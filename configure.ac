@@ -9,11 +9,11 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 AC_INIT([trash],
-        [0.3.0],
+        [0.0.3],
         [Andrea Francia andreafrancia@users.sourceforge.net],
         [trash])
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE([trash],[0.0.2])
+AM_INIT_AUTOMAKE([trash],[0.0.3])
 AC_PATH_PROGS(BASH, bash)
 AC_PROG_CC
 AC_CONFIG_FILES([

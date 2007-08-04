@@ -195,7 +195,7 @@ function trash_files () {
 
 
 prog="$(basename "${0}")"
-purpose="Put files in TrasgCan ~/.trash"
+purpose="Put files in trash"
 
 function license () {
 echo "# ${prog} ${version} -- ${purpose}
