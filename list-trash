@@ -1,0 +1,10 @@
+#!/usr/bin/python
+
+import trash.trash_directory
+
+def printTrashedFile(trashedfile) :
+    print "%s %s" % (trashedfile.getDeletionTime(), trashedfile.getPath())
+
+td = trash.trash_directory.getHomeTrashDirectory()
+td.forEachTrashedFile(printTrashedFile)
+
