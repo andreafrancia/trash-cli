@@ -1,1 +1,0 @@
-autoconf && ./configure --prefix=$HOME/opt && make && make install  
