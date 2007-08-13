@@ -1,5 +1,4 @@
 import os
-import shutil
 
 class TrashedFile :
     def __init__(self,trashinfo, trashdirectory) :
@@ -16,9 +15,7 @@ class TrashedFile :
         if not os.path.exists(os.path.dirname(self.getPath())) :
             os.makedirs(os.path.dirname(self.getPath()))
 
-        id_ = self.__trashinfo.getId()
-        filename = self.__trashdirectory.getOriginalCopyPath(id_)
-        
-        shutil.move(filename, self.getPath())
-        self.__trashdirectory.removeInfoFile(id_)
+        trashId = self.__trashinfo.getId()
+        self.__trashdirectory.getOriginalCopy(trashId).move(self.getPath())
+        self.__trashdirectory.getInfoFile(trashId).remove()
 

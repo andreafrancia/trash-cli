@@ -14,6 +14,12 @@ class Volume :
     def getPath(self) :
         return self.path
 
+    def __cmp__(self, other) :
+        if not isinstance(other, self.__class__) :
+            return cmp(self, other)
+        else :
+            return cmp(self.path,other.path)
+    
 
 def volumeOf(path) : 
     path = os.path.realpath(path)

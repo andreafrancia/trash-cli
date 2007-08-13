@@ -5,6 +5,7 @@ from trash_info import TrashInfo
 from trashed_file import TrashedFile
 from file import File
 import random
+from datetime import datetime
 
 if dir(os).count('getuid') == 0 :
     def fake_getuid() :
@@ -15,13 +16,23 @@ class TrashDirectory :
     def __init__(self, path) :
         self.path = path
 
-    def trash(self, file):
-        """
-        fjsldfjlj
-        """
-        if Volume.volumeOf(self.path).sameVolume(file)==False :
+    def trash(self, trashingFile):
+        assert(isinstance(trashingFile, File))
+        if not self.getVolume() == self.getVolume() :
             raise "file is not in the same volume of trash directory!"
-        raise NotImplementedError()
+
+        trashInfo = self.createTrashInfo(trashingFile, datetime.now())
+
+        if not os.path.exists(self.getFilesPath()) : 
+            os.makedirs(self.getFilesPath(), 0700)
+
+        try :
+            trashingFile.move(self.getOriginalCopyPath(trashInfo.getId()))
+        except IOError, e :
+            self.getTrashInfoFile(trashInfo.getId()).remove();
+            raise e
+
+        return TrashedFile(trashInfo, self)
 
     def getVolumeTrashDirectory(self, volume) :
         raise NotImplementedError()
@@ -37,6 +48,9 @@ class TrashDirectory :
 
     def getInfoPath(self) :
         return os.path.join(self.getPath(), "info")
+
+    def getFilesPath(self) :
+        return os.path.join(self.getPath(), "files")
 
     def forEachTrashedFile(self, callback) :
         for tf in self.getAllTrashedFile() :
@@ -68,11 +82,17 @@ class TrashDirectory :
                 list.append(trashedfile)
         return list
 
-    def getOriginalCopyPath(self, id_) :
-        return self.getPath() + '/files/' + str(id_)
+    def getOriginalCopyPath(self, trashId) :
+        return self.getOriginalCopyFile(trashId).getPath()
 
-    def removeInfoFile(self, id) :
-        os.remove(self.getPath() + '/info/' + str(id) + '.trashinfo')
+    def getOriginalCopyFile(self, trashId) :
+        return File(os.path.join(self.getFilesPath(), str(trashId)))
+
+    def getTrashInfoFile(self, trashId) :
+        return File(os.path.join(self.getInfoPath(), str(trashId) + '.trashinfo'))
+
+    def removeInfoFile(self, trashId) :
+        self.getTrashInfoFile(trashId).remove()
 
     def createTrashInfo(self, fileToBeTrashed, deletionTime) :
         assert(isinstance(fileToBeTrashed, File))
@@ -113,6 +133,7 @@ class TrashDirectory :
             try :
                 handle = os.open(dest, os.O_RDWR | os.O_CREAT | os.O_EXCL, 0600)
                 os.write(handle, trashInfo.render())
+                os.close(handle)
                 trashInfo.setId(trash_id)
                 return trashInfo
             except OSError :

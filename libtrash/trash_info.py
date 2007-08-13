@@ -72,7 +72,7 @@ class TrashInfo :
 
     def render(self) :
         result = "[Trash Info]\n"
-        result += "Path=" + self.getPath() + "\n"
+        result += "Path=" + urllib.quote(self.getPath(),'') + "\n"
         result += "DeletionDate=" + self.getDeletionTimeAsString() + "\n"
         return result
 

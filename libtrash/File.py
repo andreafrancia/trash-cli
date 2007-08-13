@@ -16,7 +16,7 @@ class File :
         return os.path.basename(self.path)
 
     def move(self, dest) :
-        return move(self.path, dest)
+        return shutil.move(self.path, dest)
     
     def samefs(path1, path2):
 	    if not (os.path.exists(path1) and os.path.exists(path2)):
@@ -39,3 +39,6 @@ class File :
 
     def getPath(self) :
         return self.path
+
+    def remove(self) :
+        return os.remove(self.path)

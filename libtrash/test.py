@@ -37,6 +37,11 @@ class TestVolume(unittest.TestCase) :
         for v in volumes:
             self.assertTrue(isinstance(v, Volume))
 
+    def testCmpVolumes(self) :
+        v1 = Volume(os.sep)
+        v2 = Volume(os.sep)
+
+        self.assertTrue(v1 == v2)
 
 class TestTrashDirectory(unittest.TestCase) :
     def testCreationFromVolume(self) :
@@ -84,7 +89,15 @@ class TestTrashDirectory(unittest.TestCase) :
         self.assertEqual(deletionTime, trashInfo_as_readed.getDeletionTime())
         self.assertEqual(fileToBeTrashed.getPath(), trashInfo_as_readed.getPath())
 
-        
+    def testTrashingFile(self) :
+        # create a empty file
+        filename = "dummy.txt"
+        open(filename, "w").close()
+
+        # trash the file
+        trashDirectory = TrashDirectory("testTrashDirectory")
+        trashDirectory.trash(File(filename))
+
 class TestTrashInfo(unittest.TestCase) :
     def testCreation(self) :
         ti = TrashInfo()
