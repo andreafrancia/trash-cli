@@ -1,3 +1,6 @@
+#!/usr/bin/python
+from libtrash import trash_directory
+from libtrash.file import File
 from optparse import OptionParser
 from optparse import IndentedHelpFormatter
 
@@ -66,5 +69,38 @@ parser.add_option("-v",
 
 (options, args) = parser.parse_args()
 
-if len(args) != 1:
-    parser.error("incorrect number of arguments")
+if len(args) <= 0:
+    parser.error("Please specify the files to trash.")
+
+
+for arg in args :
+    f = File(arg)
+
+    trashDirectoriesToTry = []
+
+    if trash_directory.getHomeTrashDirectory().getVolume() == f.getVolume() :
+        trashDirectoriesToTry.append(trash_directory.getHomeTrashDirectory())
+
+    trashDirectoriesToTry.append(
+        trash_directory.getVolumeTrashDirectory1(f.getVolume()))
+
+    trashDirectoriesToTry.append(
+        trash_directory.getVolumeTrashDirectory2(f.getVolume()))
+
+    print [i.getPath() for i in trashDirectoriesToTry]
+
+    trashed = False
+    for trashDirectory in trashDirectoriesToTry :
+	try : 
+	    print "trying to trash to %s\n" % trashDirectory.getPath()
+            trashDirectory.trash(f)
+	    print "trash succedeed\n"
+	    trashed = True
+	    break
+        except Exception, e:
+	    print "exception " + str(e.__class__) + str(e.message) + str(e.args)
+
+    if not trashed :
+        print "Cannot trash " + f.getPath() + "\n"
+
+
