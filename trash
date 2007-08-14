@@ -87,20 +87,18 @@ for arg in args :
     trashDirectoriesToTry.append(
         trash_directory.getVolumeTrashDirectory2(f.getVolume()))
 
-    print [i.getPath() for i in trashDirectoriesToTry]
-
     trashed = False
     for trashDirectory in trashDirectoriesToTry :
 	try : 
-	    print "trying to trash to %s\n" % trashDirectory.getPath()
             trashDirectory.trash(f)
-	    print "trash succedeed\n"
 	    trashed = True
 	    break
         except Exception, e:
 	    print "exception " + str(e.__class__) + str(e.message) + str(e.args)
 
-    if not trashed :
-        print "Cannot trash " + f.getPath() + "\n"
+    if trashed :
+	print "File trashed: %s" % f.getPath()
+    else :
+        print "Cannot trash " + f.getPath() + ""
 
 
