@@ -1,6 +1,6 @@
 #!/usr/bin/python
-from libtrash import trash_directory
-from libtrash.file import File
+import libtrash 
+from libtrash import File
 from optparse import OptionParser
 from optparse import IndentedHelpFormatter
 
@@ -69,36 +69,42 @@ parser.add_option("-v",
 
 (options, args) = parser.parse_args()
 
+
 if len(args) <= 0:
     parser.error("Please specify the files to trash.")
 
+
+def try_trash(trashDirectory, f) :
+    trashed = False
+    try : 
+        trashDirectory.trash(f)
+        trashed = True
+    except IOError, e:
+        pass
+
+    return trashed
 
 for arg in args :
     f = File(arg)
 
     trashDirectoriesToTry = []
-
-    if trash_directory.getHomeTrashDirectory().getVolume() == f.getVolume() :
-        trashDirectoriesToTry.append(trash_directory.getHomeTrashDirectory())
-
-    trashDirectoriesToTry.append(
-        trash_directory.getVolumeTrashDirectory1(f.getVolume()))
-
-    trashDirectoriesToTry.append(
-        trash_directory.getVolumeTrashDirectory2(f.getVolume()))
+    volume = f.getParent().getVolume()
 
     trashed = False
-    for trashDirectory in trashDirectoriesToTry :
-	try : 
-            trashDirectory.trash(f)
-	    trashed = True
-	    break
-        except Exception, e:
-	    print "exception " + str(e.__class__) + str(e.message) + str(e.args)
+    if libtrash.getHomeTrashDirectory().getVolume() == volume :
+        trashed = try_trash(libtrash.getHomeTrashDirectory(), f)
+
+    if not trashed :
+        if volume.hasCommonTrashDirectory() :
+            trashed = try_trash(volume.getCommonTrashDirectory(), f)
+
+    if not trashed :
+        trashed = try_trash(volume.getUserTrashDirectory(), f)
 
     if trashed :
-	print "File trashed: %s" % f.getPath()
+	#print "File trashed: %s" % f.getPath()
+        pass
     else :
-        print "Cannot trash " + f.getPath() + ""
+        print "Cannot trash %s" % f.getPath()
 
 

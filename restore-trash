@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
-import libtrash.trash_directory
+import libtrash
 import os
 
-td = libtrash.trash_directory.getHomeTrashDirectory()
+td = libtrash.getHomeTrashDirectory()
 list = td.getTrashedFileInDir(os.curdir)
 for i in range(0,len(list)) :
     trashedfile = list[i]

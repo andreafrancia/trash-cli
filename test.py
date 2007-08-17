@@ -8,21 +8,13 @@ __author__ = "Andrea Francia (andrea.francia@users.sourceforge.net)"
 __copyright__ = "Copyright (c) 2007 Andrea Francia"
 __license__ = "GPL"
 
-from volume import Volume
-from trash_directory import TrashDirectory
-from trash_info import TrashInfo
-from trashed_file import TrashedFile
-from file import File
-
-import trash_directory
-import unittest
-import trash_info
-import trashed_file
-import volume
+import libtrash
+from libtrash import *
 
 from datetime import *
 from exceptions import *
 import os
+import unittest
 
 if dir(os).count('getuid') == 0 :
     def fake_getuid() :
@@ -32,7 +24,7 @@ if dir(os).count('getuid') == 0 :
 
 class TestVolume(unittest.TestCase) :
     def testListVolumes(self) : 
-        volumes = volume.all()
+        volumes = allVolumes()
         self.assertTrue(len(volumes) > 0)
         for v in volumes:
             self.assertTrue(isinstance(v, Volume))
@@ -46,25 +38,27 @@ class TestVolume(unittest.TestCase) :
 class TestTrashDirectory(unittest.TestCase) :
     def testCreationFromVolume(self) :
         volume = Volume(os.sep) # main volume ("/"
-        td_list = trash_directory.getVolumeTrashDirectories(volume)
-        self.assertTrue(len(td_list) > 0)            
-        for td in td_list :
-            # is a trash direcory
-            self.assertTrue(isinstance(td,TrashDirectory))
-            # is in the volume
-            self.assertTrue(td.getPath().startswith(volume.getPath()))
+
+        # test with /Trash/$uid
+        td = volume.getCommonTrashDirectory()
+        # is a trash direcory
+        self.assertTrue(isinstance(td,TrashDirectory))
+        # is in the volume
+        self.assertTrue(td.getPath().startswith(volume.getPath()))
+
+        # test with /Trash-$uid
+        td = volume.getUserTrashDirectory()
+        # is a trash direcory
+        self.assertTrue(isinstance(td,TrashDirectory))
+        # is in the volume
+        self.assertTrue(td.getPath().startswith(volume.getPath()))
 
 
     def testBasePath(self) :
         os.environ['HOME'] = "/home/test"
-        td = trash_directory.getHomeTrashDirectory()
+        td = libtrash.getHomeTrashDirectory()
         self.assertEqual(td.getBasePath(),os.path.abspath("/"))
         
-        root = os.path.abspath(os.sep)
-        td_list = trash_directory.getVolumeTrashDirectories(Volume(root))
-        for td in td_list :
-            self.assertEqual(td.getBasePath(), root)
-
     def testTrashInfoFileCreation(self) :
         trashdirectory_base_dir = os.path.realpath("./testTrashDirectory")
         td = TrashDirectory(trashdirectory_base_dir)
@@ -119,7 +113,7 @@ class TestTrashedFile(unittest.TestCase) :
         ti = TrashInfo()
         ti.path = "pippo"
         ti.deletionTime = datetime(2007, 7, 23, 23, 45, 07)
-        td = trash_directory.getHomeTrashDirectory()
+        td = libtrash.getHomeTrashDirectory()
         tf = TrashedFile(ti, td)
         root = os.path.abspath(os.sep)
         self.assertEqual(tf.getPath(), os.path.join(root,"pippo"))
