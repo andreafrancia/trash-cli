@@ -1,18 +1,21 @@
 #!/usr/bin/python
 
-import libtrash
+from libtrash import TrashDirectory
 import os
 
-td = libtrash.getHomeTrashDirectory()
-list = td.getTrashedFileInDir(os.curdir)
-for i in range(0,len(list)) :
-    trashedfile = list[i]
+list = []
+i = 0
+for trashedfile in TrashDirectory.allTrashedFilesInDir(os.curdir) :
+    list.append(trashedfile)
     print "%4d %s %s" % (i, trashedfile.getDeletionTime(), trashedfile.getPath())
+    i += 1
 
-
-index=raw_input("What file to restore [0..%d]: " % (len(list)-1))
-if index == "" :
-    print "Exiting"
+if len(list) == 0 :
+    print "No trashed files"
 else :
-    index = int(index)
-    list[index].restore()
+    index=raw_input("What file to restore [0..%d]: " % (len(list)-1))
+    if index == "" :
+        print "Exiting"
+    else :
+        index = int(index)
+        list[index].restore()

@@ -1,0 +1,59 @@
+CHANGES WITH 2.0.3
+
+Back ported the Makefile from 2.1.1pre that included changes to the
+docs-docbook-prep target.
+
+Changed the test in assertFalse() so that any non-zero value registers as
+false. (Credits to Bryan Larsen)
+
+Updated the testPartyLikeItIs1999() function in the Quick Start documentation.
+The 'expected' and 'actual' values were swapped. (Credits to Richard Jensen)
+
+It was pointed out that the simple 'failed' message for a failed assert was not
+only insufficient, it was nonstandard (when compared to JUnit) and didn't
+provide the user with an expected vs actual result. The code was revised
+somewhat to bring closer into alignment with JUnit (v4.3.1 specifically) so
+that it feels more "normal". (Credits to Richard Jensen)
+
+As part of the JUnit realignment, it was noticed that fail*() functions in
+JUnit don't actually do any comparisons themselves. They only generate a
+failure message. Updated the code to match.
+
+Added self-testing unit tests. Kinda horkey, but they did find bugs during the
+JUnit realignment.
+
+Fixed the code for returning from asserts as the return was being called before
+the unsetting of variables occurred. (Credits to Mathias Goldau)
+
+The assert(True|False)() functions now accept an integer value for a
+conditional test. A value of '0' is considered 'true', while any non-zero value
+is considered 'false'.
+
+All public functions now fill use default values to work properly with the '-x'
+shell debugging flag.
+
+Fixed the method of percent calculation for the report to get achieve better
+accuracy.
+
+
+CHANGES WITH 2.0.2
+
+Fixed problem with fail(). The failure message was not properly printed.
+
+Reworked the Makefile so that the DocBook XML and XSLT files are properly
+downloaded before parsing can continue.
+
+
+CHANGES WITH 2.0.1
+
+Fixed some really stupid mistakes with the fail* functions. They were doing the
+exact opposite of what they were supposed to be doing.
+
+
+CHANGES WITH 2.0.0
+
+Made the first stand-alone release!
+
+
+$Revision: 93 $
+vim:spell

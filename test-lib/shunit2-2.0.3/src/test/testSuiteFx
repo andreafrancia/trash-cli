@@ -1,0 +1,23 @@
+#! /bin/sh
+# $Id$
+# vim: expandtab
+# author: Kate Ward <kate.ward@forestent.com>
+#
+# Self-testing unit tests for shUnit2 suite functions
+#
+
+#-----------------------------------------------------------------------------
+# suite tests
+#
+
+testAddTest()
+{
+  :
+}
+
+#-----------------------------------------------------------------------------
+# suite functions
+#
+
+# load and run shUnit2
+. ./shunit2

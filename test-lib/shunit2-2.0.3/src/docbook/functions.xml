@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+$Id: functions.xml 12 2007-02-18 03:31:14Z sfsetse $
+vim:softtabstop=2 shiftwidth=2
+-->
+
+<!-- =========================================================================
+Functions
+-->
+
+<chapter id="functions">
+  <title>Functions</title>
+  <para>This XML file is a placeholder.  It is meant to be overwritten with the dynamically generated XML document that is extracted from the source code.</para>
+</chapter>

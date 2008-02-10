@@ -1,7 +1,9 @@
 import os 
 import shutil
 
-class File :
+version='0.1.6'
+
+class File (object) :
     def __init__(self, path) :
         self.path = os.path.abspath(path)
 
@@ -37,7 +39,7 @@ class File :
         return path1 == path2  
     
     def getVolume(self) :
-        return volumeOf(self.getPath())
+        return Volume.volumeOf(self.getPath())
 
     def getPath(self) :
         return self.path
@@ -54,15 +56,14 @@ class File :
     def islink(self) :
         return os.path.islink(self.getPath())
 
-
 import os
 import random
 from datetime import datetime
 
-if dir(os).count('getuid') == 0 :
-    def fake_getuid() :
-        return 999;
-    os.getuid = fake_getuid
+try:
+    mygetuid = os.getuid
+except AttributeError:
+    mygetuid = lambda: 1234
 
 class TrashDirectory(File) :
     def __init__(self, path) :
@@ -94,36 +95,30 @@ class TrashDirectory(File) :
 
     def getFilesPath(self) :
         return os.path.join(self.getPath(), "files")
-
-    def forEachTrashedFile(self, callback) :
-        for tf in self.getAllTrashedFile() :
-            callback(tf)
             
-    def getAllTrashedFile(self) :
-        list = []
-        for filename in os.listdir(self.getInfoPath()) :
-            infoFilename = os.path.join(self.getInfoPath(), filename)
+    def trashedFiles(self) :
+        try : 
+            for filename in os.listdir(self.getInfoPath()) :
+                infoFilename = os.path.join(self.getInfoPath(), filename)
 
-            infoBasename = os.path.basename(infoFilename)
+                infoBasename = os.path.basename(infoFilename)
+            
+                if not infoBasename.endswith('.trashinfo') :
+                    raise AssertionError()
+                else :
+                    trashId = infoBasename[:-len('.trashinfo')]
+                
+                ti = TrashInfo(trashId)
+                ti.parse(open(infoFilename).read())
+                yield TrashedFile(ti, self)
+        except OSError, e: # when directory does not exist
+            pass 
         
-            if not infoBasename.endswith('.trashinfo') :
-                raise AssertionError()
-            else :
-                id_ = infoBasename[:-len('.trashinfo')]
-            
-            ti = TrashInfo(id_)
-            ti.parse(open(infoFilename).read())
-            tf = TrashedFile(ti, self)
-            list.append(tf)
-        return list
-
-    def getTrashedFileInDir(self, dir) :
+    def trashedFilesInDir(self, dir) :
         dir = os.path.realpath(dir)
-        list = []
-        for trashedfile in self.getAllTrashedFile() :
+        for trashedfile in self.trashedFiles() :
             if trashedfile.getPath().startswith(dir + os.path.sep) :
-                list.append(trashedfile)
-        return list
+                yield trashedfile
 
     def getOriginalCopyPath(self, trashId) :
         return self.getOriginalCopy(trashId).getPath()
@@ -187,18 +182,39 @@ class TrashDirectory(File) :
         raise IOError()
         
     
-def getHomeTrashDirectory() : 
-    if 'XDG_DATA_HOME' in os.environ:
-        XDG_DATA_HOME = os.environ['XDG_DATA_HOME']
-    else :
-        XDG_DATA_HOME = os.environ['HOME'] + '/.local/share'
+    @staticmethod
+    def getHomeTrashDirectory() : 
+        if 'XDG_DATA_HOME' in os.environ:
+            XDG_DATA_HOME = os.environ['XDG_DATA_HOME']
+        else :
+            XDG_DATA_HOME = os.environ['HOME'] + '/.local/share'
+            
+        path = XDG_DATA_HOME + "/Trash"
+        return TrashDirectory(path)
+
+    @staticmethod
+    def allTrashedFiles() :
+        for trashedfile in TrashDirectory.getHomeTrashDirectory().trashedFiles() :
+            yield trashedfile
+
+        for volume in Volume.all() :
+            for trashedfile in volume.getCommonTrashDirectory().trashedFiles() :
+                yield trashedfile    
+            for trashedfile in volume.getUserTrashDirectory().trashedFiles() :
+                yield trashedfile
+
+
+    @classmethod
+    def allTrashedFilesInDir(cls,dir) :
+        dir = os.path.realpath(dir)
+        for trashedfile in cls.allTrashedFiles() :
+            if trashedfile.getPath().startswith(dir + os.path.sep) :
+                yield trashedfile
         
-    path = XDG_DATA_HOME + "/Trash"
-    return TrashDirectory(path)
 
 import os
 
-class TrashedFile :
+class TrashedFile (object) :
     def __init__(self,trashinfo, trashdirectory) :
         self.__trashinfo = trashinfo
         self.__trashdirectory = trashdirectory
@@ -217,6 +233,12 @@ class TrashedFile :
         self.__trashdirectory.getOriginalCopy(trashId).move(self.getPath())
         self.__trashdirectory.getTrashInfoFile(trashId).remove()
 
+    def purge(self) :
+        # author : Einar Orn Olason
+        trashId = self.__trashinfo.getId()
+        self.__trashdirectory.getOriginalCopy(trashId).remove()
+        self.__trashdirectory.getTrashInfoFile(trashId).remove()
+
 
 import StringIO
 import re
@@ -225,7 +247,7 @@ import urllib
 from datetime import datetime
 import os
 
-class TrashInfo :
+class TrashInfo (object) :
     def __init__(self, trashId = None) :
         self.id = trashId
 
@@ -250,21 +272,14 @@ class TrashInfo :
     def setId(self, trashId) :
         self.id = trashId
     
-    def __chomp(self, string) :
-        if string[-1] == '\n' :
-            return string[:-1]
-        else :
-            return string
-
     def parse(self, data) :
-
         stream = StringIO.StringIO(data)    
-        line = self.__chomp(stream.readline())
+        line = stream.readline().rstrip('\n')
         if line != "[Trash Info]" :
             raise ValueError()
 
         try :
-            line = self.__chomp(stream.readline())
+            line = stream.readline().rstrip('\n')
         except :
             raise ValueError()
         
@@ -278,7 +293,7 @@ class TrashInfo :
             
 
         try :
-            line = self.__chomp(stream.readline())
+            line = stream.readline().rstrip('\n')
         except :
             raise ValueError()
         
@@ -292,9 +307,14 @@ class TrashInfo :
 
     def render(self) :
         result = "[Trash Info]\n"
-        result += "Path=" + urllib.quote(self.getPath(),'') + "\n"
+        result += "Path=" + urllib.quote(self.getPath(),'/') + "\n"
         result += "DeletionDate=" + self.getDeletionTimeAsString() + "\n"
         return result
+
+import sys
+import os
+import string
+from stat import *
 
 class Volume (File) :
     def __init__(self,path):
@@ -304,7 +324,7 @@ class Volume (File) :
             raise ValueError("path is not a mount point")
     
     def sameVolume(self,path) : 
-        return volumeOf(path).path == self.path
+        return Volume.volumeOf(path).path == self.path
 
     def getPath(self) :
         return self.path
@@ -315,7 +335,7 @@ class Volume (File) :
         else :
             return cmp(self.path,other.path)
     
-    def hasCommonTrashDirectory() :
+    def hasCommonTrashDirectory(self) :
         """
         checks required by trash specification
         (from http://www.ramendik.ru/docs/trashspec.0.7.html)
@@ -329,115 +349,114 @@ class Volume (File) :
         return trashdir.exists() and trashdir.isdir() and not trashdir.islink()
 
     def getCommonTrashDirectory(self) :
-        uid = os.getuid()
+        uid = mygetuid()
         return TrashDirectory(os.path.join(self.getPath(), ".Trash", str(uid)))
 
     def getUserTrashDirectory(self) :
-        uid = os.getuid()
+        uid = mygetuid()
         return TrashDirectory(os.path.join(self.getPath(), ".Trash-%s" % str(uid)))
 
+    @staticmethod
+    def volumeOf(path) : 
+        path = os.path.realpath(path)
+        while path != os.path.dirname(path):
+            if os.path.ismount(path):
+                    break
+            path = os.path.dirname(path)
+        return Volume(path)
+
+    """
+    mount_list
+    Taste the system and return a list of mount points.
+    On UNIX this will return what a df will return
+    On DOS based systems run through a list of common drive letters and
+    test them
+    to see if a mount point exists. Whether a floppy or CDROM on DOS is
+    currently active may present challenges.
+    Curtis W. Rendon 6/27/200 v.01
+      6/27/2004 v.1 using df to make portable, and some DOS tricks to get
+    active
+    drives. Will try chkdsk on DOS to try to get drive size as statvfs()
+    doesn't exist on any system I have access to...
+
+    """
+
+    @staticmethod
+    def __mount_list():
+      """
+      returns a list of mount points
+      """
 
 
-def volumeOf(path) : 
-    path = os.path.realpath(path)
-    while path != os.path.dirname(path):
-        if os.path.ismount(path):
-	        break
-        path = os.path.dirname(path)
-    return Volume(path)
+      doslist=['a:\\','b:\\','c:\\','d:\\','e:\\','f:\\','g:\\','h:\\','i:\\','j:\\','k:\\','l:\\','m:\\','n:\\','o:\\','p:\\','q:\\','r:\\','s:\\','t:\\','u:\\','v:\\','w:\\','x:\\','y:\\','z:\\']
+      mount_list=[]
 
-"""
-mount_list
-Taste the system and return a list of mount points.
-On UNIX this will return what a df will return
-On DOS based systems run through a list of common drive letters and
-test them
-to see if a mount point exists. Whether a floppy or CDROM on DOS is
-currently active may present challenges.
-Curtis W. Rendon 6/27/200 v.01
-  6/27/2004 v.1 using df to make portable, and some DOS tricks to get
-active
-drives. Will try chkdsk on DOS to try to get drive size as statvfs()
-doesn't exist on any system I have access to...
+      """
+      see what kind of system
+      if UNIX like
+         use os.path.ismount(path) from /... use df?
+      if DOS like
+         os.path.exists(path) for  a list of common drive letters
+      """
+      if sys.platform[:3] == 'win':
+        #dos like
+        doslistlen=len(doslist)
+        for apath in doslist:
+          if os.path.exists(apath):
+            #maybe stat check first... yeah, it's there...
+            if os.path.isdir(apath):
+              mode = os.stat(apath)
+              try:
+                 dummy=os.listdir(apath)
+                 mount_list.append(apath)
+              except:
+                 continue
+            else:
+              continue
+        return (mount_list)
 
-"""
-import sys,os,string
-from stat import *
+      else:
+        #UNIX like
+        """
+        AIX and SYSV are somewhat different than the GNU/BSD df, try to catch
+        them. This is for AIX, at this time I don't have a SYS5 available to see
+        what the sys.platform returns... CWR
+        """
+        if 'aix' in sys.platform.lower():
+          df_file=os.popen('df')
+          while True:
+            df_list=df_file.readline()
+            if not df_list:
+              break #EOF
+            dflistlower = df_list.lower()
+            if 'filesystem' in dflistlower:
+              continue
+            if 'proc' in dflistlower:
+              continue
 
-def mount_list():
-  """
-  returns a list of mount points
-  """
+            file_sys,disc_size,disc_avail,disc_cap_pct,inodes,inodes_pct,mount=df_list.split()
+            mount_list.append(mount)
 
-
-  doslist=['a:\\','b:\\','c:\\','d:\\','e:\\','f:\\','g:\\','h:\\','i:\\','j:\\','k:\\','l:\\','m:\\','n:\\','o:\\','p:\\','q:\\','r:\\','s:\\','t:\\','u:\\','v:\\','w:\\','x:\\','y:\\','z:\\']
-  mount_list=[]
-
-  """
-  see what kind of system
-  if UNIX like
-     use os.path.ismount(path) from /... use df?
-  if DOS like
-     os.path.exists(path) for  a list of common drive letters
-  """
-  if sys.platform[:3] == 'win':
-    #dos like
-    doslistlen=len(doslist)
-    for apath in doslist:
-      if os.path.exists(apath):
-        #maybe stat check first... yeah, it's there...
-        if os.path.isdir(apath):
-          mode = os.stat(apath)
-          try:
-             dummy=os.listdir(apath)
-             mount_list.append(apath)
-          except:
-             continue
         else:
-          continue
-    return (mount_list)
+          df_file=os.popen('df')
+          while True:
+            df_list=df_file.readline()
+            if not df_list:
+              break #EOF
+            dflistlower = df_list.lower()
+            if 'filesystem' in dflistlower:
+              continue
+            if 'proc' in dflistlower:
+              continue
 
-  else:
-    #UNIX like
-    """
-    AIX and SYSV are somewhat different than the GNU/BSD df, try to catch
-    them. This is for AIX, at this time I don't have a SYS5 available to see
-    what the sys.platform returns... CWR
-    """
-    if 'aix' in sys.platform.lower():
-      df_file=os.popen('df')
-      while True:
-        df_list=df_file.readline()
-        if not df_list:
-          break #EOF
-        dflistlower = df_list.lower()
-        if 'filesystem' in dflistlower:
-          continue
-        if 'proc' in dflistlower:
-          continue
+            file_sys,disc_size,disc_used,disc_avail,disc_cap_pct,mount=df_list.split()
+            mount_list.append(mount)
 
-        file_sys,disc_size,disc_avail,disc_cap_pct,inodes,inodes_pct,mount=df_list.split()
-        mount_list.append(mount)
-
-    else:
-      df_file=os.popen('df')
-      while True:
-        df_list=df_file.readline()
-        if not df_list:
-          break #EOF
-        dflistlower = df_list.lower()
-        if 'filesystem' in dflistlower:
-          continue
-        if 'proc' in dflistlower:
-          continue
-
-        file_sys,disc_size,disc_used,disc_avail,disc_cap_pct,mount=df_list.split()
-        mount_list.append(mount)
-
-    return (mount_list)
+        return (mount_list)
 
 
-def allVolumes() :
-    return [ Volume(elem) for elem in mount_list()]
+    @staticmethod
+    def all() :
+        return [ Volume(elem) for elem in Volume.__mount_list()]
 
     

@@ -1,10 +1,11 @@
 #!/usr/bin/python
-import libtrash 
 from libtrash import File
+from libtrash import TrashDirectory
 from optparse import OptionParser
 from optparse import IndentedHelpFormatter
+import libtrash
 
-def trash (file) :
+def trash (f) :
     """ 
     Trash a file in the appropriate trash directory.
     If the file belong to the same volume of the trash home directory it will
@@ -18,7 +19,26 @@ def trash (file) :
     Firstly the software attempt to trash the file in the first directory then 
     try to trash in the second trash directory.
     """
-    pass
+    try: 
+        volume = f.getParent().getVolume()
+
+        if TrashDirectory.getHomeTrashDirectory().getVolume() == volume :
+            TrashDirectory.getHomeTrashDirectory().trash(f)
+        else :
+            if volume.hasCommonTrashDirectory() :
+                volume.getCommonTrashDirectory().trash(f)
+            else :
+                volume.getUserTrashDirectory().trash(f)
+
+        if options.verbose:
+            print "trashed: `%s'" % arg
+    except OSError, e:
+        # occour when the file cannot be moved
+        print "trash: cannot trash `%s': %s" % (arg, str(e))
+    except IOError, e:
+        # occour when the file does not exist
+        print "trash: cannot trash `%s': %s" % (arg, str(e))
+    
 
 class MyFormatter (IndentedHelpFormatter) :
     def format_epilog(self, epilog):
@@ -29,18 +49,18 @@ class MyFormatter (IndentedHelpFormatter) :
 
 parser = OptionParser(usage="%prog [OPTION]... FILE...",
                       description="Put files in trash",
-                      version="%prog 1.0",
+                      version="%%prog %s" % libtrash.version,
                       formatter=MyFormatter(),
                       epilog=
 """To remove a file whose name starts with a `-', for example `-foo',
 use one of these commands:
 
-  ${prog} -- -foo
+  trash -- -foo
 
-  ${prog} ./-foo
+  trash ./-foo
   
-Report bugs to <andreafrancia@sourceforge.net>."""
-                      )
+Report bugs to <andreafrancia@sourceforge.net>.""")
+
 parser.add_option("-d",
                   "--directory",
                   action="store_true",
@@ -65,7 +85,8 @@ parser.add_option("-r",
 parser.add_option("-v",
                   "--verbose",
                   action="store_true",
-                  help="ignored (for GNU rm compatibility)")
+                  help="explain what is being done",
+                  dest="verbose")
 
 (options, args) = parser.parse_args()
 
@@ -74,37 +95,6 @@ if len(args) <= 0:
     parser.error("Please specify the files to trash.")
 
 
-def try_trash(trashDirectory, f) :
-    trashed = False
-    try : 
-        trashDirectory.trash(f)
-        trashed = True
-    except IOError, e:
-        pass
-
-    return trashed
-
 for arg in args :
     f = File(arg)
-
-    trashDirectoriesToTry = []
-    volume = f.getParent().getVolume()
-
-    trashed = False
-    if libtrash.getHomeTrashDirectory().getVolume() == volume :
-        trashed = try_trash(libtrash.getHomeTrashDirectory(), f)
-
-    if not trashed :
-        if volume.hasCommonTrashDirectory() :
-            trashed = try_trash(volume.getCommonTrashDirectory(), f)
-
-    if not trashed :
-        trashed = try_trash(volume.getUserTrashDirectory(), f)
-
-    if trashed :
-	#print "File trashed: %s" % f.getPath()
-        pass
-    else :
-        print "Cannot trash %s" % f.getPath()
-
-
+    trash(f)

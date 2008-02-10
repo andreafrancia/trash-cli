@@ -24,7 +24,7 @@ if dir(os).count('getuid') == 0 :
 
 class TestVolume(unittest.TestCase) :
     def testListVolumes(self) : 
-        volumes = allVolumes()
+        volumes = Volume.all()
         self.assertTrue(len(volumes) > 0)
         for v in volumes:
             self.assertTrue(isinstance(v, Volume))
@@ -56,7 +56,7 @@ class TestTrashDirectory(unittest.TestCase) :
 
     def testBasePath(self) :
         os.environ['HOME'] = "/home/test"
-        td = libtrash.getHomeTrashDirectory()
+        td = TrashDirectory.getHomeTrashDirectory()
         self.assertEqual(td.getBasePath(),os.path.abspath("/"))
         
     def testTrashInfoFileCreation(self) :
@@ -81,7 +81,8 @@ class TestTrashDirectory(unittest.TestCase) :
         trashInfo_as_readed = TrashInfo()
         trashInfo_as_readed.parse(open(trashInfoFilePath).read())
         self.assertEqual(deletionTime, trashInfo_as_readed.getDeletionTime())
-        self.assertEqual(fileToBeTrashed.getPath(), trashInfo_as_readed.getPath())
+        self.assertEqual(fileToBeTrashed.getPath(),
+                         trashInfo_as_readed.getPath())
 
     def testTrashingFile(self) :
         # create a empty file
@@ -101,7 +102,8 @@ DeletionDate=2007-07-23T23:45:07"""
         ti.parse(data)
         self.assertEqual(ti.getPath(), "home/andrea/prova.txt")
         self.assertTrue(isinstance(ti.getDeletionTime(),datetime))
-        self.assertEqual(ti.getDeletionTime(), datetime(2007, 7, 23, 23, 45, 07))
+        self.assertEqual(ti.getDeletionTime(),
+                         datetime(2007, 7, 23, 23, 45, 07))
         
     def testFailCreation(self) :
         data = "asdkjlfklajds"
@@ -113,7 +115,7 @@ class TestTrashedFile(unittest.TestCase) :
         ti = TrashInfo()
         ti.path = "pippo"
         ti.deletionTime = datetime(2007, 7, 23, 23, 45, 07)
-        td = libtrash.getHomeTrashDirectory()
+        td = TrashDirectory.getHomeTrashDirectory()
         tf = TrashedFile(ti, td)
         root = os.path.abspath(os.sep)
         self.assertEqual(tf.getPath(), os.path.join(root,"pippo"))

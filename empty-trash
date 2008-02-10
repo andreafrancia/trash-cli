@@ -1,0 +1,27 @@
+#!/usr/bin/python
+"""
+Empty the trash. If a command line parameter is given we delete only files
+older than that parameter (integer, days).
+"""
+# author: Einar Orn Olason
+
+import os, datetime, sys
+from libtrash import TrashDirectory
+
+days=0
+usage="usage: "+sys.argv[0]+" [days]" 
+
+if len(sys.argv) > 2 :
+     print usage
+     sys.exit()
+elif len(sys.argv) > 1 :
+     try :
+          days=int(sys.argv[1])
+     except :
+          print usage
+          sys.exit()
+
+
+for trashedfile in TrashDirectory.allTrashedFiles() :
+     delta=datetime.datetime.now()-trashedfile.getDeletionTime()
+     if delta.days >= days : trashedfile.purge()

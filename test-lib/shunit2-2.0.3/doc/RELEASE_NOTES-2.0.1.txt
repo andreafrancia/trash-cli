@@ -1,0 +1,73 @@
+﻿RELEASE NOTES FOR 2.0.1
+
+This release is mostly a brown-bag release. Not so nice for the second release
+ever of the product, but that's what I get for trying to get something out
+there that I hadn't fully looked through one last time.
+
+
+TESTED PLATFORMS
+
+This list of platforms comes from the latest version of log4sh as shunit2 is
+used in the testing of log4sh on each of these platforms.
+
+Cygwin
++ bash 3.2.9(10)
++ pdksh 5.2.14
+
+Linux
++ bash 3.1.17(1)
++ dash 0.5.3
++ ksh 1993-12-28
++ pdksh 5.2.14
++ zsh 4.3.2 (does not work)
+
+Mac OS X 1.4.8 (Darwin 8.8)
++ bash 2.05b.0(1)
++ ksh 1993-12-28
+
+Solaris 8 U3 (x86)
++ /bin/sh
++ bash 2.03.0(1)
++ ksh M-11/16/88i
+
+Solaris 10 U2 (sparc)
++ /bin/sh
++ bash 3.00.16(1)
++ ksh M-11/16/88i
+
+Solaris 10 U2 (x86)
++ /bin/sh
++ bash 3.00.16(1)
++ ksh M-11/16/88i
+
+
+NEW FEATURES
+
+None.
+
+
+CHANGES AND ENHANCEMENTS
+
+The documentation regarding the assertTrue() and assertFalse() functions was
+updated to reflect their proper usage. They are shell test condition evaluators
+(e.g. "[1 -eq 2]") rather than simple 0/1 comparators.
+
+
+BUG FIXES
+
+The fail*() functions were doing the exact opposite of what they were supposed
+to be doing. They have been fixed.
+
+
+DEPRECATED FEATURES
+
+None.
+
+
+KNOWN BUGS AND ISSUES
+
+None.
+
+
+$Revision: 41 $
+vim:spell
