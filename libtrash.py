@@ -45,7 +45,15 @@ class File (object) :
         return self.path
 
     def remove(self) :
-        return os.remove(self.path)
+        try:
+            return os.remove(self.path)
+        except OSError :
+            for root, dirs, files in os.walk(self.path, topdown=False):
+                for name in files:
+                    os.remove(os.path.join(root, name))
+                for name in dirs:
+                    os.rmdir(os.path.join(root, name))
+                return os.rmdir(root)
 
     def exists(self) :
         return os.path.exists(self.getPath())
