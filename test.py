@@ -84,6 +84,11 @@ class TestTrashDirectory(unittest.TestCase) :
         self.assertEqual(fileToBeTrashed.getPath(),
                          trashInfo_as_readed.getPath())
 
+    def testCreateTrashInfo(self) :
+        trashdirectory_base_dir = os.path.realpath("./testTrashDirectory")
+        td = TrashDirectory(trashdirectory_base_dir)
+        
+
     def testTrashingFile(self) :
         # create a empty file
         filename = "dummy.txt"

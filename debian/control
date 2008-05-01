@@ -1,0 +1,13 @@
+Source: trash
+Section: editors
+Priority: optional
+Maintainer: Andrea Francia <andrea.francia@gmx.it>
+Build-Depends: 
+Build-Depends-Indep: python2.5 | python (>=2.5),
+Homepage: http://www.andreafrancia.it/trash/
+
+Package: trash
+Architecture: all
+Depends: ${misc:Depends},
+         ${python:Depends},
+Description: Command line interface to Desktop Trash 

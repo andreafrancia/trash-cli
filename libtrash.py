@@ -1,7 +1,7 @@
 import os 
 import shutil
 
-version='0.1.6'
+version='0.1.7'
 
 class File (object) :
     def __init__(self, path) :
@@ -38,6 +38,9 @@ class File (object) :
 
         return path1 == path2  
     
+    """
+    return Volume the volume where the file is
+    """
     def getVolume(self) :
         return Volume.volumeOf(self.getPath())
 
@@ -73,10 +76,18 @@ try:
 except AttributeError:
     mygetuid = lambda: 1234
 
+"""
+Represent a trash directory.
+For example $XDG_DATA_HOME/Trash
+"""
 class TrashDirectory(File) :
     def __init__(self, path) :
         File.__init__(self,path)
 
+    """ 
+    Trash the specified file.
+    returns TrashedFile
+    """
     def trash(self, trashingFile):
         assert(isinstance(trashingFile, File))
         if not self.getVolume() == trashingFile.getParent().getVolume() :
@@ -140,6 +151,12 @@ class TrashDirectory(File) :
     def removeInfoFile(self, trashId) :
         self.getTrashInfoFile(trashId).remove()
 
+    """
+    Create a .trashinfo file in the $trash/info directory.
+    param File fileToBeTrashed
+    param ? deletionTime
+    returns TrashInfo the create TrashInfo file.
+    """
     def createTrashInfo(self, fileToBeTrashed, deletionTime) :
         assert(isinstance(fileToBeTrashed, File))
         # calculate relative path
