@@ -1,5 +1,0 @@
-Make it possible to execute a single test by passing the name of the test on
-the command line
-
-
-$Revision: 4 $
