@@ -2,7 +2,7 @@
 trash dist
 mkdir dist
 
-version=0.1.9
+source version.py # define the version variabile
 svn export . dist/trash-"$version"
 
 # create .tar.gz (sources)
