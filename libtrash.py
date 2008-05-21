@@ -1,7 +1,7 @@
 import os 
 import shutil
 
-from version import version
+version='0.1.10'
 
 class File (object) :
     def __init__(self, path) :
