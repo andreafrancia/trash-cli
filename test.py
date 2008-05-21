@@ -97,9 +97,17 @@ class TestTrashDirectory(unittest.TestCase) :
         # trash the file
         trashDirectory = TrashDirectory("testTrashDirectory")
         trashDirectory.trash(File(filename))
-
+    def testCreateTrashInfo(self) : 
+        instance = TrashDirectory("/home/andrea/.local/share/Trash")
+        fileToBeTrashed=File("/home/andrea/test.txt")
+        deletionTime=datetime(2000,1,1)
+        
+        result=instance.createTrashInfo(fileToBeTrashed, deletionTime)
+        self.assertEquals(datetime(2000,1,1), result.deletionTime)
+        self.assertEquals("/home/andrea/test.txt",result.getPath())
+        
 class TestTrashInfo(unittest.TestCase) :
-    def testCreation(self) :
+    def testParse(self) :
         ti = TrashInfo()
         data = """[Trash Info]
 Path=home%2Fandrea%2Fprova.txt
@@ -121,10 +129,10 @@ class TestTrashedFile(unittest.TestCase) :
         ti.path = "pippo"
         ti.deletionTime = datetime(2007, 7, 23, 23, 45, 07)
         td = TrashDirectory.getHomeTrashDirectory()
-        tf = TrashedFile(ti, td)
+        instance = TrashedFile(ti, td)
         root = os.path.abspath(os.sep)
-        self.assertEqual(tf.getPath(), os.path.join(root,"pippo"))
-        self.assertEqual(ti.getDeletionTime(), tf.getDeletionTime())
+        self.assertEqual(instance.getPath(), os.path.join(root,"pippo"))
+        self.assertEqual(ti.getDeletionTime(), instance.getDeletionTime())
         
 class TestFile(unittest.TestCase) :
     def test_creation(self) :
@@ -140,4 +148,4 @@ class TestFile(unittest.TestCase) :
 
 if __name__ == "__main__":
     unittest.main()
-    
+

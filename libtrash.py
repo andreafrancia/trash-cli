@@ -1,7 +1,7 @@
 import os 
 import shutil
 
-version='0.1.8'
+version='0.1.10'
 
 class File (object) :
     def __init__(self, path) :
@@ -49,14 +49,9 @@ class File (object) :
 
     def remove(self) :
         try:
-            return os.remove(self.path)
-        except OSError :
-            for root, dirs, files in os.walk(self.path, topdown=False):
-                for name in files:
-                    os.remove(os.path.join(root, name))
-                for name in dirs:
-                    os.rmdir(os.path.join(root, name))
-                return os.rmdir(root)
+            os.remove(self.path)        
+        except:
+            return shutil.rmtree(self.path, True)
 
     def exists(self) :
         return os.path.exists(self.getPath())
@@ -88,18 +83,18 @@ class TrashDirectory(File) :
     Trash the specified file.
     returns TrashedFile
     """
-    def trash(self, trashingFile):
-        assert(isinstance(trashingFile, File))
-        if not self.getVolume() == trashingFile.getParent().getVolume() :
+    def trash(self, fileToBeTrashed):
+        assert(isinstance(fileToBeTrashed, File))
+        if not self.getVolume() == fileToBeTrashed.getParent().getVolume() :
             raise "file is not in the same volume of trash directory!"
 
-        trashInfo = self.createTrashInfo(trashingFile, datetime.now())
+        trashInfo = self.createTrashInfo(fileToBeTrashed, datetime.now())
 
         if not os.path.exists(self.getFilesPath()) : 
             os.makedirs(self.getFilesPath(), 0700)
 
         try :
-            trashingFile.move(self.getOriginalCopyPath(trashInfo.getId()))
+            fileToBeTrashed.move(self.getOriginalCopyPath(trashInfo.getId()))
         except IOError, e :
             self.getTrashInfoFile(trashInfo.getId()).remove();
             raise e
