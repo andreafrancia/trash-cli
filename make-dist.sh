@@ -1,27 +1,32 @@
 #!/bin/sh
+
+function get_version() {
+    base_version='0.1.10'
+    scm_version="$(svnversion)"
+    echo "$base_version.$scm_version"
+}
+
+function inject_version() {
+    file="$1"
+    version="$2"
+    sed --in-place s/version=\'svn\'/version=\'"$version"\'/ "$file"
+}
+
 set -e
 trash dist
 mkdir dist
 
-source libtrashversion.py # define the version variabile
-svn export . dist/trash-"$version"
+version="$(get_version)"
+package_name="trash-cli-$version"
+tarball="$package_name".tar.gz
 
-# create .tar.gz (sources)
-tarball=dist/trash-"$version".tar.gz
-tar cvfz "$tarball" dist/trash-"$version"
+# prepare sources
+svn export . dist/"$package_name"
+inject_version dist/"$package_name"/libtrash.py "$version"
 
-# create .rpm
-python setup.py bdist_rpm
-rpm="$(echo dist/*.noarch.rpm)"
-
-# create .deb
-fakeroot alien --keep-version "$rpm"
-deb="$(echo *.deb)"
-
-
+# create tarball of sources
+tar -C dist -cvz -f "$tarball" "$package_name"
 rsync -avP -e ssh "$tarball" andreafrancia@frs.sourceforge.net:uploads/
-rsync -avP -e ssh "$rpm" andreafrancia@frs.sourceforge.net:uploads/
-rsync -avP -e ssh "$deb" andreafrancia@frs.sourceforge.net:uploads/
 
 echo "Go to https://sourceforge.net/project/admin/newrelease.php?package_id=179459&group_id=87144"
 
