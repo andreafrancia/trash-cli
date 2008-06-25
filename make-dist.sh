@@ -13,7 +13,10 @@ function inject_version() {
 }
 
 set -e
-trash dist
+if [ -e dist ]; then
+	mv -b dist old.dist
+fi
+
 mkdir dist
 
 version="$(get_version)"
