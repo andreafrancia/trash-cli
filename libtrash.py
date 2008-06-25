@@ -1,5 +1,6 @@
 import os 
 import shutil
+import time
 
 version='svn'
 
@@ -203,7 +204,7 @@ class TrashDirectory(File) :
         raise IOError()
         
     
-    @staticmethod
+    # staticmethod
     def getHomeTrashDirectory() : 
         if 'XDG_DATA_HOME' in os.environ:
             XDG_DATA_HOME = os.environ['XDG_DATA_HOME']
@@ -212,8 +213,9 @@ class TrashDirectory(File) :
             
         path = XDG_DATA_HOME + "/Trash"
         return TrashDirectory(path)
+    getHomeTrashDirectory=staticmethod(getHomeTrashDirectory)
 
-    @staticmethod
+    # staticmethod
     def allTrashedFiles() :
         for trashedfile in TrashDirectory.getHomeTrashDirectory().trashedFiles() :
             yield trashedfile
@@ -223,15 +225,15 @@ class TrashDirectory(File) :
                 yield trashedfile    
             for trashedfile in volume.getUserTrashDirectory().trashedFiles() :
                 yield trashedfile
+    allTrashedFiles=staticmethod(allTrashedFiles)
 
-
-    @classmethod
+    # classmethod
     def allTrashedFilesInDir(cls,dir) :
         dir = os.path.realpath(dir)
         for trashedfile in cls.allTrashedFiles() :
             if trashedfile.getPath().startswith(dir + os.path.sep) :
                 yield trashedfile
-        
+    allTrashedFilesInDir=classmethod(allTrashedFilesInDir)    
 
 import os
 
@@ -322,7 +324,9 @@ class TrashInfo (object) :
         if match == None :
             raise ValueError()
         try :
-            self.setDeletionTime(datetime.strptime(match.groups()[0], "%Y-%m-%dT%H:%M:%S"))
+            deletion_date=match.groups()[0] # as string
+            deletion_date=TimeUtils.parse_iso8601(deletion_date)
+            self.setDeletionTime(deletion_date)
         except IndexError, e:
             raise ValueError()
 
@@ -331,6 +335,12 @@ class TrashInfo (object) :
         result += "Path=" + urllib.quote(self.getPath(),'/') + "\n"
         result += "DeletionDate=" + self.getDeletionTimeAsString() + "\n"
         return result
+
+class TimeUtils :
+    def parse_iso8601(text) :
+        t=time.strptime(text,  "%Y-%m-%dT%H:%M:%S")
+        return datetime(t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec)
+    parse_iso8601=staticmethod(parse_iso8601)
 
 import sys
 import os
@@ -377,7 +387,7 @@ class Volume (File) :
         uid = mygetuid()
         return TrashDirectory(os.path.join(self.getPath(), ".Trash-%s" % str(uid)))
 
-    @staticmethod
+    # staticmethod
     def volumeOf(path) : 
         path = os.path.realpath(path)
         while path != os.path.dirname(path):
@@ -385,6 +395,7 @@ class Volume (File) :
                     break
             path = os.path.dirname(path)
         return Volume(path)
+    volumeOf=staticmethod(volumeOf)
 
     """
     mount_list
@@ -401,8 +412,7 @@ class Volume (File) :
     doesn't exist on any system I have access to...
 
     """
-
-    @staticmethod
+    # staticmethod
     def __mount_list():
       """
       returns a list of mount points
@@ -459,7 +469,7 @@ class Volume (File) :
             mount_list.append(mount)
 
         else:
-          df_file=os.popen('df')
+          df_file=os.popen('df -P')
           while True:
             df_list=df_file.readline()
             if not df_list:
@@ -474,10 +484,9 @@ class Volume (File) :
             mount_list.append(mount)
 
         return (mount_list)
+    __mount_list=staticmethod(__mount_list)
 
-
-    @staticmethod
+    # staticmethod
     def all() :
         return [ Volume(elem) for elem in Volume.__mount_list()]
-
-    
+    all=staticmethod(all)

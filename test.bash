@@ -1,10 +1,5 @@
 #!/bin/bash
 
-testEquality()
-{
-        assertEquals 1 1
-}
-
 testPrintVersion()
 {
 	./trash --version
@@ -34,17 +29,17 @@ testTrashRelativePath()
         touch /tmp/temp-dir/dummy
 	./trash /tmp/temp-dir/dummy
 	info_content="$(<"$XDG_DATA_HOME/Trash/info/dummy.trashinfo")"
-        [[ "$info_content" == "[Trash Info]
-Path=dummy
-DeletionDate="* ]];
-        assertEquals 0 $?
+        info_content_line_1="$(echo "$info_content" | sed -n '1p' )"
+        info_content_line_2="$(echo "$info_content" | sed -n '2p' )"
+        info_content_line_3="$(echo "$info_content" | sed -n '3p' )"
+        
+        assertEquals "[Trash Info]" "$info_content_line_1"
+        assertEquals "Path=dummy" "$info_content_line_2"
+        
+        assertTrue "DeletionDate problem" '[[ '"$info_content_line_3"' == DeletionDate=????-??-??T??:??:?? ]]'
 	rm -Rfv "$XDG_DATA_HOME/Trash"
 }
 
 
-# build and load shunit2
-pushd ./test-lib/shunit2/
-make
-popd
-. ./test-lib/shunit2/build/shunit2
-
+# load shunit2
+. test-lib/shunit2/src/shell/shunit2

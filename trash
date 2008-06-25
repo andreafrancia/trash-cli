@@ -2,7 +2,7 @@
 from libtrash import File
 from libtrash import TrashDirectory
 from optparse import OptionParser
-from optparse import IndentedHelpFormatter
+import optparse
 import libtrash
 
 def trash (f) :
@@ -40,17 +40,40 @@ def trash (f) :
         print "trash: cannot trash `%s': %s" % (arg, str(e))
     
 
-class MyFormatter (IndentedHelpFormatter) :
-    def format_epilog(self, epilog):
-        if epilog:
-            return "\n" + epilog + "\n"
-        else:
-            return ""
+class MyOptionParser(OptionParser) :
+    def __init__ (self,
+                  usage=None,
+                  option_list=None,
+                  option_class=optparse.Option,
+                  version=None,
+                  conflict_handler="error",
+                  description=None,
+                  formatter=None,
+                  add_help_option=1,
+                  prog=None,
+                  epilog=None):
+        OptionParser.__init__(self,
+                  usage,
+                  option_list,
+                  option_class,
+                  version,
+                  conflict_handler,
+                  description,
+                  formatter,
+                  add_help_option,
+                  prog)
+        self.epilog=epilog
 
-parser = OptionParser(usage="%prog [OPTION]... FILE...",
+    def format_help(self, formatter=None):
+        result=OptionParser.format_help(formatter)
+        if epilog:
+            return result + "\n" + epilog + "\n"
+        else:
+            return result
+
+parser = MyOptionParser(usage="%prog [OPTION]... FILE...",
                       description="Put files in trash",
                       version="%%prog %s" % libtrash.version,
-                      formatter=MyFormatter(),
                       epilog=
 """To remove a file whose name starts with a `-', for example `-foo',
 use one of these commands:
