@@ -3,7 +3,7 @@
 function get_version() {
     base_version='0.1.10'
     scm_version="$(svnversion)"
-    echo "$base_version.$scm_version"
+    echo "$base_version.r$scm_version"
 }
 
 function inject_version() {
