@@ -18,7 +18,7 @@ mkdir dist
 
 version="$(get_version)"
 package_name="trash-cli-$version"
-tarball="$package_name".tar.gz
+tarball=dist/"$package_name".tar.gz
 
 # prepare sources
 svn export . dist/"$package_name"
