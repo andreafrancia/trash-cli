@@ -3,3 +3,14 @@ Welcome to trash.
 trash is free software. Please see the file COPYING for details.
 For documentation, please see the files in the doc subdirectory.
 For building and installation instructions please see the INSTALL file.
+
+
+Requirements for running test.bash:
+ - python
+ - sed
+ - id
+ - the /tmp and the current directory should be in a different partition.
+ - the /.Trash dir should not exist
+
+rm -Rfv /.Trash/ ; bash test.bash
+
