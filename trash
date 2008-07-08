@@ -19,25 +19,31 @@ def trash (f) :
     Firstly the software attempt to trash the file in the first directory then 
     try to trash in the second trash directory.
     """
-    try: 
-        volume = f.getParent().getVolume()
+    #try: 
+    volume = f.parent.volume
 
-        if TrashDirectory.getHomeTrashDirectory().getVolume() == volume :
-            TrashDirectory.getHomeTrashDirectory().trash(f)
+    if TrashDirectory.getHomeTrashDirectory().volume == volume :
+        TrashDirectory.getHomeTrashDirectory().trash(f)
+    else :
+        if volume.hasCommonTrashDirectory() :
+            volume.getCommonTrashDirectory().trash(f)
         else :
-            if volume.hasCommonTrashDirectory() :
-                volume.getCommonTrashDirectory().trash(f)
-            else :
-                volume.getUserTrashDirectory().trash(f)
+            volume.getUserTrashDirectory().trash(f)
 
-        if options.verbose:
-            print "trashed: `%s'" % arg
-    except OSError, e:
-        # occour when the file cannot be moved
-        print "trash: cannot trash `%s': %s" % (arg, str(e))
-    except IOError, e:
-        # occour when the file does not exist
-        print "trash: cannot trash `%s': %s" % (arg, str(e))
+    if options.verbose:
+        print "trashed: `%s'" % arg
+    #except OSError, e:
+        ## occour when the file cannot be moved
+        #print "trash: cannot trash `%s': %s" % (arg, str(e))
+        #print e.filename
+        #print e.strerror
+        #print e
+    #except IOError, e:
+        ## occour when the file does not exist
+        #print "trash: cannot trash `%s': %s" % (arg, str(e))
+        #print e.filename
+        #print e.strerror
+        #print e
     
 
 class MyOptionParser(OptionParser) :

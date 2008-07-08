@@ -16,6 +16,36 @@ from exceptions import *
 import os
 import unittest
 
+class TestFile(unittest.TestCase) :
+    def test_constructor(self) :
+        instance = File("dummy/path")
+    
+    def test_cmp(self) :
+        self.assertNotEquals(File("."),File(os.path.realpath(".")))
+        self.assertNotEquals(File("foo"),File("bar"))
+        self.assertEquals(File("bar"),File("bar"))
+        self.assertEquals(File("foo"),File("./foo"))
+    
+    def test_parent(self) :
+        instance = File("dummy/path")
+        self.assertEquals(File("dummy"), instance.parent)
+    
+    def test_creation(self) :
+        path = os.path.abspath("adsljfkl");
+        f = File(path);
+        
+    def test_basename(self) :
+        f = File(os.path.join(os.sep, "dirname", "basename"))
+        self.assertEqual(f.basename, "basename")
+
+        f = File(os.path.join(os.sep, "dirname", "basename") + os.sep)
+        self.assertEqual(f.basename, "basename")
+    
+    def test_realpath(self) :
+        instance = File("dummy")
+        self.assertEquals(os.path.realpath("dummy"), instance.realpath)
+        
+    
 class TestVolume(unittest.TestCase) :
     def testListVolumes(self) : 
         volumes = Volume.all()
@@ -48,7 +78,7 @@ class TestVolume(unittest.TestCase) :
         
         # check
         self.assert_(isinstance(result,TrashDirectory))
-        self.assertEqual(os.path.abspath('/mnt/disk/.Trash-999'), result.path.path)
+        self.assertEqual(File('/mnt/disk/.Trash-999'), result.path)
         
 
 class TestTrashDirectory(unittest.TestCase) :
@@ -63,7 +93,7 @@ class TestTrashDirectory(unittest.TestCase) :
     def testBasePath(self) :
         os.environ['HOME'] = "/home/test"
         td = TrashDirectory.getHomeTrashDirectory()
-        self.assertEqual(td.getBasePath(),os.path.abspath("/"))
+        self.assertEqual(td.getBasePath(),"/")
         
     def testTrashInfoFileCreation(self) :
         trashdirectory_base_dir = File(os.path.realpath("./testTrashDirectory"))
@@ -117,10 +147,7 @@ class TestTrashDirectory(unittest.TestCase) :
         self.assertEquals(datetime(2000,1,1), result.deletionTime)
         
         # let test pass also on my windows developing machine
-        if(sys.platform!="win32") :
-            self.assertEquals("/home/user/test.txt",result.getPath())
-        else:
-            self.assertEquals("C:\\home\\user\\test.txt",result.getPath())
+        self.assertEquals("/home/user/test.txt",result.getPath())
             
         
 class TestHomeTrashDirectory(unittest.TestCase) :
@@ -131,7 +158,7 @@ class TestHomeTrashDirectory(unittest.TestCase) :
         # path for HomeTrashDirectory are always absolute
         fileToBeTrashed=File("/home/user/test.txt")
         result=instance._path_for_trashinfo(fileToBeTrashed)
-        self.assertEquals(os.path.abspath("/home/user/test.txt"),result)
+        self.assertEquals("/home/user/test.txt",result)
             
         #  ... even if the file is under /home/user/.local/share
         fileToBeTrashed=File("/home/user/.local/share/test.txt")
@@ -186,22 +213,9 @@ class TestTrashedFile(unittest.TestCase) :
         ti.deletionTime = datetime(2007, 7, 23, 23, 45, 07)
         td = TrashDirectory.getHomeTrashDirectory()
         instance = TrashedFile(ti, td)
-        root = os.path.abspath(os.sep)
-        self.assertEqual(instance.getPath(), os.path.join(root,"pippo"))
+        self.assertEqual(instance.getPath(), "/pippo")
         self.assertEqual(ti.getDeletionTime(), instance.getDeletionTime())
         
-class TestFile(unittest.TestCase) :
-    def test_creation(self) :
-        path = os.path.abspath("adsljfkl");
-        f = File(path);
-        
-    def test_getBasename(self) :
-        f = File(os.path.join(os.sep, "dirname", "basename"))
-        self.assertEqual(f.getBasename(), "basename")
-
-        f = File(os.path.join(os.sep, "dirname", "basename") + os.sep)
-        self.assertEqual(f.getBasename(), "basename")
-
 class TestTimeUtils(unittest.TestCase) :
     def test_parse_iso8601(self) :
         expected=datetime(2008,9,8,12,00,11)

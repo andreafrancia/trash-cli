@@ -1,7 +1,9 @@
 #!/bin/bash
+set -o nounset
 
 topdir=""
 uid="1000"
+
 
 testPrintVersion()
 {
@@ -41,9 +43,9 @@ assert_is_trashed () {
     assertTrue "The file has been deleted?" "[ ! -e \"$original_path\" ]"
 
     # check that trashcan has been created
-    assertTrue "Trashcan has been created?" "[ -d \"$trashcan\" ]"
-    assertTrue "Trashcan contains files?"   "[ -d \"$trashcan/files\" ]"
-    assertTrue "Trashcan contains info?"    "[ -d \"$trashcan/info\" ]"
+    assertTrue "[ -d \"$trashcan\" ]"
+    assertTrue "[ -d \"$trashcan/files\" ]"
+    assertTrue "[ -d \"$trashcan/info\" ]"
 
     # check that the file has been trashed
     assertTrue "[ -e \"$trashcan/files/$expected_trash_name\" ]"
@@ -62,23 +64,23 @@ test_trash_in_home_trashcan() {
     export XDG_DATA_HOME="./test-dir"
     rm -Rf "$XDG_DATA_HOME"
 
-    # trash a file when trashcan is not yet created 
+    echo 1. trash a file when trashcan is not yet created 
     echo 'Hello World!' > file-to-trash
     ./trash file-to-trash
 
-    assert_is_trashed $XDG_DATA_HOME/Trash "Hello World!" file-to-trash file-to-trash "$(pwd)/file-to-trash"
+    assert_is_trashed $XDG_DATA_HOME/Trash 'Hello World!' file-to-trash file-to-trash "$(pwd)/file-to-trash"
 
-    # trash a file when trashcan is yet created 
+    echo 2. trash a file when trashcan is yet created 
     echo 'Hello World 2!' > other-file-to-trash
     ./trash other-file-to-trash
 
-    assert_is_trashed $XDG_DATA_HOME/Trash "Hello World 2!" other-file-to-trash other-file-to-trash "$(pwd)/file-to-trash"
+    assert_is_trashed $XDG_DATA_HOME/Trash 'Hello World 2!' other-file-to-trash other-file-to-trash "$(pwd)/other-file-to-trash"
 
-    # trash a file with the same name of already trashed file
+    echo 3. trash a file with the same name of already trashed file
     echo 'Hello World 3!' > file-to-trash
     ./trash file-to-trash
 
-    assert_is_trashed $XDG_DATA_HOME/Trash "Hello World 3!" file-to-trash file-to-trash "$(pwd)/file-to-trash"
+    assert_is_trashed $XDG_DATA_HOME/Trash 'Hello World 3!' file-to-trash file-to-trash_1 "$(pwd)/file-to-trash"
 
 }
 

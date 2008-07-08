@@ -16,23 +16,29 @@ from stat import *
 version='svn'
 
 class File (object) :
+    sep = '/'
     def __init__(self, path) :
-        self.path = os.path.abspath(path)
+        self.path = os.path.normpath(path).replace(os.path.sep, self.sep)
+        if self.path .startswith("C:") :
+            self.path = self.path [len("C:"):]
 
     def getParent(self) :
         return File(os.path.dirname(self.path))
+    parent = property(getParent)
     
-    def getRealPath(self) :
+    @property
+    def realpath(self) :
         return File(os.path.realpath(self.path))
     
-    def getBasename(self) :
+    @property
+    def basename(self) :
         return os.path.basename(self.path)
 
     def move(self, dest) :
         return shutil.move(self.path, dest)
 
     def join(self, path) :
-        return File(os.path.join(self.getPath(), path))
+        return File(os.path.join(self.path, path))
     
     def samefs(path1, path2):
         if not (os.path.exists(path1) and os.path.exists(path2)):
@@ -55,8 +61,9 @@ class File (object) :
     """
     @property
     def volume(self) :
-        return Volume.volumeOf(self.getPath())
+        return Volume.volumeOf(self.path)
 
+    # TODO: remove
     def getPath(self) :
         return self.path
 
@@ -74,7 +81,12 @@ class File (object) :
 
     def islink(self) :
         return os.path.islink(self.getPath())
-    
+
+    def __cmp__(self, other) :
+        if not isinstance(other, self.__class__) :
+            return False
+        else :
+            return cmp(self.path,other.path)
     
 """
 Represent a trash directory.
@@ -93,7 +105,7 @@ class TrashDirectory(object) :
     """
     def trash(self, fileToBeTrashed):
         assert(isinstance(fileToBeTrashed, File))
-        if not self.volume == fileToBeTrashed.getParent().volume :
+        if not self.volume == fileToBeTrashed.parent.volume :
             raise "file is not in the same volume of trash directory!"
 
         trashInfo = self.createTrashInfo(fileToBeTrashed, datetime.now())
@@ -139,7 +151,7 @@ class TrashDirectory(object) :
     def trashedFilesInDir(self, dir) :
         dir = os.path.realpath(dir)
         for trashedfile in self.trashedFiles() :
-            if trashedfile.getPath().startswith(dir + os.path.sep) :
+            if trashedfile.getPath().startswith(dir + File.sep) :
                 yield trashedfile
 
     def getOriginalCopyPath(self, trashId) :
@@ -182,12 +194,19 @@ class TrashDirectory(object) :
             else :
                 suffix = "_%d" % random.randint(0, 65535)
             
-            base_id = fileToBeTrashed.getBasename()
+            base_id = fileToBeTrashed.basename
             trash_id = base_id + suffix
             trashInfoBasename = trash_id + ".trashinfo"
 
             if not os.path.exists(self.getInfoPath()) : 
-                os.makedirs(self.getInfoPath(), 0700)
+                try :
+                    os.makedirs(self.getInfoPath(), 0700)
+                except OSError:
+                    try: 
+                        os.makedirs(self.getInfoPath())
+                    except:
+                        pass
+                    
                 
             dest = os.path.join(self.getInfoPath(),trashInfoBasename)
             try :
@@ -196,7 +215,7 @@ class TrashDirectory(object) :
                 os.close(handle)
                 trashInfo.setId(trash_id)
                 return trashInfo
-            except OSError :
+            except OSError,e:
                 pass
 
             index += 1
@@ -245,8 +264,8 @@ class HomeTrashDirectory(TrashDirectory) :
         
         # for the HomeTrashDirectory all path are stored as absolute
         
-        parent = fileToBeTrashed.getParent().getRealPath().getPath()        
-        return os.path.join(parent, fileToBeTrashed.getBasename())
+        parent = fileToBeTrashed.realpath.parent
+        return parent.join(fileToBeTrashed.basename)
 
 class VolumeTrashDirectory(TrashDirectory) :
     def __init__(self, path, volume) :
@@ -259,13 +278,13 @@ class VolumeTrashDirectory(TrashDirectory) :
         # if possible
         
         # string representing the parent of the fileToBeTrashed
-        parent = fileToBeTrashed.getParent().getRealPath().getPath()        
+        parent=fileToBeTrashed.parent.realpath
         topdir=self.volume.getPath()   # e.g. /mnt/disk-1
         
-        if parent.startswith( topdir + os.sep) :
-            parent = parent[len(topdir + os.sep):]
+        if parent.path.startswith(topdir+File.sep) :
+            parent = File(parent.path[len(topdir+File.sep):])
             
-        return os.path.join(parent, fileToBeTrashed.getBasename())                      
+        return parent.join(fileToBeTrashed.basename)                      
 
     
 class TrashedFile (object) :
@@ -303,6 +322,7 @@ class TrashInfo (object) :
         self.deletionTime = deletionTime
 
     def setPath(self, path) :
+        assert isinstance(path, File)
         self.path = path
 
     def getDeletionTimeAsString(self) :
@@ -357,7 +377,7 @@ class TrashInfo (object) :
 
     def render(self) :
         result = "[Trash Info]\n"
-        result += "Path=" + urllib.quote(self.getPath(),'/') + "\n"
+        result += "Path=" + urllib.quote(self.getPath().path,'/') + "\n"
         result += "DeletionDate=" + self.getDeletionTimeAsString() + "\n"
         return result
 
