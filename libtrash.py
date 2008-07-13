@@ -10,7 +10,12 @@ import urllib
 import random
 from datetime import datetime
 from stat import *
+import traceback
+import logging
+from ctypes import *
+from ctypes.util import find_library
 
+#logging.root.setLevel(0)
 
 # the distribution script will change this to actual version number
 version='svn'
@@ -139,11 +144,8 @@ class TrashDirectory(object) :
             
                 if not infoBasename.endswith('.trashinfo') :
                     raise AssertionError()
-                else :
-                    trashId = infoBasename[:-len('.trashinfo')]
                 
-                ti = TrashInfo(trashId)
-                ti.parse(open(infoFilename).read())
+                ti = TrashInfo.parse(open(infoFilename).read())
                 yield TrashedFile(ti, self)
         except OSError, e: # when directory does not exist
             pass 
@@ -176,13 +178,12 @@ class TrashDirectory(object) :
     param ? deletionTime
     returns TrashInfo the create TrashInfo file.
     """
-    def createTrashInfo(self, fileToBeTrashed, deletionTime) :
+    def createTrashInfo(self, fileToBeTrashed, deletion_date) :
         assert(isinstance(fileToBeTrashed, File))
 
         # create trash info
-        trashInfo = TrashInfo()
-        trashInfo.setPath(self._path_for_trashinfo(fileToBeTrashed))
-        trashInfo.setDeletionTime(deletionTime)
+        trashInfo = TrashInfo(self._path_for_trashinfo(fileToBeTrashed),deletion_date)
+        
         
         # write trash info
         index = 0
@@ -202,10 +203,11 @@ class TrashDirectory(object) :
                 try :
                     os.makedirs(self.getInfoPath(), 0700)
                 except OSError:
+                    logging.debug(traceback.print_exc())
                     try: 
                         os.makedirs(self.getInfoPath())
                     except:
-                        pass
+                        logging.debug(traceback.print_exc())
                     
                 
             dest = os.path.join(self.getInfoPath(),trashInfoBasename)
@@ -213,10 +215,11 @@ class TrashDirectory(object) :
                 handle = os.open(dest, os.O_RDWR | os.O_CREAT | os.O_EXCL, 0600)
                 os.write(handle, trashInfo.render())
                 os.close(handle)
+                logging.debug(".trashinfo created as %s." % dest)
                 trashInfo.setId(trash_id)
                 return trashInfo
-            except OSError,e:
-                pass
+            except OSError, e:
+                logging.debug("Attempt for creating %s failed." % dest)
 
             index += 1
             
@@ -288,12 +291,14 @@ class VolumeTrashDirectory(TrashDirectory) :
 
     
 class TrashedFile (object) :
-    def __init__(self,trashinfo, trashdirectory) :
+    def __init__(self,trashinfo,trashdirectory) :
+        assert isinstance(trashinfo, TrashInfo)
+        assert isinstance(trashdirectory, TrashDirectory)
         self.__trashinfo = trashinfo
         self.__trashdirectory = trashdirectory
         
     def getPath(self) :
-        return os.path.join(self.__trashdirectory.getBasePath(), self.__trashinfo.getPath())
+        return os.path.join(self.__trashdirectory.getBasePath(), self.__trashinfo.getPath().path)
 
     def getDeletionTime(self) :
         return self.__trashinfo.getDeletionTime()
@@ -312,36 +317,48 @@ class TrashedFile (object) :
         self.__trashdirectory.getOriginalCopy(trashId).remove()
         self.__trashdirectory.getTrashInfoFile(trashId).remove()
 
+    @property
+    def trash_directory(self) :
+        return self.__trashdirectory
 
 
 class TrashInfo (object) :
-    def __init__(self, trashId = None) :
-        self.id = trashId
+    def __init__(self, path, deletion_date, trashId = None) :
+        assert isinstance(path, File)
+        assert isinstance(deletion_date, datetime)
+        assert trashId == None or isinstance(trashId, str)
+        self.__id = trashId
+        self.__path = path
+        self.__deletion_date = deletion_date
 
-    def setDeletionTime(self, deletionTime) :
-        self.deletionTime = deletionTime
+    def setDeletionTime(self, value) :
+        self.__deletion_date  = value
 
     def setPath(self, path) :
         assert isinstance(path, File)
-        self.path = path
+        self.__path = path
 
     def getDeletionTimeAsString(self) :
-        return datetime.strftime(self.deletionTime, "%Y-%m-%dT%H:%M:%S")
+        return datetime.strftime(self.__deletion_date, "%Y-%m-%dT%H:%M:%S")
 
     def getDeletionTime(self) :
-        return self.deletionTime
+        return self.__deletion_date
 
     def getPath(self) :
-        return self.path
+        return self.__path
 
     def getId(self) :
-        return self.id
+        return self.__id
 
     def setId(self, trashId) :
-        self.id = trashId
+        self.__id = trashId
     
-    def parse(self, data) :
-        stream = StringIO.StringIO(data)    
+    @staticmethod
+    def parse(data) :
+        path = None
+        deletion_date = None
+        
+        stream = StringIO.StringIO(data)
         line = stream.readline().rstrip('\n')
         if line != "[Trash Info]" :
             raise ValueError()
@@ -355,7 +372,7 @@ class TrashInfo (object) :
         if match == None :
             raise ValueError()
         try :
-            self.setPath(urllib.unquote(match.groups()[0]))
+            path = File(urllib.unquote(match.groups()[0]))
         except IndexError, e:
             raise ValueError()
             
@@ -369,12 +386,13 @@ class TrashInfo (object) :
         if match == None :
             raise ValueError()
         try :
-            deletion_date=match.groups()[0] # as string
-            deletion_date=TimeUtils.parse_iso8601(deletion_date)
-            self.setDeletionTime(deletion_date)
+            deletion_date_string=match.groups()[0] # as string
+            deletion_date=TimeUtils.parse_iso8601(deletion_date_string)
         except IndexError, e:
             raise ValueError()
-
+        
+        return TrashInfo(path, deletion_date)
+        
     def render(self) :
         result = "[Trash Info]\n"
         result += "Path=" + urllib.quote(self.getPath().path,'/') + "\n"
@@ -389,10 +407,10 @@ class TimeUtils(object):
 
 class Volume (File) :
     def __init__(self,path, permissive = False):
-        if permissive or os.path.ismount(path) :
+        if True or permissive or os.path.ismount(path) :
             File.__init__(self,path)
         else:
-            raise ValueError("path is not a mount point")
+            raise ValueError("path is not a mount point:" + path)
         try:
             self.getuid = os.getuid
         except AttributeError:
@@ -445,99 +463,45 @@ class Volume (File) :
         return Volume(path)
     volumeOf=staticmethod(volumeOf)
 
-    """
-    mount_list
-    Taste the system and return a list of mount points.
-    On UNIX this will return what a df will return
-    On DOS based systems run through a list of common drive letters and
-    test them
-    to see if a mount point exists. Whether a floppy or CDROM on DOS is
-    currently active may present challenges.
-    Curtis W. Rendon 6/27/200 v.01
-      6/27/2004 v.1 using df to make portable, and some DOS tricks to get
-    active
-    drives. Will try chkdsk on DOS to try to get drive size as statvfs()
-    doesn't exist on any system I have access to...
-
-    """
     # staticmethod
-    def __mount_list():
-        """
-        returns a list of mount points
-        """
-  
-  
-        doslist=['a:\\','b:\\','c:\\','d:\\','e:\\','f:\\','g:\\','h:\\','i:\\','j:\\','k:\\','l:\\','m:\\','n:\\','o:\\','p:\\','q:\\','r:\\','s:\\','t:\\','u:\\','v:\\','w:\\','x:\\','y:\\','z:\\']
-        mount_list=[]
-  
-        """
-        see what kind of system
-        if UNIX like
-           use os.path.ismount(path) from /... use df?
-        if DOS like
-           os.path.exists(path) for  a list of common drive letters
-        """
-        if sys.platform[:3] == 'win':
-            #dos like
-            doslistlen=len(doslist)
-            for apath in doslist:
-                if os.path.exists(apath):
-                    #maybe stat check first... yeah, it's there...
-                    if os.path.isdir(apath):
-                        mode = os.stat(apath)
-                        try:
-                            dummy=os.listdir(apath)
-                            mount_list.append(apath)
-                        except:
-                            continue
-                    else:
-                        continue
-            return (mount_list)
-  
-        else:
-            #UNIX like
-            """
-            AIX and SYSV are somewhat different than the GNU/BSD df, try to catch
-            them. This is for AIX, at this time I don't have a SYS5 available to see
-            what the sys.platform returns... CWR
-            """
-            if 'aix' in sys.platform.lower():
-                df_file=os.popen('df')
-                while True:
-                    df_list=df_file.readline()
-                    if not df_list:
-                        break #EOF
-                    dflistlower = df_list.lower()
-                    if 'filesystem' in dflistlower:
-                        continue
-                    if 'proc' in dflistlower:
-                        continue
-    
-                file_sys,disc_size,disc_avail,disc_cap_pct,inodes,inodes_pct,mount=df_list.split()
-                mount_list.append(mount)
-  
-            else:
-                df_file=os.popen('df -P')
-                while True:
-                    df_list=df_file.readline()
-                    if not df_list:
-                        break #EOF
-                    dflistlower = df_list.lower()
-                    if 'filesystem' in dflistlower:
-                        continue
-                    if 'proc' in dflistlower:
-                        continue
-      
-                file_sys,disc_size,disc_used,disc_avail,disc_cap_pct,mount=df_list.split()
-                mount_list.append(mount)
-  
-            return (mount_list)
-    
-    __mount_list=staticmethod(__mount_list)
+    def __mounted_filesystems() :
+        class Filesystem:
+            def __init__(self, mount_dir, type, name) :
+                self.mount_dir = mount_dir
+                self.type = type
+                self.name = name
+        class mntent_struct(Structure):
+            _fields_ = [("mnt_fsname", c_char_p),  # Device or server for filesystem.
+                        ("mnt_dir", c_char_p),     # Directory mounted on.
+                        ("mnt_type", c_char_p),    # Type of filesystem: ufs, nfs, etc.
+                        ("mnt_opts", c_char_p),    # Comma-separated options for fs.
+                        ("mnt_freq", c_int),       # Dump frequency (in days).
+                        ("mnt_passno", c_int)]     # Pass number for `fsck'.
+        
+        libc = cdll.LoadLibrary(find_library("c"))
+        libc.getmntent.restype = POINTER(mntent_struct)
+        libc.fopen.restype = c_void_p
+        
+        try:
+            f = libc.fopen("/proc/mounts", "r")
+        except:
+            try : 
+                f = libc.fopen("/etc/mtab", "r")
+            except :
+                raise IOError("Unable to open /proc/mounts nor /etc/mtab")
+            
+        while True:
+            entry = libc.getmntent(f)
+            if bool(entry) == False: 
+                libc.fclose(f)
+                break        
+            yield Filesystem(entry.contents.mnt_dir, entry.contents.mnt_type, entry.contents.mnt_fsname)
+        
+    __mounted_filesystems=staticmethod(__mounted_filesystems)
 
     # staticmethod
     def all() :
-        return [ Volume(elem) for elem in Volume.__mount_list()]
+        return [ Volume(elem.mount_dir) for elem in Volume.__mounted_filesystems()]
     all=staticmethod(all)
 
 
