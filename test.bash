@@ -1,7 +1,9 @@
 #!/bin/bash
 #set -o nounset
 
-topdir="/media/disk"
+#topdir="/media/disk"
+topdir="/cygdrive/c"
+
 uid="$(python -c "import os; print os.getuid()")"
 
 invoke_trash() 
@@ -112,8 +114,14 @@ do_trash_test() {
         local expected_trashcan="$2"
         local expected_trashname="$3"
         local expected_stored_path="$4"
-        
-        local content="$RANDOM"
+
+	echo trash test informations:
+	echo path_to_trash="$path_to_trash"
+	echo expected_trashcan="$expected_trashcan"
+	echo expected_trashname="$expected_trashname"
+	echo expected_stored_path="$expected_stored_path"
+
+	local content="$RANDOM"
         create_test_file "$content" "$path_to_trash"
 
         invoke_trash "$path_to_trash"
@@ -121,9 +129,9 @@ do_trash_test() {
         assert_does_not_exists "$path_to_trash"
         
         assert_trashed "$expected_trashcan" \
-                               "$content" \
-                               "$expected_trashname" \
-                               "$expected_stored_path"
+                       "$content" \
+                       "$expected_trashname" \
+                       "$expected_stored_path"
 
 }
 
@@ -195,6 +203,12 @@ test_trash_in_volume_trashcans_when_Trash_is_ok() {
 	do_test_trash_in_volume_trashcan "$topdir/.Trash/$uid"
 }
 
+
+clean_up() {
+	rm -Rfv $topdir/.Trash
+	rm -Rfv $topdir/.Trash-$uid
+}
+
 if [ ! -e $topdir ]; then
 	echo "Please choose a topdir that exists."
 	exit
@@ -209,4 +223,6 @@ fi
 
 # load shunit2
 . test-lib/shunit2/src/shell/shunit2
+
+clean_up
 

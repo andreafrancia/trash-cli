@@ -1,0 +1,37 @@
+#!/usr/bin/python
+
+from libtrash import *
+from optparse import OptionParser
+import optparse
+import libtrash
+
+def trashcans() :
+    yield TrashDirectory.getHomeTrashDirectory()
+    for volume in Volume.all() :
+        yield volume.getCommonTrashDirectory()
+        yield volume.getUserTrashDirectory()
+
+
+parser=OptionParser(usage="%prog [OPTION]... FILE...",
+                    description="trashcan admin",
+                    version="%%prog %s" % libtrash.version)
+
+parser.add_option("--volumes",
+                  action="store_true",
+                  help="List all volumes",
+                  dest="volumes")
+
+parser.add_option("--trashcans",
+                  action="store_true",
+                  help="List all trashcan",
+                  dest="trashcans")
+
+(options, args) = parser.parse_args()
+
+if options.volumes :
+    for i in Volume.all() :
+        print i.getPath()
+elif options.trashcans :
+    for i in trashcans() :
+        print "%s (%s)" % (i, i.volume)
+        
