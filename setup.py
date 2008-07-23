@@ -19,6 +19,8 @@
 # 02110-1301, USA.
 
 from distutils.core import setup
+import sys
+#sys.path.append('src')
 
 import libtrash 
 
@@ -28,8 +30,11 @@ setup(name='trash',
       author_email='andreafrancia@users.sourceforge.net',
       url='http://bluetrash.sourceforge.net/',
       version=libtrash.version,
-      py_modules=['libtrash'],
-      scripts=['trash', 'list-trash', 'restore-trash', 'empty-trash'],
+      py_modules=['src/libtrash'],
+      scripts=['src/trash', 
+	       'src/list-trash', 
+	       'src/restore-trash', 
+	       'src/empty-trash'],
       license='GPL',
       long_description='Command line interface to trash '
                      + 'compatible with Trash Spec from FreeDesktop.org',

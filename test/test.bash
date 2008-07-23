@@ -23,14 +23,18 @@
 #set -o nounset
 
 #topdir="/media/disk"
-topdir="/cygdrive/c"
+topdir="$(pwd)/test-volume"
 
-uid="$(python -c "import os; print os.getuid()")"
+uid="$(python -c "import os; 
+try: 
+    print os.getuid()
+except AttributeError: 
+    print 0")"
 
 invoke_trash() 
 {
 	echo "Invoking: trash $@"
-	./trash $@
+	../src/trash $@
 }
 
 
@@ -243,7 +247,7 @@ if [  -e $topdir/.Trash  -o -e $topdir/.Trash-$uid ]; then
 fi
 
 # load shunit2
-. test-lib/shunit2/src/shell/shunit2
+. "$(dirname "$0")/../test-lib/shunit2/src/shell/shunit2"
 
 clean_up
 

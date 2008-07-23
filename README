@@ -12,5 +12,9 @@ Requirements for running test.bash:
  - the /tmp and the current directory should be in a different partition.
  - the /.Trash dir should not exist
 
+Requirements for the software:
+ python-ctypes
+
+
 rm -Rfv /.Trash/ ; bash test.bash
 

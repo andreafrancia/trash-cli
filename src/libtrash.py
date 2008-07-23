@@ -42,13 +42,14 @@ version='svn'
 class File (object) :
     sep = '/'
     def __init__(self, path) :
+        assert(isinstance(path,str))
         self.path = os.path.normpath(path).replace(os.path.sep, self.sep)
-        if self.path .startswith("C:") :
-            self.path = self.path [len("C:"):]
+        if self.path.lower().startswith("c:") :
+            self.path = self.path [len("c:"):]
 
-    def getParent(self) :
+    def __get_parent(self) :
         return File(os.path.dirname(self.path))
-    parent = property(getParent)
+    parent = property(__get_parent)
 
     @property
     def realpath(self) :
@@ -61,8 +62,22 @@ class File (object) :
     def move(self, dest) :
         return shutil.move(self.path, dest)
 
-    def join(self, path) :
+    def __join_str(self, path) :
         return File(os.path.join(self.path, path))
+
+    def __join_File(self, path) :
+        assert(isinstance(path, File))
+        if path.isabs() :
+            raise ValueError("File with relative path expected")
+        return self.__join_str(path.path)
+            
+    def join(self, path) :
+        if(isinstance(path,File)):
+            return self.__join_File(path)
+        elif(isinstance(path,str)):
+            return self.__join_str(path)
+        else :
+            raise TypeError("Expected argument type as 'File' or 'str'")
 
     def samefs(path1, path2):
         if not (os.path.exists(path1) and os.path.exists(path2)):
@@ -87,10 +102,6 @@ class File (object) :
     def volume(self) :
         return Volume.volumeOf(self.path)
 
-    # TODO: remove
-    def getPath(self) :
-        return self.path
-
     def remove(self) :
         try:
             os.remove(self.path)        
@@ -98,14 +109,17 @@ class File (object) :
             return shutil.rmtree(self.path, True)
 
     def exists(self) :
-        return os.path.exists(self.getPath())
+        return os.path.exists(self.path)
 
     def isdir(self) :
-        return os.path.isdir(self.getPath())
+        return os.path.isdir(self.path)
 
     def islink(self) :
-        return os.path.islink(self.getPath())
+        return os.path.islink(self.path)
 
+    def isabs(self) :
+        return os.path.isabs(self.path)
+    
     def __cmp__(self, other) :
         if not isinstance(other, self.__class__) :
             return False
@@ -115,6 +129,19 @@ class File (object) :
     def __str__(self) :
         return str(self.path)
 
+    def list(self) :
+        for filename in os.listdir(self.path) :
+            yield self.join(filename)
+
+    def mkdir(self):
+        os.mkdir(self.path)
+
+    def mkdirs(self, mode=0777):
+        os.makedirs(self.path, mode)
+    
+    def touch(self):
+        open(self.path, "w").close()
+
 """
 Represent a trash directory.
 For example $XDG_DATA_HOME/Trash
@@ -122,7 +149,7 @@ For example $XDG_DATA_HOME/Trash
 class TrashDirectory(object) :
     def __init__(self, path, volume) :
         assert isinstance(path,File)
-        assert isinstance(volume,File)
+        assert isinstance(volume,Volume)
         self.path = path
         self.volume = volume
 
@@ -136,11 +163,13 @@ class TrashDirectory(object) :
     def trash(self, fileToBeTrashed):
         assert(isinstance(fileToBeTrashed, File))
         if not self.volume == fileToBeTrashed.parent.volume :
-            raise "file is not in the same volume of trash directory!"
+            raise "file is not in the same volume of trash directory!\n\
+self.volume = " + str(self.volume) + ", \n\
+fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
 
         trashInfo = self.createTrashInfo(fileToBeTrashed, datetime.now())
 
-        if not os.path.exists(self.getFilesPath()) : 
+        if not self.files_dir.exists() : 
             os.makedirs(self.getFilesPath(), 0700)
 
         try :
@@ -151,9 +180,14 @@ class TrashDirectory(object) :
 
         return TrashedFile(trashInfo, self)
 
-    def getBasePath(self) :
-        return self.volume.getPath()
+    def __get_info_dir(self) :
+        return self.path.join("info")
+    info_dir=property(__get_info_dir)
 
+    def __get_files_dir(self) :
+        return self.path.join("files")
+    files_dir=property(__get_files_dir)
+    
     def getInfoPath(self) :
         return os.path.join(self.path.path, "info")
 
@@ -178,11 +212,11 @@ class TrashDirectory(object) :
     def trashedFilesInDir(self, dir) :
         dir = os.path.realpath(dir)
         for trashedfile in self.trashedFiles() :
-            if trashedfile.getPath().startswith(dir + File.sep) :
+            if trashedfile.path.startswith(dir + File.sep) :
                 yield trashedfile
 
     def getOriginalCopyPath(self, trashId) :
-        return self.getOriginalCopy(trashId).getPath()
+        return self.getOriginalCopy(trashId).path
 
     def getOriginalCopy(self, trashId) :
         return File(os.path.join(self.getFilesPath(), str(trashId)))
@@ -209,8 +243,14 @@ class TrashDirectory(object) :
         # create trash info
         trashInfo = TrashInfo(self._path_for_trashinfo(fileToBeTrashed),deletion_date)
 
+        if not os.path.exists(self.getInfoPath()) : 
+            try :
+                os.makedirs(self.getInfoPath(), 0700)
+            except OSError:
+                logging.debug(traceback.print_exc())
+                os.makedirs(self.getInfoPath())
 
-        # write trash info
+	# write trash info
         index = 0
         while True :
             if index == 0 :
@@ -223,17 +263,6 @@ class TrashDirectory(object) :
             base_id = fileToBeTrashed.basename
             trash_id = base_id + suffix
             trashInfoBasename = trash_id + ".trashinfo"
-
-            if not os.path.exists(self.getInfoPath()) : 
-                try :
-                    os.makedirs(self.getInfoPath(), 0700)
-                except OSError:
-                    logging.debug(traceback.print_exc())
-                    try: 
-                        os.makedirs(self.getInfoPath())
-                    except:
-                        logging.debug(traceback.print_exc())
-
 
             dest = os.path.join(self.getInfoPath(),trashInfoBasename)
             try :
@@ -277,14 +306,13 @@ class TrashDirectory(object) :
     def allTrashedFilesInDir(cls,dir) :
         dir = os.path.realpath(dir)
         for trashedfile in cls.allTrashedFiles() :
-            if trashedfile.getPath().startswith(dir + os.path.sep) :
+            if trashedfile.path.startswith(dir + os.path.sep) :
                 yield trashedfile
     allTrashedFilesInDir=classmethod(allTrashedFilesInDir)    
 
 class HomeTrashDirectory(TrashDirectory) :
     def __init__(self, path) :
         assert isinstance(path, File)
-
         TrashDirectory.__init__(self, path, path.volume)
 
     def _path_for_trashinfo(self, fileToBeTrashed) :
@@ -298,7 +326,7 @@ class HomeTrashDirectory(TrashDirectory) :
 class VolumeTrashDirectory(TrashDirectory) :
     def __init__(self, path, volume) :
         assert isinstance(path, File)
-        assert isinstance(volume, File)
+        assert isinstance(volume, Volume)
         TrashDirectory.__init__(self,path, volume)
 
     def _path_for_trashinfo(self, fileToBeTrashed) :
@@ -307,10 +335,10 @@ class VolumeTrashDirectory(TrashDirectory) :
 
         # string representing the parent of the fileToBeTrashed
         parent=fileToBeTrashed.parent.realpath
-        topdir=self.volume.getPath()   # e.g. /mnt/disk-1
+        topdir=self.volume.path   # e.g. /mnt/disk-1
 
-        if parent.path.startswith(topdir+File.sep) :
-            parent = File(parent.path[len(topdir+File.sep):])
+        if parent.path.startswith(topdir.path+File.sep) :
+            parent = File(parent.path[len(topdir.path+File.sep):])
 
         return parent.join(fileToBeTrashed.basename)                      
 
@@ -323,17 +351,21 @@ class TrashedFile (object) :
         self.__trashdirectory = trashdirectory
 
     def getPath(self) :
-        return os.path.join(self.__trashdirectory.getBasePath(), self.__trashinfo.getPath().path)
+        if self.__trashinfo.path.isabs() :
+            return self.__trashinfo.path
+        else :
+            return self.__trashdirectory.volume.join(self.__trashinfo.path)
+    path = property(getPath)
 
     def getDeletionTime(self) :
         return self.__trashinfo.getDeletionTime()
 
     def restore(self) :
-        if not os.path.exists(os.path.dirname(self.getPath())) :
-            os.makedirs(os.path.dirname(self.getPath()))
+        if not os.path.exists(os.path.dirname(self.path)) :
+            os.makedirs(os.path.dirname(self.path))
 
         trashId = self.__trashinfo.getId()
-        self.__trashdirectory.getOriginalCopy(trashId).move(self.getPath())
+        self.__trashdirectory.getOriginalCopy(trashId).move(self.path)
         self.__trashdirectory.getTrashInfoFile(trashId).remove()
 
     def purge(self) :
@@ -371,6 +403,7 @@ class TrashInfo (object) :
 
     def getPath(self) :
         return self.__path
+    path = property(getPath)
 
     def getId(self) :
         return self.__id
@@ -420,7 +453,7 @@ class TrashInfo (object) :
 
     def render(self) :
         result = "[Trash Info]\n"
-        result += "Path=" + urllib.quote(self.getPath().path,'/') + "\n"
+        result += "Path=" + urllib.quote(self.path.path,'/') + "\n"
         result += "DeletionDate=" + self.getDeletionTimeAsString() + "\n"
         return result
 
@@ -430,10 +463,12 @@ class TimeUtils(object):
         return datetime(t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec)
     parse_iso8601=staticmethod(parse_iso8601)
 
-class Volume (File) :
+# TODO: Volume non deve essere un file ma deve contenere un file.
+class Volume(object) :
     def __init__(self,path, permissive = False):
-        if True or permissive or os.path.ismount(path) :
-            File.__init__(self,path)
+        assert(isinstance(path,File))
+        if True or permissive or os.path.ismount(path.path) :
+            self.path=path 
         else:
             raise ValueError("path is not a mount point:" + path)
         try:
@@ -448,6 +483,11 @@ class Volume (File) :
     def getPath(self) :
         return self.path
 
+    def __get_topdir(self) :
+        assert(isinstance(self.path, File))
+        return self.path
+    topdir=property(__get_topdir)
+    
     def __cmp__(self, other) :
         if not isinstance(other, self.__class__) :
             return False
@@ -467,19 +507,18 @@ class Volume (File) :
          3. check if $topdir/.Trash is not a symbolic link
          4. check it $topdir/.Trash has sticky bit
         """
-        trashdir = self.join(".Trash")
+        trashdir = self.path.join(".Trash")
         return trashdir.exists() and trashdir.isdir() and not trashdir.islink()
 
     def getCommonTrashDirectory(self) :
         uid = self.getuid()
-        trash_directory_path = File(os.path.join(self.getPath(), ".Trash", str(uid)))
-
+        trash_directory_path = self.topdir.join(File(".Trash")).join(File(str(uid)))
         return VolumeTrashDirectory(trash_directory_path,self)
 
     def getUserTrashDirectory(self) :
         uid = self.getuid()
-        trash_directory_path = File(os.path.join(self.getPath(), ".Trash-%s" % str(uid)))
-
+	dirname=".Trash-%s" % str(uid)
+        trash_directory_path = self.topdir.join(File(dirname))
         return VolumeTrashDirectory(trash_directory_path,self)
 
     # staticmethod
@@ -489,7 +528,7 @@ class Volume (File) :
             if os.path.ismount(path):
                 break
             path = os.path.dirname(path)
-        return Volume(path)
+        return Volume(File(path))
     volumeOf=staticmethod(volumeOf)
 
     # staticmethod
@@ -511,33 +550,41 @@ class Volume (File) :
             libc_name = "cygwin1.dll"
         else:
             libc_name = find_library("c")
-
+	
         if libc_name == None :
-            raise OSError("libc not found")
+            libc_name="/lib/libc.so.6" # fix for my Gentoo 4.0   	
+        sys.stderr.write("asdflk")
         
         libc = cdll.LoadLibrary(libc_name)
         libc.getmntent.restype = POINTER(mntent_struct)
         libc.fopen.restype = c_void_p
 
+        sys.stderr.write("asdflk")
         f = libc.fopen("/proc/mounts", "r")
+        sys.stderr.write("asdflk")
         if f==None:
             f = libc.fopen("/etc/mtab", "r")
             if f == None:
                 raise IOError("Unable to open /proc/mounts nor /etc/mtab")
 
+        sys.stderr.write("asdflk")
         while True:
+            sys.stderr.write("asdflk")
             entry = libc.getmntent(f)
             if bool(entry) == False: 
                 libc.fclose(f)
-                break        
-            yield Filesystem(entry.contents.mnt_dir, entry.contents.mnt_type, entry.contents.mnt_fsname)
+                break
+            yield entry
+#            yield Filesystem(entry.contents.mnt_dir, entry.contents.mnt_type, entry.contents.mnt_fsname)
 
     __mounted_filesystems=staticmethod(__mounted_filesystems)
+    mounted_filesystems=__mounted_filesystems
 
     # staticmethod
     def all() :
-        return [ Volume(elem.mount_dir) for elem in Volume.__mounted_filesystems()]
+        return [ Volume(File(elem.mount_dir)) for elem in Volume.__mounted_filesystems()]
     all=staticmethod(all)
+	
 
 
 
