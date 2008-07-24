@@ -93,7 +93,8 @@ class TestFile(unittest.TestCase) :
         self.assertEquals(File("/foo/bar"),result)
 
     def test_list(self):
-        instance=File("test-dir")
+        instance=File("sandbox/test-dir")
+        instance.remove()
         instance.mkdir()
         instance.join("file1").touch()
         instance.join("file2").touch()
@@ -103,15 +104,15 @@ class TestFile(unittest.TestCase) :
         # is much easier test the content of a list than a generator
         result_as_list=list(result)
         self.assertEquals(3, len(result_as_list))
-        self.assertTrue(File("test-dir/file1") in result_as_list)
-        self.assertTrue(File("test-dir/file1") in result_as_list)
-        self.assertTrue(File("test-dir/file1") in result_as_list)
+        self.assertTrue(File("sandbox/test-dir/file1") in result_as_list)
+        self.assertTrue(File("sandbox/test-dir/file1") in result_as_list)
+        self.assertTrue(File("sandbox/test-dir/file1") in result_as_list)
 
         # clean up
         instance.remove()
 
     def test_mkdir(self):
-        instance=File("test-dir")
+        instance=File("sandbox/test-dir")
         instance.remove()
         self.assertFalse(instance.exists())
         instance.mkdir()
@@ -121,32 +122,32 @@ class TestFile(unittest.TestCase) :
 
     def test_mkdirs_with_default_mode(self):
         # prepare
-        File("test-dir").remove()
-        self.assertFalse(File("test-dir").exists())
+        File("sandbox/test-dir").remove()
+        self.assertFalse(File("sandbox/test-dir").exists())
         # perform
-        instance=File("test-dir/sub-dir")
+        instance=File("sandbox/test-dir/sub-dir")
         instance.mkdirs()
         # test results
         self.assertTrue(instance.exists())
         self.assertTrue(instance.isdir())
         # clean up
-        File("test-dir").remove()
+        File("sandbox/test-dir").remove()
 
     def test_mkdirs_with_default_mode(self):
         # prepare
-        File("test-dir").remove()
-        self.assertFalse(File("test-dir").exists())
+        File("sandbox/test-dir").remove()
+        self.assertFalse(File("sandbox/test-dir").exists())
         # perform
-        instance=File("test-dir/sub-dir")
+        instance=File("sandbox/test-dir/sub-dir")
         instance.mkdirs()
         # test results
         self.assertTrue(instance.exists())
         self.assertTrue(instance.isdir())
         # clean up
-        File("test-dir").remove()
+        File("sandbox/test-dir").remove()
 
     def test_touch(self):
-        instance=File("test-file")
+        instance=File("sandbox/test-file")
         instance.remove()
         self.assertFalse(instance.exists())
         instance.touch()
@@ -205,7 +206,7 @@ class TestTrashDirectory(unittest.TestCase) :
         self.assertEqual(File("/"), td.volume)
         
     def testTrashInfoFileCreation(self) :
-        trashdirectory_base_dir = File("./testTrashDirectory")
+        trashdirectory_base_dir = File("./sandbox/testTrashDirectory")
         trashdirectory_base_dir.remove()
         volume=Volume(File("/"))
         instance=TrashDirectory(trashdirectory_base_dir, volume)
@@ -233,7 +234,7 @@ class TestTrashDirectory(unittest.TestCase) :
                          trashInfo_as_readed.path)
 
     def testCreateTrashInfo(self) :
-        trashdirectory_base_dir = os.path.realpath("./testTrashDirectory")
+        trashdirectory_base_dir = os.path.realpath("./sandbox/testTrashDirectory")
         instance = TrashDirectory(trashdirectory_base_dir)
         for i in range(1,200) :
             deletion_date = datetime(2007,01,01)
@@ -242,10 +243,10 @@ class TestTrashDirectory(unittest.TestCase) :
 
     def test_trash(self) :
         #instance
-        instance=TrashDirectory(File("testTrashDirectory"), Volume(File("/")))
+        instance=TrashDirectory(File("sandbox/.local/sharetestTrashDirectory"), Volume(File("/")))
 
         # test
-        filename = "dummy.txt"
+        filename = "sandbox/dummy.txt"
         open(filename, "w").close()
         instance._path_for_trashinfo = lambda fileToTrash : File("/dummy.txt")
         result = instance.trash(File(filename))
@@ -254,7 +255,7 @@ class TestTrashDirectory(unittest.TestCase) :
         self.assertTrue(result.getDeletionTime() is not None)
 
     def testCreateTrashInfo(self) : 
-        instance = HomeTrashDirectory(File("./testTrashDir"))
+        instance = HomeTrashDirectory(File("./sandbox/testTrashDir"))
         fileToBeTrashed=File("/home/user/test.txt")
         deletionTime=datetime(2000,1,1)
         
@@ -291,7 +292,31 @@ class TestHomeTrashDirectory(unittest.TestCase) :
         fileToBeTrashed=File("/home/user/.local/share/test.txt")
         result=instance._path_for_trashinfo(fileToBeTrashed)
         self.assertEquals(os.path.abspath("/home/user/.local/share/test.txt"),result)
-        
+
+    def test_str_uses_tilde(self):
+        os.environ['HOME']='/home/user'
+        self.assertEquals('~/.local/share/Trash', str(HomeTrashDirectory(File("/home/user/.local/share/Trash"))))
+                          
+    def test_str_dont_uses_tilde(self):
+        os.environ['HOME']='/home/user'        
+        self.assertEquals('/not-in-home/Trash', str(HomeTrashDirectory(File("/not-in-home/Trash"))))
+
+    def test_str_uses_tilde_with_trailing_slashes(self):
+        os.environ['HOME']='/home/user/'
+        self.assertEquals('~/.local/share/Trash', str(HomeTrashDirectory(File("/home/user/.local/share/Trash"))))
+
+    def test_str_uses_tilde_with_trailing_slash(self):
+        os.environ['HOME']='/home/user////'
+        self.assertEquals('~/.local/share/Trash', str(HomeTrashDirectory(File("/home/user/.local/share/Trash"))))
+
+    def test_str_with_empty_home(self):
+        os.environ['HOME']=''
+        self.assertEquals('/foo/Trash', str(HomeTrashDirectory(File("/foo/Trash"))))
+                
+    def test_str_with_home_not_defined(self):
+        del(os.environ['HOME'])
+        self.assertEquals('/foo/Trash', str(HomeTrashDirectory(File("/foo/Trash"))))
+                          
 class TestVolumeTrashDirectory(unittest.TestCase) :
     def test_init(self) :
         path = File("/mnt/disk/.Trash/123")
@@ -347,11 +372,12 @@ class TestTrashedFile(unittest.TestCase) :
     __dummy_datetime=datetime(2007, 7, 23, 23, 45, 07)
     
     def test_init(self) :
+        os.environ['HOME']='/home/user'
         trash_directory = TrashDirectory.getHomeTrashDirectory()
         trashinfo = TrashInfo(File("pippo"), datetime(2007, 7, 23, 23, 45, 07))
 
         instance = TrashedFile(trashinfo, trash_directory)
-
+        
         self.assertEqual(File("/pippo"), instance.path)
         self.assertEqual(datetime(2007, 7, 23, 23, 45, 07), instance.getDeletionTime())
         self.assertEqual(trash_directory, instance.trash_directory)
@@ -373,6 +399,10 @@ class TestTimeUtils(unittest.TestCase) :
         expected=datetime(2008,9,8,12,00,11)
         result=TimeUtils.parse_iso8601("2008-09-08T12:00:11")
         self.assertEqual(expected,result)
+
+        
+File("./sandbox").remove()
+File("./sandbox").mkdir()
 
 if __name__ == "__main__":
     unittest.main()

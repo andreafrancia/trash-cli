@@ -20,6 +20,7 @@
 
 from libtrash import File
 from libtrash import TrashDirectory
+from libtrash import TrashedFile
 from optparse import OptionParser
 import optparse
 import libtrash
@@ -42,15 +43,16 @@ def trash (f) :
         volume = f.parent.volume
     
         if TrashDirectory.getHomeTrashDirectory().volume == volume :
-            TrashDirectory.getHomeTrashDirectory().trash(f)
+            trashed_file = TrashDirectory.getHomeTrashDirectory().trash(f)
         else :
             if volume.hasCommonTrashDirectory() :
-                volume.getCommonTrashDirectory().trash(f)
+                trashed_file = volume.getCommonTrashDirectory().trash(f)
             else :
-                volume.getUserTrashDirectory().trash(f)
-    
+                trashed_file = volume.getUserTrashDirectory().trash(f)
+        assert(isinstance(trashed_file, TrashedFile))
+                
         if options.verbose:
-            print "trashed: `%s'" % arg
+            print "`%s' trashed in %s " % (arg, trashed_file.trash_directory)
     except OSError, e:
         # occour when the file cannot be moved
         print "trash: cannot trash `%s': %s" % (arg, str(e))

@@ -33,6 +33,7 @@ import traceback
 import logging
 from ctypes import *
 from ctypes.util import find_library
+import posixpath
 
 #logging.root.setLevel(0)
 
@@ -70,7 +71,7 @@ class File (object) :
         if path.isabs() :
             raise ValueError("File with relative path expected")
         return self.__join_str(path.path)
-            
+
     def join(self, path) :
         if(isinstance(path,File)):
             return self.__join_File(path)
@@ -119,7 +120,7 @@ class File (object) :
 
     def isabs(self) :
         return os.path.isabs(self.path)
-    
+
     def __cmp__(self, other) :
         if not isinstance(other, self.__class__) :
             return False
@@ -138,7 +139,7 @@ class File (object) :
 
     def mkdirs(self, mode=0777):
         os.makedirs(self.path, mode)
-    
+
     def touch(self):
         open(self.path, "w").close()
 
@@ -187,7 +188,7 @@ fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
     def __get_files_dir(self) :
         return self.path.join("files")
     files_dir=property(__get_files_dir)
-    
+
     def getInfoPath(self) :
         return os.path.join(self.path.path, "info")
 
@@ -250,7 +251,7 @@ fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
                 logging.debug(traceback.print_exc())
                 os.makedirs(self.getInfoPath())
 
-	# write trash info
+        # write trash info
         index = 0
         while True :
             if index == 0 :
@@ -315,6 +316,17 @@ class HomeTrashDirectory(TrashDirectory) :
         assert isinstance(path, File)
         TrashDirectory.__init__(self, path, path.volume)
 
+    def __str__(self) :
+        result=TrashDirectory.__str__(self)
+        try:
+            home_dir=os.environ['HOME']
+            home_dir = posixpath.normpath(home_dir)
+            if home_dir != '':
+                result=re.sub('^'+ re.escape(home_dir)+File.sep, '~' + File.sep,result)
+        except KeyError:
+            pass
+        return result
+
     def _path_for_trashinfo(self, fileToBeTrashed) :
         assert isinstance(fileToBeTrashed, File)
 
@@ -354,7 +366,7 @@ class TrashedFile (object) :
         if self.__trashinfo.path.isabs() :
             return self.__trashinfo.path
         else :
-            return self.__trashdirectory.volume.join(self.__trashinfo.path)
+            return self.__trashdirectory.volume.path.join(self.__trashinfo.path)
     path = property(getPath)
 
     def getDeletionTime(self) :
@@ -487,7 +499,7 @@ class Volume(object) :
         assert(isinstance(self.path, File))
         return self.path
     topdir=property(__get_topdir)
-    
+
     def __cmp__(self, other) :
         if not isinstance(other, self.__class__) :
             return False
@@ -517,7 +529,7 @@ class Volume(object) :
 
     def getUserTrashDirectory(self) :
         uid = self.getuid()
-	dirname=".Trash-%s" % str(uid)
+        dirname=".Trash-%s" % str(uid)
         trash_directory_path = self.topdir.join(File(dirname))
         return VolumeTrashDirectory(trash_directory_path,self)
 
@@ -550,11 +562,11 @@ class Volume(object) :
             libc_name = "cygwin1.dll"
         else:
             libc_name = find_library("c")
-	
+
         if libc_name == None :
             libc_name="/lib/libc.so.6" # fix for my Gentoo 4.0   	
         sys.stderr.write("asdflk")
-        
+
         libc = cdll.LoadLibrary(libc_name)
         libc.getmntent.restype = POINTER(mntent_struct)
         libc.fopen.restype = c_void_p
@@ -574,8 +586,9 @@ class Volume(object) :
             if bool(entry) == False: 
                 libc.fclose(f)
                 break
-            yield entry
-#            yield Filesystem(entry.contents.mnt_dir, entry.contents.mnt_type, entry.contents.mnt_fsname)
+            yield Filesystem(entry.contents.mnt_dir,
+                             entry.contents.mnt_type,
+                             entry.contents.mnt_fsname)
 
     __mounted_filesystems=staticmethod(__mounted_filesystems)
     mounted_filesystems=__mounted_filesystems
@@ -584,7 +597,7 @@ class Volume(object) :
     def all() :
         return [ Volume(File(elem.mount_dir)) for elem in Volume.__mounted_filesystems()]
     all=staticmethod(all)
-	
+
 
 
 

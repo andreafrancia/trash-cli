@@ -22,7 +22,6 @@
 
 #set -o nounset
 
-#topdir="/media/disk"
 topdir="$(pwd)/test-volume"
 
 uid="$(python -c "import os; 
@@ -94,13 +93,13 @@ assert_trashed () {
 #   1. trash_in_home_trashcan <file>
 #   2. trash_in_home_trashcan <dir>
 test_trash_in_home_trashcan() {
-        export XDG_DATA_HOME="./test-dir"
+        export XDG_DATA_HOME="./sandbox/XDG_DATA_HOME"
         local expected_trashcan="$XDG_DATA_HOME/Trash"
 
         file_to_trash_path=(
-                trash-test/file-to-trash
-                trash-test/other-file-to-trash
-                trash-test/file-to-trash
+                sandbox/trash-test/file-to-trash
+                sandbox/trash-test/other-file-to-trash
+                sandbox/trash-test/file-to-trash
         )
 
         expected_trashid=(
@@ -110,9 +109,9 @@ test_trash_in_home_trashcan() {
         )
         
         expected_path_in_trashinfo=(
-                "$(pwd)/trash-test/file-to-trash"
-                "$(pwd)/trash-test/other-file-to-trash"
-                "$(pwd)/trash-test/file-to-trash"
+                "$(pwd)/sandbox/trash-test/file-to-trash"
+                "$(pwd)/sandbox/trash-test/other-file-to-trash"
+                "$(pwd)/sandbox/trash-test/file-to-trash"
         )
        
 	# delete trashcan
@@ -164,9 +163,9 @@ do_test_trash_in_volume_trashcan() {
 	local expected_trashcan="$1"
 
         file_to_trash_path=(
-                trash-test/file-to-trash
-                trash-test/other-file-to-trash
-                trash-test/file-to-trash
+                sandbox/trash-test/file-to-trash
+                sandbox/trash-test/other-file-to-trash
+                sandbox/trash-test/file-to-trash
         )
 
         expected_trashid=(
@@ -176,9 +175,9 @@ do_test_trash_in_volume_trashcan() {
         )
         
         expected_path_in_trashinfo=(
-                trash-test/file-to-trash
-                trash-test/other-file-to-trash
-                trash-test/file-to-trash
+                sandbox/trash-test/file-to-trash
+                sandbox/trash-test/other-file-to-trash
+                sandbox/trash-test/file-to-trash
         )
 
 	# delete trashcan
@@ -228,26 +227,20 @@ test_trash_in_volume_trashcans_when_Trash_is_ok() {
 	do_test_trash_in_volume_trashcan "$topdir/.Trash/$uid"
 }
 
-
-clean_up() {
-	rm -Rfv $topdir/.Trash
-	rm -Rfv $topdir/.Trash-$uid
-}
+if [ -e $topdir/not-mounted ]; then
+	echo "test volume not mounted, please run mount-test-volume.sh"
+	exit 
+fi 
 
 if [ ! -e $topdir ]; then
 	echo "Please choose a topdir that exists."
 	exit
 fi
 
-if [  -e $topdir/.Trash  -o -e $topdir/.Trash-$uid ]; then
-	echo "To run these test you should remove these directories first."
-        echo " - $topdir/.Trash "
-        echo " - $topdir/.Trash-$uid "
-	exit
-fi
+rm -Rf $topdir/.Trash
+rm -Rf $topdir/.Trash-$uid
 
 # load shunit2
 . "$(dirname "$0")/../test-lib/shunit2/src/shell/shunit2"
 
-clean_up
 
