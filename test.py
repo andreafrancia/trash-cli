@@ -1,9 +1,8 @@
 import sys
 import unittest
-sys.path.append('test')
-sys.path.append('src')
-import libtrash_test
+sys.path.insert(0,'src')
+import libtrash
+import libtrash.tests
 
-suite = unittest.TestLoader().loadTestsFromModule(libtrash_test)
+suite = unittest.TestLoader().loadTestsFromModule(libtrash.tests)
 unittest.TextTestRunner(verbosity=3).run(suite)
-
