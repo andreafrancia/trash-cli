@@ -36,6 +36,7 @@ from ctypes.util import find_library
 import posixpath
 
 #logging.root.setLevel(0)
+__logger=logging.getLogger('libtrash')
 
 # the distribution script will change this to actual version number
 version='svn'
@@ -104,10 +105,11 @@ class File (object) :
         return Volume.volumeOf(self.path)
 
     def remove(self) :
-        try:
-            os.remove(self.path)        
-        except:
-            return shutil.rmtree(self.path, True)
+        if(self.exists()):
+            try:
+                os.remove(self.path)        
+            except:
+                return shutil.rmtree(self.path)
 
     def exists(self) :
         return os.path.exists(self.path)
@@ -142,7 +144,16 @@ class File (object) :
 
     def touch(self):
         open(self.path, "w").close()
+    
+    def read(self):
+        f=self.open()
+        result=f.read()
+        f.close()
+        return result
 
+    def open(self):
+        return open(self.path)
+    
 """
 Represent a trash directory.
 For example $XDG_DATA_HOME/Trash
@@ -168,18 +179,19 @@ class TrashDirectory(object) :
 self.volume = " + str(self.volume) + ", \n\
 fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
 
-        trashInfo = self.createTrashInfo(fileToBeTrashed, datetime.now())
+        trash_info=TrashInfo(self._path_for_trashinfo(fileToBeTrashed),datetime.now())
+        trash_id=self.persist_trash_info(trash_info)
 
         if not self.files_dir.exists() : 
             os.makedirs(self.getFilesPath(), 0700)
 
         try :
-            fileToBeTrashed.move(self.getOriginalCopyPath(trashInfo.getId()))
+            fileToBeTrashed.move(self.getOriginalCopyPath(trash_id))
         except IOError, e :
-            self.getTrashInfoFile(trashInfo.getId()).remove();
+            self.getTrashInfoFile(trash_id).remove();
             raise e
 
-        return TrashedFile(trashInfo, self)
+        return TrashedFile(trash_id,trash_info, self)
 
     def __get_info_dir(self) :
         return self.path.join("info")
@@ -197,19 +209,20 @@ fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
 
     def trashedFiles(self) :
         try : 
-            for filename in os.listdir(self.getInfoPath()) :
-                infoFilename = os.path.join(self.getInfoPath(), filename)
-
-                infoBasename = os.path.basename(infoFilename)
-
-                if not infoBasename.endswith('.trashinfo') :
-                    raise AssertionError()
-
-                ti = TrashInfo.parse(open(infoFilename).read())
-                yield TrashedFile(ti, self)
+            for trash_info_file in self.info_dir.list() :
+                if not trash_info_file.basename.endswith('.trashinfo') :
+                    __logger.warning("Non .trashinfo file in info dir")
+                else :
+                    id=self.calc_id(trash_info_file)
+                    ti=TrashInfo.parse(trash_info_file.read())
+                    yield TrashedFile(id,ti,self)
         except OSError, e: # when directory does not exist
             pass 
-
+    
+    @staticmethod
+    def calc_id(trash_info_file):
+        return trash_info_file.basename[:-len('.trashinfo')]
+    
     def trashedFilesInDir(self, dir) :
         dir = os.path.realpath(dir)
         for trashedfile in self.trashedFiles() :
@@ -231,18 +244,12 @@ fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
     def _path_for_trashinfo(self, fileToTrash):
         raise NotImplementedError
 
-
     """
     Create a .trashinfo file in the $trash/info directory.
-    param File fileToBeTrashed
-    param ? deletionTime
-    returns TrashInfo the create TrashInfo file.
+    returns the trash_id for the created file.
     """
-    def createTrashInfo(self, fileToBeTrashed, deletion_date) :
-        assert(isinstance(fileToBeTrashed, File))
-
-        # create trash info
-        trashInfo = TrashInfo(self._path_for_trashinfo(fileToBeTrashed),deletion_date)
+    def persist_trash_info(self,trash_info) :
+        assert(isinstance(trash_info, TrashInfo))
 
         if not os.path.exists(self.getInfoPath()) : 
             try :
@@ -261,18 +268,17 @@ fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
             else :
                 suffix = "_%d" % random.randint(0, 65535)
 
-            base_id = fileToBeTrashed.basename
+            base_id = trash_info.path.basename
             trash_id = base_id + suffix
-            trashInfoBasename = trash_id + ".trashinfo"
+            trash_info_basename=trash_id+".trashinfo"
 
-            dest = os.path.join(self.getInfoPath(),trashInfoBasename)
+            dest = os.path.join(self.getInfoPath(),trash_info_basename)
             try :
                 handle = os.open(dest, os.O_RDWR | os.O_CREAT | os.O_EXCL, 0600)
-                os.write(handle, trashInfo.render())
+                os.write(handle, trash_info.render())
                 os.close(handle)
                 logging.debug(".trashinfo created as %s." % dest)
-                trashInfo.setId(trash_id)
-                return trashInfo
+                return trash_id
             except OSError, e:
                 logging.debug("Attempt for creating %s failed." % dest)
 
@@ -291,9 +297,10 @@ fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
         return HomeTrashDirectory(path)
     getHomeTrashDirectory=staticmethod(getHomeTrashDirectory)
 
-    # staticmethod
-    def allTrashedFiles() :
+    def trashed_files() :
+        """Return a generator of all TrashedFiles."""
         for trashedfile in TrashDirectory.getHomeTrashDirectory().trashedFiles() :
+            assert(isinstance(trashedfile,TrashedFile))
             yield trashedfile
 
         for volume in Volume.all() :
@@ -301,15 +308,14 @@ fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
                 yield trashedfile    
             for trashedfile in volume.getUserTrashDirectory().trashedFiles() :
                 yield trashedfile
-    allTrashedFiles=staticmethod(allTrashedFiles)
+    trashed_files=staticmethod(trashed_files)
 
-    # classmethod
-    def allTrashedFilesInDir(cls,dir) :
+    def files_trahsed_from_dir(cls,dir) :
         dir = os.path.realpath(dir)
         for trashedfile in cls.allTrashedFiles() :
             if trashedfile.path.startswith(dir + os.path.sep) :
                 yield trashedfile
-    allTrashedFilesInDir=classmethod(allTrashedFilesInDir)    
+    files_trahsed_from_dir=classmethod(files_trahsed_from_dir)    
 
 class HomeTrashDirectory(TrashDirectory) :
     def __init__(self, path) :
@@ -356,47 +362,64 @@ class VolumeTrashDirectory(TrashDirectory) :
 
 
 class TrashedFile (object) :
-    def __init__(self,trashinfo,trashdirectory) :
-        assert isinstance(trashinfo, TrashInfo)
-        assert isinstance(trashdirectory, TrashDirectory)
-        self.__trashinfo = trashinfo
-        self.__trashdirectory = trashdirectory
+    def __init__(self,id,trash_info,trash_directory) :
+        assert isinstance(id, str)
+        assert isinstance(trash_info, TrashInfo)
+        assert isinstance(trash_directory, TrashDirectory)
+        self.__id=id
+        self.__trash_info=trash_info
+        self.__trash_directory=trash_directory
 
+    def __get_id(self) :
+        return self.__id
+    id=property(__get_id)
+        
     def getPath(self) :
-        if self.__trashinfo.path.isabs() :
-            return self.__trashinfo.path
+        if self.__trash_info.path.isabs() :
+            return self.__trash_info.path
         else :
-            return self.__trashdirectory.volume.path.join(self.__trashinfo.path)
+            return self.__trash_directory.volume.path.join(self.__trash_info.path)
     path = property(getPath)
 
+    def trash_info(self):
+        assert(isinstance(self.__trash_info,TrashInfo))
+        return self.__trash_info
+    trash_info=property(trash_info)
+    
+    def __original_file(self):        
+        return self.__trash_directory.getOriginalCopy(self.id)
+    original_file=property(__original_file)
+    
     def getDeletionTime(self) :
-        return self.__trashinfo.getDeletionTime()
+        return self.__trash_info.getDeletionTime()
+    deletion_date=property(getDeletionTime)
 
     def restore(self) :
         if not os.path.exists(os.path.dirname(self.path)) :
             os.makedirs(os.path.dirname(self.path))
 
-        trashId = self.__trashinfo.getId()
-        self.__trashdirectory.getOriginalCopy(trashId).move(self.path)
-        self.__trashdirectory.getTrashInfoFile(trashId).remove()
+        trashId = self.__trash_info.getId()
+        self.__trash_directory.getOriginalCopy(trashId).move(self.path)
+        self.__trash_directory.getTrashInfoFile(trashId).remove()
 
     def purge(self) :
-        # author : Einar Orn Olason
-        trashId = self.__trashinfo.getId()
-        self.__trashdirectory.getOriginalCopy(trashId).remove()
-        self.__trashdirectory.getTrashInfoFile(trashId).remove()
+        # created by : Einar Orn Olason
+        # 2008-07-26 Andrea Francia: added postcondition test
+        self.original_file.remove()
+        self.trash_info_file.remove()
 
+    def __get_trash_info_file(self):
+        return self.__trash_directory.getTrashInfoFile(self.id)
+    trash_info_file=property(__get_trash_info_file)
+    
     @property
     def trash_directory(self) :
-        return self.__trashdirectory
-
+        return self.__trash_directory
 
 class TrashInfo (object) :
-    def __init__(self, path, deletion_date, trashId = None) :
+    def __init__(self, path, deletion_date) :
         assert isinstance(path, File)
         assert isinstance(deletion_date, datetime)
-        assert trashId == None or isinstance(trashId, str)
-        self.__id = trashId
         self.__path = path
         self.__deletion_date = deletion_date
 
@@ -416,12 +439,6 @@ class TrashInfo (object) :
     def getPath(self) :
         return self.__path
     path = property(getPath)
-
-    def getId(self) :
-        return self.__id
-
-    def setId(self, trashId) :
-        self.__id = trashId
 
     @staticmethod
     def parse(data) :
@@ -565,23 +582,18 @@ class Volume(object) :
 
         if libc_name == None :
             libc_name="/lib/libc.so.6" # fix for my Gentoo 4.0   	
-        sys.stderr.write("asdflk")
 
         libc = cdll.LoadLibrary(libc_name)
         libc.getmntent.restype = POINTER(mntent_struct)
         libc.fopen.restype = c_void_p
 
-        sys.stderr.write("asdflk")
         f = libc.fopen("/proc/mounts", "r")
-        sys.stderr.write("asdflk")
         if f==None:
             f = libc.fopen("/etc/mtab", "r")
             if f == None:
                 raise IOError("Unable to open /proc/mounts nor /etc/mtab")
 
-        sys.stderr.write("asdflk")
         while True:
-            sys.stderr.write("asdflk")
             entry = libc.getmntent(f)
             if bool(entry) == False: 
                 libc.fclose(f)

@@ -23,7 +23,7 @@ import os
 
 list = []
 i = 0
-for trashedfile in TrashDirectory.allTrashedFilesInDir(os.curdir) :
+for trashedfile in TrashDirectory.files_trahsed_from_dir(os.curdir) :
     list.append(trashedfile)
     print "%4d %s %s" % (i, trashedfile.getDeletionTime(), trashedfile.getPath())
     i += 1

@@ -22,9 +22,9 @@
 Unit test for Volume.py
 """
 
-__author__ = "Andrea Francia (andrea.francia@users.sourceforge.net)"
-__copyright__ = "Copyright (c) 2007 Andrea Francia"
-__license__ = "GPL"
+__author__="Andrea Francia (andrea.francia@users.sourceforge.net)"
+__copyright__="Copyright (c) 2007 Andrea Francia"
+__license__="GPL"
 
 import libtrash
 from libtrash import *
@@ -32,6 +32,7 @@ from datetime import *
 from exceptions import *
 import os
 import unittest
+import pdb
 
 class TestFile(unittest.TestCase) :
     def test_constructor(self) :
@@ -204,43 +205,6 @@ class TestTrashDirectory(unittest.TestCase) :
         os.environ['HOME'] = "/home/test"
         td = TrashDirectory.getHomeTrashDirectory()
         self.assertEqual(File("/"), td.volume)
-        
-    def testTrashInfoFileCreation(self) :
-        trashdirectory_base_dir = File("./sandbox/testTrashDirectory")
-        trashdirectory_base_dir.remove()
-        volume=Volume(File("/"))
-        instance=TrashDirectory(trashdirectory_base_dir, volume)
-        instance._path_for_trashinfo = lambda fileToBeTrashed : File("_path_for_trashinfo-result")
-        
-        fileToBeTrashed = File("/directory/filetobetrashed.ext")
-        deletionTime = datetime(2007, 7, 23, 23, 45, 07)
-        trashInfo = instance.createTrashInfo(fileToBeTrashed, deletionTime)
-
-        # check that the result is a TrashInfo 
-        self.assert_(isinstance(trashInfo, TrashInfo))
-
-        # check that the trash info was placed in the "info" directory under
-        # the TrashDirectory
-        trashInfoFilePath = os.path.join(instance.getInfoPath(),
-                                         trashInfo.getId() + ".trashinfo")
-
-        self.assert_(os.path.exists(trashInfoFilePath))
-
-        # check that the information recorded in the .trashinfo file are
-        # the same we specified earlier
-        trashInfo_as_readed = TrashInfo.parse(open(trashInfoFilePath).read())
-        self.assertEqual(deletionTime, trashInfo_as_readed.getDeletionTime())
-        self.assertEqual("_path_for_trashinfo-result", 
-                         trashInfo_as_readed.path)
-
-    def testCreateTrashInfo(self) :
-        trashdirectory_base_dir = os.path.realpath("./sandbox/testTrashDirectory")
-        instance = TrashDirectory(trashdirectory_base_dir)
-        for i in range(1,200) :
-            deletion_date = datetime(2007,01,01)
-            result=instance.createTrashInfo("dummy", deletion_date)
-        
-
     def test_trash(self) :
         #instance
         instance=TrashDirectory(File("sandbox/.local/sharetestTrashDirectory"), Volume(File("/")))
@@ -254,17 +218,6 @@ class TestTrashDirectory(unittest.TestCase) :
         self.assertEquals(File("/dummy.txt"), result.path)
         self.assertTrue(result.getDeletionTime() is not None)
 
-    def testCreateTrashInfo(self) : 
-        instance = HomeTrashDirectory(File("./sandbox/testTrashDir"))
-        fileToBeTrashed=File("/home/user/test.txt")
-        deletionTime=datetime(2000,1,1)
-        
-        result=instance.createTrashInfo(fileToBeTrashed, deletionTime)
-        self.assertEquals(datetime(2000,1,1), result.getDeletionTime())
-        
-        # let test pass also on my windows developing machine
-        self.assertEquals("/home/user/test.txt",result.path)
-
     def test_get_info_dir(self):
         instance=TrashDirectory(
             File("/mnt/disk/.Trash-123"),
@@ -276,7 +229,68 @@ class TestTrashDirectory(unittest.TestCase) :
             File("/mnt/disk/.Trash-123"),
             Volume(File("/mnt/disk"), True))
         self.assertEquals("/mnt/disk/.Trash-123/files", instance.files_dir)
+    
+    def test_calc_id(self):
+        trash_info_file=File("/home/user/.local/share/Trash/info/foo.trashinfo")
+        self.assertEquals('foo',TrashDirectory.calc_id(trash_info_file))
+         
+class TestTrashDirectory_persit_trash_info(unittest.TestCase) :
+    def setUp(self):
+        trashdirectory_base_dir = File(os.path.realpath("./sandbox/testTrashDirectory"))
+        trashdirectory_base_dir.remove()
         
+        self.instance=TrashDirectory(trashdirectory_base_dir, Volume(File("/")))
+        
+    def test_persist_trash_info_first_time(self):
+        trash_info=TrashInfo(File("dummy-path"), datetime(2007,01,01))
+
+        result=self.instance.persist_trash_info(trash_info)
+
+        self.assertTrue(isinstance(result, str))
+        self.assertEquals('dummy-path', result)
+        trash_info_file=self.instance.getTrashInfoFile(result)
+        self.assertTrue(trash_info_file.exists())
+        self.assertEquals("""[Trash Info]
+Path=dummy-path
+DeletionDate=2007-01-01T00:00:00
+""", trash_info_file.read())
+        
+    def test_persist_trash_info_first_100_times(self):
+        self.test_persist_trash_info_first_time()
+        
+        for i in range(1,100) :
+            trash_info=TrashInfo(File("dummy-path"), datetime(2007,01,01))
+            
+            result=self.instance.persist_trash_info(trash_info)
+    
+            self.assertTrue(isinstance(result, str))
+            self.assertEquals('dummy-path'+"_" + str(i), result)
+            trash_info_file=self.instance.getTrashInfoFile(result)
+            self.assertTrue(trash_info_file.exists())
+            self.assertEquals("""[Trash Info]
+Path=dummy-path
+DeletionDate=2007-01-01T00:00:00
+""", trash_info_file.read())
+
+    def test_persist_trash_info_other_times(self):
+        self.test_persist_trash_info_first_100_times()
+        
+        for i in range(101,200) :
+            trash_info=TrashInfo(File("dummy-path"), datetime(2007,01,01))
+            
+            result=self.instance.persist_trash_info(trash_info)
+    
+            self.assertTrue(isinstance(result, str))
+            self.assertTrue(result.startswith("dummy-path_"))
+            trash_info_file=self.instance.getTrashInfoFile(result)            
+            self.assertTrue(trash_info_file.exists())
+            self.assertEquals("""[Trash Info]
+Path=dummy-path
+DeletionDate=2007-01-01T00:00:00
+""", trash_info_file.read())
+
+
+       
 class TestHomeTrashDirectory(unittest.TestCase) :
     def test_path_for_trashinfo (self) : 
         instance = HomeTrashDirectory(File("/home/user/.local/share/Trash"))
@@ -341,7 +355,7 @@ class TestVolumeTrashDirectory(unittest.TestCase) :
         self.assertEquals("/mnt/other-volume/directory/test.txt",result)
                     
 class TestTrashInfo(unittest.TestCase) :
-    def testParse(self) :
+    def test_parse(self) :
         data = """[Trash Info]
 Path=home%2Fandrea%2Fprova.txt
 DeletionDate=2007-07-23T23:45:07"""
@@ -355,13 +369,11 @@ DeletionDate=2007-07-23T23:45:07"""
         instance = TrashInfo(File("path"), datetime(2007, 7, 23, 23, 45, 07))
         self.assertEquals("path", instance.path)
         self.assertEquals(datetime(2007, 7, 23, 23, 45, 07), instance.getDeletionTime())
-        self.assertEquals(None, instance.getId())
 
     def test_init2(self) :
-        instance = TrashInfo(File("path"), datetime(2007, 7, 23, 23, 45, 07), "id")
+        instance = TrashInfo(File("path"), datetime(2007, 7, 23, 23, 45, 07))
         self.assertEquals("path", instance.path)
         self.assertEquals(datetime(2007, 7, 23, 23, 45, 07), instance.getDeletionTime())
-        self.assertEquals("id", instance.getId())
     
     def test_getDeletionTimeAsString(self) :
         instance = TrashInfo(File("path"), datetime(2007, 7, 23, 23, 45, 07))
@@ -376,20 +388,23 @@ class TestTrashedFile(unittest.TestCase) :
         trash_directory = TrashDirectory.getHomeTrashDirectory()
         trashinfo = TrashInfo(File("pippo"), datetime(2007, 7, 23, 23, 45, 07))
 
-        instance = TrashedFile(trashinfo, trash_directory)
+        instance = TrashedFile("dummy-id", trashinfo, trash_directory)
         
+        self.assertEqual("dummy-id", instance.id)
         self.assertEqual(File("/pippo"), instance.path)
         self.assertEqual(datetime(2007, 7, 23, 23, 45, 07), instance.getDeletionTime())
         self.assertEqual(trash_directory, instance.trash_directory)
         
     def test_path_when_absolute(self) :
         instance = TrashedFile(
+            "dummy-id",
             TrashInfo(File("/foo"), self.__dummy_datetime),
             TrashDirectory(File("/mnt/volume/Trash/123"), Volume(File("/mnt/volume"))))
         self.assertEqual(instance.path, "/foo")
         
     def test_path_when_relative(self):
         instance = TrashedFile(
+            "dummy-id",
             TrashInfo(File("foo"), self.__dummy_datetime),
             TrashDirectory(File("/mnt/volume/Trash/123"), Volume(File("/mnt/volume"))))
         self.assertEqual(instance.path, "/mnt/volume/foo")

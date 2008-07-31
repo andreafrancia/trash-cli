@@ -20,5 +20,5 @@
 
 from libtrash import TrashDirectory
 
-for trashedfile in TrashDirectory.allTrashedFiles() :
-    print "%s %s" % (trashedfile.getDeletionTime(), trashedfile.getPath())
+for trashed_file in TrashDirectory.trashed_files() :
+    print "%s %s" % (trashed_file.deletion_date, trashed_file.path)

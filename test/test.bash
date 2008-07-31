@@ -30,16 +30,31 @@ try:
 except AttributeError: 
     print 0")"
 
-invoke_trash() 
-{
-	echo "Invoking: trash $@"
-	../src/trash $@
+# --- commands --------------------------------------------
+_trash() {
+	echo "Invoking: trash $@" >2
+	../src/trash "$@"
 }
 
+_empty-trash() {
+	echo "Invoking: empty-trash $@" >2
+	../src/empty-trash "$@"
+}
+
+_list-trash() {
+	echo "Invoking: list-trash $@" >2
+	../src/list-trash "$@"
+}
+
+_restore-trash() {
+	echo "Invoking: restore-trash $@" >2
+	../src/restore-trash "$@"
+}
+# --- end of commands --------------------------------------
 
 testPrintVersion()
 {
-	invoke_trash --version
+	_trash --version
 	assertEquals 0 "$?"
 }
 
@@ -148,7 +163,7 @@ do_trash_test() {
 	local content="$RANDOM"
         create_test_file "$content" "$path_to_trash"
 
-        invoke_trash "$path_to_trash"
+        _trash "$path_to_trash"
         assertEquals 0 "$?"
         assert_does_not_exists "$path_to_trash"
         
@@ -225,6 +240,30 @@ test_trash_in_volume_trashcans_when_Trash_is_ok() {
 	chmod u+t $topdir/.Trash
 	chmod a+w $topdir/.Trash
 	do_test_trash_in_volume_trashcan "$topdir/.Trash/$uid"
+}
+
+prepare_volume_trashcan() {
+	rm -Rf $topdir/.Trash
+	mkdir --parent $topdir/.Trash
+	chmod u+t $topdir/.Trash
+	chmod a+w $topdir/.Trash
+}
+
+get-trashed-item-count() {
+	_list-trash | wc -l
+}
+
+test_empty-trash_removes_trash() {
+	prepare_volume_trashcan
+	_empty-trash
+	assertEquals 0 "$(_list-trash | wc -l)"
+
+	touch "$topdir/foo" "$topdir/bar" "$topdir/zap"	
+	_trash "$topdir/foo" "$topdir/bar" "$topdir/zap"	
+	assertEquals 3 "$(_list-trash | wc -l)"
+
+	_empty-trash 
+	assertEquals 0 "$(_list-trash | wc -l)"
 }
 
 if [ -e $topdir/not-mounted ]; then
