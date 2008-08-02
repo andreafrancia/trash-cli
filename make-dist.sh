@@ -22,7 +22,7 @@ tarball=dist/"$package_name".tar.gz
 
 # prepare sources
 svn export . dist/"$package_name"
-inject_version dist/"$package_name"/libtrash.py "$version"
+inject_version dist/"$package_name"/src/libtrash/__init__.py "$version"
 
 # create tarball of sources
 tar -C dist -cvz -f "$tarball" "$package_name"
