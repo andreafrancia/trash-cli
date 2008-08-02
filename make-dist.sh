@@ -1,10 +1,6 @@
 #!/bin/sh
 
-function get_version() {
-    base_version='0.1.10'
-    scm_version="$(svnversion)"
-    echo "$base_version.r$scm_version"
-}
+base_version='0.1.10'
 
 function inject_version() {
     file="$1"
@@ -16,12 +12,24 @@ set -e
 rm -Rf dist
 mkdir dist
 
-version="$(get_version)"
+requested_revision="$1"
+# calc version 
+if [ -z "$requested_revision" ]; then
+	version="$base_version.r$(svnversion)"
+else 
+	version="$base_version.r$requested_revision"
+fi
+
 package_name="trash-cli-$version"
 tarball=dist/"$package_name".tar.gz
 
 # prepare sources
-svn export . dist/"$package_name"
+if [ -z "$requested_revision" ]; then
+	svn export . dist/"$package_name"
+else 
+	svn export -r "$requested_revision" . dist/"$package_name"
+fi
+
 inject_version dist/"$package_name"/src/libtrash/__init__.py "$version"
 
 # create tarball of sources
