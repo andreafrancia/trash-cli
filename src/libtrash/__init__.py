@@ -102,7 +102,7 @@ class File (object) :
     """
     @property
     def volume(self) :
-        return Volume.volumeOf(self.path)
+        return Volume.volume_of(self.path)
 
     def remove(self) :
         if(self.exists()):
@@ -154,6 +154,9 @@ class File (object) :
     def open(self):
         return open(self.path)
     
+    def ismount(self):
+        return os.path.ismount(self.path)
+    
 """
 Represent a trash directory.
 For example $XDG_DATA_HOME/Trash
@@ -183,7 +186,7 @@ fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
         trash_id=self.persist_trash_info(trash_info)
 
         if not self.files_dir.exists() : 
-            os.makedirs(self.getFilesPath(), 0700)
+            self.files_dir.mkdirs(0700)
 
         try :
             fileToBeTrashed.move(self.getOriginalCopyPath(trash_id))
@@ -198,7 +201,9 @@ fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
     info_dir=property(__get_info_dir)
 
     def __get_files_dir(self) :
-        return self.path.join("files")
+        result=self.path.join("files")
+        assert(isinstance(result,File))
+        return result
     files_dir=property(__get_files_dir)
 
     def getInfoPath(self) :
@@ -374,29 +379,31 @@ class TrashedFile (object) :
         return self.__id
     id=property(__get_id)
         
-    def getPath(self) :
+    #rename in __get_path
+    def __get_path(self) :
         if self.__trash_info.path.isabs() :
             return self.__trash_info.path
         else :
             return self.__trash_directory.volume.path.join(self.__trash_info.path)
-    path = property(getPath)
-
+    path = property(__get_path)
+    original_location=property(__get_path)
+    
     def trash_info(self):
         assert(isinstance(self.__trash_info,TrashInfo))
         return self.__trash_info
     trash_info=property(trash_info)
     
-    def __original_file(self):        
+    def __get_original_file(self):        
         return self.__trash_directory.getOriginalCopy(self.id)
-    original_file=property(__original_file)
+    original_file=property(__get_original_file)
     
     def getDeletionTime(self) :
         return self.__trash_info.getDeletionTime()
     deletion_date=property(getDeletionTime)
 
     def restore(self) :
-        if not os.path.exists(os.path.dirname(self.path)) :
-            os.makedirs(os.path.dirname(self.path))
+        if not self.original_location.exists :
+            self.original_location.dirname.mkdirs()
 
         trashId = self.__trash_info.getId()
         self.__trash_directory.getOriginalCopy(trashId).move(self.path)
@@ -412,9 +419,9 @@ class TrashedFile (object) :
         return self.__trash_directory.getTrashInfoFile(self.id)
     trash_info_file=property(__get_trash_info_file)
     
-    @property
     def trash_directory(self) :
         return self.__trash_directory
+    trash_directory=property(trash_directory)
 
 class TrashInfo (object) :
     def __init__(self, path, deletion_date) :
@@ -423,22 +430,15 @@ class TrashInfo (object) :
         self.__path = path
         self.__deletion_date = deletion_date
 
-    def setDeletionTime(self, value) :
-        self.__deletion_date  = value
-
-    def setPath(self, path) :
-        assert isinstance(path, File)
-        self.__path = path
-
     def getDeletionTimeAsString(self) :
         return datetime.strftime(self.__deletion_date, "%Y-%m-%dT%H:%M:%S")
 
     def getDeletionTime(self) :
         return self.__deletion_date
 
-    def getPath(self) :
+    def path(self) :
         return self.__path
-    path = property(getPath)
+    path = property(path)
 
     @staticmethod
     def parse(data) :
@@ -505,12 +505,6 @@ class Volume(object) :
         except AttributeError:
             self.getuid = lambda: 0
 
-    def sameVolume(self,path) : 
-        return Volume.volumeOf(path).path == self.path
-
-    # TODO: replace with @property path
-    def getPath(self) :
-        return self.path
 
     def __get_topdir(self) :
         assert(isinstance(self.path, File))
@@ -551,14 +545,14 @@ class Volume(object) :
         return VolumeTrashDirectory(trash_directory_path,self)
 
     # staticmethod
-    def volumeOf(path) : 
+    def volume_of(path) : 
         path = os.path.realpath(path)
         while path != os.path.dirname(path):
             if os.path.ismount(path):
                 break
             path = os.path.dirname(path)
         return Volume(File(path))
-    volumeOf=staticmethod(volumeOf)
+    volume_of=staticmethod(volume_of)
 
     # staticmethod
     def __mounted_filesystems() :

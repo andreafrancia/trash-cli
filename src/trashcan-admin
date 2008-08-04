@@ -49,7 +49,7 @@ parser.add_option("--trashcans",
 
 if options.volumes :
     for i in Volume.all() :
-        print i.getPath()
+        print i.path
 elif options.trashcans :
     for i in trashcans() :
         print "%s (%s)" % (i, i.volume)

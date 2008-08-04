@@ -395,20 +395,20 @@ class TestTrashedFile(unittest.TestCase) :
         self.assertEqual(datetime(2007, 7, 23, 23, 45, 07), instance.getDeletionTime())
         self.assertEqual(trash_directory, instance.trash_directory)
         
-    def test_path_when_absolute(self) :
+    def test_original_location_when_absolute(self) :
         instance = TrashedFile(
             "dummy-id",
             TrashInfo(File("/foo"), self.__dummy_datetime),
             TrashDirectory(File("/mnt/volume/Trash/123"), Volume(File("/mnt/volume"))))
-        self.assertEqual(instance.path, "/foo")
+        self.assertEqual(instance.original_location, "/foo")
         
-    def test_path_when_relative(self):
+    def test_original_location_when_relative(self):
         instance = TrashedFile(
             "dummy-id",
             TrashInfo(File("foo"), self.__dummy_datetime),
             TrashDirectory(File("/mnt/volume/Trash/123"), Volume(File("/mnt/volume"))))
-        self.assertEqual(instance.path, "/mnt/volume/foo")
-        
+        self.assertEqual(instance.original_location, "/mnt/volume/foo")
+            
 class TestTimeUtils(unittest.TestCase) :
     def test_parse_iso8601(self) :
         expected=datetime(2008,9,8,12,00,11)

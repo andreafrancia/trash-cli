@@ -280,6 +280,6 @@ rm -Rf $topdir/.Trash
 rm -Rf $topdir/.Trash-$uid
 
 # load shunit2
-. "$(dirname "$0")/../test-lib/shunit2/src/shell/shunit2"
+. "$(dirname "$0")/bashunit.bash"
 
 
