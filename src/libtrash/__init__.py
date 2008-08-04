@@ -36,8 +36,9 @@ from ctypes import *
 from ctypes.util import find_library
 import posixpath
 
-#logging.root.setLevel(0)
-logger=logging
+logger=logging.getLogger()
+#logger.setLevel(0)
+logger.setLevel(logging.FATAL)
 
 # the distribution script will change this to actual version number
 version='svn'
