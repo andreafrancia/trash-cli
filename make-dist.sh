@@ -56,5 +56,5 @@ rsync -avP -e ssh "$tarball" andreafrancia@frs.sourceforge.net:uploads/
 
 echo "Go to https://sourceforge.net/project/admin/newrelease.php?package_id=179459&group_id=87144"
 
-echo "New release name: trash-$version"
+echo "New release name: trash-cli-$version"
 
