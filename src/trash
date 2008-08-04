@@ -85,9 +85,9 @@ class MyOptionParser(OptionParser) :
         self.epilog=epilog
 
     def format_help(self, formatter=None):
-        result=OptionParser.format_help(formatter)
-        if epilog:
-            return result + "\n" + epilog + "\n"
+        result=OptionParser.format_help(self,formatter)
+        if self.epilog:
+            return result + "\n" + self.epilog + "\n"
         else:
             return result
 

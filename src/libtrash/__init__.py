@@ -62,7 +62,7 @@ class File (object) :
         return os.path.basename(self.path)
 
     def move(self, dest) :
-        return shutil.move(self.path, dest)
+        return shutil.move(self.path, str(dest))
 
     def __join_str(self, path) :
         return File(os.path.join(self.path, path))
@@ -315,12 +315,12 @@ fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
                 yield trashedfile
     trashed_files=staticmethod(trashed_files)
 
+    @classmethod
     def files_trahsed_from_dir(cls,dir) :
         dir = os.path.realpath(dir)
-        for trashedfile in cls.allTrashedFiles() :
-            if trashedfile.path.startswith(dir + os.path.sep) :
+        for trashedfile in cls.trashed_files() :
+            if trashedfile.path.path.startswith(dir + os.path.sep) :
                 yield trashedfile
-    files_trahsed_from_dir=classmethod(files_trahsed_from_dir)    
 
 class HomeTrashDirectory(TrashDirectory) :
     def __init__(self, path) :
@@ -379,23 +379,27 @@ class TrashedFile (object) :
         return self.__id
     id=property(__get_id)
         
-    #rename in __get_path
-    def __get_path(self) :
+    @property
+    def path(self) :
         if self.__trash_info.path.isabs() :
-            return self.__trash_info.path
+            result=self.__trash_info.path
         else :
-            return self.__trash_directory.volume.path.join(self.__trash_info.path)
-    path = property(__get_path)
-    original_location=property(__get_path)
+            result=self.__trash_directory.volume.path.join(self.__trash_info.path)
+        assert(isinstance(result, File))
+        return result
     
+    @property
+    def original_location(self):
+        return self.path
+    
+    @property
     def trash_info(self):
         assert(isinstance(self.__trash_info,TrashInfo))
         return self.__trash_info
-    trash_info=property(trash_info)
     
-    def __get_original_file(self):        
+    @property
+    def original_file(self):        
         return self.__trash_directory.getOriginalCopy(self.id)
-    original_file=property(__get_original_file)
     
     def getDeletionTime(self) :
         return self.__trash_info.getDeletionTime()
@@ -403,11 +407,11 @@ class TrashedFile (object) :
 
     def restore(self) :
         if not self.original_location.exists :
-            self.original_location.dirname.mkdirs()
+            self.original_location.parent.mkdirs()
 
-        trashId = self.__trash_info.getId()
-        self.__trash_directory.getOriginalCopy(trashId).move(self.path)
-        self.__trash_directory.getTrashInfoFile(trashId).remove()
+        trashId = self.id
+        self.original_file.move(self.path)
+        self.trash_info_file.remove()
 
     def purge(self) :
         # created by : Einar Orn Olason
@@ -415,13 +419,13 @@ class TrashedFile (object) :
         self.original_file.remove()
         self.trash_info_file.remove()
 
-    def __get_trash_info_file(self):
+    @property
+    def trash_info_file(self):
         return self.__trash_directory.getTrashInfoFile(self.id)
-    trash_info_file=property(__get_trash_info_file)
     
+    @property
     def trash_directory(self) :
         return self.__trash_directory
-    trash_directory=property(trash_directory)
 
 class TrashInfo (object) :
     def __init__(self, path, deletion_date) :

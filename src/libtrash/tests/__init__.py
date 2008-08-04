@@ -400,14 +400,14 @@ class TestTrashedFile(unittest.TestCase) :
             "dummy-id",
             TrashInfo(File("/foo"), self.__dummy_datetime),
             TrashDirectory(File("/mnt/volume/Trash/123"), Volume(File("/mnt/volume"))))
-        self.assertEqual(instance.original_location, "/foo")
+        self.assertEqual(instance.original_location.path, "/foo")
         
     def test_original_location_when_relative(self):
         instance = TrashedFile(
             "dummy-id",
             TrashInfo(File("foo"), self.__dummy_datetime),
             TrashDirectory(File("/mnt/volume/Trash/123"), Volume(File("/mnt/volume"))))
-        self.assertEqual(instance.original_location, "/mnt/volume/foo")
+        self.assertEqual(instance.original_location.path, "/mnt/volume/foo")
             
 class TestTimeUtils(unittest.TestCase) :
     def test_parse_iso8601(self) :
