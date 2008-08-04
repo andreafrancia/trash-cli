@@ -1,4 +1,5 @@
-# libtrash.py: library supporting FreeDesktop.org Trash Spec 
+#!/usr/bin/python
+# libtrash/__init__.py: library supporting FreeDesktop.org Trash Spec 
 #
 # Copyright (C) 2007,2008 Andrea Francia Trivolzio(PV) Italy
 #

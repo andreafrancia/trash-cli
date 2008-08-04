@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# test_libtrash.py: Unit tests for libtrash.py classes.
+# libtrash/tests/__init__.py: Unit tests for libtrash.py classes.
 #
 # Copyright (C) 2007,2008 Andrea Francia Trivolzio(PV) Italy
 #
