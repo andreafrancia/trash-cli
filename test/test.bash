@@ -264,6 +264,26 @@ test_empty-trash_removes_trash() {
 	assertEquals 0 "$(_list-trash | wc -l)"
 }
 
+test_list-trash_on_non_trashinfo_files_in_info_dir() {
+	export XDG_DATA_HOME="./sandbox/XDG_DATA_HOME"
+	rm -Rf "$XDG_DATA_HOME/Trash"
+	mkdir --parent "$XDG_DATA_HOME/Trash/info"
+	touch "$XDG_DATA_HOME/info/non-trashinfo" #garbage: not ending with .trashinfo
+	_list-trash
+	assertEquals "$?" 0
+}
+
+test_list-trash_on_invalid_info() {
+	export XDG_DATA_HOME="./sandbox/XDG_DATA_HOME"
+	rm -Rf "$XDG_DATA_HOME/Trash"
+	mkdir --parent "$XDG_DATA_HOME/Trash/info"
+	echo "An invalid trashinfo" > "$XDG_DATA_HOME/info/invalid.trashinfo"
+	_list-trash
+	assertEquals "$?" 0
+}
+
+
+
 if [ -e $topdir/not-mounted ]; then
 	echo "test volume not mounted, please run mount-test-volume.sh"
 	exit 

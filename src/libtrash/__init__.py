@@ -37,7 +37,7 @@ from ctypes.util import find_library
 import posixpath
 
 #logging.root.setLevel(0)
-__logger=logging.getLogger('libtrash')
+logger=logging
 
 # the distribution script will change this to actual version number
 version='svn'
@@ -217,11 +217,14 @@ fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
         try : 
             for trash_info_file in self.info_dir.list() :
                 if not trash_info_file.basename.endswith('.trashinfo') :
-                    __logger.warning("Non .trashinfo file in info dir")
+                    logger.warning("Non .trashinfo file in info dir")
                 else :
                     id=self.calc_id(trash_info_file)
-                    ti=TrashInfo.parse(trash_info_file.read())
-                    yield TrashedFile(id,ti,self)
+                    try:
+                        ti=TrashInfo.parse(trash_info_file.read())
+                        yield TrashedFile(id,ti,self)
+                    except ValueError:
+                        logger.warning("Non parsable trashinfo file: %s" % trash_info_file.path)
         except OSError, e: # when directory does not exist
             pass 
     
