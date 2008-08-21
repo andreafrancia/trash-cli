@@ -207,13 +207,15 @@ class TestTrashDirectory(unittest.TestCase) :
         self.assertEqual(File("/"), td.volume)
     def test_trash(self) :
         #instance
-        instance=TrashDirectory(File("sandbox/.local/sharetestTrashDirectory"), Volume(File("/")))
+        instance=TrashDirectory(
+			File("sandbox/trash-directory"), 
+			File("sandbox").volume)
 
         # test
-        filename = "sandbox/dummy.txt"
-        open(filename, "w").close()
+        file_to_trash=File("sandbox/dummy.txt")
+        file_to_trash.touch()
         instance._path_for_trashinfo = lambda fileToTrash : File("/dummy.txt")
-        result = instance.trash(File(filename))
+        result = instance.trash(file_to_trash)
         self.assertTrue(isinstance(result,TrashedFile))
         self.assertEquals(File("/dummy.txt"), result.path)
         self.assertTrue(result.getDeletionTime() is not None)
