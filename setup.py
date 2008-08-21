@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # setup.py: Python distutils script
 #
 # Copyright (C) 2007,2008 Andrea Francia Trivolzio(PV) Italy
@@ -18,25 +18,72 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
 # 02110-1301, USA.
 
+"""Installation script for trash-cli.
+Run it with
+ './setup.py install', or
+ './setup.py --help' for more options
+"""
+
 from distutils.core import setup
 import sys
+import os
 sys.path.append('src')
 
 import libtrash 
 
-setup(name='trash',
-      description='Command line trashcan (recycle bin) interface',
-      author='Andrea Francia',
-      author_email='andreafrancia@users.sourceforge.net',
-      url='http://bluetrash.sourceforge.net/',
-      version=libtrash.version,
-      packages=['libtrash'],
-      scripts=['src/trash', 
-	       'src/list-trash', 
-	       'src/restore-trash', 
-	       'src/empty-trash'],
-      license='GPL',
-      package_dir={'':'src'},
-      long_description='Command line interface to trash '
-                     + 'compatible with Trash Spec from FreeDesktop.org',
-      )
+
+
+setup_args = {
+    'name':         'trash-cli',
+    'version':      libtrash.version,
+    'author':       'Andrea Francia',
+    'author_email': 'andreafrancia@users.sourceforge.net',
+    'url':          'http://code.google.com/p/trash-cli',
+    'description':  'Command line interface to FreeDesktop.org Trash.',
+    'license':      'GPL v2',
+    'download_url': 'http://code.google.com/p/trash-cli/wiki/Download',
+    'long_description': 
+"""trash-cli - Command Line Interface to FreeDesktop.org Trash.
+
+trash-cli provides the following commands to manage the trash:
+
+* trash                 trashes files and directories.
+* empty-trash           empty the trashcan(s).
+* list-trash            list trashed file.
+* restore-trash         restore a trashed file.
+* trash-admin           administrate trashcan(s).
+
+For each file the name, original path, deletion date, and permissions
+are recorded. The trash command allow trash multiple files with the
+same name. These command uses the same Trashcan of last versions of
+KDE, GNOME and XFCE.
+
+Trash a file:
+$ trash /home/andrea/foobar
+
+List trashed files:
+$ list-trash
+2008-06-01 10:30:48 /home/andrea/bar
+2008-06-02 21:50:41 /home/andrea/bar
+2008-06-23 21:50:49 /home/andrea/foo
+
+Restore a trashed file:
+$ restore-trash /home/andrea/foo
+
+Empty the trashcan:
+$ empty-trash""",
+	'packages' : ['libtrash'],
+	'scripts'  : ['src/trash',
+                  'src/list-trash',
+				  'src/restore-trash',
+				  'src/empty-trash'],
+	'package_dir' : {'':'src'},
+	'data_files': [('man/man1', ['man/man1/empty-trash.1', 
+						          'man/man1/list-trash.1', 
+						          'man/man1/restore-trash.1', 
+						          'man/man1/trash.1'])]
+
+    }
+
+
+setup(**setup_args)
