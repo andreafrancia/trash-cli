@@ -1,0 +1,60 @@
+.\" Copyright (C) 2008 Steve Stalcup <vorian@ubuntu.com>
+.\"
+.\" This manual page is free software.  It is distributed under the
+.\" terms of the GNU General Public License as published by the Free
+.\" Software Foundation; either version 2 of the License, or (at your
+.\" option) any later version.
+.\"
+.\" This manual page is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this manual page; if not, write to the Free Software
+.\" Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+.\" USA
+.\"
+.TH "LIST-TRASH" "1"
+
+.SH "NAME"
+list-trash \- List trashed files.
+
+.SH "SYNOPSIS"
+.B list-trash [OPTIONS]... [PATH]...
+
+.SH "DESCRIPTION"
+.PP
+List all the contents of the trashcan.
+
+.SH "EXAMPLES"
+List all trashed files or grep output:
+.nf
+$ list-trash
+2008-06-23 21:57:26 /home/andrea/src/bluetrash/pippo
+2008-06-23 21:50:41 /home/andrea/foobar
+2008-06-23 21:50:49 /home/andrea/foobar
+2008-06-23 21:53:13 /media/disk/adsfljasldj
+$ list-trash | grep foo
+2008-06-23 21:50:41 /home/andrea/foobar
+2008-06-23 21:50:49 /home/andrea/foobar
+.fi
+
+.SH "BUGS"
+Report bugs to Andrea Francia <andreafrancia@users.sourceforge.net>.
+
+.SH "AUTHORS"
+Trash was written by Andrea Francia
+<andreafrancia@users.sourceforge.net>
+and Einar Orn Olason <eoo@hi.is>.
+This manual page was written by Steve Stalcup <vorian@ubuntu.com>.
+Changes made by Massimo Cavalleri <submax@tiscalinet.it>.
+
+.SH "SEE ALSO"
+list-trash(1), restore-trash(1), list-trash(1), empty-trash(1), and the
+FreeDesktop.org Trash Specification at 
+http://www.ramendik.ru/docs/trashspec.html.
+.br
+
+Both are released under the \s-1GNU\s0 General Public License,
+version 2 or later.
