@@ -1,0 +1,43 @@
+NAME
+	trash-cli - Command Line Interface to FreeDesktop.org Trash.
+
+DESCRIPTION
+	trash-cli provides the following commands to manage the trash:
+	
+	  * trash	   trashes files and directories.
+          * empty-trash    empty the trashcan(s).
+	  * list-trash     list trashed file.
+          * restore-trash  restore a trashed file.
+	  * trash-admin	   administrate trashcan(s).
+
+	For each file the name, original path, deletion date, and permissions 
+	are recorded. The trash command allow trash multiple files with the 
+	same name. These command uses the same Trashcan of last versions of 
+	KDE, GNOME and XFCE.
+
+EXAMPLES
+	Trash a file:
+	  $ trash /home/andrea/foobar
+
+	List trashed files:
+	  $ list-trash
+	  2008-06-01 10:30:48 /home/andrea/bar
+	  2008-06-02 21:50:41 /home/andrea/bar
+	  2008-06-23 21:50:49 /home/andrea/foo
+
+	Restore a trashed file:
+	  $ restore-trash /home/andrea/foo
+
+	Empty the trashcan:
+	  $ empty-trash
+
+AUTHORS
+	
+REPORTING BUGS
+
+COPYRIGHT
+
+SEE ALSO
+	trash(1), restore-trashed(1), empty-trash(1), list-trash(1), 
+	trash-admin(1),	trashinfo(5).
+
