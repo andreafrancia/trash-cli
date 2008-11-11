@@ -1,0 +1,5 @@
+#!/bin/bash
+set -o errexit
+
+cd command-test
+bash test.bash
