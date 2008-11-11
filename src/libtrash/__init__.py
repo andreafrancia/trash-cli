@@ -43,7 +43,7 @@ logger.setLevel(logging.FATAL)
 # the distribution script will change this to actual version number
 version='svn'
 
-class File (object) :
+class Path (object) :
     sep = '/'
     def __init__(self, path) :
         assert(isinstance(path,str))
@@ -52,12 +52,12 @@ class File (object) :
             self.path = self.path [len("c:"):]
 
     def __get_parent(self) :
-        return File(os.path.dirname(self.path))
+        return Path(os.path.dirname(self.path))
     parent = property(__get_parent)
 
     @property
     def realpath(self) :
-        return File(os.path.realpath(self.path))
+        return Path(os.path.realpath(self.path))
 
     @property
     def basename(self) :
@@ -67,17 +67,17 @@ class File (object) :
         return shutil.move(self.path, str(dest))
 
     def __join_str(self, path) :
-        return File(os.path.join(self.path, path))
+        return Path(os.path.join(self.path, path))
 
-    def __join_File(self, path) :
-        assert(isinstance(path, File))
+    def __join_Path(self, path) :
+        assert(isinstance(path, Path))
         if path.isabs() :
             raise ValueError("File with relative path expected")
         return self.__join_str(path.path)
 
     def join(self, path) :
-        if(isinstance(path,File)):
-            return self.__join_File(path)
+        if(isinstance(path,Path)):
+            return self.__join_Path(path)
         elif(isinstance(path,str)):
             return self.__join_str(path)
         else :
@@ -165,7 +165,7 @@ For example $XDG_DATA_HOME/Trash
 """
 class TrashDirectory(object) :
     def __init__(self, path, volume) :
-        assert isinstance(path,File)
+        assert isinstance(path,Path)
         assert isinstance(volume,Volume)
         self.path = path
         self.volume = volume
@@ -178,7 +178,7 @@ class TrashDirectory(object) :
     returns TrashedFile
     """
     def trash(self, fileToBeTrashed):
-        assert(isinstance(fileToBeTrashed, File))
+        assert(isinstance(fileToBeTrashed, Path))
         if not self.volume == fileToBeTrashed.parent.volume :
             raise "file is not in the same volume of trash directory!\n\
 self.volume = " + str(self.volume) + ", \n\
@@ -204,7 +204,7 @@ fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
 
     def __get_files_dir(self) :
         result=self.path.join("files")
-        assert(isinstance(result,File))
+        assert(isinstance(result,Path))
         return result
     files_dir=property(__get_files_dir)
 
@@ -236,17 +236,17 @@ fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
     def trashedFilesInDir(self, dir) :
         dir = os.path.realpath(dir)
         for trashedfile in self.trashedFiles() :
-            if trashedfile.path.startswith(dir + File.sep) :
+            if trashedfile.path.startswith(dir + Path.sep) :
                 yield trashedfile
 
     def getOriginalCopyPath(self, trashId) :
         return self.getOriginalCopy(trashId).path
 
     def getOriginalCopy(self, trashId) :
-        return File(os.path.join(self.getFilesPath(), str(trashId)))
+        return Path(os.path.join(self.getFilesPath(), str(trashId)))
 
     def getTrashInfoFile(self, trashId) :
-        return File(os.path.join(self.getInfoPath(), str(trashId) + '.trashinfo'))
+        return Path(os.path.join(self.getInfoPath(), str(trashId) + '.trashinfo'))
 
     def removeInfoFile(self, trashId) :
         self.getTrashInfoFile(trashId).remove()
@@ -303,7 +303,7 @@ fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
         else :
             XDG_DATA_HOME = os.environ['HOME'] + '/.local/share'
 
-        path = File(XDG_DATA_HOME + "/Trash")
+        path = Path(XDG_DATA_HOME + "/Trash")
         return HomeTrashDirectory(path)
     getHomeTrashDirectory=staticmethod(getHomeTrashDirectory)
 
@@ -329,7 +329,7 @@ fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
 
 class HomeTrashDirectory(TrashDirectory) :
     def __init__(self, path) :
-        assert isinstance(path, File)
+        assert isinstance(path, Path)
         TrashDirectory.__init__(self, path, path.volume)
 
     def __str__(self) :
@@ -338,13 +338,13 @@ class HomeTrashDirectory(TrashDirectory) :
             home_dir=os.environ['HOME']
             home_dir = posixpath.normpath(home_dir)
             if home_dir != '':
-                result=re.sub('^'+ re.escape(home_dir)+File.sep, '~' + File.sep,result)
+                result=re.sub('^'+ re.escape(home_dir)+Path.sep, '~' + Path.sep,result)
         except KeyError:
             pass
         return result
 
     def _path_for_trashinfo(self, fileToBeTrashed) :
-        assert isinstance(fileToBeTrashed, File)
+        assert isinstance(fileToBeTrashed, Path)
 
         # for the HomeTrashDirectory all path are stored as absolute
 
@@ -353,7 +353,7 @@ class HomeTrashDirectory(TrashDirectory) :
 
 class VolumeTrashDirectory(TrashDirectory) :
     def __init__(self, path, volume) :
-        assert isinstance(path, File)
+        assert isinstance(path, Path)
         assert isinstance(volume, Volume)
         TrashDirectory.__init__(self,path, volume)
 
@@ -365,8 +365,8 @@ class VolumeTrashDirectory(TrashDirectory) :
         parent=fileToBeTrashed.parent.realpath
         topdir=self.volume.path   # e.g. /mnt/disk-1
 
-        if parent.path.startswith(topdir.path+File.sep) :
-            parent = File(parent.path[len(topdir.path+File.sep):])
+        if parent.path.startswith(topdir.path+Path.sep) :
+            parent = Path(parent.path[len(topdir.path+Path.sep):])
 
         return parent.join(fileToBeTrashed.basename)                      
 
@@ -390,7 +390,7 @@ class TrashedFile (object) :
             result=self.__trash_info.path
         else :
             result=self.__trash_directory.volume.path.join(self.__trash_info.path)
-        assert(isinstance(result, File))
+        assert(isinstance(result, Path))
         return result
     
     @property
@@ -434,7 +434,7 @@ class TrashedFile (object) :
 
 class TrashInfo (object) :
     def __init__(self, path, deletion_date) :
-        assert isinstance(path, File)
+        assert isinstance(path, Path)
         assert isinstance(deletion_date, datetime)
         self.__path = path
         self.__deletion_date = deletion_date
@@ -468,7 +468,7 @@ class TrashInfo (object) :
         if match == None :
             raise ValueError()
         try :
-            path = File(urllib.unquote(match.groups()[0]))
+            path = Path(urllib.unquote(match.groups()[0]))
         except IndexError, e:
             raise ValueError()
 
@@ -504,7 +504,7 @@ class TimeUtils(object):
 # TODO: Volume non deve essere un file ma deve contenere un file.
 class Volume(object) :
     def __init__(self,path, permissive = False):
-        assert(isinstance(path,File))
+        assert(isinstance(path,Path))
         if True or permissive or os.path.ismount(path.path) :
             self.path=path 
         else:
@@ -516,7 +516,7 @@ class Volume(object) :
 
 
     def __get_topdir(self) :
-        assert(isinstance(self.path, File))
+        assert(isinstance(self.path, Path))
         return self.path
     topdir=property(__get_topdir)
 
@@ -544,13 +544,13 @@ class Volume(object) :
 
     def getCommonTrashDirectory(self) :
         uid = self.getuid()
-        trash_directory_path = self.topdir.join(File(".Trash")).join(File(str(uid)))
+        trash_directory_path = self.topdir.join(Path(".Trash")).join(Path(str(uid)))
         return VolumeTrashDirectory(trash_directory_path,self)
 
     def getUserTrashDirectory(self) :
         uid = self.getuid()
         dirname=".Trash-%s" % str(uid)
-        trash_directory_path = self.topdir.join(File(dirname))
+        trash_directory_path = self.topdir.join(Path(dirname))
         return VolumeTrashDirectory(trash_directory_path,self)
 
     # staticmethod
@@ -560,7 +560,7 @@ class Volume(object) :
             if os.path.ismount(path):
                 break
             path = os.path.dirname(path)
-        return Volume(File(path))
+        return Volume(Path(path))
     volume_of=staticmethod(volume_of)
 
     # staticmethod
@@ -610,7 +610,7 @@ class Volume(object) :
 
     # staticmethod
     def all() :
-        return [ Volume(File(elem.mount_dir)) for elem in Volume.__mounted_filesystems()]
+        return [ Volume(Path(elem.mount_dir)) for elem in Volume.__mounted_filesystems()]
     all=staticmethod(all)
 
 

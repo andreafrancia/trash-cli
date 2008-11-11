@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
 # 02110-1301, USA.
 
-from libtrash import File
+from libtrash import Path
 from libtrash import TrashDirectory
 from libtrash import TrashedFile
 from optparse import OptionParser
@@ -139,5 +139,5 @@ if len(args) <= 0:
 
 
 for arg in args :
-    f = File(arg)
+    f = Path(arg)
     trash(f)
