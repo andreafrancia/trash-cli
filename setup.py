@@ -72,16 +72,16 @@ $ restore-trash /home/andrea/foo
 
 Empty the trashcan:
 $ empty-trash""",
-	'packages' : ['libtrash'],
-	'scripts'  : ['src/trash',
-                  'src/list-trash',
-				  'src/restore-trash',
-				  'src/empty-trash'],
-	'package_dir' : {'':'src'},
-	'data_files': [('man/man1', ['man/man1/empty-trash.1', 
-						          'man/man1/list-trash.1', 
-						          'man/man1/restore-trash.1', 
-						          'man/man1/trash.1'])]
+    'packages' : ['libtrash'],
+    'scripts'  : ['src/trash-file',
+                  'src/trash-list',
+                  'src/trash-restore',
+                  'src/trash-empty'],
+    'package_dir' : {'':'src'},
+    'data_files': [('man/man1', ['man/man1/trash-empty.1',
+                                 'man/man1/trash-list.1',
+                                 'man/man1/trash-restore.1',
+                                 'man/man1/trash-file.1'])]
 
     }
 
