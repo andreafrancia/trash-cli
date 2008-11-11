@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
 # 02110-1301, USA.
 
-base_version='0.1.10'
+base_version='0.2'
 
 function inject_version() {
     file="$1"
@@ -33,9 +33,9 @@ mkdir dist
 requested_revision="$1"
 # calc version 
 if [ -z "$requested_revision" ]; then
-	version="$base_version.r$(svnversion)"
+	version="$base_version.$(svnversion)"
 else 
-	version="$base_version.r$requested_revision"
+	version="$base_version.$requested_revision"
 fi
 
 package_name="trash-cli-$version"
