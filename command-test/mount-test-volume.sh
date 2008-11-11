@@ -24,7 +24,7 @@ device_image="$(dirname "$0")/test-volume.img"
 mount_point="$(dirname "$0")/test-volume"
 
 # clean up
-sudo umount "$mount_point"
+sudo umount "$mount_point" || true
 rm -fv "$device_image"
 
 # prepare a fresh device image

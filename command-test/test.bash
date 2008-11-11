@@ -31,22 +31,22 @@ except AttributeError:
 # --- commands --------------------------------------------
 _trash() {
 	echo "Invoking: trash $@" >2
-	../src/trash "$@"
+	../src/trash-file "$@"
 }
 
 _empty-trash() {
 	echo "Invoking: empty-trash $@" >2
-	../src/empty-trash "$@"
+	../src/trash-empty "$@"
 }
 
 _list-trash() {
 	echo "Invoking: list-trash $@" >2
-	../src/list-trash "$@"
+	../src/trash-list "$@"
 }
 
 _restore-trash() {
 	echo "Invoking: restore-trash $@" >2
-	../src/restore-trash "$@"
+	../src/trash-restore "$@"
 }
 # --- end of commands --------------------------------------
 
@@ -285,7 +285,8 @@ test_list-trash_on_invalid_info() {
 
 
 if [ -e $topdir/not-mounted ]; then
-	echo "test volume not mounted, please run mount-test-volume.sh"
+	echo "test volume not mounted, please run:"
+        echo "    bash command-test/mount-test-volume.sh"
 	exit 
 fi 
 
