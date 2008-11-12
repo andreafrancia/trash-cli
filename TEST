@@ -1,0 +1,30 @@
+----
+TEST
+----
+
+This documents explain how to run tests.
+
+There are two level of unit tests:
+ - unit tests
+ - commands tests
+
+Unit tests
+----------
+Requirement:
+ - python
+
+To run python unit tests:
+ $ ./test-units 
+
+Commands tests
+--------------
+Requirements:
+ - python
+ - sed
+ - id
+
+To run commands tests:
+ $ bash command-test/mount-test-volume.sh
+ $ ./test-commands 
+
+-EOF
