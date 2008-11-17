@@ -47,10 +47,10 @@ setup_args = {
 
 trash-cli provides the following commands to manage the trash:
 
-* trash                 trashes files and directories.
-* empty-trash           empty the trashcan(s).
-* list-trash            list trashed file.
-* restore-trash         restore a trashed file.
+* trash-file            trashes files and directories.
+* trash-empty           empty the trashcan(s).
+* trash-list            list trashed file.
+* trash-restore         restore a trashed file.
 * trash-admin           administrate trashcan(s).
 
 For each file the name, original path, deletion date, and permissions
@@ -62,16 +62,16 @@ Trash a file:
 $ trash /home/andrea/foobar
 
 List trashed files:
-$ list-trash
+$ trash-list
 2008-06-01 10:30:48 /home/andrea/bar
 2008-06-02 21:50:41 /home/andrea/bar
 2008-06-23 21:50:49 /home/andrea/foo
 
 Restore a trashed file:
-$ restore-trash /home/andrea/foo
+$ trash-restore /home/andrea/foo
 
 Empty the trashcan:
-$ empty-trash""",
+$ trash-empty """,
     'packages' : ['libtrash'],
     'scripts'  : ['src/trash-file',
                   'src/trash-list',

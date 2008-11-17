@@ -568,7 +568,7 @@ class Volume(object) :
             libc_name = find_library("c")
 
         if libc_name == None :
-            libc_name="/lib/libc.so.6" # fix for my Gentoo 4.0   	
+            libc_name="/lib/libc.so.6" # fix for my Gentoo 4.0
 
         libc = cdll.LoadLibrary(libc_name)
         libc.getmntent.restype = POINTER(mntent_struct)

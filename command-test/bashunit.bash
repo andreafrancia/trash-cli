@@ -30,6 +30,9 @@
 # u - treat unset variables as an error when performing parameter expansion
 __SHUNIT_SHELL_FLAGS='u'
 
+#STOP_ON_FAILS='yes'
+
+
 # save the current set of shell flags, and then set some for ourselves
 __shunit_oldShellFlags="$-"
 for _shunit_shellFlag in `echo "${__SHUNIT_SHELL_FLAGS}" |sed 's/\(.\)/\1 /g'`
@@ -85,25 +88,45 @@ __shunit_testsTotal=0
 #*/
 assertEquals()
 {
-  _su_message=''
+  local message=''
   if [ $# -eq 3 ]; then
-    _su_message=$1
+    message="$1"
     shift
   fi
-  _su_expected=${1:-}
-  _su_actual=${2:-}
+  expected="${1:-}"
+  actual="${2:-}"
 
-  shunit_return=${__SHUNIT_TRUE}
-  if [ "${_su_expected}" = "${_su_actual}" ]; then
+  result="${__SHUNIT_TRUE}"
+  if [ "$expected" = "$actual" ]; then
     _shunit_testPassed
   else
-    failNotEquals "${_su_message}" "${_su_expected}" "${_su_actual}"
-    shunit_return=${__SHUNIT_FALSE}
+    _shunit_testFailed "${message:+${message}}expected:<$expected> but was:<$actual>"  
+    result="$__SHUNIT_FALSE"
   fi
 
-  unset _su_message _su_expected _su_actual
-  return ${shunit_return}
+  return "$result"
 }
+
+assertNotEquals() {
+  local message=''
+  if [ $# -eq 3 ]; then
+    message="$1"
+    shift
+  fi
+  expected="${1:-}"
+  actual="${2:-}"
+  
+  result="${__SHUNIT_TRUE}"
+  if [ "$expected" = "$actual" ]; then
+    _shunit_testPassed
+  else
+    failNotEquals "$message" "$expected" "$actual"
+    result="$__SHUNIT_FALSE"
+  fi
+
+  return "$result"
+}
+
 
 #/**
 # <s:function group="asserts">
@@ -734,13 +757,15 @@ _shunit_testPassed()
 
 _shunit_testFailed()
 {
-  _su__msg=$1
+  msg="$1"
 
   __shunit_testsFailed=`expr ${__shunit_testsFailed} + 1`
   __shunit_testsTotal=`expr ${__shunit_testsTotal} + 1`
-  echo "${__SHUNIT_ASSERT_MSG_PREFIX}${_su__msg}" >&2
-
-  unset _su__msg
+  echo "${__SHUNIT_ASSERT_MSG_PREFIX}$msg" >&2
+  if [ "${STOP_ON_FAILS:-}" ]; then 
+    echo "Stopping on failure, unset STOP_ON_FAILS to avoid this."
+    exit
+  fi
 }
 
 #------------------------------------------------------------------------------

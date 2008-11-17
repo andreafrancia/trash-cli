@@ -15,13 +15,13 @@
 .\" Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
 .\" USA
 .\"
-.TH "EMPTY-TRASH" "1"
+.TH "TRASH-EMPTY" "1"
 
 .SH "NAME"
-empty-trash \- Empty for Command line trash utility.
+trash-empty \- Empty for Command line trash utility.
 
 .SH "SYNOPSIS"
-.B empty-trash
+.B trash-empty
 .RI [ arguments ]
 
 .SH "DESCRIPTION"
@@ -38,25 +38,25 @@ each trashed file.
 To remove all trashed files, use 'emtpy-trash'.
 .TP
 To remove files that have been in the trash more than a given number of
-days, use 'empty-trash x', 'x' representing the nuber of days.
+days, use 'trash-empty x', 'x' representing the nuber of days.
 
 .SH "EXAMPLES"
 .nf
 $ date
 Tue Feb 19 20:26:52 CET 2008
-$ list-trash
+$ trash-list
 2008-02-19 20:11:34 /home/einar/today
 2008-02-18 20:11:34 /home/einar/yesterday
 2008-02-10 20:11:34 /home/einar/last_week
-$ empty-trash 7
-$ list-trash
+$ trash-empty 7
+$ trash-list
 2008-02-19 20:11:34 /home/einar/today
 2008-02-18 20:11:34 /home/einar/yesterday
-$ empty-trash 1
-$ list-trash
+$ trash-empty 1
+$ trash-list
 2008-02-19 20:11:34 /home/einar/today
-$ empty-trash 
-$ list-trash
+$ trash-empty 
+$ trash-list
 <none>
 .fi
 
@@ -71,7 +71,7 @@ This manual page was written by Steve Stalcup <vorian@ubuntu.com>.
 Changes made by Massimo Cavalleri <submax@tiscalinet.it>.
 
 .SH "SEE ALSO"
-list-trash(1), restore-trash(1), list-trash(1), empty-trash(1), and the
+trash-list(1), trash-restore(1), trash-list(1), trash-empty(1), and the
 FreeDesktop.org Trash Specification at 
 http://www.ramendik.ru/docs/trashspec.html.
 .br

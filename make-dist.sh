@@ -33,9 +33,9 @@ mkdir dist
 requested_revision="$1"
 # calc version 
 if [ -z "$requested_revision" ]; then
-	version="$base_version.$(svnversion)"
+        version="$base_version.$(svnversion)"
 else 
-	version="$base_version.$requested_revision"
+        version="$base_version.$requested_revision"
 fi
 
 package_name="trash-cli-$version"
@@ -43,9 +43,9 @@ tarball=dist/"$package_name".tar.gz
 
 # prepare sources
 if [ -z "$requested_revision" ]; then
-	svn export . dist/"$package_name"
+        svn export . dist/"$package_name"
 else 
-	svn export -r "$requested_revision" . dist/"$package_name"
+        svn export -r "$requested_revision" . dist/"$package_name"
 fi
 
 inject_version dist/"$package_name"/src/libtrash/__init__.py "$version"

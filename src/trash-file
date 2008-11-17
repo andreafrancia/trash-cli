@@ -60,40 +60,15 @@ def trash (f) :
         # occour when the file does not exist
         print "trash: cannot trash `%s': %s" % (arg, str(e))    
 
-class MyOptionParser(OptionParser) :
-    def __init__ (self,
-                  usage=None,
-                  option_list=None,
-                  option_class=optparse.Option,
-                  version=None,
-                  conflict_handler="error",
-                  description=None,
-                  formatter=None,
-                  add_help_option=1,
-                  prog=None,
-                  epilog=None):
-        OptionParser.__init__(self,
-                  usage,
-                  option_list,
-                  option_class,
-                  version,
-                  conflict_handler,
-                  description,
-                  formatter,
-                  add_help_option,
-                  prog)
-        self.epilog=epilog
+class NoWrapFormatter(optparse.IndentedHelpFormatter) :
+    def _format_text(self, text) :
+        "[Does not] format a text, return the text as it is."
+        return text
 
-    def format_help(self, formatter=None):
-        result=OptionParser.format_help(self,formatter)
-        if self.epilog:
-            return result + "\n" + self.epilog + "\n"
-        else:
-            return result
-
-parser = MyOptionParser(usage="%prog [OPTION]... FILE...",
+parser = OptionParser(usage="%prog [OPTION]... FILE...",
                       description="Put files in trash",
                       version="%%prog %s" % libtrash.version,
+					  formatter=NoWrapFormatter(),
                       epilog=
 """To remove a file whose name starts with a `-', for example `-foo',
 use one of these commands:

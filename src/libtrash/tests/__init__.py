@@ -208,8 +208,8 @@ class TestTrashDirectory(unittest.TestCase) :
     def test_trash(self) :
         #instance
         instance=TrashDirectory(
-			Path("sandbox/trash-directory"), 
-			Path("sandbox").volume)
+                        Path("sandbox/trash-directory"), 
+                        Path("sandbox").volume)
 
         # test
         file_to_trash=Path("sandbox/dummy.txt")
