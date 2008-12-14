@@ -18,6 +18,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
 # 02110-1301, USA.
 
+from __future__ import absolute_import
+
 """
 Unit test for Volume.py
 """
@@ -26,171 +28,24 @@ __author__="Andrea Francia (andrea.francia@users.sourceforge.net)"
 __copyright__="Copyright (c) 2007 Andrea Francia"
 __license__="GPL"
 
-import libtrash
-from libtrash import *
+__all__=["test_filesystem"]
+
+from .trash import TrashDirectory
+from .trash import TrashedFile
+from .trash import TrashInfo
+from .trash import VolumeTrashDirectory
+from .trash import TimeUtils
+from .trash import HomeTrashDirectory
+from .filesystem import Path
+from .filesystem import Volume
+
 from datetime import *
 from exceptions import *
 import os
 import unittest
 import pdb
+import sys
 
-class TestFile(unittest.TestCase) :
-    def test_constructor(self) :
-        instance = Path("dummy/path")
-    
-    def test_cmp(self) :
-        self.assertNotEquals(Path("."),Path(os.path.realpath(".")))
-        self.assertNotEquals(Path("foo"),Path("bar"))
-        self.assertEquals(Path("bar"),Path("bar"))
-        self.assertEquals(Path("foo"),Path("./foo"))
-    
-    def test_parent(self) :
-        instance = Path("dummy/path")
-        self.assertEquals(Path("dummy"), instance.parent)
-    
-    def test_creation(self) :
-        path = os.path.abspath("adsljfkl");
-        f = Path(path);
-        
-    def test_basename(self) :
-        f = Path(os.path.join(os.sep, "dirname", "basename"))
-        self.assertEqual(f.basename, "basename")
-
-        f = Path(os.path.join(os.sep, "dirname", "basename") + os.sep)
-        self.assertEqual(f.basename, "basename")
-    
-    def test_realpath(self) :
-        instance = Path("dummy")
-        self.assertEquals(os.path.realpath("dummy"), instance.realpath)
-
-    def test_isabs_returns_true(self) :
-        instance = Path("/foo")
-        self.assertEquals(True,instance.isabs())
-
-    def test_isabs_returns_false(self) :
-        instance = Path("/foo")
-        self.assertEquals(True,instance.isabs())
-
-    def test_isabs_returns_on_windows(self) :
-        instance = Path("C:/foo")
-        self.assertEquals(True,instance.isabs())
-
-    def test_join_with_File_relative(self) :
-        instance=Path("/foo")
-        result=instance.join(Path("bar"))
-        self.assertEquals(Path("/foo/bar"),result)
-
-    def test_join_with_File_absolute(self) :
-        instance=Path("/foo")
-        try : 
-            instance.join(Path("/bar"))
-            self.fail()
-        except ValueError: 
-            pass
-
-    def test_join_with_str(self):
-        instance=Path("/foo")
-        result=instance.join("bar")
-        self.assertEquals(Path("/foo/bar"),result)
-
-    def test_list(self):
-        instance=Path("sandbox/test-dir")
-        instance.remove()
-        instance.mkdir()
-        instance.join("file1").touch()
-        instance.join("file2").touch()
-        instance.join("file3").touch()
-        result=instance.list()
-        self.assertEquals("<type 'generator'>", str(type(result)))
-        # is much easier test the content of a list than a generator
-        result_as_list=list(result)
-        self.assertEquals(3, len(result_as_list))
-        self.assertTrue(Path("sandbox/test-dir/file1") in result_as_list)
-        self.assertTrue(Path("sandbox/test-dir/file1") in result_as_list)
-        self.assertTrue(Path("sandbox/test-dir/file1") in result_as_list)
-
-        # clean up
-        instance.remove()
-
-    def test_mkdir(self):
-        instance=Path("sandbox/test-dir")
-        instance.remove()
-        self.assertFalse(instance.exists())
-        instance.mkdir()
-        self.assertTrue(instance.exists())
-        self.assertTrue(instance.isdir())
-        instance.remove() # clean up
-
-    def test_mkdirs_with_default_mode(self):
-        # prepare
-        Path("sandbox/test-dir").remove()
-        self.assertFalse(Path("sandbox/test-dir").exists())
-        # perform
-        instance=Path("sandbox/test-dir/sub-dir")
-        instance.mkdirs()
-        # test results
-        self.assertTrue(instance.exists())
-        self.assertTrue(instance.isdir())
-        # clean up
-        Path("sandbox/test-dir").remove()
-
-    def test_mkdirs_with_default_mode(self):
-        # prepare
-        Path("sandbox/test-dir").remove()
-        self.assertFalse(Path("sandbox/test-dir").exists())
-        # perform
-        instance=Path("sandbox/test-dir/sub-dir")
-        instance.mkdirs()
-        # test results
-        self.assertTrue(instance.exists())
-        self.assertTrue(instance.isdir())
-        # clean up
-        Path("sandbox/test-dir").remove()
-
-    def test_touch(self):
-        instance=Path("sandbox/test-file")
-        instance.remove()
-        self.assertFalse(instance.exists())
-        instance.touch()
-        self.assertTrue(instance.exists())
-        self.assertFalse(instance.isdir())
-        instance.remove() # clean up
-
-class TestVolume(unittest.TestCase) :
-    def test_all(self) :
-        if sys.platform[:3] != "win":
-            volumes = Volume.all()
-            self.assert_(len(volumes) > 0)
-            for v in volumes:
-                self.assert_(isinstance(v, Volume))
-
-    def testCmpVolumes(self) :
-        v1 = Volume(Path(os.sep))
-        v2 = Volume(Path(os.sep))
-
-        self.assert_(v1 == v2)
-        
-    def test_getCommonTrashDirectory(self) :
-        instance = Volume(Path("/mnt/disk"))
-
-        # invoke
-        result = instance.getCommonTrashDirectory()
-        
-        # check
-        self.assert_(isinstance(result,TrashDirectory))
-        self.assertEqual('/mnt/disk/.Trash/999', result.path.path)
-
-    def test_getCommonTrashDirectory(self) :        
-        instance = Volume(Path("/mnt/disk"), True)
-
-        # invoke
-        instance.getuid = lambda : 999
-        result = instance.getUserTrashDirectory()
-        
-        # check
-        self.assert_(isinstance(result,TrashDirectory))
-        self.assertEqual(Path('/mnt/disk/.Trash-999'), result.path)
-        
 
 class TestTrashDirectory(unittest.TestCase) :
     def test_init(self) :
@@ -235,6 +90,27 @@ class TestTrashDirectory(unittest.TestCase) :
     def test_calc_id(self):
         trash_info_file=Path("/home/user/.local/share/Trash/info/foo.trashinfo")
         self.assertEquals('foo',TrashDirectory.calc_id(trash_info_file))
+    def test_common_trash_dir(self) :
+        # prepare
+        TrashDirectory._getuid = staticmethod(lambda: 999)
+
+        # execute
+        result = TrashDirectory.common_trash_dir(Volume(Path("/mnt/disk")))        
+        
+        # check
+        self.assert_(isinstance(result,TrashDirectory))
+        self.assertEqual('/mnt/disk/.Trash/999', result.path.path)
+
+    def test_getCommonTrashDirectory(self) :        
+        #prepare
+        TrashDirectory._getuid = staticmethod(lambda: 999)
+        
+        # invoke
+        result = TrashDirectory.getUserTrashDirectory(Volume(Path("/mnt/disk")))
+        
+        # check
+        self.assert_(isinstance(result,TrashDirectory))
+        self.assertEqual(Path('/mnt/disk/.Trash-999'), result.path)
          
 class TestTrashDirectory_persit_trash_info(unittest.TestCase) :
     def setUp(self):
@@ -420,6 +296,3 @@ class TestTimeUtils(unittest.TestCase) :
         
 Path("./sandbox").remove()
 Path("./sandbox").mkdir()
-
-if __name__ == "__main__":
-    unittest.main()

@@ -18,12 +18,13 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
 # 02110-1301, USA.
 
-from libtrash import Path
-from libtrash import TrashDirectory
-from libtrash import TrashedFile
+from trashcli.filesystem import Path
+from trashcli.trash import TrashDirectory
+from trashcli.trash import TrashedFile
+import trashcli
+
 from optparse import OptionParser
 import optparse
-import libtrash
 
 def trash (f) :
     """ 
@@ -46,9 +47,9 @@ def trash (f) :
             trashed_file = TrashDirectory.getHomeTrashDirectory().trash(f)
         else :
             if volume.hasCommonTrashDirectory() :
-                trashed_file = volume.getCommonTrashDirectory().trash(f)
+                trashed_file = TrashDirectory.common_trash_dir(volume).trash(f)
             else :
-                trashed_file = volume.getUserTrashDirectory().trash(f)
+                trashed_file = TrashDirectory.getUserTrashDirectory(volume).trash(f)
         assert(isinstance(trashed_file, TrashedFile))
                 
         if options.verbose:
@@ -67,7 +68,7 @@ class NoWrapFormatter(optparse.IndentedHelpFormatter) :
 
 parser = OptionParser(usage="%prog [OPTION]... FILE...",
                       description="Put files in trash",
-                      version="%%prog %s" % libtrash.version,
+                      version="%%prog %s" % trashcli.version,
 					  formatter=NoWrapFormatter(),
                       epilog=
 """To remove a file whose name starts with a `-', for example `-foo',

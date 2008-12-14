@@ -43,9 +43,12 @@ See the INSTALL file.
 
 Software requirements
 ---------------------
-The trash-cli software depends on:
+The trash-cli software depends on these packages:
  - python
  - python-ctypes
+
+And from these python packages
+ - enum
 
 Testing the software
 --------------------

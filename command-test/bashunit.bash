@@ -261,12 +261,12 @@ assertTrue()
 
   _su_message="$1"
   if [ $# -eq 2 ]; then
-    _su_message=$1
+    _su_message="$1"
     shift
   fi
-  _su_condition=${1:-}
+  _su_condition="${1:-}"
 
-  shunit_return=${__SHUNIT_TRUE}
+  shunit_return="${__SHUNIT_TRUE}"
 
   # see if condition is an integer, i.e. a return value
   _su_match=`expr "${_su_condition}" : '\([0-9]*\)'`

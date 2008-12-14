@@ -29,13 +29,13 @@ import sys
 import os
 sys.path.append('src')
 
-import libtrash 
+import trashcli 
 
 
 
 setup_args = {
     'name':         'trash-cli',
-    'version':      libtrash.version,
+    'version':      trashcli.version,
     'author':       'Andrea Francia',
     'author_email': 'andreafrancia@users.sourceforge.net',
     'url':          'http://code.google.com/p/trash-cli',
@@ -72,9 +72,11 @@ $ trash-restore /home/andrea/foo
 
 Empty the trashcan:
 $ trash-empty """,
-    'packages' : ['libtrash'],
+    'packages' : ['trashcli'],
     'scripts'  : ['src/trash-file',
                   'src/trash-list',
+                  'src/volume-of',
+                  'src/restore-trash',
                   'src/trash-restore',
                   'src/trash-empty'],
     'package_dir' : {'':'src'},

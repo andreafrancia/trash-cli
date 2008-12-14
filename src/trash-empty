@@ -25,7 +25,7 @@ older than that parameter (integer, days).
 # author: Einar Orn Olason
 
 import os, datetime, sys
-from libtrash import TrashDirectory
+from trashcli.trash import TrashDirectory
 
 days=0
 usage="usage: "+sys.argv[0]+" [days]" 

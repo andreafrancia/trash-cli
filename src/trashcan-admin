@@ -18,7 +18,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
 # 02110-1301, USA.
 
-from libtrash import *
+from trashcli.trash import TrashDirectory
+from trashcli.filesystem import Volume
 from optparse import OptionParser
 import optparse
 import libtrash

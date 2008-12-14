@@ -19,14 +19,9 @@
 # 02110-1301, USA.
 
 from libtrash import Path
-from libtrash import TrashDirectory
-from libtrash import TrashedFile
-from optparse import OptionParser
 import optparse
 import libtrash
 import sys
-import optparse
-
 
 for arg in sys.argv :
     print '' + str(Path(arg)) + ' -> ' + str(Path(arg).volume)
