@@ -77,6 +77,8 @@ $ trash-empty """,
                   'src/trash-list',
                   'src/volume-of',
                   'src/restore-trash',
+                  # this is on the way but it is not ready yet
+                  # 'src/trash-restore', 
                   'src/trash-restore',
                   'src/trash-empty'],
     'package_dir' : {'':'src'},

@@ -28,16 +28,14 @@ __author__="Andrea Francia (andrea.francia@users.sourceforge.net)"
 __copyright__="Copyright (c) 2007 Andrea Francia"
 __license__="GPL"
 
-__all__=["test_filesystem"]
-
-from .trash import TrashDirectory
-from .trash import TrashedFile
-from .trash import TrashInfo
-from .trash import VolumeTrashDirectory
-from .trash import TimeUtils
-from .trash import HomeTrashDirectory
-from .filesystem import Path
-from .filesystem import Volume
+from trashcli.trash import TrashDirectory
+from trashcli.trash import TrashedFile
+from trashcli.trash import TrashInfo
+from trashcli.trash import VolumeTrashDirectory
+from trashcli.trash import TimeUtils
+from trashcli.trash import HomeTrashDirectory
+from trashcli.filesystem import Path
+from trashcli.filesystem import Volume
 
 from datetime import *
 from exceptions import *
@@ -73,7 +71,7 @@ class TestTrashDirectory(unittest.TestCase) :
         result = instance.trash(file_to_trash)
         self.assertTrue(isinstance(result,TrashedFile))
         self.assertEquals(Path("/dummy.txt"), result.path)
-        self.assertTrue(result.getDeletionTime() is not None)
+        self.assertTrue(result.deletion_date is not None)
 
     def test_get_info_dir(self):
         instance=TrashDirectory(
@@ -270,7 +268,7 @@ class TestTrashedFile(unittest.TestCase) :
         
         self.assertEqual("dummy-id", instance.id)
         self.assertEqual(Path("/pippo"), instance.path)
-        self.assertEqual(datetime(2007, 7, 23, 23, 45, 07), instance.getDeletionTime())
+        self.assertEqual(datetime(2007, 7, 23, 23, 45, 07), instance.deletion_date)
         self.assertEqual(trash_directory, instance.trash_directory)
         
     def test_original_location_when_absolute(self) :

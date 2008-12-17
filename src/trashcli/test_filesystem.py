@@ -1,8 +1,8 @@
 from __future__ import absolute_import
 
 import unittest
-from .filesystem import Volume
-from .filesystem import Path
+from trashcli.filesystem import Volume
+from trashcli.filesystem import Path
 import sys
 import os
 
@@ -82,7 +82,7 @@ class TestPath(unittest.TestCase) :
     def test_list(self):
         instance=Path("sandbox/test-dir")
         instance.remove()
-        instance.mkdir()
+        instance.mkdirs()
         instance.join("file1").touch()
         instance.join("file2").touch()
         instance.join("file3").touch()
@@ -99,6 +99,7 @@ class TestPath(unittest.TestCase) :
         instance.remove()
 
     def test_mkdir(self):
+        Path("sandbox").mkdirs()
         instance=Path("sandbox/test-dir")
         instance.remove()
         self.assertFalse(instance.exists())

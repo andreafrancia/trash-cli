@@ -61,36 +61,38 @@ class TrashDirectory(object) :
     Trash the specified file.
     returns TrashedFile
     """
-    def trash(self, fileToBeTrashed):
-        assert(isinstance(fileToBeTrashed, Path))
-        if not self.volume == fileToBeTrashed.parent.volume :
-            raise "file is not in the same volume of trash directory!\n\
-self.volume = " + str(self.volume) + ", \n\
-fileToBeTrashed.parent.volume = " + str(fileToBeTrashed.parent.volume)
+    def trash(self, file):
+        assert(isinstance(file, Path))
 
-        trash_info=TrashInfo(self._path_for_trashinfo(fileToBeTrashed),datetime.now())
+        if not self.volume == file.parent.volume :
+            raise ("file is not in the same volume of trash directory!\n"
+                   + "self.volume = " + str(self.volume) + ", \n"
+                   + "file.parent.volume = "
+                        + str(file.parent.volume))
+
+        trash_info=TrashInfo(self._path_for_trashinfo(file),datetime.now())
         trash_id=self.persist_trash_info(trash_info)
 
         if not self.files_dir.exists() : 
             self.files_dir.mkdirs(0700)
 
         try :
-            fileToBeTrashed.move(self.getOriginalCopyPath(trash_id))
+            file.move(self.getOriginalCopyPath(trash_id))
         except IOError, e :
             self.getTrashInfoFile(trash_id).remove();
             raise e
 
         return TrashedFile(trash_id,trash_info, self)
 
-    def __get_info_dir(self) :
+    @property
+    def info_dir(self) :
         return self.path.join("info")
-    info_dir=property(__get_info_dir)
 
-    def __get_files_dir(self) :
+    @property
+    def files_dir(self) :
         result=self.path.join("files")
         assert(isinstance(result,Path))
         return result
-    files_dir=property(__get_files_dir)
 
     def getInfoPath(self) :
         return os.path.join(self.path.path, "info")
@@ -309,15 +311,14 @@ class TrashedFile (object) :
     def original_file(self):        
         return self.__trash_directory.getOriginalCopy(self.id)
     
-    def getDeletionTime(self) :
+    @property
+    def deletion_date(self) :
         return self.__trash_info.getDeletionTime()
-    deletion_date=property(getDeletionTime)
 
     def restore(self) :
         if not self.original_location.exists :
             self.original_location.parent.mkdirs()
 
-        trashId = self.id
         self.original_file.move(self.path)
         self.trash_info_file.remove()
 
@@ -337,7 +338,14 @@ class TrashedFile (object) :
 
 class TrashInfo (object) :
     def __init__(self, path, deletion_date) :
-        assert isinstance(path, Path)
+        """Create a TrashInfo.
+
+        Keyword arguments:
+        path          -- the of the .trashinfo file (string or Path)
+        deletion_date -- the date of deletion, should be a datetime.
+        """
+        if  not isinstance(path,Path) :
+            path = Path('' + path)
         assert isinstance(deletion_date, datetime)
         self.__path = path
         self.__deletion_date = deletion_date

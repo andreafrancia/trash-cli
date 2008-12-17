@@ -23,8 +23,6 @@ __author__="Andrea Francia (andrea.francia@users.sourceforge.net)"
 __copyright__="Copyright (c) 2007 Andrea Francia"
 __license__="GPL"
 
-from . restore import RestoreCommand
-from restore import *
 from datetime import *
 from exceptions import *
 import os
@@ -32,8 +30,17 @@ import unittest
 import pdb
 from mock import Mock
 from optparse import OptionParser
-from ..libtrash import TrashedFile
-from ..libtrash
+from trashcli.trash import TrashedFile
+from trashcli.trash import TrashInfo
+from trashcli.trash import TrashInfo
+from trashcli.trash import TrashDirectory
+from trashcli.filesystem import Path
+from trashcli.filesystem import Volume
+
+from trashcli.cli.restore import RestoreCommand
+from trashcli.cli.restore import extract
+from trashcli.cli.restore import create_option_parser
+from trashcli.cli.restore import last_trashed
 
 class TestRestoreParser(unittest.TestCase) :
     def test_version_option(self) :
@@ -54,17 +61,57 @@ class TestRestoreParser(unittest.TestCase) :
         assert args == ["file1", "file2", "file3"]
         
 class TestRestoreCommand(unittest.TestCase):
-    def test_execute_call_version(self):
+    def __ignore_test_execute_call_version(self):
         instance = RestoreCommand()
         instance.print_version = Mock()
         instance.execute(["--version"])
+        assert instance.print_version.called  == True
         instance.print_version.assert_called_with()
     
-    def teste_execute_call_restore(self):
-        instance = RestoreCommand()
-        instance.execute("foo", "")
-        pass
     
-    def test_find_latest_trashed_file(self):
-        list = []
-        list.append(TrashedFile("pippo", TrashInfo
+    def test_extract_return_only_matching_elements(self):
+        alist = [1,2,3,4,5,6,7]
+        def isodd(elem):
+            return elem % 2 == 1
+        assert [1,3,5,7] == list(extract(alist, isodd))
+    
+    def test_extract_TrashedFile(self):
+        trash_dir = TrashDirectory(Path('/.Trash/'), Volume(Path('/')))
+        
+        alist=[TrashedFile('foo', 
+                           TrashInfo(Path('foo'), datetime(2009,01,01)),
+                           trash_dir),
+               TrashedFile('foo_1',
+                           TrashInfo(Path('foo'), datetime(2009,01,01)),
+                           trash_dir),
+               TrashedFile('bar',
+                           TrashInfo(Path('bar'), datetime(2009,01,01)),
+                           trash_dir)]
+        
+        def is_named_foo(item):
+            return "foo" in str(item.path)
+        
+        result = list(extract(alist, is_named_foo))
+        assert len(result) == 2
+        assert result[0].id == 'foo'
+        assert result[1].id == 'foo_1'
+
+    def test_last_trashed(self):
+        """
+        Test that last_deleted returns the last trashed file.
+        """
+        trash_dir = TrashDirectory(Path('/.Trash/'), Volume(Path('/')))
+
+        before = TrashedFile('foo', TrashInfo("foo", datetime(2009,01,01,01,01,01)), trash_dir)
+        after = TrashedFile('foo', TrashInfo("foo", datetime(2009,01,01,01,01,02)), trash_dir)
+
+        assert last_trashed(before, after) is after
+        assert last_trashed(after, before) is after
+    
+        sametime1 = TrashedFile('foo', TrashInfo("foo", datetime(2009,01,01,01,01,01)), trash_dir)
+        sametime2 = TrashedFile('foo', TrashInfo("foo", datetime(2009,01,01,01,01,01)), trash_dir)
+        
+        assert last_trashed(sametime1, sametime2) is sametime1
+
+    
+        

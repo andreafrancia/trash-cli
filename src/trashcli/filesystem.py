@@ -89,6 +89,9 @@ class Path (object) :
         os.mkdir(self.path)
 
     def mkdirs(self, mode=0777):
+        if self.isdir():
+            os.chmod(self.path, mode)
+            return 
         os.makedirs(self.path, mode)
 
     def touch(self):
