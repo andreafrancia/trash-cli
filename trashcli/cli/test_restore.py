@@ -41,6 +41,8 @@ from trashcli.cli.restore import RestoreCommand
 from trashcli.cli.restore import extract
 from trashcli.cli.restore import create_option_parser
 from trashcli.cli.restore import last_trashed
+from trashcli.cli.restore import both
+
 
 class TestRestoreParser(unittest.TestCase) :
     def test_version_option(self) :
@@ -102,16 +104,48 @@ class TestRestoreCommand(unittest.TestCase):
         """
         trash_dir = TrashDirectory(Path('/.Trash/'), Volume(Path('/')))
 
-        before = TrashedFile('foo', TrashInfo("foo", datetime(2009,01,01,01,01,01)), trash_dir)
-        after = TrashedFile('foo', TrashInfo("foo", datetime(2009,01,01,01,01,02)), trash_dir)
+        before = TrashedFile('foo', 
+                             TrashInfo("foo", datetime(2009,01,01,01,01,01)), 
+                             trash_dir)
+        after = TrashedFile('foo', 
+                            TrashInfo("foo", datetime(2009,01,01,01,01,02)), 
+                            trash_dir)
 
         assert last_trashed(before, after) is after
         assert last_trashed(after, before) is after
     
-        sametime1 = TrashedFile('foo', TrashInfo("foo", datetime(2009,01,01,01,01,01)), trash_dir)
-        sametime2 = TrashedFile('foo', TrashInfo("foo", datetime(2009,01,01,01,01,01)), trash_dir)
+        sametime1 = TrashedFile('foo', 
+                                TrashInfo("foo", datetime(2009,01,01,01,01,01)),
+                                trash_dir)
+        sametime2 = TrashedFile('foo', 
+                                TrashInfo("foo", datetime(2009,01,01,01,01,01)),
+                                trash_dir)
         
         assert last_trashed(sametime1, sametime2) is sametime1
 
-    
+    def test_both(self):
+        def is_greater_than_1(elem):
+            return elem > 1
         
+        def is_lower_than_3(elem):
+            return elem < 3
+        
+        def is_odd(elem):
+            return elem % 2 == 1
+        
+        result1 = both(is_greater_than_1, is_lower_than_3)
+        result2 = both(is_greater_than_1, is_odd)
+        
+        assert result1(1) == False
+        assert result1(2) == True
+        assert result1(3) == False
+        assert result1(4) == False
+    
+        assert result2(1) == False
+        assert result2(2) == False
+        assert result2(3) == True
+        assert result2(4) == False
+    
+    def test_get_latest_named_file(self):
+        
+        extract
