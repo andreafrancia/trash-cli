@@ -255,21 +255,17 @@ assertNotSame()
 #*/
 assertTrue()
 {
-  local caller_line_no="${BASH_LINENO[1]}"
-  local caller_name="${FUNCNAME[1]}"
-  local caller_source_file="${BASH_SOURCE[1]}"
-
-  _su_message="$1"
+  local message="$1"
   if [ $# -eq 2 ]; then
-    _su_message="$1"
+    message="$1"
     shift
   fi
-  _su_condition="${1:-}"
+  local condition = "${1:-}"
 
   shunit_return="${__SHUNIT_TRUE}"
 
   # see if condition is an integer, i.e. a return value
-  _su_match=`expr "${_su_condition}" : '\([0-9]*\)'`
+  _su_match=`expr "${condition}" : '\([0-9]*\)'`
   if [ -z "${_su_condition}" ]; then
     # null condition
     shunit_return=${__SHUNIT_FALSE}
@@ -293,6 +289,39 @@ assertTrue()
 
   unset _su_message _su_condition _su_match
   return ${shunit_return}
+}
+
+assertThat()
+{
+    local message="$1"
+    if [ $# -eq 2 ]; then
+        message="$1"
+        shift
+    fi
+    local condition="${1:-}"
+
+    local result="${__SHUNIT_TRUE}"
+
+    if [ -z "$condition" ]; then
+        # null condition
+        result="${__SHUNIT_FALSE}"
+    else
+        # (hopefully) a condition
+        #( eval "$condition" ) >/dev/null 2>&1
+        ( eval "$condition" ) 2>&1
+        [ $? -ne 0 ] && result="${__SHUNIT_FALSE}"
+    fi
+
+    # record the test
+    if [ "$result" -eq "${__SHUNIT_TRUE}" ]; then
+        _shunit_testPassed
+    else
+        print_stack_trace
+        _shunit_testFailed "$message"
+        exit
+    fi
+
+    return "$result"
 }
 
 print_stack_trace() {

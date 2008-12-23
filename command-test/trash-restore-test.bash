@@ -38,12 +38,12 @@ test-restore-trash() {
         _trash-file file
         
         # execute
-        assertTrue "[ ! -e file ]"
-        _restore-trash file 
+        assertThat "[ ! -e file ]"
+        _trash-restore file 
         
         # test
         assertEquals 0 $?
-        assertTrue "[ -e file ]" 
+        assertThat "[ -e file ]" 
 }
 
 test-restore-trash-creates-dirs() {

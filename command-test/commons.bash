@@ -31,22 +31,27 @@ except AttributeError:
 # --- commands --------------------------------------------
 _trash-file() {
         echo "Invoking: trash $@" >2
-        ../src/trash-file "$@"
+        ../scripts/trash-file "$@"
 }
 
 _trash-empty() {
         echo "Invoking: trash-empty $@" >2
-        ../src/trash-empty "$@"
+        ../scripts/trash-empty "$@"
 }
 
 _trash-list() {
         echo "Invoking: trash-list $@" >2
-        ../src/trash-list "$@"
+        ../scripts/trash-list "$@"
 }
 
 _trash-restore() {
         echo "Invoking: trash-restore $@" >2
-        ../src/trash-restore "$@"
+        ../scripts/trash-restore "$@"
+}
+
+_restore-trash() {
+        echo "Invoking: restore-trash $@" >2
+        ../scripts/restore-trash "$@"
 }
 # --- end of commands --------------------------------------
 
