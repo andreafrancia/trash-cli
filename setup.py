@@ -25,25 +25,14 @@ Run it with
 """
 
 from distutils.core import setup
+from setuptools import find_packages
 import sys
 import os
 sys.path.append('src')
 
 import trashcli 
 
-
-
-setup_args = {
-    'name':         'trash-cli',
-    'version':      trashcli.version,
-    'author':       'Andrea Francia',
-    'author_email': 'andreafrancia@users.sourceforge.net',
-    'url':          'http://code.google.com/p/trash-cli',
-    'description':  'Command line interface to FreeDesktop.org Trash.',
-    'license':      'GPL v2',
-    'download_url': 'http://code.google.com/p/trash-cli/wiki/Download',
-    'long_description': 
-"""trash-cli - Command Line Interface to FreeDesktop.org Trash.
+long_description="""trash-cli - Command Line Interface to FreeDesktop.org Trash.
 
 trash-cli provides the following commands to manage the trash:
 
@@ -71,23 +60,31 @@ Restore a trashed file:
 $ trash-restore /home/andrea/foo
 
 Empty the trashcan:
-$ trash-empty """,
-    'packages' : ['trashcli'],
-    'scripts'  : ['scripts/trash-file',
-                  'scripts/trash-list',
-                  'scripts/volume-of',
-                  'scripts/restore-trash',
-                  # this is on the way but it is not ready yet
-                  # 'scripts/trash-restore', 
-                  'scripts/trash-restore',
-                  'scripts/trash-empty'],
-    'package_dir' : {'':'.'},
-    'data_files': [('man/man1', ['man/man1/trash-empty.1',
-                                 'man/man1/trash-list.1',
-                                 'man/man1/trash-restore.1',
-                                 'man/man1/trash-file.1'])]
+$ trash-empty """
 
-    }
+setup(
+    name = 'trash-cli',
+    version = trashcli.version,
+    author = 'Andrea Francia',
+    author_email = 'andreafrancia@users.sourceforge.net',
+    url = 'http://code.google.com/p/trash-cli',
+    description = 'Command line interface to FreeDesktop.org Trash.',
+    license = 'GPL v2',
+    download_url = 'http://code.google.com/p/trash-cli/wiki/Download',
+    long_description = long_description
+,
+    packages = ['trashcli'],
+    scripts = ['scripts/trash-file',
+               'scripts/trash-list',
+               'scripts/volume-of',
+               'scripts/restore-trash',
+               # 'scripts/trash-restore',  # not ready yet
+               'scripts/trash-restore',
+               'scripts/trash-empty'],
+    data_files = [('man/man1', ['man/man1/trash-empty.1',
+                                'man/man1/trash-list.1',
+                                'man/man1/trash-restore.1',
+                                'man/man1/trash-file.1'])]
 
+    )
 
-setup(**setup_args)
