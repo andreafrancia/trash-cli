@@ -1,0 +1,53 @@
+----
+TEST
+----
+
+This documents explain how to run tests.
+
+There are two level of unit tests:
+ - unit tests
+ - commands tests
+
+Requirements
+------------
+ - python >= 2.5.2
+ - python-nose >= 0.10.3 (only for unit tests)
+ - id                    (only for command tests)
+ - sed                   (only for command tests)
+ 
+
+Unit tests
+----------
+To run unit tests:
+ $ nosetests
+ ......................................................
+ ----------------------------------------------------------------------
+ Ran 54 tests in 1.250s
+
+ OK
+
+Commands tests
+--------------
+Before running the tests you should prepare the enviroment:
+ $ cd command-test
+ $ bash mount-test-volume.sh
+ [sudo] password for andrea:
+
+There are three test scripts:
+ - trash-file-test.bash
+ - trash-restore-test.bash      # not yet ready don't use it
+ 
+To run the test use:
+ $ bash <test-script>
+
+For example:
+ $ bash trash-file-test.bash
+ #
+ # Test report
+ #
+ tests passed: 132
+ tests failed: 0
+ tests total:  132
+ success rate: 100%
+
+-EOF

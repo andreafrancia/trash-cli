@@ -260,21 +260,21 @@ assertTrue()
     message="$1"
     shift
   fi
-  local condition = "${1:-}"
+  local condition="${1:-}"
 
   shunit_return="${__SHUNIT_TRUE}"
 
   # see if condition is an integer, i.e. a return value
   _su_match=`expr "${condition}" : '\([0-9]*\)'`
-  if [ -z "${_su_condition}" ]; then
+  if [ -z "${condition}" ]; then
     # null condition
     shunit_return=${__SHUNIT_FALSE}
-  elif [ "${_su_condition}" = "${_su_match}" ]; then
+  elif [ "${condition}" = "${_su_match}" ]; then
     # possible return value. treating 0 as true, and non-zero as false.
-    [ ${_su_condition} -ne 0 ] && shunit_return=${__SHUNIT_FALSE}
+    [ ${condition} -ne 0 ] && shunit_return=${__SHUNIT_FALSE}
   else
     # (hopefully) a condition
-    ( eval ${_su_condition} ) >/dev/null 2>&1
+    ( eval ${condition} ) >/dev/null 2>&1
     [ $? -ne 0 ] && shunit_return=${__SHUNIT_FALSE}
   fi
 
