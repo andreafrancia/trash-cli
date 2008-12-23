@@ -41,7 +41,7 @@ elif len(sys.argv) > 1 :
         sys.exit()
 
 for trashedfile in TrashDirectory.trashed_files() :
-    delta=datetime.datetime.now()-trashedfile.getDeletionTime()
+    delta=datetime.datetime.now()-trashedfile.deletion_date
     if delta.days >= days : 
         trashedfile.purge()
 
