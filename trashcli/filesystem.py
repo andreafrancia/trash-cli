@@ -134,6 +134,7 @@ class Volume(object) :
     def __str__(self) :
         return str(self.path)
 
+    # TODO: move to trash.py module
     def hasCommonTrashDirectory(self) :
         """
         checks required by trash specification

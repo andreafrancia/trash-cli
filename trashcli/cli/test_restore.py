@@ -38,7 +38,6 @@ from trashcli.filesystem import Path
 from trashcli.filesystem import Volume
 
 from trashcli.cli.restore import RestoreCommand
-from trashcli.cli.restore import extract
 from trashcli.cli.restore import create_option_parser
 from trashcli.cli.restore import last_trashed
 from trashcli.cli.restore import both
@@ -75,7 +74,7 @@ class TestRestoreCommand(unittest.TestCase):
         alist = [1,2,3,4,5,6,7]
         def isodd(elem):
             return elem % 2 == 1
-        assert [1,3,5,7] == list(extract(alist, isodd))
+        assert [1,3,5,7] == list(filter(isodd,alist))
     
     def test_extract_TrashedFile(self):
         trash_dir = TrashDirectory(Path('/.Trash/'), Volume(Path('/')))
@@ -93,7 +92,7 @@ class TestRestoreCommand(unittest.TestCase):
         def is_named_foo(item):
             return "foo" in str(item.path)
         
-        result = list(extract(alist, is_named_foo))
+        result = list(filter(is_named_foo,alist))
         assert len(result) == 2
         assert result[0].id == 'foo'
         assert result[1].id == 'foo_1'
@@ -146,6 +145,3 @@ class TestRestoreCommand(unittest.TestCase):
         assert result2(3) == True
         assert result2(4) == False
     
-    def test_get_latest_named_file(self):
-        
-        extract

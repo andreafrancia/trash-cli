@@ -18,22 +18,28 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
 # 02110-1301, USA.
 
-from trashcli.trash import TrashDirectory
+from trashcli.trash import trashcan
+from trashcli.trash import TrashedFile
 import os
 
-list = []
+def is_trashed_from_curdir(trashedfile):
+    dir = os.path.realpath(os.curdir)
+    if trashedfile.path.path.startswith(dir + os.path.sep) :
+        return True
+
+trashed_files = []
 i = 0
-for trashedfile in TrashDirectory.files_trahsed_from_dir(os.curdir) :
-    list.append(trashedfile)
+for trashedfile in filter(is_trashed_from_curdir, trashcan.trashed_files()) :
+    trashed_files.append(trashedfile)
     print "%4d %s %s" % (i, trashedfile.deletion_date, trashedfile.path)
     i += 1
 
-if len(list) == 0 :
-    print "No trashed files"
+if len(trashed_files) == 0 :
+    print "No files trashed from current dir ('%s')" % os.path.realpath(os.curdir)
 else :
-    index=raw_input("What file to restore [0..%d]: " % (len(list)-1))
+    index=raw_input("What file to restore [0..%d]: " % (len(trashed_files)-1))
     if index == "" :
         print "Exiting"
     else :
         index = int(index)
-        list[index].restore()
+        trashed_files[index].restore()

@@ -1,4 +1,5 @@
 from optparse import OptionParser
+from trashcli.trash import trashcan
 
 def create_option_parser():
     parser = OptionParser()
@@ -27,16 +28,6 @@ class RestoreCommand:
 class RestoreOptionParser:
     pass
 
-def extract(source, matches):
-    """
-    source: generator or list.
-    matches: the matches function. matches(item) should return True if item matches, False otherwise
-    return 
-    """
-    for item in source:
-        if matches(item):
-            yield item
-            
 def last_trashed(trashed_file1, trashed_file2):
     """
     Returns the TrashedFile more recently trashed. 
@@ -54,3 +45,5 @@ def both(matcher1, matcher2):
         return matcher1(item) and matcher2(item)
     
     return result
+
+

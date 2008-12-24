@@ -28,12 +28,16 @@ __author__="Andrea Francia (andrea.francia@users.sourceforge.net)"
 __copyright__="Copyright (c) 2007 Andrea Francia"
 __license__="GPL"
 
+import sys
+sys.path.append("../")
+
 from trashcli.trash import TrashDirectory
 from trashcli.trash import TrashedFile
 from trashcli.trash import TrashInfo
 from trashcli.trash import VolumeTrashDirectory
 from trashcli.trash import TimeUtils
 from trashcli.trash import HomeTrashDirectory
+from trashcli.trash import GlobalTrashCan
 from trashcli.filesystem import Path
 from trashcli.filesystem import Volume
 
@@ -54,10 +58,7 @@ class TestTrashDirectory(unittest.TestCase) :
         self.assertEquals(volume,instance.volume)
         self.assertEquals(path, instance.path)
         
-    def testBasePath(self) :
-        os.environ['HOME'] = "/home/test"
-        td = TrashDirectory.getHomeTrashDirectory()
-        self.assertEqual(Path("/"), td.volume)
+
     def test_trash(self) :
         #instance
         instance=TrashDirectory(
@@ -88,27 +89,7 @@ class TestTrashDirectory(unittest.TestCase) :
     def test_calc_id(self):
         trash_info_file=Path("/home/user/.local/share/Trash/info/foo.trashinfo")
         self.assertEquals('foo',TrashDirectory.calc_id(trash_info_file))
-    def test_common_trash_dir(self) :
-        # prepare
-        TrashDirectory._getuid = staticmethod(lambda: 999)
 
-        # execute
-        result = TrashDirectory.common_trash_dir(Volume(Path("/mnt/disk")))        
-        
-        # check
-        self.assert_(isinstance(result,TrashDirectory))
-        self.assertEqual('/mnt/disk/.Trash/999', result.path.path)
-
-    def test_getCommonTrashDirectory(self) :        
-        #prepare
-        TrashDirectory._getuid = staticmethod(lambda: 999)
-        
-        # invoke
-        result = TrashDirectory.getUserTrashDirectory(Volume(Path("/mnt/disk")))
-        
-        # check
-        self.assert_(isinstance(result,TrashDirectory))
-        self.assertEqual(Path('/mnt/disk/.Trash-999'), result.path)
          
 class TestTrashDirectory_persit_trash_info(unittest.TestCase) :
     def setUp(self):
@@ -260,8 +241,9 @@ class TestTrashedFile(unittest.TestCase) :
     __dummy_datetime=datetime(2007, 7, 23, 23, 45, 07)
     
     def test_init(self) :
-        os.environ['HOME']='/home/user'
-        trash_directory = TrashDirectory.getHomeTrashDirectory()
+        trash_directory = HomeTrashDirectory(
+                              Path('/home/user/.local/share/Trash'))
+        
         trashinfo = TrashInfo(Path("pippo"), datetime(2007, 7, 23, 23, 45, 07))
 
         instance = TrashedFile("dummy-id", trashinfo, trash_directory)
@@ -284,13 +266,46 @@ class TestTrashedFile(unittest.TestCase) :
             TrashInfo(Path("foo"), self.__dummy_datetime),
             TrashDirectory(Path("/mnt/volume/Trash/123"), Volume(Path("/mnt/volume"))))
         self.assertEqual(instance.original_location.path, "/mnt/volume/foo")
-            
+        
 class TestTimeUtils(unittest.TestCase) :
     def test_parse_iso8601(self) :
         expected=datetime(2008,9,8,12,00,11)
         result=TimeUtils.parse_iso8601("2008-09-08T12:00:11")
         self.assertEqual(expected,result)
 
+class GlobalTrashCanTest(unittest.TestCase) :
+    
+    def testBasePath(self) :
+        # prepare
+        os.environ['HOME'] = "/home/test"
+        instance = GlobalTrashCan()
+        # execute 
+        td = instance.home_trash_dir()
+        # verify
+        self.assertEqual(Path("/"), td.volume)
+
+    def test_volume_trash_dir1(self) :
+        # prepare
+        instance = GlobalTrashCan(fake_uid=999)
         
+        # execute
+        result = instance.volume_trash_dir1(Volume(Path("/mnt/disk")))
+        
+        # check
+        self.assert_(isinstance(result,TrashDirectory))
+        self.assertEqual('/mnt/disk/.Trash/999', result.path.path)
+    
+    def test_volume_trash_dir2(self) :        
+        # prepare
+        instance = GlobalTrashCan(fake_uid=999)
+        
+        # execute
+        result = instance.volume_trash_dir2(Volume(Path("/mnt/disk")))
+        
+        # check
+        self.assert_(isinstance(result,TrashDirectory))
+        self.assertEqual(Path('/mnt/disk/.Trash-999'), result.path)
+
 Path("./sandbox").remove()
 Path("./sandbox").mkdir()
+

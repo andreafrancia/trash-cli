@@ -57,6 +57,9 @@ class TrashDirectory(object) :
     def __str__(self) :
         return str(self.path)
 
+    def __repr__(self) :
+        return "TrashDirectory(\"%s\", \"%s\")" % (self.path, self.volume)
+    
     """ 
     Trash the specified file.
     returns TrashedFile
@@ -94,13 +97,15 @@ class TrashDirectory(object) :
         assert(isinstance(result,Path))
         return result
 
+    # TODO: remove if not used
     def getInfoPath(self) :
         return os.path.join(self.path.path, "info")
 
+    # TODO: remove if not used
     def getFilesPath(self) :
         return os.path.join(self.path.path, "files")
 
-    def trashedFiles(self) :
+    def trashed_files(self) :
         try : 
             for trash_info_file in self.info_dir.list() :
                 if not trash_info_file.basename.endswith('.trashinfo') :
@@ -121,19 +126,26 @@ class TrashDirectory(object) :
     
     def trashedFilesInDir(self, dir) :
         dir = os.path.realpath(dir)
-        for trashedfile in self.trashedFiles() :
+        for trashedfile in self.trashed_files() :
             if trashedfile.path.startswith(dir + Path.sep) :
                 yield trashedfile
 
+    # TODO: remove if not used
     def getOriginalCopyPath(self, trashId) :
         return self.getOriginalCopy(trashId).path
 
+    # TODO: switch @property 
+    # TODO: rename to original_copy
     def getOriginalCopy(self, trashId) :
         return Path(os.path.join(self.getFilesPath(), str(trashId)))
 
+    # TODO: switch @property 
+    # TODO: rename to trashinfo_file
     def getTrashInfoFile(self, trashId) :
         return Path(os.path.join(self.getInfoPath(), str(trashId) + '.trashinfo'))
 
+    # TODO: make private
+    # TODO: is useful?
     def removeInfoFile(self, trashId) :
         self.getTrashInfoFile(trashId).remove()
 
@@ -182,55 +194,6 @@ class TrashDirectory(object) :
 
         raise IOError()
 
-    @staticmethod
-    def getHomeTrashDirectory() : 
-        if 'XDG_DATA_HOME' in os.environ:
-            XDG_DATA_HOME = os.environ['XDG_DATA_HOME']
-        else :
-            XDG_DATA_HOME = os.environ['HOME'] + '/.local/share'
-
-        path = Path(XDG_DATA_HOME + "/Trash")
-        return HomeTrashDirectory(path)
-
-    @classmethod
-    def all_trash_directories(cls) :
-        """Return a generator of all TrashDirectories in the filesystem"""
-        yield TrashDirectory.getHomeTrashDirectory()
-        
-        for volume in Volume.all():
-            yield cls.common_trash_dir(volume)
-            yield cls.getUserTrashDirectory(volume)
-    
-    @staticmethod
-    def trashed_files() :
-        """Return a generator of all TrashedFiles."""
-        for trash_dir in TrashDirectory.all_trash_directories():
-            for trashedfile in trash_dir.trashedFiles():
-                yield trashedfile
-
-    @classmethod
-    def files_trahsed_from_dir(cls,dir) :
-        dir = os.path.realpath(dir)
-        for trashedfile in cls.trashed_files() :
-            if trashedfile.path.path.startswith(dir + os.path.sep) :
-                yield trashedfile
-
-    @staticmethod
-    def _getuid():
-        return os.getuid()
-
-    @classmethod
-    def common_trash_dir(cls,volume):
-        uid = cls._getuid()
-        trash_directory_path = volume.topdir.join(Path(".Trash")).join(Path(str(uid)))
-        return VolumeTrashDirectory(trash_directory_path,volume)
-
-    @classmethod
-    def getUserTrashDirectory(cls, volume) :
-        uid = cls._getuid()
-        dirname=".Trash-%s" % str(uid)
-        trash_directory_path = volume.topdir.join(Path(dirname))
-        return VolumeTrashDirectory(trash_directory_path,volume)
         
 class HomeTrashDirectory(TrashDirectory) :
     def __init__(self, path) :
@@ -255,6 +218,113 @@ class HomeTrashDirectory(TrashDirectory) :
 
         parent = fileToBeTrashed.realpath.parent
         return parent.join(fileToBeTrashed.basename)
+
+class TrashDirectories(object):
+    
+    pass
+    
+class TrashCan(object):
+    def trashed_files(self):
+        pass
+
+    def trash(self, file):
+        pass
+    
+    def restore(trashed_file, dest=None):
+        pass
+    
+class GlobalTrashCan(TrashCan) :
+    """
+    Represent the TrashCan that contains all trashed files.
+    This class is the facade used by all trashcli commands
+    """
+
+    def __init__(self, fake_uid=None) :
+        self.fake_uid = fake_uid
+    
+    def _getuid(self):
+        if self.fake_uid is None:
+            return os.getuid()
+        else:
+            return self.fake_uid
+        
+    def trashed_files(self):
+        """Return a generator of all TrashedFile(s)."""
+        for trash_dir in self.trash_directories():
+            for trashedfile in trash_dir.trashed_files():
+                yield trashedfile
+
+    def trashed_file(self, name):
+        pass
+    
+    def trash (self,f) :
+        """ 
+        Trash a file in the appropriate trash directory.
+        If the file belong to the same volume of the trash home directory it 
+        will be trashed in the home trash directory.
+        Otherwise it will be trashed in one of the relevant volume trash 
+        directories.
+        
+        Each volume can have two trash directories, they are 
+            - $volume/.Trash/$uid
+            - $volume/.Trash-$uid
+        
+        Firstly the software attempt to trash the file in the first directory 
+        then try to trash in the second trash directory.
+        """
+        volume = f.parent.volume
+    
+        if self.home_trash_dir().volume == volume :
+            trashed_file = self.home_trash_dir().trash(f)
+        else :
+            if volume.hasCommonTrashDirectory() :
+                trashed_file = self.volume_trash_dir1(volume).trash(f)
+            else :
+                trashed_file = self.volume_trash_dir2(volume).trash(f)
+        assert(isinstance(trashed_file, TrashedFile))
+                    
+    
+    def restore(trashed_file, dest=None):
+        pass
+    
+    def trash_directories(self) :
+        """Return a generator of all TrashDirectories in the filesystem"""
+        
+        yield self.home_trash_dir()
+        for volume in Volume.all():
+            yield self.volume_trash_dir1(volume)
+            yield self.volume_trash_dir2(volume)
+
+    def home_trash_dir(self) : 
+        if 'XDG_DATA_HOME' in os.environ:
+            XDG_DATA_HOME = os.environ['XDG_DATA_HOME']
+        else :
+            XDG_DATA_HOME = os.environ['HOME'] + '/.local/share'
+
+        path = Path(XDG_DATA_HOME + "/Trash")
+        return HomeTrashDirectory(path)
+
+    def volume_trash_dir1(self,volume):
+        uid = self._getuid()
+        trash_directory_path = volume.topdir.join(Path(".Trash")).join(Path(str(uid)))
+        return VolumeTrashDirectory(trash_directory_path,volume)
+
+    def volume_trash_dir2(self, volume) :
+        uid = self._getuid()
+        dirname=".Trash-%s" % str(uid)
+        trash_directory_path = volume.topdir.join(Path(dirname))
+        return VolumeTrashDirectory(trash_directory_path,volume)
+    
+    # TODO: 
+    # - deprecate this method
+    # - replace the usage of this method with a filter of trashed_files()
+    @classmethod
+    def files_trahsed_from_dir(cls,dir) :
+        dir = os.path.realpath(dir)
+        for trashedfile in cls.trashed_files() :
+            if trashedfile.path.path.startswith(dir + os.path.sep) :
+                yield trashedfile
+
 
 class VolumeTrashDirectory(TrashDirectory) :
     def __init__(self, path, volume) :
@@ -412,6 +482,4 @@ class TimeUtils(object):
         t=time.strptime(text,  "%Y-%m-%dT%H:%M:%S")
         return datetime(t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec)
 
-
-
-
+trashcan = GlobalTrashCan()

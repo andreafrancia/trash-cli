@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
 # 02110-1301, USA.
 
-from trashcli.trash import TrashDirectory
+from trashcli.trash import trashcan
 
-for trashed_file in TrashDirectory.trashed_files() :
+for trashed_file in trashcan.trashed_files() :
     print "%s %s" % (trashed_file.deletion_date, trashed_file.path)

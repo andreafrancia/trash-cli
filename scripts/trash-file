@@ -19,57 +19,21 @@
 # 02110-1301, USA.
 
 from trashcli.filesystem import Path
-from trashcli.trash import TrashDirectory
-from trashcli.trash import TrashedFile
-import trashcli
+from trashcli.trash import trashcan
+from trashcli import version
 
 from optparse import OptionParser
-import optparse
+from optparse import IndentedHelpFormatter
 
-def trash (f) :
-    """ 
-    Trash a file in the appropriate trash directory.
-    If the file belong to the same volume of the trash home directory it will
-    be trashed in the home trash directory.
-    Otherwise it will be trashed in one of the relevant volume trash directories.
-    
-    Each volume can have two trash directories, they are 
-        - $volume/.Trash/$uid
-        - $volume/.Trash-$uid
-    
-    Firstly the software attempt to trash the file in the first directory then 
-    try to trash in the second trash directory.
-    """
-    try: 
-        volume = f.parent.volume
-    
-        if TrashDirectory.getHomeTrashDirectory().volume == volume :
-            trashed_file = TrashDirectory.getHomeTrashDirectory().trash(f)
-        else :
-            if volume.hasCommonTrashDirectory() :
-                trashed_file = TrashDirectory.common_trash_dir(volume).trash(f)
-            else :
-                trashed_file = TrashDirectory.getUserTrashDirectory(volume).trash(f)
-        assert(isinstance(trashed_file, TrashedFile))
-                
-        if options.verbose:
-            print "`%s' trashed in %s " % (arg, trashed_file.trash_directory)
-    except OSError, e:
-        # occour when the file cannot be moved
-        print "trash: cannot trash `%s': %s" % (arg, str(e))
-    except IOError, e:
-        # occour when the file does not exist
-        print "trash: cannot trash `%s': %s" % (arg, str(e))    
-
-class NoWrapFormatter(optparse.IndentedHelpFormatter) :
+class NoWrapFormatter(IndentedHelpFormatter) :
     def _format_text(self, text) :
         "[Does not] format a text, return the text as it is."
         return text
 
 parser = OptionParser(usage="%prog [OPTION]... FILE...",
                       description="Put files in trash",
-                      version="%%prog %s" % trashcli.version,
-					  formatter=NoWrapFormatter(),
+                      version="%%prog %s" % version,
+                      formatter=NoWrapFormatter(),
                       epilog=
 """To remove a file whose name starts with a `-', for example `-foo',
 use one of these commands:
@@ -116,4 +80,13 @@ if len(args) <= 0:
 
 for arg in args :
     f = Path(arg)
-    trash(f)
+    try:
+        trashcan.trash(f)
+        if options.verbose:
+            print "`%s' trashed in %s " % (arg, trashed_file.trash_directory)
+    except OSError, e:
+        # occour when the file cannot be moved
+        print "trash: cannot trash `%s': %s" % (arg, str(e))
+    except IOError, e:
+        # occour when the file does not exist
+        print "trash: cannot trash `%s': %s" % (arg, str(e))    
