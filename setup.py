@@ -28,39 +28,30 @@ from distutils.core import setup
 from setuptools import find_packages
 import sys
 import os
-sys.path.append('src')
 
+try:
+    from googlecode_distutils_upload import upload as google_upload
+except ImportError:
+    class upload(distutils.core.Command):
+        user_options = []
+        def __init__(self, *args, **kwargs):
+            sys.stderr.write("""\
+error: Install this module in site-packages to upload:
+http://support.googlecode.com/svn/trunk/scripts/googlecode_distutils_upload.py
+""")
+            sys.exit(3)
+
+
+
+sys.path.append('.')
 import trashcli 
 
-long_description="""trash-cli - Command Line Interface to FreeDesktop.org Trash.
-
-trash-cli provides the following commands to manage the trash:
-
-* trash-file            trashes files and directories.
-* trash-empty           empty the trashcan(s).
-* trash-list            list trashed file.
-* trash-restore         restore a trashed file.
-* trash-admin           administrate trashcan(s).
-
-For each file the name, original path, deletion date, and permissions
-are recorded. The trash command allow trash multiple files with the
-same name. These command uses the same Trashcan of last versions of
-KDE, GNOME and XFCE.
-
-Trash a file:
-$ trash /home/andrea/foobar
-
-List trashed files:
-$ trash-list
-2008-06-01 10:30:48 /home/andrea/bar
-2008-06-02 21:50:41 /home/andrea/bar
-2008-06-23 21:50:49 /home/andrea/foo
-
-Restore a trashed file:
-$ trash-restore /home/andrea/foo
-
-Empty the trashcan:
-$ trash-empty """
+def read_description():
+    f = open("description.txt")
+    try :
+        return f.read()
+    finally:
+        f.close()
 
 setup(
     name = 'trash-cli',
@@ -71,8 +62,7 @@ setup(
     description = 'Command line interface to FreeDesktop.org Trash.',
     license = 'GPL v2',
     download_url = 'http://code.google.com/p/trash-cli/wiki/Download',
-    long_description = long_description
-,
+    long_description = read_description(),
     packages = ['trashcli'],
     scripts = ['scripts/trash-file',
                'scripts/trash-list',
@@ -84,7 +74,7 @@ setup(
     data_files = [('man/man1', ['man/man1/trash-empty.1',
                                 'man/man1/trash-list.1',
                                 'man/man1/trash-restore.1',
-                                'man/man1/trash-file.1'])]
-
+                                'man/man1/trash-file.1'])],
+    cmdclass={'google_upload': google_upload},
     )
 
