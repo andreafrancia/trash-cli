@@ -45,5 +45,3 @@ def both(matcher1, matcher2):
         return matcher1(item) and matcher2(item)
     
     return result
-
-
