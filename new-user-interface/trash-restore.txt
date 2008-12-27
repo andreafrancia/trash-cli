@@ -8,7 +8,7 @@ DESCRIPTION
         Restore the trashed file specified by SOURCE in DEST (or its original
         location).
 
-        -d, --deletion-date=DATE
+        -d, --deleted-on=DATE
                 Choose the trashed file with the specified original location
                 and with the specified deletion date.
         
