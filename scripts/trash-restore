@@ -18,61 +18,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
 # 02110-1301, USA.
 
-from trashcli.filesystem import Path
-from trashcli.trash import TrashDirectory
-from trashcli.trash import TrashedFile
-from optparse import OptionParser
-import optparse
-import libtrash
+from trashcli.cli import restore
 
-class NoWrapFormatter(optparse.IndentedHelpFormatter) :
-    def _format_text(self, text) :
-        "[Does not] format a text, return the text as it is."
-        return text
-
-
-parser = OptionParser(usage="%prog [OPTION]... FILE...",
-                      description="""Restore the trashed file 
-specified by SOURCE in DEST (or its original location).""",
-                      version="%%prog %s" % libtrash.version,
-					  formatter=NoWrapFormatter(),
-                      epilog=
-"""
-A TrashId is a URL referring to a specific item in a specific trash directory. 
-The URL has this form:
-
-    trash:TRASH_DIR/ID
-
-Where
-    'trash:'  is the scheme part.
-    TRASH_DIR is the Trash directory containing the item, can
-              contains slashes '/'.
-    ID        is the Item part and can not contains slashes.
-
-The TrashId refer to the trashed file with
-        TRASH_DIR/info/ID.trashinfo as .trashinfo file.
-        TRASH_DIR/files/ID as original file.
-""")
-
-parser.add_option("--trash-id",
-                  action="store_true",
-                  help="The SOURCE param should be interpreted as trash ids.")
-
-parser.add_option("-d",
-                  "--deletion-date",
-                  action="store_const",
-                  help="""Choose the trashed file with the specified original 
-                          location and with the specified deletion date.""")
-
-(options, args) = parser.parse_args()
-
-
-if len(args) == 0: 
-    parser.error("Please specify the trashed file to be restored.")
-elif len(args) == 1 :
-    restore_to_original_location(args[1])
-elif len(args) == 2:
-    restore_to_specified_location(args[1], args[2])
-else :
-    parser.error("Too many arguments, one or two expected, %s given." 
-                  % len(args)
+restore.run()

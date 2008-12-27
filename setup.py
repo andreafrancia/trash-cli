@@ -63,7 +63,7 @@ setup(
     license = 'GPL v2',
     download_url = 'http://code.google.com/p/trash-cli/wiki/Download',
     long_description = read_description(),
-    packages = ['trashcli'],
+    packages = ['trashcli', 'trashcli.cli'],
     scripts = ['scripts/trash-file',
                'scripts/trash-list',
                'scripts/volume-of',

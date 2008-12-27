@@ -29,73 +29,50 @@ import os
 import unittest
 import pdb
 from mock import Mock
+
 from optparse import OptionParser
 from trashcli.trash import TrashedFile
 from trashcli.trash import TrashInfo
 from trashcli.trash import TrashInfo
 from trashcli.trash import TrashDirectory
+from trashcli.trash import HomeTrashDirectory
 from trashcli.filesystem import Path
 from trashcli.filesystem import Volume
 
 from trashcli.cli.restore import RestoreCommand
-from trashcli.cli.restore import create_option_parser
-from trashcli.cli.restore import last_trashed
-from trashcli.cli.restore import both
+from trashcli.cli.restore import Restorer
 
+class RestorerTest(unittest.TestCase):
 
-class TestRestoreParser(unittest.TestCase) :
-    def test_version_option(self) :
-        instance=create_option_parser()
-        (option,args)=instance.parse_args(["--version"])
-        assert option.version == True
+    def test_restore_latest(self):
+        class TrashedFileMock:
+            def __init__(self, path, deletion_date, 
+                         is_restore_call_expected=False):
+                self.path = path
+                self.deletion_date = deletion_date
+                self.is_restore_call_expected = is_restore_call_expected
+                self.restore_call_count = 0
+                
+            def restore(self):
+                assert self.is_restore_call_expected
+                self.restore_call_count+=1
+            
+        a_foo      = TrashedFileMock(Path('/foo'), datetime(2009,01,01))
+        latest_foo = TrashedFileMock(Path('/foo'), datetime(2010,01,01), True)
+        a_bar      = TrashedFileMock(Path('/bar'), datetime(2010,01,01))
         
-    def test_help_option(self) :
-        instance=create_option_parser()
-        instance.exit = Mock()
-        (option,args)=instance.parse_args(["--help"])
-        assert instance.exit.called == True
-        instance.exit.assert_called_with()
+        class TrashCanMock:
+            def trashed_files(self):
+                yield a_foo
+                yield latest_foo
+                yield a_bar 
+
+                
+        trashcan = TrashCanMock()
+        instance = Restorer(trashcan)
+        instance.restore_latest(Path('/foo'))
         
-    def test_simple_usage(self):
-        instance=create_option_parser()
-        (option,args)=instance.parse_args(["file1", "file2", "file3"])
-        assert args == ["file1", "file2", "file3"]
-        
-class TestRestoreCommand(unittest.TestCase):
-    def __ignore_test_execute_call_version(self):
-        instance = RestoreCommand()
-        instance.print_version = Mock()
-        instance.execute(["--version"])
-        assert instance.print_version.called  == True
-        instance.print_version.assert_called_with()
-    
-    
-    def test_extract_return_only_matching_elements(self):
-        alist = [1,2,3,4,5,6,7]
-        def isodd(elem):
-            return elem % 2 == 1
-        assert [1,3,5,7] == list(filter(isodd,alist))
-    
-    def test_extract_TrashedFile(self):
-        trash_dir = TrashDirectory(Path('/.Trash/'), Volume(Path('/')))
-        
-        alist=[TrashedFile('foo', 
-                           TrashInfo(Path('foo'), datetime(2009,01,01)),
-                           trash_dir),
-               TrashedFile('foo_1',
-                           TrashInfo(Path('foo'), datetime(2009,01,01)),
-                           trash_dir),
-               TrashedFile('bar',
-                           TrashInfo(Path('bar'), datetime(2009,01,01)),
-                           trash_dir)]
-        
-        def is_named_foo(item):
-            return "foo" in str(item.path)
-        
-        result = list(filter(is_named_foo,alist))
-        assert len(result) == 2
-        assert result[0].id == 'foo'
-        assert result[1].id == 'foo_1'
+        assert latest_foo.restore_call_count == 1
 
     def test_last_trashed(self):
         """
@@ -110,8 +87,8 @@ class TestRestoreCommand(unittest.TestCase):
                             TrashInfo("foo", datetime(2009,01,01,01,01,02)), 
                             trash_dir)
 
-        assert last_trashed(before, after) is after
-        assert last_trashed(after, before) is after
+        assert Restorer.last_trashed(before, after) is after
+        assert Restorer.last_trashed(after, before) is after
     
         sametime1 = TrashedFile('foo', 
                                 TrashInfo("foo", datetime(2009,01,01,01,01,01)),
@@ -120,7 +97,7 @@ class TestRestoreCommand(unittest.TestCase):
                                 TrashInfo("foo", datetime(2009,01,01,01,01,01)),
                                 trash_dir)
         
-        assert last_trashed(sametime1, sametime2) is sametime1
+        assert Restorer.last_trashed(sametime1, sametime2) is sametime1
 
     def test_both(self):
         def is_greater_than_1(elem):
@@ -132,8 +109,8 @@ class TestRestoreCommand(unittest.TestCase):
         def is_odd(elem):
             return elem % 2 == 1
         
-        result1 = both(is_greater_than_1, is_lower_than_3)
-        result2 = both(is_greater_than_1, is_odd)
+        result1 = Restorer.both(is_greater_than_1, is_lower_than_3)
+        result2 = Restorer.both(is_greater_than_1, is_odd)
         
         assert result1(1) == False
         assert result1(2) == True

@@ -233,6 +233,7 @@ class TrashCan(object):
     def restore(trashed_file, dest=None):
         pass
     
+    
 class GlobalTrashCan(TrashCan) :
     """
     Represent the TrashCan that contains all trashed files.
@@ -350,7 +351,7 @@ class TrashedFile (object) :
     def __init__(self,id,trash_info,trash_directory) :
         assert isinstance(id, str)
         assert isinstance(trash_info, TrashInfo)
-        assert isinstance(trash_directory, TrashDirectory)
+        #assert isinstance(trash_directory, TrashDirectory)
         self.__id=id
         self.__trash_info=trash_info
         self.__trash_directory=trash_directory
