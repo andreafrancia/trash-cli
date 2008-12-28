@@ -110,7 +110,7 @@ class Path (object) :
         return os.path.ismount(self.path)
     
     def __repr__(self):
-        return '[Path:' + self.path + ']'
+        return "Path('%s')" % self.path
 
 class Volume(object) :
     def __init__(self,path, permissive = False):
