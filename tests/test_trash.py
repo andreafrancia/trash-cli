@@ -29,6 +29,7 @@ __copyright__="Copyright (c) 2007 Andrea Francia"
 __license__="GPL"
 
 import sys
+# TODO: remove
 sys.path.append("../")
 
 from trashcli.trash import TrashDirectory
@@ -239,7 +240,9 @@ DeletionDate=2007-07-23T23:45:07"""
 
 class TestTrashedFile(unittest.TestCase) :
     __dummy_datetime=datetime(2007, 7, 23, 23, 45, 07)
-    
+    def setUp(self):
+        self.xdg_data_home = Path("sandbox").join("XDG_DATA_HOME")
+        
     def test_init(self) :
         trash_directory = HomeTrashDirectory(
                               Path('/home/user/.local/share/Trash'))
@@ -266,7 +269,16 @@ class TestTrashedFile(unittest.TestCase) :
             TrashInfo(Path("foo"), self.__dummy_datetime),
             TrashDirectory(Path("/mnt/volume/Trash/123"), Volume(Path("/mnt/volume"))))
         self.assertEqual(instance.original_location.path, "/mnt/volume/foo")
-        
+
+    def test_restore_create_needed_directories(self):
+        trash_dir = HomeTrashDirectory(self.xdg_data_home)
+        Path("sandbox/foo").mkdir()
+        Path("sandbox/foo/bar").touch()
+        instance = trash_dir.trash(Path("sandbox/foo/bar"))
+        Path("sandbox/foo").remove()
+        instance.restore()
+        assert Path("sandbox/foo/bar").exists() == True
+
 class TestTimeUtils(unittest.TestCase) :
     def test_parse_iso8601(self) :
         expected=datetime(2008,9,8,12,00,11)

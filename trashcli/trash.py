@@ -229,11 +229,7 @@ class TrashCan(object):
 
     def trash(self, file):
         pass
-    
-    def restore(trashed_file, dest=None):
-        pass
-    
-    
+
 class GlobalTrashCan(TrashCan) :
     """
     Represent the TrashCan that contains all trashed files.
@@ -283,11 +279,7 @@ class GlobalTrashCan(TrashCan) :
             else :
                 trashed_file = self.volume_trash_dir2(volume).trash(f)
         assert(isinstance(trashed_file, TrashedFile))
-                    
-    
-    def restore(trashed_file, dest=None):
-        pass
-    
+
     def trash_directories(self) :
         """Return a generator of all TrashDirectories in the filesystem"""
         
@@ -387,7 +379,7 @@ class TrashedFile (object) :
         return self.__trash_info.getDeletionTime()
 
     def restore(self) :
-        if not self.original_location.exists :
+        if not self.original_location.exists() :
             self.original_location.parent.mkdirs()
 
         self.original_file.move(self.path)
