@@ -32,7 +32,8 @@ import os
 try:
     from googlecode_distutils_upload import upload as google_upload
 except ImportError:
-    class upload(distutils.core.Command):
+    from distutils.core import Command
+    class google_upload(Command):
         user_options = []
         def __init__(self, *args, **kwargs):
             sys.stderr.write("""\
