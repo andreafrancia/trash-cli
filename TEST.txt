@@ -34,14 +34,14 @@ Before running the tests you should prepare the enviroment:
  [sudo] password for andrea:
 
 There are three test scripts:
- - trash-file-test.bash
+ - trash-put-test.bash
  - trash-restore-test.bash      # not yet ready don't use it
  
 To run the test use:
  $ bash <test-script>
 
 For example:
- $ bash trash-file-test.bash
+ $ bash trash-put-test.bash
  #
  # Test report
  #

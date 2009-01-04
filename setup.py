@@ -53,7 +53,7 @@ setup(
     download_url = 'http://code.google.com/p/trash-cli/wiki/Download',
     long_description = read_description(),
     packages = ['trashcli', 'trashcli.cli'],
-    scripts = ['scripts/trash-file',
+    scripts = ['scripts/trash-put',
                'scripts/trash-list',
                'scripts/volume-of',
                'scripts/restore-trash',
@@ -63,7 +63,7 @@ setup(
     data_files = [('man/man1', ['man/man1/trash-empty.1',
                                 'man/man1/trash-list.1',
                                 'man/man1/trash-restore.1',
-                                'man/man1/trash-file.1'])],
+                                'man/man1/trash-put.1'])],
     cmdclass={'google_upload': google_upload},
     )
 

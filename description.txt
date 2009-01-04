@@ -1,7 +1,7 @@
 trash-cli - Command Line Interface to FreeDesktop.org Trash.
 
 trash-cli provides the following commands to manage the trash:
- * trash-file            trashes files and directories.
+ * trash-put             trashes files and directories.
  * trash-empty           empty the trashcan(s).
  * trash-list            list trashed file.
  * trash-restore         restore a trashed file.
@@ -13,7 +13,7 @@ KDE, GNOME and XFCE.
 
 Trash a file:
 
- $ trash /home/andrea/foobar
+ $ trash-put /home/andrea/foobar
 
 List trashed files:
  

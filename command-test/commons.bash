@@ -29,9 +29,9 @@ except AttributeError:
     print 0")"
 
 # --- commands --------------------------------------------
-_trash-file() {
+_trash-put() {
         echo "Invoking: trash $@" >2
-        ../scripts/trash-file "$@"
+        ../scripts/trash-put "$@"
 }
 
 _trash-empty() {
@@ -127,7 +127,7 @@ create-trashed-file() {
         
         create_test_file "$content" "$path"
         
-        _trash-file "$path"
+        _trash-put "$path"
         assertTrue "[ ! -e \"$path\" ]"
 }
 

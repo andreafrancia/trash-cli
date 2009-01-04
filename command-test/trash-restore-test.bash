@@ -35,7 +35,7 @@ test-restore-trash() {
         # prepare
         _trash-empty # delete all
         touch file
-        _trash-file file
+        _trash-put file
         
         # execute
         assertThat "[ ! -e file ]"

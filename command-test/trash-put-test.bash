@@ -1,5 +1,5 @@
 #!/bin/bash
-# trash-file-test.bash: back box testing for trash-cli commands
+# trash-put-test.bash: back box testing for trash-cli commands
 #
 # Copyright (C) 2007,2008 Andrea Francia Trivolzio(PV) Italy
 #
@@ -25,7 +25,7 @@
 
 testPrintVersion()
 {
-        _trash-file --version
+        _trash-put --version
         assertEquals 0 "$?"
 }
 
@@ -78,7 +78,7 @@ do_trash_test() {
         local content="$RANDOM"
         create_test_file "$content" "$path_to_trash"
 
-        _trash-file "$path_to_trash"
+        _trash-put "$path_to_trash"
         assertEquals 0 "$?"
         assert_does_not_exists "$path_to_trash"
         
@@ -174,7 +174,7 @@ test_trash-empty_removes_trash() {
         assertEquals 0 "$(_trash-list | wc -l)"
 
         touch "$topdir/foo" "$topdir/bar" "$topdir/zap" 
-        _trash-file "$topdir/foo" "$topdir/bar" "$topdir/zap"        
+        _trash-put "$topdir/foo" "$topdir/bar" "$topdir/zap"        
         assertEquals 3 "$(_trash-list | wc -l)"
 
         _trash-empty 
