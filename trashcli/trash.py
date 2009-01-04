@@ -37,8 +37,8 @@ import logging
 import posixpath
 
 logger=logging.getLogger()
-#logger.setLevel(0)
-logger.setLevel(logging.FATAL)
+logger.setLevel(logging.WARNING)
+logger.addHandler(logging.StreamHandler())
 
 from .filesystem import Volume
 from .filesystem import Path
@@ -117,6 +117,8 @@ class TrashDirectory(object) :
                         yield TrashedFile(id,ti,self)
                     except ValueError:
                         logger.warning("Non parsable trashinfo file: %s" % trash_info_file.path)
+                    except IOError, e:
+                        logger.warning(str(e))
         except OSError, e: # when directory does not exist
             pass 
     
@@ -220,7 +222,6 @@ class HomeTrashDirectory(TrashDirectory) :
         return parent.join(fileToBeTrashed.basename)
 
 class TrashDirectories(object):
-    
     pass
     
 class TrashCan(object):
