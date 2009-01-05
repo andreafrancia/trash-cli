@@ -29,8 +29,19 @@ from setuptools import find_packages
 import sys
 import os
 
-sys.path.append("google-code")
-from googlecode_distutils_upload import upload as google_upload
+try :
+    sys.path.append("google-code")
+    from googlecode_distutils_upload import upload as google_upload
+except ImportError:
+    from distutils.core import Command
+    class google_upload(Command):
+        user_options = []
+        def __init__(self, *args, **kwargs):
+            sys.stderr.write("""\
+error: Install this module in site-packages to upload:
+http://support.googlecode.com/svn/trunk/scripts/googlecode_distutils_upload.py
+""")
+            sys.exit(3)
 
 sys.path.append('.')
 import trashcli 
