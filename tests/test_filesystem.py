@@ -24,12 +24,19 @@ class TestPath(unittest.TestCase) :
     def test_constructor(self) :
         instance = Path("dummy/path")
     
-    def test_cmp(self) :
+    def test_eq(self) :
         self.assertNotEquals(Path("."),Path(os.path.realpath(".")))
         self.assertNotEquals(Path("foo"),Path("bar"))
         self.assertEquals(Path("bar"),Path("bar"))
         self.assertEquals(Path("foo"),Path("./foo"))
-    
+        
+        list1=(Path('bar'), Path('bur'))
+        list2=(Path('bar'), Path('bur'))
+        list3=(Path('foo'), Path('bur'))
+        
+        assert list1 == list2
+        assert list1 != list3
+        
     def test_parent(self) :
         instance = Path("dummy/path")
         self.assertEquals(Path("dummy"), instance.parent)
@@ -142,6 +149,6 @@ class TestPath(unittest.TestCase) :
         self.assertTrue(instance.exists())
         self.assertFalse(instance.isdir())
         instance.remove() # clean up
-        
+    
 
 

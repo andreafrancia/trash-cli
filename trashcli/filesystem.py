@@ -5,8 +5,9 @@ import shutil
 from ctypes import *
 from ctypes.util import find_library
 import sys 
+import unipath
 
-class Path (object) :
+class Path (unipath.Path) :
     sep = '/'
     def __init__(self, path) :
         assert(isinstance(path,str))
@@ -72,11 +73,12 @@ class Path (object) :
     def isabs(self) :
         return os.path.isabs(self.path)
 
-    def __cmp__(self, other) :
-        if not isinstance(other, self.__class__) :
-            return False
-        else :
-            return cmp(self.path,other.path)
+    def __eq__(self, other) :
+        if self is other:
+            return True
+        if self.path == other:
+            return True
+        return False
 
     def __str__(self) :
         return str(self.path)
