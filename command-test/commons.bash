@@ -31,22 +31,22 @@ except AttributeError:
 # --- commands --------------------------------------------
 _trash-put() {
         echo "Invoking: trash $@" 1>&2
-        ../scripts/trash-put "$@"
+        python -S ../scripts/trash-put "$@"
 }
 
 _trash-empty() {
         echo "Invoking: trash-empty $@" 1>&2
-        ../scripts/trash-empty "$@"
+        python -S ../scripts/trash-empty "$@"
 }
 
 _trash-list() {
         echo "Invoking: trash-list $@" 1>&2
-        ../scripts/trash-list "$@"
+        python -S ../scripts/trash-list "$@"
 }
 
 _trash-restore() {
         echo "Invoking: trash-restore $@" 1>&2
-        ../scripts/trash-restore "$@"
+        python -S ../scripts/trash-restore "$@"
 }
 
 _restore-trash() {

@@ -199,4 +199,6 @@ test_trash-list_on_invalid_info() {
         assertEquals "$?" 0
 }
 
+export PYTHONPATH="$(dirname "$0")/.."
+
 . "$(dirname "$0")/bashunit.bash"
