@@ -70,6 +70,11 @@ class Path (unipath.Path) :
     def islink(self) :
         return os.path.islink(self.path)
 
+    def has_sticky_bit(self):
+        import os
+        import stat
+        return (os.stat(self.path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
+    
     def isabs(self) :
         return os.path.isabs(self.path)
 

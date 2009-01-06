@@ -5,6 +5,7 @@ from trashcli.filesystem import Volume
 from trashcli.filesystem import Path
 import sys
 import os
+import subprocess
 
 class TestVolume(unittest.TestCase) :
     def test_all(self) :
@@ -150,5 +151,18 @@ class TestPath(unittest.TestCase) :
         self.assertFalse(instance.isdir())
         instance.remove() # clean up
     
+    def test_has_sticky_bit_returns_true(self):
+        Path("sandbox").mkdirs()
+        sticky=Path("sandbox").join("sticky")
+        sticky.touch()
+        assert subprocess.call(["chmod", "+t", "sandbox/sticky"]) == 0
+        assert sticky.has_sticky_bit()
+        
+    def test_has_sticky_bit_returns_false(self):
+        Path("sandbox").mkdirs()
+        non_sticky=Path("sandbox").join("non-sticky")
+        non_sticky.touch()
+        assert subprocess.call(["chmod", "-t", "sandbox/non-sticky"]) == 0
+        assert not non_sticky.has_sticky_bit()
 
 
