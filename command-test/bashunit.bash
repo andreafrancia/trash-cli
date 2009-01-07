@@ -283,7 +283,7 @@ assertTrue()
     _shunit_testPassed
   else
     print_stack_trace
-    _shunit_testFailed "${_su_message}"
+    _shunit_testFailed "$message"
     exit
   fi
 
