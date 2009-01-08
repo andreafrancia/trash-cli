@@ -1,7 +1,7 @@
 #!/usr/bin/python
-# libtrash/__init__.py: library supporting FreeDesktop.org Trash Spec 
+# trashcli/trash.py: library supporting FreeDesktop.org Trash Spec 
 #
-# Copyright (C) 2007,2008 Andrea Francia Trivolzio(PV) Italy
+# Copyright (C) 2007-2009 Andrea Francia Trivolzio(PV) Italy
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -37,7 +37,7 @@ import logging
 import posixpath
 
 logger=logging.getLogger()
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
 
 from .filesystem import Volume
@@ -66,7 +66,8 @@ class TrashDirectory(object) :
     """
     def trash(self, file):
         assert(isinstance(file, Path))
-
+        self.check()
+        
         if not self.volume == file.parent.volume :
             raise ("file is not in the same volume of trash directory!\n"
                    + "self.volume = " + str(self.volume) + ", \n"
@@ -164,8 +165,8 @@ class TrashDirectory(object) :
         if not os.path.exists(self.getInfoPath()) : 
             try :
                 os.makedirs(self.getInfoPath(), 0700)
-            except OSError:
-                logging.debug(traceback.print_exc())
+            except OSError, e:
+                logging.debug(e)
                 os.makedirs(self.getInfoPath())
 
         # write trash info
@@ -196,6 +197,13 @@ class TrashDirectory(object) :
 
         raise IOError()
 
+    def check(self):
+        """
+        Perform a sanity check of this trash directory.
+        If the check is not passed the directory can be used for trashing, 
+        listing or restoring files.
+        """
+        pass
         
 class HomeTrashDirectory(TrashDirectory) :
     def __init__(self, path) :
@@ -221,6 +229,59 @@ class HomeTrashDirectory(TrashDirectory) :
         parent = fileToBeTrashed.realpath.parent
         return parent.join(fileToBeTrashed.basename)
 
+class VolumeTrashDirectory(TrashDirectory) :
+    def __init__(self, path, volume) :
+        assert isinstance(path, Path)
+        assert isinstance(volume, Volume)
+        TrashDirectory.__init__(self,path, volume)
+
+    def _path_for_trashinfo(self, fileToBeTrashed) :
+        # for the VolumeTrashDirectory paths are stored as relative 
+        # if possible
+
+        # string representing the parent of the fileToBeTrashed
+        parent=fileToBeTrashed.parent.realpath
+        topdir=self.volume.path   # e.g. /mnt/disk-1
+
+        if parent.path.startswith(topdir.path+Path.sep) :
+            parent = Path(parent.path[len(topdir.path+Path.sep):])
+
+        return parent.join(fileToBeTrashed.basename)
+
+class TopDirWithoutStickyBit(IOError):
+    """
+    Raised when $topdir/.Trash doesn't have the sticky bit.
+    """
+    pass
+
+class TopDirNotPresent(IOError):
+    """
+    Raised when $topdir/.Trash is not a dir.
+    """
+    pass
+
+class TopDirIsSymLink(IOError):
+    """
+    Raised when $topdir/.Trash is a simbolic link.
+    """
+    pass
+
+class Method1VolumeTrashDirectory(VolumeTrashDirectory):
+    def __init__(self, path, volume) :
+        VolumeTrashDirectory.__init__(self,path,volume)
+        
+    def check(self):
+        if not self.path.parent.isdir():
+            raise TopDirNotPresent("topdir should be a directory: %s" 
+                                   % self.path)
+        if self.path.parent.islink():
+            raise TopDirIsSymLink("topdir can't be a symbolic link: %s" 
+                                  % self.path)
+        if not self.path.parent.has_sticky_bit():
+            raise TopDirWithoutStickyBit("topdir should have the sticky bit: %s"
+                                         % self.path)
+
+#TODO: remove
 class TrashDirectories(object):
     pass
     
@@ -275,10 +336,14 @@ class GlobalTrashCan(TrashCan) :
         if self.home_trash_dir().volume == volume :
             trashed_file = self.home_trash_dir().trash(f)
         else :
-            if volume.hasCommonTrashDirectory() :
-                trashed_file = self.volume_trash_dir1(volume).trash(f)
-            else :
+            volume_trash_dir1 = self.volume_trash_dir1(volume)
+            try:
+                trashed_file = volume_trash_dir1.trash(f)
+            except (IOError, OSError), e:
+                logger.debug("Trashing in method(1) trash dir failed: %s" %e)
                 trashed_file = self.volume_trash_dir2(volume).trash(f)
+        
+        logger.info("File trashed as: `%s'" % (trashed_file.original_file.path))
         assert(isinstance(trashed_file, TrashedFile))
 
     def trash_directories(self) :
@@ -299,11 +364,18 @@ class GlobalTrashCan(TrashCan) :
         return HomeTrashDirectory(path)
 
     def volume_trash_dir1(self,volume):
+        """
+        Return the method (1) volume trash dir ($topdir/.Trash/$uid).
+        """
         uid = self._getuid()
         trash_directory_path = volume.topdir.join(Path(".Trash")).join(Path(str(uid)))
-        return VolumeTrashDirectory(trash_directory_path,volume)
+                
+        return Method1VolumeTrashDirectory(trash_directory_path,volume)
 
     def volume_trash_dir2(self, volume) :
+        """
+        Return the method (2) volume trash dir ($topdir/.Trash-$uid).
+        """
         uid = self._getuid()
         dirname=".Trash-%s" % str(uid)
         trash_directory_path = volume.topdir.join(Path(dirname))
@@ -320,24 +392,6 @@ class GlobalTrashCan(TrashCan) :
                 yield trashedfile
 
 
-class VolumeTrashDirectory(TrashDirectory) :
-    def __init__(self, path, volume) :
-        assert isinstance(path, Path)
-        assert isinstance(volume, Volume)
-        TrashDirectory.__init__(self,path, volume)
-
-    def _path_for_trashinfo(self, fileToBeTrashed) :
-        # for the VolumeTrashDirectory paths are stored as relative 
-        # if possible
-
-        # string representing the parent of the fileToBeTrashed
-        parent=fileToBeTrashed.parent.realpath
-        topdir=self.volume.path   # e.g. /mnt/disk-1
-
-        if parent.path.startswith(topdir.path+Path.sep) :
-            parent = Path(parent.path[len(topdir.path+Path.sep):])
-
-        return parent.join(fileToBeTrashed.basename)                      
 
 
 class TrashedFile (object) :

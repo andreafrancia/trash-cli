@@ -70,10 +70,10 @@ do_trash_test() {
         local expected_stored_path="$4"
 
         echo trash test informations:
-        echo path_to_trash="$path_to_trash"
-        echo expected_trashcan="$expected_trashcan"
-        echo expected_trashname="$expected_trashname"
-        echo expected_stored_path="$expected_stored_path"
+        echo -e "\t"path_to_trash="$path_to_trash"
+        echo -e "\t"expected_trashcan="$expected_trashcan"
+        echo -e "\t"expected_trashname="$expected_trashname"
+        echo -e "\t"expected_stored_path="$expected_stored_path"
 
         local content="$RANDOM"
         create_test_file "$content" "$path_to_trash"
@@ -120,48 +120,48 @@ do_test_trash_in_volume_trashcan() {
 
 
 test_trash_in_volume_trashcans_when_Trash_does_not_exist() {
-        rm -Rf $topdir/.Trash
+        rm -Rf "$topdir/.Trash"
         trashcan="$topdir/.Trash-$uid"
         do_test_trash_in_volume_trashcan "$trashcan"
 }
 
-dont_test_trash_in_volume_trashcans_when_Trash_is_not_sticky_nor_writable() {
-        rm -Rf $topdir/.Trash
-        mkdir --parent $topdir/.Trash
-        chmod a-t $topdir/.Trash        
-        chmod a-w $topdir/.Trash
+test_trash_in_volume_trashcans_when_Trash_is_not_sticky_nor_writable() {
+        rm -Rf "$topdir/.Trash"
+        mkdir --parent "$topdir/.Trash"
+        chmod a-t "$topdir/.Trash"        
+        chmod a-w "$topdir/.Trash"
         do_test_trash_in_volume_trashcan "$topdir/.Trash-$uid"
 }
 
-dont_test_trash_in_volume_trashcans_when_Trash_is_not_sticky() {
-        rm -Rf $topdir/.Trash
-        mkdir --parent $topdir/.Trash
-        chmod a-t $topdir/.Trash        
-        chmod a+w $topdir/.Trash
+test_trash_in_volume_trashcans_when_Trash_is_not_sticky() {
+        rm -Rf "$topdir/.Trash"
+        mkdir --parent "$topdir/.Trash"
+        chmod a-t "$topdir/.Trash"        
+        chmod a+w "$topdir/.Trash"
         do_test_trash_in_volume_trashcan "$topdir/.Trash-$uid"
 }
 
-dont_test_trash_in_volume_trashcans_when_Trash_is_not_writable() {
-        rm -Rf $topdir/.Trash
-        mkdir --parent $topdir/.Trash
-        chmod a+t $topdir/.Trash        
-        chmod a-w $topdir/.Trash
+test_trash_in_volume_trashcans_when_Trash_is_not_writable() {
+        rm -Rf "$topdir/.Trash"
+        mkdir --parent "$topdir/.Trash"
+        chmod a+t "$topdir/.Trash"        
+        chmod a-w "$topdir/.Trash"
         do_test_trash_in_volume_trashcan "$topdir/.Trash-$uid"
 }
 
 test_trash_in_volume_trashcans_when_Trash_is_ok() {
-        rm -Rf $topdir/.Trash
-        mkdir --parent $topdir/.Trash
-        chmod u+t $topdir/.Trash
-        chmod a+w $topdir/.Trash
+        rm -Rf "$topdir/.Trash"
+        mkdir --parent "$topdir/.Trash"
+        chmod +t "$topdir/.Trash"
+        chmod a+w "$topdir/.Trash"
         do_test_trash_in_volume_trashcan "$topdir/.Trash/$uid"
 }
 
 prepare_volume_trashcan() {
-        rm -Rf $topdir/.Trash
-        mkdir --parent $topdir/.Trash
-        chmod u+t $topdir/.Trash
-        chmod a+w $topdir/.Trash
+        rm -Rf "$topdir/.Trash"
+        mkdir --parent "$topdir/.Trash"
+        chmod +t "$topdir/.Trash"
+        chmod a+w "$topdir/.Trash"
 }
 
 get-trashed-item-count() {
@@ -198,7 +198,5 @@ test_trash-list_on_invalid_info() {
         _trash-list
         assertEquals "$?" 0
 }
-
-export PYTHONPATH="$(dirname "$0")/.."
 
 . "$(dirname "$0")/bashunit.bash"

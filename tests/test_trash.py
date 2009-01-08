@@ -41,16 +41,21 @@ from trashcli.trash import HomeTrashDirectory
 from trashcli.trash import GlobalTrashCan
 from trashcli.filesystem import Path
 from trashcli.filesystem import Volume
+from trashcli.trash import TopDirIsSymLink
+from trashcli.trash import TopDirNotPresent
+from trashcli.trash import TopDirWithoutStickyBit
+from trashcli.trash import Method1VolumeTrashDirectory
 
 from datetime import *
 from exceptions import *
 import os
-import unittest
+from unittest import TestCase
 import pdb
 import sys
+from nose.tools import raises
 
 
-class TestTrashDirectory(unittest.TestCase) :
+class TestTrashDirectory(TestCase) :
     def test_init(self) :
         path = Path("/mnt/disk/.Trash-123")
         volume = Volume(Path("/mnt/disk"), True);
@@ -92,7 +97,7 @@ class TestTrashDirectory(unittest.TestCase) :
         self.assertEquals('foo',TrashDirectory.calc_id(trash_info_file))
 
          
-class TestTrashDirectory_persit_trash_info(unittest.TestCase) :
+class TestTrashDirectory_persit_trash_info(TestCase) :
     def setUp(self):
         trashdirectory_base_dir = Path(os.path.realpath("./sandbox/testTrashDirectory"))
         trashdirectory_base_dir.remove()
@@ -149,7 +154,7 @@ DeletionDate=2007-01-01T00:00:00
 
 
        
-class TestHomeTrashDirectory(unittest.TestCase) :
+class TestHomeTrashDirectory(TestCase) :
     def test_path_for_trashinfo (self) : 
         instance = HomeTrashDirectory(Path("/home/user/.local/share/Trash"))
         instance.volume = Volume(Path("/"))
@@ -189,7 +194,7 @@ class TestHomeTrashDirectory(unittest.TestCase) :
         del(os.environ['HOME'])
         self.assertEquals('/foo/Trash', str(HomeTrashDirectory(Path("/foo/Trash"))))
                           
-class TestVolumeTrashDirectory(unittest.TestCase) :
+class TestVolumeTrashDirectory(TestCase) :
     def test_init(self) :
         path = Path("/mnt/disk/.Trash/123")
         volume = Volume(Path("/mnt/disk"), True)
@@ -212,7 +217,7 @@ class TestVolumeTrashDirectory(unittest.TestCase) :
         result=instance._path_for_trashinfo(fileToBeTrashed)
         self.assertEquals("/mnt/other-volume/directory/test.txt",result)
                     
-class TestTrashInfo(unittest.TestCase) :
+class TestTrashInfo(TestCase) :
     def test_parse(self) :
         data = """[Trash Info]
 Path=home%2Fandrea%2Fprova.txt
@@ -238,7 +243,7 @@ DeletionDate=2007-07-23T23:45:07"""
         self.assertEquals("2007-07-23T23:45:07", instance.getDeletionTimeAsString())
         
 
-class TestTrashedFile(unittest.TestCase) :
+class TestTrashedFile(TestCase) :
     __dummy_datetime=datetime(2007, 7, 23, 23, 45, 07)
     def setUp(self):
         self.xdg_data_home = Path("sandbox").join("XDG_DATA_HOME")
@@ -279,13 +284,13 @@ class TestTrashedFile(unittest.TestCase) :
         instance.restore()
         assert Path("sandbox/foo/bar").exists() == True
 
-class TestTimeUtils(unittest.TestCase) :
+class TestTimeUtils(TestCase) :
     def test_parse_iso8601(self) :
         expected=datetime(2008,9,8,12,00,11)
         result=TimeUtils.parse_iso8601("2008-09-08T12:00:11")
         self.assertEqual(expected,result)
 
-class GlobalTrashCanTest(unittest.TestCase) :
+class GlobalTrashCanTest(TestCase) :
     
     def testBasePath(self) :
         # prepare
@@ -317,6 +322,61 @@ class GlobalTrashCanTest(unittest.TestCase) :
         # check
         self.assert_(isinstance(result,TrashDirectory))
         self.assertEqual(Path('/mnt/disk/.Trash-999'), result.path)
+
+class Method1VolumeTrashDirectoryTest(TestCase):
+    def setUp(self):
+        Path("sandbox").remove()
+        Path("sandbox").mkdirs()
+        
+    @raises(TopDirWithoutStickyBit)
+    def test_check_when_no_sticky_bit(self):
+        # prepare
+        import subprocess
+        topdir = Path("sandbox").join("trash-dir")
+        topdir.mkdirs()
+        assert subprocess.call(["chmod", "-t", topdir.path]) == 0
+        volume = Volume(Path("/mnt/disk"), True)
+        instance = Method1VolumeTrashDirectory(topdir.join("123"), volume)
+        
+        instance.check()
+        
+    @raises(TopDirNotPresent)
+    def test_check_when_no_dir(self):
+        # prepare
+        import subprocess
+        topdir = Path("sandbox").join("trash-dir")
+        topdir.touch()
+        assert subprocess.call(["chmod", "+t", topdir.path]) == 0
+        volume = Volume(Path("/mnt/disk"), True)
+        instance = Method1VolumeTrashDirectory(topdir.join("123"), volume)
+        
+        instance.check()
+
+    @raises(TopDirIsSymLink)
+    def test_check_when_is_symlink(self):
+        # prepare
+        import subprocess
+        topdir = Path("sandbox").join("trash-dir")
+        topdir.mkdir()
+        assert subprocess.call(["chmod", "+t", topdir.path]) == 0
+        
+        topdir_link = Path("sandbox/trash-dir-link")
+        topdir_link.write_link("./trash-dir")
+        volume = Volume(Path("/mnt/disk"), True)
+        instance = Method1VolumeTrashDirectory(topdir_link.join("123"), volume)
+        
+        instance.check()
+        
+    def test_check_pass(self):
+        # prepare
+        import subprocess
+        topdir = Path("sandbox").join("trash-dir")
+        topdir.mkdirs()
+        assert subprocess.call(["chmod", "+t", topdir.path]) == 0
+        volume = Volume(Path("/mnt/disk"), True)
+        instance = Method1VolumeTrashDirectory(topdir.join("123"), volume)
+        
+        instance.check() # should pass
 
 Path("./sandbox").remove()
 Path("./sandbox").mkdir()
