@@ -15,6 +15,7 @@ class Path (unipath.Path) :
         if self.path.lower().startswith("c:") :
             self.path = self.path [len("c:"):]
 
+    # TODO: use "@property"
     def __get_parent(self) :
         return Path(os.path.dirname(self.path))
     parent = property(__get_parent)
