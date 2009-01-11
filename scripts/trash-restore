@@ -20,4 +20,4 @@
 
 from trashcli.cli import restore
 
-restore.run()
+restore.main()
