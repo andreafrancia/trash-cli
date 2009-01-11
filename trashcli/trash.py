@@ -107,6 +107,10 @@ class TrashDirectory(object) :
         return os.path.join(self.path.path, "files")
 
     def trashed_files(self) :
+        """
+        List trashed files.
+        Returns a generator for each trashed file in dir.
+        """
         try : 
             for trash_info_file in self.info_dir.list() :
                 if not trash_info_file.basename.endswith('.trashinfo') :
@@ -208,6 +212,7 @@ class TrashDirectory(object) :
 class HomeTrashDirectory(TrashDirectory) :
     def __init__(self, path) :
         assert isinstance(path, Path)
+        logger.debug("HomeTrashDirectory with path = %s" % path)
         TrashDirectory.__init__(self, path, path.volume)
 
     def __str__(self) :
@@ -433,7 +438,9 @@ class TrashedFile (object) :
     def deletion_date(self) :
         return self.__trash_info.getDeletionTime()
 
-    def restore(self) :
+    def restore(self, dest=None) :
+        if dest is not None:
+            raise NotImplementedError("not yet supported")
         if not self.original_location.exists() :
             self.original_location.parent.mkdirs()
 
