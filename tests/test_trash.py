@@ -53,7 +53,7 @@ from unittest import TestCase
 import pdb
 import sys
 from nose.tools import raises
-
+from nose.tools import assert_equals
 
 class TestTrashDirectory(TestCase) :
     def test_init(self) :
@@ -67,17 +67,16 @@ class TestTrashDirectory(TestCase) :
 
     def test_trash(self) :
         #instance
-        instance=TrashDirectory(
+        instance=VolumeTrashDirectory(
                         Path("sandbox/trash-directory"), 
                         Path("sandbox").volume)
 
         # test
         file_to_trash=Path("sandbox/dummy.txt")
         file_to_trash.touch()
-        instance._path_for_trashinfo = lambda fileToTrash : Path("/dummy.txt")
         result = instance.trash(file_to_trash)
         self.assertTrue(isinstance(result,TrashedFile))
-        self.assertEquals(Path("/dummy.txt"), result.path)
+        self.assertEquals(file_to_trash.absolute(), result.path)
         self.assertTrue(result.deletion_date is not None)
 
     def test_get_info_dir(self):
@@ -96,7 +95,22 @@ class TestTrashDirectory(TestCase) :
         trash_info_file=Path("/home/user/.local/share/Trash/info/foo.trashinfo")
         self.assertEquals('foo',TrashDirectory.calc_id(trash_info_file))
 
-         
+    def test_calc_original_location_when_absolute(self) :
+        instance = TrashDirectory(
+            Path("/mnt/disk/.Trash-123"),
+            Volume(Path("/mnt/disk"), True))
+        
+        assert_equals(Path("/foo"),
+                      instance._calc_original_location(Path("/foo")))
+        
+    def test_calc_original_location_when_relative(self) :
+        instance = TrashDirectory(
+            Path("/mnt/disk/.Trash-123"),
+            Volume(Path("/mnt/disk"), True))
+        
+        assert_equals(Path("/mnt/disk/foo"),
+                      instance._calc_original_location(Path("foo")))
+        
 class TestTrashDirectory_persit_trash_info(TestCase) :
     def setUp(self):
         trashdirectory_base_dir = Path(os.path.realpath("./sandbox/testTrashDirectory"))
@@ -249,31 +263,34 @@ class TestTrashedFile(TestCase) :
         self.xdg_data_home = Path("sandbox").join("XDG_DATA_HOME")
         
     def test_init(self) :
+        path = Path("/foo")
+        deletion_date = datetime(2001,01,01)
+        info_file = Path("/home/user/.local/share/Trash/info/foo.trashinfo")
+        actual_path = Path("/home/user/.local/share/Trash/files/foo")
         trash_directory = HomeTrashDirectory(
-                              Path('/home/user/.local/share/Trash'))
+            Path('/home/user/.local/share/Trash'))
         
-        trashinfo = TrashInfo(Path("pippo"), datetime(2007, 7, 23, 23, 45, 07))
-
-        instance = TrashedFile("dummy-id", trashinfo, trash_directory)
+        instance = TrashedFile(path, deletion_date, info_file, actual_path, 
+                              trash_directory)
         
-        self.assertEqual("dummy-id", instance.id)
-        self.assertEqual(Path("/pippo"), instance.path)
-        self.assertEqual(datetime(2007, 7, 23, 23, 45, 07), instance.deletion_date)
-        self.assertEqual(trash_directory, instance.trash_directory)
+        assert_equals(instance.path, path)
+        assert_equals(instance.deletion_date, deletion_date)
+        assert_equals(instance.info_file, info_file)
+        assert_equals(instance.actual_path, actual_path)
+        assert_equals(trash_directory, trash_directory)
+    
+    @raises(ValueError)
+    def test_init_requires_absolute_paths(self):
+        path = Path("./relative-path")
+        deletion_date = datetime(2001,01,01)
+        info_file = Path("/home/user/.local/share/Trash/info/foo.trashinfo")
+        actual_path = Path("/home/user/.local/share/Trash/files/foo")
+        trash_directory = HomeTrashDirectory(
+            Path('/home/user/.local/share/Trash'))
         
-    def test_original_location_when_absolute(self) :
-        instance = TrashedFile(
-            "dummy-id",
-            TrashInfo(Path("/foo"), self.__dummy_datetime),
-            TrashDirectory(Path("/mnt/volume/Trash/123"), Volume(Path("/mnt/volume"))))
-        self.assertEqual(instance.original_location.path, "/foo")
-        
-    def test_original_location_when_relative(self):
-        instance = TrashedFile(
-            "dummy-id",
-            TrashInfo(Path("foo"), self.__dummy_datetime),
-            TrashDirectory(Path("/mnt/volume/Trash/123"), Volume(Path("/mnt/volume"))))
-        self.assertEqual(instance.original_location.path, "/mnt/volume/foo")
+        TrashedFile(path, deletion_date, info_file, actual_path, 
+                    trash_directory)
+    
 
     def test_restore_create_needed_directories(self):
         trash_dir = HomeTrashDirectory(self.xdg_data_home)

@@ -64,30 +64,33 @@ class TrashDirectory(object) :
     Trash the specified file.
     returns the TrashedFile
     """
-    def trash(self, file):
-        assert(isinstance(file, Path))
+    def trash(self, path):
+        assert(isinstance(path, Path))
         self.check()
         
-        if not self.volume == file.parent.volume :
+        if not self.volume == path.parent.volume :
             raise ("file is not in the same volume of trash directory!\n"
                    + "self.volume = " + str(self.volume) + ", \n"
                    + "file.parent.volume = "
-                        + str(file.parent.volume))
+                        + str(path.parent.volume))
 
-        trash_info=TrashInfo(self._path_for_trashinfo(file),datetime.now())
+        trash_info=TrashInfo(self._path_for_trashinfo(path),datetime.now())
         trash_id=self.persist_trash_info(trash_info)
+        actual_path = self.getOriginalCopy(trash_id)
+        info_file = self.getTrashInfoFile(trash_id)
 
         if not self.files_dir.exists() : 
             self.files_dir.mkdirs(0700)
 
         try :
-            file.move(self.getOriginalCopyPath(trash_id))
+            path.move(actual_path)
         except IOError, e :
-            self.getTrashInfoFile(trash_id).remove();
+            info_file.remove();
             raise e
         
-        return TrashedFile(trash_id,trash_info, self)
-
+        return TrashedFile(path.absolute(), trash_info.deletion_date, info_file,
+                           actual_path, self)
+    
     @property
     def info_dir(self) :
         return self.path.join("info")
@@ -120,14 +123,18 @@ class TrashDirectory(object) :
         Returns a generator for each trashed file in dir.
         """
         try : 
-            for trash_info_file in self.info_dir.list() :
-                if not trash_info_file.basename.endswith('.trashinfo') :
+            for info_file in self.info_dir.list() :
+                if not info_file.basename.endswith('.trashinfo') :
                     logger.warning("Non .trashinfo file in info dir")
                 else :
-                    id=self.calc_id(trash_info_file)
+                    trash_id=self.calc_id(info_file)
                     try:
-                        ti=TrashInfo.parse(trash_info_file.read())
-                        yield TrashedFile(id,ti,self)
+                        trash_info = TrashInfo.parse(info_file.read())
+                        actual_path = self.getOriginalCopy(trash_id)
+                        path = self._calc_original_location(trash_info.path)
+                        
+                        yield TrashedFile(path, trash_info.deletion_date, 
+                                          info_file, actual_path, self)
                     except ValueError:
                         logger.warning("Non parsable trashinfo file: %s" 
                                        % trash_info_file.path)
@@ -136,31 +143,26 @@ class TrashDirectory(object) :
         except OSError, e: # when directory does not exist
             pass 
     
+    def _calc_original_location(self, path):
+        if path.isabs() :
+            return path
+        else :
+            return self.volume.path.join(path)
+        
     @staticmethod
     def calc_id(trash_info_file):
         return trash_info_file.basename[:-len('.trashinfo')]
     
-    # TODO: remove if not used
-    def getOriginalCopyPath(self, trashId) :
-        return self.getOriginalCopy(trashId).path
-
-    # TODO: switch @property 
     # TODO: rename to original_copy
     def getOriginalCopy(self, trash_id) :
         return self.files_dir.join(trash_id)
 
-    # TODO: switch @property 
     # TODO: rename to trashinfo_file
     def getTrashInfoFile(self, trash_id) :
         return self.info_dir.join('%s.trashinfo' % trash_id)
 
-    # TODO: make private
-    # TODO: is useful?
-    def removeInfoFile(self, trashId) :
-        self.getTrashInfoFile(trashId).remove()
-
     def _path_for_trashinfo(self, fileToTrash):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     """
     Create a .trashinfo file in the $trash/info directory.
@@ -287,10 +289,6 @@ class Method1VolumeTrashDirectory(VolumeTrashDirectory):
             raise TopDirWithoutStickyBit("topdir should have the sticky bit: %s"
                                          % self.path)
 
-#TODO: remove
-class TrashDirectories(object):
-    pass
-    
 class TrashCan(object):
     def trashed_files(self):
         pass
@@ -386,79 +384,91 @@ class GlobalTrashCan(TrashCan) :
         dirname=".Trash-%s" % str(uid)
         trash_directory_path = volume.topdir.join(Path(dirname))
         return VolumeTrashDirectory(trash_directory_path,volume)
-    
-    # TODO: 
-    # - deprecate this method
-    # - replace the usage of this method with a filter of trashed_files()
-    @classmethod
-    def files_trahsed_from_dir(cls,dir) :
-        dir = os.path.realpath(dir)
-        for trashedfile in cls.trashed_files() :
-            if trashedfile.path.path.startswith(dir + os.path.sep) :
-                yield trashedfile
+
 
 class TrashedFile(object) :
-    def __init__(self,id,trash_info,trash_directory) :
-        assert isinstance(id, str)
-        assert isinstance(trash_info, TrashInfo)
-        #assert isinstance(trash_directory, TrashDirectory)
-        self.__id=id
-        self.__trash_info=trash_info
-        self.__trash_directory=trash_directory
+    """
+    Represent a trashed file.
+    Each trashed file is persisted in two files:
+     - $trash_dir/info/$id.trashinfo
+     - $trash_dir/files/$id
+    
+    Properties:
+     - path : the original path from where the file has been trashed
+     - deletion_date : the time when the file has been trashed (instance of 
+                       datetime)
+     - info_file : the file that contains information (instance of Path)
+     - actual_path : the path where the trashed file has been placed after the 
+                     trash opeartion (instance of Path)
+     - trash_directory : 
+    """
+    def __init__(self, 
+                 path, 
+                 deletion_date, 
+                 info_file, 
+                 actual_path, 
+                 trash_directory) :
+        
+        if not hasattr(actual_path,'move'):
+            raise TypeError('actual_path should have move(). '
+                            'Tip: use a Path instance.')
+
+        if not hasattr(actual_path,'remove'):
+            raise TypeError('actual_path should have remove(). '
+                            'Tip: use a Path instance.')
+        
+        if not hasattr(info_file,'remove'):
+            raise TypeError('info_file should have remove(). '
+                            'Tip: use a Path instance.')
+
+        if not Path('' + path).isabs():
+            raise ValueError("Absolute path required.")
+        
+        self._path = path
+        self._deletion_date = deletion_date
+        self._info_file = info_file
+        self._actual_path = actual_path
+        self._trash_directory = trash_directory
 
     @property
-    def id(self) :
-        return self.__id
-        
-    @property
     def path(self) :
-        if self.__trash_info.path.isabs() :
-            result=self.__trash_info.path
-        else :
-            result=self.__trash_directory.volume.path.join(self.__trash_info.path)
-        assert(isinstance(result, Path))
-        return result
+        """
+        The path from where the file has been trashed
+        """
+        return self._path
     
     @property
-    def original_location(self):
-        return self.path
+    def actual_path(self):        
+        return self._actual_path
     
-    # TODO remove
-    @property
-    def trash_info(self):
-        assert(isinstance(self.__trash_info,TrashInfo))
-        return self.__trash_info
-    
-    @property
-    def original_file(self):        
-        return self.__trash_directory.getOriginalCopy(self.id)
+    original_file = actual_path
     
     @property
     def deletion_date(self) :
-        return self.__trash_info.deletion_date
+        return self._deletion_date
 
     def restore(self, dest=None) :
         if dest is not None:
             raise NotImplementedError("not yet supported")
-        if not self.original_location.exists() :
-            self.original_location.parent.mkdirs()
+        if not self.path.exists() :
+            self.path.parent.mkdirs()
 
         self.original_file.move(self.path)
-        self.trash_info_file.remove()
+        self.info_file.remove()
 
     def purge(self) :
         # created by : Einar Orn Olason
         # 2008-07-26 Andrea Francia: added postcondition test
         self.original_file.remove()
-        self.trash_info_file.remove()
+        self.info_file.remove()
 
     @property
-    def trash_info_file(self):
-        return self.__trash_directory.getTrashInfoFile(self.id)
+    def info_file(self):
+        return self._info_file
     
     @property
     def trash_directory(self) :
-        return self.__trash_directory
+        return self._trash_directory
 
 class TrashInfo (object) :
     def __init__(self, path, deletion_date) :
