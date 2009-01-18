@@ -11,7 +11,7 @@ class TestVolume(unittest.TestCase) :
     def test_all(self) :
         if sys.platform[:3] != "win":
             volumes = Volume.all()
-            self.assert_(len(volumes) > 0)
+            self.assert_(len(list(volumes)) > 0)
             for v in volumes:
                 self.assert_(isinstance(v, Volume))
 

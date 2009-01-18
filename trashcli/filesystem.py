@@ -15,10 +15,9 @@ class Path (unipath.Path) :
         if self.path.lower().startswith("c:") :
             self.path = self.path [len("c:"):]
 
-    # TODO: use "@property"
-    def __get_parent(self) :
+    @property
+    def parent(self) :
         return Path(os.path.dirname(self.path))
-    parent = property(__get_parent)
 
     @property
     def realpath(self) :
@@ -141,21 +140,7 @@ class Volume(object) :
 
     def __str__(self) :
         return str(self.path)
-
-    # TODO: move to trash.py module
-    def hasCommonTrashDirectory(self) :
-        """
-        checks required by trash specification
-        (from http://www.ramendik.ru/docs/trashspec.0.7.html)
-
-         1. check if $topdir/.Trash exist
-         2. check if $topdir/.Trash is a directory
-         3. check if $topdir/.Trash is not a symbolic link
-         4. check it $topdir/.Trash has sticky bit
-        """
-        trashdir = self.path.join(".Trash")
-        return trashdir.exists() and trashdir.isdir() and not trashdir.islink()
-
+    
     @staticmethod
     def volume_of(path) : 
         path = os.path.realpath(path)
@@ -173,10 +158,13 @@ class Volume(object) :
                 self.type = type
                 self.name = name
         class mntent_struct(Structure):
-            _fields_ = [("mnt_fsname", c_char_p),  # Device or server for filesystem.
+            _fields_ = [("mnt_fsname", c_char_p),  # Device or server for 
+                                                   # filesystem.
                         ("mnt_dir", c_char_p),     # Directory mounted on.
-                        ("mnt_type", c_char_p),    # Type of filesystem: ufs, nfs, etc.
-                        ("mnt_opts", c_char_p),    # Comma-separated options for fs.
+                        ("mnt_type", c_char_p),    # Type of filesystem: ufs, 
+                                                   # nfs, etc.
+                        ("mnt_opts", c_char_p),    # Comma-separated options 
+                                                   # for fs.
                         ("mnt_freq", c_int),       # Dump frequency (in days).
                         ("mnt_passno", c_int)]     # Pass number for `fsck'.
 
@@ -212,4 +200,5 @@ class Volume(object) :
     
     @staticmethod
     def all() :
-        return [ Volume(Path(elem.mount_dir)) for elem in Volume.mounted_filesystems()]
+        for elem in Volume.mounted_filesystems():
+            yield Volume(Path(elem.mount_dir))

@@ -224,24 +224,24 @@ Path=home%2Fandrea%2Fprova.txt
 DeletionDate=2007-07-23T23:45:07"""
         result = TrashInfo.parse(data)
         self.assertEqual(result.path, "home/andrea/prova.txt")
-        self.assert_(isinstance(result.getDeletionTime(),datetime))
-        self.assertEqual(result.getDeletionTime(),
+        self.assert_(isinstance(result.deletion_date,datetime))
+        self.assertEqual(result.deletion_date,
                          datetime(2007, 7, 23, 23, 45, 07))
         
     def test_init(self) :
         instance = TrashInfo(Path("path"), datetime(2007, 7, 23, 23, 45, 07))
         self.assertEquals("path", instance.path)
-        self.assertEquals(datetime(2007, 7, 23, 23, 45, 07), instance.getDeletionTime())
+        self.assertEquals(datetime(2007, 7, 23, 23, 45, 07), instance.deletion_date)
 
     def test_init2(self) :
         instance = TrashInfo(Path("path"), datetime(2007, 7, 23, 23, 45, 07))
         self.assertEquals("path", instance.path)
-        self.assertEquals(datetime(2007, 7, 23, 23, 45, 07), instance.getDeletionTime())
+        self.assertEquals(datetime(2007, 7, 23, 23, 45, 07), instance.deletion_date)
     
-    def test_getDeletionTimeAsString(self) :
-        instance = TrashInfo(Path("path"), datetime(2007, 7, 23, 23, 45, 07))
-        self.assertEquals("2007-07-23T23:45:07", instance.getDeletionTimeAsString())
-        
+    def test_format_date(self) :
+        date = datetime(2007, 7, 23, 23, 45, 07)
+        self.assertEquals("2007-07-23T23:45:07", TrashInfo._format_date(date))
+
 
 class TestTrashedFile(TestCase) :
     __dummy_datetime=datetime(2007, 7, 23, 23, 45, 07)

@@ -62,7 +62,7 @@ class TrashDirectory(object) :
     
     """ 
     Trash the specified file.
-    returns TrashedFile
+    returns the TrashedFile
     """
     def trash(self, file):
         assert(isinstance(file, Path))
@@ -85,7 +85,7 @@ class TrashDirectory(object) :
         except IOError, e :
             self.getTrashInfoFile(trash_id).remove();
             raise e
-
+        
         return TrashedFile(trash_id,trash_info, self)
 
     @property
@@ -98,13 +98,21 @@ class TrashDirectory(object) :
         assert(isinstance(result,Path))
         return result
 
-    # TODO: remove if not used
-    def getInfoPath(self) :
-        return os.path.join(self.path.path, "info")
-
-    # TODO: remove if not used
-    def getFilesPath(self) :
-        return os.path.join(self.path.path, "files")
+    @property
+    def info_dir(self):
+        """
+        The $trash_dir/info dir that contains the .trashinfo files
+        as filesystem.Path.
+        """
+        return self.path.join("info")
+    
+    @property
+    def files_dir(self):
+        """
+        The directory where original file where stored. 
+        A Path instance.
+        """
+        return self.path.join("files")
 
     def trashed_files(self) :
         """
@@ -121,7 +129,8 @@ class TrashDirectory(object) :
                         ti=TrashInfo.parse(trash_info_file.read())
                         yield TrashedFile(id,ti,self)
                     except ValueError:
-                        logger.warning("Non parsable trashinfo file: %s" % trash_info_file.path)
+                        logger.warning("Non parsable trashinfo file: %s" 
+                                       % trash_info_file.path)
                     except IOError, e:
                         logger.warning(str(e))
         except OSError, e: # when directory does not exist
@@ -131,25 +140,19 @@ class TrashDirectory(object) :
     def calc_id(trash_info_file):
         return trash_info_file.basename[:-len('.trashinfo')]
     
-    def trashedFilesInDir(self, dir) :
-        dir = os.path.realpath(dir)
-        for trashedfile in self.trashed_files() :
-            if trashedfile.path.startswith(dir + Path.sep) :
-                yield trashedfile
-
     # TODO: remove if not used
     def getOriginalCopyPath(self, trashId) :
         return self.getOriginalCopy(trashId).path
 
     # TODO: switch @property 
     # TODO: rename to original_copy
-    def getOriginalCopy(self, trashId) :
-        return Path(os.path.join(self.getFilesPath(), str(trashId)))
+    def getOriginalCopy(self, trash_id) :
+        return self.files_dir.join(trash_id)
 
     # TODO: switch @property 
     # TODO: rename to trashinfo_file
-    def getTrashInfoFile(self, trashId) :
-        return Path(os.path.join(self.getInfoPath(), str(trashId) + '.trashinfo'))
+    def getTrashInfoFile(self, trash_id) :
+        return self.info_dir.join('%s.trashinfo' % trash_id)
 
     # TODO: make private
     # TODO: is useful?
@@ -165,14 +168,10 @@ class TrashDirectory(object) :
     """
     def persist_trash_info(self,trash_info) :
         assert(isinstance(trash_info, TrashInfo))
-
-        if not os.path.exists(self.getInfoPath()) : 
-            try :
-                os.makedirs(self.getInfoPath(), 0700)
-            except OSError, e:
-                logging.debug(e)
-                os.makedirs(self.getInfoPath())
-
+        
+        self.info_dir.mkdirs(0700)
+        self.info_dir.chmod(0700)
+        
         # write trash info
         index = 0
         while True :
@@ -187,9 +186,11 @@ class TrashDirectory(object) :
             trash_id = base_id + suffix
             trash_info_basename=trash_id+".trashinfo"
 
-            dest = os.path.join(self.getInfoPath(),trash_info_basename)
+            dest = self.info_dir.join(trash_info_basename)
             try :
-                handle = os.open(dest, os.O_RDWR | os.O_CREAT | os.O_EXCL, 0600)
+                handle = os.open(dest.path, 
+                                 os.O_RDWR | os.O_CREAT | os.O_EXCL, 
+                                 0600)
                 os.write(handle, trash_info.render())
                 os.close(handle)
                 logging.debug(".trashinfo created as %s." % dest)
@@ -396,10 +397,7 @@ class GlobalTrashCan(TrashCan) :
             if trashedfile.path.path.startswith(dir + os.path.sep) :
                 yield trashedfile
 
-
-
-
-class TrashedFile (object) :
+class TrashedFile(object) :
     def __init__(self,id,trash_info,trash_directory) :
         assert isinstance(id, str)
         assert isinstance(trash_info, TrashInfo)
@@ -425,6 +423,7 @@ class TrashedFile (object) :
     def original_location(self):
         return self.path
     
+    # TODO remove
     @property
     def trash_info(self):
         assert(isinstance(self.__trash_info,TrashInfo))
@@ -436,7 +435,7 @@ class TrashedFile (object) :
     
     @property
     def deletion_date(self) :
-        return self.__trash_info.getDeletionTime()
+        return self.__trash_info.deletion_date
 
     def restore(self, dest=None) :
         if dest is not None:
@@ -469,21 +468,24 @@ class TrashInfo (object) :
         path          -- the of the .trashinfo file (string or Path)
         deletion_date -- the date of deletion, should be a datetime.
         """
-        if  not isinstance(path,Path) :
+        if not isinstance(path,Path) :
             path = Path('' + path)
-        assert isinstance(deletion_date, datetime)
-        self.__path = path
-        self.__deletion_date = deletion_date
+        if not isinstance(deletion_date, datetime):
+            raise TypeError("deletion_date should be a datetime")
+        self._path = path
+        self._deletion_date = deletion_date
 
-    def getDeletionTimeAsString(self) :
-        return datetime.strftime(self.__deletion_date, "%Y-%m-%dT%H:%M:%S")
+    @staticmethod
+    def _format_date(deletion_date) : 
+        return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
 
-    def getDeletionTime(self) :
-        return self.__deletion_date
+    @property
+    def deletion_date(self) :
+        return self._deletion_date
 
+    @property
     def path(self) :
-        return self.__path
-    path = property(path)
+        return self._path
 
     @staticmethod
     def parse(data) :
@@ -528,13 +530,15 @@ class TrashInfo (object) :
     def render(self) :
         result = "[Trash Info]\n"
         result += "Path=" + urllib.quote(self.path.path,'/') + "\n"
-        result += "DeletionDate=" + self.getDeletionTimeAsString() + "\n"
+        result += "DeletionDate=" + self._format_date(self.deletion_date) + "\n"
         return result
+    
 
 class TimeUtils(object):
     @staticmethod
     def parse_iso8601(text) :
         t=time.strptime(text,  "%Y-%m-%dT%H:%M:%S")
-        return datetime(t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec)
+        return datetime(t.tm_year, t.tm_mon, t.tm_mday, 
+                        t.tm_hour, t.tm_min, t.tm_sec)
 
 trashcan = GlobalTrashCan()
