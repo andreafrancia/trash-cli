@@ -29,8 +29,6 @@ __copyright__="Copyright (c) 2007 Andrea Francia"
 __license__="GPL"
 
 import sys
-# TODO: remove
-sys.path.append("../")
 
 from trashcli.trash import TrashDirectory
 from trashcli.trash import TrashedFile
@@ -125,7 +123,7 @@ class TestTrashDirectory_persit_trash_info(TestCase) :
 
         self.assertTrue(isinstance(result, str))
         self.assertEquals('dummy-path', result)
-        trash_info_file=self.instance.getTrashInfoFile(result)
+        trash_info_file=self.instance._calc_path_for_info_file(result)
         self.assertTrue(trash_info_file.exists())
         self.assertEquals("""[Trash Info]
 Path=dummy-path
@@ -142,7 +140,7 @@ DeletionDate=2007-01-01T00:00:00
     
             self.assertTrue(isinstance(result, str))
             self.assertEquals('dummy-path'+"_" + str(i), result)
-            trash_info_file=self.instance.getTrashInfoFile(result)
+            trash_info_file=self.instance._calc_path_for_info_file(result)
             self.assertTrue(trash_info_file.exists())
             self.assertEquals("""[Trash Info]
 Path=dummy-path
@@ -159,7 +157,7 @@ DeletionDate=2007-01-01T00:00:00
     
             self.assertTrue(isinstance(result, str))
             self.assertTrue(result.startswith("dummy-path_"))
-            trash_info_file=self.instance.getTrashInfoFile(result)            
+            trash_info_file=self.instance._calc_path_for_info_file(result)
             self.assertTrue(trash_info_file.exists())
             self.assertEquals("""[Trash Info]
 Path=dummy-path

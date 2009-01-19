@@ -76,20 +76,20 @@ class TrashDirectory(object) :
 
         trash_info=TrashInfo(self._path_for_trashinfo(path),datetime.now())
         trash_id=self.persist_trash_info(trash_info)
-        actual_path = self.getOriginalCopy(trash_id)
-        info_file = self.getTrashInfoFile(trash_id)
-
+        trashed_file = self._create_trashed_file(trash_id, 
+                                         path.absolute(), 
+                                         trash_info.deletion_date)
+        
         if not self.files_dir.exists() : 
             self.files_dir.mkdirs(0700)
 
         try :
-            path.move(actual_path)
+            path.move(trashed_file.actual_path)
         except IOError, e :
             info_file.remove();
             raise e
         
-        return TrashedFile(path.absolute(), trash_info.deletion_date, info_file,
-                           actual_path, self)
+        return trashed_file
     
     @property
     def info_dir(self) :
@@ -130,11 +130,10 @@ class TrashDirectory(object) :
                     trash_id=self.calc_id(info_file)
                     try:
                         trash_info = TrashInfo.parse(info_file.read())
-                        actual_path = self.getOriginalCopy(trash_id)
                         path = self._calc_original_location(trash_info.path)
                         
-                        yield TrashedFile(path, trash_info.deletion_date, 
-                                          info_file, actual_path, self)
+                        yield self._create_trashed_file(trash_id, path, 
+                                                        trash_info.deletion_date)
                     except ValueError:
                         logger.warning("Non parsable trashinfo file: %s" 
                                        % trash_info_file.path)
@@ -142,7 +141,17 @@ class TrashDirectory(object) :
                         logger.warning(str(e))
         except OSError, e: # when directory does not exist
             pass 
-    
+
+    def _create_trashed_file(self, trash_id, path, deletion_date):
+        actual_path = self._calc_path_for_actual_file(trash_id)
+        info_file = self._calc_path_for_info_file(trash_id)
+        
+        return TrashedFile(path, 
+                           deletion_date,
+                           info_file, 
+                           actual_path, 
+                           self)
+                            
     def _calc_original_location(self, path):
         if path.isabs() :
             return path
@@ -153,12 +162,10 @@ class TrashDirectory(object) :
     def calc_id(trash_info_file):
         return trash_info_file.basename[:-len('.trashinfo')]
     
-    # TODO: rename to original_copy
-    def getOriginalCopy(self, trash_id) :
+    def _calc_path_for_actual_file(self, trash_id) :
         return self.files_dir.join(trash_id)
 
-    # TODO: rename to trashinfo_file
-    def getTrashInfoFile(self, trash_id) :
+    def _calc_path_for_info_file(self, trash_id) :
         return self.info_dir.join('%s.trashinfo' % trash_id)
 
     def _path_for_trashinfo(self, fileToTrash):
