@@ -1,7 +1,7 @@
 #!/usr/bin/python
-# libtrash/tests/__init__.py: Unit tests for libtrash.py classes.
+# tests/cli/test_restore.py: Unit tests for trashcli.cli.restore classes.
 #
-# Copyright (C) 2007,2008 Andrea Francia Trivolzio(PV) Italy
+# Copyright (C) 2007-2009 Andrea Francia Trivolzio(PV) Italy
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,6 +17,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
 # 02110-1301, USA.
+
 """
 test module for the trashcli.cli.restore module
 """

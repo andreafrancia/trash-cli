@@ -1,7 +1,7 @@
 #!/bin/bash
 # bashunit.bash Modified version of shunit2 main file.
 # This file is a fork of the one of http://shunit2.sourceforge.net/
-# The modification are copyright of Andrea Francia 2008
+# The modification are copyright of Andrea Francia 2008-2009
 #
 # The original file information
 # svn url: https://shunit2.svn.sourceforge.net/svnroot/shunit2/trunk/source/2.0/src/shell/shunit2

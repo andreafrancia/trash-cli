@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # setup.py: Python distutils script
 #
-# Copyright (C) 2007,2008 Andrea Francia Trivolzio(PV) Italy
+# Copyright (C) 2007-2009 Andrea Francia Trivolzio(PV) Italy
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

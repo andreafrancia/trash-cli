@@ -1,7 +1,7 @@
 #!/usr/bin/python
-# libtrash/tests/__init__.py: Unit tests for libtrash.py classes.
+# tests/test_trash.py: Unit tests for trashcli.trash module.
 #
-# Copyright (C) 2007,2008 Andrea Francia Trivolzio(PV) Italy
+# Copyright (C) 2007-2009 Andrea Francia Trivolzio(PV) Italy
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
