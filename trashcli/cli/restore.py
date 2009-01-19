@@ -54,7 +54,7 @@ class TrashNotFoundError(IOError):
 
 def find_latest(trashcan, path):
     def is_the_expected_path(trashed_file):
-        result=(trashed_file.path == path)
+        result=(trashed_file.path.absolute() == path.absolute())
         if result:
             logger.debug("Matched path =`%s'", trashed_file.path)
         else :
@@ -82,7 +82,6 @@ class Restorer(object):
         """
         latest=self.find_latest(self.trashcan, path)
         latest.restore(dest)
-
 
 def main():
     import sys

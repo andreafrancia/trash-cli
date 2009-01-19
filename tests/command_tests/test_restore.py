@@ -136,10 +136,11 @@ class RestoreTest(TestCase):
         """
         Trash the file in the trash dir at sandbox/home/.local/share/Trash
         """
-        self.trashdir.trash(path)
+        result = self.trashdir.trash(path)
         
         # sanity check 
         assert not path.exists()
+        return result
     
     def test_cmd_creates_commands(self):
         result = self.cmd("echo", "pippo").run()
@@ -159,6 +160,7 @@ class RestoreTest(TestCase):
         assert expected.match(result.out_data) is not None
     
     def test_restore_restores_trashed_file_absolute(self):
+        from time import sleep
         """
         $ trash-list
         2009-01-12 12:00:00 /home/andrea/file
@@ -167,17 +169,23 @@ class RestoreTest(TestCase):
         $ trash-list
         1977-01-12 12:00:00 /home/andrea/file # the oldest remain in trashcan
         """
-        raise SkipTest()
+        
         # prepare
         foo_file = self.create_file('foo', "first")
-        self.trash(foo_file)
+        trashed_file1 = self.trash(foo_file)
         
+        sleep(1) # to make sure that deletion dates differs
         foo_file = self.create_file('foo', "second")
-        self.trash(foo_file)
+        trashed_file2 = self.trash(foo_file)
 
+        sleep(1) # to make sure that deletion dates differs
         foo_file = self.create_file('foo', "latest")
-        self.trash(foo_file)
+        trashed_file3 = self.trash(foo_file)
         assert_false(foo_file.exists())
+        
+        print trashed_file1.deletion_date
+        print trashed_file2.deletion_date
+        print trashed_file3.deletion_date
         
         # execute 
         self.cmd(restore_cmd,foo_file.absolute()).assert_succeed()
@@ -191,7 +199,6 @@ class RestoreTest(TestCase):
         $ cd /home/andrea
         $ trash-restore ./file
         """
-        raise SkipTest()
         # prepare
         foo_file = self.create_file('file', "content")
         self.trash(foo_file)
