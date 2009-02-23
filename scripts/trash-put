@@ -42,7 +42,7 @@ use one of these commands:
 
   trash ./-foo
   
-Report bugs to <andreafrancia@sourceforge.net>.""")
+Report bugs to http://code.google.com/p/trash-cli/issues/""")
 
 parser.add_option("-d",
                   "--directory",
