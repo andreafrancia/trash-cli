@@ -18,6 +18,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
 # 02110-1301, USA.
 
+from nose.tools import assert_equals
+
 class CmdResult(object):
     """
     self.exit_code: integer
@@ -29,8 +31,17 @@ class CmdResult(object):
         self.out_data = stdout_data
         self.err_data = stderr_data
 
+    def assert_result(self, exit_code=None, output=None, error=None):
+        if exit_code != None:
+	    assert_equals(self.exit_code, exit_code)
+        if output != None:
+            assert_equals(self.out_data, output)
+        if error != None:
+            assert_equals(self.err_data, error) 
+        
+
 class Command(object):
-    def __init__(self, cmdline, env={}):
+    def __init__(self, cmdline, env={}, cwd=None):
         """
         cmdline: the command line (list of string or string)
         env: a map of enviroment variables
@@ -39,6 +50,7 @@ class Command(object):
         if not isinstance(env, dict): 
             raise TypeError("env should be a map")
         self.env = env
+        self.cwd = cwd
     
     def run(self,input_=None):
         """
@@ -50,6 +62,7 @@ class Command(object):
                      stdin=PIPE, 
                      stdout=PIPE, 
                      stderr=PIPE, 
+                     cwd=self.cwd,
                      env=self.env)
         (stdout_data,stderr_data) = proc.communicate(input_)
         proc.wait()

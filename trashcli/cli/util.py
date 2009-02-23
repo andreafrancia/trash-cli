@@ -18,6 +18,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
 # 02110-1301, USA.from optparse import IndentedHelpFormatter
 
+from optparse import IndentedHelpFormatter
+
 class NoWrapFormatter(IndentedHelpFormatter) :
     def _format_text(self, text) :
         "[Does not] format a text, return the text as it is."

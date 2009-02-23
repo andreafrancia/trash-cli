@@ -37,8 +37,8 @@ import logging
 import posixpath
 
 logger=logging.getLogger()
-logger.setLevel(logging.INFO)
-logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.WARNING)
+#logger.addHandler(logging.StreamHandler())
 
 from .filesystem import Volume
 from .filesystem import Path
