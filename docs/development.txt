@@ -1,0 +1,13 @@
+To build a release
+------------------
+
+Register the new version of the software on pypi
+
+  python setup register
+
+Then create a tarball and upload it to google and pypi:
+  
+  python setup.py sdist upload google_upload --src
+
+
+-EOF
