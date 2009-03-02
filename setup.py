@@ -25,9 +25,7 @@ Run it with
 """
 
 from distutils.core import setup
-from distutils.core import Command
 from setuptools import find_packages
-from freshmeat import freshmeat
 import sys
 import os
 
@@ -55,16 +53,6 @@ def read_description():
     finally:
         f.close()
 
-class my_command(Command):
-   user_options= []
-   def initialize_options (self):
-       pass
-   def finalize_options (self):
-       pass
-   def run(self):
-       print "hello world"
-       print str(self.distribution)
-
 setup(
     name = 'trash-cli',
     version = trashcli.version,
@@ -88,6 +76,6 @@ setup(
                                 'man/man1/trash-list.1',
                                 'man/man1/trash-restore.1',
                                 'man/man1/trash-put.1'])],
-    cmdclass={'google_upload': google_upload, 'freshmeat': freshmeat},
+    cmdclass={'google_upload': google_upload},
     )
 
