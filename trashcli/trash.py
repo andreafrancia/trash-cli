@@ -36,9 +36,9 @@ import traceback
 import logging
 import posixpath
 
-logger=logging.getLogger()
+logger=logging.getLogger('trashcli.trash')
 logger.setLevel(logging.WARNING)
-#logger.addHandler(logging.StreamHandler())
+logger.addHandler(logging.StreamHandler())
 
 from .filesystem import Volume
 from .filesystem import Path
@@ -75,8 +75,8 @@ class TrashDirectory(object) :
                         + str(path.parent.volume))
 
         trash_info=TrashInfo(self._path_for_trashinfo(path),datetime.now())
-        trash_id=self.persist_trash_info(trash_info)
-        trashed_file = self._create_trashed_file(trash_id, 
+        trash_info_file=self.persist_trash_info(trash_info)
+        trashed_file = self._create_trashed_file(trash_info_file.id, 
                                          path.absolute(), 
                                          trash_info.deletion_date)
         
@@ -86,7 +86,7 @@ class TrashDirectory(object) :
         try :
             path.move(trashed_file.actual_path)
         except IOError, e :
-            info_file.remove();
+            trash_info_file.remove();
             raise e
         
         return trashed_file
@@ -173,7 +173,7 @@ class TrashDirectory(object) :
 
     """
     Create a .trashinfo file in the $trash/info directory.
-    returns the trash_id for the created file.
+    returns the created TrashInfoFile.
     """
     def persist_trash_info(self,trash_info) :
         assert(isinstance(trash_info, TrashInfo))
@@ -202,10 +202,10 @@ class TrashDirectory(object) :
                                  0600)
                 os.write(handle, trash_info.render())
                 os.close(handle)
-                logging.debug(".trashinfo created as %s." % dest)
-                return trash_id
+                logger.debug(".trashinfo created as %s." % dest)
+                return TrashInfoFile(dest, trash_id)
             except OSError, e:
-                logging.debug("Attempt for creating %s failed." % dest)
+                logger.debug("Attempt for creating %s failed." % dest)
 
             index += 1
 
@@ -549,7 +549,11 @@ class TrashInfo (object) :
         result += "Path=" + urllib.quote(self.path.path,'/') + "\n"
         result += "DeletionDate=" + self._format_date(self.deletion_date) + "\n"
         return result
-    
+
+class TrashInfoFile(Path):
+    def __init__(self, path, id):
+        Path.__init__(self, path)
+        self.id = id
 
 class TimeUtils(object):
     @staticmethod

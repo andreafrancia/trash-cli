@@ -156,5 +156,8 @@ setup-test-enviroment() {
         
         rm -Rf $topdir/.Trash
         rm -Rf $topdir/.Trash-$uid        
+       
+	export XDG_DATA_HOME="./sandbox/XDG_DATA_HOME"
+ 
 }
 

@@ -65,7 +65,7 @@ test-restore-trash-restores-in-dir() {
         # prepare
         _trash-empty # delete all
         create-trashed-file dir/file
-        mkdir dir
+        rmdir dir
         assertTrue "[ ! -e dir ]" 
         
         # execute        

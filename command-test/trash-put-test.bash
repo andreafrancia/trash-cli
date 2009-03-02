@@ -23,6 +23,8 @@
 # load common definitions
 . "$(dirname "$0")/commons.bash"
 
+setup-test-enviroment
+
 testPrintVersion()
 {
         _trash-put --version
@@ -33,7 +35,6 @@ testPrintVersion()
 #   1. trash_in_home_trashcan <file>
 #   2. trash_in_home_trashcan <dir>
 test_trash_in_home_trashcan() {
-        export XDG_DATA_HOME="./sandbox/XDG_DATA_HOME"
         local expected_trashcan="$XDG_DATA_HOME/Trash"
 
         file_to_trash_path=(
@@ -182,7 +183,6 @@ test_trash-empty_removes_trash() {
 }
 
 test_trash-list_on_non_trashinfo_files_in_info_dir() {
-        export XDG_DATA_HOME="./sandbox/XDG_DATA_HOME"
         rm -Rf "$XDG_DATA_HOME/Trash"
         mkdir --parent "$XDG_DATA_HOME/Trash/info"
         touch "$XDG_DATA_HOME/info/non-trashinfo" #garbage: not ending with .trashinfo
@@ -191,7 +191,6 @@ test_trash-list_on_non_trashinfo_files_in_info_dir() {
 }
 
 test_trash-list_on_invalid_info() {
-        export XDG_DATA_HOME="./sandbox/XDG_DATA_HOME"
         rm -Rf "$XDG_DATA_HOME/Trash"
         mkdir --parent "$XDG_DATA_HOME/Trash/info"
         echo "An invalid trashinfo" > "$XDG_DATA_HOME/info/invalid.trashinfo"
