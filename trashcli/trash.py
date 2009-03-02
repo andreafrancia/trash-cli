@@ -136,7 +136,7 @@ class TrashDirectory(object) :
                                                         trash_info.deletion_date)
                     except ValueError:
                         logger.warning("Non parsable trashinfo file: %s" 
-                                       % trash_info_file.path)
+                                       % info_file.path)
                     except IOError, e:
                         logger.warning(str(e))
         except OSError, e: # when directory does not exist
