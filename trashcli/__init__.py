@@ -1,2 +1,2 @@
 # the distribution script will change this to actual version number
-version='0.2.1'
+version='0.11.0'
