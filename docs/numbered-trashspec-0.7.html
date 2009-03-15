@@ -1,0 +1,466 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head>
+
+
+	<meta http-equiv="CONTENT-TYPE" content="text/html; charset=KOI8-R">
+	<title>Trash specification</title>
+	<meta name="GENERATOR" content="OpenOffice.org 1.1.0  (Linux)">
+	<meta name="AUTHOR" content="Mikhail Ramendik">
+	<style type="text/css">
+	<!--
+		P.sdfootnote { margin-left: 0.5cm; text-indent: -0.5cm; margin-bottom: 0cm; font-size: 80% }
+		A.sdfootnoteanc { font-size: 57% }
+		A.req { font-weight:bold}
+	-->
+	</style>
+</head><body dir="ltr" lang="en-US">
+<div style="background-color:#FFFF00; border-color:#FF0000; border-style:double">
+<h1>Numbered version of The FreeDesktop.org Trash specification</h1>
+<p>This is a modification of  <a href="http://www.ramendik.ru/docs/trashspec.html">http://www.ramendik.ru/docs/trashspec.html</a> where all requirements are numbered.</p>
+<h3>Copyright and License of the modifications</h3>
+<p>This copyright notice applies only to the modifications respect the <a href="http://www.ramendik.ru/docs/trashspec.html">original document</a>. The modifications consist mainly in the requirements numbering.</p>
+<p>Copyright (C) 2008 Andrea Francia, <a href="http://andreafrancia.it">http://andreafrancia.it</a>. </p>
+<p>The license: Use and distribute as you wish. If you make a
+  modified version and redistribute it, (a) keep the name of the author
+  and contributors somewhere, and (b) indicate that this is a modified
+  version.</p>
+</div>
+<h1>The FreeDesktop.org Trash specification</h1>
+<h3>Written by Mikhail Ramendik &lt;<a href="mailto:mr@ramendik.ru">mr@ramendik.ru</a>&gt;</h3>
+<h3>Content by David Faure &lt;<a href="mailto:dfaure@trolltech.com">dfaure@trolltech.com</a>&gt;,
+Alexander Larsson &lt;<a href="mailto:alexl@redhat.com">alexl@redhat.com</a>&gt;
+and others on the FreeDesktop.org mailing list</h3>
+<h3>Version 0.7</h3>
+<h2>Abstract</h2>
+<p>The purpose of this Specification is to provide a common way in
+which all &#8220;Trash can&#8221; implementations should store, list,
+and undelete trashed files. By complying with this Specification,
+various Trash implementations will be able to work with the same
+devices and use the same Trash storage. For example, if one
+implementation sends a file into the Trash can, another will be able
+to list it, undelete it, or clear it from the Trash.</p>
+<h2>Introduction</h2>
+<p>An ability to recover accidentally deleted files has become the de
+facto standard for today's desktop user experience. 
+</p>
+<p>Users do not expect that anything they delete is permanently gone.
+Instead, they are used to a &#8220;Trash can&#8221; metaphor. A
+deleted document ends up in a &#8220;Trash can&#8221;, and stays
+there at least for some time &#8212; until the can is manually or
+automatically cleaned. 
+</p>
+<p>This system has its own problems. Notably, cleaning disk space
+becomes a two-step operation &#8212; delete files and empty trash;
+this can lead to confusion for inexperienced users (&#8220;what's
+taking up my space?!&#8221;). Also, it is not easy to adapt the
+system to a multiuser environment. Besides, there is a potential for
+abuse by uneducated users &#8212; anecdotal evidence says they
+sometimes store important documents in the Trash can, and lose them
+when it gets cleaned!</p>
+<p>However, the benefits of this system are so great, and the user
+expectation for it so high, that it definitely should be implemented
+on a free desktop system. And in fact, several implementations
+already exist &#8212; some as command line utilities, some as
+preloaded libraries, and some as parts of major desktop environments.
+For example, both Gnome and KDE have their own trash mechanisms.</p>
+<p>This Specification is to provide a common way in which all Trash
+can implementations should store trashed files. By complying with
+this Specification, various Trash implementations will be able to
+work with the same devices and use the same Trash storage. 
+</p>
+<p>This is important, at least, for shared network resources,
+removable devices, and in cases when different implementations are
+used on the same machine at different moments (i.e. some users prefer
+Gnome, others prefer KDE, and yet others are command-line fans).</p>
+<h2>Scope and limitations</h2>
+<p>This Specification only describes the Trash storage. It does <b>not</b>
+limit the ways in which the actual implementations should operate, as
+long as they use the same Trash storage. Command line utilities,
+desktop-integrated solutions and preloaded libraries can work with
+this specification. <a class="sdfootnoteanc" name="sdfootnote1anc" href="#sdfootnote1sym"><sup>1</sup></a></p>
+<p>This Specification is geared towards the Unix file system tree
+approach. However, with slight modifications, it can easily be used
+with another kind of file system tree (for example, with drive
+letters). 
+</p>
+<p>A multi-user environment, where users have specific numeric
+identifiers, is essential for this Specification. 
+</p>
+<p>File systems and logon systems can be
+case-sensitive or non-case-sensitive; therefore, systems should
+generally not allow user names that differ only in case.</p>
+<h2>Definitions</h2>
+<p>Trash, or Trash can &#8212; the storage of files that were trashed
+(&#8220;deleted&#8221;) by the user. These files can be listed,
+undeleted, or cleaned from the trash can.</p>
+<p>Trashing &#8212; a &#8220;delete&#8221; operation in which files
+are transferred into the Trash can.</p>
+<p>Erasing &#8212; an operation in which files (possibly already in
+the Trash can) are removed (unlinked) from the file system. An erased
+file is generally considered to be non-recoverable; the space used by
+this file is freed. [A &#8220;shredding&#8221; operation, physically
+overwriting the data, may or may not accompany an erasing operation;
+the question of shredding is beyond the scope of this document].</p>
+<p>Original location &#8212; the name and location that a file
+(currently in the trash) had prior to getting trashed.</p>
+<p>Original filename &#8212; the name that a file (currently in the
+trash) had prior to getting trashed. 
+</p>
+<p>Top directory , $topdir &#8212; the directory where a file system
+is mounted. &#8220;/&#8221; is the top directory for the root file
+system, but not for the other mounted file systems. For example,
+separate FSes can be mounted on &#8220;/home&#8221;, &#8220;/mnt/flash&#8221;,
+etc. In this text, the designation &#8220;$topdir&#8221; is used for
+&#8220;any top directory&#8221;.</p>
+<p>User identifier , $uid &#8212; the numeric user identifier for a
+user. $uid is used here as &#8220;the numeric user identifier of the
+user who is currently logged on&#8221;.</p>
+<p>Trash directory &#8212; a directory where trashed files, as well
+as the information on their original name/location and time of
+trashing, are stored. There may be several trash directories on one
+system; this Specification defines their location and contents. In
+this text, the designation &#8220;$trash&#8221; is used for &#8220;any
+trash directory&#8221;.</p>
+<p>&#8220;Home trash&#8221; directory &#8212; a user's main trash
+directory. Its name and location is defined in this document.</p>
+<p>The key words "MUST", "MUST NOT", "REQUIRED",
+"SHALL", "SHALL NOT", "SHOULD", "SHOULD
+NOT", "RECOMMENDED", "MAY", and "OPTIONAL"
+in this document are to be interpreted as described in <a href="http://www.faqs.org/rfcs/rfc2119.html">RFC
+2119</a>.</p>
+<h2>Trash directories</h2>
+<p>A system can have one or more trash directories. The contents of
+any trash directory are to be compliant with the same standard,
+described below.</p>
+<p><a class="req" name="req-010">[010]</a> For every user<a class="sdfootnoteanc" name="sdfootnote2anc" href="#sdfootnote2sym"><sup>2</sup></a>
+a &#8220;home trash&#8221; directory MUST be available<a class="sdfootnoteanc" name="sdfootnote3anc" href="#sdfootnote3sym"><sup>3</sup></a>.
+<a class="req" name="req-020">[020]</a> Its name and location are $XDG_DATA_HOME/Trash ; $XDG_DATA_HOME is
+the base directory for user-specific data, as defined in the <a href="http://www.freedesktop.org/Standards/basedir-spec">Desktop
+Base Directory Specification</a> . 
+</p>
+<p>The &#8220;home trash&#8221; should function as the user's main
+trash directory. Files that the user trashes from the same file
+system (device/partition) should be stored here (see the next section
+for the storage details). <a class="req" name="req-030">[030]</a> A &#8220;home trash&#8221; directory SHOULD
+be automatically created for any new user. <a class="req" name="req-040">[040]</a> If this directory is
+needed for a trashing operation but does not exist, the
+implementation SHOULD automatically create it, without any warnings
+or delays.</p>
+<p>The implementation MAY also support trashing files from the rest
+of the system (including other partitions, shared network resources,
+and removable devices) into the &#8220;home trash&#8221; directory .
+This is a &#8220;failsafe&#8221; method: trashing works for all file
+locations, the user can not fill up any space except the home
+directory, and as other users generally do not have access to it, no
+security issues arise.</p>
+<p>However, this solution leads to costly file copying (between
+partitions, over the network, from a removable device, etc.) A delay
+instead of a quick &#8220;delete&#8221; operation can be unpleasant
+to users.</p>
+<p>An implementation may choose not to support trashing in some of
+these cases (notably on network resources and removable devices).
+This is what some well known operating systems do.</p>
+<p>It may also choose to provide trashing in the &#8220;top
+directories&#8221; of some or all mounted resources. This trashing is
+done in two ways, described below as (1) and (2). 
+</p>
+<p>(1) An administrator can create an $topdir/.Trash directory. The
+permissions on this directories should permit all users who can trash
+files at all to write in it.; and the &#8220;sticky bit&#8221; in the
+permissions must be set, if the file system supports it. 
+</p>
+<p><a class="req" name="req-050">[050]</a> When trashing a file from a non-home partition/device<a class="sdfootnoteanc" name="sdfootnote4anc" href="#sdfootnote4sym"><sup>4</sup></a>
+, an implementation (if it supports trashing in top directories) MUST
+check for the presence of $topdir/.Trash.</p>
+<p><a class="req" name="req-060">[060]</a> When preparing a list of all trashed files (i.e. to show to the
+user), an implementation also MUST check for .Trash in all top
+directories that are known to it.</p>
+<p><a class="req" name="req-070">[070]</a> If this directory is present, the implementation MUST, by default,
+check for the &#8220;sticky bit&#8221;. (It MAY provide a way for the
+administrator, <i>and only the administrator</i>, to disable this
+checking for a particular top directory, in order to support file
+systems that do not have the &#8220;sticky bit&#8221;).</p>
+<p><a class="req" name="req-080">[080]</a> The implementation also MUST check that
+this directory is not a symbolic link.
+</p>
+<p><a class="req" name="req-090">[090]</a> If any of these checks fail, the
+implementation MUST NOT use this directory for either trashing or
+undeleting files, even is an appropriate $uid directory (see below)
+already exists in it. <a class="req" name="req-100">[100]</a> Besides, the implementation SHOULD report the
+failed check to the administrator, and MAY also report it to the
+user.</p>
+<p>The following paragraph applies ONLY to
+the case when the implementation supports trashing in the top
+directory, and a $topdir/.Trash exists and has passed the checks:</p>
+<p style="margin-left: 2cm;"><a class="req" name="req-110">[110]</a> If the directory exists and passes the
+checks, a subdirectory of the $topdir/.Trash directory is to be used
+as the user's trash directory for this partition/device. The name of
+this subdirectory is the numeric identifier of the current user
+($topdir/.Trash/$uid). <a class="req" name="req-120">[120]</a> When trashing a file, if this directory does
+not exist for the current user, the implementation MUST immediately
+create it, without any warnings or delays for the user.</p>
+<p>(2) <a class="req" name="req-130">[130]</a> If an $topdir/.Trash directory is
+absent, an $topdir/.Trash-$uid directory is to be used as the user's
+trash directory for this device/partition. $uid is the user's numeric
+identifier.</p>
+<p>The following paragraph applies ONLY to
+the case when the implementation supports trashing in the top
+directory, and a $topdir/.Trash does not exist or has not passed the
+checks:</p>
+<p style="margin-left: 2cm;"><a class="req" name="req-140">[140]</a> When trashing a file,
+if an $topdir/.Trash-$uid directory does not exist, the
+implementation MUST immediately create it, without any warnings or
+delays for the user.</p>
+<p>When trashing a file, if this directory
+does not exist for the current user, the implementation MUST
+immediately create it, without any warnings or delays for the user.</p>
+<p><b>Notes.</b> <a class="req" name="req-150">[150]</a> If an implementation provides trashing in top
+directories at all, it MUST support both (1) and (2). 
+</p>
+<p><a class="req" name="req-160">[160]</a> If an implementation does NOT provide such trashing, and does
+provide the user with some interface to view and/or undelete trashed
+files, it SHOULD make a &#8220;best effort&#8221; to show files
+trashed in top directories (by both methods) to the user, among other
+trashed files or in a clearly accessible separate way.</p>
+<p><a class="req" name="req-170">[170]</a> When trashing a file, if the method (1) fails at any point &#8212;
+i.e. the $topdir/.Trash directory does not exist, or it fails the
+checks, or the system refuses to create an $uid directory in it &#8212;
+the implementation MUST, by default, fall back to method (2),
+described below. <a class="req" name="req-180">[180]</a> Except for the case when $topdir/.Trash fails the
+checks, the fallback must be immediate, without any warnings or
+delays. The implementation MAY, however, a way for the administrator
+to disable (2) completely.</p>
+<p><a class="req" name="req-190">[190]</a> If both (1) and (2) fail (i.e. no
+$topdir/.Trash directory exists, and an attempt to create
+$topdir/.Trash-$uid fails), the implementation MUST either trash the
+file into the user's &#8220;home trash&#8221; or refuse to trash it.
+The choice between these options can be pre-determined, or it can
+depend on the particular situation (i.e. No trashing of very large
+files). <a class="req" name="req-200">[200]</a> However, if an implementation refuses to trash a file after a
+user action that generally causes trashing, it MUST clearly warn the
+user about this, and request confirmation for the action.</p>
+<p><a class="req" name="req-210">[210]</a> For showing trashed files, implementations SHOULD support (1) and
+(2) at the same time (i.e. if both $topdir/.Trash/$uid and
+$topdir/.Trash-$uid are present, it should list trashed files from
+both of them).</p>
+<h2>Contents of a trash directory</h2>
+<p>The previous section has described the location of trash
+directories. This section concerns the contents of any trash
+directory (including the &#8220;home trash&#8221; directory). This
+trash directory will be named &#8220;$trash&#8221; here.</p>
+<p>A trash directory contains two subdirectories, named <b>info </b>and
+<b>files</b>.</p>
+<p>The <b>$trash/files</b> directory contains the files and
+directories that were trashed. <a class="req" name="req-220">[220]</a> When a file or directory is trashed,
+it MUST be moved into this directory<a class="sdfootnoteanc" name="sdfootnote5anc" href="#sdfootnote5sym"><sup>5</sup></a>
+. The names of files in this directory are to be determined by the
+implementation; the only limitation is that they must be unique
+within the directory. <i>Even if a file with the same name and
+location gets trashed many times, each subsequent trashing must not
+overwrite a previous copy. </i><a class="req" name="req-230">[230]</a> The access rights, access time,
+modification time and extended attributes (if any) for a
+file/directory in $trash/files SHOULD be the same as the
+file/directory had before getting trashed.</p>
+<p><b>IMPORTANT NOTE. While an implementation may choose to base
+filenames in the $trash/files directory on the original filenames,
+this is never to be taken for granted<a class="sdfootnoteanc" name="sdfootnote6anc" href="#sdfootnote6sym"><sup>6</sup></a>.
+<a class="req" name="req-240">[240]</a> A filename in the $trash/files directory MUST NEVER be used to
+recover the original filename; use the info file (see below) for
+that. </b>(If an info file corresponding to a file/directory in
+$trash/files is not available, this is an emergency case, and <a class="req" name="req-250">[250]</a> MUST be
+clearly presented as such to the user or to the system
+administrator). 
+</p>
+<p>The <b>$trash/info </b>directory contains an &#8220;information
+file&#8221; for every file and directory in $trash/files. <a class="req" name="req-260">[260]</a> This file
+MUST have exactly the same name as the file or directory in
+$trash/files, plus the extension &#8220;.trashinfo&#8221;<a class="sdfootnoteanc" name="sdfootnote7anc" href="#sdfootnote7sym"><sup>7</sup></a>.
+</p>
+<p>The format of this file is similar to the format of a desktop
+entry file, as described in the <a href="http://www.freedesktop.org/Standards/desktop-entry-spec">Desktop
+Entry Specification</a> . <a class="req" name="req-270">[270]</a> Its first line must be [Trash Info]. 
+</p>
+<p><a class="req" name="req-280">[280]</a> It also must have two lines that are
+key/value pairs as described in the Desktop Entry Specification:</p>
+<ul>
+	<li><p>The key &#8220;Path&#8221;
+	contains the original location of the file/directory, as either an
+	absolute pathname (starting with the slash character &#8220;/&#8221;)
+	or a relative pathname (starting with any other character). A
+	relative pathname is to be from the directory in which the trash
+	directory resides (i.e., from $XDG_DATA_HOME for the &#8220;home
+	trash&#8221; directory); <a class="req" name="req-290">[290]</a> it MUST not include a &#8220;..&#8221;
+	directory, and for files not &#8220;under&#8221; that directory,
+	absolute pathnames must be used. <a class="req" name="req-300">[300]</a> The system SHOULD only support
+	absolute pathnames in the &#8220;home trash&#8221; directory, not in
+	the directories under $topdir. 
+	</p>
+	<p><a class="req" name="req-310">[310]</a> The value type for this key is
+	&#8220;string&#8221;; it should store the file name as the
+	sequence of bytes produced by the file system, with characters escaped
+        as in URLs (as defined by <a href="http://www.faqs.org/rfcs/rfc2396.html">RFC
+2396</a>, section 2).</p>
+	</li><li><p><a class="req" name="req-320">[320]</a> The key &#8220;DeletionDate&#8221; contains
+	the date and time when the file/directory was trashed. <a class="req" name="req-330">[330]</a> The date and
+	time are to be in the YYYY-MM-DDThh:mm:ss
+	format (see <a href="http://www.faqs.org/rfcs/rfc3339.html">RFC
+	3339</a>). <a class="req" name="req-340">[340]</a> The time zone should be the user's (or
+	filesystem's) local time. The value type for this key is &#8220;string&#8221;.</p>
+</li></ul>
+<p>Example:</p>
+<pre>[Trash Info]
+Path=foo/bar/meow.bow-wow
+DeletionDate=20040831T22:32:08</pre><p>
+<a class="req" name="req-350">[350]</a> The implementation MUST ignore any other lines in this file, except
+the first line (must be [Trash Info]) and these two key/value pairs.
+<a class="req" name="req-360">[360]</a> If a string that starts with &#8220;Path=&#8221; or &#8220;DeletionDate=&#8221;
+occurs several times, the first occurence is to be used.<a class="sdfootnoteanc" name="sdfootnote8anc" href="#sdfootnote8sym"><sup>8</sup></a></p>
+<p>Note that $trash/info has no subdirectories. For a directory in
+$trash/files, only an information file for its own name is needed.
+This is because, when a subdirectory gets trashed, it must be moved
+to $trash/files with its entire contents. <a class="req" name="req-370">[370]</a> The names of the files and
+directories within the directory MUST NOT be altered; <a class="req" name="req-380">[380]</a> the
+implementation also SHOULD preserve the access and modification time
+for them.</p>
+<p><a class="req" name="req-390">[390]</a> When trashing a file or directory, the implementation MUST create
+the corresponding file in $trash/info first.  <a class="req" name="req-400">[400]</a> Moreover, it MUST try to do this in an atomic
+fashion, so that if two processes try trash files with the same
+filename this will result in two different trash files. On Unix-like
+systems this is done by generating a filename, and then opening with
+O_EXCL. If that succeeds the creation was atomic (at least on the
+same machine), if it fails you need to pick another filename.</p>
+<h2>Implementation notes</h2>
+<p><a class="req" name="req-410">[410]</a> The names of the files/directories in $trash/info SHOULD be
+somehow related to original file names. This can help manual recovery
+in emergency cases (for example, if the corresponding info file is
+lost).</p>
+<p><a class="req" name="req-420">[420]</a> When trashing a file or directory, the implementation SHOULD check
+whether the user has the necessary permissions to delete it, before
+starting the trashing operation itself.</p>
+<p>When copying, rather than moving, a file into the trash (i.e. When
+trashing to the &#8220;home trash&#8221; from a different partition),
+exact preservation of permissions might be impossible. Notably, a
+file.directory that was owned by another user will now be owned by
+this user (changing owners is usually only available to root). This
+should not cause the trashing operation to fail.</p>
+<p><a class="req" name="req-430">[430]</a> In this same situation, setting the permissions SHOULD be done
+<i>after</i> writing the copied file, as they may make it
+unwriteable..</p>
+<p>A trashing operation might be refused because of insufficient
+permissions, even when the user does have the right to delete a file
+or directory. This may happen when the user has the right to delete a
+file/directory, but not to read it (or, in the case of a directory,
+to list it). In this case, the best solution is probably to warn the
+user, offering options to delete the file/directory or leave it
+alone.</p>
+<p>Automatic trash cleaning may, and probably eventually should, be
+implemented. <a class="req" name="req-440">[440]</a> But the implementation SHOULD be somehow known to the
+user.</p>
+<p>If a directory was trashed in its entirety, it is easiest to
+undelete it or remove it from the trash only in its entirety as well,
+not as separate files. The user might not have the permissions to
+delete some files in it even while he does have the permission to
+delete the directory!</p>
+<p><b>Important note on scope</b>. This specification currently does
+NOT define trashing on remote machines where multiuser permissions
+are implemented but the numeric user ID is not supported, like FTP
+sites and CIFS shares. In systems implementing this specification,
+trashing of files from such machines is to be done only to the user's
+home trash directory (if at all). A future version may address this
+limitation.</p>
+<h2>Administrativia</h2>
+<h3>Status of this document</h3>
+<p>This document is, at this moment, only a draft. It will hopefully
+become an official or semi-official FreeDesktop.org specification in
+the future.</p>
+<p>Date of first public distribution: August 30, 2004. This document
+will serve as evidence of prior art for any patent filed after this
+date.</p>
+<h3>Copyright and License</h3>
+<p>Copyright (C) 2004 Mikhail Ramendik , <a href="mailto:mr@ramendik.ru">mr@ramendik.ru</a>
+. 
+</p>
+<p>The originators of the ideas that are described here did not
+object to this copyright. The author is ready to transfer the
+copyright to a standards body that would be committed to keeping this
+specification, or any successor to it, an open standard.</p>
+<p>The license: Use and distribute as you wish. If you make a
+modified version and redistribute it, (a) keep the name of the author
+and contributors somewhere, and (b) indicate that this is a modified
+version.</p>
+<p>Implementation under any license at all is explicitly allowed.</p>
+<h3>Location</h3>
+<p><a href="http://www.ramendik.ru/docs/trashspec.html">http://www.ramendik.ru/docs/trashspec.html</a>
+. If this document gets hosted by FreeDesktop.org, a link to the page
+will still be available at this location.</p>
+<p><a href="http://www.ramendik.ru/docs/trashspec.0.7.html">http://www.ramendik.ru/docs/trashspec.0.5.html</a>
+is the permanent location of this version. 
+</p>
+<h3>Version history</h3>
+<p>0.1 &#8220;First try&#8221;, August 30, 2004. Initial draft.
+&#8220;Implementation notes&#8221; not written as yet.</p>
+<p>0.2 August 30, 2004. Updated with feedback by Alexander Larsson
+&lt;<a href="mailto:alexl@redhat.com">alexl@redhat.com</a>&gt; and by
+Dave Cridland &lt;<a href="mailto:dave@cridland.net">dave@cridland.net</a>&gt;</p>
+<p>0.3 September 8, 2004. Changed the name and location of the &#8220;home
+trash&#8221; directory, and introduced the generic term &#8220;home
+trash&#8221;. Changed the trash info file format to a .desktop-like
+one. Added directions on creation of info files and copying of
+trashed files. Changed user names to user ids. Added implementation
+notes. Added a copyright notice.</p>
+<p>0.4 September 9, 2004. Changed [Trash entry] to [Trash info] and
+fixed some typo's</p>
+<p>0.5 September 9, 2004. Changed [Trash info] to [Trash Info]</p>
+<p>0.6 October 8, 2004. Corrections by Alexander Larsson
+&lt;<a href="mailto:alexl@redhat.com">alexl@redhat.com</a>&gt; . Also
+added &#8220;note on scope&#8221;. Cleaned up HTML. Added a link to this 
+document on the freedesktop.org standards page</p>
+<p>0.7 April 12, 2005. Added URL-style encoding for the name of the deleted file,
+as implemented in KDE 3.4</p>
+<p><br><br>
+</p>
+<div id="sdfootnote1">
+	<p class="sdfootnote" style="margin-bottom: 0.5cm;"><a class="sdfootnotesym" name="sdfootnote1sym" href="#sdfootnote1anc">1</a>However,
+	developers of preloaded libraries should somehow work around the
+	case when a desktop environment also supporting the Trash
+	specification is run on top of them. &#8220;Double trashing&#8221;
+	and &#8220;trashing of the trash&#8221; should be avoided.</p>
+</div>
+<div id="sdfootnote2">
+	<p class="sdfootnote" style="margin-bottom: 0.5cm;"><a class="sdfootnotesym" name="sdfootnote2sym" href="#sdfootnote2anc">2</a>To
+	be more precise, for every user who can use the trash facility. In
+	general, all human users, and possibly some &#8220;robotic&#8221;
+	ones like ftp, should be able to use the trash facility. 
+	</p>
+</div>
+<div id="sdfootnote3">
+	<p class="sdfootnote" style="margin-bottom: 0.5cm;"><a class="sdfootnotesym" name="sdfootnote3sym" href="#sdfootnote3anc">3</a>Note
+	the dot in the beginning, and for case sensitive file systems, note
+	the case.</p>
+</div>
+<div id="sdfootnote4">
+	<p class="sdfootnote" style="margin-bottom: 0.5cm;"><a class="sdfootnotesym" name="sdfootnote4sym" href="#sdfootnote4anc">4</a>To
+	be more precise, from a partition/device different from the one on
+	which $XDG_DATA_HOME resides. 
+	</p>
+</div>
+<div id="sdfootnote5">
+	<p class="sdfootnote" style="margin-bottom: 0.5cm;"><a class="sdfootnotesym" name="sdfootnote5sym" href="#sdfootnote5anc">5</a>&#8220;$trash/files/&#8221;,
+	<b>not </b>into &#8220;$trash/&#8221; as in many existing
+	implementations!</p>
+</div>
+<div id="sdfootnote6">
+	<p class="sdfootnote" style="margin-bottom: 0.5cm;"><a class="sdfootnotesym" name="sdfootnote6sym" href="#sdfootnote6anc">6</a>At
+	least because another implementation might trash files into the same
+	trash directory</p>
+</div>
+<div id="sdfootnote7">
+	<p class="sdfootnote" style="margin-bottom: 0.5cm;"><a class="sdfootnotesym" name="sdfootnote7sym" href="#sdfootnote7anc">7</a>For
+	example, if the file in $trash/files is named foo.bar , the
+	corresponding file in $trash/info must be named foo.bar.trashinfo</p>
+</div>
+<div id="sdfootnote8">
+	<p class="sdfootnote" style="margin-bottom: 0.5cm;"><a class="sdfootnotesym" name="sdfootnote8sym" href="#sdfootnote8anc">8</a>This
+	provides for future extension</p>
+</div>
+</body></html>
