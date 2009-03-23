@@ -1,0 +1,748 @@
+2009-03-15 22:10  andrea.francia
+
+	* docs/numbered-trashspec-0.7.html: Restored numered-trashspec
+	  file.
+
+2009-03-14 12:42  andrea.francia
+
+	* description.txt: Fixed reStructuredText style.
+
+2009-03-14 12:34  andrea.francia
+
+	* trashcli/__init__.py: Changing the version number to solve the
+	  problem described in https://bugs.launchpad.net/bugs/319268
+
+2009-03-03 19:31  andrea.francia
+
+	* THANKS: Updated
+
+2009-03-02 23:48  andrea.francia
+
+	* HISTORY.txt, command-test/commons.bash,
+	  command-test/trash-put-test.bash,
+	  command-test/trash-restore-test.bash, tests/test_trash.py,
+	  trashcli/trash.py: Fixed #35: trash-list prints `No handlers
+	  could be found for logger "root"'
+
+2009-03-02 22:47  andrea.francia
+
+	* docs, docs/development.txt: Added development instructions.
+
+2009-03-02 22:40  andrea.francia
+
+	* trashcli/trash.py: Fixed #34: trash_info_file is not defined
+	  Thanks to jpschewe
+
+2009-03-02 22:15  andrea.francia
+
+	* setup.py: Removed garbage from setup.py that I commited
+	  unintenionally.
+
+2009-03-02 22:09  andrea.francia
+
+	* setup.py: Added dependency rom Unipath >= 0.2.0
+
+2009-02-23 22:44  andrea.francia
+
+	* man/man1/trash-empty.1, man/man1/trash-list.1,
+	  man/man1/trash-put.1, man/man1/trash-restore.1,
+	  scripts/trash-put: Updated the place where reports bugs to.
+
+2009-02-23 22:22  andrea.francia
+
+	* HISTORY.txt: Updated history.
+
+2009-02-23 22:20  andrea.francia
+
+	* tests/command_tests/cmd.py, tests/command_tests/test_put.py,
+	  trashcli/cli/util.py, trashcli/trash.py: Fixed #32: Verbosity of
+	  trash-put
+
+2009-01-19 21:19  andrea.francia
+
+	* BUGS: Removed no more used BUGS file.
+
+2009-01-19 19:40  andrea.francia
+
+	* command-test/bashunit.bash, command-test/commons.bash,
+	  command-test/mount-test-volume.sh,
+	  command-test/trash-put-test.bash,
+	  command-test/trash-restore-test.bash, make-dist.sh,
+	  scripts/restore-trash, scripts/trash-list, scripts/trash-put,
+	  scripts/trash-restore, scripts/trashcan-admin, scripts/volume-of,
+	  setup.py, tests/cli/test_restore.py, tests/command_tests/cmd.py,
+	  tests/command_tests/test_cmd.py,
+	  tests/command_tests/test_restore.py, tests/test_filesystem.py,
+	  tests/test_trash.py, trashcli/cli/restore.py,
+	  trashcli/cli/util.py, trashcli/filesystem.py: Updated copyright
+	  informations
+
+2009-01-19 19:00  andrea.francia
+
+	* tests/test_trash.py, trashcli/trash.py: Renamed getOriginalCopy
+	  to _calc_path_for_actual_file.
+	  Renamed getTrashInfoFile to _calc_path_for_info_file.
+
+2009-01-19 00:39  andrea.francia
+
+	* tests/command_tests/cmd.py, tests/command_tests/test_cmd.py,
+	  tests/command_tests/test_restore.py: Factored out Command.
+
+2009-01-19 00:30  andrea.francia
+
+	* tests/command_tests/test_restore.py, trashcli/cli/restore.py:
+	  Fixed test_restore_restores_trashed_file_absolute.
+	  Fixed test_restores_with_relative_name.
+
+2009-01-19 00:26  andrea.francia
+
+	* integration_tests, tests/command_tests: Moved integration_tests
+	  under others tests.
+
+2009-01-19 00:23  andrea.francia
+
+	* tests/__init__.py: Made tests a package (using a dummy
+	  __init__.py).
+
+2009-01-18 23:36  andrea.francia
+
+	* tests/test_trash.py, trashcli/trash.py: Simplified TrashedFile.
+
+2009-01-18 21:32  andrea.francia
+
+	* tests/test_filesystem.py, tests/test_trash.py,
+	  trashcli/filesystem.py, trashcli/trash.py: CHG: Code: Now command
+	  tests are in tests/command_tests and are executed
+	  together with unit tests.
+	  CHG: Code: Now Volume.all() returns a generator.
+	  CHG: Code clean up.
+
+2009-01-11 23:29  andrea.francia
+
+	* integration_tests/test_restore.py, scripts/trash-restore,
+	  tests/cli/test_restore.py, trashcli/cli/restore.py: Added tests
+	  for:
+	  * trash-restore restores latest trashed file.
+	  * trash-restore ./relative-path
+	  * trash-restore when a trashed file doe not exist in trashcan
+	  * trash-restore doesn't overwrite files by default
+	  * trash-restore overwrites files with --force
+	  * trash-restore --help
+	  Renamed main function of restore.py to main() instead of run().
+
+2009-01-11 23:28  andrea.francia
+
+	* HISTORY.txt: Added an (empty) history file.
+
+2009-01-11 23:27  andrea.francia
+
+	* trashcli/trash.py: Added docstring to
+	  TrashDirectory.trashed_files().
+	  Added destination argument to TrashedFile.restore().
+
+2009-01-11 23:23  andrea.francia
+
+	* trashcli/filesystem.py: renamed __get_parent to parent, and used
+	  @property.
+
+2009-01-08 00:04  andrea.francia
+
+	* TEST.txt, command-test, command-test/commons.bash,
+	  command-test/trash-put-test.bash, tests, tests/test_trash.py,
+	  trashcli/trash.py: Fixed #22: trash-cli does not fall back to
+	  method (2) when method (1) fails
+	  Now trash-put honours the checks for the $topdir/.Trash
+	  directories.
+
+2009-01-07 23:27  andrea.francia
+
+	* command-test/bashunit.bash: Fixed unset variable error.
+
+2009-01-06 23:40  andrea.francia
+
+	* tests/test_filesystem.py, trashcli/filesystem.py: Added
+	  .has_sticky_bit to Path
+
+2009-01-06 23:39  andrea.francia
+
+	* command-test/commons.bash, command-test/trash-put-test.bash:
+	  Fixed command test PYTHONPATH
+
+2009-01-06 23:35  andrea.francia
+
+	* tests/test_filesystem.py, trashcli/filesystem.py: Fixed Path
+	  equality
+
+2009-01-06 20:24  andrea.francia
+
+	* command-test/commons.bash: Fixed commands invocation, now the an
+	  invocation notification is echoed to standard error instead of
+	  the file with name '2'.
+
+2009-01-05 12:40  andrea.francia
+
+	* setup.py: When googlecode_distutils_upload can't be found the
+	  ImportError is handled.
+
+2009-01-04 22:47  andrea.francia
+
+	* command-test/trash-put-test.bash, scripts/trash-put: Added two
+	  svn:executable property that I missed.
+
+2009-01-04 22:14  andrea.francia
+
+	* trashcli/trash.py: Fixed #20 in the trunk.
+
+2009-01-04 21:22  andrea.francia
+
+	* README.txt, TEST.txt, THANKS, command-test/commons.bash,
+	  command-test/trash-file-test.bash,
+	  command-test/trash-put-test.bash,
+	  command-test/trash-restore-test.bash, description.txt,
+	  man/man1/trash-file.1, man/man1/trash-put.1, scripts/trash-file,
+	  scripts/trash-put, setup.py: Renamed trash-file to trash-put.
+
+2009-01-04 21:18  andrea.francia
+
+	* ., googlecode_distutils_upload.py, setup.py: Fixed google code
+	  upload.
+
+2008-12-28 01:26  andrea
+
+	* setup.py: Fixed some problme in setup.py
+
+2008-12-28 01:17  andrea
+
+	* trashcli/filesystem.py: Now Path.__repr__() returns a string like
+	  Path("/foo").
+
+2008-12-28 01:16  andrea
+
+	* tests/test_trash.py, trashcli/trash.py: Fixed issue #19
+
+2008-12-27 18:59  andrea
+
+	* integration_tests, integration_tests/__init__.py,
+	  integration_tests/test_restore.py, scripts/trash-restore,
+	  setup.py, tests/cli/test_restore.py, trashcli/cli/restore.py,
+	  trashcli/cli/util.py, trashcli/trash.py: Added a working stub of
+	  trash-restore
+
+2008-12-27 18:37  andrea
+
+	* new-user-interface/trash-restore.txt: Changed the interface.
+
+2008-12-25 15:04  andrea
+
+	* description.txt: Updated description.
+
+2008-12-24 20:44  andrea
+
+	* tests/cli, tests/cli/test_restore.py, trashcli/cli/restore.py,
+	  trashcli/cli/test_restore.py: Tests moved to the tests package.
+
+2008-12-24 20:44  andrea
+
+	* setup.cfg: Enabled install_script by default.
+
+2008-12-24 20:43  andrea
+
+	* description.txt, googlecode_distutils_upload.py, setup.py: Now
+	  the description is in a file.
+	  Using the google_upload.
+
+2008-12-24 17:08  andrea
+
+	* scripts/restore-trash, scripts/trash-empty, scripts/trash-file,
+	  scripts/trash-list, scripts/trash-restore,
+	  scripts/trashcan-admin, tests/test_trash.py,
+	  trashcli/__init__.py, trashcli/cli/restore.py,
+	  trashcli/cli/test_restore.py, trashcli/filesystem.py,
+	  trashcli/trash.py: Introduced trashcan and GlobalTrashCan.
+	  Improved some names.
+	  Moved trash(f) logic from scripts/trash-file to
+	  trash.GlobalTrashCan.
+
+2008-12-23 23:22  andreafrancia
+
+	* TEST, TEST.txt, command-test/bashunit.bash,
+	  command-test/restore-trash-test.bash, test-commands: Fixed tests.
+
+2008-12-23 22:31  andreafrancia
+
+	* setup.cfg: Commented install_script from setup.cfg
+
+2008-12-23 22:29  andreafrancia
+
+	* install-rpm.sh, setup.cfg: Made
+
+2008-12-23 21:58  andreafrancia
+
+	* README, README.txt, install-rpm.sh, setup.cfg, setup.py,
+	  trashcli/__init__.py: Fixes some problems in bdist_rpm.
+
+2008-12-23 19:21  andreafrancia
+
+	* command-test/bashunit.bash, command-test/commons.bash,
+	  command-test/restore-trash-test.bash,
+	  command-test/trash-restore-test.bash: Added assertThat assertion.
+
+2008-12-23 19:20  andreafrancia
+
+	* scripts/restore-trash, scripts/trash-empty: Fixed minor bugs.
+
+2008-12-21 00:28  andreafrancia
+
+	* scripts, scripts/restore-trash, scripts/trash-empty,
+	  scripts/trash-file, scripts/trash-list, scripts/trash-restore,
+	  scripts/trashcan-admin, scripts/volume-of, setup.py, src, tests,
+	  tests/test_filesystem.py, tests/test_trash.py, trashcli,
+	  trashcli/cli/restore.py, trashcli/cli/test_restore.py,
+	  trashcli/test_filesystem.py, trashcli/test_trash.py: Restructured
+	  directories.
+
+2008-12-17 22:23  andreafrancia
+
+	* setup.py, src/trashcli/cli/__init__.py,
+	  src/trashcli/cli/restore.py, src/trashcli/cli/test_restore.py,
+	  src/trashcli/filesystem.py, src/trashcli/test_filesystem.py,
+	  src/trashcli/test_trash.py, src/trashcli/trash.py: Added some
+	  methods to the new restore command.
+	  Converted all import to be absolute imports.
+	  Renamed getDeletionTime to deletion_date.
+
+2008-12-14 18:27  andreafrancia
+
+	* README, command-test/bashunit.bash, setup.py, src, src/libtrash,
+	  src/restore-trash, src/trash-empty, src/trash-file,
+	  src/trash-list, src/trash-restore, src/trashcan-admin,
+	  src/trashcli, src/trashcli/__init__.py, src/trashcli/cli,
+	  src/trashcli/cli/restore.py, src/trashcli/cli/test_restore.py,
+	  src/trashcli/filesystem.py, src/trashcli/test_filesystem.py,
+	  src/trashcli/test_trash.py, src/trashcli/trash.py, src/volume-of:
+	  Renamed the main packages as trashcli.
+	  Split the main packages classes in two modules: filesystem and
+	  trash.
+	  Added the cli subpackage for commands.
+
+2008-12-09 19:33  andreafrancia
+
+	* test-units: Removed test-units directory, now unit test are
+	  stored in the 'test'
+	  subpackages of each package.
+
+2008-11-17 19:40  andreafrancia
+
+	* BUGS, README, command-test/bashunit.bash,
+	  command-test/commons.bash, command-test/test.bash,
+	  command-test/trash-file-test.bash,
+	  command-test/trash-restore-test.bash, make-dist.sh,
+	  man/man1/trash-empty.1, man/man1/trash-file.1,
+	  man/man1/trash-list.1, man/man1/trash-restore.1,
+	  new-user-interface/empty-trashcan.txt,
+	  new-user-interface/list-trash.txt,
+	  new-user-interface/restore-trash.txt,
+	  new-user-interface/trash-cli.txt,
+	  new-user-interface/trash-empty.txt,
+	  new-user-interface/trash-list.txt,
+	  new-user-interface/trash-restore.txt, setup.py,
+	  src/libtrash/__init__.py, src/libtrash/tests/__init__.py,
+	  src/restore-trash, src/trash-empty, src/trash-file,
+	  src/trash-restore: Renamed all remainings references to command
+	  names.
+	  Expanded all tabs.
+	  Restructured command tests.
+
+2008-11-12 22:53  andreafrancia
+
+	* README, TEST: Updated documentation: README and TEST.
+
+2008-11-11 22:41  andreafrancia
+
+	* setup.py: Updated setup.py with new commands names
+
+2008-11-11 22:40  andreafrancia
+
+	* man/trash-empty.1, man/trash-file.1, man/trash-list.1,
+	  man/trash-restore.1: Removed duplicates man pages
+
+2008-11-11 22:34  andreafrancia
+
+	* man/empty-trash.1, man/list-trash.1, man/man1/empty-trash.1,
+	  man/man1/list-trash.1, man/man1/restore-trash.1,
+	  man/man1/trash-empty.1, man/man1/trash-file.1,
+	  man/man1/trash-list.1, man/man1/trash-restore.1,
+	  man/man1/trash.1, man/restore-trash.1, man/trash-empty.1,
+	  man/trash-file.1, man/trash-list.1, man/trash-restore.1,
+	  man/trash.1: Renamed the man pages
+
+2008-11-11 22:30  andreafrancia
+
+	* make-dist.sh: Now the version number is x.y.z where z is always
+	  the subversion revision.
+
+2008-11-11 22:27  andreafrancia
+
+	* command-test/mount-test-volume.sh, command-test/test.bash,
+	  src/empty-trash, src/list-trash, src/restore-trash, src/trash,
+	  src/trash-empty, src/trash-file, src/trash-list,
+	  src/trash-restore: Renamed commands to avoid too generic "trash"
+	  name.
+	  Applied the suggestion by Behdad Esfahbod (see
+	  http://www.redhat.com/archives/rhl-devel-list/2008-October/msg00231.html)
+
+2008-11-11 21:36  andreafrancia
+
+	* command-test, command-test/mount-test-volume.sh, test,
+	  test-commands, test-units, test.py: Restructured the way of
+	  starting tests.
+
+2008-11-11 21:34  andreafrancia
+
+	* src/libtrash/__init__.py: Removed method samefs because is not
+	  used.
+
+2008-11-11 20:59  andreafrancia
+
+	* src/libtrash/__init__.py, src/libtrash/tests/__init__.py,
+	  src/trash, src/volume-of: Renamed class File to Path.
+
+2008-11-01 11:45  andreafrancia
+
+	* branches: Moved branches to correct position.
+
+2008-11-01 11:43  andreafrancia
+
+	* branches: Created branches folder
+
+2008-09-15 21:02  andreafrancia
+
+	* man/empty-trash.1, man/list-trash.1, man/restore-trash.1,
+	  man/trash.1: Added manpages.
+
+2008-09-15 20:55  andreafrancia
+
+	* new-user-interface, new-user-interface/empty-trashcan.txt,
+	  new-user-interface/list-trash.txt,
+	  new-user-interface/restore-trash.txt,
+	  new-user-interface/trash-cli.txt: Added new-interface design.
+
+2008-08-21 16:01  andreafrancia
+
+	* README, man, man/man1, man/man1/empty-trash.1,
+	  man/man1/list-trash.1, man/man1/restore-trash.1,
+	  man/man1/trash.1, setup.py: Customized README file.
+	  Added man pages.
+
+2008-08-21 14:10  andreafrancia
+
+	* src/libtrash/tests/__init__.py: Fixed
+	  TestTrashDirectory.test_trash, now works even if the volume of
+	  'sandbox' is not '/'.
+
+2008-08-04 20:14  andreafrancia
+
+	* make-dist.sh: Now release name begin whith trash-cli.
+
+2008-08-04 19:57  andreafrancia
+
+	* src/libtrash/__init__.py: Disabled logger.
+
+2008-08-04 19:49  andreafrancia
+
+	* AUTHORS, THANKS, src/libtrash/__init__.py, test/test.bash: Added
+	  THANKS file.
+	  Added jpschewe to THANKS file.
+	  Fixed [ 2021946 ] Handle broken trashinfo files
+
+2008-08-04 19:08  andreafrancia
+
+	* AUTHORS, make-dist.sh, src/empty-trash, src/libtrash/__init__.py,
+	  src/libtrash/tests/__init__.py, src/trashcan-admin, test.py,
+	  test/mount-test-volume.sh, test/test.bash: Fixed 5: Add GPL
+	  license in the header of each file.
+	  Reorgnized AUTHORS file.
+
+2008-08-04 18:53  andreafrancia
+
+	* src/libtrash/__init__.py, src/libtrash/tests/__init__.py,
+	  src/trash: Fixed restore-trash.
+	  Fixed trash --help.
+
+2008-08-04 18:25  andreafrancia
+
+	* AUTHORS, src/libtrash/__init__.py,
+	  src/libtrash/tests/__init__.py, src/restore-trash,
+	  src/trashcan-admin, test-lib, test.py, test/bashunit.bash,
+	  test/test.bash: Introduced bashunit.bash.
+	  Converted some properties to use the python common practice.
+
+2008-08-02 15:18  andreafrancia
+
+	* make-dist.sh: Revision can be specified during make-dist.sh
+	  invokcation.
+
+2008-08-02 14:47  andreafrancia
+
+	* make-dist.sh: Fixed inject_version() function.
+
+2008-07-31 19:25  andreafrancia
+
+	* setup.py, src/libtrash, src/libtrash.py,
+	  src/libtrash/__init__.py, src/libtrash/tests,
+	  src/libtrash/tests/__init__.py, test.py, test/libtrash_test.py:
+	  Moved tests under libtrash.tests module.
+	  Now modules are directories instead of files.
+
+2008-07-31 17:33  andreafrancia
+
+	* src/empty-trash, src/libtrash.py, src/list-trash,
+	  src/restore-trash, test/libtrash_test.py, test/test-volume,
+	  test/test-volume/not-mounted, test/test.bash: Improved some
+	  names.
+	  Some fixes.
+	  Added tests for empty-trash command.
+
+2008-07-24 21:57  andreafrancia
+
+	* ., src/libtrash.py, src/trash, src/volume-of, test,
+	  test/libtrash_test.py, test/test.bash: Fixed tabs.
+	  Added fancy __str__() method for HomeTrashDirectory.
+	  Improved trash --verbose behaviour (print also the destination
+	  trash directory).
+	  Added volume-of utility.
+	  Moved all files/dirs created during tests under sandbox.
+	  Now test.bash uses always $(pwd)/test-volume for tests of
+	  trashing in another volume.
+
+2008-07-23 23:04  andreafrancia
+
+	* README, empty-trash, libtrash.py, list-trash, restore-trash,
+	  setup.py, src, src/empty-trash, src/libtrash.py, src/list-trash,
+	  src/restore-trash, src/trash, src/trashcan-admin, test,
+	  test.bash, test.py, test/libtrash_test.py,
+	  test/mount-test-volume.sh, test/test.bash, test_libtrash.py,
+	  trash, trashcan-admin: Some fixes to make File working also on
+	  windows.
+	  Added list(), touch(), mkdir() and mkdirs().
+	  Improved some properties: e.g. from getPath() to path.
+	  Volume is no more a File but now it contains a File.
+	  Fixed an infinite loop problem in createTrashInfo()
+	  Added mount-test-volume.sh utility for creating a testing volume.
+
+2008-07-19 20:54  andreafrancia
+
+	* libtrash.py, list-trash, restore-trash, setup.py, test.bash,
+	  test_libtrash.py, trash, trashcan-admin: Added copyright notices
+	  to all files.
+	  Problems -> fixes:
+	  - unneeded try/except in Volume.__mounted_filesystems -> removed.
+	  - Volume.__mounted_filesystems does not handle "libc not found"
+	  -> now raises an OSError.
+
+2008-07-14 23:07  andreafrancia
+
+	* libtrash.py, test.bash, trashcan-admin: Added __str__ to File,
+	  Volume and TrashDirectory.
+	  Added trascan-admin script.
+
+2008-07-14 21:38  andreafrancia
+
+	* AUTHORS: Added Michele Barbiero to the bug reporters.
+
+2008-07-13 00:38  andreafrancia
+
+	* libtrash.py, test.bash, test_libtrash.py, trash: Added many
+	  integration tests.
+
+2008-07-08 23:31  andreafrancia
+
+	* ., libtrash.py, test.bash, test_libtrash.py, trash: fixed all
+	  tests of test_libtrash.py
+	  Tests of test.bash still fails.
+
+2008-07-07 18:16  andreafrancia
+
+	* libtrash.py, test_libtrash.py: Added many unit tests.
+
+2008-07-06 01:13  andreafrancia
+
+	* README, test.bash: Added new test procedures.
+
+2008-06-25 22:29  andreafrancia
+
+	* make-dist.sh: New release version schema: x.y.z.rXX
+
+2008-06-25 22:27  andreafrancia
+
+	* make-dist.sh: Now makedist.bash creates the tarball in the dist
+	  directory
+
+2008-06-25 22:25  andreafrancia
+
+	* make-dist.sh: Now make-dist.bash remove any previous existing
+	  dist directory
+
+2008-06-25 22:16  andreafrancia
+
+	* make-dist.sh: Removed the dependency from the trash command in
+	  make-dist.sh
+
+2008-06-25 22:06  andreafrancia
+
+	* test.bash: Improved the failure messages from test.bash
+	  Still some test fails.
+
+2008-06-25 21:51  andreafrancia
+
+	* libtrash.py, test.bash, test_libtrash.py, trash: Added support
+	  for python 2.3
+
+2008-06-23 17:08  andreafrancia
+
+	* test.py, test_libtrash.py: Renamed test.py in test_libtrash.py.
+
+2008-06-21 11:48  andreafrancia
+
+	* ., INSTALL, libtrash.py, libtrashversion.py, make-dist.sh:
+	  Removed creation of rpm and deb files.
+
+2008-05-21 22:03  andreafrancia
+
+	* libtrash.py, libtrashversion.py, make-dist.sh, setup.py,
+	  version.py:
+
+2008-05-21 21:34  andreafrancia
+
+	* libtrash.py, make-dist.sh, setup.py, version.py: Now the version
+	  is in version.py
+
+2008-05-21 21:26  andreafrancia
+
+	* libtrash.py, make-dist.sh, test.py, trash: Now empty-trash remove
+	  the directories too.
+
+2008-05-21 19:01  andreafrancia
+
+	* debian: Removed debian control dir.
+
+2008-05-21 18:59  andreafrancia
+
+	* libtrash.py, setup.py: Removed data_files from setup.py: it does
+	  not work.
+	  Increased version.
+
+2008-05-20 20:28  andreafrancia
+
+	* TODO, setup.py: Added doc files to setup.py.
+	  Removed obsoleted TODO.
+
+2008-05-01 12:55  andreafrancia
+
+	* debian, debian/changelog, debian/compat, debian/control,
+	  debian/copyright, debian/docs, debian/files, debian/pycompat,
+	  debian/rules, libtrash.py, make-dist.sh, test.bash, test.py:
+	  Added files for debian package.
+	  Modified test.bash to invoke make on shunit.
+
+2008-05-01 12:38  andreafrancia
+
+	* test-lib: Added shunit2 as external definition.
+
+2008-05-01 12:37  andreafrancia
+
+	* test-lib, test-lib/shunit2, test-lib/shunit2-2.0.3: Removed
+	  shunit2.
+
+2008-03-22 00:40  andreafrancia
+
+	* AUTHORS, libtrash.py, make-dist.sh:
+
+2008-02-10 20:10  andreafrancia
+
+	* INSTALL, TODO, empty-trash, libtrash.py, list-trash,
+	  restore-trash, setup.py, test-lib, test-lib/shunit2,
+	  test-lib/shunit2-2.0.3, test-lib/shunit2-2.0.3/Makefile,
+	  test-lib/shunit2-2.0.3/bin,
+	  test-lib/shunit2-2.0.3/bin/docbookPrep.sh,
+	  test-lib/shunit2-2.0.3/bin/extractDocs.pl,
+	  test-lib/shunit2-2.0.3/bin/which, test-lib/shunit2-2.0.3/doc,
+	  test-lib/shunit2-2.0.3/doc/CHANGES-2.0.txt,
+	  test-lib/shunit2-2.0.3/doc/LGPL-2.1,
+	  test-lib/shunit2-2.0.3/doc/README.txt,
+	  test-lib/shunit2-2.0.3/doc/RELEASE_NOTES-2.0.0.txt,
+	  test-lib/shunit2-2.0.3/doc/RELEASE_NOTES-2.0.1.txt,
+	  test-lib/shunit2-2.0.3/doc/RELEASE_NOTES-2.0.2.txt,
+	  test-lib/shunit2-2.0.3/doc/RELEASE_NOTES-2.0.3.txt,
+	  test-lib/shunit2-2.0.3/doc/TODO.txt,
+	  test-lib/shunit2-2.0.3/doc/contributors.txt,
+	  test-lib/shunit2-2.0.3/doc/design_doc.txt,
+	  test-lib/shunit2-2.0.3/doc/shunit2.html,
+	  test-lib/shunit2-2.0.3/doc/style.css, test-lib/shunit2-2.0.3/lib,
+	  test-lib/shunit2-2.0.3/lib/sh,
+	  test-lib/shunit2-2.0.3/lib/sh/shlib,
+	  test-lib/shunit2-2.0.3/share,
+	  test-lib/shunit2-2.0.3/share/docbook,
+	  test-lib/shunit2-2.0.3/share/docbook/tldp-xsl,
+	  test-lib/shunit2-2.0.3/share/docbook/tldp-xsl/21MAR2004,
+	  test-lib/shunit2-2.0.3/share/docbook/tldp-xsl/21MAR2004/fo,
+	  test-lib/shunit2-2.0.3/share/docbook/tldp-xsl/21MAR2004/fo/tldp-print.xsl,
+	  test-lib/shunit2-2.0.3/share/docbook/tldp-xsl/21MAR2004/html,
+	  test-lib/shunit2-2.0.3/share/docbook/tldp-xsl/21MAR2004/html/tldp-common.xsl,
+	  test-lib/shunit2-2.0.3/share/docbook/tldp-xsl/21MAR2004/html/tldp-one-page.xsl,
+	  test-lib/shunit2-2.0.3/share/resources,
+	  test-lib/shunit2-2.0.3/share/resources/shelldoc.xslt,
+	  test-lib/shunit2-2.0.3/src, test-lib/shunit2-2.0.3/src/docbook,
+	  test-lib/shunit2-2.0.3/src/docbook/functions.xml,
+	  test-lib/shunit2-2.0.3/src/docbook/introduction.xml,
+	  test-lib/shunit2-2.0.3/src/docbook/quickstart.xml,
+	  test-lib/shunit2-2.0.3/src/docbook/shunit2.xml,
+	  test-lib/shunit2-2.0.3/src/shell,
+	  test-lib/shunit2-2.0.3/src/shell/shunit2,
+	  test-lib/shunit2-2.0.3/src/test,
+	  test-lib/shunit2-2.0.3/src/test/run-test-suite,
+	  test-lib/shunit2-2.0.3/src/test/test-functions.inc,
+	  test-lib/shunit2-2.0.3/src/test/testAsserts,
+	  test-lib/shunit2-2.0.3/src/test/testFailures,
+	  test-lib/shunit2-2.0.3/src/test/testInternalFx,
+	  test-lib/shunit2-2.0.3/src/test/testSuiteFx, test.bash, test.py,
+	  trash: Added unit testing library shunit2.
+	  Added script 'empty-trash' script as provided by Einar Orn Olason
+	  Modified TrashInfo.render().
+
+2007-08-17 18:24  andreafrancia
+
+	* ., TODO, libtrash, libtrash.py, list-trash, make-dist.sh,
+	  restore-trash, setup.py, test.py, trash:
+
+2007-08-14 14:20  andreafrancia
+
+	* libtrash/File.py, libtrash/file.py, setup.py, trash: Fixed case
+	  for libtrash/file.py.
+	  Version number now is 0.1.0.
+	  Removed some debug prints.
+
+2007-08-13 15:54  andreafrancia
+
+	* TODO, libtrash, libtrash/File.py, libtrash/test.py,
+	  libtrash/trash_directory.py, libtrash/trash_info.py,
+	  libtrash/trashed_file.py, libtrash/volume.py, list-trash,
+	  restore-trash, setup.py, src, trash:
+
+2007-08-13 15:44  andreafrancia
+
+	* src, src/list-trash, src/list-trash.py, src/restore-trash,
+	  src/restore-trash.py, src/setup.py, src/trash, src/trash.py:
+
+2007-08-11 16:46  andreafrancia
+
+	* ., AUTHORS, COPYING, INSTALL, README, list-trash, restore-trash,
+	  src, trash, trash.py: Now the main implementation relies on
+	  python.
+
+2007-08-04 18:16  andreafrancia
+
+	* Makefile, config.h, config.log, config.status, configure,
+	  configure.ac, src/Makefile, src/trash.bash, version.sh: Added
+	  python.
+
