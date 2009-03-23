@@ -18,11 +18,11 @@ Install the virtualenv package, in Ubuntu/Debian use::
 
 Prepare a virtualenv with::
 	
-	virtualenv ${XDG_DATA_HOME:-~/.local}
+	virtualenv "${XDG_DATA_HOME:-$HOME/.local}"
 
 Add your local bin directory to the PATH::
 
-	echo 'XDG_DATA_HOME="${XDG_DATA_HOME:-~/.local}"' >> ~/.bashrc
+	echo 'XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local}"' >> ~/.bashrc
 	echo 'export PATH="$XDG_DATA_HOME/bin:$PATH"' >> ~/.bashrc
 
 -EOF
