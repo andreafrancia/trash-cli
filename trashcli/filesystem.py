@@ -29,12 +29,11 @@ import unipath
 
 class Path (unipath.Path) :
     sep = '/'
-    def __init__(self, path) :
-        assert(isinstance(path,str))
-        self.path = os.path.normpath(path).replace(os.path.sep, self.sep)
-        if self.path.lower().startswith("c:") :
-            self.path = self.path [len("c:"):]
 
+    @property
+    def path(self):
+        return str(self)
+    
     @property
     def parent(self) :
         return Path(os.path.dirname(self.path))
@@ -45,7 +44,7 @@ class Path (unipath.Path) :
 
     @property
     def basename(self) :
-        return os.path.basename(self.path)
+        return self.name
 
     def move(self, dest) :
         return shutil.move(self.path, str(dest))
@@ -105,9 +104,6 @@ class Path (unipath.Path) :
             return True
         return False
 
-    def __str__(self) :
-        return str(self.path)
-
     def list(self) :
         for filename in os.listdir(self.path) :
             yield self.join(filename)
@@ -138,6 +134,41 @@ class Path (unipath.Path) :
     
     def __repr__(self):
         return "Path('%s')" % self.path
+    
+    def type_description(self):
+        """
+        Return a textual description of the file pointed by this path.
+        Options:
+         - "symbolic link"
+         - "directory"
+         - "`.' directory"
+         - "`..' directory"
+         - "regular file"
+         - "regular empty file"
+         - "entry"
+        """        
+        if self.islink():
+            return 'symbolic link'
+        elif self.isdir():
+            if self == '.':
+                return 'directory'
+            elif self == '..':
+                return 'directory'
+            else:
+                if self.basename == '.':
+                    return "`.' directory"
+                elif self.basename == '..':
+                    return "`..' directory"
+                else:
+                    return 'directory'
+        elif self.isfile():
+            if self.size() == 0:
+                return 'regular empty file'
+            else:
+                return 'regular file'
+        else:
+            return 'entry'
+    
 
 class Volume(object) :
     def __init__(self,path, permissive = False):

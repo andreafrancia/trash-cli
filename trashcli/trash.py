@@ -51,7 +51,7 @@ class TrashDirectory(object) :
     def __init__(self, path, volume) :
         assert isinstance(path,Path)
         assert isinstance(volume,Volume)
-        self.path = path
+        self.path = path.norm()
         self.volume = volume
 
     def __str__(self) :
@@ -66,6 +66,7 @@ class TrashDirectory(object) :
     """
     def trash(self, path):
         assert(isinstance(path, Path))
+        path = path.norm()
         self.check()
         
         if not self.volume == path.parent.volume :
@@ -75,10 +76,12 @@ class TrashDirectory(object) :
                         + str(path.parent.volume))
 
         trash_info=TrashInfo(self._path_for_trashinfo(path),datetime.now())
-        trash_info_file=self.persist_trash_info(trash_info)
-        trashed_file = self._create_trashed_file(trash_info_file.id, 
-                                         path.absolute(), 
-                                         trash_info.deletion_date)
+        
+        (trash_info_file, trash_info_id)=self.persist_trash_info(trash_info)
+        
+        trashed_file = self._create_trashed_file(trash_info_id, 
+                                                 path.absolute(), 
+                                                 trash_info.deletion_date)
         
         if not self.files_dir.exists() : 
             self.files_dir.mkdirs(0700)
@@ -203,7 +206,7 @@ class TrashDirectory(object) :
                 os.write(handle, trash_info.render())
                 os.close(handle)
                 logger.debug(".trashinfo created as %s." % dest)
-                return TrashInfoFile(dest, trash_id)
+                return (dest, trash_id)
             except OSError, e:
                 logger.debug("Attempt for creating %s failed." % dest)
 
@@ -238,7 +241,8 @@ class HomeTrashDirectory(TrashDirectory) :
 
     def _path_for_trashinfo(self, fileToBeTrashed) :
         assert isinstance(fileToBeTrashed, Path)
-
+        fileToBeTrashed = fileToBeTrashed.norm()
+        
         # for the HomeTrashDirectory all path are stored as absolute
 
         parent = fileToBeTrashed.realpath.parent
@@ -253,7 +257,8 @@ class VolumeTrashDirectory(TrashDirectory) :
     def _path_for_trashinfo(self, fileToBeTrashed) :
         # for the VolumeTrashDirectory paths are stored as relative 
         # if possible
-
+        fileToBeTrashed = fileToBeTrashed.norm()
+        
         # string representing the parent of the fileToBeTrashed
         parent=fileToBeTrashed.parent.realpath
         topdir=self.volume.path   # e.g. /mnt/disk-1
@@ -356,6 +361,7 @@ class GlobalTrashCan(TrashCan) :
         
         logger.info("File trashed as: `%s'" % (trashed_file.original_file.path))
         assert(isinstance(trashed_file, TrashedFile))
+        return trashed_file
 
     def trash_directories(self) :
         """Return a generator of all TrashDirectories in the filesystem"""
@@ -549,11 +555,6 @@ class TrashInfo (object) :
         result += "Path=" + urllib.quote(self.path.path,'/') + "\n"
         result += "DeletionDate=" + self._format_date(self.deletion_date) + "\n"
         return result
-
-class TrashInfoFile(Path):
-    def __init__(self, path, id):
-        Path.__init__(self, path)
-        self.id = id
 
 class TimeUtils(object):
     @staticmethod

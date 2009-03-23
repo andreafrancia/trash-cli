@@ -1,4 +1,6 @@
+r
 
+r?
  Fixed #34: trash_info_file is not defined
  Fixed #35: trash-list prints `No handlers could be found for logger "root"'
 

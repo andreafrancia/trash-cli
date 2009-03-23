@@ -69,7 +69,6 @@ class Sandbox():
         Create a command with the current enviroment (self.env)
         """
         return Command(cmdline, self.env, self.path).run()
-    
 
 class Test(TestCase):
    
@@ -87,4 +86,71 @@ class Test(TestCase):
         self.sandbox.create_file('foo')
         self.sandbox.execute("trash-put","foo").assert_result(output="")
             
+    def test_dot_argument_is_skipped(self):
+        """
+        $ trash-put . other_argument
+        trash-put: cannot trash directory `.'
+        """
+        self.sandbox.create_file('other_argument')
+        result = self.sandbox.execute("trash-put", ".","other_argument")
+        
+        # the dot directory shouldn't be operated, but a diagnostic message
+        # shall be writtend on stderr
+        print result.stderr
+        assert_equals(result.stderr,"trash-put: cannot trash directory `.'\n")
+        
+        # the remaining arguments should be processed
+        assert_false(self.sandbox.path.join('other_argument').exists())
 
+    def test_dot_dot_argument_is_skipped(self):
+        """
+        $ trash-put .. other_argument
+        trash-put: cannot trash directory `..'
+        """
+        self.sandbox.create_file('other_argument')
+        result = self.sandbox.execute("trash-put", "..", "other_argument")
+        
+        # the dot directory shouldn't be operated, but a diagnostic message
+        # shall be writtend on stderr
+        
+        assert_equals(result.stderr,"trash-put: cannot trash directory `..'\n")
+        
+        # the remaining arguments should be processed
+        assert_false(self.sandbox.path.join('other_argument').exists())
+    
+    def test_dot_argument_is_skipped_even_in_subdirs(self):
+        """
+        $ trash-put foo/. other_argument
+        trash-put: cannot trash directory `.'
+        """
+        self.sandbox.path.join('foo').mkdir()
+        self.sandbox.create_file('other_argument')
+        result = self.sandbox.execute("trash-put", "foo/.","other_argument")
+        
+        # the dot directory shouldn't be operated, but a diagnostic message
+        # shall be writtend on stderr
+        assert_equals(result.stderr,
+            "trash-put: cannot trash `.' directory `foo/.'\n")
+        
+        # the remaining arguments should be processed
+        assert_false(self.sandbox.path.join('other_argument').exists())
+        assert_true(self.sandbox.path.join('foo').exists())
+
+    def test_dot_dot_argument_is_skipped_even_in_subdirs(self):
+        """
+        $ trash-put foo/.. other_argument
+        trash-put: cannot trash directory `..'
+        """
+        self.sandbox.path.join('foo').mkdir()
+        self.sandbox.create_file('other_argument')
+        result = self.sandbox.execute("trash-put", "foo/..", "other_argument")
+        
+        # the dot directory shouldn't be operated, but a diagnostic message
+        # shall be writtend on stderr
+        assert_equals(result.stderr,
+            "trash-put: cannot trash `..' directory `foo/..'\n")
+        
+        # the remaining arguments should be processed
+        assert_false(self.sandbox.path.join('other_argument').exists())
+        assert_true(self.sandbox.path.join('foo').exists())
+    

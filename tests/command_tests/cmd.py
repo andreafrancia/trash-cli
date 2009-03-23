@@ -28,8 +28,10 @@ class CmdResult(object):
     """
     def __init__(self, exit_code, stdout_data, stderr_data):
         self.exit_code = exit_code
-        self.out_data = stdout_data
-        self.err_data = stderr_data
+        self.out_data = stdout_data # TODO remove this variable
+        self.err_data = stderr_data # TODO remove this variable
+        self.stderr = stderr_data
+        self.stdout = stdout_data
 
     def assert_result(self, exit_code=None, output=None, error=None):
         if exit_code != None:

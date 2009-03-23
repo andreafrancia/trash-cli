@@ -25,6 +25,16 @@ from trashcli import version
 from optparse import OptionParser
 from optparse import IndentedHelpFormatter
 
+import logging
+
+log_stream = logging.StreamHandler()
+log_stream.setLevel(logging.WARNING)
+log_stream.formatter = logging.Formatter('%(name)s: %(message)s')
+
+logger=logging.getLogger('trash-put')
+logger.setLevel(logging.WARNING)
+logger.addHandler(log_stream)
+
 class NoWrapFormatter(IndentedHelpFormatter) :
     def _format_text(self, text) :
         "[Does not] format a text, return the text as it is."
@@ -42,7 +52,7 @@ use one of these commands:
 
   trash ./-foo
   
-Report bugs to http://code.google.com/p/trash-cli/issues/""")
+Report bugs to http://code.google.com/p/trash-cli/issues""")
 
 parser.add_option("-d",
                   "--directory",
@@ -73,20 +83,26 @@ parser.add_option("-v",
 
 (options, args) = parser.parse_args()
 
+if(options.verbose): 
+    log_stream.setLevel(logging.INFO)
+else:
+    log_stream.setLevel(logging.WARNING)
 
 if len(args) <= 0:
     parser.error("Please specify the files to trash.")
 
-
+    
 for arg in args :
     f = Path(arg)
-    try:
-        trashcan.trash(f)
-        if options.verbose:
-            print "`%s' trashed in %s " % (arg, trashed_file.trash_directory)
-    except OSError, e:
-        # occour when the file cannot be moved
-        print "trash: cannot trash `%s': %s" % (arg, str(e))
-    except IOError, e:
-        # occour when the file does not exist
-        print "trash: cannot trash `%s': %s" % (arg, str(e))    
+    if f.basename == '.' or f.basename == '..':
+        logger.warning("cannot trash %s `%s'" % (f.type_description(), f))
+    else:
+        try:
+            trashed_file = trashcan.trash(f)
+            logger.info("`%s' trashed in %s " % (arg, trashed_file.trash_directory))
+        except OSError, e:
+            # occour when the file cannot be moved
+            logger.warning("trash: cannot trash %s `%s': %s" % (f.type_description(), arg, str(e)))
+        except IOError, e:
+            # occour when the file does not exist
+            logger.warning("trash: cannot trash %s `%s': %s" % (f.type_description(), arg, str(e)))
