@@ -1,1 +1,1 @@
-recursive-include man
+recursive-include man *.1
