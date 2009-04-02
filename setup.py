@@ -46,12 +46,41 @@ http://support.googlecode.com/svn/trunk/scripts/googlecode_distutils_upload.py
 sys.path.append('.')
 import trashcli 
 
-def read_description():
-    f = open("description.txt")
-    try :
-        return f.read()
-    finally:
-        f.close()
+def description():
+    return \
+"""
+trash-cli - Command Line Interface to FreeDesktop.org Trash.
+
+trash-cli provides the following commands to manage the trash:
+ * trash-put             trashes files and directories.
+ * trash-empty           empty the trashcan(s).
+ * trash-list            list trashed file.
+ * trash-restore         restore a trashed file.
+
+For each file the name, original path, deletion date, and permissions
+are recorded. The trash command allow trash multiple files with the
+same name. These command uses the same Trashcan of last versions of
+KDE, GNOME and XFCE.
+
+Trash a file::
+
+ $ trash-put /home/andrea/foobar
+
+List trashed files::
+ 
+ $ trash-list
+ 2008-06-01 10:30:48 /home/andrea/bar
+ 2008-06-02 21:50:41 /home/andrea/bar
+ 2008-06-23 21:50:49 /home/andrea/foo
+
+Restore a trashed file::
+
+ $ trash-restore /home/andrea/foo
+
+Empty the trashcan::
+
+ $ trash-empty
+"""
 
 setup(
     name = 'trash-cli',
@@ -63,7 +92,7 @@ setup(
     description = 'Command line interface to FreeDesktop.org Trash.',
     license = 'GPL v2',
     download_url = 'http://code.google.com/p/trash-cli/wiki/Download',
-    long_description = read_description(),
+    long_description = description(),
     packages = ['trashcli', 'trashcli.cli'],
     scripts = ['scripts/trash-put',
                'scripts/trash-list',
