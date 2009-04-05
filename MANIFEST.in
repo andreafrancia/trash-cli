@@ -1,6 +1,0 @@
-include description.txt
-include install-rpm.sh
-include HISTORY.txt
-recursive-include man *.1
-include setup.cfg
-recursive-include tests *.py

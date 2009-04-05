@@ -24,7 +24,7 @@ Run it with
  './setup.py --help' for more options
 """
 
-from distutils.core import setup
+from setuptools import setup 
 import sys
 import os
 
