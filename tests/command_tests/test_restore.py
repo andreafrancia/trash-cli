@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
 from unittest import TestCase
@@ -32,7 +32,7 @@ from cmd import Command
 restore_cmd='trash-restore'
 legacy_restore_cmd='restore-trash'
 
-# Peraphs TODO: Refactoring: move cmd(), create_file(), trash(), trash-dir to 
+# Peraphs TODO: Refactoring: move cmd(), create_file(), trash(), trash-dir to
 # a Sandbox class.
 class RestoreTest(TestCase):
     def cmd(self, *cmdline) :
@@ -40,17 +40,18 @@ class RestoreTest(TestCase):
         Create a command with the current enviroment (self.env)
         """
         return Command(cmdline, self.env)
-    
+
     def setUp(self):
         self.sandbox = Path("./sandbox")
         self.sandbox.remove()
         self.sandbox.mkdirs()
         self.env = {
             'HOME':'./sandbox/home',
+            'PATH':Path(__file__).parent.parent.parent.join('scripts')
         }
         self.trashdir = HomeTrashDirectory(
             Path('./sandbox/home/.local/share/Trash'))
-    
+
     def create_file(self, path, content=None):
         """
         Create a file in sandbox with content
@@ -59,7 +60,7 @@ class RestoreTest(TestCase):
         file.touch()
         if content!=None :
             file.write_file(content)
-            
+
         return file
 
     def trash(self, path):
@@ -67,17 +68,17 @@ class RestoreTest(TestCase):
         Trash the file in the trash dir at sandbox/home/.local/share/Trash
         """
         result = self.trashdir.trash(path)
-        
-        # sanity check 
+
+        # sanity check
         assert not path.exists()
         return result
-    
+
     def test_cmd_creates_commands(self):
-        result = self.cmd("echo", "pippo").run()
+        result = self.cmd("/bin/echo", "pippo").run()
         assert_equals("",result.err_data)
         assert_equals("pippo\n", result.out_data)
         assert_equals(0,result.exit_code)
-    
+
     def test_version_option(self):
         """
         $ trash-restore --version
@@ -88,7 +89,7 @@ class RestoreTest(TestCase):
         assert_equals("", result.err_data)
         expected = re.compile("trash-restore (\d)+\.(\d)+\.(\d)+")
         assert expected.match(result.out_data) is not None
-    
+
     def test_restore_restores_trashed_file_absolute(self):
         from time import sleep
         """
@@ -99,11 +100,11 @@ class RestoreTest(TestCase):
         $ trash-list
         1977-01-12 12:00:00 /home/andrea/file # the oldest remain in trashcan
         """
-        
+
         # prepare
         foo_file = self.create_file('foo', "first")
         trashed_file1 = self.trash(foo_file)
-        
+
         sleep(1) # to make sure that deletion dates differs
         foo_file = self.create_file('foo', "second")
         trashed_file2 = self.trash(foo_file)
@@ -112,16 +113,16 @@ class RestoreTest(TestCase):
         foo_file = self.create_file('foo', "latest")
         trashed_file3 = self.trash(foo_file)
         assert_false(foo_file.exists())
-        
+
         print trashed_file1.deletion_date
         print trashed_file2.deletion_date
         print trashed_file3.deletion_date
-        
-        # execute 
+
+        # execute
         self.cmd(restore_cmd,foo_file.absolute()).assert_succeed()
         assert_true(foo_file.exists()) # File has been restored ?
         assert_equals("latest", foo_file.read()) # Is the latest deleted file?
-    
+
     def test_restores_with_relative_name(self):
         """
         $ trash-list
@@ -133,8 +134,8 @@ class RestoreTest(TestCase):
         foo_file = self.create_file('file', "content")
         self.trash(foo_file)
         assert_false(foo_file.exists())
-        
-        # execute 
+
+        # execute
         self.cmd(restore_cmd,"./sandbox/file").assert_succeed()
         assert_true(foo_file.exists()) # File has been restored ?
         assert_equals("content", foo_file.read()) # Is the latest deleted file?
@@ -151,10 +152,10 @@ class RestoreTest(TestCase):
         # test
         assert_equals(result.exit_code, 1)
         assert_equals(result.out_data, "")
-        assert_equals(result.err_data, 
+        assert_equals(result.err_data,
                       "trash-restore: cannot restore path `non-existent': "
                       "Not found in any trash directory.")
-    
+
     def test_overwrite_attempt(self):
         """
         $ touch file
@@ -166,17 +167,17 @@ class RestoreTest(TestCase):
         self.create_file('existing-file')
         self.trash('existing-file')
         self.create_file('existing-file')
-        
+
         # execute
         result = self.cmd(restore_cmd, 'existing-file').assert_fail()
-        
+
         # test
         assert_equals(result.exit_code, 1)
         assert_equals(result.out_data, "")
-        assert_equals(result.err_data, 
+        assert_equals(result.err_data,
                       "trash-restore: cannot overwrite`existing-file': "
                       "File exists.")
-    
+
     def test_overwrite_attempt_with_force_option(self):
         """
         $ touch file
@@ -187,27 +188,27 @@ class RestoreTest(TestCase):
         self.create_file('existing-file')
         self.trash('existing-file')
         self.create_file('existing-file')
-        
+
         # execute
-        result = self.cmd(restore_cmd, '--force', 
+        result = self.cmd(restore_cmd, '--force',
                           'existing-file').assert_succeed
-        
+
         # test
         assert_equals(result.exit_code, 0)
         assert_equals(result.out_data, "")
         assert_equals(result.err_data, "")
-        
-    
+
+
     def test_help_option(self):
         """
-        $ trash-restore --help 
+        $ trash-restore --help
         Usage: trash-restore ...
         ...
         """
         raise SkipTest()
         result = self.cmd(restore_cmd, '--help').assert_succeed()
         assert_equals(result.exit_code, 0)
-        assert_equals(result.out_data, 
+        assert_equals(result.out_data,
 """Usage: trash-restore TRASHED-FILE [NEW-LOCATION]
 Restore the TRASHED-FILE to its original location or to NEW-LOCATION.
 
@@ -218,21 +219,20 @@ Options:
   -v, --verbose        explain what is being done
 """)
         assert_equals(result.err_data, "")
-        
+
     def test_issue_19(self):
         # bug: http://code.google.com/p/trash-cli/issues/detail?id=19
-        # also reported in: 
+        # also reported in:
         #     https://bugs.launchpad.net/ubuntu/+source/trash-cli/+bug/310088
-        
+
         self.sandbox.join('dir').mkdir()
         self.sandbox.join("dir/file").touch()
-        
+
         self.trash(Path('sandbox/dir/file'))
         self.sandbox.join('dir').remove()
-        
+
         result = self.cmd(legacy_restore_cmd).assert_succeed("0")
         assert result.err_data == ""
         print result.out_data
         assert result.exit_code == 0
         assert self.sandbox.join("dir").join("file").exists()
-        

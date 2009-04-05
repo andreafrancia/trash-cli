@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
 from unittest import TestCase
@@ -39,7 +39,10 @@ class Sandbox():
         self.path=Path("./sandbox")
         self.path.remove()
         self.path.mkdirs()
-        self.env = {'HOME':'./sandbox/home'}
+        self.env = {
+            'HOME':'./sandbox/home',
+            'PATH':Path(__file__).parent.parent.parent.join('scripts')
+        }
         self.trashdir = HomeTrashDirectory(
             Path('./sandbox/home/.local/share/Trash'))
 
@@ -51,7 +54,7 @@ class Sandbox():
         file.touch()
         if content!=None :
             file.write_file(content)
-            
+
         return file
 
     def trash(self, path):
@@ -59,11 +62,11 @@ class Sandbox():
         Trash the file in the trash dir at sandbox/home/.local/share/Trash
         """
         result = self.trashdir.trash(path)
-        
-        # sanity check 
+
+        # sanity check
         assert not path.exists()
         return result
- 
+
     def execute(self, *cmdline) :
         """
         Create a command with the current enviroment (self.env)
@@ -71,13 +74,13 @@ class Sandbox():
         return Command(cmdline, self.env, self.path).run()
 
 class Test(TestCase):
-   
+
     def setUp(self):
         self.sandbox = Sandbox()
-    
+
     # Rule of Silence: When a program has nothing surprising to say, it should say nothing.
     # See also:
-    #  - issue #32 
+    #  - issue #32
     #  - http://www.catb.org/~esr/writings/taouu/taouu.html#rule-silence
     def test_silence_rule(self):
         """
@@ -85,7 +88,7 @@ class Test(TestCase):
         """
         self.sandbox.create_file('foo')
         self.sandbox.execute("trash-put","foo").assert_result(output="")
-            
+
     def test_dot_argument_is_skipped(self):
         """
         $ trash-put . other_argument
@@ -93,12 +96,12 @@ class Test(TestCase):
         """
         self.sandbox.create_file('other_argument')
         result = self.sandbox.execute("trash-put", ".","other_argument")
-        
+
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
         print result.stderr
         assert_equals(result.stderr,"trash-put: cannot trash directory `.'\n")
-        
+
         # the remaining arguments should be processed
         assert_false(self.sandbox.path.join('other_argument').exists())
 
@@ -109,15 +112,15 @@ class Test(TestCase):
         """
         self.sandbox.create_file('other_argument')
         result = self.sandbox.execute("trash-put", "..", "other_argument")
-        
+
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
-        
+
         assert_equals(result.stderr,"trash-put: cannot trash directory `..'\n")
-        
+
         # the remaining arguments should be processed
         assert_false(self.sandbox.path.join('other_argument').exists())
-    
+
     def test_dot_argument_is_skipped_even_in_subdirs(self):
         """
         $ trash-put foo/. other_argument
@@ -126,12 +129,12 @@ class Test(TestCase):
         self.sandbox.path.join('foo').mkdir()
         self.sandbox.create_file('other_argument')
         result = self.sandbox.execute("trash-put", "foo/.","other_argument")
-        
+
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
         assert_equals(result.stderr,
             "trash-put: cannot trash `.' directory `foo/.'\n")
-        
+
         # the remaining arguments should be processed
         assert_false(self.sandbox.path.join('other_argument').exists())
         assert_true(self.sandbox.path.join('foo').exists())
@@ -144,13 +147,12 @@ class Test(TestCase):
         self.sandbox.path.join('foo').mkdir()
         self.sandbox.create_file('other_argument')
         result = self.sandbox.execute("trash-put", "foo/..", "other_argument")
-        
+
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
         assert_equals(result.stderr,
             "trash-put: cannot trash `..' directory `foo/..'\n")
-        
+
         # the remaining arguments should be processed
         assert_false(self.sandbox.path.join('other_argument').exists())
         assert_true(self.sandbox.path.join('foo').exists())
-    

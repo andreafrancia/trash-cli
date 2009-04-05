@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
 from nose.tools import assert_equals
@@ -35,12 +35,12 @@ class CmdResult(object):
 
     def assert_result(self, exit_code=None, output=None, error=None):
         if exit_code != None:
-	    assert_equals(self.exit_code, exit_code)
+            assert_equals(self.exit_code, exit_code)
         if output != None:
             assert_equals(self.out_data, output)
         if error != None:
-            assert_equals(self.err_data, error) 
-        
+            assert_equals(self.err_data, error)
+
 
 class Command(object):
     def __init__(self, cmdline, env={}, cwd=None):
@@ -49,21 +49,21 @@ class Command(object):
         env: a map of enviroment variables
         """
         self.cmdline = cmdline
-        if not isinstance(env, dict): 
+        if not isinstance(env, dict):
             raise TypeError("env should be a map")
         self.env = env
         self.cwd = cwd
-    
+
     def run(self,input_=None):
         """
         Execute the command in the current enviroment and return the CmdResult
         """
         from subprocess import Popen
         from subprocess import PIPE
-        proc = Popen(self.cmdline, 
-                     stdin=PIPE, 
-                     stdout=PIPE, 
-                     stderr=PIPE, 
+        proc = Popen(self.cmdline,
+                     stdin=PIPE,
+                     stdout=PIPE,
+                     stderr=PIPE,
                      cwd=self.cwd,
                      env=self.env)
         (stdout_data,stderr_data) = proc.communicate(input_)
@@ -77,7 +77,7 @@ class Command(object):
             print 'exit_code=', result.exit_code
             print 'err_data=', result.err_data
             print 'out_data=', result.out_data
-            raise AssertionError("The command returns a %s code instead of 0" 
+            raise AssertionError("The command returns a %s code instead of 0"
                                  % result.exit_code)
         return result
 
@@ -87,4 +87,4 @@ class Command(object):
             raise AssertionError("The command returns a 0 exit code instead, "
                                  "while non zero status is expected")
         return result
-    
+

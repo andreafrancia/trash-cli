@@ -1,8 +1,11 @@
-r
+0.11.2:
+ Fixed #45: Cannot build RPM package with 0.11.1.2
 
-r?
- Fixed #34: trash_info_file is not defined
- Fixed #35: trash-list prints `No handlers could be found for logger "root"'
+0.11.1.2:
+ Fixed problems running setup.py
 
-r183:
- Fixed #32: Verbosity of trash-put
+0.11.1:
+ Updated version number to make easy_install happy
+
+0.11.0:
+ Fixed serious bug in trash-put: now the dot `.' and dot-dot `..' are skipped.
