@@ -1,0 +1,2 @@
+include description.txt
+recursive-include man *.1
