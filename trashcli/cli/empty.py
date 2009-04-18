@@ -15,34 +15,36 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
-"""
-Empty the trash. If a command line parameter is given we delete only files
-older than that parameter (integer, days).
-"""
-# author: Einar Orn Olason
 
-import os, datetime, sys
-from trashcli.trash import trashcan
+def main(argv=None) :
+    """
+    Empty the trash. If a command line parameter is given we delete only files
+    older than that parameter (integer, days).
+    """
+    # original author: Einar Orn Olason
+    # modified by Andrea Francia
+    import os, datetime, sys
+    from trashcli.trash import trashcan
 
-days=0
-usage="usage: "+sys.argv[0]+" [days]" 
+    days=0
+    usage="usage: "+sys.argv[0]+" [days]"
 
-if len(sys.argv) > 2 :
-    print usage
-    sys.exit()
-elif len(sys.argv) > 1 :
-    try :
-        days=int(sys.argv[1])
-    except :
+    if len(sys.argv) > 2 :
         print usage
         sys.exit()
+    elif len(sys.argv) > 1 :
+        try :
+            days=int(sys.argv[1])
+        except :
+            print usage
+            sys.exit()
 
-for trashedfile in trashcan.trashed_files() :
-    delta=datetime.datetime.now()-trashedfile.deletion_date
-    if delta.days >= days : 
-        trashedfile.purge()
+    for trashedfile in trashcan.trashed_files() :
+        delta=datetime.datetime.now()-trashedfile.deletion_date
+        if delta.days >= days :
+            trashedfile.purge()
 
 # eof

@@ -1,54 +1,69 @@
-----
-TEST
-----
+=======================
+Running trash-cli tests
+=======================
 
-This documents explain how to run tests.
+This documents explain how to run trash-cli tests.
 
-There are two level of unit tests:
- - unit tests
- - commands tests
+For historical reason trash-cli features two test-suites written with two 
+different technologies:
+ - tests written for python nose
+ - tests written with bashunit
 
-Requirements
-------------
- - python >= 2.5.2
- - python-nose >= 0.10.3 (only for unit tests)
- - id                    (only for command tests)
- - sed                   (only for command tests)
- 
+Running nose tests
+------------------
+This will tests only the python methods and functions but not trash-cli scripts
+as a whole entity:
 
-Unit tests
-----------
-To run unit tests:
+This will test only the internal library:
  $ python setup.py develop
- $ nosetests
+ $ python setup.py test
  ......................................................
  ----------------------------------------------------------------------
  Ran 54 tests in 1.250s
 
  OK
 
-Commands tests
---------------
-Before running the tests you should prepare the enviroment:
- $ cd command-test
- $ bash mount-test-volume.sh
- [sudo] password for andrea:
+This will tests python methods AND scripts but requires that you specify where
+the scripts are. To know were commands are you need simply pay attention at the
+output of 'develop'::
 
-There are three test scripts:
- - trash-put-test.bash
- - trash-restore-test.bash      # not yet ready don't use it
- 
-To run the test use:
- $ bash <test-script>
+  $ python setup.py develop
+  ...
+  Installing trash-list script to /home/andrea/.local/bin
+  Installing restore-trash script to /home/andrea/.local/bin
+  Installing trash-put script to /home/andrea/.local/bin
+  Installing volume-of script to /home/andrea/.local/bin
+  Installing trash-empty script to /home/andrea/.local/bin
+  ...
 
-For example:
- $ bash trash-put-test.bash
- #
- # Test report
- #
- tests passed: 132
- tests failed: 0
- tests total:  132
- success rate: 100%
+Setting the TRASHCLI_BIN enviroment variable you tell to tests where the 
+scripts are.
+
+  $ export TRASHCLI_BIN=/home/andrea/.local/bin
+  $ python setup.py test
+
+
+Running bashunit tests
+----------------------
+The commands tests are executed invoking `run-test` command from the 
+`command-test` directory. Refer to the `run-test` usage message for a more 
+complete description.
+
+If you are in the sudoers file you can run the test in the simplest form with:
+
+  $ python setup.py develop --script-dir scripts/
+  $ cd command-test
+  $ ./create-test-volume
+  [sudo] password for andrea: *********
+  $ ./run-tests ../scripts test-volume
+  ...
+  #
+  # Test report
+  #
+  tests passed: 132
+  tests failed: 0
+  tests total:  132
+  success rate: 100%
+
 
 -EOF

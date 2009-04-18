@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# trash-restore: restore trashed file from the trashcan
+# volume-of: determine the volume of a file
 #
 # Copyright (C) 2007-2009 Andrea Francia Trivolzio(PV) Italy
 #
@@ -15,9 +15,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
-from trashcli.cli import restore
+def get_option_parser():
+    from optparse import OptionParser
 
-restore.main()
+    parser = OptionParser()
+    return parser
+
+def main(argv=None):
+    from trashcli.filesystem import Path
+
+    (options, args) = get_option_parser().parse_args(argv)
+
+    for arg in args :
+        print '%s is in volume %s ' % (Path(arg), Path(arg).volume)

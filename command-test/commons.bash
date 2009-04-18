@@ -20,41 +20,6 @@
 
 #set -o nounset
 
-topdir="$(pwd)/test-volume"
-
-uid="$(python -c "import os; 
-try: 
-    print os.getuid()
-except AttributeError: 
-    print 0")"
-
-# --- commands --------------------------------------------
-_trash-put() {
-        echo "Invoking: trash $@" 1>&2
-        ../scripts/trash-put "$@"
-}
-
-_trash-empty() {
-        echo "Invoking: trash-empty $@" 1>&2
-        ../scripts/trash-empty "$@"
-}
-
-_trash-list() {
-        echo "Invoking: trash-list $@" 1>&2
-        ../scripts/trash-list "$@"
-}
-
-_trash-restore() {
-        echo "Invoking: trash-restore $@" 1>&2
-        ../scripts/trash-restore "$@"
-}
-
-_restore-trash() {
-        echo "Invoking: restore-trash $@" >2
-        ../scripts/restore-trash "$@"
-}
-# --- end of commands --------------------------------------
-
 # Usage:
 #   check_trashinfo <path-to-trashinfo> <expected-path>
 # Description:
@@ -140,24 +105,5 @@ prepare_volume_trashcan() {
 
 get-trashed-item-count() {
         _trash-list | wc -l
-}
-
-setup-test-enviroment() {
-        if [ -e $topdir/not-mounted ]; then
-                echo "test volume not mounted, please run:"
-                echo "    bash command-test/mount-test-volume.sh"
-                exit 
-        fi
-
-        if [ ! -e $topdir ]; then
-                echo "Please choose a topdir that exists."
-                exit
-        fi
-        
-        rm -Rf $topdir/.Trash
-        rm -Rf $topdir/.Trash-$uid        
-       
-	export XDG_DATA_HOME="./sandbox/XDG_DATA_HOME"
- 
 }
 

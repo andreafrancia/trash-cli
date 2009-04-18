@@ -52,6 +52,6 @@ And from these python packages
 
 Testing the software
 --------------------
-See the TEST file.
+See the TEST.txt file.
 
 -EOF

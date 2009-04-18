@@ -29,9 +29,6 @@ from nose.tools import raises
 from nose import SkipTest
 from cmd import Command
 
-restore_cmd='trash-restore'
-legacy_restore_cmd='restore-trash'
-
 # Peraphs TODO: Refactoring: move cmd(), create_file(), trash(), trash-dir to
 # a Sandbox class.
 class RestoreTest(TestCase):
@@ -42,15 +39,23 @@ class RestoreTest(TestCase):
         return Command(cmdline, self.env)
 
     def setUp(self):
-        self.sandbox = Path("./sandbox")
-        self.sandbox.remove()
-        self.sandbox.mkdirs()
-        self.env = {
-            'HOME':'./sandbox/home',
-            'PATH':Path(__file__).parent.parent.parent.join('scripts')
-        }
-        self.trashdir = HomeTrashDirectory(
-            Path('./sandbox/home/.local/share/Trash'))
+        import os
+
+        if 'TRASHCLI_BIN' in os.environ:
+            self.restore_cmd=Path(os.environ['TRASHCLI_BIN']).join('trash-restore')
+            self.legacy_restore_cmd=Path(os.environ['TRASHCLI_BIN']).join('restore-trash')
+
+            self.sandbox = Path("./sandbox")
+            self.sandbox.remove()
+            self.sandbox.mkdirs()
+            self.env = {
+                'HOME':'./sandbox/home',
+                'PATH':''
+            }
+            self.trashdir = HomeTrashDirectory(
+                Path('./sandbox/home/.local/share/Trash'))
+        else:
+            raise SkipTest("TRASHCLI_BIN not set.")
 
     def create_file(self, path, content=None):
         """
@@ -84,8 +89,9 @@ class RestoreTest(TestCase):
         $ trash-restore --version
         0.2.1
         """
+        raise SkipTest("trash-restore not yet ready")
         import re
-        result = self.cmd(restore_cmd,'--version').assert_succeed()
+        result = self.cmd(self.restore_cmd,'--version').assert_succeed()
         assert_equals("", result.err_data)
         expected = re.compile("trash-restore (\d)+\.(\d)+\.(\d)+")
         assert expected.match(result.out_data) is not None
@@ -100,6 +106,7 @@ class RestoreTest(TestCase):
         $ trash-list
         1977-01-12 12:00:00 /home/andrea/file # the oldest remain in trashcan
         """
+        raise SkipTest("trash-restore not yet ready")
 
         # prepare
         foo_file = self.create_file('foo', "first")
@@ -119,7 +126,7 @@ class RestoreTest(TestCase):
         print trashed_file3.deletion_date
 
         # execute
-        self.cmd(restore_cmd,foo_file.absolute()).assert_succeed()
+        self.cmd(self.restore_cmd,foo_file.absolute()).assert_succeed()
         assert_true(foo_file.exists()) # File has been restored ?
         assert_equals("latest", foo_file.read()) # Is the latest deleted file?
 
@@ -130,13 +137,15 @@ class RestoreTest(TestCase):
         $ cd /home/andrea
         $ trash-restore ./file
         """
+        raise SkipTest("trash-restore not yet ready")
+
         # prepare
         foo_file = self.create_file('file', "content")
         self.trash(foo_file)
         assert_false(foo_file.exists())
 
         # execute
-        self.cmd(restore_cmd,"./sandbox/file").assert_succeed()
+        self.cmd(self.restore_cmd,"./sandbox/file").assert_succeed()
         assert_true(foo_file.exists()) # File has been restored ?
         assert_equals("content", foo_file.read()) # Is the latest deleted file?
 
@@ -148,7 +157,7 @@ class RestoreTest(TestCase):
         """
         raise SkipTest()
         # execute
-        result = self.cmd(restore_cmd, 'non-existent').assert_fail()
+        result = self.cmd(self.restore_cmd, 'non-existent').assert_fail()
         # test
         assert_equals(result.exit_code, 1)
         assert_equals(result.out_data, "")
@@ -169,7 +178,7 @@ class RestoreTest(TestCase):
         self.create_file('existing-file')
 
         # execute
-        result = self.cmd(restore_cmd, 'existing-file').assert_fail()
+        result = self.cmd(self.restore_cmd, 'existing-file').assert_fail()
 
         # test
         assert_equals(result.exit_code, 1)
@@ -190,7 +199,7 @@ class RestoreTest(TestCase):
         self.create_file('existing-file')
 
         # execute
-        result = self.cmd(restore_cmd, '--force',
+        result = self.cmd(self.restore_cmd, '--force',
                           'existing-file').assert_succeed
 
         # test
@@ -206,7 +215,7 @@ class RestoreTest(TestCase):
         ...
         """
         raise SkipTest()
-        result = self.cmd(restore_cmd, '--help').assert_succeed()
+        result = self.cmd(self.restore_cmd, '--help').assert_succeed()
         assert_equals(result.exit_code, 0)
         assert_equals(result.out_data,
 """Usage: trash-restore TRASHED-FILE [NEW-LOCATION]
@@ -231,7 +240,7 @@ Options:
         self.trash(Path('sandbox/dir/file'))
         self.sandbox.join('dir').remove()
 
-        result = self.cmd(legacy_restore_cmd).assert_succeed("0")
+        result = self.cmd(self.legacy_restore_cmd).assert_succeed("0")
         assert result.err_data == ""
         print result.out_data
         assert result.exit_code == 0

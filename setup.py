@@ -15,16 +15,20 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
 """Installation script for trash-cli.
 Run it with
- './setup.py install', or
- './setup.py --help' for more options
+ 'python setup.py install', or
+ 'python setup.py --help' for more options
 """
 
-from setuptools import setup 
+import ez_setup
+ez_setup.use_setuptools()
+
+from setuptools import setup
+from setuptools import find_packages
 import sys
 import os
 
@@ -43,7 +47,7 @@ http://support.googlecode.com/svn/trunk/scripts/googlecode_distutils_upload.py
             sys.exit(3)
 
 sys.path.append('.')
-import trashcli 
+import trashcli
 
 def read_description():
     f = open("description.txt")
@@ -63,14 +67,19 @@ setup(
     license = 'GPL v2',
     download_url = 'http://code.google.com/p/trash-cli/wiki/Download',
     long_description = read_description(),
-    packages = ['trashcli', 'trashcli.cli'],
-    scripts = ['scripts/trash-put',
-               'scripts/trash-list',
-               'scripts/volume-of',
-               'scripts/restore-trash',
-               # 'scripts/trash-restore',  # not ready yet
-               'scripts/trash-restore',
-               'scripts/trash-empty'],
+    packages = find_packages(exclude=["tests", "tests.*"]),
+    test_suite = "nose.collector",
+    entry_points = {
+        'console_scripts' : [
+            'trash-list = trashcli.cli.list:main',
+            'trash-put = trashcli.cli.put:main',
+            'restore-trash = trashcli.cli.legacy_restore:main',
+            # 'trash-restore = trashcli.cli.restore:main',
+            # 'trash-admin = trashcli.cli.admin:main',
+            'volume-of = trashcli.cli.volume_of:main',
+            'trash-empty = trashcli.cli.empty:main'
+        ]
+    },
     data_files = [('man/man1', ['man/man1/trash-empty.1',
                                 'man/man1/trash-list.1',
                                 'man/man1/trash-restore.1',

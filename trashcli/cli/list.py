@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# volume-of: determine the volume of a file
+# trash-list: list trashed files
 #
 # Copyright (C) 2007-2009 Andrea Francia Trivolzio(PV) Italy
 #
@@ -15,13 +15,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
-from libtrash import Path
-import optparse
-import libtrash
-import sys
+def main(argv=None) :
+    from trashcli.trash import trashcan
 
-for arg in sys.argv :
-    print '' + str(Path(arg)) + ' -> ' + str(Path(arg).volume)
+    for trashed_file in trashcan.trashed_files() :
+        print "%s %s" % (trashed_file.deletion_date, trashed_file.path)

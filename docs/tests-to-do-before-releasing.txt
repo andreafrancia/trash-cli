@@ -1,0 +1,34 @@
+Author: Andrea Francia
+Created on: Apr 16, 2009
+
+Creating and testing a release package
+--------------------------------------
+Create the dist::
+
+  python setup.py sdist
+
+Unpack for testing::
+  
+   cd dist
+   tar xvfz trash-cli-0.11.2a-r249.tar.gz
+   cd trash-cli-0.11.2a-r249/
+
+Test::
+
+  # test the methods
+  unset TRASHCLI_BIN
+  python setup.py test
+
+  # test the scripts with nose
+  python setup.py develop --script-dir scripts
+  TRASHCLI_BIN=$(pwd)/scripts python setup.py test
+
+  # test the scripts with bashunit
+  command-test/create-test-volume
+  command-test/run-tests scripts command-test/test-volume
+
+  # test the creation of .rpm
+  python setup.py bdist_rpm
+
+
+-EOF

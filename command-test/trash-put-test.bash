@@ -23,7 +23,7 @@
 # load common definitions
 . "$(dirname "$0")/commons.bash"
 
-setup-test-enviroment
+uid="$(id -u)"
 
 testPrintVersion()
 {
@@ -197,5 +197,3 @@ test_trash-list_on_invalid_info() {
         _trash-list
         assertEquals "$?" 0
 }
-
-. "$(dirname "$0")/bashunit.bash"

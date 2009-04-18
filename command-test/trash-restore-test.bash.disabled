@@ -22,9 +22,7 @@
 set +e
 # load common definitions
 . "$(dirname "$0")/commons.bash"
-
-setup-test-enviroment
-
+ 
 test-restore-trash-with-non-existent-trash() {
         _trash-empty # delete all
         _trash-restore non-existent
@@ -91,6 +89,3 @@ test-restore-trash-restores-the-latest-deleted() {
         assertEquals "the latest deleted" "$(<file)"
 }
 
-
-
-. "$(dirname "$0")/bashunit.bash"

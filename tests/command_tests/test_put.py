@@ -29,7 +29,6 @@ from nose.tools import raises
 from nose import SkipTest
 from cmd import Command
 
-put_cmd='trash-put'
 
 class Sandbox():
     """
@@ -41,7 +40,7 @@ class Sandbox():
         self.path.mkdirs()
         self.env = {
             'HOME':'./sandbox/home',
-            'PATH':Path(__file__).parent.parent.parent.join('scripts')
+            'PATH':''
         }
         self.trashdir = HomeTrashDirectory(
             Path('./sandbox/home/.local/share/Trash'))
@@ -76,7 +75,13 @@ class Sandbox():
 class Test(TestCase):
 
     def setUp(self):
-        self.sandbox = Sandbox()
+        import os
+
+        if 'TRASHCLI_BIN' in os.environ:
+            self.put_cmd = Path(os.environ['TRASHCLI_BIN']).join('trash-put')
+            self.sandbox = Sandbox()
+        else:
+            raise SkipTest("TRASHCLI_BIN not set.")
 
     # Rule of Silence: When a program has nothing surprising to say, it should say nothing.
     # See also:
@@ -87,7 +92,7 @@ class Test(TestCase):
         $ trash-put foo
         """
         self.sandbox.create_file('foo')
-        self.sandbox.execute("trash-put","foo").assert_result(output="")
+        self.sandbox.execute(self.put_cmd,"foo").assert_result(output="")
 
     def test_dot_argument_is_skipped(self):
         """
@@ -95,7 +100,7 @@ class Test(TestCase):
         trash-put: cannot trash directory `.'
         """
         self.sandbox.create_file('other_argument')
-        result = self.sandbox.execute("trash-put", ".","other_argument")
+        result = self.sandbox.execute(self.put_cmd, ".","other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
@@ -111,7 +116,7 @@ class Test(TestCase):
         trash-put: cannot trash directory `..'
         """
         self.sandbox.create_file('other_argument')
-        result = self.sandbox.execute("trash-put", "..", "other_argument")
+        result = self.sandbox.execute(self.put_cmd, "..", "other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
@@ -128,7 +133,7 @@ class Test(TestCase):
         """
         self.sandbox.path.join('foo').mkdir()
         self.sandbox.create_file('other_argument')
-        result = self.sandbox.execute("trash-put", "foo/.","other_argument")
+        result = self.sandbox.execute(self.put_cmd, "foo/.","other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
@@ -146,7 +151,7 @@ class Test(TestCase):
         """
         self.sandbox.path.join('foo').mkdir()
         self.sandbox.create_file('other_argument')
-        result = self.sandbox.execute("trash-put", "foo/..", "other_argument")
+        result = self.sandbox.execute(self.put_cmd, "foo/..", "other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
