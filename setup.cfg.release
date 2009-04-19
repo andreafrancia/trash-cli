@@ -1,5 +1,0 @@
-[bdist_rpm]
-doc_files = README.txt
-;; Uncomment if your platform automatically gzips man pages
-;; See README.BDIST_RPM
-;; install_script = install-rpm.sh

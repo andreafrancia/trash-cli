@@ -28,6 +28,7 @@ from nose.tools import assert_false
 from nose.tools import raises
 from nose import SkipTest
 from cmd import Command
+from cmd import CommandEnviroment
 
 
 class Sandbox():
@@ -38,10 +39,6 @@ class Sandbox():
         self.path=Path("./sandbox")
         self.path.remove()
         self.path.mkdirs()
-        self.env = {
-            'HOME':'./sandbox/home',
-            'PATH':''
-        }
         self.trashdir = HomeTrashDirectory(
             Path('./sandbox/home/.local/share/Trash'))
 
@@ -66,22 +63,21 @@ class Sandbox():
         assert not path.exists()
         return result
 
-    def execute(self, *cmdline) :
-        """
-        Create a command with the current enviroment (self.env)
-        """
-        return Command(cmdline, self.env, self.path).run()
-
 class Test(TestCase):
 
     def setUp(self):
-        import os
+        import trashcli
+        cmds_aliases={}
+        scripts_dir=Path(trashcli.__file__).parent.parent.join("scripts")
+        for i in ["trash-list", "trash-put", "trash-empty"]:
+            command=scripts_dir.join(i)
+            if not command.exists():
+                raise SkipTest("Script not found: %s\nPlease run 'python setup.py develop -s scripts' before." % command)
+            else:
+                cmds_aliases[i]=command
 
-        if 'TRASHCLI_BIN' in os.environ:
-            self.put_cmd = Path(os.environ['TRASHCLI_BIN']).join('trash-put')
-            self.sandbox = Sandbox()
-        else:
-            raise SkipTest("TRASHCLI_BIN not set.")
+        self.sandbox = Sandbox()
+        self.cmdenv=CommandEnviroment(cmds_aliases,"./sandbox", {'HOME':'./sandbox/home',})
 
     # Rule of Silence: When a program has nothing surprising to say, it should say nothing.
     # See also:
@@ -92,7 +88,7 @@ class Test(TestCase):
         $ trash-put foo
         """
         self.sandbox.create_file('foo')
-        self.sandbox.execute(self.put_cmd,"foo").assert_result(output="")
+        self.cmdenv.run('trash-put', 'foo').assert_result(output="")
 
     def test_dot_argument_is_skipped(self):
         """
@@ -100,7 +96,7 @@ class Test(TestCase):
         trash-put: cannot trash directory `.'
         """
         self.sandbox.create_file('other_argument')
-        result = self.sandbox.execute(self.put_cmd, ".","other_argument")
+        result = self.cmdenv.run("trash-put", ".","other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
@@ -116,7 +112,7 @@ class Test(TestCase):
         trash-put: cannot trash directory `..'
         """
         self.sandbox.create_file('other_argument')
-        result = self.sandbox.execute(self.put_cmd, "..", "other_argument")
+        result = self.cmdenv.run("trash-put", "..", "other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
@@ -133,7 +129,7 @@ class Test(TestCase):
         """
         self.sandbox.path.join('foo').mkdir()
         self.sandbox.create_file('other_argument')
-        result = self.sandbox.execute(self.put_cmd, "foo/.","other_argument")
+        result = self.cmdenv.run("trash-put", "foo/.","other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
@@ -151,7 +147,7 @@ class Test(TestCase):
         """
         self.sandbox.path.join('foo').mkdir()
         self.sandbox.create_file('other_argument')
-        result = self.sandbox.execute(self.put_cmd, "foo/..", "other_argument")
+        result = self.cmdenv.run("trash-put", "foo/..", "other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr

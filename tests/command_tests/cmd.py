@@ -88,3 +88,25 @@ class Command(object):
                                  "while non zero status is expected")
         return result
 
+class CommandEnviroment():
+    """
+    Run commands for the same working dir and enviroments
+    """
+    def __init__(self, cmd_aliases, cwd=".", env={}):
+        self.cmd_aliases=cmd_aliases
+        self.cwd=cwd
+        self.env=env
+
+    def run(self, cmd, *args) :
+        """
+        Run the cmd with args.
+
+        The 'cmd' is subsituted should be present in cmd_aliases.
+        The command is run in the current enviroment (self.env) in the current directory (self.cwd)
+        It returns the CommandResult of the command.
+        """
+        real_cmd =self.cmd_aliases[cmd]
+        cmd_line = [real_cmd] + list(args)
+        return Command(cmd_line, self.env, self.cwd).run()
+
+

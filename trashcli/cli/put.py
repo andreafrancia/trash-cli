@@ -21,12 +21,7 @@
 def get_option_parser():
     from trashcli import version
     from optparse import OptionParser
-    from optparse import IndentedHelpFormatter
-
-    class NoWrapFormatter(IndentedHelpFormatter) :
-        def _format_text(self, text) :
-            "[Does not] format a text, return the text as it is."
-            return text
+    from trashcli.cli.util import NoWrapFormatter
 
     parser = OptionParser(usage="%prog [OPTION]... FILE...",
                           description="Put files in trash",
@@ -34,13 +29,13 @@ def get_option_parser():
                           formatter=NoWrapFormatter(),
                           epilog=
     """To remove a file whose name starts with a `-', for example `-foo',
-    use one of these commands:
+use one of these commands:
 
-      trash -- -foo
+    trash -- -foo
 
-      trash ./-foo
+    trash ./-foo
 
-    Report bugs to http://code.google.com/p/trash-cli/issues""")
+Report bugs to http://code.google.com/p/trash-cli/issues""")
 
     parser.add_option("-d",
                       "--directory",
