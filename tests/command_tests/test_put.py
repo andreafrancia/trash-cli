@@ -30,7 +30,6 @@ from nose import SkipTest
 from cmd import Command
 from cmd import CommandEnviroment
 
-
 class Sandbox():
     """
     A sandbox where executing commands under tests
@@ -63,21 +62,12 @@ class Sandbox():
         assert not path.exists()
         return result
 
-class Test(TestCase):
+class PutTest(TestCase):
 
     def setUp(self):
-        import trashcli
-        cmds_aliases={}
-        scripts_dir=Path(trashcli.__file__).parent.parent.join("scripts")
-        for i in ["trash-list", "trash-put", "trash-empty"]:
-            command=scripts_dir.join(i)
-            if not command.exists():
-                raise SkipTest("Script not found: %s\nPlease run 'python setup.py develop -s scripts' before." % command)
-            else:
-                cmds_aliases[i]=command
-
+        from common import create_cmdenv
+        self.cmdenv = create_cmdenv()
         self.sandbox = Sandbox()
-        self.cmdenv=CommandEnviroment(cmds_aliases,"./sandbox", {'HOME':'./sandbox/home',})
 
     # Rule of Silence: When a program has nothing surprising to say, it should say nothing.
     # See also:

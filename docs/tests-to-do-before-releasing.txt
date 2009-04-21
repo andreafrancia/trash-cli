@@ -14,21 +14,20 @@ Unpack for testing::
    cd trash-cli-0.11.2a-r249/
 
 Test::
-
-  # test the methods
-  unset TRASHCLI_BIN
-  python setup.py test
-
-  # test the scripts with nose
+  # prepare the test scripts so they can tested 
   python setup.py develop --script-dir scripts
-  TRASHCLI_BIN=$(pwd)/scripts python setup.py test
+  
+  # launch tests with python nosecommand-test/create-test-volume
+  python setup.py test
 
   # test the scripts with bashunit
   command-test/create-test-volume
   command-test/run-tests scripts command-test/test-volume
+  sudo umount command-test/test-volume
 
   # test the creation of .rpm
   python setup.py bdist_rpm
 
-
+  # in case of errors:
+  python setup.py bdist_rpm --install-script=install-rpm.sh
 -EOF

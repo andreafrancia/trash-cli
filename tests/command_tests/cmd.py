@@ -19,6 +19,7 @@
 # 02110-1301, USA.
 
 from nose.tools import assert_equals
+from unipath import Path
 
 class CmdResult(object):
     """
@@ -99,14 +100,25 @@ class CommandEnviroment():
 
     def run(self, cmd, *args) :
         """
-        Run the cmd with args.
+        Run a Command.
+
+        The Command is created on the fly using the self.cmd() method.
+        """
+        return self.cmd(cmd,*args).run()
+
+    def cmd(self, cmd, *args) :
+        """
+        Creates a command.
 
         The 'cmd' is subsituted should be present in cmd_aliases.
         The command is run in the current enviroment (self.env) in the current directory (self.cwd)
         It returns the CommandResult of the command.
         """
-        real_cmd =self.cmd_aliases[cmd]
+        if Path(cmd).isabsolute():
+            real_cmd = cmd
+        else:
+            real_cmd =self.cmd_aliases[cmd]
         cmd_line = [real_cmd] + list(args)
-        return Command(cmd_line, self.env, self.cwd).run()
+        return Command(cmd_line, self.env, self.cwd)
 
 

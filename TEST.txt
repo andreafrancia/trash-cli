@@ -11,11 +11,10 @@ different technologies:
 
 Running nose tests
 ------------------
-This will tests only the python methods and functions but not trash-cli scripts
-as a whole entity:
+These will test the methods and functions and optionally the trash-cli scripts
+as a whole entity. To run the tests just do::
 
-This will test only the internal library:
- $ python setup.py develop
+ $ python setup.py develop -s scripts
  $ python setup.py test
  ......................................................
  ----------------------------------------------------------------------
@@ -23,25 +22,18 @@ This will test only the internal library:
 
  OK
 
-This will tests python methods AND scripts but requires that you specify where
-the scripts are. To know were commands are you need simply pay attention at the
-output of 'develop'::
+The scripts are tested only if they were found in the `scripts` sub directory,
+otherwise they are skipped. For example if you miss to supply the "-s scripts" 
+option the scripts tests will be skipped:
 
-  $ python setup.py develop
-  ...
-  Installing trash-list script to /home/andrea/.local/bin
-  Installing restore-trash script to /home/andrea/.local/bin
-  Installing trash-put script to /home/andrea/.local/bin
-  Installing volume-of script to /home/andrea/.local/bin
-  Installing trash-empty script to /home/andrea/.local/bin
-  ...
-
-Setting the TRASHCLI_BIN enviroment variable you tell to tests where the 
-scripts are.
-
-  $ export TRASHCLI_BIN=/home/andrea/.local/bin
-  $ python setup.py test
-
+ $ python setup.py develop
+ $ python setup.py test
+ ...
+ $ trash-list --help ... SKIP: Script not found: /home/andrea/src/trash-cli/scripts/trash-list
+ Please run 'python setup.py develop -s scripts' before.
+ $ trash-put . other_argument ... SKIP: Script not found: /home/andrea/src/trash-cli/scripts/trash-list
+ Please run 'python setup.py develop -s scripts' before.
+ ...
 
 Running bashunit tests
 ----------------------

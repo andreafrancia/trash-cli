@@ -33,17 +33,8 @@ from cmd import CommandEnviroment
 class Test(TestCase):
 
     def setUp(self):
-        import trashcli
-        cmds_aliases={}
-        scripts_dir=Path(trashcli.__file__).parent.parent.join("scripts")
-        for i in ["trash-list", "trash-put", "trash-empty"]:
-            command=scripts_dir.join(i)
-            if not command.exists():
-                raise SkipTest("Script not found, please use 'setup.py develop --scripts-dir scripts': %s" % command)
-            else:
-                cmds_aliases[i]=command
-
-        self.cmdenv=CommandEnviroment(cmds_aliases,"./sandbox", {})
+        from common import create_cmdenv
+        self.cmdenv = create_cmdenv()
 
     def test_help_option(self):
         "$ trash-list --help"
