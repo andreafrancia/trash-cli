@@ -22,6 +22,7 @@ from nose.tools import assert_equals
 from unipath import Path
 
 class CmdResult(object):
+
     """
     self.exit_code: integer
     self.stdout_data: string
@@ -29,18 +30,33 @@ class CmdResult(object):
     """
     def __init__(self, exit_code, stdout_data, stderr_data):
         self.exit_code = exit_code
-        self.out_data = stdout_data # TODO remove this variable
-        self.err_data = stderr_data # TODO remove this variable
         self.stderr = stderr_data
         self.stdout = stdout_data
 
     def assert_result(self, exit_code=None, output=None, error=None):
+
+
         if exit_code != None:
             assert_equals(self.exit_code, exit_code)
         if output != None:
-            assert_equals(self.out_data, output)
+            assert_equals(self.stdout, output, self._unidiff_output(self.stdout,output))
         if error != None:
-            assert_equals(self.err_data, error)
+            assert_equals(self.stderr, error)
+
+    @staticmethod
+    def _unidiff_output(expected, actual):
+        """
+        Helper function. Returns a string containing the unified diff of two multiline strings.
+        """
+        import difflib
+        expected=expected.splitlines(1)
+        actual=actual.splitlines(1)
+
+        diff=difflib.unified_diff(expected, actual)
+
+        return ''.join(diff)
+
+
 
 
 class Command(object):

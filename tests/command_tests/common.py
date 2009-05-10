@@ -1,4 +1,3 @@
-from unittest import TestCase
 from unipath import Path
 
 def create_cmdenv(default_cwd="./sandbox", home_env=Path("./sandbox/home").absolute()):
@@ -17,3 +16,4 @@ def create_cmdenv(default_cwd="./sandbox", home_env=Path("./sandbox/home").absol
             cmds_aliases[i]=command
 
     return CommandEnviroment(cmds_aliases, default_cwd, {'HOME':home_env})
+

@@ -18,6 +18,20 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
+def get_option_parser():
+    from trashcli import version
+    from optparse import OptionParser
+    from optparse import IndentedHelpFormatter
+    from trashcli.cli.util import NoWrapFormatter
+
+    parser = OptionParser(usage="%prog [days]",
+                          description="Purge trashed files.",
+                          version="%%prog %s" % version,
+                          formatter=NoWrapFormatter(),
+                          epilog=
+    """Report bugs to http://code.google.com/p/trash-cli/issues""")
+
+    return parser
 
 def main(argv=None) :
     """
@@ -25,22 +39,25 @@ def main(argv=None) :
     older than that parameter (integer, days).
     """
     # original author: Einar Orn Olason
-    # modified by Andrea Francia
+    # modified by Andrea Francia (refactored, and OptionParser added)
+
+
+    parser = get_option_parser()
+    (options, args) = parser.parse_args(argv)
+
     import os, datetime, sys
     from trashcli.trash import trashcan
 
     days=0
-    usage="usage: "+sys.argv[0]+" [days]"
 
-    if len(sys.argv) > 2 :
-        print usage
-        sys.exit()
-    elif len(sys.argv) > 1 :
+    if len(args) > 1 :
+        parser.print_usage()
+        parser.exit()
+    elif len(args) > 1 :
         try :
-            days=int(sys.argv[1])
+            days=int(args[1])
         except :
-            print usage
-            sys.exit()
+            parser.print_usage()
 
     for trashedfile in trashcan.trashed_files() :
         delta=datetime.datetime.now()-trashedfile.deletion_date
