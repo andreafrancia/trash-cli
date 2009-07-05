@@ -18,10 +18,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
+from trashcli.trash import *
+import os
+
 def main(argv=None):
-    from trashcli.trash import trashcan
-    from trashcli.trash import TrashedFile
-    import os
+    trashcan = GlobalTrashCan()
 
     def is_trashed_from_curdir(trashedfile):
         dir = os.path.realpath(os.curdir)

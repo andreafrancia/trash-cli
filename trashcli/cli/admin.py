@@ -18,38 +18,60 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
-def create_option_parser():
-    """
-    Creates and returns the option parser for the trash-admin command
-    """
+from trashcli.cli.subcommandsparser import *
+from trashcli.filesystem import *
+from trashcli.trash import *
+from trashcli.logger import *
+
+def main(argv=None):
+    logger=ConsoleLogger()
+    filesystem = OsFileSystem()
+    trashsystem = RealTrashSystem()
+
+    command = AdminCommand(logger, OsFileSystem(), RealTrashSystem())
+
+    command.execute(argv)
+
+class AdminCommand(object):
+    def __init__(self, logger, filesystem, trashsystem):
+        self.parser = create_command_line_parser(filesystem, logger, trashsystem)
+
+    def execute(self, args):
+        try:
+            (command, args) = self.parser.parse(args)
+            return command.execute(args)
+        except CommandNotFoundError, e:
+            logger.fatal(e)
+
+def create_command_line_parser(filesystem, logger, trashsystem):
     import trashcli
-    from optparse import OptionParser
-    parser=OptionParser(usage="%prog [OPTION]... FILE...",
-                        description="trashcan admin",
-                        version="%%prog %s" % trashcli.version)
 
-    parser.add_option("--volumes",
-                      action="store_true",
-                      help="List all volumes",
-                      dest="volumes")
+    parser = SubCommandsParser(usage="%prog command [options] [args]",
+                               description="trash-cli admin tool",
+                               version="%%prog %s" % trashcli.version)
 
-    parser.add_option("--trashcans",
-                      action="store_true",
-                      help="List all trashcan",
-                      dest="trashcans")
+    parser.add_sub_command("list-volumes",
+                           ListVolumesCommand(logger, filesystem.volumes))
+
+    parser.add_sub_command("list-trashdirs",
+                           ListTrashDirectoriesCommand(logger, trashsystem.trash_directories))
 
     return parser
 
+class ListVolumesCommand(object):
+    def __init__(self, logger, volume_generator):
+        self.logger = logger
+        self.volume_generator = volume_generator
 
-def main(argv=None) :
-    from trashcli.filesystem import Volume
+    def execute(self, args):
+        for volume in self.volume_generator():
+            self.logger.reply(volume.path)
 
-    parser = create_option_parser()
-    (options, args) = parser.parse_args(argv)
+class ListTrashDirectoriesCommand(object):
+    def __init__(self, logger, trash_directories_generator):
+        self.logger = logger
+        self.trash_directories_generator = trash_directories_generator
 
-    if options.volumes :
-        for i in Volume.all() :
-            print i.path
-    elif options.trashcans :
-        for i in trashcan.trash_directories() :
-            print "%s (%s)" % (i, i.volume)
+    def execute(self, args):
+        for trashdir in self.trash_directories_generator():
+            self.logger.reply("%s (%s)" % (trashdir, trashdir.volume))

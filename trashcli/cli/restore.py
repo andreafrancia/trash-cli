@@ -20,10 +20,9 @@
 
 from optparse import OptionParser
 from trashcli import version
-from trashcli.cli.util import NoWrapFormatter
-from trashcli.filesystem import Path
-from trashcli.trash import GlobalTrashCan
-from trashcli.trash import logger
+from trashcli.cli.util import *
+from trashcli.filesystem import *
+from trashcli.trash import *
 
 class RestoreCommandLine(object):
     def __init__(self,restorer):

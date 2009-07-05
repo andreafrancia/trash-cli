@@ -29,18 +29,16 @@ class CmdResult(object):
     """
     def __init__(self, exit_code, stdout_data, stderr_data):
         self.exit_code = exit_code
-        self.out_data = stdout_data # TODO remove this variable
-        self.err_data = stderr_data # TODO remove this variable
-        self.stderr = stderr_data
         self.stdout = stdout_data
+        self.stderr = stderr_data
 
     def assert_result(self, exit_code=None, output=None, error=None):
         if exit_code != None:
             assert_equals(self.exit_code, exit_code)
         if output != None:
-            assert_equals(self.out_data, output)
+            assert_equals(self.stdout, output)
         if error != None:
-            assert_equals(self.err_data, error)
+            assert_equals(self.stderr, error)
 
 
 class Command(object):

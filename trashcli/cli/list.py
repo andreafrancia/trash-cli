@@ -33,12 +33,13 @@ def get_option_parser():
 
     return parser
 
+from trashcli.trash import *
 
 def main(argv=None) :
-    from trashcli.trash import trashcan
+    trashsystem = GlobalTrashCan()
 
     parser = get_option_parser()
     (options, args) = parser.parse_args(argv)
 
-    for trashed_file in trashcan.trashed_files() :
+    for trashed_file in trashsystem.trashed_files() :
         print "%s %s" % (trashed_file.deletion_date, trashed_file.path)

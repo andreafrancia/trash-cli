@@ -18,6 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
+from trashcli.trash import *
 
 def main(argv=None) :
     """
@@ -27,7 +28,8 @@ def main(argv=None) :
     # original author: Einar Orn Olason
     # modified by Andrea Francia
     import os, datetime, sys
-    from trashcli.trash import trashcan
+
+    trashcan = GlobalTrashCan()
 
     days=0
     usage="usage: "+sys.argv[0]+" [days]"

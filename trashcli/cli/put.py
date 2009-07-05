@@ -18,6 +18,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
+from trashcli.trash import *
+from trashcli.filesystem import *
+
 def get_option_parser():
     from trashcli import version
     from optparse import OptionParser
@@ -90,8 +93,8 @@ def get_logger(verbose):
     return logger
 
 def main(argv=None):
-    from trashcli.filesystem import Path
-    from trashcli.trash import trashcan
+
+    trashcan = GlobalTrashCan()
 
     parser = get_option_parser()
     (options, args) = parser.parse_args(argv)

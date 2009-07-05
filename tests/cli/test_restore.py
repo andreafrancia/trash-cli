@@ -15,12 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
-
-"""
-test module for the trashcli.cli.restore module
-"""
 
 from __future__ import absolute_import
 
@@ -58,7 +54,7 @@ class TrashedFileMock(object):
         self.deletion_date = deletion_date
 
     def __repr__(self):
-        return "TrashedFileMock('%s','%s')" % (self.path, 
+        return "TrashedFileMock('%s','%s')" % (self.path,
                                                self.deletion_date)
 
 class FindLatestTest(TestCase):
@@ -66,32 +62,32 @@ class FindLatestTest(TestCase):
         a_foo      = TrashedFileMock(Path('/foo'), datetime(2009, 01, 01))
         latest_foo = TrashedFileMock(Path('/foo'), datetime(2010, 01, 01))
         a_bar      = TrashedFileMock(Path('/bar'), datetime(2010, 01, 01))
-        
+
         class TrashCanMock:
             def trashed_files(self):
                 yield a_foo
                 yield latest_foo
-                yield a_bar 
+                yield a_bar
         trashcan = TrashCanMock()
-        
+
         # execute
         result = find_latest(trashcan, Path('/foo'))
-        
+
         # test
         assert_equals(latest_foo, result)
-    
+
     @raises(TrashNotFoundError)
     def test_find_latest_raises_TrashNotFoundError(self):
         class TrashCanMock:
             def trashed_files(self):
                 yield TrashedFileMock(Path('/foo'), datetime(2009, 01, 01))
                 yield TrashedFileMock(Path('/foo'), datetime(2010, 01, 01))
-                yield TrashedFileMock(Path('/bar'), datetime(2010, 01, 01)) 
+                yield TrashedFileMock(Path('/bar'), datetime(2010, 01, 01))
         trashcan = TrashCanMock()
-        
+
         # execute
         find_latest(trashcan, Path('/goo'))
-        
+
 class LastTrashedTest(TestCase):
     def test_last_trashed(self):
         """
@@ -99,44 +95,44 @@ class LastTrashedTest(TestCase):
         """
         trash_dir = TrashDirectory(Path('/.Trash/'), Volume(Path('/')))
 
-        before = TrashedFile('foo', 
-                             TrashInfo("foo", 
+        before = TrashedFile('foo',
+                             TrashInfo("foo",
                                        datetime(2009, 01, 01, 01, 01, 01)),
                              trash_dir)
-        after = TrashedFile('foo', 
-                            TrashInfo("foo", 
-                                      datetime(2009, 01, 01, 01, 01, 02)), 
+        after = TrashedFile('foo',
+                            TrashInfo("foo",
+                                      datetime(2009, 01, 01, 01, 01, 02)),
                             trash_dir)
 
         assert last_trashed(before, after) is after
         assert last_trashed(after, before) is after
-    
-        sametime1 = TrashedFile('foo', 
-                                TrashInfo("foo", datetime(2009, 01, 01, 
+
+        sametime1 = TrashedFile('foo',
+                                TrashInfo("foo", datetime(2009, 01, 01,
                                                           01, 01, 01)),
                                 trash_dir)
-        sametime2 = TrashedFile('foo', 
+        sametime2 = TrashedFile('foo',
                                 TrashInfo("foo", datetime(2009,01,01,
                                                           01,01,01)),
                                 trash_dir)
-        
+
         assert last_trashed(sametime1, sametime2) is sametime1
-    
+
 class RestorerTest(TestCase):
     def test_restore_latest_calls_find_latest_and_restore(self):
         # prepare
         latest = Mock()
         trashcan = Mock()
         find_latest = Mock(return_value=latest)
-        
+
         instance = Restorer(trashcan, find_latest)
-        # execute 
+        # execute
         instance.restore_latest(Path('/foo'))
-        
+
         # check
         assert_equals(1, find_latest.call_count)
         find_latest.assert_called_with(trashcan, Path('/foo'))
-        
+
         assert_equals(1, latest.restore.call_count)
         latest.restore.assert_called_with((None))
 
@@ -149,7 +145,7 @@ class RestoreCommandLineTest(TestCase):
         print restorer.restore_latest.call_args
         restorer.restore_latest.assert_called_with(
             Path('/path-to-restore'))
-    
+
     def test_call_restore_with_dest(self):
         restorer = Mock()
         instance = RestoreCommandLine(restorer)
@@ -157,4 +153,4 @@ class RestoreCommandLineTest(TestCase):
         assert restorer.restore_latest.call_count == 1
         restorer.restore_latest.assert_called_with(
             Path('/path-to-restore'), Path('dest'))
-    
+

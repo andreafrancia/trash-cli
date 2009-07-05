@@ -15,16 +15,25 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.from optparse import IndentedHelpFormatter
 
 from __future__ import absolute_import
+
+class FileSystem(object):
+    def volumes():
+        "Should return the list of volume of the system"
+        raise NotImplementedError()
+
+class OsFileSystem(object):
+    def volumes():
+        return Volume.all()
 
 import os
 import shutil
 from ctypes import *
 from ctypes.util import find_library
-import sys 
+import sys
 import unipath
 
 class Path (unipath.Path) :
@@ -33,7 +42,7 @@ class Path (unipath.Path) :
     @property
     def path(self):
         return str(self)
-    
+
     @property
     def parent(self) :
         return Path(os.path.dirname(self.path))
@@ -76,7 +85,7 @@ class Path (unipath.Path) :
     def remove(self) :
         if(self.exists()):
             try:
-                os.remove(self.path)        
+                os.remove(self.path)
             except:
                 return shutil.rmtree(self.path)
 
@@ -93,7 +102,7 @@ class Path (unipath.Path) :
         import os
         import stat
         return (os.stat(self.path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
-    
+
     def isabs(self) :
         return os.path.isabs(self.path)
 
@@ -114,12 +123,12 @@ class Path (unipath.Path) :
     def mkdirs(self, mode=0777):
         if self.isdir():
             os.chmod(self.path, mode)
-            return 
+            return
         os.makedirs(self.path, mode)
 
     def touch(self):
         open(self.path, "w").close()
-    
+
     def read(self):
         f=self.open()
         result=f.read()
@@ -128,13 +137,13 @@ class Path (unipath.Path) :
 
     def open(self):
         return open(self.path)
-    
+
     def ismount(self):
         return os.path.ismount(self.path)
-    
+
     def __repr__(self):
         return "Path('%s')" % self.path
-    
+
     def type_description(self):
         """
         Return a textual description of the file pointed by this path.
@@ -146,7 +155,7 @@ class Path (unipath.Path) :
          - "regular file"
          - "regular empty file"
          - "entry"
-        """        
+        """
         if self.islink():
             return 'symbolic link'
         elif self.isdir():
@@ -168,13 +177,13 @@ class Path (unipath.Path) :
                 return 'regular file'
         else:
             return 'entry'
-    
+
 
 class Volume(object) :
     def __init__(self,path, permissive = False):
         assert(isinstance(path,Path))
         if True or permissive or os.path.ismount(path.path) :
-            self.path=path 
+            self.path=path
         else:
             raise ValueError("path is not a mount point:" + path)
 
@@ -191,9 +200,9 @@ class Volume(object) :
 
     def __str__(self) :
         return str(self.path)
-    
+
     @staticmethod
-    def volume_of(path) : 
+    def volume_of(path) :
         path = os.path.realpath(path)
         while path != os.path.dirname(path):
             if os.path.ismount(path):
@@ -209,12 +218,12 @@ class Volume(object) :
                 self.type = type
                 self.name = name
         class mntent_struct(Structure):
-            _fields_ = [("mnt_fsname", c_char_p),  # Device or server for 
+            _fields_ = [("mnt_fsname", c_char_p),  # Device or server for
                                                    # filesystem.
                         ("mnt_dir", c_char_p),     # Directory mounted on.
-                        ("mnt_type", c_char_p),    # Type of filesystem: ufs, 
+                        ("mnt_type", c_char_p),    # Type of filesystem: ufs,
                                                    # nfs, etc.
-                        ("mnt_opts", c_char_p),    # Comma-separated options 
+                        ("mnt_opts", c_char_p),    # Comma-separated options
                                                    # for fs.
                         ("mnt_freq", c_int),       # Dump frequency (in days).
                         ("mnt_passno", c_int)]     # Pass number for `fsck'.
@@ -239,7 +248,7 @@ class Volume(object) :
 
         while True:
             entry = libc.getmntent(f)
-            if bool(entry) == False: 
+            if bool(entry) == False:
                 libc.fclose(f)
                 break
             yield Filesystem(entry.contents.mnt_dir,
@@ -248,8 +257,11 @@ class Volume(object) :
 
     def __repr__(self):
         return "[Path:%s]" % self.path
-    
+
     @staticmethod
     def all() :
         for elem in Volume.mounted_filesystems():
             yield Volume(Path(elem.mount_dir))
+
+
+
