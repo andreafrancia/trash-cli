@@ -334,10 +334,7 @@ class GlobalTrashCan(TrashCan) :
             for trashedfile in trash_dir.trashed_files():
                 yield trashedfile
 
-    def trashed_file(self, name):
-        pass
-
-    def trash (self,f) :
+    def trash(self,f) :
         """
         Trash a file in the appropriate trash directory.
         If the file belong to the same volume of the trash home directory it

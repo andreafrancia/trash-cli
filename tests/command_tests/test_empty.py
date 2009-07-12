@@ -1,5 +1,6 @@
 #!/usr/bin/python
-# tests/command_tests/test_list.py: Tests for the trash-list command.
+#
+# tests/command_tests/test_empty.py: Tests for the trash-empty command.
 #
 # Copyright (C) 2009 Andrea Francia Trivolzio(PV) Italy
 #
@@ -30,21 +31,26 @@ from nose import SkipTest
 from cmd import Command
 from cmd import CommandEnviroment
 
-class Test(TestCase):
+class TestEmptyCommand(TestCase):
+    """
+    Tests for the trash-empty command
+    """
 
     def setUp(self):
         from common import create_cmdenv
         self.cmdenv = create_cmdenv()
 
     def test_help_option(self):
-        "$ trash-list --help"
+        "$ trash-empty --help"
 
-        self.cmdenv.run("trash-list", "--help").assert_result(
-            exit_code=0,
-            output=
-"""Usage: trash-list
+        self.cmdenv.run(
+            "trash-empty", "--help"
+            ).assert_result(
+                exit_code=0,
+                output=
+"""Usage: trash-empty [days]
 
-List trashed files
+Purge trashed files.
 
 Options:
   --version   show program's version number and exit
@@ -52,6 +58,5 @@ Options:
 
 Report bugs to http://code.google.com/p/trash-cli/issues
 """,
-            error="")
-
+                error="")
 
