@@ -226,3 +226,16 @@ Options:
         )
 
         assert_true(self.sandbox.child("dir").child("file").exists())
+
+    def test_overwrite(self):
+        # Trash a file, then create a file of the same name in its place.
+        # Restore the file, and ensure that it asks before overwriting.
+        self.sandbox.join('testfile').touch()
+        self.trash(Path('sandbox/testfile'))
+        self.sandbox.join('testfile').touch()
+        result = self.cmdenv.cmd('restore-trash').run('0')
+        result.assert_result(
+            exit_code=1,
+            error='Refusing to overwrite existing file "testfile".\n',
+        )
+

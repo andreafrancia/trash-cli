@@ -465,7 +465,9 @@ class TrashedFile(object) :
     def restore(self, dest=None) :
         if dest is not None:
             raise NotImplementedError("not yet supported")
-        if not self.path.exists() :
+        if self.path.exists():
+            raise IOError('Refusing to overwrite existing file "%s".' % self.path.basename);
+        else:
             self.path.parent.mkdirs()
 
         self.original_file.move(self.path)

@@ -44,4 +44,9 @@ def main(argv=None):
             print "Exiting"
         else :
             index = int(index)
-            trashed_files[index].restore()
+            try:
+            	trashed_files[index].restore()
+            except IOError, e:
+	 	import sys
+                print >> sys.stderr, str(e)
+	 	sys.exit(1)	
