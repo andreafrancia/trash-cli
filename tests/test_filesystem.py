@@ -32,10 +32,14 @@ from nose import SkipTest
 class TestVolume(unittest.TestCase) :
     def test_all(self) :
         if sys.platform[:3] != "win":
-            volumes = Volume.all()
-            self.assert_(len(list(volumes)) > 0)
-            for v in volumes:
-                self.assert_(isinstance(v, Volume))
+	    return
+	if sys.platform[:6] != "darwin":
+	    return
+
+	volumes = Volume.all()
+	self.assert_(len(list(volumes)) > 0)
+	for v in volumes:
+	    self.assert_(isinstance(v, Volume))
 
     def testCmpVolumes(self) :
         v1 = Volume(Path(os.sep))
