@@ -26,11 +26,11 @@ from nose.tools import assert_true
 from nose.tools import assert_not_equals
 
 class CommandTest(TestCase):
-    def test_run_retuns_exit_code(self):
-        result=Command("/bin/false").run()
+    def test_run_returns_exit_code(self):
+        result=Command("false").run()
         assert_not_equals(0, result.exit_code)
 
-        result=Command("/bin/true").run()
+        result=Command("true").run()
         assert_equals(0, result.exit_code)
 
     def test_run_returns_output(self):
