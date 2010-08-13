@@ -74,8 +74,6 @@ setup(
             'trash-list = trashcli.cli.list:main',
             'trash-put = trashcli.cli.put:main',
             'restore-trash = trashcli.cli.legacy_restore:main',
-            # 'trash-restore = trashcli.cli.restore:main',
-            # 'trash-admin = trashcli.cli.admin:main',
             'volume-of = trashcli.cli.volume_of:main',
             'trash-empty = trashcli.cli.empty:main'
         ]

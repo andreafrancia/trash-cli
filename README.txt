@@ -7,8 +7,7 @@ trash-cli provides the following commands to manage the trash:
   * trash-put          trashes files and directories. 
   * trash-empty         empty the trashcan(s).
   * trash-list          list trashed file.
-  * trash-restore       restore a trashed file.
-  * trash-admin         administrate trashcan(s).
+  * restore-trash       restore a trashed file.
 
 For each file the name, original path, deletion date, and permissions 
 are recorded. The trash command allow trash multiple files with the 
@@ -49,9 +48,5 @@ The trash-cli software depends on these packages:
 
 And from these python packages
  - enum
-
-Testing the software
---------------------
-See the TEST.txt file.
 
 -EOF
