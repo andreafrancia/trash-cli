@@ -1,33 +1,37 @@
-Author: Andrea Francia
-Created on: Apr 16, 2009
-
-Creating and testing a release package
---------------------------------------
-Create the dist::
+# Creating and testing a release package
+# --------------------------------------
+# Create the dist::
 
   python setup.py sdist
 
-Unpack for testing::
+# Unpack for testing::
   
    cd dist
-   tar xvfz trash-cli-0.11.2a-r249.tar.gz
-   cd trash-cli-0.11.2a-r249/
+   tar xvfz trash-cli-*.tar.gz
+   cd trash-cli-*
 
-Test::
-  # prepare the test scripts so they can tested 
-  python setup.py develop --script-dir scripts
+# Prepare the virtualenv
+
+   virtualenv testing
+   source testing/bin/activate
+   
+# prepare the test scripts so they can tested 
+   
+   python setup.py develop --script-dir scripts
   
-  # launch tests with python nosecommand-test/create-test-volume
+# launch tests with python nose
+
   python setup.py test
 
-  # test the scripts with bashunit
+# test the scripts with bashunit
   command-test/create-test-volume
   command-test/run-tests scripts command-test/test-volume
   sudo umount command-test/test-volume
 
-  # test the creation of .rpm
+# test the creation of .rpm
   python setup.py bdist_rpm
 
-  # in case of errors:
+# in case of errors:
   python setup.py bdist_rpm --install-script=install-rpm.sh
--EOF
+
+echo "All done"
