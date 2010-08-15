@@ -31,10 +31,6 @@ from nose import SkipTest
 
 class TestVolume(unittest.TestCase) :
     def test_all(self) :
-        if sys.platform[:3] != "win":
-	    return
-	if sys.platform[:6] != "darwin":
-	    return
 
 	volumes = Volume.all()
 	self.assert_(len(list(volumes)) > 0)
@@ -46,7 +42,14 @@ class TestVolume(unittest.TestCase) :
         v2 = Volume(Path(os.sep))
 
         self.assert_(v1 == v2)
-        
+
+def _is_mac_os():
+    return sys.platform == 'darwin'
+
+def _is_cygwin():
+    return sys.platform == 'cygwin' 
+
+
 class TestPath(unittest.TestCase) :
     def test_constructor(self) :
         instance = Path("dummy/path")
