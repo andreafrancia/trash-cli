@@ -21,6 +21,44 @@
 from trashcli.trash import *
 from trashcli.filesystem import *
 
+def main(argv=None):
+    parser = get_option_parser()
+    (options, args) = parser.parse_args(argv)
+
+    if len(args) <= 0:
+	parser.error("Please specify the files to trash.")
+
+    trasher = Trasher(
+	get_logger(options.verbose),
+	GlobalTrashCan()
+    )
+    trasher.trash_all(args)
+
+class Trasher:
+    def __init__(self, logger, trashcan):
+	self.logger = logger
+	self.trashcan = trashcan
+
+    def trash_all(self, args):
+	for arg in args :
+	    self.trash(arg)
+
+    def trash(self, arg):
+	f = Path(arg)
+	if f.basename == '.' or f.basename == '..':
+	    self.logger.warning("cannot trash %s `%s'" % (f.type_description(), f))
+	else:
+	    try:
+		trashed_file = self.trashcan.trash(f)
+		self.logger.info("`%s' trashed in %s " % (arg, trashed_file.trash_directory))
+	    except OSError, e:
+		# occour when the file cannot be moved
+		self.logger.warning("trash: cannot trash %s `%s': %s" % (f.type_description(), arg, str(e)))
+	    except IOError, e:
+		# occour when the file does not exist
+		self.logger.warning("trash: cannot trash %s `%s': %s" % (f.type_description(), arg, str(e)))
+
+
 def get_option_parser():
     from trashcli import version
     from optparse import OptionParser
@@ -92,29 +130,3 @@ def get_logger(verbose):
 
     return logger
 
-def main(argv=None):
-
-    trashcan = GlobalTrashCan()
-
-    parser = get_option_parser()
-    (options, args) = parser.parse_args(argv)
-
-    logger = get_logger(options.verbose)
-
-    if len(args) <= 0:
-        parser.error("Please specify the files to trash.")
-
-    for arg in args :
-        f = Path(arg)
-        if f.basename == '.' or f.basename == '..':
-            logger.warning("cannot trash %s `%s'" % (f.type_description(), f))
-        else:
-            try:
-                trashed_file = trashcan.trash(f)
-                logger.info("`%s' trashed in %s " % (arg, trashed_file.trash_directory))
-            except OSError, e:
-                # occour when the file cannot be moved
-                logger.warning("trash: cannot trash %s `%s': %s" % (f.type_description(), arg, str(e)))
-            except IOError, e:
-                # occour when the file does not exist
-                logger.warning("trash: cannot trash %s `%s': %s" % (f.type_description(), arg, str(e)))

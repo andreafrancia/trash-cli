@@ -23,7 +23,12 @@ from trashcli.filesystem import *
 from trashcli.trash import *
 from trashcli.logger import *
 
+
 def main(argv=None):
+    class OsFileSystem(object):
+	def volumes():
+	    return Volume.all()
+
     logger=ConsoleLogger()
     filesystem = OsFileSystem()
     trashsystem = RealTrashSystem()

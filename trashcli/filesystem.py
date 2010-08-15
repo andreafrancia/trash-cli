@@ -20,15 +20,6 @@
 
 from __future__ import absolute_import
 
-class FileSystem(object):
-    def volumes():
-        "Should return the list of volume of the system"
-        raise NotImplementedError()
-
-class OsFileSystem(object):
-    def volumes():
-        return Volume.all()
-
 import os
 import shutil
 import sys
@@ -213,13 +204,7 @@ class Volume(object) :
 
     @staticmethod
     def all() :
+	from trashcli.list_mount_points import mount_points
         for mount_point in mount_points():
             yield Volume(Path(mount_point))
 
-def mount_points():
-    from trashcli.list_mount_points import mount_points_from_df
-    from trashcli.list_mount_points import mount_points_from_getmnt
-    try:
-	return list(mount_points_from_getmnt())
-    except AttributeError:
-        return mount_points_from_df() 

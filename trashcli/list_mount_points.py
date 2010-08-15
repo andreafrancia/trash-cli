@@ -1,3 +1,9 @@
+def mount_points():
+    try:
+	return list(mount_points_from_getmnt())
+    except AttributeError:
+        return mount_points_from_df() 
+
 def mount_points_from_getmnt():
     for elem in _mounted_filesystems_from_getmnt():
         yield elem.mount_dir

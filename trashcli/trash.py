@@ -120,30 +120,38 @@ class TrashDirectory(object) :
         """
         return self.path.join("files")
 
-    def trashed_files(self) :
-        """
-        List trashed files.
-        Returns a generator for each trashed file in dir.
-        """
+    def all_info_files(self) :
+	'Returns a generator of "Path"s'
         try :
             for info_file in self.info_dir.list() :
                 if not info_file.basename.endswith('.trashinfo') :
                     logger.warning("Non .trashinfo file in info dir")
                 else :
-                    trash_id=self.calc_id(info_file)
-                    try:
-                        trash_info = TrashInfo.parse(info_file.read())
-                        path = self._calc_original_location(trash_info.path)
-
-                        yield self._create_trashed_file(trash_id, path,
-                                                        trash_info.deletion_date)
-                    except ValueError:
-                        logger.warning("Non parsable trashinfo file: %s"
-                                       % info_file.path)
-                    except IOError, e:
-                        logger.warning(str(e))
+		    yield info_file
         except OSError, e: # when directory does not exist
             pass
+
+    def trashed_files(self) :
+        """
+        List trashed files.
+        Returns a generator for each trashed file in dir.
+        """
+	for info_file in self.all_info_files():
+	    try:
+		yield self._create_trashed_file_from_info_file(info_file) 
+	    except ValueError:
+		logger.warning("Non parsable trashinfo file: %s" % info_file.path)
+	    except IOError, e:
+		logger.warning(str(e))
+
+    def _create_trashed_file_from_info_file(self,info_file):
+	trash_id=self.calc_id(info_file)
+	trash_info = TrashInfo.parse(info_file.read())
+	path = self._calc_original_location(trash_info.path)
+
+	trashed_file = self._create_trashed_file(trash_id, path,
+					trash_info.deletion_date)
+	return trashed_file
 
     def _create_trashed_file(self, trash_id, path, deletion_date):
         actual_path = self._calc_path_for_actual_file(trash_id)
@@ -301,7 +309,6 @@ class Method1VolumeTrashDirectory(VolumeTrashDirectory):
             raise TopDirWithoutStickyBit("topdir should have the sticky bit: %s"
                                          % self.path)
 
-# TODO: Better rename to TrashSystem
 class TrashCan(object):
     def trash_directories(self) :
         pass
@@ -312,7 +319,6 @@ class TrashCan(object):
     def trash(self, file):
         pass
 
-# TODO: Better rename to OsTrashSystem
 class GlobalTrashCan(TrashCan) :
     """
     Represent the TrashCan that contains all trashed files.
@@ -399,7 +405,6 @@ class GlobalTrashCan(TrashCan) :
         dirname=".Trash-%s" % str(uid)
         trash_directory_path = volume.topdir.join(Path(dirname))
         return VolumeTrashDirectory(trash_directory_path,volume)
-
 
 class TrashedFile(object) :
     """
@@ -566,8 +571,5 @@ class TimeUtils(object):
         t=time.strptime(text,  "%Y-%m-%dT%H:%M:%S")
         return datetime(t.tm_year, t.tm_mon, t.tm_mday,
                         t.tm_hour, t.tm_min, t.tm_sec)
-
-#TODO: better to remove this variabile
-#trashcan = GlobalTrashCan()
 
 RealTrashSystem = GlobalTrashCan
