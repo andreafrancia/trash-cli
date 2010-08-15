@@ -1,3 +1,9 @@
+0.11.3:
+ - Now works also on Mac OS X
+ - Fixed #55: restore-trash sets all-write permissions for the destination directory
+ - Volumes detection: Now uses "df -P" output as fallback when getmnt fails.
+ - Fixed #54. Now restore trash refuses to overwrite a file. Used code adapted from a patch written by Christian.Oudard
+
 0.11.2:
  Fixed #45: Cannot build RPM package with 0.11.1.2
 

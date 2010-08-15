@@ -1,6 +1,6 @@
-------------------------------------------------------------
+============================================================
 trash-cli - Command Line Interface to FreeDesktop.org Trash.
-------------------------------------------------------------
+============================================================
 
 trash-cli provides the following commands to manage the trash:
 
@@ -45,8 +45,5 @@ Software requirements
 The trash-cli software depends on these packages:
  - python
  - python-ctypes
-
-And from these python packages
- - enum
 
 -EOF
