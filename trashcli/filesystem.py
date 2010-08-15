@@ -109,7 +109,12 @@ class Path (unipath.Path) :
     def mkdir(self):
         os.mkdir(self.path)
 
-    def mkdirs(self, mode=0777):
+    def mkdirs(self):
+        if self.isdir():
+            return
+        os.makedirs(self.path)
+
+    def mkdirs_using_mode(self, mode):
         if self.isdir():
             os.chmod(self.path, mode)
             return

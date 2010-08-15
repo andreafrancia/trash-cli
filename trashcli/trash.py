@@ -84,7 +84,7 @@ class TrashDirectory(object) :
                                                  trash_info.deletion_date)
 
         if not self.files_dir.exists() :
-            self.files_dir.mkdirs(0700)
+            self.files_dir.mkdirs_using_mode(0700)
 
         try :
             path.move(trashed_file.actual_path)
@@ -189,7 +189,7 @@ class TrashDirectory(object) :
     def persist_trash_info(self,trash_info) :
         assert(isinstance(trash_info, TrashInfo))
 
-        self.info_dir.mkdirs(0700)
+        self.info_dir.mkdirs_using_mode(0700)
         self.info_dir.chmod(0700)
 
         # write trash info
