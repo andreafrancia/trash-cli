@@ -29,8 +29,6 @@ from nose.tools import raises
 from nose import SkipTest
 from cmd import Command
 
-# Peraphs TODO: Refactoring: move cmd(), create_file(), trash(), trash-dir to
-# a Sandbox class.
 class RestoreTest(TestCase):
     def setUp(self):
         from common import create_cmdenv

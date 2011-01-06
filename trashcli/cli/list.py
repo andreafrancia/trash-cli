@@ -21,21 +21,19 @@
 def get_option_parser():
     from trashcli import version
     from optparse import OptionParser
-    from optparse import IndentedHelpFormatter
-    from trashcli.cli.util import NoWrapFormatter
 
     parser = OptionParser(usage="%prog",
                           description="List trashed files",
                           version="%%prog %s" % version,
-                          formatter=NoWrapFormatter(),
                           epilog=
     """Report bugs to http://code.google.com/p/trash-cli/issues""")
 
     return parser
 
-from trashcli.trash import *
+from trashcli.trash import GlobalTrashCan 
+import sys
 
-def main(argv=None) :
+def main(argv=sys.argv,stdout=sys.stdout,stderr=sys.stderr) :
     trashsystem = GlobalTrashCan()
 
     parser = get_option_parser()
@@ -43,3 +41,6 @@ def main(argv=None) :
 
     for trashed_file in trashsystem.trashed_files() :
         print "%s %s" % (trashed_file.deletion_date, trashed_file.path)
+
+class TrashListCmd:
+    pass

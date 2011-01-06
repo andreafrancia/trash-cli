@@ -18,58 +18,45 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
-from trashcli.trash import *
-from trashcli.filesystem import *
+from trashcli.trash import GlobalTrashCan 
+from trashcli.filesystem import Path 
 
-def main(argv=None):
-    parser = get_option_parser()
-    (options, args) = parser.parse_args(argv)
+class TrashPutCmd:
 
-    if len(args) <= 0:
-	parser.error("Please specify the files to trash.")
+    def __init__(self, stdout, stderr):
+	self.stdout=stdout
+	self.stderr=stderr
 
-    trasher = Trasher(
-	get_logger(options.verbose),
-	GlobalTrashCan()
-    )
-    trasher.trash_all(args)
+    def run(self,argv):
+	parser = self.get_option_parser()
+	(options, args) = parser.parse_args(argv[1:])
 
-class Trasher:
-    def __init__(self, logger, trashcan):
-	self.logger = logger
-	self.trashcan = trashcan
+	if len(args) <= 0:
+	    parser.error("Please specify the files to trash.")
+
+	reporter=Reporter(self.get_logger(options.verbose,argv[0]))
+
+	self.trashcan=GlobalTrashCan(reporter=reporter)
+	self.trash_all(args)
 
     def trash_all(self, args):
 	for arg in args :
 	    self.trash(arg)
 
     def trash(self, arg):
-	f = Path(arg)
-	if f.basename == '.' or f.basename == '..':
-	    self.logger.warning("cannot trash %s `%s'" % (f.type_description(), f))
-	else:
-	    try:
-		trashed_file = self.trashcan.trash(f)
-		self.logger.info("`%s' trashed in %s " % (arg, trashed_file.trash_directory))
-	    except OSError, e:
-		# occour when the file cannot be moved
-		self.logger.warning("trash: cannot trash %s `%s': %s" % (f.type_description(), arg, str(e)))
-	    except IOError, e:
-		# occour when the file does not exist
-		self.logger.warning("trash: cannot trash %s `%s': %s" % (f.type_description(), arg, str(e)))
+	self.trashcan.trash(Path(arg))
 
+    def get_option_parser(self):
+	from trashcli import version
+	from optparse import OptionParser
+	from trashcli.cli.util import NoWrapFormatter
 
-def get_option_parser():
-    from trashcli import version
-    from optparse import OptionParser
-    from trashcli.cli.util import NoWrapFormatter
-
-    parser = OptionParser(usage="%prog [OPTION]... FILE...",
-                          description="Put files in trash",
-                          version="%%prog %s" % version,
-                          formatter=NoWrapFormatter(),
-                          epilog=
-    """To remove a file whose name starts with a `-', for example `-foo',
+	parser = OptionParser(usage="%prog [OPTION]... FILE...",
+			      description="Put files in trash",
+			      version="%%prog %s" % version,
+			      formatter=NoWrapFormatter(),
+			      epilog=
+"""To remove a file whose name starts with a `-', for example `-foo',
 use one of these commands:
 
     trash -- -foo
@@ -77,56 +64,65 @@ use one of these commands:
     trash ./-foo
 
 Report bugs to http://code.google.com/p/trash-cli/issues""")
+	parser.add_option("-d",
+			  "--directory",
+			  action="store_true",
+			  help="ignored (for GNU rm compatibility)")
+	parser.add_option("-f",
+			  "--force",
+			  action="store_true",
+			  help="ignored (for GNU rm compatibility)")
+	parser.add_option("-i",
+			  "--interactive",
+			  action="store_true",
+			  help="ignored (for GNU rm compatibility)")
+	parser.add_option("-r",
+			  "-R",
+			  "--recursive",
+			  action="store_true",
+			  help="ignored (for GNU rm compatibility)")
+	parser.add_option("-v",
+			  "--verbose",
+			  action="store_true",
+			  help="explain what is being done",
+			  dest="verbose")
+	return parser
 
-    parser.add_option("-d",
-                      "--directory",
-                      action="store_true",
-                      help="ignored (for GNU rm compatibility)")
+    def get_logger(self,verbose,argv0):
+	import os.path
+	class MyLogger:
+	    def __init__(self, stderr):
+		self.program_name = os.path.basename(argv0)
+		self.stderr=stderr
+	    def info(self,message):
+		if verbose:
+		    self.emit(message)
+	    def warning(self,message):
+		self.emit(message)
+	    def emit(self, message):
+		self.stderr.write("{0}: {1}\n".format(self.program_name,message))
+	
+	return MyLogger(self.stderr)
 
-    parser.add_option("-f",
-                      "--force",
-                      action="store_true",
-                      help="ignored (for GNU rm compatibility)")
+class Reporter:
+    def __init__(self, logger):
+	self.logger = logger
 
-    parser.add_option("-i",
-                      "--interactive",
-                      action="store_true",
-                      help="ignored (for GNU rm compatibility)")
+    def unable_to_trash_dot_entries(self,file):
+	self.logger.warning("cannot trash %s `%s'" % (file.type_description(), file))
 
-    parser.add_option("-r",
-                      "-R",
-                      "--recursive",
-                      action="store_true",
-                      help="ignored (for GNU rm compatibility)")
+    def unable_to_trash_file(self,f):
+	self.logger.warning("cannot trash %s `%s'" % (f.type_description(), f))
 
-    parser.add_option("-v",
-                      "--verbose",
-                      action="store_true",
-                      help="explain what is being done",
-                      dest="verbose")
+    def file_has_been_trashed_in_as(self, trashee, trash_directory, destination):
+	self.logger.info("`%s' trashed in %s " % (trashee, trash_directory))
 
-    return parser
+    def unable_to_trash_file_in_because(self, file_to_be_trashed, trash_directory, error):
+	self.logger.info("Failed to trash %s in %s, because :%s" % (file_to_be_trashed,
+	    trash_directory, error))
 
-def get_logger(verbose):
+def main():
     import sys
-    from trashcli.filesystem import Path
-    """
-    Create a logger which sends messages to stderr filtered according to the verbosity.
-    """
-    import logging
-    log_stream = logging.StreamHandler()
-    log_stream.setLevel(logging.WARNING)
-    log_stream.formatter = logging.Formatter('%(name)s: %(message)s')
-
-    if(verbose):
-        log_stream.setLevel(logging.INFO)
-    else:
-        log_stream.setLevel(logging.WARNING)
-
-
-    logger=logging.getLogger(Path(sys.argv[0]).basename)
-    logger.setLevel(logging.WARNING)
-    logger.addHandler(log_stream)
-
-    return logger
+    cmd=TrashPutCmd(sys.stdout,sys.stderr)
+    cmd.run(sys.argv)
 

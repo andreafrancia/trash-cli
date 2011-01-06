@@ -1,0 +1,9 @@
+command-test/sandbox/
+command-test/test-volume.img
+sandbox/
+scripts/
+trash_cli.egg-info/
+*.pyc
+*.swp
+.svn
+.DS_Store

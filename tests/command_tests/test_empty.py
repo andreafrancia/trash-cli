@@ -20,16 +20,6 @@
 # 02110-1301, USA.
 
 from unittest import TestCase
-from trashcli.filesystem import Path
-from trashcli.trash import HomeTrashDirectory
-from nose.tools import assert_equals
-from nose.tools import assert_not_equals
-from nose.tools import assert_true
-from nose.tools import assert_false
-from nose.tools import raises
-from nose import SkipTest
-from cmd import Command
-from cmd import CommandEnviroment
 
 class TestEmptyCommand(TestCase):
     """

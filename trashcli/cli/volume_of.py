@@ -18,16 +18,13 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
-def get_option_parser():
+import sys
+
+def main(argv=sys.argv[1:]):
     from optparse import OptionParser
+    from trashcli.trash import volume_of
 
-    parser = OptionParser()
-    return parser
-
-def main(argv=None):
-    from trashcli.filesystem import Path
-
-    (options, args) = get_option_parser().parse_args(argv)
+    (options, args) = OptionParser().parse_args(argv)
 
     for arg in args :
-        print '%s is in volume %s ' % (Path(arg), Path(arg).volume)
+        print '%s is in volume %s ' % (arg, volume_of(arg))

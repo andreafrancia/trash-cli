@@ -88,36 +88,6 @@ class FindLatestTest(TestCase):
         # execute
         find_latest(trashcan, Path('/goo'))
 
-class LastTrashedTest(TestCase):
-    def test_last_trashed(self):
-        """
-        Test that last_deleted returns the last trashed file.
-        """
-        trash_dir = TrashDirectory(Path('/.Trash/'), Volume(Path('/')))
-
-        before = TrashedFile('foo',
-                             TrashInfo("foo",
-                                       datetime(2009, 01, 01, 01, 01, 01)),
-                             trash_dir)
-        after = TrashedFile('foo',
-                            TrashInfo("foo",
-                                      datetime(2009, 01, 01, 01, 01, 02)),
-                            trash_dir)
-
-        assert last_trashed(before, after) is after
-        assert last_trashed(after, before) is after
-
-        sametime1 = TrashedFile('foo',
-                                TrashInfo("foo", datetime(2009, 01, 01,
-                                                          01, 01, 01)),
-                                trash_dir)
-        sametime2 = TrashedFile('foo',
-                                TrashInfo("foo", datetime(2009,01,01,
-                                                          01,01,01)),
-                                trash_dir)
-
-        assert last_trashed(sametime1, sametime2) is sametime1
-
 class RestorerTest(TestCase):
     def test_restore_latest_calls_find_latest_and_restore(self):
         # prepare

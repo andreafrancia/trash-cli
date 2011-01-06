@@ -54,12 +54,13 @@ from nose.tools import raises
 from nose.tools import assert_equals
 
 class TestTrashDirectory(TestCase) :
+
     def test_init(self) :
         path = Path("/mnt/disk/.Trash-123")
         volume = Volume(Path("/mnt/disk"), True);
         instance = TrashDirectory(path, volume)
         
-        self.assertEquals(volume,instance.volume)
+        self.assertEquals(volume, instance.volume)
         self.assertEquals(path, instance.path)
         
 
@@ -197,10 +198,6 @@ class TestHomeTrashDirectory(TestCase) :
     def test_str_with_empty_home(self):
         os.environ['HOME']=''
         self.assertEquals('/foo/Trash', str(HomeTrashDirectory(Path("/foo/Trash"))))
-                
-    def test_str_with_home_not_defined(self):
-        del(os.environ['HOME'])
-        self.assertEquals('/foo/Trash', str(HomeTrashDirectory(Path("/foo/Trash"))))
                           
 class TestVolumeTrashDirectory(TestCase) :
     def test_init(self) :
@@ -302,7 +299,7 @@ class TestTimeUtils(TestCase) :
         self.assertEqual(expected,result)
 
 class GlobalTrashCanTest(TestCase) :
-    
+
     def testBasePath(self) :
         # prepare
         os.environ['HOME'] = "/home/test"
@@ -314,7 +311,8 @@ class GlobalTrashCanTest(TestCase) :
 
     def test_volume_trash_dir1(self) :
         # prepare
-        instance = GlobalTrashCan(fake_uid=999)
+        instance = GlobalTrashCan(
+		getuid=self.a_fake_getuid_which_always_returns(999))
         
         # execute
         result = instance.volume_trash_dir1(Volume(Path("/mnt/disk")))
@@ -325,7 +323,7 @@ class GlobalTrashCanTest(TestCase) :
     
     def test_volume_trash_dir2(self) :        
         # prepare
-        instance = GlobalTrashCan(fake_uid=999)
+        instance = GlobalTrashCan(getuid=self.a_fake_getuid_which_always_returns(999))
         
         # execute
         result = instance.volume_trash_dir2(Volume(Path("/mnt/disk")))
@@ -333,6 +331,10 @@ class GlobalTrashCanTest(TestCase) :
         # check
         self.assert_(isinstance(result,TrashDirectory))
         self.assertEqual(Path('/mnt/disk/.Trash-999'), result.path)
+
+    def a_fake_getuid_which_always_returns(self, fake_uid):
+	return lambda:fake_uid
+
 
 class Method1VolumeTrashDirectoryTest(TestCase):
     def setUp(self):

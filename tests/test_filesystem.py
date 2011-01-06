@@ -27,7 +27,6 @@ import sys
 import os
 import subprocess
 from nose.tools import assert_equals
-from nose import SkipTest
 
 class TestVolume(unittest.TestCase) :
     def test_all(self) :
@@ -92,11 +91,6 @@ class TestPath(unittest.TestCase) :
 
     def test_isabs_returns_false(self) :
         instance = Path("/foo")
-        self.assertEquals(True,instance.isabs())
-
-    def test_isabs_returns_on_windows(self) :
-        raise SkipTest("why?")
-        instance = Path("C:/foo")
         self.assertEquals(True,instance.isabs())
 
     def test_join_with_File_relative(self) :

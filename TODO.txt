@@ -1,0 +1,12 @@
+Code cleaning:
+ - dependency from ctypes in TestVolume
+ - too many imports in some files
+ - test_restore.py a test approach different from the one used by test_empty
+
+Features:
+ - support alias rmdir=trash-put
+ - don't use world writable trash
+ - trash-empty should empty even the mac trash directory
+ - enable trash-put home fallback
+ - trash-empty removes files until a certain amount of space has been restored
+ - trash-list shows file size

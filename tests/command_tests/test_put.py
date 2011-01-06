@@ -26,7 +26,6 @@ from nose.tools import assert_not_equals
 from nose.tools import assert_true
 from nose.tools import assert_false
 from nose.tools import raises
-from nose import SkipTest
 from cmd import Command
 from cmd import CommandEnviroment
 
@@ -90,7 +89,6 @@ class PutTest(TestCase):
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
-        print result.stderr
         assert_equals(result.stderr,"trash-put: cannot trash directory `.'\n")
 
         # the remaining arguments should be processed
