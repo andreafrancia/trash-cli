@@ -120,7 +120,10 @@ class TestTrashDirectory_persit_trash_info(TestCase) :
     def test_persist_trash_info_first_time(self):
         trash_info=TrashInfo(Path("dummy-path"), datetime(2007,01,01))
 
-        (trash_info_file, trash_info_id)=self.instance.persist_trash_info(trash_info)
+        basename=trash_info.path.basename
+        content=trash_info.render()
+        (trash_info_file,
+                trash_info_id)=self.instance.persist_trash_info(basename,content)
 
         self.assertTrue(isinstance(trash_info_file, Path))
         self.assertEquals('dummy-path', trash_info_id)
@@ -137,7 +140,10 @@ DeletionDate=2007-01-01T00:00:00
         for i in range(1,100) :
             trash_info=TrashInfo(Path("dummy-path"), datetime(2007,01,01))
             
-            (trash_info_file, trash_info_id)=self.instance.persist_trash_info(trash_info)
+            basename=trash_info.path.basename
+            content=trash_info.render()
+            (trash_info_file,
+                    trash_info_id)=self.instance.persist_trash_info(basename,content)
     
             self.assertTrue(isinstance(trash_info_id, str))
             self.assertEquals('dummy-path'+"_" + str(i), trash_info_id)
@@ -152,7 +158,10 @@ DeletionDate=2007-01-01T00:00:00
         for i in range(101,200) :
             trash_info=TrashInfo(Path("dummy-path"), datetime(2007,01,01))
             
-            (trash_info_file, trash_info_id)=self.instance.persist_trash_info(trash_info)
+            basename=trash_info.path.basename
+            content=trash_info.render()
+            (trash_info_file,
+                    trash_info_id)=self.instance.persist_trash_info(basename,content)
     
             self.assertTrue(isinstance(trash_info_id, str))
             self.assertTrue(trash_info_id.startswith("dummy-path_"))

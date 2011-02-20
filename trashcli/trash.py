@@ -65,7 +65,6 @@ class TrashDirectory(object) :
     returns the TrashedFile
     """
     def trash(self, path):
-        #assert(isinstance(path, Path))
         path = path.norm()
         self.check()
 
@@ -76,8 +75,10 @@ class TrashDirectory(object) :
                         + str(path.parent.volume))
 
         trash_info=TrashInfo(self._path_for_trashinfo(path),datetime.now())
-
-        (trash_info_file, trash_info_id)=self.persist_trash_info(trash_info)
+        
+        basename=trash_info.path.basename
+        trashinfo_file_content=trash_info.render()
+        (trash_info_file, trash_info_id)=self.persist_trash_info(basename, trashinfo_file_content)
 
         trashed_file = self._create_trashed_file(trash_info_id,
                                                  path.absolute(),
@@ -186,8 +187,7 @@ class TrashDirectory(object) :
     Create a .trashinfo file in the $trash/info directory.
     returns the created TrashInfoFile.
     """
-    def persist_trash_info(self,trash_info) :
-        assert(isinstance(trash_info, TrashInfo))
+    def persist_trash_info(self,basename,content) :
 
         self.info_dir.mkdirs_using_mode(0700)
         self.info_dir.chmod(0700)
@@ -202,7 +202,7 @@ class TrashDirectory(object) :
             else :
                 suffix = "_%d" % random.randint(0, 65535)
 
-            base_id = trash_info.path.basename
+            base_id = basename
             trash_id = base_id + suffix
             trash_info_basename=trash_id+".trashinfo"
 
@@ -211,7 +211,7 @@ class TrashDirectory(object) :
                 handle = os.open(dest.path,
                                  os.O_RDWR | os.O_CREAT | os.O_EXCL,
                                  0600)
-                os.write(handle, trash_info.render())
+                os.write(handle, content)
                 os.close(handle)
                 logger.debug(".trashinfo created as %s." % dest)
                 return (dest, trash_id)
@@ -308,6 +308,12 @@ class Method1VolumeTrashDirectory(VolumeTrashDirectory):
             raise TopDirWithoutStickyBit("topdir should have the sticky bit: %s"
                                          % self.path)
 
+
+def real_list_mount_points():
+    from trashcli.list_mount_points import mount_points
+    for mount_point in mount_points(): 
+	yield Path(mount_point)
+
 import os
 class GlobalTrashCan(object) :
     """
@@ -323,11 +329,11 @@ class GlobalTrashCan(object) :
 		 environ=os.environ,
 		 reporter=NullReporter(),
 		 getuid=os.getuid,
-		 list_volumes=Volume.all):
+		 list_mount_points=real_list_mount_points):
 	self.getuid=getuid
 	self.environ = environ
 	self.reporter = reporter
-	self.list_volumes=list_volumes
+	self.list_mount_points=list_mount_points
 
     def trashed_files(self):
         """Return a generator of all TrashedFile(s)."""
@@ -397,7 +403,8 @@ class GlobalTrashCan(object) :
     def trash_directories(self) :
         """Return a generator of all TrashDirectories in the filesystem"""
         yield self.home_trash_dir()
-	for volume in self.list_volumes():
+	for mount_point in self.list_mount_points():
+	    volume = Volume(mount_point)
             yield self.volume_trash_dir1(volume)
             yield self.volume_trash_dir2(volume)
 
@@ -429,6 +436,9 @@ class GlobalTrashCan(object) :
         dirname=".Trash-%s" % str(uid)
         trash_directory_path = volume.topdir.join(Path(dirname))
         return VolumeTrashDirectory(trash_directory_path,volume)
+
+    def purge(self, trashed_file):
+        trashed_file._purge()
 
 class TrashedFile(object) :
     """
@@ -502,7 +512,7 @@ class TrashedFile(object) :
         self.original_file.move(self.path)
         self.info_file.remove()
 
-    def purge(self) :
+    def _purge(self) :
         # created by : Einar Orn Olason
         # 2008-07-26 Andrea Francia: added postcondition test
         self.original_file.remove()

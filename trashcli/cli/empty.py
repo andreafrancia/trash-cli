@@ -18,7 +18,51 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
-from trashcli.trash import *
+from trashcli.trash import GlobalTrashCan
+
+def main() :
+    import sys
+    from datetime import datetime
+    TrashEmptyCommand(GlobalTrashCan(), datetime.now).run_with_argv(sys.argv) 
+
+class TrashEmptyCommand:
+    from datetime import datetime 
+    def __init__(self,trashcan,now):
+        self.trashcan = trashcan
+        self.now = now
+
+    def run_with_argv(self,argv):
+        """
+        Empty the trash. If a command line parameter is given we delete only files
+        older than that parameter (integer, days).
+        """
+
+        parser = get_option_parser()
+        (options, args) = parser.parse_args(argv[1:])
+
+        if len(args) > 1 :
+            parser.print_usage()
+            parser.exit()
+        elif len(args) == 1 :
+            try :
+                days=int(args[0])
+                self.delete_file_trashed_more_than_N_days_ago(days)
+            except ValueError:
+                parser.print_usage()
+                parser.exit()
+        else:
+             self.delete_all_files()
+
+    def delete_all_files(self):
+        for trashedfile in self.trashcan.trashed_files():
+            self.trashcan.purge(trashedfile)
+
+    def delete_file_trashed_more_than_N_days_ago(self, days):
+        for trashedfile in self.trashcan.trashed_files() :
+            delta=self.now()-trashedfile.deletion_date
+            if delta.days >= days :
+                self.trashcan.purge(trashedfile)
+
 def get_option_parser():
     from trashcli import version
     from optparse import OptionParser
@@ -33,37 +77,5 @@ def get_option_parser():
     """Report bugs to http://code.google.com/p/trash-cli/issues""")
 
     return parser
-
-def main(argv=None) :
-    """
-    Empty the trash. If a command line parameter is given we delete only files
-    older than that parameter (integer, days).
-    """
-    # original author: Einar Orn Olason
-    # modified by Andrea Francia (refactored, and OptionParser added)
-
-
-    parser = get_option_parser()
-    (options, args) = parser.parse_args(argv)
-
-    import os, datetime, sys
-
-    trashcan = GlobalTrashCan()
-
-    days=0
-
-    if len(args) > 1 :
-        parser.print_usage()
-        parser.exit()
-    elif len(args) > 1 :
-        try :
-            days=int(args[1])
-        except :
-            parser.print_usage()
-
-    for trashedfile in trashcan.trashed_files() :
-        delta=datetime.datetime.now()-trashedfile.deletion_date
-        if delta.days >= days :
-            trashedfile.purge()
 
 # eof

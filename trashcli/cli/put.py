@@ -100,7 +100,7 @@ Report bugs to http://code.google.com/p/trash-cli/issues""")
 	    def warning(self,message):
 		self.emit(message)
 	    def emit(self, message):
-		self.stderr.write("{0}: {1}\n".format(self.program_name,message))
+		self.stderr.write("%s: %s\n" % (self.program_name,message))
 	
 	return MyLogger(self.stderr)
 

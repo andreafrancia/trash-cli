@@ -7,3 +7,5 @@ trash_cli.egg-info/
 *.swp
 .svn
 .DS_Store
+test-volume.dmg
+test-volume/
