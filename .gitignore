@@ -9,3 +9,5 @@ trash_cli.egg-info/
 .DS_Store
 test-volume.dmg
 test-volume/
+build/
+dist/
