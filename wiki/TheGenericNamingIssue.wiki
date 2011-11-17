@@ -1,0 +1,29 @@
+The trash-cli project provide a Command Line Interface to FreeDesktop.org Trash.
+Ideally trash-cli provide these commands:
+ 
+ * trash            # trashes files and directories.
+ * trash-empty      # empty the trashcan(s).
+ * trash-list       # list trashed files.
+ * trash-restore    # restore a trashed file.
+
+The people at RedHat thinks that the name of the 'trash' command is too generic,
+and they don't want add it to fedora until 
+
+The discussion started on:
+
+  https://bugzilla.redhat.com/show_bug.cgi?id=448122
+
+And it followed in
+
+  https://www.redhat.com/archives/fedora-devel-list/2008-October/msg00216.html
+  
+You can read a summary of the discussion on 
+    
+  http://fedoraproject.org/wiki/FWN/Issue147 ù
+  
+or if it is down at
+   
+  http://www.google.it/search?q=Fedora+Weekly+News+147
+  
+Now, if I want my project will be added to Fedora, I need to change the 'trash' 
+command name, but I can't find a name good as the original one.

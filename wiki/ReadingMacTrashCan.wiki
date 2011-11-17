@@ -1,0 +1,93 @@
+#summary One-sentence summary of this page.
+#labels Phase-Design
+
+= Introduction =
+
+This page is about the support of reading mac trashcan. 
+
+= How the mac trashcan works =
+
+At this time we don't know if there is a pubblicy available specification of the data structure used by Finder for the trashcan.
+
+These information are collected without observing a running Mac, only reading about it in the jpschewe comment in issue 36 and on the internet. Feel free to update these information.
+
+In Mac there are these trashcan directories:
+ - ~/.Trash
+ - $topdr/.Trashes/$uid 
+
+Where:
+ * $topdir is the mounting point of a volume
+ * $uid is the UID of a user
+
+The behavior of trashing files is given by example:
+
+Suppose I start with the trashcan empty.
+
+What happen if I trash a file named 'foo.txt'?
+ * The file is moved in ~./Trash/foo.txt
+
+What happen if I trash another file named 'foo.txt'?
+ * The file is moved in "~./Trash/foo $date $random.txt"
+   Where: 
+    * $date: is ???? which format?
+    * $random: is ????
+
+What happen if I trash a file with multiple extension, for example 'foo.tar.gz'?
+ * The is moved to ????
+
+What happen if I trash a file from a path not in the home?
+ * ???
+
+What happen if I trash a file from a path in a subdir of the home?
+ * ???
+
+
+$ cd
+$ touch foo.txt
+$ <<trash>> foo.txt
+$ ls ~/.Trash
+foo.txt
+
+$ touch foo.txt
+$ <<trash>> foo.txt
+$ ls ~/.Trash
+foo.txt
+foo 20-26-09.txt
+
+$ touch 'foo bar.txt'
+$ trash 'foo bar.txt'
+$ ls ~/.Trash
+foo.txt
+foo 20-26-09.txt
+foo bar.txt
+
+$ touch "foo 20-26-09.txt"
+$ trash "foo 20-26-09.txt"
+$ ls ~/.Trash | cat
+foo 20-26-09 20-32-01.txt
+foo 20-26-09.txt
+foo bar.txt
+foo.txt
+
+$ mkdir dir
+$ touch dir/foo.txt
+$ trash dir/foo.txt
+$ ls ~/.Trash | cat
+foo 20-26-09 20-32-01.txt
+foo 20-26-09.txt
+foo 20-34-11.txt
+foo bar.txt
+foo.txt
+
+$ echo pippo > ~/.Trash/foo.tar.gz
+$ touch foo.tar.gz
+$ trash foo.tar.gz
+$ ls ~/.Trash | cat
+foo 20-26-09 20-32-01.txt
+foo 20-26-09.txt
+foo 20-34-11.txt
+foo bar.txt
+foo.tar 20-38-01.gz
+foo.tar.gz
+foo.txt
+

@@ -1,0 +1,20 @@
+#summary Migrating from sourceforge to google cde.
+
+= Plan =
+
+  * ~~Dumping the sourceforge code repository (trunk,branches,tags)~~
+  * ~~Dumping the google code repository (wiki)~~
+  * ~~Merging the repositories~~
+  * ~~Deleting the the google code repository~~
+  * ~~Requesting google code repository rest~~
+  * ~~Obtaining google code repository reset~~
+
+  * Removing subversion repository from sourceforge:
+    * ~~On [https://sourceforge.net/project/admin/svn.php?group_id=87144 subversion admin page]:~~
+      * ~~Set as a Non-SF.net Resource~~
+      * ~~Put the text:~~
+      ~~The sources were moved to googlecode page, please see http://code.google.com/p/trash-cli/source/checkout~~
+      * ~~Disable subversion~~
+    * ~~Remove all files on sourceforge repository and add a README.moved file~~
+
+  * ~~Removing Issue tracker from sourceforge.~~

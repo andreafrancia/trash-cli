@@ -1,0 +1,60 @@
+The __mount_list method rely on the *df* command.
+
+The interface of the *df* command may vary from system to system.
+
+We support only the system that comply with the [http://www.opengroup.org/onlinepubs/009695399/utilities/df.html|POSIX specification of the df command].
+
+{{{
+# uname -a
+OSF1 x.invalid.it V4.0 1229 alpha
+# df -P
+Filesystem        512-blocks        Used   Available Capacity  Mounted on
+root_domain#root      262144      167054       80832    68%    /
+/proc                      0           0           0   100%    /proc
+usr_domain#usr      11239984     3372768     7796624    31%    /usr
+var_domain#var       2077088      183980     1861744     9%    /var
+/dev/rzb16a         22934504     5001884    15639168    25%    /home2
+extern:/atom      102398304    44759584    57638720    44%    /home2/atom
+#
+}}}
+
+Example 2:
+{{{
+File system         blocchi di   1K   Usati Disponib. Uso% Montato su
+/dev/sdb5             10883628   5202528   5681100  48% /
+varrun                 3062924       104   3062820   1% /var/run
+varlock                3062924         0   3062924   0% /var/lock
+udev                   3062924       168   3062756   1% /dev
+devshm                 4500000     25640   4474360   1% /dev/shm
+lrm                    3062924     43040   3019884   2% /lib/modules/2.6.24-19-generic/volatile
+/dev/sdb4              1035692    113336    869744  12% /boot
+/dev/mapper/var       16577536   1128080  15449456   7% /var
+/dev/md0              20481928   7523196  12958732  37% /usr
+/dev/md1              15346084   1109936  14236148   8% /chroot
+/dev/sda3             50169624  29642452  20527172  60% /home
+/dev/mapper/spazio1-LV1
+                     426396964 276310360 150086604  65% /media/LV1
+/dev/sda4            240686472  27295300 213391172  12% /media/archivio
+/dev/mapper/ibox      18929088  15733744   3195344  84% /media/ibox
+gvfs-fuse-daemon      10883628   5202528   5681100  48% /home/lem/.gvfs
+}}}
+
+Example 3:
+{{{
+File system         1024-blocks      Used Available Capacity Montato su
+/dev/sdb5             10883628   5202528   5681100      48% /
+varrun                 3062924       104   3062820       1% /var/run
+varlock                3062924         0   3062924       0% /var/lock
+udev                   3062924       168   3062756       1% /dev
+devshm                 4500000     25640   4474360       1% /dev/shm
+lrm                    3062924     43040   3019884       2% /lib/modules/2.6.24-19-generic/volatile
+/dev/sdb4              1035692    113336    869744      12% /boot
+/dev/mapper/var       16577536   1127952  15449584       7% /var
+/dev/md0              20481928   7523196  12958732      37% /usr
+/dev/md1              15346084   1109936  14236148       8% /chroot
+/dev/sda3             50169624  29642452  20527172      60% /home
+/dev/mapper/spazio1-LV1 426396964 276310360 150086604      65% /media/LV1
+/dev/sda4            240686472  27295300 213391172      12% /media/archivio
+/dev/mapper/ibox      18929088  15733744   3195344      84% /media/ibox
+gvfs-fuse-daemon      10883628   5202528   5681100      48% /home/lem/.gvfs
+}}}

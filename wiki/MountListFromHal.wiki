@@ -1,0 +1,12 @@
+#summary Notes about using HAL (Hardware Abstraction Layer) to get the list of mount points.
+
+This [http://davyd.livejournal.com/206645.html article] explain how to use HAL from python.
+
+This [https://www.dfwpython.org/repo/Projects/DBUS/dtest.py python scripts] communicates with HAL trouch DBUS and uses the 'org.freedesktop.Hal.Device.Volume' name.
+
+=Depedencies=
+Using this method will add some dependencies:
+ * hal ?
+ * libhal1
+ * dbus python module 
+

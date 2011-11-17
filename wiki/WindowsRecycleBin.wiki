@@ -1,0 +1,4 @@
+Seems that ReactOS projects has implemented a library for dealing with the Windows specific trashcan data structure.
+
+The code of the library is available from
+http://svn.reactos.org/svn/reactos/trunk/reactos/lib/recyclebin/

@@ -1,0 +1,90 @@
+﻿#summary This page describe the proposed user interface for the next version of trash-cli.
+
+*Disclaimer*: This page describe the proposed new user interface, *not* the current 
+interface. The intended audience of this page are developers (or interested users) not 
+ordinary users. 
+
+= Commands =
+trash-cli provides four commands:
+
+    * trash-put
+    * trash-empty
+    * trash-list
+    * trash-restore
+
+== Examples ==
+Putting a file (or a directory) in the trashcan:
+{{{
+$ trash-put foobar
+}}}
+
+Listing all trashed files:
+{{{
+$ trash-list
+2008-06-23 21:57:26 /home/andrea/src/bluetrash/pippo
+2008-06-23 21:50:41 /home/andrea/foobar
+2008-06-23 21:50:49 /home/andrea/foobar
+2008-06-23 21:53:13 /media/disk/adsfljasldj
+}}}
+
+Empty the trashcan:
+{{{
+$ trash-empty
+}}}
+
+= Future Improvements =
+ == trash-list enhancements == 
+List all files trashed in the current directory and subdirectories:
+{{{
+$ pwd
+/home/andrea
+$ trash-list .
+2008-06-23 21:50:41 /home/andrea/foobar
+2008-06-23 21:50:49 /home/andrea/foobar
+$ trash-list -R .
+2008-06-23 21:57:26 /home/andrea/src/bluetrash/pippo
+2008-06-23 21:50:41 /home/andrea/foobar
+2008-06-23 21:50:49 /home/andrea/foobar
+}}}
+
+List all files removed from a specific directory:
+{{{
+$ trash-list /tmp/
+2008-06-23 21:50:41 /tmp/foobar1
+2008-06-23 21:50:49 /tmp/foobar2
+}}}
+
+ == trash-restore enhancements == 
+Restoring a file (by name, non interactive) to the original location: 
+{{{
+$ trash-restore /home/andrea/foobar
+}}}
+
+Restore a file trashed from elsewhere to the current directory:
+{{{
+$ trash-restore /home/andrea/foobar .
+}}}
+
+Restore a trashed file in a new location.
+{{{
+$ trash-restore /home/andrea/foobar /tmp/temp1/barfoo
+}}}
+
+Restore file trashed at specifing time.
+{{{
+$ trash-restore -t "Apr 15, 08" /home/andrea/foobar
+}}}
+
+==Usages of empty-trash==
+Empty all trashed files in all trashcans.
+{{{
+???
+}}}
+Empty all trashed files in a specific trashcan.
+{{{
+???
+}}}
+Empty a specific trashed file.
+{{{
+???
+}}}

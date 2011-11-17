@@ -1,0 +1,52 @@
+#summary Download and Install instructions
+
+= Generic =
+The recommended way works nearly on all distributions.
+
+Requirements:
+ * python >= 2.5
+ * python-setuptools >= 2.5
+Steps:
+{{{
+   sudo easy_install trash-cli
+}}}
+
+= Ubuntu and Debian =
+Don't use apt-get, this would install a very old version of trash-cli that contain a serious bug that could destroy your data.
+
+I asked Debian to update theirs package but without luck. 
+
+Please, if you are interested, ask to Debian/Ubuntu to upgrade their version of trash-cli.
+
+Use this instead:
+{{{
+sudo apt-get install python-setuptools
+sudo easy_install trash-cli
+}}}
+
+=Slackware (12.1)=
+Packaged by Massimo Cavalleri "submax82"/"submax".
+
+Go to http://repository.slacky.eu/slackware-12.1/system/trash-cli/
+
+For install/upgrade do the followings:
+
+{{{
+wget http://repository.slacky.eu/slackware-12.1/system/trash-cli/0.1.10.r55/trash-cli-0.1.10.r55-noarch-1sm.tgz
+upgradepkg --install-new trash-cli-0.1.10.r55-noarch-1sm.tgz
+}}}
+
+= Classic way =
+ * Download the tarball(.tar.gz) from the Python Index [http://pypi.python.org/pypi/trash-cli/ download page] or from the google code [http://code.google.com/p/trash-cli/downloads/list download page]
+ * To install do the followings:
+{{{
+tar xvfz trash-cli-0.1.10.r55.tar.gz 
+cd trash-cli-0.1.10.r55
+sudo python setup.py install
+}}}
+
+= Foresight Linux = 
+{{{
+sudo conary update trash-cli
+}}}
+Suggested by [http://code.google.com/u/kvandine/ kvandine]

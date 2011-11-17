@@ -1,0 +1,121 @@
+#summary List of similar projects
+
+= DELSAFE =
+*URL:* http://homepage.esoterica.pt/~nx0yew/delsafe/ 
+
+Use a different approach to the same problem.
+While 'trash' provide a extra command that put files in the trash, 'delsafe' modifies the semantics of the existing commands.
+
+Apparently 'delsafe' overrides the library calls of unlink, unlinkat, rename, open and fopen modifying the semantics of these functions.
+A program that was designed to works with the original functions may not work well with the overridden functions.
+
+The example is the KDE filemanager which as two command:
+ * delete file
+ * trash file
+Using 'delsafe' these commands becomes:
+ * delete file --> trash file in the delsafe trash
+ * trash file --> trash file in the KDE trash
+
+I prefer the 'trash' approach because don't change the semantics of the existing program letting the user chose when putting files in the trash and when removing them.
+
+Personally I don't like the model where each deletion should recorded somewhere. 'trash' is intended to be used only in interactive shells, if a program decides to delete, or trunk a file the information loss risk IMHO should be managed in the context of this program.
+
+= trash.sh = 
+*URL:* http://fresh.t-systems-sfr.com/unix/src/privat2/trashcan-3.2.tar.gz/
+
+    * This program seems not compliant with the FreeDesktopTrashSpecification.
+    * It compresses trashed file instead of just moving it.
+    * Like trash-cli can trash and restore directories.
+    * Seems that the development was ended in 2003.
+
+= Trashcan for Rox-Filer =
+URL: http://usuarios.lycos.es/proyectarr/
+
+Features:
+ * Has a graphical user interface.
+ * Does not support the FreeDesktopTrashSpecification.
+ * Implemented in bash using zenity.
+
+= trash by skymt= 
+URL: http://mysite.verizon.net/skymt/trash/
+Language: Python
+
+I reviewed the version [http://mysite.verizon.net/skymt/trash/trash-0.2.tar.gz 0.2]
+
+Is the only other CLI implementation of FreeDesktopTrashSpecification I ever found till now (2008-06-29)
+
+Features:
+ * Operation supported:
+  * trash files and directories: yes
+  * listing trashed files: no
+  * restoring trashed files: no
+  * emptying the trashcan: no 
+ * Support of volumes trashcans: no
+ * Can be used as alias='rm': no
+
+Notes:
+ * *(Better than trash-cli)* Seems much simpler of trash-cli.\
+ * *(Better than trash-cli)* Prints sensible output if the trashcan directories permission are wrong.
+ * Not object oriented.
+
+=cn by Richard Neill=
+URL: http://www.richardneill.org/source.php#cn
+
+License: GPLv3
+
+Reviewed on: 2008-06-29
+
+Features:
+ * Seems it is conform to the FreeDesktopTrashSpecification 
+ * Works also with the older KDE and GNOME TrashCan implementation
+ * Can be used as alias='rm': no
+ * *(Better than trash-cli)* It has a manpage.
+
+Trash Specification:
+ * Operation supported:
+  * trash files and directories: yes
+  * listing trashed files: yes
+  * restoring trashed files: yes 
+  * emptying trashcan: yes 
+ * Support of volumes trashcans: no
+ * Can be used as alias='rm': no
+
+FreeDesktop.org specification deviations:
+ * I'm not sure that it creates the trashinfo file in an atomic way.
+
+=File Rename Utils=
+URL: http://filerenameutils.sourceforge.net/
+
+License: ?
+
+Reviewed on: 2008-06-30
+
+Features:
+ * Conform to FreeDesktopTrashSpecification : yes
+ * Operation supported:
+  * trash files and directories: yes
+  * listing trashed files: yes
+  * restoring trashed files: yes 
+  * emptying trashcan: yes 
+ * Support of volumes trashcans: ?
+ * Can be used as alias='rm': no
+
+=Gnome Trashcan =
+As of Nautilus 2.22, GNOME support the XDG Trash specification through
+GIO and the GVFS-Trash backend. You can find the code for this backend
+here:
+http://svn.gnome.org/viewvc/gvfs/trunk/daemon/
+and GIO is in GLib:
+http://svn.gnome.org/viewvc/glib/trunk/gio/
+
+=Safe RM=
+This project does not use the TrashCan metaphore. The program alert you whenewer you attempt to delete files known to be important.
+URL: http://www.safe-rm.org.nz/
+
+= rmtrash =
+website: http://www.nightproductions.net/cli.htm
+trashcan utility for Mac OS X.
+I think it support only trashing files (not trash listing, or restoring).
+
+=Feedback=
+Feel free to leave any comment (below or mailing me) for any error or else.

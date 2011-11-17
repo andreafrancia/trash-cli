@@ -1,0 +1,8 @@
+#summary Peoples to thanks
+In none particular order:
+ * Massimo "Submax82" Cavalleri: packaging for Slackware
+ * Steve Stalcup: for mantain the Debian and Ubuntu packages
+ * jpschewe(users.sourceforge.net): bug reporting and patch submission.
+ * Michele Barbiero([http://greedyandlounge.blogspot.com]): bug reporting 
+
+If you think you should appear in this page please tell me.

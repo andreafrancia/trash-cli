@@ -1,0 +1,58 @@
+NAME
+        trash-list - list trashed files.
+
+SYNOPSIS
+        trash-list [OPTIONS]... [DIR]...
+
+DESCRIPTION
+        List files trashed from DIR (or the current directory by default).
+        
+        -l
+                do not recurse subfolders
+        -r, --recursive
+                recurse subfolders (default)
+        -a, --all
+                list all file trashed in all trashcans
+        --version
+                output version information and exit
+        --help
+                display this help and exit
+
+EXAMPLES
+        List all trashed files:
+          $ trash-list
+          2008-06-23T21:57:26 /home/andrea/src/bluetrash/pippo
+          2008-06-23T21:50:41 /home/andrea/foobar
+          2008-06-23T21:50:49 /home/andrea/foobar
+          2008-06-23T21:53:13 /media/disk/adsfljasldj
+
+        List all file trashed from the current directory (recursive):
+          $ pwd
+          /home/andrea
+          $ trash-list .
+          2008-06-23T21:57:26 /home/andrea/src/bluetrash/pippo
+          2008-06-23T21:50:41 /home/andrea/foobar
+          2008-06-23T21:50:49 /home/andrea/foobar
+
+        List all file trashed from the current directory (not recursive):
+          $ pwd
+          /home/andrea
+          $ trash-list -l .
+          2008-06-23T21:50:41 /home/andrea/foobar
+          2008-06-23T21:50:49 /home/andrea/foobar
+
+        List all files removed from a specific directory:
+          $ trash-list /tmp/
+          2008-06-23T21:50:41 /tmp/foobar1
+          2008-06-23T21:50:49 /tmp/foobar2
+
+AUTHORS
+        
+REPORTING BUGS
+
+COPYRIGHT
+
+SEE ALSO
+        trash-cli(1), trash(1), trashinfo(5), trash-restore(1), 
+        trash-empty(1).
+
