@@ -57,16 +57,4 @@ If you are in the sudoers file you can run the test in the simplest form with:
   tests total:  132
   success rate: 100%
 
-Preparing test volume on Mac OS X:
-----------------------------------
-::
-{
-    mkdir --parent test-volume
-    hdiutil detach ./test-volume || true
-    rm -f test-volume.dmg
-    hdiutil create -size 1M -fs HFS+ test-volume
-    hdiutil attach test-volume.dmg -mountpoint test-volume
-    (cd command-test; ./run-tests ../scripts ../test-volume/ )
-}
-
 -EOF

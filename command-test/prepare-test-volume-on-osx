@@ -1,0 +1,6 @@
+mkdir --parent test-volume
+hdiutil detach ./test-volume || true
+rm -f test-volume.dmg
+hdiutil create -size 1M -fs HFS+ test-volume
+hdiutil attach test-volume.dmg -mountpoint test-volume
+./run-tests ../scripts test-volume

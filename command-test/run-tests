@@ -1,8 +1,53 @@
 #!/bin/bash
 
-# Run all tests in each *test.bash files 
+usage="\
+Usage:
+  $(basename $0) [commands-path] [test-volume]
 
-#source commons.bash
+Arguments:
+  commands-path (default to ../scripts)
+  test-voluem   (default to test-volume)
+
+Run the test suite on trash-cli commands founds in <commands-path> using the 
+specified <test-volume>. Use --help for more informations.
+
+TEST VOLUME
+-----------
+The <test-volume> is supplied by the user and it is used by the tests to verify
+the supports of the \$topdir trash directories. 
+The user supplied test-volume must satisfy these requirements:
+ * the test-volume shall be a mount point 
+ * the test-volume shall be different from the the volume of the current dir
+ * the test-volume couldn't contain any .Trash or Trash-\$uid entry in its 
+   \$topdir
+
+The latest is for security because the tests tends to destroy the 
+trash directories found in the test-volume.
+
+If you are a sudoers, you can use the create-test-volume script to create a 
+test-volume. If you aren't you should create a test volume by yourself or 
+use an existing volume. 
+
+WARNING: Using an existing volume as test volume is BAD idea because it may 
+cause a data loss.
+
+COMMANDS PATH
+-------------
+The commands-path arguments specify where are the trash-cli commands that should
+be tested.
+
+USAGE EXAMPLE
+-------------
+
+ $ ./prepare-test-volume-linux
+ [sudo] password for andrea: **********
+ ...
+ test-volume mounted as './test-volume'
+
+ $ ./run-tests ../scripts test-volume
+"
+
+# Run all tests in each *test.bash files 
 
 setup-commands-wrappers() {
     base="${1:?"Base not specified. Usage: setup-commands-wrappers <base>"}"
@@ -53,51 +98,9 @@ setup-test-volume() {
     done
 }
 
-usage="
-Usage:
-  $(basename $0) <commands-path> <test-volume>
 
-Run the test suite on trash-cli commands founds in <commands-path> using the 
-specified <test-volume>. Use --help for more informations.
-
-TEST VOLUME
------------
-The <test-volume> is supplied by the user and it is used by the tests to verify
-the supports of the \$topdir trash directories. 
-The user supplied test-volume must satisfy these requirements:
- * the test-volume shall be a mount point 
- * the test-volume shall be different from the the volume of the current dir
- * the test-volume couldn't contain any .Trash or Trash-\$uid entry in its 
-   \$topdir
-
-The latest is for security because the tests tends to destroy the 
-trash directories found in the test-volume.
-
-If you are a sudoers, you can use the create-test-volume script to create a 
-test-volume. If you aren't you should create a test volume by yourself or 
-use an existing volume. 
-
-WARNING: Using an existing volume as test volume is BAD idea because it may 
-cause a data loss.
-
-COMMANDS PATH
--------------
-The commands-path arguments specify where are the trash-cli commands that should
-be tested.
-
-USAGE EXAMPLE
--------------
-
- $ ./create-test-volume
- [sudo] password for andrea: **********
- ...
- test-volume mounted as './test-volume'
-
- $ ./run-tests ../scripts test-volume
-"
-
-commands_path="${1:?"commands-path not specified.$usage"}"; shift
-test_volume="${1:?"test-volume not specified.$usage"}"; shift
+commands_path="${1:-"../scripts"}"; shift
+test_volume="${1:-"test-volume"}"; shift
 
 # setup the enviroment
 setup-commands-wrappers "$commands_path"
