@@ -21,18 +21,12 @@
 from __future__ import absolute_import
 
 import StringIO
-import exceptions
 import os
 import re
-import shutil
-import string
-import sys
 import time
 import urllib
 import random
 from datetime import datetime
-from stat import *
-import traceback
 import logging
 import posixpath
 
@@ -608,14 +602,15 @@ class TimeUtils(object):
 class List:
     def __init__(self, out):
         self.out = out
+
     def main(self, *argv):
         program_name=argv[0]
         import getopt
-        options, arguments = getopt.gnu_getopt(argv, '', ('help'))
+        options, arguments = getopt.getopt(argv[1:], 'h', ['help'])
     
         for option, value in options:
             if option == '--help':
-                self.out.write("""\
+                self._println("""\
 Usage: %s
 
 List trashed files
@@ -624,12 +619,15 @@ Options:
   --version   show program's version number and exit
   -h, --help  show this help message and exit
 
-Report bugs to http://code.google.com/p/trash-cli/issues
+Report bugs to http://code.google.com/p/trash-cli/issues\
 """ % program_name)
             return
 
         trashsystem = GlobalTrashCan()
         for trashed_file in trashsystem.trashed_files() :
-            print "%s %s" % (trashed_file.deletion_date, trashed_file.path)
+            self._println("%s %s" % (trashed_file.deletion_date, trashed_file.path))
 
+    def _println(self,line):
+        self.out.write(line)
+        self.out.write('\n')
 

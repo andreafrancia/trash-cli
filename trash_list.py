@@ -5,4 +5,7 @@ import sys
 from trashcli.trash import List
 
 def main():
-    List(sys.stdout).main(sys.argv)
+    List(sys.stdout).main(*sys.argv)
+
+if __name__ == '__main__':
+    main()
