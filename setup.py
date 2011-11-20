@@ -25,7 +25,7 @@ setup(
     test_suite = "nose.collector",
     entry_points = {
         'console_scripts' : [
-            'trash-list    = trashcli.cli.list:main',
+            'trash-list    = trash_list:main',
             'trash-put     = trashcli.cli.put:main',
             'restore-trash = trashcli.cli.legacy_restore:main',
             'volume-of     = trashcli.cli.volume_of:main',

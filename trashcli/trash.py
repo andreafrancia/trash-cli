@@ -133,8 +133,6 @@ class TrashDirectory(object) :
             pass
 
     def trashed_files(self) :
-        class TrashLister:
-            pass
         """
         List trashed files.
         Returns a generator for each trashed file in dir.
@@ -607,4 +605,31 @@ class TimeUtils(object):
         t=time.strptime(text,  "%Y-%m-%dT%H:%M:%S")
         return datetime(t.tm_year, t.tm_mon, t.tm_mday,
                         t.tm_hour, t.tm_min, t.tm_sec)
+class List:
+    def __init__(self, out):
+        self.out = out
+    def main(self, *argv):
+        program_name=argv[0]
+        import getopt
+        options, arguments = getopt.gnu_getopt(argv, '', ('help'))
+    
+        for option, value in options:
+            if option == '--help':
+                self.out.write("""\
+Usage: %s
+
+List trashed files
+
+Options:
+  --version   show program's version number and exit
+  -h, --help  show this help message and exit
+
+Report bugs to http://code.google.com/p/trash-cli/issues
+""" % program_name)
+            return
+
+        trashsystem = GlobalTrashCan()
+        for trashed_file in trashsystem.trashed_files() :
+            print "%s %s" % (trashed_file.deletion_date, trashed_file.path)
+
 
