@@ -29,7 +29,7 @@ setup(
             'trash-put     = trashcli.cli.put:main',
             'restore-trash = trashcli.cli.legacy_restore:main',
             'volume-of     = trashcli.cli.volume_of:main',
-            'trash-empty   = trashcli.cli.empty:main'
+            'trash-empty   = trash_empty:main'
         ]
     },
     data_files = [('man/man1', ['man/man1/trash-empty.1',

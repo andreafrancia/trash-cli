@@ -84,20 +84,10 @@ class TrashDirectory(object) :
         try :
             path.move(trashed_file.actual_path)
         except IOError, e :
-            trash_info_file.remove();
+            remove_file(trash_info_file.path)
             raise e
 
         return trashed_file
-
-    @property
-    def info_dir(self) :
-        return self.path.join("info")
-
-    @property
-    def files_dir(self) :
-        result=self.path.join("files")
-        assert(isinstance(result,Path))
-        return result
 
     @property
     def info_dir(self):
@@ -123,7 +113,7 @@ class TrashDirectory(object) :
                     logger.warning("Non .trashinfo file in info dir")
                 else :
 		    yield info_file
-        except OSError, e: # when directory does not exist
+        except OSError: # when directory does not exist
             pass
 
     def trashed_files(self) :
@@ -209,7 +199,7 @@ class TrashDirectory(object) :
                 os.close(handle)
                 logger.debug(".trashinfo created as %s." % dest)
                 return (dest, trash_id)
-            except OSError, e:
+            except OSError:
                 logger.debug("Attempt for creating %s failed." % dest)
 
             index += 1
@@ -308,7 +298,6 @@ def real_list_mount_points():
     for mount_point in mount_points(): 
 	yield Path(mount_point)
 
-import os
 class GlobalTrashCan(object) :
     """
     Represent the TrashCan that contains all trashed files.
@@ -432,7 +421,8 @@ class GlobalTrashCan(object) :
         return VolumeTrashDirectory(trash_directory_path,volume)
 
     def purge(self, trashed_file):
-        trashed_file._purge()
+        remove_file(trashed_file.original_file.path)
+        remove_file(trashed_file.info_file.path)
 
 class TrashedFile(object) :
     """
@@ -456,18 +446,6 @@ class TrashedFile(object) :
                  info_file,
                  actual_path,
                  trash_directory) :
-
-        if not hasattr(actual_path,'move'):
-            raise TypeError('actual_path should have move(). '
-                            'Tip: use a Path instance.')
-
-        if not hasattr(actual_path,'remove'):
-            raise TypeError('actual_path should have remove(). '
-                            'Tip: use a Path instance.')
-
-        if not hasattr(info_file,'remove'):
-            raise TypeError('info_file should have remove(). '
-                            'Tip: use a Path instance.')
 
         if not Path('' + path).isabs():
             raise ValueError("Absolute path required.")
@@ -504,13 +482,7 @@ class TrashedFile(object) :
             self.path.parent.mkdirs()
 
         self.original_file.move(self.path)
-        self.info_file.remove()
-
-    def _purge(self) :
-        # created by : Einar Orn Olason
-        # 2008-07-26 Andrea Francia: added postcondition test
-        self.original_file.remove()
-        self.info_file.remove()
+        remove_file(self.info_file.path)
 
     @property
     def info_file(self):
@@ -567,9 +539,8 @@ class TrashInfo (object) :
             raise ValueError()
         try :
             path = Path(urllib.unquote(match.groups()[0]))
-        except IndexError, e:
+        except IndexError:
             raise ValueError()
-
 
         try :
             line = stream.readline().rstrip('\n')
@@ -582,7 +553,7 @@ class TrashInfo (object) :
         try :
             deletion_date_string=match.groups()[0] # as string
             deletion_date=TimeUtils.parse_iso8601(deletion_date_string)
-        except IndexError, e:
+        except IndexError:
             raise ValueError()
 
         return TrashInfo(path, deletion_date)
@@ -630,4 +601,75 @@ Report bugs to http://code.google.com/p/trash-cli/issues\
     def _println(self,line):
         self.out.write(line)
         self.out.write('\n')
+
+import shutil
+def remove_file(path):
+    if(os.path.exists(path)):
+        try:
+            os.remove(path)
+        except:
+            return shutil.rmtree(path)
+import sys
+from trashcli.trash import GlobalTrashCan
+class EmptyCmd:
+    def run(self,argv):
+        Parser(Deleter(GlobalTrashCan(), datetime.now)).run_with_argv(sys.argv) 
+
+class Parser:
+    def __init__(self,deleter):
+        self.deleter = deleter
+        self.parser = self.get_option_parser()
+
+    def run_with_argv(self,argv):
+        (options, args) = self.parser.parse_args(argv[1:])
+
+        if len(args) > 1 :
+            self._print_usage()
+        elif len(args) == 1 :
+            try :
+                days=int(args[0])
+                self.deleter.delete_files_older_than(days)
+            except ValueError:
+                self._print_usage()
+        else:
+            self.deleter.delete_all_files()
+
+    def _print_usage(self):
+        self.parser.print_usage()
+        self.parser.exit()
+
+    def get_option_parser(self):
+        from trashcli import version
+        from optparse import OptionParser
+        from trashcli.cli.util import NoWrapFormatter
+
+        parser = OptionParser(usage="%prog [days]",
+                              description="Purge trashed files.",
+                              version="%%prog %s" % version,
+                              formatter=NoWrapFormatter(),
+                              epilog=
+        """Report bugs to http://code.google.com/p/trash-cli/issues""")
+
+        return parser
+
+class Deleter:
+    def __init__(self,trashcan,now):
+        self.trashcan = trashcan
+        self.now = now
+    def delete_all_files(self):
+        self._delete_files(self._list_all_files())
+    def delete_files_older_than(self, days):
+        self._delete_files(self._list_all_files_older_than(days))
+    def _delete_files(self, files):
+        for trashedfile in files:
+            self.trashcan.purge(trashedfile)
+    def _list_all_files(self):
+        for trashedfile in self.trashcan.trashed_files():
+            yield trashedfile
+    def _list_all_files_older_than(self, days):
+        for trashedfile in self.trashcan.trashed_files() :
+            delta=self.now()-trashedfile.deletion_date
+            if delta.days >= days :
+                yield trashedfile
+
 
