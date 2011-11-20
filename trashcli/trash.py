@@ -133,6 +133,8 @@ class TrashDirectory(object) :
             pass
 
     def trashed_files(self) :
+        class TrashLister:
+            pass
         """
         List trashed files.
         Returns a generator for each trashed file in dir.

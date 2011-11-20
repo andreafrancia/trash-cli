@@ -18,29 +18,35 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
-def get_option_parser():
-    from trashcli import version
-    from optparse import OptionParser
-
-    parser = OptionParser(usage="%prog",
-                          description="List trashed files",
-                          version="%%prog %s" % version,
-                          epilog=
-    """Report bugs to http://code.google.com/p/trash-cli/issues""")
-
-    return parser
-
 from trashcli.trash import GlobalTrashCan 
 import sys
 
-def main(argv=sys.argv,stdout=sys.stdout,stderr=sys.stderr) :
-    trashsystem = GlobalTrashCan()
+class List:
+    def __init__(self, out):
+        self.out = out
+    def main(self, *argv):
+        program_name=argv[0]
+        import getopt
+        options, arguments = getopt.gnu_getopt(argv, '', ('help'))
+    
+        for option, value in options:
+            if option == '--help':
+                self.out.write("""\
+Usage: %s
 
-    parser = get_option_parser()
-    (options, args) = parser.parse_args(argv)
+List trashed files
 
-    for trashed_file in trashsystem.trashed_files() :
-        print "%s %s" % (trashed_file.deletion_date, trashed_file.path)
+Options:
+  --version   show program's version number and exit
+  -h, --help  show this help message and exit
 
-class TrashListCmd:
-    pass
+Report bugs to http://code.google.com/p/trash-cli/issues
+""" % program_name)
+            return
+
+        trashsystem = GlobalTrashCan()
+        for trashed_file in trashsystem.trashed_files() :
+            print "%s %s" % (trashed_file.deletion_date, trashed_file.path)
+
+def main():
+    List(sys.stdout).main(sys.argv)

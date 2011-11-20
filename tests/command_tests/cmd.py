@@ -34,14 +34,12 @@ class CmdResult(object):
         self.stderr = stderr_data
 
     def assert_result(self, exit_code=None, output=None, error=None):
-
-
-        if exit_code != None:
-            assert_equals(self.exit_code, exit_code)
         if output != None:
             assert_equals(self.stdout, output, self._unidiff_output(self.stdout,output))
         if error != None:
             assert_equals(self.stderr, error)
+        if exit_code != None:
+            assert_equals(self.exit_code, exit_code)
 
     @staticmethod
     def _unidiff_output(expected, actual):
