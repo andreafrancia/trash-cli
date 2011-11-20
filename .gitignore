@@ -3,6 +3,7 @@ command-test/test-volume.img
 sandbox/
 scripts/
 trash_cli.egg-info/
+nose-*.egg/
 *.pyc
 *.swp
 .svn
@@ -11,3 +12,4 @@ test-volume.dmg
 test-volume/
 build/
 dist/
+env/

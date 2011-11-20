@@ -22,7 +22,6 @@ from __future__ import absolute_import
 
 import os
 import shutil
-import sys
 import unipath
 
 class Path (unipath.Path) :
@@ -59,10 +58,8 @@ class Path (unipath.Path) :
     def join(self, path) :
         if(isinstance(path,Path)):
             return self.__join_Path(path)
-        elif(isinstance(path,str)):
-            return self.__join_str(path)
-        else :
-            raise TypeError("Expected argument type as 'File' or 'str'")
+        else:
+            return self.__join_str(str(path))
 
     """
     return Volume the volume where the file is

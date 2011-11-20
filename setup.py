@@ -14,7 +14,7 @@ import trashcli
 setup(
     name = 'trash-cli',
     version = trashcli.version,
-    install_requires="Unipath>=0.2.0",
+    install_requires=file("requirements.txt").readlines(),
     author = 'Andrea Francia',
     author_email = 'me@andreafrancia.it',
     url = 'https://github.com/andreafrancia/trash-cli',
@@ -36,5 +36,6 @@ setup(
                                 'man/man1/trash-list.1',
                                 'man/man1/trash-restore.1',
                                 'man/man1/trash-put.1'])],
+    tests_require = file("requirements-dev.txt").readlines(),
 )
 

@@ -145,7 +145,6 @@ DeletionDate=2007-01-01T00:00:00
             (trash_info_file,
                     trash_info_id)=self.instance.persist_trash_info(basename,content)
     
-            self.assertTrue(isinstance(trash_info_id, str))
             self.assertEquals('dummy-path'+"_" + str(i), trash_info_id)
             self.assertEquals("""[Trash Info]
 Path=dummy-path
@@ -163,7 +162,6 @@ DeletionDate=2007-01-01T00:00:00
             (trash_info_file,
                     trash_info_id)=self.instance.persist_trash_info(basename,content)
     
-            self.assertTrue(isinstance(trash_info_id, str))
             self.assertTrue(trash_info_id.startswith("dummy-path_"))
             self.assertEquals("""[Trash Info]
 Path=dummy-path

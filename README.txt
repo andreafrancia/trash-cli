@@ -15,20 +15,21 @@ same name. trash-cli uses the same trashcan of KDE, GNOME and XFCE.
 
 Usage
 -----
-        Trash a file:
-          $ trash-put /home/andrea/foobar
 
-        List trashed files:
-          $ trash-list
-          2008-06-01 10:30:48 /home/andrea/bar
-          2008-06-02 21:50:41 /home/andrea/bar
-          2008-06-23 21:50:49 /home/andrea/foo
+  Trash a file:
+    $ trash-put /home/andrea/foobar
 
-        Restore a trashed file:
-          $ trash-restore /home/andrea/foo
+  List trashed files:
+    $ trash-list
+    2008-06-01 10:30:48 /home/andrea/bar
+    2008-06-02 21:50:41 /home/andrea/bar
+    2008-06-23 21:50:49 /home/andrea/foo
 
-        Empty the trashcan:
-          $ trash-empty
+  Restore a trashed file:
+    $ trash-restore /home/andrea/foo
+
+  Empty the trashcan:
+    $ trash-empty
 
 Informations
 ------------
@@ -45,5 +46,13 @@ Software requirements
 The trash-cli software depends on these packages:
  - python
  - python-ctypes
+
+Development
+-----------
+virtualenv env --no-site-packages
+source env/bin/activate
+pip install -r requirements.txt
+
+
 
 -EOF
