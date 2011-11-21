@@ -14,7 +14,7 @@ are recorded. The trash command allow trash multiple files with the
 same name. trash-cli uses the same trashcan of KDE, GNOME and XFCE.
 
 Usage
------
+=====
 
   Trash a file:
     $ trash-put /home/andrea/foobar
@@ -31,28 +31,35 @@ Usage
   Empty the trashcan:
     $ trash-empty
 
-Informations
-------------
+Information
+===========
+
        Website: http://code.google.com/p/trash-cli/
  Download page: http://code.google.com/p/trash-cli/wiki/Download
 Report bugs to: http://code.google.com/p/trash-cli/issues/list
 
 Installation
-------------
+============
 See the INSTALL file.
 
-Software requirements
----------------------
-The trash-cli software depends on these packages:
- - python
- - python-ctypes
-
 Development
------------
-virtualenv env --no-site-packages
-source env/bin/activate
-pip install -r requirements.txt -r requirements-dev.txt
+===========
+Environment setup::
 
+    virtualenv env --no-site-packages
+    source env/bin/activate
+    pip install -r requirements.txt -r requirements-dev.txt
 
+Running tests::
 
--EOF
+    nosetests unit_tests                # unit tests
+    nosetests integration_tests         # integration tests
+    nosetests                           # run all tests
+
+Profiling unit tests::
+
+    pip install gprof2dot
+    nosetests --with-profile --profile-stats-file stats.pf --profile-restrict=unit_tests unit_tests
+    gprof2dot -w  -f pstats stats.pf | dot -Tsvg >| stats.svg
+    open stats.svg
+

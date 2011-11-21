@@ -25,25 +25,15 @@ __copyright__ = "Copyright (c) 2007 Andrea Francia"
 __license__ = "GPL"
 
 from datetime import datetime
-import os
-import unittest
 from unittest import TestCase
-import pdb
 from mock import Mock
 
-from optparse import OptionParser
-from trashcli.trash import TrashedFile
-from trashcli.trash import TrashInfo
-from trashcli.trash import TrashDirectory
-from trashcli.trash import HomeTrashDirectory
 from trashcli.cli.restore import TrashNotFoundError
 from trashcli.filesystem import Path
-from trashcli.filesystem import Volume
 import trashcli.cli.restore
 from trashcli.cli.restore import RestoreCommandLine
 from trashcli.cli.restore import Restorer
 from trashcli.cli.restore import find_latest
-from trashcli.cli.restore import last_trashed
 
 from nose.tools import assert_equals
 from nose.tools import raises
