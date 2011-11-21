@@ -305,44 +305,6 @@ class TestTimeUtils(TestCase) :
         result=TimeUtils.parse_iso8601("2008-09-08T12:00:11")
         self.assertEqual(expected,result)
 
-class GlobalTrashCanTest(TestCase) :
-
-    def testBasePath(self) :
-        # prepare
-        os.environ['HOME'] = "/home/test"
-        instance = GlobalTrashCan()
-        # execute 
-        td = instance.home_trash_dir()
-        # verify
-        self.assertEqual(Path("/"), td.volume)
-
-    def test_volume_trash_dir1(self) :
-        # prepare
-        instance = GlobalTrashCan(
-		getuid=self.a_fake_getuid_which_always_returns(999))
-        
-        # execute
-        result = instance.volume_trash_dir1(Volume(Path("/mnt/disk")))
-        
-        # check
-        self.assert_(isinstance(result,TrashDirectory))
-        self.assertEqual('/mnt/disk/.Trash/999', result.path.path)
-    
-    def test_volume_trash_dir2(self) :        
-        # prepare
-        instance = GlobalTrashCan(getuid=self.a_fake_getuid_which_always_returns(999))
-        
-        # execute
-        result = instance.volume_trash_dir2(Volume(Path("/mnt/disk")))
-        
-        # check
-        self.assert_(isinstance(result,TrashDirectory))
-        self.assertEqual(Path('/mnt/disk/.Trash-999'), result.path)
-
-    def a_fake_getuid_which_always_returns(self, fake_uid):
-	return lambda:fake_uid
-
-
 class Method1VolumeTrashDirectoryTest(TestCase):
     def setUp(self):
         Path("sandbox").remove()
