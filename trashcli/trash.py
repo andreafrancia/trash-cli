@@ -307,20 +307,22 @@ class GlobalTrashCan(object) :
     class NullReporter:
 	def __getattr__(self,name):
 	    return lambda *argl,**args:None
-
+    from datetime import datetime
     def __init__(self, 
 		 environ=os.environ,
 		 reporter=NullReporter(),
 		 getuid=os.getuid,
-		 list_mount_points=real_list_mount_points):
-	self.getuid=getuid
-	self.environ = environ
-	self.reporter = reporter
-	self.list_mount_points=list_mount_points
+		 list_mount_points=real_list_mount_points,
+                 now=datetime.now):
+	self.getuid            = getuid
+	self.environ           = environ
+	self.reporter          = reporter
+	self.list_mount_points = list_mount_points
+	self.now               = now
 
     def trashed_files(self):
         """Return a generator of all TrashedFile(s)."""
-        for trash_dir in self.trash_directories():
+        for trash_dir in self._trash_directories():
             for trashedfile in trash_dir.trashed_files():
                 yield trashedfile
 
@@ -383,7 +385,7 @@ class GlobalTrashCan(object) :
     def volume_of(self, file):
 	return Path(file).volume
 
-    def trash_directories(self) :
+    def _trash_directories(self) :
         """Return a generator of all TrashDirectories in the filesystem"""
         yield self.home_trash_dir()
 	for mount_point in self.list_mount_points():
@@ -419,10 +421,16 @@ class GlobalTrashCan(object) :
         dirname=".Trash-%s" % str(uid)
         trash_directory_path = volume.topdir.join(Path(dirname))
         return VolumeTrashDirectory(trash_directory_path,volume)
-
-    def purge(self, trashed_file):
-        remove_file(trashed_file.original_file.path)
-        remove_file(trashed_file.info_file.path)
+    def for_all_trashed_file(self, action):
+        for trashedfile in self.trashed_files():
+            action(info_path=trashedfile.original_file.path,
+                   path=trashedfile.info_file.path)
+    def for_all_files_trashed_more_than(self, days_ago, action):
+        for trashedfile in self.trashed_files() :
+            delta=self.now()-trashedfile.deletion_date
+            if delta.days >= days_ago :
+                action(info_path=trashedfile.original_file.path,
+                       path=trashedfile.info_file.path)
 
 class TrashedFile(object) :
     """
@@ -612,8 +620,15 @@ def remove_file(path):
 import sys
 from trashcli.trash import GlobalTrashCan
 class EmptyCmd:
+    from datetime import datetime
+    def __init__(self,
+                 now=datetime.now,
+                 trashcan=GlobalTrashCan(datetime.now)):
+        self.now = now
+        self.trashcan = trashcan
+
     def run(self,argv):
-        Parser(Deleter(GlobalTrashCan(), datetime.now)).run_with_argv(sys.argv) 
+        Parser(Deleter(self.trashcan)).run_with_argv(sys.argv) 
 
 class Parser:
     def __init__(self,deleter):
@@ -653,23 +668,13 @@ class Parser:
         return parser
 
 class Deleter:
-    def __init__(self,trashcan,now):
+    def __init__(self,trashcan):
         self.trashcan = trashcan
-        self.now = now
     def delete_all_files(self):
-        self._delete_files(self._list_all_files())
+        self.trashcan.for_all_trashed_file(self._delete)
     def delete_files_older_than(self, days):
-        self._delete_files(self._list_all_files_older_than(days))
-    def _delete_files(self, files):
-        for trashedfile in files:
-            self.trashcan.purge(trashedfile)
-    def _list_all_files(self):
-        for trashedfile in self.trashcan.trashed_files():
-            yield trashedfile
-    def _list_all_files_older_than(self, days):
-        for trashedfile in self.trashcan.trashed_files() :
-            delta=self.now()-trashedfile.deletion_date
-            if delta.days >= days :
-                yield trashedfile
-
-
+        self.trashcan.for_all_files_trashed_more_than(days_ago=days,
+                action=self._delete)
+    def _delete(self, info_path, path):
+        remove_file(path)
+        remove_file(info_path)

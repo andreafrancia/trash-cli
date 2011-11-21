@@ -3,7 +3,7 @@ from trashcli.trash import List
 
 from StringIO import StringIO
 import unittest
-class DontTestList(unittest.TestCase):
+class TestList(unittest.TestCase):
     def test_help_option(self):
         out=StringIO()
         cmd=List(out)
@@ -20,11 +20,3 @@ Options:
 Report bugs to http://code.google.com/p/trash-cli/issues
 """)
 
-    def test_list(self):
-        out=StringIO()
-        cmd=List(out)
-        cmd.main('trash-list')
-        assert_equals(out.getvalue(), """\
-2011-11-20 20:53:20 /Users/andreafrancia/trash-cli_svn2git/ciao
-2011-11-20 20:53:26 /Users/andreafrancia/trash-cli_svn2git/ciao2
-""")
