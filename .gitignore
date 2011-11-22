@@ -1,6 +1,7 @@
 *.pyc
 *.swp
 .DS_Store
+.local/
 .svn
 build/
 command-test/sandbox/

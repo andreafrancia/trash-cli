@@ -1,10 +1,13 @@
 from nose.tools import assert_equals, assert_not_equals
 
+
 class EmptyCmd():
-    def __init__(self, out, err, environ):
+    from datetime import datetime
+    def __init__(self, out, err, environ, now = datetime.now):
         self.out = out
         self.err = err
         self.environ = environ
+        self.now = now
     def run(self, *argv):
         for info_dir in self._info_dirs():
             infodir=InfoDir(info_dir)
@@ -101,13 +104,57 @@ class TestEmptyCmd():
 
         assert not os.path.exists('.local/Trash/files/a-file-without-any-associated-trashinfo')
 
+from nose import SkipTest
 
+class TestEmptyCmdWithTime:
+
+    def test_it_keeps_files_newer_than_N_days(self):
+        raise SkipTest()
+        require_empty_dir('.local')
+
+        make_trashinfo('foo', '2000-01-01')
+
+        empty=EmptyCmd(
+                out=StringIO(), 
+                err=StringIO(), 
+                environ={'XDG_DATA_HOME':'.local'},
+                now=lambda: date('2000-01-01')
+                )
+        empty.run('2')
+
+        assert os.path.exists('.local/Trash/info/foo.trashinfo')
+
+def read_date(contents):
+    from datetime import datetime 
+    for line in contents.split('\n'):
+        if line.startswith('DeletionDate='):
+            return datetime.strptime(line, "DeletionDate=%Y-%m-%dT%H:%M:%S")
+
+def test_how_to_extract():
+    from datetime import datetime
+    assert_equals(datetime(2000,12,31,23,59,58), read_date('DeletionDate=2000-12-31T23:59:58'))
+    assert_equals(datetime(2000,12,31,23,59,58), read_date('[TrashInfo]\nDeletionDate=2000-12-31T23:59:58'))
+
+def date(yyyy_mm_dd):
+    from datetime import datetime
+    return datetime.strptime(yyyy_mm_dd, '%Y-%m-%d')
+
+def make_trashinfo(filename, date):
+    trashinfo = '.local/Trash/info/%(name)s.trashinfo' % {'name': filename}
+    contents = "DeletionDate=%sT00:00:00\n" % date
+    write_file(trashinfo, contents) 
+    assert os.path.exists('.local/Trash/info/foo.trashinfo')
+        
 def touch(filename):
+    write_file(filename, '')
+    assert os.path.isfile(filename)
+
+def write_file(filename, contents):
     import os
     parent = os.path.dirname(filename)
     if not os.path.isdir(parent): os.makedirs(parent)
-    file(filename, 'w').write('')
-    assert os.path.isfile(filename)
+    file(filename, 'w').write(contents)
+    assert_equals(file(filename).read(), contents)
 
 def require_empty_dir(dirname):
     import os
