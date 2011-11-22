@@ -625,9 +625,9 @@ class EmptyCmd:
         self.trashcan = trashcan
 
     def run(self,argv):
-        Parser(Deleter(self.trashcan)).run_with_argv(sys.argv) 
+        EmptyCmdParser(Deleter(self.trashcan)).run_with_argv(sys.argv) 
 
-class Parser:
+class EmptyCmdParser:
     def __init__(self,deleter):
         self.deleter = deleter
         self.parser = self.get_option_parser()
@@ -653,7 +653,6 @@ class Parser:
     def get_option_parser(self):
         from trashcli import version
         from optparse import OptionParser
-        from trashcli.cli.util import NoWrapFormatter
 
         parser = OptionParser(usage="%prog [days]",
                               description="Purge trashed files.",
@@ -675,3 +674,146 @@ class Deleter:
     def _delete(self, info_path, path):
         remove_file(path)
         remove_file(info_path)
+
+class RestoreCmd:
+    def __init__(self):
+        pass
+    def run(self):
+        trashcan = GlobalTrashCan()
+
+        def is_trashed_from_curdir(trashedfile):
+            dir = os.path.realpath(os.curdir)
+            if trashedfile.path.path.startswith(dir + os.path.sep) :
+                return True
+
+        trashed_files = []
+        i = 0
+        for trashedfile in filter(is_trashed_from_curdir, trashcan.trashed_files()) :
+            trashed_files.append(trashedfile)
+            print "%4d %s %s" % (i, trashedfile.deletion_date, trashedfile.path)
+            i += 1
+
+        if len(trashed_files) == 0 :
+            print "No files trashed from current dir ('%s')" % os.path.realpath(os.curdir)
+        else :
+            index=raw_input("What file to restore [0..%d]: " % (len(trashed_files)-1))
+            if index == "" :
+                print "Exiting"
+            else :
+                index = int(index)
+                try:
+                    trashed_files[index].restore()
+                except IOError, e:
+                    import sys
+                    print >> sys.stderr, str(e)
+                    sys.exit(1)	
+
+from optparse import IndentedHelpFormatter
+class NoWrapFormatter(IndentedHelpFormatter) :
+    def _format_text(self, text) :
+        "[Does not] format a text, return the text as it is."
+        return text
+
+from trashcli.trash import GlobalTrashCan 
+from trashcli.trash import NoWrapFormatter
+
+class TrashPutCmd:
+
+    def __init__(self, stdout, stderr):
+	self.stdout=stdout
+	self.stderr=stderr
+
+    def run(self,argv):
+	parser = self.get_option_parser()
+	(options, args) = parser.parse_args(argv[1:])
+
+	if len(args) <= 0:
+	    parser.error("Please specify the files to trash.")
+
+	reporter=TrashPutReporter(self.get_logger(options.verbose,argv[0]))
+
+	self.trashcan=GlobalTrashCan(reporter=reporter)
+	self.trash_all(args)
+
+    def trash_all(self, args):
+	for arg in args :
+	    self.trash(arg)
+
+    def trash(self, arg):
+	self.trashcan.trash(Path(arg))
+
+    def get_option_parser(self):
+	from trashcli import version
+	from optparse import OptionParser
+
+	parser = OptionParser(usage="%prog [OPTION]... FILE...",
+			      description="Put files in trash",
+			      version="%%prog %s" % version,
+			      formatter=NoWrapFormatter(),
+			      epilog=
+"""To remove a file whose name starts with a `-', for example `-foo',
+use one of these commands:
+
+    trash -- -foo
+
+    trash ./-foo
+
+Report bugs to http://code.google.com/p/trash-cli/issues""")
+	parser.add_option("-d",
+			  "--directory",
+			  action="store_true",
+			  help="ignored (for GNU rm compatibility)")
+	parser.add_option("-f",
+			  "--force",
+			  action="store_true",
+			  help="ignored (for GNU rm compatibility)")
+	parser.add_option("-i",
+			  "--interactive",
+			  action="store_true",
+			  help="ignored (for GNU rm compatibility)")
+	parser.add_option("-r",
+			  "-R",
+			  "--recursive",
+			  action="store_true",
+			  help="ignored (for GNU rm compatibility)")
+	parser.add_option("-v",
+			  "--verbose",
+			  action="store_true",
+			  help="explain what is being done",
+			  dest="verbose")
+	return parser
+
+    def get_logger(self,verbose,argv0):
+	import os.path
+	class MyLogger:
+	    def __init__(self, stderr):
+		self.program_name = os.path.basename(argv0)
+		self.stderr=stderr
+	    def info(self,message):
+		if verbose:
+		    self.emit(message)
+	    def warning(self,message):
+		self.emit(message)
+	    def emit(self, message):
+		self.stderr.write("%s: %s\n" % (self.program_name,message))
+	
+	return MyLogger(self.stderr)
+
+class TrashPutReporter:
+    def __init__(self, logger):
+	self.logger = logger
+
+    def unable_to_trash_dot_entries(self,file):
+	self.logger.warning("cannot trash %s `%s'" % (file.type_description(), file))
+
+    def unable_to_trash_file(self,f):
+	self.logger.warning("cannot trash %s `%s'" % (f.type_description(), f))
+
+    def file_has_been_trashed_in_as(self, trashee, trash_directory, destination):
+	self.logger.info("`%s' trashed in %s " % (trashee, trash_directory))
+
+    def unable_to_trash_file_in_because(self, file_to_be_trashed, trash_directory, error):
+	self.logger.info("Failed to trash %s in %s, because :%s" % (file_to_be_trashed,
+	    trash_directory, error))
+
+

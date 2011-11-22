@@ -1,7 +1,7 @@
 from nose.tools import assert_equals
 from unittest import TestCase
 from StringIO import StringIO
-from trashcli.cli.put import TrashPutCmd
+from trashcli.trash import TrashPutCmd
 
 class TrashPutCmd_Test(TestCase):
 

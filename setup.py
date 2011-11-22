@@ -26,9 +26,9 @@ setup(
     entry_points = {
         'console_scripts' : [
             'trash-list    = trash_list:main',
-            'trash-put     = trashcli.cli.put:main',
-            'restore-trash = trashcli.cli.legacy_restore:main',
-            'volume-of     = trashcli.cli.volume_of:main',
+            'trash-put     = trash_put:main',
+            'restore-trash = legacy_restore:main',
+            'volume-of     = volume_of:main',
             'trash-empty   = trash_empty:main'
         ]
     },

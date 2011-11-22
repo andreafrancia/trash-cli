@@ -51,7 +51,7 @@ def _is_cygwin():
 
 class TestPath(unittest.TestCase) :
     def test_constructor(self) :
-        instance = Path("dummy/path")
+        Path("dummy/path")
     
     def test_eq(self) :
         self.assertNotEquals(Path("."),Path(os.path.realpath(".")))
