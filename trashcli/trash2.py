@@ -35,15 +35,16 @@ class EmptyCmd():
         else:
             date_criteria = always
 
-        janitor = Janitor(self.fs, date_criteria, self.file_remover)
-        self.infodirs.for_each_path(janitor)
+        janitor = Janitor(date_criteria, self.file_remover)
+        def invoke(info_dir_path):
+            infodir = InfoDir(self.fs, info_dir_path)
+            janitor(infodir)
+        self.infodirs.for_each_path(invoke)
 class Janitor:
-    def __init__(self, fs, date_criteria, file_remover):
-        self.fs = fs
+    def __init__(self, date_criteria, file_remover):
         self.date_criteria = date_criteria
         self.file_remover = file_remover
-    def __call__(self, info_dir_path):
-        infodir = InfoDir(self.fs, info_dir_path)
+    def __call__(self, infodir):
         infodir.for_all_files_satisfying(self.date_criteria, self.remove_both)
         infodir.for_all_orphan(self.remove_file)
     def remove_file(self, path):
