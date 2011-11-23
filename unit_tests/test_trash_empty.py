@@ -1,169 +1,46 @@
-from nose.tools import assert_equals, assert_not_equals
+from nose.tools import assert_equals
+from trashcli.trash2 import read_deletion_date
 
-
-class EmptyCmd():
+def test_how_to_parse_date_from_trashinfo():
     from datetime import datetime
-    def __init__(self, out, err, environ, now = datetime.now):
-        self.out = out
-        self.err = err
+    assert_equals(datetime(2000,12,31,23,59,58), read_deletion_date('DeletionDate=2000-12-31T23:59:58'))
+    assert_equals(datetime(2000,12,31,23,59,58), read_deletion_date('DeletionDate=2000-12-31T23:59:58\n'))
+    assert_equals(datetime(2000,12,31,23,59,58), read_deletion_date('[TrashInfo]\nDeletionDate=2000-12-31T23:59:58'))
+
+
+from trashcli.trash2 import InfoDirs
+class TestInfoDirsPathsFrom():
+    def test_no_path_if_no_environment_variables(self):
+        self.with_environ({})
+        self.should_return([])
+    def test_it_honours_the_xdg_datahome(self):
+        self.with_environ({'XDG_DATA_HOME':'/alternate/xdg/data/home'})
+        self.should_return(['/alternate/xdg/data/home/Trash/info'])
+    def test_it_uses_the_default_value_of_xdg_datahome(self):
+        self.with_environ({'HOME':'/home/foo'})
+        self.should_return(['/home/foo/.local/share/Trash/info'])
+
+    def test_it_considers_trashcans_volumes(self):
+        self.with_volumes('/mnt')
+        self.with_user_id('123')
+        self.should_return(['/mnt/Trash/123/info',
+                            '/mnt/Trash-123/info'])
+
+    def with_environ(self, environ):
         self.environ = environ
-        self.now = now
-    def run(self, *argv):
-        for info_dir in self._info_dirs():
-            infodir=InfoDir(info_dir)
-            for entry in infodir.trashinfo_entries():
-                infodir.remove_file_if_exists(entry)
-                infodir.remove_trashinfo(entry)
-            for entry in infodir.files():
-                infodir.remove_existring_file(entry)
-    def _info_dirs(self):
-        if 'XDG_DATA_HOME' in self.environ:
-            yield '%s/Trash/info' % self.environ['XDG_DATA_HOME']
-        elif 'HOME' in self.environ:
-            yield '%s/.local/share/Trash/info' % self.environ['HOME']
-
-class InfoDir:
-    def __init__(self, path):
-        self.path = path
-    def files_dir(self):
-        files_dir = os.path.join(os.path.dirname(self.path), 'files')
-        return files_dir
-    def trashinfo_entries(self):
-        for entry in self._entries_if_dir_exists(self.path):
-            if entry.endswith('.trashinfo'):
-                yield entry
-    def remove_trashinfo(self, entry):
-        os.remove(os.path.join(self.path, entry))
-    def remove_file_if_exists(self, trashinfo_entry):
-        entry=trashinfo_entry[:-len('.trashinfo')]
-        path = os.path.join(self.files_dir(), entry)
-        if os.path.exists(path): os.remove(path)
-    def remove_existring_file(self, entry):
-        os.remove(os.path.join(self.files_dir(), entry))
-    def files(self):
-        return self._entries_if_dir_exists(self.files_dir())
-    def _entries_if_dir_exists(self, path):
-        return entries_if_dir_exists(path)
-
-def entries_if_dir_exists(path):
-    if os.path.exists(path):
-        for entry in os.listdir(path):
-            yield entry
-
-from StringIO import StringIO
-import os
-
-class TestEmptyCmd():
+    def with_volumes(self, *volumes_paths):
+        self.list_volumes = lambda:volumes_paths
+    def with_user_id(self, uid):
+        self.getuid = lambda: uid
+    def should_return(self, expected_result):
+        result = InfoDirs(environ      = self.environ,
+                          getuid       = self.getuid,
+                          list_volumes = self.list_volumes).paths()
+        assert_equals(expected_result, list(result))
     def setUp(self):
-        require_empty_dir('.local')
-        self.out=StringIO()
-        self.err=StringIO()
-        self.environ = { 'XDG_DATA_HOME': '.local' }
-    def run(self):
-        EmptyCmd(
-            out = self.out, 
-            err = self.err, 
-            environ = self.environ).run()
-
-    def test_it_removes_an_info_file(self):
-        touch(                    '.local/Trash/info/foo.trashinfo')
-        self.run()
-        assert not os.path.exists('.local/Trash/info/foo.trashinfo')
-
-    def test_it_removes_multiple_info_files(self):
-        touch('.local/Trash/info/foo.trashinfo')
-        touch('.local/Trash/info/bar.trashinfo')
-        touch('.local/Trash/info/baz.trashinfo')
-        assert_not_equals([],list(os.listdir('.local/Trash/info/')))
-
-        self.run()
-
-        assert_equals([],list(os.listdir('.local/Trash/info/')))
-
-    def test_it_removes_files(self):
-        touch('.local/Trash/info/foo.trashinfo')
-        touch('.local/Trash/files/foo')
-        assert_not_equals([],list(os.listdir('.local/Trash/files/')))
-
-        self.run()
-
-        assert_equals([],list(os.listdir('.local/Trash/files/')))
-    
-    def test_it_keep_unknown_files_in_infodir(self):
-        touch('.local/Trash/info/not-a-trashinfo')
-
-        self.run()
-
-        assert os.path.exists('.local/Trash/info/not-a-trashinfo')
-
-    def test_it_removes_orphan_files(self):
-        touch(                    '.local/Trash/files/a-file-without-any-associated-trashinfo')
-        assert os.path.exists(    '.local/Trash/files/a-file-without-any-associated-trashinfo')
-
-        self.run()
-
-        assert not os.path.exists('.local/Trash/files/a-file-without-any-associated-trashinfo')
-
-from nose import SkipTest
-
-class TestEmptyCmdWithTime:
-
-    def test_it_keeps_files_newer_than_N_days(self):
-        raise SkipTest()
-        require_empty_dir('.local')
-
-        make_trashinfo('foo', '2000-01-01')
-
-        empty=EmptyCmd(
-                out=StringIO(), 
-                err=StringIO(), 
-                environ={'XDG_DATA_HOME':'.local'},
-                now=lambda: date('2000-01-01')
-                )
-        empty.run('2')
-
-        assert os.path.exists('.local/Trash/info/foo.trashinfo')
-
-def read_date(contents):
-    from datetime import datetime 
-    for line in contents.split('\n'):
-        if line.startswith('DeletionDate='):
-            return datetime.strptime(line, "DeletionDate=%Y-%m-%dT%H:%M:%S")
-
-def test_how_to_extract():
-    from datetime import datetime
-    assert_equals(datetime(2000,12,31,23,59,58), read_date('DeletionDate=2000-12-31T23:59:58'))
-    assert_equals(datetime(2000,12,31,23,59,58), read_date('[TrashInfo]\nDeletionDate=2000-12-31T23:59:58'))
-
-def date(yyyy_mm_dd):
-    from datetime import datetime
-    return datetime.strptime(yyyy_mm_dd, '%Y-%m-%d')
-
-def make_trashinfo(filename, date):
-    trashinfo = '.local/Trash/info/%(name)s.trashinfo' % {'name': filename}
-    contents = "DeletionDate=%sT00:00:00\n" % date
-    write_file(trashinfo, contents) 
-    assert os.path.exists('.local/Trash/info/foo.trashinfo')
-        
-def touch(filename):
-    write_file(filename, '')
-    assert os.path.isfile(filename)
-
-def write_file(filename, contents):
-    import os
-    parent = os.path.dirname(filename)
-    if not os.path.isdir(parent): os.makedirs(parent)
-    file(filename, 'w').write(contents)
-    assert_equals(file(filename).read(), contents)
-
-def require_empty_dir(dirname):
-    import os
-    import shutil
-    if os.path.exists(dirname): shutil.rmtree(dirname)
-    os.makedirs(dirname)
-    assert os.path.isdir(dirname)
-
-    
+        self.environ      = {}
+        self.getuid       = lambda:None
+        self.list_volumes = lambda:[]
 
 
 # class TrashEmptyCommand_Test(TestCase):

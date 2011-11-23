@@ -2,6 +2,7 @@
 *.swp
 .DS_Store
 .local/
+.fake_root/
 .svn
 build/
 command-test/sandbox/
