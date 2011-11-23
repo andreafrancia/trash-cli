@@ -105,7 +105,7 @@ class TestEmptyCmdWithMultipleVolumes:
     def test_it_removes_trashinfos_from_method_1_dir(self):
         raise SkipTest()
         require_empty_dir('.fake_root')
-        touch('.fake_root/media/external-disk/.Trash/123/info/foo')
+        touch('.fake_root/media/external-disk/.Trash/123/info/foo.trashinfo')
         empty=EmptyCmd(
                 out=StringIO(), 
                 err=StringIO(), 
@@ -114,7 +114,7 @@ class TestEmptyCmdWithMultipleVolumes:
                 list_volumes=lambda: ['.fake_root/media/external-disk'],
                 )
         empty.run('trash-empty')
-        assert not os.path.exists('.fake_root/media/external-disk/.Trash/123/info/foo')
+        assert not os.path.exists('.fake_root/media/external-disk/.Trash/123/info/foo.trashinfo')
 
 def touch(filename):
     write_file(filename, '')

@@ -5,6 +5,8 @@ class FileSystem:
         return file(path).read()
     def remove_file(self, path):
         return os.remove(path)
+    def remove_file_if_exists(self,path):
+        if self.exists(path): self.remove_file(path)
     def exists(self, path):
         return os.path.exists(path)
     def entries_if_dir_exists(self, path):
@@ -21,7 +23,7 @@ class EmptyCmd():
         self.out          = out
         self.err          = err
         self.now          = now
-        self.fs           = FileSystem()
+        self.fs           = fs
         self.infodirs     = InfoDirs(environ, getuid, list_volumes)
     def run(self, *argv):
         if len(argv) > 1:
@@ -29,17 +31,16 @@ class EmptyCmd():
         else:
             date_criteria = always
 
-        self._empty_trashcans_according_to(date_criteria)
-    def _empty_trashcans_according_to(self, date_criteria):
-        for infodir in self._info_dirs():
-            for entry in infodir.trashinfo_entries():
-                infodir.remove_both(entry, date_criteria)
-            for entry in infodir.files():
-                infodir.remove_file(entry)
-    def _info_dirs(self):
-        for path in self.infodirs.paths():
-            yield InfoDir(self.fs, path)
-
+        janitor = Janitor(self.fs, date_criteria)
+        self.infodirs.for_each_path(janitor)
+class Janitor:
+    def __init__(self, fs, date_criteria):
+        self.fs = fs
+        self.date_criteria = date_criteria
+    def __call__(self, info_dir_path):
+        infodir = InfoDir(self.fs, info_dir_path)
+        infodir.remove_all_files_satisfying(self.date_criteria)
+        infodir.remove_all_files()
 class InfoDirs:
     def __init__(self, environ, getuid, list_volumes):
         self.environ      = environ
@@ -53,9 +54,9 @@ class InfoDirs:
         for volume in self.list_volumes():
             yield '%(volume)s/Trash/%(uid)s/info' % { 'volume': volume, 'uid': self.getuid()}
             yield '%(volume)s/Trash-%(uid)s/info' % { 'volume': volume, 'uid': self.getuid()}
-
-def info_dirs_paths(environ):
-    return InfoDirs(environ).paths()
+    def for_each_path(self, callable):
+        for path in self.paths():
+            callable(path)
 def always(deletion_date): return True
 class OlderThan:
     def __init__(self, days_ago, now):
@@ -63,40 +64,58 @@ class OlderThan:
         self.limit_date = now() - timedelta(days=days_ago)
     def __call__(self, deletion_date):
         return deletion_date < self.limit_date
+class BothRemover:
+    def __init__(self, fs):
+        self.fs = fs
+    def __call__(self, trashinfo_path, file_path):
+        self.fs.remove_file_if_exists(file_path)
+        self.fs.remove_file(trashinfo_path)
 class InfoDir:
     def __init__(self, fs, path):
         self.path = path
         self.fs = fs
-    def files_dir(self):
+    def for_all_orphan(self, callable):
+        for entry in self._files():
+            trashinfo_path = self._trashinfo_path(entry)
+            file_path = os.path.join(self._files_dir(), entry)
+            if not self.fs.exists(trashinfo_path): callable(file_path)
+    def remove_all_files(self):
+        for entry in self._files():
+            self._remove_file(entry)
+    def _deletion_date(self, entry):
+        return read_deletion_date(self.fs.contents_of(self._trashinfo_path(entry)))
+    def _files(self):
+        return self._entries_if_dir_exists(self._files_dir())
+    def _entries_if_dir_exists(self, path):
+        return self.fs.entries_if_dir_exists(path)
+    def remove_all_files_satisfying(self, date_criteria):
+        remover=BothRemover(self.fs)
+        self.for_all_files_satisfying(date_criteria, remover)
+    def for_all_files_satisfying(self, date_criteria, callable):
+        for entry in self._trashinfo_entries():
+            date = read_deletion_date(self.fs.contents_of(self._trashinfo_path(entry)))
+            if(date_criteria(date)):
+                file_path = self._file_path(entry)
+                trashinfo_path = self._trashinfo_path(entry)
+                callable(trashinfo_path, file_path)
+    def _remove_file(self, entry):
+        self.fs.remove_file(os.path.join(self._files_dir(), entry))
+    def _file_path(self, trashinfo_entry):
+        entry=trashinfo_entry[:-len('.trashinfo')]
+        path = os.path.join(self._files_dir(), entry)
+        return path
+    def _trashinfo_path(self, file_entry):
+        return os.path.join(self.path, file_entry + '.trashinfo')
+    def _files_dir(self):
         return os.path.join(os.path.dirname(self.path), 'files')
-    def trashinfo_entries(self):
+    def _trashinfo_entries(self):
         for entry in self._entries_if_dir_exists(self.path):
             if entry.endswith('.trashinfo'):
                 yield entry
-    def trashinfo_path(self, entry):
+    def _trashinfo_path(self, entry):
         return os.path.join(self.path, entry)
-    def remove_trashinfo(self, entry):
-        self.fs.remove_file(self.trashinfo_path(entry))
-    def remove_file_if_exists(self, trashinfo_entry):
-        path = self.file_path(trashinfo_entry)
-        if self.fs.exists(path): self.fs.remove_file(path)
-    def file_path(self, trashinfo_entry):
-        entry=trashinfo_entry[:-len('.trashinfo')]
-        path = os.path.join(self.files_dir(), entry)
-        return path
-    def remove_file(self, entry):
-        self.fs.remove_file(os.path.join(self.files_dir(), entry))
-    def files(self):
-        return self._entries_if_dir_exists(self.files_dir())
-    def _entries_if_dir_exists(self, path):
-        return self.fs.entries_if_dir_exists(path)
-    def remove_both(self, entry, criteria=always):
-        date = read_deletion_date(self.fs.contents_of(self.trashinfo_path(entry)))
-        if(criteria(date)):
-            self.remove_file_if_exists(entry)
-            self.remove_trashinfo(entry)
-    def _deletion_date(self, entry):
-        return read_deletion_date(self.fs.contents_of(self.trashinfo_path(entry)))
+
+
 def read_deletion_date(contents):
     from datetime import datetime 
     for line in contents.split('\n'):

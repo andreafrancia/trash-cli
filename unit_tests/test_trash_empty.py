@@ -1,5 +1,5 @@
 from nose.tools import assert_equals
-from trashcli.trash2 import read_deletion_date
+from trashcli.trash2 import read_deletion_date, EmptyCmd
 
 def test_how_to_parse_date_from_trashinfo():
     from datetime import datetime
@@ -41,6 +41,112 @@ class TestInfoDirsPathsFrom():
         self.environ      = {}
         self.getuid       = lambda:None
         self.list_volumes = lambda:[]
+
+from trashcli.trash2 import InfoDir
+class TestInfoDir:
+    def test(self):
+        self.result=[]
+        self.fs = FakeFileSystem()
+        self.fs.create_fake_file('/info/foo.trashinfo')
+        self.infodir=InfoDir(self.fs, '/info')
+        self.infodir.for_all_orphan(self.result.append)
+
+        assert_equals([], self.result)
+    def test2(self):
+        self.result=[]
+        self.fs = FakeFileSystem()
+        self.fs.create_fake_file('/files/foo')
+        self.infodir=InfoDir(self.fs, '/info')
+        self.infodir.for_all_orphan(self.result.append)
+
+        assert_equals(['/files/foo'], self.result)
+
+
+class FakeFileSystem:
+    def __init__(self):
+        self.files={}
+        self.dirs={}
+        self.deleted=[]
+    def contents_of(self, path):
+        return self.files[path]
+    def remove_file(self, path):
+        self.deleted.append(path)
+        return
+    def exists(self, path):
+        return path in self.files
+    def entries_if_dir_exists(self, path):
+        return self.dirs.get(path, [])
+    def create_fake_file(self, path, contents=''):
+        import os
+        self.files[path] = contents
+        self.create_fake_dir(os.path.dirname(path), os.path.basename(path))
+    def create_fake_dir(self, dir_path, *dir_entries):
+        self.dirs[dir_path] = dir_entries
+    def removed_files(self):
+        return self.deleted[:]
+
+class TestFakeFileSystem:
+    def setUp(self):
+        self.fs = FakeFileSystem()
+    def test_you_can_read_from_files(self):
+        self.fs.create_fake_file('/path/to/file', "file contents")
+        assert_equals('file contents', self.fs.contents_of('/path/to/file'))
+    def test_when_creating_a_fake_file_it_creates_also_the_dir(self):
+        self.fs.create_fake_file('/dir/file')
+        assert_equals(set(('file',)), set(self.fs.entries_if_dir_exists('/dir')))
+    def test_you_can_create_multiple_fake_file(self):
+        self.fs.create_fake_file('/path/to/file1', "one")
+        self.fs.create_fake_file('/path/to/file2', "two")
+        assert_equals('one', self.fs.contents_of('/path/to/file1'))
+        assert_equals('two', self.fs.contents_of('/path/to/file2'))
+    def test_no_file_exists_at_beginning(self):
+        assert not self.fs.exists('/filename')
+    def test_after_a_creation_the_file_exists(self):
+        self.fs.create_fake_file('/filename')
+        assert self.fs.exists('/filename')
+    def test_create_fake_dir(self):
+        self.fs.create_fake_dir('/etc', 'passwd', 'shadow', 'hosts')
+        
+        assert_equals(set(['passwd', 'shadow', 'hosts']),
+                      set(self.fs.entries_if_dir_exists('/etc')))
+    def test_it_keeps_track_of_deleted_files(self):
+        self.fs.remove_file('the-first-file-being-deleted')
+        self.fs.remove_file('the-second-one')
+
+        assert_equals(['the-first-file-being-deleted',
+                       'the-second-one'], self.fs.removed_files())
+
+from StringIO import StringIO
+from nose import SkipTest
+class TestEmptyCmdWithMultipleVolumes:
+    def test_it_removes_trashinfos_from_method_1_dir(self):
+        class Fake:
+            def entries_if_dir_exists(self,path):
+                return ['foo.trashinfo']
+            def contents_of(self, path):
+                return ''
+            def remove_file_if_exists(self,path):
+                pass
+            def remove_file(self,path):
+                pass
+            pass
+        fs=Fake()
+
+        raise SkipTest()
+        from trashcli.trash2 import InfoDir
+        infodir=InfoDir(fs, '/mnt/.Trash/123/info')
+
+        empty=EmptyCmd(
+                out=StringIO(), 
+                err=StringIO(), 
+                environ={},
+                getuid=lambda: 123,
+                list_volumes=lambda: ['/mnt'],
+                fs = fs
+                )
+        empty.run('trash-empty')
+        #assert_equals(['/mnt/.Trash/123/info/foo.trashinfo'], fs.removed_files())
+
 
 
 # class TrashEmptyCommand_Test(TestCase):
