@@ -92,18 +92,14 @@ class TestEmptyCmdWithTime:
         self.now = lambda: date(yyyy_mm_dd)
 
     def run_trash_emtpy(self, *args):
-        empty=EmptyCmd(
-                out=StringIO(), 
-                err=StringIO(), 
-                environ={'XDG_DATA_HOME':self.xdg_data_home},
-                now=self.now
-                )
+        empty=EmptyCmd( out=StringIO(), 
+                        err=StringIO(), 
+                        environ={'XDG_DATA_HOME':self.xdg_data_home},
+                        now=self.now)
         empty.run('trash-empty', *args)
 
-from nose import SkipTest
 class TestEmptyCmdWithMultipleVolumes:
     def test_it_removes_trashinfos_from_method_1_dir(self):
-        raise SkipTest()
         require_empty_dir('.fake_root')
         touch('.fake_root/media/external-disk/.Trash/123/info/foo.trashinfo')
         empty=EmptyCmd(
@@ -115,6 +111,50 @@ class TestEmptyCmdWithMultipleVolumes:
                 )
         empty.run('trash-empty')
         assert not os.path.exists('.fake_root/media/external-disk/.Trash/123/info/foo.trashinfo')
+    def test_it_removes_trashinfos_from_method_2_dir(self):
+        require_empty_dir('.fake_root')
+        touch('.fake_root/media/external-disk/.Trash-123/info/foo.trashinfo')
+        empty=EmptyCmd(
+                out=StringIO(), 
+                err=StringIO(), 
+                environ={},
+                getuid=lambda: 123,
+                list_volumes=lambda: ['.fake_root/media/external-disk'],
+                )
+        empty.run('trash-empty')
+        assert not os.path.exists('.fake_root/media/external-disk/.Trash-123/info/foo.trashinfo')
+
+class TestTrashEmpty_on_help:
+    def test_help_output(self):
+        err, out = StringIO(), StringIO()
+        cmd = EmptyCmd(err = err,
+                       out = out,
+                       environ = {},)
+        cmd.run('trash-empty', '--help')
+        assert_equals(out.getvalue(), """\
+Usage: trash-empty [days]
+
+Purge trashed files.
+
+Options:
+  --version   show program's version number and exit
+  -h, --help  show this help message and exit
+
+Report bugs to http://code.google.com/p/trash-cli/issues
+""")
+
+class TestTrashEmpty_on_version():
+    def test_it_print_version(self):
+        err, out = StringIO(), StringIO()
+        cmd = EmptyCmd(err = err,
+                       out = out,
+                       environ = {},
+                       version = '1.2.3')
+        cmd.run('trash-empty', '--version')
+        assert_equals(out.getvalue(), """\
+trash-empty 1.2.3
+""")
+    pass
 
 def touch(filename):
     write_file(filename, '')
