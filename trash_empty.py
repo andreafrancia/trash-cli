@@ -19,10 +19,19 @@
 # 02110-1301, USA.
 
 import sys
-from trashcli.trash import EmptyCmd
+import os
+
+from trashcli.trash2 import EmptyCmd
 
 def main():
-    EmptyCmd().run(sys.argv)
+    EmptyCmd(
+        out=sys.stdout,
+        err=sys.stderr,
+        environ=os.environ,
+    ).run(*sys.argv)
+    print 'ciao'
+    print sys.argv
+    sys.stdout.write('ciao')
 
 if __name__ == '__main__':
     main()
