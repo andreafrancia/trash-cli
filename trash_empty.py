@@ -29,9 +29,6 @@ def main():
         err=sys.stderr,
         environ=os.environ,
     ).run(*sys.argv)
-    print 'ciao'
-    print sys.argv
-    sys.stdout.write('ciao')
 
 if __name__ == '__main__':
     main()

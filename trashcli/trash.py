@@ -614,66 +614,7 @@ def remove_file(path):
             os.remove(path)
         except:
             return shutil.rmtree(path)
-import sys
 from trashcli.trash import GlobalTrashCan
-class EmptyCmd:
-    from datetime import datetime
-    def __init__(self,
-                 now=datetime.now,
-                 trashcan=GlobalTrashCan(datetime.now)):
-        self.now = now
-        self.trashcan = trashcan
-
-    def run(self,argv):
-        EmptyCmdParser(Deleter(self.trashcan)).run_with_argv(sys.argv) 
-
-class EmptyCmdParser:
-    def __init__(self,deleter):
-        self.deleter = deleter
-        self.parser = self.get_option_parser()
-
-    def run_with_argv(self,argv):
-        (options, args) = self.parser.parse_args(argv[1:])
-
-        if len(args) > 1 :
-            self._print_usage()
-        elif len(args) == 1 :
-            try :
-                days=int(args[0])
-                self.deleter.delete_files_older_than(days)
-            except ValueError:
-                self._print_usage()
-        else:
-            self.deleter.delete_all_files()
-
-    def _print_usage(self):
-        self.parser.print_usage()
-        self.parser.exit()
-
-    def get_option_parser(self):
-        from trashcli import version
-        from optparse import OptionParser
-
-        parser = OptionParser(usage="%prog [days]",
-                              description="Purge trashed files.",
-                              version="%%prog %s" % version,
-                              formatter=NoWrapFormatter(),
-                              epilog=
-        """Report bugs to http://code.google.com/p/trash-cli/issues""")
-
-        return parser
-
-class Deleter:
-    def __init__(self,trashcan):
-        self.trashcan = trashcan
-    def delete_all_files(self):
-        self.trashcan.for_all_trashed_file(self._delete)
-    def delete_files_older_than(self, days):
-        self.trashcan.for_all_files_trashed_more_than(days_ago=days,
-                action=self._delete)
-    def _delete(self, info_path, path):
-        remove_file(path)
-        remove_file(info_path)
 
 class RestoreCmd:
     def __init__(self):

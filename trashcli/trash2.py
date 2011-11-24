@@ -40,11 +40,8 @@ class EmptyCmd():
         self.date_criteria = always
         action             = self.delete_according_criteria
         self.program_name  = argv[0]
-        print 'argv', argv
         for arg in argv[1:]:
-            print 'arg=', arg
             if arg == '--help' or arg == '-h':
-                print 'in-help'
                 action = self.print_help
                 break
             if arg == '--version' :
