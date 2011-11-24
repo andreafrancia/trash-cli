@@ -1,5 +1,14 @@
+Author
+------
+
+Andrea Francia andreafrancia@users.sourceforge.net
+
 Thanks to
 ---------
+
+Einar Orn Olason: 
+    Developmemt of first version of the empty-trash command
+
 Rahul Sundaram, http://fedoraproject.org/wiki/RahulSundaram
     Packaged trash-cli for Fedora (https://bugzilla.redhat.com/show_bug.cgi?id=508750)
 
