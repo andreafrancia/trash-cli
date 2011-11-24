@@ -16,6 +16,10 @@ same name. trash-cli uses the same trashcan of KDE, GNOME and XFCE.
 Usage
 =====
 
+  Install with::
+
+    $ sudo python setup.py install
+
   Trash a file::
 
     $ trash-put /home/andrea/foobar
@@ -42,12 +46,9 @@ Information
  Download page: http://code.google.com/p/trash-cli/wiki/Download
 Report bugs to: http://code.google.com/p/trash-cli/issues/list
 
-Installation
-============
-See the INSTALL file.
-
 Development
 ===========
+
 Environment setup::
 
     virtualenv env --no-site-packages
