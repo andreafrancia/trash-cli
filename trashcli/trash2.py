@@ -1,6 +1,6 @@
 import os
 
-class FileSystem:
+class _FileSystem:
     def contents_of(self, path):
         return file(path).read()
     def exists(self, path):
@@ -9,12 +9,8 @@ class FileSystem:
         if os.path.exists(path):
             for entry in os.listdir(path):
                 yield entry
-    def if_exists(self, path, action):
-        if self.exists(path): action()
-    def if_does_not_exists(self, path, action):
-        if not self.exists(path): action()
 
-class FileRemover:
+class _FileRemover:
     def remove_file(self, path):
         return os.remove(path)
     def remove_file_if_exists(self,path):
@@ -25,10 +21,13 @@ from .list_mount_points import mount_points
 from . import version
 class EmptyCmd():
     from datetime import datetime
-    def __init__(self, out, err, environ, now = datetime.now, 
-                 file_reader = FileSystem(), list_volumes=mount_points, 
-                 getuid=os.getuid, file_remover = FileRemover(),
-                 version = version):
+    def __init__(self, out, err, environ, 
+                 list_volumes = mount_points,
+                 now          = datetime.now,
+                 file_reader  = _FileSystem(),
+                 getuid       = os.getuid,
+                 file_remover = _FileRemover(),
+                 version      = version):
         self.out          = out
         self.err          = err
         self.now          = now
@@ -151,8 +150,6 @@ class InfoDir:
                 yield entry
     def _trashinfo_path(self, entry):
         return os.path.join(self.path, entry)
-
-
 def read_deletion_date(contents):
     from datetime import datetime 
     for line in contents.split('\n'):

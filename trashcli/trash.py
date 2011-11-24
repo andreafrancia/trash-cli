@@ -37,11 +37,11 @@ logger.addHandler(logging.StreamHandler())
 from .filesystem import Volume
 from .filesystem import Path
 
-"""
-Represent a trash directory.
-For example $XDG_DATA_HOME/Trash
-"""
 class TrashDirectory(object) :
+    """\
+    Represent a trash directory.
+    For example $XDG_DATA_HOME/Trash
+    """
     def __init__(self, path, volume) :
         assert isinstance(path,Path)
         assert isinstance(volume,Volume)
@@ -54,7 +54,7 @@ class TrashDirectory(object) :
     def __repr__(self) :
         return "TrashDirectory(\"%s\", \"%s\")" % (self.path, self.volume)
 
-    """
+    """\
     Trash the specified file.
     returns the TrashedFile
     """
