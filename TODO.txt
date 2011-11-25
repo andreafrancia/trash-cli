@@ -1,5 +1,15 @@
-Code cleaning:
- - dependency from ctypes in TestVolume
+Feature: Rewrite of trash-list
+ x set up integration test for ListCmd
+ - when there's not trashed file
+ - when there's only one trashed file
+ - when there are multiple trashed files
+ - support for trashed files on volume 1 trashcan
+ - support for trashed files on volume 2 trashcan
+ - when the trashinfo does not contain Path information (it should print an 
+   error message)
+ - when the trashinfo does not contain valid DeletionDate (it should print an 
+   error message)
+ - it should print also the orphan files
 
 Features:
  - support alias rmdir=trash-put

@@ -21,10 +21,23 @@ from . import version
 from datetime import datetime
 
 class ListCmd():
-    def __init__(self, out, environ):
-        pass
+    def __init__(self, out, environ,
+                 getuid = os.getuid,
+                 list_volumes = mount_points,
+                 file_reader = _FileReader()):
+        self.out = out
+        self.infodirs     = InfoDirs(environ, getuid, list_volumes)
+        self.file_reader = file_reader
     def run(self, *argv):
-        pass
+        self.infodirs.for_each_path(self.list_contents)
+    def list_contents(self, info_dir_path):
+        info_dir=InfoDir(self.file_reader, info_dir_path)
+        info_dir.for_all_trashinfos(self.print_entry)
+    def print_entry(self, deletion_date, path):
+        self.println("2001-02-03 23:55:59 /aboslute/path/to/the/file")
+    def println(self, line):
+        self.out.write(line+'\n')
+
 class EmptyCmd():
     def __init__(self, out, err, environ, 
                  now          = datetime.now,
@@ -42,7 +55,7 @@ class EmptyCmd():
         self.version      = version
     def run(self, *argv):
         self.date_criteria = always
-        action             = self.delete_according_criteria
+        action             = self._delete_according_criteria
         self.program_name  = argv[0]
         for arg in argv[1:]:
             if arg == '--help' or arg == '-h':
@@ -53,7 +66,6 @@ class EmptyCmd():
                 break
             elif self.is_int(arg):
                 self.date_criteria = OlderThan(int(arg), self.now)
-                action = self.delete_according_criteria
         action()
     def is_int(self, text):
         try:
@@ -61,12 +73,11 @@ class EmptyCmd():
             return True
         except ValueError:
             return False
-    def delete_according_criteria(self):
-        janitor = Janitor(self.date_criteria, self.file_remover)
-        def invoke(info_dir_path):
-            infodir = InfoDir(self.file_reader, info_dir_path)
-            janitor(infodir)
-        self.infodirs.for_each_path(invoke)
+    def _delete_according_criteria(self):
+        self.infodirs.for_each_path(self._empty_trashdir_according_criteria)
+    def _empty_trashdir_according_criteria(self, info_dir_path):
+        (_Purger(self.date_criteria, self.file_remover)
+        ).run(InfoDir(self.file_reader, info_dir_path))
     def print_version(self):
         self.out.write("%s %s\n" % (self.program_name, self.version))
     def print_help(self):
@@ -84,11 +95,11 @@ Report bugs to http://code.google.com/p/trash-cli/issues
         'program_name':self.program_name
         })
 
-class Janitor:
+class _Purger:
     def __init__(self, date_criteria, file_remover):
         self.date_criteria = date_criteria
         self.file_remover = file_remover
-    def __call__(self, infodir):
+    def run(self, infodir):
         infodir.for_all_files_satisfying(self.date_criteria, self.remove_both)
         infodir.for_all_orphan(self.remove_file)
     def remove_file(self, path):
@@ -112,6 +123,11 @@ class InfoDirs:
     def for_each_path(self, callable):
         for path in self.paths():
             callable(path)
+    def for_each_infodir(self, file_reader, action):
+        def create_info_dir_and_invoke_action(info_dir_path):
+            infodir = InfoDir(file_reader, info_dir_path)
+            action(infodir)
+        self.for_each_path(create_info_dir_and_invoke_action)
 def always(deletion_date): return True
 class OlderThan:
     def __init__(self, days_ago, now):
@@ -125,27 +141,33 @@ class InfoDir:
         self.file_reader = file_reader
     def for_all_orphan(self, callable):
         for entry in self._files():
-            trashinfo_path = self._trashinfo_path(entry)
+            trashinfo_path = self._trashinfo_path_from_file(entry)
             file_path = os.path.join(self._files_dir(), entry)
             if not self.file_reader.exists(trashinfo_path): callable(file_path)
-    def _deletion_date(self, entry):
-        return read_deletion_date(self.file_reader.contents_of(self._trashinfo_path(entry)))
     def _files(self):
         return self._entries_if_dir_exists(self._files_dir())
     def _entries_if_dir_exists(self, path):
         return self.file_reader.entries_if_dir_exists(path)
     def for_all_files_satisfying(self, date_criteria, callable):
         for entry in self._trashinfo_entries():
-            date = read_deletion_date(self.file_reader.contents_of(self._trashinfo_path(entry)))
+            date = self._deletion_date(entry)
             if(date_criteria(date)):
                 file_path = self._file_path(entry)
                 trashinfo_path = self._trashinfo_path(entry)
                 callable(trashinfo_path, file_path)
+    def for_all_trashinfos(self, action):
+        for entry in self._trashinfo_entries():
+            file_path = self._file_path(entry)
+            action(
+                deletion_date = self._deletion_date(entry), 
+                path = file_path)
+    def _deletion_date(self, entry):
+        return read_deletion_date(self.file_reader.contents_of(self._trashinfo_path(entry)))
     def _file_path(self, trashinfo_entry):
         entry=trashinfo_entry[:-len('.trashinfo')]
         path = os.path.join(self._files_dir(), entry)
         return path
-    def _trashinfo_path(self, file_entry):
+    def _trashinfo_path_from_file(self, file_entry):
         return os.path.join(self.path, file_entry + '.trashinfo')
     def _files_dir(self):
         return os.path.join(os.path.dirname(self.path), 'files')
