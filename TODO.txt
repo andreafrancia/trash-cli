@@ -1,7 +1,7 @@
 Feature: Rewrite of trash-list
  x set up integration test for ListCmd
- - when there's not trashed file
- - when there's only one trashed file
+ x when there's not trashed file
+ x when there's only one trashed file
  - when there are multiple trashed files
  - support for trashed files on volume 1 trashcan
  - support for trashed files on volume 2 trashcan

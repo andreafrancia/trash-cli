@@ -33,8 +33,8 @@ class ListCmd():
     def list_contents(self, info_dir_path):
         info_dir=InfoDir(self.file_reader, info_dir_path)
         info_dir.for_all_trashinfos(self.print_entry)
-    def print_entry(self, deletion_date, path):
-        self.println("2001-02-03 23:55:59 /aboslute/path/to/the/file")
+    def print_entry(self, deletion_date, original_location):
+        self.println("%s %s" %(deletion_date, original_location))
     def println(self, line):
         self.out.write(line+'\n')
 
@@ -120,9 +120,9 @@ class InfoDirs:
         for volume in self.list_volumes():
             yield '%(volume)s/.Trash/%(uid)s/info' % { 'volume': volume, 'uid': self.getuid()}
             yield '%(volume)s/.Trash-%(uid)s/info' % { 'volume': volume, 'uid': self.getuid()}
-    def for_each_path(self, callable):
+    def for_each_path(self, action):
         for path in self.paths():
-            callable(path)
+            action(path)
     def for_each_infodir(self, file_reader, action):
         def create_info_dir_and_invoke_action(info_dir_path):
             infodir = InfoDir(file_reader, info_dir_path)
@@ -139,46 +139,69 @@ class InfoDir:
     def __init__(self, file_reader, path):
         self.path = path
         self.file_reader = file_reader
-    def for_all_orphan(self, callable):
+    def for_all_orphan(self, action):
         for entry in self._files():
             trashinfo_path = self._trashinfo_path_from_file(entry)
             file_path = os.path.join(self._files_dir(), entry)
-            if not self.file_reader.exists(trashinfo_path): callable(file_path)
+            if not self.file_reader.exists(trashinfo_path): action(file_path)
     def _files(self):
         return self._entries_if_dir_exists(self._files_dir())
     def _entries_if_dir_exists(self, path):
         return self.file_reader.entries_if_dir_exists(path)
-    def for_all_files_satisfying(self, date_criteria, callable):
-        for entry in self._trashinfo_entries():
-            date = self._deletion_date(entry)
+    def for_all_files_satisfying(self, date_criteria, action):
+        for trashinfo in self._trashinfos():
+            date = trashinfo.deletion_date()
             if(date_criteria(date)):
-                file_path = self._file_path(entry)
-                trashinfo_path = self._trashinfo_path(entry)
-                callable(trashinfo_path, file_path)
+                file_path = trashinfo.path_to_backup_copy()
+                trashinfo_path = trashinfo.path()
+                action(trashinfo_path, file_path)
     def for_all_trashinfos(self, action):
-        for entry in self._trashinfo_entries():
-            file_path = self._file_path(entry)
-            action(
-                deletion_date = self._deletion_date(entry), 
-                path = file_path)
-    def _deletion_date(self, entry):
-        return read_deletion_date(self.file_reader.contents_of(self._trashinfo_path(entry)))
-    def _file_path(self, trashinfo_entry):
-        entry=trashinfo_entry[:-len('.trashinfo')]
-        path = os.path.join(self._files_dir(), entry)
-        return path
+        for trashinfo in self._trashinfos():
+            action(deletion_date = trashinfo.deletion_date(),
+            original_location    = trashinfo.original_location())
+    def _trashinfo(self, entry):
+        class TrashInfo:
+            def __init__(self, info_dir, files_dir, entry, contents_of):
+                self.info_dir    = info_dir
+                self.files_dir   = files_dir
+                self.entry       = entry
+                self.contents_of = contents_of
+            def contents(self):
+                return self.contents_of(self.path())
+            def path(self):
+                return os.path.join(self.info_dir, self.entry)
+            def deletion_date(self):
+                return read_deletion_date(self.contents())
+            def path_to_backup_copy(self):
+                entry = self.entry[:-len('.trashinfo')]
+                return os.path.join(self.files_dir, entry)
+            def original_location(self):
+                return read_path(self.contents())
+        return TrashInfo(self.path, self._files_dir(), entry, 
+                         self.file_reader.contents_of)
     def _trashinfo_path_from_file(self, file_entry):
         return os.path.join(self.path, file_entry + '.trashinfo')
     def _files_dir(self):
         return os.path.join(os.path.dirname(self.path), 'files')
+    def _trashinfos(self):
+        for entry in self._trashinfo_entries():
+            yield self._trashinfo(entry)
     def _trashinfo_entries(self):
         for entry in self._entries_if_dir_exists(self.path):
             if entry.endswith('.trashinfo'):
                 yield entry
     def _trashinfo_path(self, entry):
         return os.path.join(self.path, entry)
+
 def read_deletion_date(contents):
     from datetime import datetime 
     for line in contents.split('\n'):
         if line.startswith('DeletionDate='):
             return datetime.strptime(line, "DeletionDate=%Y-%m-%dT%H:%M:%S")
+
+def read_path(contents):
+    import urllib
+    for line in contents.split('\n'):
+        if line.startswith('Path='):
+            return urllib.unquote(line[len('Path='):])
+

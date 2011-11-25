@@ -1,11 +1,4 @@
 from nose.tools import assert_equals
-from trashcli.trash2 import read_deletion_date, EmptyCmd
-
-def test_how_to_parse_date_from_trashinfo():
-    from datetime import datetime
-    assert_equals(datetime(2000,12,31,23,59,58), read_deletion_date('DeletionDate=2000-12-31T23:59:58'))
-    assert_equals(datetime(2000,12,31,23,59,58), read_deletion_date('DeletionDate=2000-12-31T23:59:58\n'))
-    assert_equals(datetime(2000,12,31,23,59,58), read_deletion_date('[TrashInfo]\nDeletionDate=2000-12-31T23:59:58'))
 
 from trashcli.trash2 import InfoDirs
 class TestInfoDirsPathsFrom():
