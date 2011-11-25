@@ -15,3 +15,4 @@ scripts/
 test-volume.dmg
 test-volume/
 trash_cli.egg-info/
+XDG_DATA_HOME/

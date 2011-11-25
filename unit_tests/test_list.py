@@ -3,7 +3,7 @@ from trashcli.trash import List
 
 from StringIO import StringIO
 import unittest
-class TestList(unittest.TestCase):
+class TestList_on_help(unittest.TestCase):
     def test_help_option(self):
         out=StringIO()
         cmd=List(out)

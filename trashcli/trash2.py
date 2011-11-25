@@ -1,6 +1,6 @@
 import os
 
-class _FileSystem:
+class _FileReader:
     def contents_of(self, path):
         return file(path).read()
     def exists(self, path):
@@ -17,14 +17,19 @@ class _FileRemover:
         if os.path.exists(path): self.remove_file(path)
 
 from .list_mount_points import mount_points
-
 from . import version
+from datetime import datetime
+
+class ListCmd():
+    def __init__(self, out, environ):
+        pass
+    def run(self, *argv):
+        pass
 class EmptyCmd():
-    from datetime import datetime
     def __init__(self, out, err, environ, 
-                 list_volumes = mount_points,
                  now          = datetime.now,
-                 file_reader  = _FileSystem(),
+                 file_reader  = _FileReader(),
+                 list_volumes = mount_points,
                  getuid       = os.getuid,
                  file_remover = _FileRemover(),
                  version      = version):
