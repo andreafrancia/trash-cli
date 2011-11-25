@@ -2,7 +2,7 @@ Feature: Rewrite of trash-list
  x set up integration test for ListCmd
  x when there's not trashed file
  x when there's only one trashed file
- - when there are multiple trashed files
+ x when there are multiple trashed files
  - support for trashed files on volume 1 trashcan
  - support for trashed files on volume 2 trashcan
  - when the trashinfo does not contain Path information (it should print an 

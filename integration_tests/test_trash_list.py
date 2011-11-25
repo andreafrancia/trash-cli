@@ -2,25 +2,48 @@ from trashcli.trash2 import ListCmd
 from StringIO import StringIO
 from files import write_file, require_empty_dir
 
-class TestListCmd_removes_files:
+class TestListCmd_should_list_files:
 
-    def test_it_should_print_nothing_on_no_trashed_files(self):
+    def test_when_there_are_no_files(self):
         
         self.run()
 
         self.assert_output_is('')
 
-    def test_it_should_print_date_and_time_the_path(self):
+    def test_when_there_is_one_file(self):
         write_file('XDG_DATA_HOME/Trash/info/foo.trashinfo', text("""\
-                   [TrashInfo]
-                   Path=/aboslute/path/to/the/file
-                   DeletionDate=2001-02-03T23:55:59
-                   """))
+            [TrashInfo]
+            Path=/aboslute/path/to/the/file
+            DeletionDate=2001-02-03T23:55:59
+            """))
         self.run()
 
-        self.assert_output_is("""\
-2001-02-03 23:55:59 /aboslute/path/to/the/file
-""")
+        self.assert_output_is(
+            "2001-02-03 23:55:59 /aboslute/path/to/the/file\n")
+
+    def test_when_there_are_multiple_files(self):
+        write_file('XDG_DATA_HOME/Trash/info/file1.trashinfo', text("""\
+            [TrashInfo]
+            Path=/file1
+            DeletionDate=2000-01-01T00:00:01
+            """))
+        write_file('XDG_DATA_HOME/Trash/info/file2.trashinfo', text("""\
+            [TrashInfo]
+            Path=/file2
+            DeletionDate=2000-01-01T00:00:02
+            """))
+        write_file('XDG_DATA_HOME/Trash/info/file3.trashinfo', text("""\
+            [TrashInfo]
+            Path=/file3
+            DeletionDate=2000-01-01T00:00:03
+            """))
+        self.run()
+
+        self.assert_output_is(
+            "2000-01-01 00:00:01 /file1\n"
+            "2000-01-01 00:00:02 /file2\n"
+            "2000-01-01 00:00:03 /file3\n"
+        )
 
     def setUp(self):
         require_empty_dir('XDG_DATA_HOME')
