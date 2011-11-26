@@ -107,6 +107,7 @@ class _Purger:
     def remove_both(self, trashinfo_path, file_path):
         self.file_remover.remove_file_if_exists(file_path)
         self.file_remover.remove_file(trashinfo_path)
+
 class InfoDirs:
     def __init__(self, environ, getuid, list_volumes):
         self.environ      = environ

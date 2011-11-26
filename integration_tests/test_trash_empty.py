@@ -104,11 +104,11 @@ class TestEmptyCmdWithMultipleVolumes:
         require_empty_dir('.fake_root')
         touch('.fake_root/media/external-disk/.Trash/123/info/foo.trashinfo')
         empty=EmptyCmd(
-                out=StringIO(), 
-                err=StringIO(), 
-                environ={},
-                getuid=lambda: 123,
-                list_volumes=lambda: ['.fake_root/media/external-disk'],
+                out          = StringIO(),
+                err          = StringIO(),
+                environ      = {},
+                getuid       = lambda: 123,
+                list_volumes = lambda: ['.fake_root/media/external-disk'],
                 )
         empty.run('trash-empty')
         assert not os.path.exists('.fake_root/media/external-disk/.Trash/123/info/foo.trashinfo')
@@ -116,11 +116,11 @@ class TestEmptyCmdWithMultipleVolumes:
         require_empty_dir('.fake_root')
         touch('.fake_root/media/external-disk/.Trash-123/info/foo.trashinfo')
         empty=EmptyCmd(
-                out=StringIO(), 
-                err=StringIO(), 
-                environ={},
-                getuid=lambda: 123,
-                list_volumes=lambda: ['.fake_root/media/external-disk'],
+                out          = StringIO(),
+                err          = StringIO(),
+                environ      = {},
+                getuid       = lambda: 123,
+                list_volumes = lambda: ['.fake_root/media/external-disk'],
                 )
         empty.run('trash-empty')
         assert not os.path.exists('.fake_root/media/external-disk/.Trash-123/info/foo.trashinfo')
