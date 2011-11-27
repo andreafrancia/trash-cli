@@ -4,12 +4,19 @@ Feature: Rewrite of trash-list
  x when there's only one trashed file
  x when there are multiple trashed files
  x support for trashed files on volume 1 trashcan
- - support for trashed files on volume 2 trashcan
+ x support for trashed files on volume 2 trashcan
+ - should check if the .Trash directory 1) has the sticky bit, 2) is not a 
+   symbolic link 
  - exception when a .trashinfo from home trashdir contains a path that is not 
    absolute
  - exception when a .trashinfo does not contain the 'Path=' entry information
  - exception when a .trashinfo does not contain valid DeletionDate 
+ - exception when a .Trash-
  - it should print also the orphan files
+
+Features for trash-put rewrite:
+ - should refuse to create the $topdir/.Trash/$uid directory if the 
+   $topdir/.Trash is not sticky
 
 Features:
  - support alias rmdir=trash-put
