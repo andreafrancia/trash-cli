@@ -363,7 +363,6 @@ class GlobalTrashCan(object) :
 
 	self.reporter.unable_to_trash_file(file)
 
-
     def should_skipped_by_specs(self,file):
 	return (file.basename == ".") or (file.basename == "..")
 

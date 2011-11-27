@@ -69,11 +69,9 @@ class TestListCmd_should_list_files:
 
 class TestListCmd_list_files_from_other_trashcans:
     def test_something(self):
-        from nose import SkipTest
-        raise SkipTest()
         self.write_trashinfo(text("""\
             [TrashInfo]
-            Path=/file1
+            Path=file1
             DeletionDate=2000-01-01T00:00:00
             """))
 

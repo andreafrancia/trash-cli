@@ -25,13 +25,13 @@ class ListCmd():
                  getuid = os.getuid,
                  list_volumes = mount_points,
                  file_reader = _FileReader()):
-        self.out = out
-        self.infodirs     = InfoDirs(environ, getuid, list_volumes)
+        self.out         = out
+        self.infodirs    = InfoDirsFinder(environ, getuid, list_volumes)
         self.file_reader = file_reader
     def run(self, *argv):
-        self.infodirs.for_each_path(self.list_contents)
-    def list_contents(self, info_dir_path):
-        info_dir=InfoDir(self.file_reader, info_dir_path)
+        self.infodirs.for_each_infodir(self.file_reader,
+                                       self.list_contents)
+    def list_contents(self, info_dir):
         info_dir.for_all_trashinfos(self.print_entry)
     def print_entry(self, deletion_date, original_location):
         self.println("%s %s" %(deletion_date, original_location))
@@ -51,7 +51,7 @@ class EmptyCmd():
         self.now          = now
         self.file_reader  = file_reader 
         self.file_remover = file_remover
-        self.infodirs     = InfoDirs(environ, getuid, list_volumes)
+        self.infodirs     = InfoDirsFinder(environ, getuid, list_volumes)
         self.version      = version
     def run(self, *argv):
         self.date_criteria = always
@@ -74,10 +74,11 @@ class EmptyCmd():
         except ValueError:
             return False
     def _delete_according_criteria(self):
-        self.infodirs.for_each_path(self._empty_trashdir_according_criteria)
-    def _empty_trashdir_according_criteria(self, info_dir_path):
-        (_Purger(self.date_criteria, self.file_remover)
-        ).run(InfoDir(self.file_reader, info_dir_path))
+        self.infodirs.for_each_infodir(self.file_reader,
+                                       self._empty_trashdir_according_criteria)
+    def _empty_trashdir_according_criteria(self, info_dir):
+        janitor=Janitor(self.date_criteria, self.file_remover)
+        janitor.swep(info_dir)
     def print_version(self):
         self.out.write("%s %s\n" % (self.program_name, self.version))
     def print_help(self):
@@ -95,11 +96,11 @@ Report bugs to http://code.google.com/p/trash-cli/issues
         'program_name':self.program_name
         })
 
-class _Purger:
+class Janitor:
     def __init__(self, date_criteria, file_remover):
         self.date_criteria = date_criteria
         self.file_remover = file_remover
-    def run(self, infodir):
+    def swep(self, infodir):
         infodir.for_all_files_satisfying(self.date_criteria, self.remove_both)
         infodir.for_all_orphan(self.remove_file)
     def remove_file(self, path):
@@ -108,27 +109,24 @@ class _Purger:
         self.file_remover.remove_file_if_exists(file_path)
         self.file_remover.remove_file(trashinfo_path)
 
-class InfoDirs:
+class InfoDirsFinder:
     def __init__(self, environ, getuid, list_volumes):
         self.environ      = environ
         self.getuid       = getuid
         self.list_volumes = list_volumes
-    def paths(self):
-        if 'XDG_DATA_HOME' in self.environ:
-            yield '%s/Trash/info' % self.environ['XDG_DATA_HOME']
-        elif 'HOME' in self.environ:
-            yield '%s/.local/share/Trash/info' % self.environ['HOME']
-        for volume in self.list_volumes():
-            yield '%(volume)s/.Trash/%(uid)s/info' % { 'volume': volume, 'uid': self.getuid()}
-            yield '%(volume)s/.Trash-%(uid)s/info' % { 'volume': volume, 'uid': self.getuid()}
-    def for_each_path(self, action):
-        for path in self.paths():
-            action(path)
     def for_each_infodir(self, file_reader, action):
-        def create_info_dir_and_invoke_action(info_dir_path):
-            infodir = InfoDir(file_reader, info_dir_path)
+        for info_dir_path, volume_path in self._paths():
+            infodir = InfoDir(file_reader, info_dir_path, volume_path)
             action(infodir)
-        self.for_each_path(create_info_dir_and_invoke_action)
+    def _paths(self):
+        from os.path import join 
+        if 'XDG_DATA_HOME' in self.environ:
+            yield ('%(XDG_DATA_HOME)s/Trash/info' % self.environ, None)
+        elif 'HOME' in self.environ:
+            yield ('%(HOME)s/.local/share/Trash/info' % self.environ, None)
+        for volume in self.list_volumes():
+            yield (join(volume, '.Trash', str(self.getuid()), 'info'), volume)
+            yield (join(volume, '.Trash-%s' % self.getuid() , 'info'), volume)
 def always(deletion_date): return True
 class OlderThan:
     def __init__(self, days_ago, now):
@@ -136,10 +134,12 @@ class OlderThan:
         self.limit_date = now() - timedelta(days=days_ago)
     def __call__(self, deletion_date):
         return deletion_date < self.limit_date
+
 class InfoDir:
-    def __init__(self, file_reader, path):
-        self.path = path
+    def __init__(self, file_reader, path, volume_path):
+        self.path        = path
         self.file_reader = file_reader
+        self.volume_path = volume_path
     def for_all_orphan(self, action):
         for entry in self._files():
             trashinfo_path = self._trashinfo_path_from_file(entry)
@@ -158,15 +158,18 @@ class InfoDir:
                 action(trashinfo_path, file_path)
     def for_all_trashinfos(self, action):
         for trashinfo in self._trashinfos():
-            action(deletion_date = trashinfo.deletion_date(),
-            original_location    = trashinfo.original_location())
+            action(
+                deletion_date     = trashinfo.deletion_date(),
+                original_location = trashinfo.original_location())
     def _trashinfo(self, entry):
         class TrashInfo:
-            def __init__(self, info_dir, files_dir, entry, contents_of):
+            def __init__(self, info_dir, files_dir, entry, contents_of, 
+                         volume):
                 self.info_dir    = info_dir
                 self.files_dir   = files_dir
                 self.entry       = entry
                 self.contents_of = contents_of
+                self.volume      = volume
             def contents(self):
                 return self.contents_of(self.path())
             def path(self):
@@ -177,9 +180,10 @@ class InfoDir:
                 entry = self.entry[:-len('.trashinfo')]
                 return os.path.join(self.files_dir, entry)
             def original_location(self):
-                return read_path(self.contents())
+                path_read=read_path(self.contents())
+                return os.path.join(self.volume, path_read)
         return TrashInfo(self.path, self._files_dir(), entry, 
-                         self.file_reader.contents_of)
+                         self.file_reader.contents_of, self.volume_path)
     def _trashinfo_path_from_file(self, file_entry):
         return os.path.join(self.path, file_entry + '.trashinfo')
     def _files_dir(self):
