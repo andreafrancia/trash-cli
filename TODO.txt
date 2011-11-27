@@ -5,10 +5,10 @@ Feature: Rewrite of trash-list
  x when there are multiple trashed files
  x support for trashed files on volume 1 trashcan
  - support for trashed files on volume 2 trashcan
- - when the trashinfo does not contain Path information (it should print an 
-   error message)
- - when the trashinfo does not contain valid DeletionDate (it should print an 
-   error message)
+ - exception when a .trashinfo from home trashdir contains a path that is not 
+   absolute
+ - exception when a .trashinfo does not contain the 'Path=' entry information
+ - exception when a .trashinfo does not contain valid DeletionDate 
  - it should print also the orphan files
 
 Features:
