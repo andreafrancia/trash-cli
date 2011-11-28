@@ -21,10 +21,10 @@ from . import version
 from datetime import datetime
 
 class ListCmd():
-    def __init__(self, out, environ,
-                 getuid = os.getuid,
+    def __init__(self, out, err, environ, 
+                 getuid       = os.getuid,
                  list_volumes = mount_points,
-                 file_reader = _FileReader()):
+                 file_reader  = _FileReader()):
         self.out         = out
         self.infodirs    = InfoDirsFinder(environ, getuid, list_volumes)
         self.file_reader = file_reader
@@ -32,7 +32,10 @@ class ListCmd():
         self.infodirs.for_each_infodir(self.file_reader,
                                        self.list_contents)
     def list_contents(self, info_dir):
-        info_dir.for_all_trashinfos(self.print_entry)
+        info_dir.for_all_trashinfos(self.print_entry,
+                                    on_parse_error=self.print_parse_error)
+    def print_parse_error(self, offending_file):
+        self.err.write("Problems parsing `XDG_DATA_HOME/Trash/info/empty.trashinfo'")
     def print_entry(self, deletion_date, original_location):
         self.println("%s %s" %(deletion_date, original_location))
     def println(self, line):
@@ -156,7 +159,7 @@ class InfoDir:
                 file_path = trashinfo.path_to_backup_copy()
                 trashinfo_path = trashinfo.path()
                 action(trashinfo_path, file_path)
-    def for_all_trashinfos(self, action):
+    def for_all_trashinfos(self, action, on_parse_error):
         for trashinfo in self._trashinfos():
             action(
                 deletion_date     = trashinfo.deletion_date(),

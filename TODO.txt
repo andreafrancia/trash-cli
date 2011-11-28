@@ -5,13 +5,13 @@ Feature: Rewrite of trash-list
  x when there are multiple trashed files
  x support for trashed files on volume 1 trashcan
  x support for trashed files on volume 2 trashcan
+ - exception when a .trashinfo is empty
+ - exception when a .trashinfo does not contain the 'Path=' entry information
+ - exception when a .trashinfo does not contain valid DeletionDate 
  - should check if the .Trash directory 1) has the sticky bit, 2) is not a 
    symbolic link 
  - exception when a .trashinfo from home trashdir contains a path that is not 
    absolute
- - exception when a .trashinfo does not contain the 'Path=' entry information
- - exception when a .trashinfo does not contain valid DeletionDate 
- - exception when a .Trash-
  - it should print also the orphan files
 
 Features for trash-put rewrite:

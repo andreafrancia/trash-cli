@@ -28,6 +28,21 @@ class TestListCmd_should_list_files:
                                   "2000-01-01 00:00:02 /file2\n"
                                   "2000-01-01 00:00:03 /file3\n")
 
+    def test_should_warn_on_badly_formatted_trashinfo(self):
+        from nose import SkipTest
+        raise SkipTest()
+        write_file('XDG_DATA_HOME/Trash/info/empty.trashinfo', '')
+
+        err = OutputCollector()
+        ListCmd(
+            out = StringIO(),
+            err = err,
+            environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME}
+        ).run()
+
+        self.err.assert_equal_to(
+            "Problems parsing `XDG_DATA_HOME/Trash/info/empty.trashinfo'")
+
     def setUp(self):
         self.XDG_DATA_HOME = 'XDG_DATA_HOME'
 
@@ -41,6 +56,7 @@ class TestListCmd_should_list_files:
     def run(self):
         ListCmd(
             out = self.out,
+            err = StringIO(),
             environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME}
         ).run()
 
@@ -73,6 +89,7 @@ class TestListCmd_with_volume_trashcans:
         self.out = OutputCollector()
         ListCmd(
             out          = self.out,
+            err          = StringIO(),
             environ      = {},
             getuid       = lambda: 123,
             list_volumes = lambda: ['.fake_root'],
@@ -86,12 +103,14 @@ class TestListCmd_with_volume_trashcans:
         self.out = OutputCollector()
         ListCmd(
             out          = self.out,
+            err          = StringIO(),
             environ      = {},
             getuid       = lambda: 123,
             list_volumes = lambda: ['.fake_root'],
         ).run()
 
         self.out.assert_equal_to("2000-01-01 00:00:00 .fake_root/file\n")
+
 
 class OutputCollector:
     def __init__(self):
