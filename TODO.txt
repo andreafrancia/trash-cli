@@ -6,6 +6,7 @@ Feature: Rewrite of trash-list
  x support for trashed files on volume 1 trashcan
  x support for trashed files on volume 2 trashcan
  - exception when a .trashinfo is empty
+ - exception when a .trashinfo is not readable
  - exception when a .trashinfo does not contain the 'Path=' entry information
  - exception when a .trashinfo does not contain valid DeletionDate 
  - should check if the .Trash directory 1) has the sticky bit, 2) is not a 
