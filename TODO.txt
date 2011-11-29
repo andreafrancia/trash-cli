@@ -19,9 +19,17 @@ Features for trash-put rewrite:
  - should refuse to create the $topdir/.Trash/$uid directory if the 
    $topdir/.Trash is not sticky
 
-Features:
+Features backlog:
  - support alias rmdir=trash-put
  - don't use world writable trash
  - trash-empty should empty even the mac trash directory
  - enable trash-put home fallback
  - trash-empty removes files until a certain amount of space has been restored
+ - trash-list <directory-name>
+ - trash-list -R <directory-name>                 # recursive
+ - trash-restore <path>                           # restore the newest
+ - trash-restore <path> <dest>                    # restore to a certain destination
+ - trash-restore --trashed-on="Apr 15, 08" <path>
+ - trash-empty --from=/.Trash
+ - trash-rm '*.o'
+
