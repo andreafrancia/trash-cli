@@ -1,0 +1,28 @@
+In OS X the trash can directories are:
+ - ~/.Trash
+ - $topdr/.Trashes/$uid 
+
+Afert installing the `osx-trash` gem the behaviour can be described with:
+ $ ls ~/.Trash
+ $ touch foo
+ $ trash foo
+ $ ls ~/.Trash
+ foo
+ $ touch foo
+ $ trash foo
+ $ ls ~/.Trash
+ foo
+ foo 17-32-40
+
+Where 17-32-40 is HH:MM:SS. If you "Put back" a file it is moved to the 
+original path but it still mantain the new name (e.g. "foo 17-32-40").
+
+The deletion time is put before the last dot:
+ $ touch foo.tar.gz; trash foo.tar.gz
+ $ touch foo.tar.gz; trash foo.tar.gz
+ $ ls ~/.Trash
+ foo.tar 17-36-13.gz  
+ foo.tar.gz
+
+The original path is stored in the ~/.Trash/.DS_Store. More details in 
+http://superuser.com/questions/108301/deleting-a-single-file-from-the-trash-in-mac-os-x-snow-leopard

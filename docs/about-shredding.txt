@@ -1,6 +1,3 @@
-#summary Notes about implementing shredding of trashed files.
-#labels Phase-Design
-
 = Introduction =
 
 See also issue #37
@@ -27,54 +24,70 @@ Things to be defined:
 = Use cases =
 
 == Main flow ==
-User want to shred all trashed files of all trash directories. So he/she types the command::
-{{{
+User want to shred all trashed files of all trash directories. So he/she types 
+the command::
+
  $ trash-empty --shred 
-}}}
-The trash-empty command will silently shred all trashinfo and trashed files from all trashed directory. 
-The wiping is implemented calling the `shred` command from the coreutils for each file to be wiped.
+
+The trash-empty command will silently shred all trashinfo and trashed files 
+from all trashed directory.  The wiping is implemented calling the `shred` 
+command from the coreutils for each file to be wiped.
 
 == Exceptional Flows ==
+
 Each `shred` invocation is a change for an error. This lead to many exceptional flows.
 
 === CommandNotFound ===
+
 Suppose that: 
  * `shred` is not available in $PATH. 
  * the trashcan contains at least a trashed file.
 
 The behaviour should be
-{{{
+
  $ trash-empty --shred
  trash-empty: Unable to shred `filename' (shred: command not found). You need shred from coreutils.
  $ echo $(($?==0))
  1
-}}}
+
 === Permission Denied ===
+
 Suppose that: 
  * `shred` is available in $PATH. 
  * `shred` permissions are `--x` (could not be read from the user)
  * the trashcan contains at least two trashed file.
 
 The behaviour should be:
-{{{
+
  $ trash-empty --shred
  trash-empty: Unable to shred `filename' (shred: Permission denied).
  $ echo $(($?==0))
  1
-}}}
-The error message should be displayed once and the command should not attempt to re-execute shred with others files (even if there are multiple files in trash directories).
+
+The error message should be displayed once and the command should not attempt 
+to re-execute shred with others files (even if there are multiple files in 
+trash directories).
 
 = Design choices =
+
 Design choices are guided by simplicity.
 
 == User shouldn't install additional software ==
-The shred operation would be implemented against the `shred` command line utility.
-The `shred` was chosen because is part of the coreutils which is virtually installed in all major GNU/Linux distributions.
+
+The shred operation would be implemented against the `shred` command line 
+utility.
+The `shred` was chosen because is part of the coreutils which is virtually 
+installed in all major GNU/Linux distributions.
 
 == User shouldn't configure the software ==
-We don't add the support to multiple commands because this would increase the complexity of the user interface of the `trash-empty` command and the other choices does not offer something very different from `shred`.
 
-If someone feel the urge of doing arbitrary command on all trashed files we can always add a `for-each-trashed-files` command or use a combination of an hypothetic `list-all-trashed-files` and `xargs` command.
+We don't add the support to multiple commands because this would increase the 
+complexity of the user interface of the `trash-empty` command and the other 
+choices does not offer something very different from `shred`.
+
+If someone feel the urge of doing arbitrary command on all trashed files we 
+can always add a `for-each-trashed-files` command or use a combination of an 
+hypothetic `list-all-trashed-files` and `xargs` command.
 
 = Implementation details = 
 
@@ -84,10 +97,16 @@ Things to do:
  * create a DeletionUtility abstraction, and implement methods for the three utilities below?
 
 = Knowledge background =
+
 Secure deleting is implemented in these shell utilities:
  * shred (part of the coreutils package)
  * srm (part of secure_deletion package from http://www.thc.org)
  * [http://wipe.sourceforge.net/ wipe]
 
 = Limitation of this feature = 
-This features could be less useful that one can think. As stated in the [http://www.gnu.org/software/coreutils/manual/html_node/shred-invocation.html shred documentation] (in the "Please note") the shredding operation could not be safe on many cases such as use of RAID, and the Ext3 in data=journal mode.
+
+This features could be less useful that one can think. As stated in the 
+[http://www.gnu.org/software/coreutils/manual/html_node/shred-invocation.html 
+shred documentation] (in the "Please note") the shredding operation could not 
+be safe on many cases such as use of RAID, and the Ext3 in data=journal mode.
+
