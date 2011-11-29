@@ -166,7 +166,9 @@ class InfoDir:
     def for_all_trashinfos(self, action, on_parse_error):
         for trashinfo in self._trashinfos():
             contents            = self.file_reader.contents_of(trashinfo.path())
-            parser              = TrashInfoParser(contents, self.volume_path)
+            parser              = TrashInfoParser(contents, self.volume_path, 
+                                   on_parse_error)
+            parser.on_error     = on_parse_error
 
             deletion_date       = parser.deletion_date()
             original_location   = parser.original_location()
@@ -190,10 +192,13 @@ class InfoDir:
     def _trashinfo_path(self, entry):
         return os.path.join(self.path, entry)
 
+def do_nothing(*argv, **argvk): pass
+
 class TrashInfoParser:
-    def __init__(self, contents, volume):
+    def __init__(self, contents, volume, on_error = do_nothing):
         self.contents = contents
         self.volume   = volume
+        self.on_error = on_error
     def deletion_date(self):
         return read_deletion_date(self.contents)
     def original_location(self):
