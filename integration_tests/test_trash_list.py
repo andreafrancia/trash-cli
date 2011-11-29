@@ -41,7 +41,8 @@ class TestListCmd_should_list_files:
         ).run()
 
         self.err.assert_equal_to(
-            "Problems parsing `XDG_DATA_HOME/Trash/info/empty.trashinfo'")
+                "Error: XDG_DATA_HOME/Trash/info/empty.trashinfo: "
+                "Unable to parse the 'Path=' entry.")
 
     def setUp(self):
         self.XDG_DATA_HOME = 'XDG_DATA_HOME'
