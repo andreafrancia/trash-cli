@@ -156,17 +156,22 @@ class InfoDir:
         def action2(path, deletion_date):
             if(date_criteria(deletion_date)):
                 path_to_backup_copy = trashinfo.path_to_backup_copy()
-                path_to_trashinfo   = trashinfo.path()
+                path_to_trashinfo   = trashinfo.path_to_trashinfo()
                 action(path_to_trashinfo, path_to_backup_copy)
-            
+        class Boh:
+            def __init__(self, contents_of):
+                self.contents_of = contents_of
+
         for trashinfo in self._trashinfos():
-            contents          = self.file_reader.contents_of(trashinfo.path())
+            contents          = self.file_reader.contents_of(trashinfo.path_to_trashinfo())
             deletion_date     = read_deletion_date(contents)
             path              = read_path(contents)
             action2(path, deletion_date)
 
     def for_all_trashinfos(self, action, on_parse_error):
-        def action2(path, deletion_date):
+        def action2(trashinfo):
+            deletion_date = trashinfo.deletion_date()
+            path = trashinfo.read_path()
             original_location = os.path.join(self.volume_path, path)
 
             action(
@@ -176,13 +181,32 @@ class InfoDir:
 
     def for_all_deletion_date_and_path(self, action2, on_parse_error):
         for trashinfo in self._trashinfos():
-            contents          = self.file_reader.contents_of(trashinfo.path())
-            deletion_date     = read_deletion_date(contents)
-            path              = read_path(contents)
-            action2(path, deletion_date)
+            action2(trashinfo)
 
     def _trashinfo(self, entry):
-        return TrashInfo(self.path, self._files_dir(), entry)
+        class TrashInfo:
+            def __init__(self, info_dir, files_dir, entry, file_reader):
+                self.info_dir    = info_dir      
+                self.files_dir   = files_dir     
+                self.entry       = entry         
+                self.file_reader = file_reader
+            def path_to_backup_copy(self):
+                # used by trash-empty
+                entry = self.entry[:-len('.trashinfo')]
+                return os.path.join(self.files_dir, entry)
+            def path_to_trashinfo(self):
+                # used by trash-empty
+                return os.path.join(self.info_dir, self.entry)
+            def contents(self):
+                return self.file_reader.contents_of(self.path_to_trashinfo())
+            def deletion_date(self):
+                return read_deletion_date(self.contents())
+            def read_path(self):
+                return read_path(self.contents())
+        return TrashInfo(self.path, 
+                         self._files_dir(), 
+                         entry, 
+                         self.file_reader)
     def _trashinfo_path_from_file(self, file_entry):
         return os.path.join(self.path, file_entry + '.trashinfo')
     def _files_dir(self):
@@ -199,18 +223,6 @@ class InfoDir:
 
 def do_nothing(*argv, **argvk): pass
 
-class TrashInfo:
-    def __init__(self, info_dir, files_dir, entry):
-        self.info_dir    = info_dir      
-        self.files_dir   = files_dir     
-        self.entry       = entry         
-    def path_to_backup_copy(self):
-        # used by trash-empty
-        entry = self.entry[:-len('.trashinfo')]
-        return os.path.join(self.files_dir, entry)
-    def path(self):
-        # used by trash-empty
-        return os.path.join(self.info_dir, self.entry)
 
 class TrashInfoParser:
     def __init__(self, contents, on_error = do_nothing):
