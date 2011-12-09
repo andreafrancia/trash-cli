@@ -1,6 +1,7 @@
 from trashcli.trash2 import ListCmd
 from StringIO import StringIO
 from files import write_file, require_empty_dir
+from nose import SkipTest
 
 class TestListCmd_should_list_files:
     def test_when_there_are_no_files(self):
@@ -29,7 +30,6 @@ class TestListCmd_should_list_files:
                                   "2000-01-01 00:00:03 /file3\n")
 
     def test_should_warn_on_badly_formatted_trashinfo(self):
-        from nose import SkipTest
         raise SkipTest()
         write_file('XDG_DATA_HOME/Trash/info/empty.trashinfo', '')
 
