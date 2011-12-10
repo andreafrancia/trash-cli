@@ -25,3 +25,5 @@ def main():
     cmd=TrashPutCmd(sys.stdout,sys.stderr)
     cmd.run(sys.argv)
 
+if __name__ == '__main__':
+    main()

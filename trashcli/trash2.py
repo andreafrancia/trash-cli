@@ -24,7 +24,7 @@ from datetime import datetime
 class ListCmd():
     def __init__(self, out, err, environ, 
                  getuid       = os.getuid,
-                 list_volumes = lambda:[],
+                 list_volumes = mount_points,
                  file_reader  = _FileReader()):
         self.out         = out
         self.err         = err
@@ -40,8 +40,8 @@ class ListCmd():
                 on_parse_error = self.print_parse_error)
     def print_parse_error(self, offending_file, reason):
         self.error("Parse Error: %s: %s" % (offending_file, reason))
-    def print_read_error(self, offending_file, reason):
-        self.error("Read Error: %s: %s" % (offending_file, repr(reason)))
+    def print_read_error(self, error):
+        self.error(str(error))
     def print_entry(self, deletion_date, original_location):
         self.println("%s %s" %(deletion_date, 
                                original_location))
@@ -191,7 +191,7 @@ class InfoDir:
                 except ParseError, e:
                     on_parse_error(trashinfo.path_to_trashinfo(), e.message)
                 except IOError, e:
-                    on_read_error(e.filename, e.strerror)
+                    on_read_error(e)
                 else:
                     on_parse(deletion_date, original_location)
         
