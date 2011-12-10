@@ -32,34 +32,22 @@ class TestListCmd_should_list_files:
     def test_it_should_warn_on_badly_formatted_trashinfo(self):
         write_file('XDG_DATA_HOME/Trash/info/empty.trashinfo', '')
 
-        err = OutputCollector()
-        out = OutputCollector()
-        ListCmd(
-            out = out,
-            err = err,
-            environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME}
-        ).run()
+        self.run()
 
-        out.assert_equal_to('')
-        err.assert_equal_to(
+        self.out.assert_equal_to('')
+        self.err.assert_equal_to(
                 "Parse Error: XDG_DATA_HOME/Trash/info/empty.trashinfo: "
                 "Unable to parse Path\n")
 
     def test_it_should_warn_on_unreadable_trashinfo(self):
         make_unreadable_file('XDG_DATA_HOME/Trash/info/unreadable.trashinfo')
 
-        err = OutputCollector()
-        out = OutputCollector()
-        ListCmd(
-            out = out,
-            err = err,
-            environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME}
-        ).run()
+        self.run()
 
-        err.assert_equal_to(
+        self.out.assert_equal_to('')
+        self.err.assert_equal_to(
                 "[Errno 13] Permission denied: "
                 "'XDG_DATA_HOME/Trash/info/unreadable.trashinfo'\n")
-        out.assert_equal_to('')
 
     def setUp(self):
         self.XDG_DATA_HOME = 'XDG_DATA_HOME'
@@ -69,11 +57,12 @@ class TestListCmd_should_list_files:
         self.add_trashinfo = self.fake_info_dir.add_trashinfo
 
         self.out = OutputCollector()
+        self.err = OutputCollector()
 
     def run(self):
         ListCmd(
             out = self.out,
-            err = StringIO(),
+            err = self.err,
             environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME}
         ).run()
 
