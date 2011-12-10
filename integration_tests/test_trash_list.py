@@ -64,6 +64,14 @@ Report bugs to http://code.google.com/p/trash-cli/issues
 """)
         self.err.assert_equal_to('')
 
+    def test_it_shows_files_even_also_deletion_date_is_unparsable(self):
+        self.info_dir.make_file('without-date.trashinfo', 
+                ("[TrashInfo]\n"
+                 "Path=/path\n"))
+        self.run()
+        self.err.assert_equal_to('')
+        self.out.assert_equal_to("????-??-?? ??:??:?? /path\n")
+
     def setUp(self):
         self.XDG_DATA_HOME = 'XDG_DATA_HOME'
 
@@ -75,19 +83,23 @@ Report bugs to http://code.google.com/p/trash-cli/issues
         self.err = OutputCollector()
 
         class InfoDir:
-            def touch(_, path_relative_to_info_dir):
-                import os
-                path = os.path.join(self.XDG_DATA_HOME, 'Trash', 'info',
-                                    path_relative_to_info_dir)
-                write_file(path, '')
-            def make_unreadable_file(_, path_relative_to_info_dir):
-                import os
-                path = os.path.join(self.XDG_DATA_HOME, 'Trash', 'info',
-                                    path_relative_to_info_dir)
+            def __init__(self, XDG_DATA_HOME):
+                self.XDG_DATA_HOME = XDG_DATA_HOME
+            def make_file(self, path_relative_to_info_dir, contents):
+                path = self.real_path(path_relative_to_info_dir)
+                write_file(path, contents)
+            def touch(self, path_relative_to_info_dir):
+                self.make_file(path_relative_to_info_dir, '')
+            def make_unreadable_file(self, path_relative_to_info_dir):
+                path = self.real_path(path_relative_to_info_dir)
                 make_unreadable_file(path)
+            def real_path(self, path_relative_to_info_dir):
+                import os
+                path = os.path.join(self.XDG_DATA_HOME, 'Trash', 'info',
+                                    path_relative_to_info_dir)
+                return path
 
-
-        self.info_dir = InfoDir()
+        self.info_dir = InfoDir(self.XDG_DATA_HOME)
 
 
     def run(self, *argv):

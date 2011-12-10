@@ -62,12 +62,15 @@ Report bugs to http://code.google.com/p/trash-cli/issues\
     def print_read_error(self, error):
         self.error(str(error))
     def print_entry(self, deletion_date, original_location):
-        self.println("%s %s" %(deletion_date, 
+        self.println("%s %s" %(self.datestr(deletion_date), 
                                original_location))
     def println(self, line):
         self.out.write(line+'\n')
     def error(self, line):
         self.err.write(line+'\n')
+    def datestr(_, datetime):
+        if datetime: return str(datetime)
+        return "????-??-?? ??:??:??"
 
 class EmptyCmd():
     def __init__(self, out, err, environ, 

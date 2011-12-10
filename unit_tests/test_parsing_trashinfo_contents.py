@@ -16,6 +16,13 @@ def test_how_to_parse_original_path():
 
 
 from trashcli.trash2 import LazyTrashInfoParser, ParseError
+
+class TestParsing:
+    def test_1(self):
+        parser = LazyTrashInfoParser(lambda:("[TrashInfo]\n"
+                                             "Path=/foo.txt\n"), volume_path = '/')
+        assert_equals('/foo.txt', parser.original_location())
+
 class TestLazyTrashInfoParser_with_empty_trashinfo:
     def setUp(self):
         self.parser = LazyTrashInfoParser(contents=an_empty_trashinfo, volume_path='/')
