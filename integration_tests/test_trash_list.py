@@ -29,7 +29,7 @@ class TestListCmd_should_list_files:
                                   "2000-01-01 00:00:02 /file2\n"
                                   "2000-01-01 00:00:03 /file3\n")
 
-    def test_should_warn_on_badly_formatted_trashinfo(self):
+    def test_it_should_warn_on_badly_formatted_trashinfo(self):
         write_file('XDG_DATA_HOME/Trash/info/empty.trashinfo', '')
 
         err = OutputCollector()
@@ -45,6 +45,21 @@ class TestListCmd_should_list_files:
                 "Error parsing `XDG_DATA_HOME/Trash/info/empty.trashinfo': "
                 "Unable to parse Path")
 
+    def test_it_should_warn_on_unreadable_trashinfo(self):
+        make_unreadable_file('XDG_DATA_HOME/Trash/info/unreadable.trashinfo')
+
+        err = OutputCollector()
+        out = OutputCollector()
+        raise SkipTest
+        ListCmd(
+            out = out,
+            err = err,
+            environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME}
+        ).run()
+
+        out.assert_equal_to('')
+        err.assert_equal_to('')
+
     def setUp(self):
         self.XDG_DATA_HOME = 'XDG_DATA_HOME'
 
@@ -54,7 +69,6 @@ class TestListCmd_should_list_files:
 
         self.out = OutputCollector()
 
-
     def run(self):
         ListCmd(
             out = self.out,
@@ -62,6 +76,13 @@ class TestListCmd_should_list_files:
             environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME}
         ).run()
 
+def make_unreadable_file(path):
+    write_file(path, '')
+    import os
+    os.chmod(path, 0)
+    from nose.tools import assert_raises
+    with assert_raises(IOError):
+        file(path).read()
 
 def trashinfo(escaped_path_entry, formatted_deletion_date):
     return ("[TrashInfo]\n" + 

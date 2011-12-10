@@ -6,7 +6,6 @@ Feature: Rewrite of trash-list
  x support for trashed files on volume 1 trashcan
  x support for trashed files on volume 2 trashcan
  x error when a .trashinfo is empty
- - trash-empty should remove malformed .trashinfo (empty, without date)
  - error when a .trashinfo is not readable
  - error when a .trashinfo does not contain the 'Path=' entry information
  - error when a .trashinfo does not contain valid DeletionDate 
