@@ -31,6 +31,25 @@ class ListCmd():
         self.infodirs    = InfoDirsFinder(environ, getuid, list_volumes)
         self.file_reader = file_reader
     def run(self, *argv):
+        if len(argv)==0: argv = ['trash-list']
+        program_name=argv[0]
+        import getopt
+        options, arguments = getopt.getopt(argv[1:], 'h', ['help'])
+    
+        for option, value in options:
+            if option == '--help':
+                self.println("""\
+Usage: %s [OPTIONS...]
+
+List trashed files
+
+Options:
+  --version   show program's version number and exit
+  -h, --help  show this help message and exit
+
+Report bugs to http://code.google.com/p/trash-cli/issues\
+""" % program_name)
+            return
         self.infodirs.for_each_infodir(self.file_reader,
                                        self.list_contents)
     def list_contents(self, info_dir):

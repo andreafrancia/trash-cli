@@ -30,7 +30,7 @@ class TestListCmd_should_list_files:
                                   "2000-01-01 00:00:03 /file3\n")
 
     def test_it_should_warn_on_badly_formatted_trashinfo(self):
-        write_file('XDG_DATA_HOME/Trash/info/empty.trashinfo', '')
+        self.info_dir.touch('empty.trashinfo')
 
         self.run()
 
@@ -40,7 +40,7 @@ class TestListCmd_should_list_files:
                 "Unable to parse Path\n")
 
     def test_it_should_warn_on_unreadable_trashinfo(self):
-        make_unreadable_file('XDG_DATA_HOME/Trash/info/unreadable.trashinfo')
+        self.info_dir.make_unreadable_file('unreadable.trashinfo')
 
         self.run()
 
@@ -48,6 +48,21 @@ class TestListCmd_should_list_files:
         self.err.assert_equal_to(
                 "[Errno 13] Permission denied: "
                 "'XDG_DATA_HOME/Trash/info/unreadable.trashinfo'\n")
+
+    def test_it_shows_help_message(self):
+        self.run('trash-list', '--help')
+        self.out.assert_equal_to("""\
+Usage: trash-list [OPTIONS...]
+
+List trashed files
+
+Options:
+  --version   show program's version number and exit
+  -h, --help  show this help message and exit
+
+Report bugs to http://code.google.com/p/trash-cli/issues
+""")
+        self.err.assert_equal_to('')
 
     def setUp(self):
         self.XDG_DATA_HOME = 'XDG_DATA_HOME'
@@ -59,12 +74,29 @@ class TestListCmd_should_list_files:
         self.out = OutputCollector()
         self.err = OutputCollector()
 
-    def run(self):
+        class InfoDir:
+            def touch(_, path_relative_to_info_dir):
+                import os
+                path = os.path.join(self.XDG_DATA_HOME, 'Trash', 'info',
+                                    path_relative_to_info_dir)
+                write_file(path, '')
+            def make_unreadable_file(_, path_relative_to_info_dir):
+                import os
+                path = os.path.join(self.XDG_DATA_HOME, 'Trash', 'info',
+                                    path_relative_to_info_dir)
+                make_unreadable_file(path)
+
+
+        self.info_dir = InfoDir()
+
+
+    def run(self, *argv):
         ListCmd(
             out = self.out,
             err = self.err,
             environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME}
-        ).run()
+        ).run(*argv)
+
 
 def make_unreadable_file(path):
     write_file(path, '')
