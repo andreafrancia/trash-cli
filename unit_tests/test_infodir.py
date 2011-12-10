@@ -20,7 +20,7 @@ class TestInfoDir_finding_orphans:
         self.infodir=InfoDir(self.fs, '/info', None)
 
     def find_orphan(self):
-        self.infodir.for_all_orphan(self.orphan_found.append)
+        self.infodir.for_all_orphans(self.orphan_found.append)
 
 from nose.tools import assert_equals
 

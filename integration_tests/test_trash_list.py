@@ -30,19 +30,20 @@ class TestListCmd_should_list_files:
                                   "2000-01-01 00:00:03 /file3\n")
 
     def test_should_warn_on_badly_formatted_trashinfo(self):
-        raise SkipTest()
         write_file('XDG_DATA_HOME/Trash/info/empty.trashinfo', '')
 
         err = OutputCollector()
+        out = OutputCollector()
         ListCmd(
-            out = StringIO(),
+            out = out,
             err = err,
             environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME}
         ).run()
 
-        self.err.assert_equal_to(
-                "Error: XDG_DATA_HOME/Trash/info/empty.trashinfo: "
-                "Unable to parse the 'Path=' entry.")
+        out.assert_equal_to('')
+        err.assert_equal_to(
+                "Error parsing `XDG_DATA_HOME/Trash/info/empty.trashinfo': "
+                "Unable to parse Path")
 
     def setUp(self):
         self.XDG_DATA_HOME = 'XDG_DATA_HOME'

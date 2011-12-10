@@ -6,6 +6,6 @@ def assert_equals_with_unidiff(expected, actual):
 
         diff=difflib.unified_diff(expected, actual)
 
-        return ''.join(diff)
+        return '\n'.join(diff)
     from nose.tools import assert_equals
-    assert_equals(expected, actual, unidiff(expected, actual))
+    assert_equals(expected, actual, "\n" + unidiff(expected, actual))
