@@ -42,23 +42,23 @@ class TestListCmd_should_list_files:
 
         out.assert_equal_to('')
         err.assert_equal_to(
-                "Error parsing `XDG_DATA_HOME/Trash/info/empty.trashinfo': "
-                "Unable to parse Path")
+                "Parse Error: XDG_DATA_HOME/Trash/info/empty.trashinfo: "
+                "Unable to parse Path\n")
 
     def test_it_should_warn_on_unreadable_trashinfo(self):
         make_unreadable_file('XDG_DATA_HOME/Trash/info/unreadable.trashinfo')
 
         err = OutputCollector()
         out = OutputCollector()
-        raise SkipTest
         ListCmd(
             out = out,
             err = err,
             environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME}
         ).run()
 
+        err.assert_matches(
+                'Read Error: XDG_DATA_HOME/Trash/info/unreadable.trashinfo.*')
         out.assert_equal_to('')
-        err.assert_equal_to('')
 
     def setUp(self):
         self.XDG_DATA_HOME = 'XDG_DATA_HOME'
@@ -145,6 +145,10 @@ class OutputCollector:
         assert_equals_with_unidiff(expected, self.stream.getvalue())
     def getvalue(self):
         return self.stream.getvalue()
+    def assert_matches(self, regex):
+        text = self.stream.getvalue()
+        from nose.tools import assert_regexp_matches
+        assert_regexp_matches(text, regex)
 
 class FakeInfoDir:
     def __init__(self, path):

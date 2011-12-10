@@ -34,15 +34,21 @@ class ListCmd():
         self.infodirs.for_each_infodir(self.file_reader,
                                        self.list_contents)
     def list_contents(self, info_dir):
-        info_dir.each_parsed_trashinfo(on_parse=self.print_entry,
-                                       on_error=self.print_parse_error)
+        info_dir.each_parsed_trashinfo(
+                on_parse       = self.print_entry,
+                on_read_error  = self.print_read_error,
+                on_parse_error = self.print_parse_error)
     def print_parse_error(self, offending_file, reason):
-        self.err.write("Error parsing `%s': %s" % ( offending_file, reason))
-    def print_entry(self, trashinfo, parsed):
-        self.println("%s %s" %(parsed.deletion_date(), 
-                               parsed.original_location()))
+        self.error("Parse Error: %s: %s" % (offending_file, reason))
+    def print_read_error(self, offending_file, reason):
+        self.error("Read Error: %s: %s" % (offending_file, repr(reason)))
+    def print_entry(self, deletion_date, original_location):
+        self.println("%s %s" %(deletion_date, 
+                               original_location))
     def println(self, line):
         self.out.write(line+'\n')
+    def error(self, line):
+        self.err.write(line+'\n')
 
 class EmptyCmd():
     def __init__(self, out, err, environ, 
@@ -149,7 +155,6 @@ class FilterByDateCriteria:
     def __call__(self, trashinfo, parsed):
         if self.date_criteria(parsed.deletion_date()):
             self.action(trashinfo)
-
 class InfoDir:
     def __init__(self, file_reader, path, volume_path):
         self.path        = path
@@ -169,22 +174,32 @@ class InfoDir:
                 FilterByDateCriteria(date_criteria, action))
 
     def each_trashinfo_lazily_parsed(self, action):
-        self.parse_each_trashinfo( lazy_parse, action, on_error=do_nothing)
-
-    def each_parsed_trashinfo(self, on_parse, on_error):
-        self.parse_each_trashinfo( parse, on_parse, on_error)
-
-    def parse_each_trashinfo(self, parse_func, action, on_error):
         for trashinfo in self._trashinfos():
-            file_to_parse = trashinfo.path_to_trashinfo()
-            def contents():
-                return self.file_reader.contents_of(file_to_parse)
-            def on_result(parsed):
-                action(trashinfo, parsed)
-            def _on_error(reason):
-                on_error(file_to_parse, reason)
-            parse_func(contents, self.volume_path, on_result, _on_error)
 
+            file_being_parsed = trashinfo.path_to_trashinfo()
+            def contents(): return self.file_reader.contents_of(file_being_parsed)
+            parser = LazyTrashInfoParser(contents, self.volume_path) 
+
+            action(trashinfo, parser)
+
+    def each_parsed_trashinfo(self, on_parse, on_read_error, on_parse_error):
+        class WakingUpParser:
+            def __call__(self, trashinfo, parser):
+                try:
+                    deletion_date     = parser.deletion_date()
+                    original_location = parser.original_location() 
+                except ParseError, e:
+                    on_parse_error(trashinfo.path_to_trashinfo(), e.message)
+                except IOError, e:
+                    on_read_error(e.filename, e.strerror)
+                else:
+                    on_parse(deletion_date, original_location)
+        
+        self.each_trashinfo_lazily_parsed(WakingUpParser())
+            
+    def _trashinfos(self):
+        for entry in self._trashinfo_entries():
+            yield self._trashinfo(entry)
     def _trashinfo(self, entry):
         class TrashInfo:
             def __init__(self, info_dir, files_dir, entry, file_reader,
@@ -206,9 +221,6 @@ class InfoDir:
         return os.path.join(self.path, file_entry + '.trashinfo')
     def _files_dir(self):
         return os.path.join(os.path.dirname(self.path), 'files')
-    def _trashinfos(self):
-        for entry in self._trashinfo_entries():
-            yield self._trashinfo(entry)
     def _trashinfo_entries(self):
         for entry in self._entries_if_dir_exists(self.path):
             if entry.endswith('.trashinfo'):
@@ -217,24 +229,6 @@ class InfoDir:
         return os.path.join(self.path, entry)
 
 class ParseError(ValueError): pass
-
-def parse(contents, volume_path, on_result, on_error):
-    parser = LazyTrashInfoParser(contents, volume_path)
-    try:
-        deletion_date     = parser.deletion_date()
-        original_location = parser.original_location() 
-    except ParseError, e:
-        on_error(e.message)
-    else:
-        class Result:
-            def deletion_date(self):     return deletion_date
-            def original_location(self): return original_location
-        result=Result()
-        on_result(result)
-
-def lazy_parse(contents, volume_path, on_result, on_error):
-    result = LazyTrashInfoParser(contents, volume_path) 
-    on_result(result)
 
 class LazyTrashInfoParser:
     def __init__(self, contents, volume_path):
