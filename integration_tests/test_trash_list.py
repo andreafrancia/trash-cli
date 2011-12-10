@@ -56,8 +56,9 @@ class TestListCmd_should_list_files:
             environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME}
         ).run()
 
-        err.assert_matches(
-                'Read Error: XDG_DATA_HOME/Trash/info/unreadable.trashinfo.*')
+        err.assert_equal_to(
+                "[Errno 13] Permission denied: "
+                "'XDG_DATA_HOME/Trash/info/unreadable.trashinfo'\n")
         out.assert_equal_to('')
 
     def setUp(self):

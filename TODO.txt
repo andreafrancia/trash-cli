@@ -20,6 +20,7 @@ Features for trash-put rewrite:
    $topdir/.Trash is not sticky
 
 Features backlog:
+ - trash-empty with unreadable trashinfo
  - support alias rmdir=trash-put
  - don't use world writable trash
  - trash-empty should empty even the mac trash directory

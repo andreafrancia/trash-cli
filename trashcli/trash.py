@@ -20,15 +20,9 @@
 
 from __future__ import absolute_import
 
-import StringIO
 import os
-import re
-import time
-import urllib
 import random
-from datetime import datetime
 import logging
-import posixpath
 
 logger=logging.getLogger('trashcli.trash')
 logger.setLevel(logging.WARNING)
@@ -37,7 +31,7 @@ logger.addHandler(logging.StreamHandler())
 from .filesystem import Volume
 from .filesystem import Path
 
-class TrashDirectory(object) :
+class TrashDirectory:
     """\
     Represent a trash directory.
     For example $XDG_DATA_HOME/Trash
@@ -59,6 +53,7 @@ class TrashDirectory(object) :
     returns the TrashedFile
     """
     def trash(self, path):
+        from datetime import datetime
         path = path.norm()
         self.check()
 
@@ -214,12 +209,14 @@ class TrashDirectory(object) :
         """
         pass
 
-class HomeTrashDirectory(TrashDirectory) :
+class HomeTrashDirectory(TrashDirectory):
     def __init__(self, path) :
         assert isinstance(path, Path)
         TrashDirectory.__init__(self, path, path.volume)
 
-    def __str__(self) :
+    def __str__(self):
+        import re
+        import posixpath
         result=TrashDirectory.__str__(self)
         try:
             home_dir=os.environ['HOME']
@@ -292,15 +289,12 @@ class Method1VolumeTrashDirectory(VolumeTrashDirectory):
             raise TopDirWithoutStickyBit("topdir should have the sticky bit: %s"
                                          % self.path)
 
-
 def real_list_mount_points():
     from trashcli.list_mount_points import mount_points
     for mount_point in mount_points(): 
 	yield Path(mount_point)
-class Directories:
-    pass
 
-class GlobalTrashCan(object) :
+class GlobalTrashCan:
     """
     Represent the TrashCan that contains all trashed files.
     This class is the facade used by all trashcli commands
@@ -428,7 +422,7 @@ class GlobalTrashCan(object) :
                 action(info_path=trashedfile.original_file.path,
                        path=trashedfile.info_file.path)
 
-class TrashedFile(object) :
+class TrashedFile:
     """
     Represent a trashed file.
     Each trashed file is persisted in two files:
@@ -496,15 +490,16 @@ class TrashedFile(object) :
     def trash_directory(self) :
         return self._trash_directory
 
-class TrashInfo (object) :
-    def __init__(self, path, deletion_date) :
+class TrashInfo:
+    def __init__(self, path, deletion_date):
+        from datetime import datetime
         """Create a TrashInfo.
 
         Keyword arguments:
         path          -- the of the .trashinfo file (string or Path)
         deletion_date -- the date of deletion, should be a datetime.
         """
-        if not isinstance(path,Path) :
+        if not isinstance(path,Path):
             path = Path('' + path)
         if not isinstance(deletion_date, datetime):
             raise TypeError("deletion_date should be a datetime")
@@ -512,25 +507,28 @@ class TrashInfo (object) :
         self._deletion_date = deletion_date
 
     @staticmethod
-    def _format_date(deletion_date) :
+    def _format_date(deletion_date):
         return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
 
     @property
-    def deletion_date(self) :
+    def deletion_date(self):
         return self._deletion_date
 
     @property
-    def path(self) :
+    def path(self):
         return self._path
 
     @staticmethod
-    def parse(data) :
+    def parse(data):
+        from StringIO import StringIO
+        import urllib
+        import re
         path = None
         deletion_date = None
 
-        stream = StringIO.StringIO(data)
+        stream = StringIO(data)
         line = stream.readline().rstrip('\n')
-        if line != "[Trash Info]" :
+        if line != "[Trash Info]":
             raise ValueError()
 
         try :
@@ -563,14 +561,17 @@ class TrashInfo (object) :
         return TrashInfo(path, deletion_date)
 
     def render(self) :
+        import urllib
         result = "[Trash Info]\n"
         result += "Path=" + urllib.quote(self.path.path,'/') + "\n"
         result += "DeletionDate=" + self._format_date(self.deletion_date) + "\n"
         return result
 
-class TimeUtils(object):
+class TimeUtils:
     @staticmethod
     def parse_iso8601(text) :
+        import time
+        from datetime import datetime
         t=time.strptime(text,  "%Y-%m-%dT%H:%M:%S")
         return datetime(t.tm_year, t.tm_mon, t.tm_mday,
                         t.tm_hour, t.tm_min, t.tm_sec)
@@ -613,7 +614,6 @@ def remove_file(path):
             os.remove(path)
         except:
             return shutil.rmtree(path)
-from trashcli.trash import GlobalTrashCan
 
 class RestoreCmd:
     def __init__(self):
@@ -654,11 +654,7 @@ class NoWrapFormatter(IndentedHelpFormatter) :
         "[Does not] format a text, return the text as it is."
         return text
 
-from trashcli.trash import GlobalTrashCan 
-from trashcli.trash import NoWrapFormatter
-
 class TrashPutCmd:
-
     def __init__(self, stdout, stderr):
 	self.stdout=stdout
 	self.stderr=stderr
