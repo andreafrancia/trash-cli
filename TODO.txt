@@ -7,7 +7,8 @@ Feature: Rewrite of trash-list
  x support for trashed files on volume 2 trashcan
  x error when a .trashinfo is empty
  x error when a .trashinfo is not readable
- x error when a .trashinfo does not contain valid DeletionDate 
+ x displays unknown date when .trashinfo does not contain DeletionDate
+ - displays unknown date when .trashinfo contains an invalid DeletionDate
  - error when a .trashinfo does not contain the 'Path=' entry information
  - should check if the .Trash directory 1) has the sticky bit, 2) is not a 
    symbolic link 
