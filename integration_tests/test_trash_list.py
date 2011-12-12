@@ -101,14 +101,12 @@ Report bugs to http://code.google.com/p/trash-cli/issues
 
         self.info_dir = InfoDir(self.XDG_DATA_HOME)
 
-
     def run(self, *argv):
         ListCmd(
             out = self.out,
             err = self.err,
             environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME}
         ).run(*argv)
-
 
 def make_unreadable_file(path):
     write_file(path, '')
