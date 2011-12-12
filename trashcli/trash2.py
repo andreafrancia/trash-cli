@@ -61,16 +61,13 @@ Report bugs to http://code.google.com/p/trash-cli/issues\
         self.error("Parse Error: %s: %s" % (offending_file, reason))
     def print_read_error(self, error):
         self.error(str(error))
-    def print_entry(self, deletion_date, original_location):
-        self.println("%s %s" %(self.datestr(deletion_date), 
+    def print_entry(self, maybe_deletion_date, original_location):
+        self.println("%s %s" %(maybe_deletion_date,
                                original_location))
     def println(self, line):
         self.out.write(line+'\n')
     def error(self, line):
         self.err.write(line+'\n')
-    def datestr(_, datetime):
-        if datetime: return str(datetime)
-        return "????-??-?? ??:??:??"
 
 class EmptyCmd():
     def __init__(self, out, err, environ, 
@@ -208,14 +205,14 @@ class InfoDir:
         class WakingUpParser:
             def __call__(self, trashinfo, parser):
                 try:
-                    deletion_date     = parser.deletion_date()
-                    original_location = parser.original_location() 
+                    maybe_deletion_date = maybe_date(parser.deletion_date)
+                    original_location   = parser.original_location()
                 except ParseError, e:
                     on_parse_error(trashinfo.path_to_trashinfo(), e.message)
                 except IOError, e:
                     on_read_error(e)
                 else:
-                    on_parse(deletion_date, original_location)
+                    on_parse(maybe_deletion_date, original_location)
         
         self.each_trashinfo_lazily_parsed(WakingUpParser())
             
@@ -262,6 +259,21 @@ class LazyTrashInfoParser:
         return parse_path(self.contents())
     def original_location(self):
         return os.path.join(self.volume_path, self._path())
+
+def maybe_parse_deletion_date(contents):
+    return maybe_date(lambda:parse_deletion_date(contents))
+
+def maybe_date(parsing_closure):
+    try:
+        date = parsing_closure()
+    except ValueError:
+        return unknown_date()
+    else:
+        if date: return date
+    return unknown_date()
+
+def unknown_date():
+    return '????-??-?? ??:??:??'
 
 def parse_deletion_date(contents):
     from datetime import datetime 
