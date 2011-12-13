@@ -28,8 +28,6 @@ logger=logging.getLogger('trashcli.trash')
 logger.setLevel(logging.WARNING)
 logger.addHandler(logging.StreamHandler())
 
-#from .filesystem import Volume
-#from .filesystem import Path
 from .trash2 import contents_of
 
 class TrashDirectory:
@@ -68,7 +66,7 @@ class TrashDirectory:
         trash_info = TrashInfo(self._path_for_trashinfo(path),
                                datetime.now())
         
-        basename = trash_info.path.basename
+        basename = os.path.basename(trash_info.path)
         trashinfo_file_content = trash_info.render()
         (trash_info_file, trash_info_id) = self.persist_trash_info(basename, 
                                                                    trashinfo_file_content)
@@ -77,8 +75,7 @@ class TrashDirectory:
                                                  Path(os.path.abspath(path)),
                                                  trash_info.deletion_date)
 
-        if not self.files_dir.exists() :
-            mkdirs_using_mode(self.files_dir, 0700)
+        self.ensure_files_dir_exists()
 
         try :
             move(path, trashed_file.actual_path)
@@ -87,6 +84,10 @@ class TrashDirectory:
             raise e
 
         return trashed_file
+
+    def ensure_files_dir_exists(self):
+        if not os.path.exists(self.files_dir) :
+            mkdirs_using_mode(self.files_dir, 0700)
 
     @property
     def info_dir(self):
@@ -112,7 +113,7 @@ class TrashDirectory:
 	'Returns a generator of "Path"s'
         try :
             for info_file in list_files_in_dir(self.info_dir):
-                if not info_file.basename.endswith('.trashinfo') :
+                if not os.path.basename(info_file).endswith('.trashinfo') :
                     logger.warning("Non .trashinfo file in info dir")
                 else :
 		    yield info_file
@@ -152,14 +153,14 @@ class TrashDirectory:
                            self)
 
     def _calc_original_location(self, path):
-        if path.isabs() :
+        if os.path.isabs(path) :
             return path
         else :
             return self.volume.path.join(path)
 
     @staticmethod
     def calc_id(trash_info_file):
-        return trash_info_file.basename[:-len('.trashinfo')]
+        return os.path.basename(trash_info_file)[:-len('.trashinfo')]
 
     def _calc_path_for_actual_file(self, trash_id) :
         return self.files_dir.join(trash_id)
@@ -242,7 +243,6 @@ class HomeTrashDirectory(TrashDirectory):
 
         # for the HomeTrashDirectory all path are stored as absolute
 
-        parent   = fileToBeTrashed.realpath.parent
         realpath = os.path.realpath(fileToBeTrashed)
         parent   = os.path.dirname(realpath)
         basename = os.path.basename(fileToBeTrashed)
@@ -380,8 +380,9 @@ class GlobalTrashCan:
 
 	self.reporter.unable_to_trash_file(file)
 
-    def should_skipped_by_specs(self,file):
-	return (file.basename == ".") or (file.basename == "..")
+    def should_skipped_by_specs(self, file):
+        basename = os.path.basename(file)
+	return (basename == ".") or (basename == "..")
 
     def volume_of_parent(self, file):
 	return self.volume_of(self.parent_of(file))
@@ -468,7 +469,7 @@ class TrashedFile:
                  actual_path,
                  trash_directory) :
 
-        if not Path('' + path).isabs():
+        if not os.path.isabs(path):
             raise ValueError("Absolute path required.")
 
         self._path = path
@@ -497,10 +498,11 @@ class TrashedFile:
     def restore(self, dest=None) :
         if dest is not None:
             raise NotImplementedError("not yet supported")
-        if self.path.exists():
-            raise IOError('Refusing to overwrite existing file "%s".' % self.path.basename);
+        if os.path.exists(self.path): 
+            raise IOError('Refusing to overwrite existing file "%s".' % os.path.basename(self.path))
         else:
-            self.path.parent.mkdirs()
+            parent = os.path.dirname(self.path)
+            mkdirs(parent)
 
         move(self.original_file, self.path)
         remove_file(self.info_file.path)
@@ -795,8 +797,13 @@ def has_sticky_bit(path):
     import os
     import stat
     return (os.stat(path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
+
+def mkdirs(path):
+    if os.path.isdir(path):
+        return
+    os.makedirs(path)
+
 import os
-import shutil
 import unipath
 
 class Path (unipath.Path) :
@@ -808,14 +815,10 @@ class Path (unipath.Path) :
 
     @property
     def parent(self) :
-        return Path(os.path.dirname(self.path))
+        return Path(os.path.dirname(self))
 
     @property
-    def realpath(self) :
-        return Path(os.path.realpath(self.path))
-
-    @property
-    def basename(self) :
+    def _basename(self) :
         return self.name
 
     def __join_str(self, path) :
@@ -823,7 +826,7 @@ class Path (unipath.Path) :
 
     def __join_Path(self, path) :
         assert(isinstance(path, Path))
-        if path.isabs() :
+        if os.path.isabs(path) :
             raise ValueError("File with relative path expected")
         return self.__join_str(path.path)
 
@@ -840,24 +843,12 @@ class Path (unipath.Path) :
     def volume(self) :
         return Volume.volume_of(self.path)
 
-    def remove(self) :
-        if(self.exists()):
+    def remove(path) :
+        if(os.path.exists(path)):
             try:
-                os.remove(self.path)
+                os.remove(path)
             except:
-                return shutil.rmtree(self.path)
-
-    def exists(self) :
-        return os.path.exists(self.path)
-
-    def isdir(self) :
-        return os.path.isdir(self.path)
-
-    def islink(self) :
-        return os.path.islink(self.path)
-
-    def isabs(self) :
-        return os.path.isabs(self.path)
+                return shutil.rmtree(path)
 
     def __eq__(self, other) :
         if self is other:
@@ -865,14 +856,6 @@ class Path (unipath.Path) :
         if self.path == other:
             return True
         return False
-
-    def mkdir(self):
-        os.mkdir(self.path)
-
-    def mkdirs(self):
-        if self.isdir():
-            return
-        os.makedirs(self.path)
 
     def __repr__(self):
         return "Path('%s')" % self.path

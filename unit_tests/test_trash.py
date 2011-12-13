@@ -34,12 +34,14 @@ from trashcli.trash import TrashInfo
 from trashcli.trash import VolumeTrashDirectory
 from trashcli.trash import TimeUtils
 from trashcli.trash import HomeTrashDirectory
-from trashcli.trash import Path
+from trashcli.trash import Path, mkdirs
 from trashcli.trash import Volume
 from trashcli.trash import TopDirIsSymLink
 from trashcli.trash import TopDirNotPresent
 from trashcli.trash import TopDirWithoutStickyBit
 from trashcli.trash import Method1VolumeTrashDirectory
+
+from integration_tests.files import require_empty_dir
 
 from datetime import datetime
 import os
@@ -241,15 +243,14 @@ class TestTimeUtils(TestCase) :
 
 class Method1VolumeTrashDirectoryTest(TestCase):
     def setUp(self):
-        Path("sandbox").remove()
-        Path("sandbox").mkdirs()
+        require_empty_dir('sandbox')
         
     @raises(TopDirWithoutStickyBit)
     def test_check_when_no_sticky_bit(self):
         # prepare
         import subprocess
         topdir = Path("sandbox").join("trash-dir")
-        topdir.mkdirs()
+        mkdirs(topdir)
         assert subprocess.call(["chmod", "-t", topdir.path]) == 0
         volume = Volume(Path("/mnt/disk"), True)
         instance = Method1VolumeTrashDirectory(topdir.join("123"), volume)
@@ -273,7 +274,7 @@ class Method1VolumeTrashDirectoryTest(TestCase):
         # prepare
         import subprocess
         topdir = Path("sandbox").join("trash-dir")
-        topdir.mkdir()
+        mkdirs(topdir)
         assert subprocess.call(["chmod", "+t", topdir.path]) == 0
         
         topdir_link = Path("sandbox/trash-dir-link")
@@ -287,7 +288,7 @@ class Method1VolumeTrashDirectoryTest(TestCase):
         # prepare
         import subprocess
         topdir = Path("sandbox").join("trash-dir")
-        topdir.mkdirs()
+        mkdirs(topdir)
         assert subprocess.call(["chmod", "+t", topdir.path]) == 0
         volume = Volume(Path("/mnt/disk"), True)
         instance = Method1VolumeTrashDirectory(topdir.join("123"), volume)

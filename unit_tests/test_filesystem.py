@@ -22,11 +22,12 @@ from __future__ import absolute_import
 
 import unittest
 from trashcli.trash import Volume
-from trashcli.trash import Path, has_sticky_bit
+from trashcli.trash import Path, has_sticky_bit, mkdirs
 import sys
 import os
 import subprocess
 from nose.tools import assert_equals
+from integration_tests.files import require_empty_dir
 
 class TestVolume(unittest.TestCase) :
     def test_all(self) :
@@ -70,29 +71,6 @@ class TestPath(unittest.TestCase) :
         instance = Path("dummy/path")
         self.assertEquals(Path("dummy"), instance.parent)
     
-    def test_creation(self) :
-        path = os.path.abspath("adsljfkl");
-        f = Path(path);
-        
-    def test_basename(self) :
-        f = Path(os.path.join(os.sep, "dirname", "basename"))
-        self.assertEqual(f.basename, "basename")
-
-        f = Path(os.path.join(os.sep, "dirname", "basename") + os.sep)
-        self.assertEqual(f.basename, "")
-    
-    def test_realpath(self) :
-        instance = Path("dummy")
-        self.assertEquals(os.path.realpath("dummy"), instance.realpath)
-
-    def test_isabs_returns_true(self) :
-        instance = Path("/foo")
-        self.assertEquals(True,instance.isabs())
-
-    def test_isabs_returns_false(self) :
-        instance = Path("/foo")
-        self.assertEquals(True,instance.isabs())
-
     def test_join_with_File_relative(self) :
         instance=Path("/foo")
         result=instance.join(Path("bar"))
@@ -112,7 +90,7 @@ class TestPath(unittest.TestCase) :
         self.assertEquals(Path("/foo/bar"),result)
 
     def test_mkdir(self):
-        Path("sandbox").mkdirs()
+        require_empty_dir('sandbox')
         instance=Path("sandbox/test-dir")
         instance.remove()
         self.assertFalse(instance.exists())
@@ -127,20 +105,7 @@ class TestPath(unittest.TestCase) :
         self.assertFalse(Path("sandbox/test-dir").exists())
         # perform
         instance=Path("sandbox/test-dir/sub-dir")
-        instance.mkdirs()
-        # test results
-        self.assertTrue(instance.exists())
-        self.assertTrue(instance.isdir())
-        # clean up
-        Path("sandbox/test-dir").remove()
-
-    def test_mkdirs_with_default_mode(self):
-        # prepare
-        Path("sandbox/test-dir").remove()
-        self.assertFalse(Path("sandbox/test-dir").exists())
-        # perform
-        instance=Path("sandbox/test-dir/sub-dir")
-        instance.mkdirs()
+        mkdirs(instance)
         # test results
         self.assertTrue(instance.exists())
         self.assertTrue(instance.isdir())
@@ -157,14 +122,14 @@ class TestPath(unittest.TestCase) :
         instance.remove() # clean up
     
     def test_has_sticky_bit_returns_true(self):
-        Path("sandbox").mkdirs()
+        require_empty_dir('sandbox')
         sticky=Path("sandbox").join("sticky")
         touch(sticky)
         assert subprocess.call(["chmod", "+t", "sandbox/sticky"]) == 0
         assert has_sticky_bit(sticky)
         
     def test_has_sticky_bit_returns_false(self):
-        Path("sandbox").mkdirs()
+        require_empty_dir('sandbox')
         non_sticky=Path("sandbox").join("non-sticky")
         touch(non_sticky)
         assert subprocess.call(["chmod", "-t", "sandbox/non-sticky"]) == 0
@@ -172,14 +137,14 @@ class TestPath(unittest.TestCase) :
 
 
     def test_type_descrition_for_directories(self):
-        Path("sandbox").mkdirs()
+        require_empty_dir('sandbox')
         
         assert_equals("directory", Path(".").type_description())
         assert_equals("directory", Path("..").type_description())
         assert_equals("directory", Path("sandbox").type_description())
         
     def test_name_for_regular_files(self):
-        Path("sandbox").mkdirs()
+        require_empty_dir('sandbox')
         Path("sandbox").join("non-empty").write_file("content")
         touch('sandbox/empty')
         
@@ -187,14 +152,14 @@ class TestPath(unittest.TestCase) :
         assert_equals("regular empty file", Path("sandbox/empty").type_description())
                 
     def test_name_for_symbolic_links(self):
-        Path("sandbox").mkdirs()
+        require_empty_dir('sandbox')
         Path("sandbox").join("symlink").write_link('somewhere')
         
         assert_equals("symbolic link", Path("sandbox/symlink").type_description())
 
     def test_name_for_dot_directories(self):
-        Path("sandbox").mkdirs()
-        
+        require_empty_dir('sandbox')
+
         assert_equals("`.' directory", Path("sandbox/.").type_description())
         assert_equals("`..' directory", Path("sandbox/..").type_description())
         

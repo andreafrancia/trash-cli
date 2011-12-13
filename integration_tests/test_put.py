@@ -19,7 +19,7 @@
 # 02110-1301, USA.
 
 from unittest import TestCase
-from trashcli.trash import Path
+from trashcli.trash import Path, mkdirs
 from trashcli.trash import HomeTrashDirectory
 from nose.tools import assert_equals
 from nose.tools import assert_true
@@ -117,7 +117,7 @@ class Sandbox():
     def __init__(self):
         self.path=Path("./sandbox")
         self.path.remove()
-        self.path.mkdirs()
+        mkdirs(self.path)
         self.trashdir = HomeTrashDirectory(
             Path('./sandbox/home/.local/share/Trash'))
 
