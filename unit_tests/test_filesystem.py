@@ -111,25 +111,6 @@ class TestPath(unittest.TestCase) :
         result=instance.join("bar")
         self.assertEquals(Path("/foo/bar"),result)
 
-    def test_list(self):
-        instance=Path("sandbox/test-dir")
-        instance.remove()
-        instance.mkdirs()
-        instance.join("file1").touch()
-        instance.join("file2").touch()
-        instance.join("file3").touch()
-        result=instance.list()
-        self.assertEquals("<type 'generator'>", str(type(result)))
-        # is much easier test the content of a list than a generator
-        result_as_list=list(result)
-        self.assertEquals(3, len(result_as_list))
-        self.assertTrue(Path("sandbox/test-dir/file1") in result_as_list)
-        self.assertTrue(Path("sandbox/test-dir/file1") in result_as_list)
-        self.assertTrue(Path("sandbox/test-dir/file1") in result_as_list)
-
-        # clean up
-        instance.remove()
-
     def test_mkdir(self):
         Path("sandbox").mkdirs()
         instance=Path("sandbox/test-dir")

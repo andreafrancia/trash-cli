@@ -54,7 +54,8 @@ class TrashDirectory:
     """
     def trash(self, path):
         from datetime import datetime
-        path = path.norm()
+        path = os.path.normpath(path)
+        path = Path(path)
         self.check()
 
         if not self.volume == path.parent.volume :
@@ -74,7 +75,7 @@ class TrashDirectory:
                                                  trash_info.deletion_date)
 
         if not self.files_dir.exists() :
-            self.files_dir.mkdirs_using_mode(0700)
+            mkdirs_using_mode(self.files_dir, 0700)
 
         try :
             path.move(trashed_file.actual_path)
@@ -90,7 +91,9 @@ class TrashDirectory:
         The $trash_dir/info dir that contains the .trashinfo files
         as filesystem.Path.
         """
-        return self.path.join("info")
+        result = os.path.join(self.path, 'info')
+        result = Path(result)
+        return result
 
     @property
     def files_dir(self):
@@ -98,12 +101,14 @@ class TrashDirectory:
         The directory where original file where stored.
         A Path instance.
         """
-        return self.path.join("files")
+        result = os.path.join(self.path, 'files')
+        result = Path(result)
+        return result
 
     def all_info_files(self) :
 	'Returns a generator of "Path"s'
         try :
-            for info_file in self.info_dir.list() :
+            for info_file in list_files_in_dir(self.info_dir):
                 if not info_file.basename.endswith('.trashinfo') :
                     logger.warning("Non .trashinfo file in info dir")
                 else :
@@ -168,8 +173,8 @@ class TrashDirectory:
     """
     def persist_trash_info(self,basename,content) :
 
-        self.info_dir.mkdirs_using_mode(0700)
-        self.info_dir.chmod(0700)
+        mkdirs_using_mode(self.info_dir, 0700)
+        os.chmod(self.info_dir,0700)
 
         # write trash info
         index = 0
@@ -183,11 +188,12 @@ class TrashDirectory:
 
             base_id = basename
             trash_id = base_id + suffix
-            trash_info_basename=trash_id+".trashinfo"
+            trash_info_basename = trash_id+".trashinfo"
 
-            dest = self.info_dir.join(trash_info_basename)
+            dest = os.path.join(self.info_dir, trash_info_basename)
+            dest = Path(dest)
             try :
-                handle = os.open(dest.path,
+                handle = os.open(dest,
                                  os.O_RDWR | os.O_CREAT | os.O_EXCL,
                                  0600)
                 os.write(handle, content)
@@ -238,8 +244,6 @@ class HomeTrashDirectory(TrashDirectory):
 
 class VolumeTrashDirectory(TrashDirectory) :
     def __init__(self, path, volume) :
-        assert isinstance(path, Path)
-        assert isinstance(volume, Volume)
         TrashDirectory.__init__(self,path, volume)
 
     def _path_for_trashinfo(self, fileToBeTrashed) :
@@ -251,8 +255,8 @@ class VolumeTrashDirectory(TrashDirectory) :
         parent=fileToBeTrashed.parent.realpath
         topdir=self.volume.path   # e.g. /mnt/disk-1
 
-        if parent.path.startswith(topdir.path+Path.sep) :
-            parent = Path(parent.path[len(topdir.path+Path.sep):])
+        if parent.path.startswith(topdir.path+os.path.sep) :
+            parent = Path(parent.path[len(topdir.path+os.path.sep):])
 
         return parent.join(fileToBeTrashed.basename)
 
@@ -751,5 +755,17 @@ class TrashPutReporter:
     def unable_to_trash_file_in_because(self, file_to_be_trashed, trash_directory, error):
 	self.logger.info("Failed to trash %s in %s, because :%s" % (file_to_be_trashed,
 	    trash_directory, error))
+
+def mkdirs_using_mode(path, mode):
+    if os.path.isdir(path):
+        os.chmod(path, mode)
+        return
+    os.makedirs(path, mode)
+
+def list_files_in_dir(path):
+    for entry in os.listdir(path):
+        result = os.path.join(path, entry)
+        result = Path(result)
+        yield result
 
 

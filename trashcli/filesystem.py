@@ -99,10 +99,6 @@ class Path (unipath.Path) :
             return True
         return False
 
-    def list(self) :
-        for filename in os.listdir(self.path) :
-            yield self.join(filename)
-
     def mkdir(self):
         os.mkdir(self.path)
 
@@ -110,12 +106,6 @@ class Path (unipath.Path) :
         if self.isdir():
             return
         os.makedirs(self.path)
-
-    def mkdirs_using_mode(self, mode):
-        if self.isdir():
-            os.chmod(self.path, mode)
-            return
-        os.makedirs(self.path, mode)
 
     def touch(self):
         open(self.path, "w").close()
