@@ -1,7 +1,7 @@
 from unittest import TestCase
 from trashcli.trash import TrashDirectory
 from trashcli.trash import TrashInfo
-from trashcli.trash import Path
+from integration_tests.files import require_empty_dir
 
 from datetime import datetime
 import os
@@ -9,13 +9,13 @@ join = os.path.join
 
 class TestTrashDirectory_persit_trash_info(TestCase) :
     def setUp(self):
-        self.trashdirectory_base_dir = Path(os.path.realpath("./sandbox/testTrashDirectory"))
-        self.trashdirectory_base_dir.remove()
+        self.trashdirectory_base_dir = os.path.realpath("./sandbox/testTrashDirectory")
+        require_empty_dir(self.trashdirectory_base_dir)
         
         self.instance=TrashDirectory(self.trashdirectory_base_dir, "/")
         
     def test_persist_trash_info_first_time(self):
-        trash_info=TrashInfo(Path("dummy-path"), datetime(2007,01,01))
+        trash_info=TrashInfo("dummy-path", datetime(2007,01,01))
 
         basename=os.path.basename(trash_info.path)
         content=trash_info.render()
@@ -34,7 +34,7 @@ class TestTrashDirectory_persit_trash_info(TestCase) :
         self.test_persist_trash_info_first_time()
         
         for i in range(1,100) :
-            trash_info=TrashInfo(Path("dummy-path"), datetime(2007,01,01))
+            trash_info=TrashInfo("dummy-path", datetime(2007,01,01))
             
             basename=os.path.basename(trash_info.path)
             content=trash_info.render()
@@ -51,7 +51,7 @@ DeletionDate=2007-01-01T00:00:00
         self.test_persist_trash_info_first_100_times()
         
         for i in range(101,200) :
-            trash_info=TrashInfo(Path("dummy-path"), datetime(2007,01,01))
+            trash_info=TrashInfo("dummy-path", datetime(2007,01,01))
             
             basename=os.path.basename(trash_info.path)
             content=trash_info.render()

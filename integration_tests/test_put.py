@@ -19,8 +19,9 @@
 # 02110-1301, USA.
 
 from unittest import TestCase
-from trashcli.trash import Path, mkdirs
+from trashcli.trash import mkdirs
 from trashcli.trash import HomeTrashDirectory
+from integration_tests.files import require_empty_dir
 from nose.tools import assert_equals
 from nose.tools import assert_true
 from nose.tools import assert_false
@@ -96,11 +97,11 @@ class Sandbox():
     A sandbox where executing commands under tests
     """
     def __init__(self):
-        self.path=Path("./sandbox")
-        self.path.remove()
+        self.path="./sandbox"
+        require_empty_dir(self.path)
         mkdirs(self.path)
         self.trashdir = HomeTrashDirectory(
-            Path('./sandbox/home/.local/share/Trash'))
+                        './sandbox/home/.local/share/Trash')
 
     def create_file(self, path, content=None):
         """
@@ -127,7 +128,7 @@ class Sandbox():
     def mkdir(self,subdir):
         import os
         path=os.path.join(self.path, subdir)
-        Path(path).mkdir()
+        os.mkdir(path)
     def exists(self, path):
         import os
         return os.path.exists(os.path.join(self.path, path))

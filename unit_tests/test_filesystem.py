@@ -20,82 +20,71 @@
 
 from __future__ import absolute_import
 
-import unittest
-from trashcli.trash import Path, has_sticky_bit, mkdirs
-import sys
-import os
-import subprocess
 from nose.tools import assert_equals
+
+from trashcli.trash import has_sticky_bit, mkdirs, describe, write_file
 from integration_tests.files import require_empty_dir
 clean_up=require_empty_dir
 
-def _is_mac_os():
-    return sys.platform == 'darwin'
+import os
+import subprocess
 
-def _is_cygwin():
-    return sys.platform == 'cygwin' 
-
-class TestPath(unittest.TestCase) :
+class TestPath:
 
     def test_mkdirs_with_default_mode(self):
         require_empty_dir('sandbox')
         mkdirs("sandbox/test-dir/sub-dir")
-        self.assertTrue(os.path.isdir("sandbox/test-dir/sub-dir"))
+        assert os.path.isdir("sandbox/test-dir/sub-dir")
         clean_up('sandbox')
 
     def test_touch(self):
-        instance=Path("sandbox/test-file")
-        instance.remove()
-        self.assertFalse(instance.exists())
-        touch(instance)
-        self.assertTrue(instance.exists())
-        self.assertFalse(instance.isdir())
-        instance.remove() # clean up
+        require_empty_dir('sandbox')
+        touch('sandbox/new-file')
+        assert os.path.isfile('sandbox/new-file')
+        clean_up('sandbox')
     
     def test_has_sticky_bit_returns_true(self):
         require_empty_dir('sandbox')
-        sticky=Path("sandbox/sticky")
+        sticky="sandbox/sticky"
         touch(sticky)
         assert subprocess.call(["chmod", "+t", "sandbox/sticky"]) == 0
         assert has_sticky_bit(sticky)
         
     def test_has_sticky_bit_returns_false(self):
         require_empty_dir('sandbox')
-        non_sticky=Path("sandbox/non-sticky")
+        non_sticky="sandbox/non-sticky"
         touch(non_sticky)
         assert subprocess.call(["chmod", "-t", "sandbox/non-sticky"]) == 0
         assert not has_sticky_bit(non_sticky)
 
+class TestDescritions:
+    def setUp(self):
+        require_empty_dir('sandbox')
 
     def test_type_descrition_for_directories(self):
-        require_empty_dir('sandbox')
         
-        assert_equals("directory", Path(".").type_description())
-        assert_equals("directory", Path("..").type_description())
-        assert_equals("directory", Path("sandbox").type_description())
+        assert_equals("directory", describe('.'))
+        assert_equals("directory", describe(".."))
+        assert_equals("directory", describe("sandbox"))
         
     def test_name_for_regular_files(self):
-        require_empty_dir('sandbox')
-        Path("sandbox/non-empty").write_file("content")
+        write_file("sandbox/non-empty", "contents")
         touch('sandbox/empty')
         
-        assert_equals("regular file", Path("sandbox/non-empty").type_description())
-        assert_equals("regular empty file", Path("sandbox/empty").type_description())
+        assert_equals("regular file", describe("sandbox/non-empty"))
+        assert_equals("regular empty file", describe("sandbox/empty"))
                 
     def test_name_for_symbolic_links(self):
-        require_empty_dir('sandbox')
-        Path("sandbox/symlink").write_link('somewhere')
+        os.symlink('somewhere', "sandbox/symlink")
         
-        assert_equals("symbolic link", Path("sandbox/symlink").type_description())
+        assert_equals("symbolic link", describe("sandbox/symlink"))
 
     def test_name_for_dot_directories(self):
-        require_empty_dir('sandbox')
 
-        assert_equals("`.' directory", Path("sandbox/.").type_description())
-        assert_equals("`..' directory", Path("sandbox/..").type_description())
-        
-        assert_equals("`.' directory", Path("./.").type_description())
-        assert_equals("`..' directory", Path("./..").type_description())
+        assert_equals("`.' directory",  describe("sandbox/."))
+        assert_equals("`..' directory", describe("sandbox/.."))
+        assert_equals("`.' directory",  describe("./."))
+        assert_equals("`..' directory", describe("./.."))
 
 def touch(path):
     open(path,'w').close()

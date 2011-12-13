@@ -52,7 +52,6 @@ class TrashDirectory:
     def trash(self, path):
         from datetime import datetime
         path = os.path.normpath(path)
-        path = Path(path)
         self.check()
 
         if not self.volume == volume_of(parent_of(path)) :
@@ -70,7 +69,7 @@ class TrashDirectory:
                                                                    trashinfo_file_content)
 
         trashed_file = self._create_trashed_file(trash_info_id,
-                                                 Path(os.path.abspath(path)),
+                                                 os.path.abspath(path),
                                                  trash_info.deletion_date)
 
         self.ensure_files_dir_exists()
@@ -94,7 +93,6 @@ class TrashDirectory:
         as filesystem.Path.
         """
         result = os.path.join(self.path, 'info')
-        result = Path(result)
         return result
 
     @property
@@ -104,7 +102,6 @@ class TrashDirectory:
         A Path instance.
         """
         result = os.path.join(self.path, 'files')
-        result = Path(result)
         return result
 
     def all_info_files(self) :
@@ -142,7 +139,7 @@ class TrashDirectory:
 
     def _create_trashed_file(self, trash_id, path, deletion_date):
         actual_path = self._calc_path_for_actual_file(trash_id)
-        info_file = self._calc_path_for_info_file(trash_id)
+        info_file   = self._calc_path_for_info_file(trash_id)
 
         return TrashedFile(path,
                            deletion_date,
@@ -193,7 +190,6 @@ class TrashDirectory:
             trash_info_basename = trash_id+".trashinfo"
 
             dest = os.path.join(self.info_dir, trash_info_basename)
-            dest = Path(dest)
             try :
                 handle = os.open(dest,
                                  os.O_RDWR | os.O_CREAT | os.O_EXCL,
@@ -219,7 +215,6 @@ class TrashDirectory:
 
 class HomeTrashDirectory(TrashDirectory):
     def __init__(self, path) :
-        assert isinstance(path, Path)
         TrashDirectory.__init__(self, path, volume_of(path))
 
     def __str__(self):
@@ -230,14 +225,13 @@ class HomeTrashDirectory(TrashDirectory):
             home_dir=os.environ['HOME']
             home_dir = posixpath.normpath(home_dir)
             if home_dir != '':
-                result=re.sub('^'+ re.escape(home_dir)+Path.sep, '~' + Path.sep,result)
+                result=re.sub('^'+ re.escape(home_dir)+os.path.sep, '~' + os.path.sep,result)
         except KeyError:
             pass
         return result
 
     def _path_for_trashinfo(self, fileToBeTrashed) :
-        #assert isinstance(fileToBeTrashed, Path)
-        fileToBeTrashed = fileToBeTrashed.norm()
+        fileToBeTrashed = os.path.normpath(fileToBeTrashed)
 
         # for the HomeTrashDirectory all path are stored as absolute
 
@@ -245,7 +239,8 @@ class HomeTrashDirectory(TrashDirectory):
         parent   = os.path.dirname(realpath)
         basename = os.path.basename(fileToBeTrashed)
         result   = os.path.join(parent,basename)
-        return Path(result)
+
+        return result
 
 class VolumeTrashDirectory(TrashDirectory) :
     def __init__(self, path, volume) :
@@ -254,7 +249,7 @@ class VolumeTrashDirectory(TrashDirectory) :
     def _path_for_trashinfo(self, fileToBeTrashed) :
         # for the VolumeTrashDirectory paths are stored as relative
         # if possible
-        fileToBeTrashed = fileToBeTrashed.norm()
+        fileToBeTrashed = os.path.normpath(fileToBeTrashed)
 
         # string representing the parent of the fileToBeTrashed
         parent = os.path.dirname(fileToBeTrashed)
@@ -263,10 +258,9 @@ class VolumeTrashDirectory(TrashDirectory) :
         topdir=self.volume   # e.g. /mnt/disk-1
 
         if parent.startswith(topdir+os.path.sep) :
-            parent = Path(parent[len(topdir+os.path.sep):])
+            parent = parent[len(topdir+os.path.sep):]
 
         result = os.path.join(parent, os.path.basename(fileToBeTrashed))
-        result = Path(result)
         return result
 
 class TopDirWithoutStickyBit(IOError):
@@ -313,7 +307,7 @@ class Method1VolumeTrashDirectory(VolumeTrashDirectory):
 def real_list_mount_points():
     from trashcli.list_mount_points import mount_points
     for mount_point in mount_points(): 
-	yield Path(mount_point)
+	yield mount_point
 
 class GlobalTrashCan:
     """
@@ -358,7 +352,6 @@ class GlobalTrashCan:
         Firstly the software attempt to trash the file in the first directory
         then try to trash in the second trash directory.
         """
-	file=Path(file)	
 
 	if self.should_skipped_by_specs(file):
 	    self.reporter.unable_to_trash_dot_entries(file)
@@ -368,9 +361,10 @@ class GlobalTrashCan:
 	    if self.file_could_be_trashed_in(file, trash_dir.path):
 		try:
 		    trashed_file = trash_dir.trash(file)
-		    self.reporter.file_has_been_trashed_in_as(file, 
-								  trashed_file.trash_directory,
-								  trashed_file.original_file.path)
+		    self.reporter.file_has_been_trashed_in_as(
+                          file, 
+                          trashed_file.trash_directory,
+                          trashed_file.original_file)
 		    return
 
 		except (IOError, OSError), error:
@@ -396,7 +390,7 @@ class GlobalTrashCan:
             yield self._volume_trash_dir1(volume)
             yield self._volume_trash_dir2(volume)
     def _home_trash_dir(self) :
-	return HomeTrashDirectory(Path(self._home_trash_dir_path()))
+	return HomeTrashDirectory(self._home_trash_dir_path())
     def _possible_trash_directories_for(self,file):
 	yield self._home_trash_dir()
         for td in self.trash_directories_for_volume(self.volume_of_parent(file)):
@@ -429,8 +423,9 @@ class GlobalTrashCan:
 
     def for_all_trashed_file(self, action):
         for trashedfile in self.trashed_files():
-            action(info_path=trashedfile.original_file.path,
-                   path=trashedfile.info_file.path)
+            action(
+                    info_path = trashedfile.original_file,
+                    path      = trashedfile.info_file)
     def for_all_files_trashed_more_than(self, days_ago, action):
         for trashedfile in self.trashed_files() :
             delta=self.now()-trashedfile.deletion_date
@@ -497,7 +492,7 @@ class TrashedFile:
             mkdirs(parent)
 
         move(self.original_file, self.path)
-        remove_file(self.info_file.path)
+        remove_file(self.info_file)
 
     @property
     def info_file(self):
@@ -516,8 +511,6 @@ class TrashInfo:
         path          -- the of the .trashinfo file (string or Path)
         deletion_date -- the date of deletion, should be a datetime.
         """
-        if not isinstance(path,Path):
-            path = Path('' + path)
         if not isinstance(deletion_date, datetime):
             raise TypeError("deletion_date should be a datetime")
         self._path = path
@@ -557,7 +550,7 @@ class TrashInfo:
         if match == None :
             raise ValueError()
         try :
-            path = Path(urllib.unquote(match.groups()[0]))
+            path = urllib.unquote(match.groups()[0])
         except IndexError:
             raise ValueError()
 
@@ -580,7 +573,7 @@ class TrashInfo:
     def render(self) :
         import urllib
         result = "[Trash Info]\n"
-        result += "Path=" + urllib.quote(self.path.path,'/') + "\n"
+        result += "Path=" + urllib.quote(self.path,'/') + "\n"
         result += "DeletionDate=" + self._format_date(self.deletion_date) + "\n"
         return result
 
@@ -693,7 +686,7 @@ class TrashPutCmd:
 	    self.trash(arg)
 
     def trash(self, arg):
-	self.trashcan.trash(Path(arg))
+        self.trashcan.trash(arg)
 
     def get_option_parser(self):
 	from trashcli import version
@@ -778,7 +771,6 @@ def mkdirs_using_mode(path, mode):
 def list_files_in_dir(path):
     for entry in os.listdir(path):
         result = os.path.join(path, entry)
-        result = Path(result)
         yield result
 
 def move(path, dest) :
@@ -796,44 +788,9 @@ def mkdirs(path):
     os.makedirs(path)
 
 import os
-import unipath
 
 def parent_of(path):
-    return Path(os.path.dirname(path))
-
-_base = os.path.supports_unicode_filenames and unicode or str
-class _Volume(_base) :
-    def __new__(class_, path):
-        return _base.__new__(class_, path)
-
-class Path(unipath.Path) :
-    sep = '/'
-    def __new__(class_, path):
-        return _base.__new__(class_, path)
-
-    @property
-    def path(self):
-        return str(self)
-
-    def remove(path) :
-        if(os.path.exists(path)):
-            try:
-                os.remove(path)
-            except:
-                return shutil.rmtree(path)
-
-    def __eq__(self, other) :
-        if self is other:
-            return True
-        if self.path == other:
-            return True
-        return False
-
-    def __repr__(self):
-        return "Path('%s')" % self.path
-
-    def type_description(self):
-        return describe(self)
+    return os.path.dirname(path)
 
 def describe(path):
     """
@@ -877,3 +834,7 @@ def volume_of(path) :
         path = os.path.dirname(path)
     return path
 
+def write_file(path, contents):
+    f = open(path, 'w')
+    f.write(contents)
+    f.close()
