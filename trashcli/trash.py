@@ -36,9 +36,7 @@ class TrashDirectory:
     For example $XDG_DATA_HOME/Trash
     """
     def __init__(self, path, volume) :
-        assert isinstance(path,Path)
-        assert isinstance(volume,Volume)
-        self.path = path.norm()
+        self.path = os.path.normpath(path)
         self.volume = volume
 
     def __str__(self) :
@@ -58,7 +56,7 @@ class TrashDirectory:
         self.check()
 
         if not self.volume == volume_of(parent_of(path)) :
-            raise ("file is not in the same volume of trash directory!\n"
+            raise IOError("file is not in the same volume of trash directory!\n"
                    + "self.volume = " + str(self.volume) + ", \n"
                    + "file.parent.volume = "
                         + str(volume_of(parent_of(path))))
@@ -156,7 +154,7 @@ class TrashDirectory:
         if os.path.isabs(path) :
             return path
         else :
-            return os.path.join(self.volume.path, path)
+            return os.path.join(self.volume, path)
 
     @staticmethod
     def calc_id(trash_info_file):
@@ -262,10 +260,10 @@ class VolumeTrashDirectory(TrashDirectory) :
         parent = os.path.dirname(fileToBeTrashed)
         parent = os.path.realpath(parent)
 
-        topdir=self.volume.path   # e.g. /mnt/disk-1
+        topdir=self.volume   # e.g. /mnt/disk-1
 
-        if parent.startswith(topdir.path+os.path.sep) :
-            parent = Path(parent[len(topdir.path+os.path.sep):])
+        if parent.startswith(topdir+os.path.sep) :
+            parent = Path(parent[len(topdir+os.path.sep):])
 
         result = os.path.join(parent, os.path.basename(fileToBeTrashed))
         result = Path(result)
@@ -394,7 +392,7 @@ class GlobalTrashCan:
         """Return a generator of all TrashDirectories in the filesystem"""
         yield self._home_trash_dir()
 	for mount_point in self.list_mount_points():
-	    volume = Volume(mount_point)
+	    volume = mount_point
             yield self._volume_trash_dir1(volume)
             yield self._volume_trash_dir2(volume)
     def _home_trash_dir(self) :
@@ -411,7 +409,7 @@ class GlobalTrashCan:
         Return the method (1) volume trash dir ($topdir/.Trash/$uid).
         """
         uid = self.getuid()
-        trash_directory_path = os.path.join(volume.topdir, '.Trash', str(uid))
+        trash_directory_path = os.path.join(volume, '.Trash', str(uid))
         return Method1VolumeTrashDirectory(trash_directory_path,volume)
     def _volume_trash_dir2(self, volume) :
         """
@@ -419,7 +417,7 @@ class GlobalTrashCan:
         """
         uid = self.getuid()
         dirname=".Trash-%s" % str(uid)
-        trash_directory_path = os.path.join(volume.topdir, dirname)
+        trash_directory_path = os.path.join(volume, dirname)
         return VolumeTrashDirectory(trash_directory_path,volume)
     def _home_trash_dir_path(self):
         if 'XDG_DATA_HOME' in self.environ:
@@ -865,16 +863,10 @@ def describe(path):
         return 'entry'
 
 
-class Volume(object) :
-    def __init__(self, path, permissive = False):
-        if True or permissive or os.path.ismount(path.path) :
-            self.path = Path(path)
-        else:
-            raise ValueError("path is not a mount point:" + path)
-
-    @property
-    def topdir(self) :
-        return self.path
+_base = os.path.supports_unicode_filenames and unicode or str
+class Volume(_base) :
+    def __new__(class_, path):
+        return _base.__new__(class_, path)
 
     def __cmp__(self, other) :
         if not isinstance(other, self.__class__) :
@@ -894,5 +886,5 @@ def volume_of(path) :
         if os.path.ismount(path):
             break
         path = os.path.dirname(path)
-    return Volume(path)
+    return path
 

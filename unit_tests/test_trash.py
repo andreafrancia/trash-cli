@@ -20,10 +20,6 @@
 
 from __future__ import absolute_import
 
-"""
-Unit test for Volume.py
-"""
-
 __author__="Andrea Francia (andrea.francia@users.sourceforge.net)"
 __copyright__="Copyright (c) 2007 Andrea Francia"
 __license__="GPL"
@@ -35,7 +31,6 @@ from trashcli.trash import VolumeTrashDirectory
 from trashcli.trash import TimeUtils
 from trashcli.trash import HomeTrashDirectory
 from trashcli.trash import Path, mkdirs, volume_of
-from trashcli.trash import Volume
 from trashcli.trash import TopDirIsSymLink
 from trashcli.trash import TopDirNotPresent
 from trashcli.trash import TopDirWithoutStickyBit
@@ -50,15 +45,6 @@ from nose.tools import raises
 from nose.tools import assert_equals
 
 class TestTrashDirectory(TestCase) :
-
-    def test_init(self) :
-        path = Path("/mnt/disk/.Trash-123")
-        volume = Volume(Path("/mnt/disk"), True);
-        instance = TrashDirectory(path, volume)
-        
-        self.assertEquals(volume, instance.volume)
-        self.assertEquals(path, instance.path)
-        
 
     def test_trash(self) :
         #instance
@@ -77,13 +63,13 @@ class TestTrashDirectory(TestCase) :
     def test_get_info_dir(self):
         instance=TrashDirectory(
             Path("/mnt/disk/.Trash-123"),
-            Volume(Path("/mnt/disk"), True))
+            volume_of(Path("/mnt/disk")))
         self.assertEquals("/mnt/disk/.Trash-123/info", instance.info_dir)
 
     def test_get_files_dir(self):
         instance=TrashDirectory(
             Path("/mnt/disk/.Trash-123"),
-            Volume(Path("/mnt/disk"), True))
+            volume_of(Path("/mnt/disk")))
         self.assertEquals("/mnt/disk/.Trash-123/files", instance.files_dir)
     
     def test_calc_id(self):
@@ -93,7 +79,7 @@ class TestTrashDirectory(TestCase) :
     def test_calc_original_location_when_absolute(self) :
         instance = TrashDirectory(
             Path("/mnt/disk/.Trash-123"),
-            Volume(Path("/mnt/disk"), True))
+            volume_of(Path("/mnt/disk")))
         
         assert_equals(Path("/foo"),
                       instance._calc_original_location(Path("/foo")))
@@ -101,15 +87,15 @@ class TestTrashDirectory(TestCase) :
     def test_calc_original_location_when_relative(self) :
         instance = TrashDirectory(
             Path("/mnt/disk/.Trash-123"),
-            Volume(Path("/mnt/disk"), True))
+            "/mnt/disk")
         
-        assert_equals(Path("/mnt/disk/foo"),
+        assert_equals("/mnt/disk/foo",
                       instance._calc_original_location(Path("foo")))
        
 class TestHomeTrashDirectory(TestCase) :
     def test_path_for_trashinfo (self) : 
         instance = HomeTrashDirectory(Path("/home/user/.local/share/Trash"))
-        instance.volume = Volume(Path("/"))
+        instance.volume = volume_of(Path("/"))
 
         # path for HomeTrashDirectory are always absolute
         fileToBeTrashed=Path("/home/user/test.txt")
@@ -145,20 +131,20 @@ class TestHomeTrashDirectory(TestCase) :
 class TestVolumeTrashDirectory(TestCase) :
     def test_init(self) :
         path = Path("/mnt/disk/.Trash/123")
-        volume = Volume(Path("/mnt/disk"), True)
+        volume = volume_of(Path("/mnt/disk"))
         instance = VolumeTrashDirectory(path, volume)
         self.assertEquals(path, instance.path)
         self.assertEquals(volume, instance.volume)
         
     def test_path_for_trashinfo (self) : 
         path = Path("/mnt/disk/.Trash-123")
-        volume = Volume(Path("/mnt/volume"), True)
+        volume = "/mnt/volume"
         instance = VolumeTrashDirectory(path, volume)
 
         # path for VolumeTrashDirectory are relative as possible
         fileToBeTrashed=Path("/mnt/volume/directory/test.txt")
         result=instance._path_for_trashinfo(fileToBeTrashed)
-        self.assertEquals("directory/test.txt",result)
+        self.assertEquals("directory/test.txt", result)
             
         # path for VolumeTrashDirectory are relative as possible
         fileToBeTrashed=Path("/mnt/other-volume/directory/test.txt")
@@ -251,7 +237,7 @@ class Method1VolumeTrashDirectoryTest(TestCase):
         topdir = Path("sandbox/trash-dir")
         mkdirs(topdir)
         assert subprocess.call(["chmod", "-t", topdir.path]) == 0
-        volume = Volume(Path("/mnt/disk"), True)
+        volume = volume_of(Path("/mnt/disk"))
         instance = Method1VolumeTrashDirectory(os.path.join(topdir,"123"), volume)
         
         instance.check()
@@ -263,7 +249,7 @@ class Method1VolumeTrashDirectoryTest(TestCase):
         topdir = Path("sandbox/trash-dir")
         touch(topdir)
         assert subprocess.call(["chmod", "+t", topdir.path]) == 0
-        volume = Volume(Path("/mnt/disk"), True)
+        volume = volume_of(Path("/mnt/disk"))
         instance = Method1VolumeTrashDirectory(os.path.join(topdir,"123"), volume)
         
         instance.check()
@@ -278,7 +264,7 @@ class Method1VolumeTrashDirectoryTest(TestCase):
         
         topdir_link = Path("sandbox/trash-dir-link")
         topdir_link.write_link("./trash-dir")
-        volume = Volume(Path("/mnt/disk"), True)
+        volume = volume_of(Path("/mnt/disk"))
         instance = Method1VolumeTrashDirectory(os.path.join(topdir_link,"123"), volume)
         
         instance.check()
@@ -289,7 +275,7 @@ class Method1VolumeTrashDirectoryTest(TestCase):
         topdir = Path("sandbox/trash-dir")
         mkdirs(topdir)
         assert subprocess.call(["chmod", "+t", topdir.path]) == 0
-        volume = Volume(Path("/mnt/disk"), True)
+        volume = volume_of(Path("/mnt/disk"))
         instance = Method1VolumeTrashDirectory(os.path.join(topdir,"123"), volume)
         
         instance.check() # should pass
