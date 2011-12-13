@@ -19,7 +19,6 @@
 # 02110-1301, USA.
 
 from nose.tools import assert_equals
-from unipath import Path
 from assert_equals_with_unidiff import assert_equals_with_unidiff
 
 class CmdResult(object):
@@ -113,7 +112,8 @@ class CommandEnviroment():
         The command is run in the current enviroment (self.env) in the current directory (self.cwd)
         It returns the CommandResult of the command.
         """
-        if Path(cmd).isabsolute():
+        import os
+        if os.path.isabs(cmd):
             real_cmd = cmd
         else:
             real_cmd =self.cmd_aliases[cmd]

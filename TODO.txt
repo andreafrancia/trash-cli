@@ -1,3 +1,5 @@
+Environment:
+ - use distribute as default
 Feature: Rewrite of trash-list
  x set up integration test for ListCmd
  x when there's not trashed file

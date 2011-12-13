@@ -14,7 +14,6 @@ import trashcli
 setup(
     name = 'trash-cli',
     version = trashcli.version,
-    install_requires=file("requirements.txt").readlines(),
     author = 'Andrea Francia',
     author_email = 'me@andreafrancia.it',
     url = 'https://github.com/andreafrancia/trash-cli',
