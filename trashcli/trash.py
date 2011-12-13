@@ -57,11 +57,11 @@ class TrashDirectory:
         path = Path(path)
         self.check()
 
-        if not self.volume == path.parent.volume :
+        if not self.volume == volume_of(parent_of(path)) :
             raise ("file is not in the same volume of trash directory!\n"
                    + "self.volume = " + str(self.volume) + ", \n"
                    + "file.parent.volume = "
-                        + str(path.parent.volume))
+                        + str(volume_of(parent_of(path))))
 
         trash_info = TrashInfo(self._path_for_trashinfo(path),
                                datetime.now())
@@ -156,17 +156,17 @@ class TrashDirectory:
         if os.path.isabs(path) :
             return path
         else :
-            return self.volume.path.join(path)
+            return os.path.join(self.volume.path, path)
 
     @staticmethod
     def calc_id(trash_info_file):
         return os.path.basename(trash_info_file)[:-len('.trashinfo')]
 
     def _calc_path_for_actual_file(self, trash_id) :
-        return self.files_dir.join(trash_id)
+        return os.path.join(self.files_dir, trash_id)
 
     def _calc_path_for_info_file(self, trash_id) :
-        return self.info_dir.join('%s.trashinfo' % trash_id)
+        return os.path.join(self.info_dir, '%s.trashinfo' % trash_id)
 
     def _path_for_trashinfo(self, fileToTrash):
         raise NotImplementedError()
@@ -222,7 +222,7 @@ class TrashDirectory:
 class HomeTrashDirectory(TrashDirectory):
     def __init__(self, path) :
         assert isinstance(path, Path)
-        TrashDirectory.__init__(self, path, path.volume)
+        TrashDirectory.__init__(self, path, volume_of(path))
 
     def __str__(self):
         import re
@@ -385,16 +385,10 @@ class GlobalTrashCan:
 	return (basename == ".") or (basename == "..")
 
     def volume_of_parent(self, file):
-	return self.volume_of(self.parent_of(file))
+	return volume_of(parent_of(file))
 
     def file_could_be_trashed_in(self,file_to_be_trashed,trash_dir_path):
-	return self.volume_of(trash_dir_path) == self.volume_of_parent(file_to_be_trashed)
-
-    def parent_of(self, file):
-	return Path(file.parent)
-
-    def volume_of(self, file):
-	return Path(file).volume
+	return volume_of(trash_dir_path) == self.volume_of_parent(file_to_be_trashed)
 
     def _trash_directories(self) :
         """Return a generator of all TrashDirectories in the filesystem"""
@@ -417,7 +411,7 @@ class GlobalTrashCan:
         Return the method (1) volume trash dir ($topdir/.Trash/$uid).
         """
         uid = self.getuid()
-        trash_directory_path = volume.topdir.join(Path(".Trash")).join(Path(str(uid)))
+        trash_directory_path = os.path.join(volume.topdir, '.Trash', str(uid))
         return Method1VolumeTrashDirectory(trash_directory_path,volume)
     def _volume_trash_dir2(self, volume) :
         """
@@ -425,7 +419,7 @@ class GlobalTrashCan:
         """
         uid = self.getuid()
         dirname=".Trash-%s" % str(uid)
-        trash_directory_path = volume.topdir.join(Path(dirname))
+        trash_directory_path = os.path.join(volume.topdir, dirname)
         return VolumeTrashDirectory(trash_directory_path,volume)
     def _home_trash_dir_path(self):
         if 'XDG_DATA_HOME' in self.environ:
@@ -806,42 +800,15 @@ def mkdirs(path):
 import os
 import unipath
 
+def parent_of(path):
+    return Path(os.path.dirname(path))
+
 class Path (unipath.Path) :
     sep = '/'
 
     @property
     def path(self):
         return str(self)
-
-    @property
-    def parent(self) :
-        return Path(os.path.dirname(self))
-
-    @property
-    def _basename(self) :
-        return self.name
-
-    def __join_str(self, path) :
-        return Path(os.path.join(self.path, path))
-
-    def __join_Path(self, path) :
-        assert(isinstance(path, Path))
-        if os.path.isabs(path) :
-            raise ValueError("File with relative path expected")
-        return self.__join_str(path.path)
-
-    def join(self, path) :
-        if(isinstance(path,Path)):
-            return self.__join_Path(path)
-        else:
-            return self.__join_str(str(path))
-
-    """
-    return Volume the volume where the file is
-    """
-    @property
-    def volume(self) :
-        return Volume.volume_of(self.path)
 
     def remove(path) :
         if(os.path.exists(path)):
@@ -896,10 +863,9 @@ class Path (unipath.Path) :
 
 
 class Volume(object) :
-    def __init__(self,path, permissive = False):
-        assert(isinstance(path,Path))
+    def __init__(self, path, permissive = False):
         if True or permissive or os.path.ismount(path.path) :
-            self.path=path
+            self.path = Path(path)
         else:
             raise ValueError("path is not a mount point:" + path)
 
@@ -919,12 +885,7 @@ class Volume(object) :
 
     @staticmethod
     def volume_of(path) :
-        path = os.path.realpath(path)
-        while path != os.path.dirname(path):
-            if os.path.ismount(path):
-                break
-            path = os.path.dirname(path)
-        return Volume(Path(path))
+        return volume_of(path)
 
     def __repr__(self):
         return "[Path:%s]" % self.path
@@ -935,4 +896,11 @@ class Volume(object) :
         for mount_point in mount_points():
             yield Volume(Path(mount_point))
 
+def volume_of(path) :
+    path = os.path.realpath(path)
+    while path != os.path.dirname(path):
+        if os.path.ismount(path):
+            break
+        path = os.path.dirname(path)
+    return Volume(path)
 

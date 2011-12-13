@@ -71,23 +71,6 @@ class TestPath(unittest.TestCase) :
         instance = Path("dummy/path")
         self.assertEquals(Path("dummy"), instance.parent)
     
-    def test_join_with_File_relative(self) :
-        instance=Path("/foo")
-        result=instance.join(Path("bar"))
-        self.assertEquals(Path("/foo/bar"),result)
-
-    def test_join_with_File_absolute(self) :
-        instance=Path("/foo")
-        try : 
-            instance.join(Path("/bar"))
-            self.fail()
-        except ValueError: 
-            pass
-
-    def test_join_with_str(self):
-        instance=Path("/foo")
-        result=instance.join("bar")
-        self.assertEquals(Path("/foo/bar"),result)
 
     def test_mkdir(self):
         require_empty_dir('sandbox')
@@ -123,14 +106,14 @@ class TestPath(unittest.TestCase) :
     
     def test_has_sticky_bit_returns_true(self):
         require_empty_dir('sandbox')
-        sticky=Path("sandbox").join("sticky")
+        sticky=Path("sandbox/sticky")
         touch(sticky)
         assert subprocess.call(["chmod", "+t", "sandbox/sticky"]) == 0
         assert has_sticky_bit(sticky)
         
     def test_has_sticky_bit_returns_false(self):
         require_empty_dir('sandbox')
-        non_sticky=Path("sandbox").join("non-sticky")
+        non_sticky=Path("sandbox/non-sticky")
         touch(non_sticky)
         assert subprocess.call(["chmod", "-t", "sandbox/non-sticky"]) == 0
         assert not has_sticky_bit(non_sticky)
@@ -145,7 +128,7 @@ class TestPath(unittest.TestCase) :
         
     def test_name_for_regular_files(self):
         require_empty_dir('sandbox')
-        Path("sandbox").join("non-empty").write_file("content")
+        Path("sandbox/non-empty").write_file("content")
         touch('sandbox/empty')
         
         assert_equals("regular file", Path("sandbox/non-empty").type_description())
@@ -153,7 +136,7 @@ class TestPath(unittest.TestCase) :
                 
     def test_name_for_symbolic_links(self):
         require_empty_dir('sandbox')
-        Path("sandbox").join("symlink").write_link('somewhere')
+        Path("sandbox/symlink").write_link('somewhere')
         
         assert_equals("symbolic link", Path("sandbox/symlink").type_description())
 

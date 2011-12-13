@@ -6,6 +6,7 @@ from trashcli.trash import Volume
 
 from datetime import datetime
 import os
+join = os.path.join
 
 class TestTrashDirectory_persit_trash_info(TestCase) :
     def setUp(self):
@@ -22,14 +23,13 @@ class TestTrashDirectory_persit_trash_info(TestCase) :
         (trash_info_file,
                 trash_info_id)=self.instance.persist_trash_info(basename,content)
 
-        self.assertTrue(isinstance(trash_info_file, Path))
         self.assertEquals('dummy-path', trash_info_id)
-        self.assertEquals(self.trashdirectory_base_dir.join('info').join('dummy-path.trashinfo').path, trash_info_file)
+        self.assertEquals(join(self.trashdirectory_base_dir,'info', 'dummy-path.trashinfo'), trash_info_file)
 
-        self.assertEquals("""[Trash Info]
-Path=dummy-path
-DeletionDate=2007-01-01T00:00:00
-""", read(trash_info_file))
+        self.assertEquals("[Trash Info]\n"
+                          "Path=dummy-path\n"
+                          "DeletionDate=2007-01-01T00:00:00\n", 
+                          read(trash_info_file))
 
     def test_persist_trash_info_first_100_times(self):
         self.test_persist_trash_info_first_time()

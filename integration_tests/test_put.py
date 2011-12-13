@@ -37,17 +37,10 @@ class PutTest(TestCase):
     #  - issue #32
     #  - http://www.catb.org/~esr/writings/taouu/taouu.html#rule-silence
     def test_silence_rule(self):
-        """
-        $ trash-put foo
-        """
         self.sandbox.create_file('foo')
         self.cmdenv.run('trash-put', 'foo').assert_result(output="")
 
     def test_dot_argument_is_skipped(self):
-        """
-        $ trash-put . other_argument
-        trash-put: cannot trash directory `.'
-        """
         self.sandbox.create_file('other_argument')
         result = self.cmdenv.run("trash-put", ".","other_argument")
 
@@ -56,13 +49,9 @@ class PutTest(TestCase):
         assert_equals(result.stderr,"trash-put: cannot trash directory `.'\n")
 
         # the remaining arguments should be processed
-        assert_false(self.sandbox.path.join('other_argument').exists())
+        assert_false(self.sandbox.exists('other_argument'))
 
     def test_dot_dot_argument_is_skipped(self):
-        """
-        $ trash-put .. other_argument
-        trash-put: cannot trash directory `..'
-        """
         self.sandbox.create_file('other_argument')
         result = self.cmdenv.run("trash-put", "..", "other_argument")
 
@@ -72,14 +61,10 @@ class PutTest(TestCase):
         assert_equals(result.stderr,"trash-put: cannot trash directory `..'\n")
 
         # the remaining arguments should be processed
-        assert_false(self.sandbox.path.join('other_argument').exists())
+        assert_false(self.sandbox.exists('other_argument'))
 
     def test_dot_argument_is_skipped_even_in_subdirs(self):
-        """
-        $ trash-put foo/. other_argument
-        trash-put: cannot trash directory `.'
-        """
-        self.sandbox.path.join('foo').mkdir()
+        self.sandbox.mkdir('foo')
         self.sandbox.create_file('other_argument')
         result = self.cmdenv.run("trash-put", "foo/.","other_argument")
 
@@ -89,15 +74,11 @@ class PutTest(TestCase):
             "trash-put: cannot trash `.' directory `foo/.'\n")
 
         # the remaining arguments should be processed
-        assert_false(self.sandbox.path.join('other_argument').exists())
-        assert_true(self.sandbox.path.join('foo').exists())
+        assert_false(self.sandbox.exists('other_argument'))
+        assert_true(self.sandbox.exists('foo'))
 
     def test_dot_dot_argument_is_skipped_even_in_subdirs(self):
-        """
-        $ trash-put foo/.. other_argument
-        trash-put: cannot trash directory `..'
-        """
-        self.sandbox.path.join('foo').mkdir()
+        self.sandbox.mkdir('foo')
         self.sandbox.create_file('other_argument')
         result = self.cmdenv.run("trash-put", "foo/..", "other_argument")
 
@@ -107,8 +88,8 @@ class PutTest(TestCase):
             "trash-put: cannot trash `..' directory `foo/..'\n")
 
         # the remaining arguments should be processed
-        assert_false(self.sandbox.path.join('other_argument').exists())
-        assert_true(self.sandbox.path.join('foo').exists())
+        assert_false(self.sandbox.exists('other_argument'))
+        assert_true(self.sandbox.exists('foo'))
 
 class Sandbox():
     """
@@ -125,7 +106,8 @@ class Sandbox():
         """
         Create a file in sandbox with content
         """
-        file=self.path.join(path)
+        import os
+        file=os.path.join(self.path,path)
         touch(file)
         if content!=None :
             file.write_file(content)
@@ -141,6 +123,14 @@ class Sandbox():
         # sanity check
         assert not path.exists()
         return result
+
+    def mkdir(self,subdir):
+        import os
+        path=os.path.join(self.path, subdir)
+        Path(path).mkdir()
+    def exists(self, path):
+        import os
+        return os.path.exists(os.path.join(self.path, path))
 
 def touch(path):
     open(path,'a+').close()

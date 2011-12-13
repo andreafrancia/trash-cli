@@ -34,7 +34,7 @@ from trashcli.trash import TrashInfo
 from trashcli.trash import VolumeTrashDirectory
 from trashcli.trash import TimeUtils
 from trashcli.trash import HomeTrashDirectory
-from trashcli.trash import Path, mkdirs
+from trashcli.trash import Path, mkdirs, volume_of
 from trashcli.trash import Volume
 from trashcli.trash import TopDirIsSymLink
 from trashcli.trash import TopDirNotPresent
@@ -64,7 +64,7 @@ class TestTrashDirectory(TestCase) :
         #instance
         instance=VolumeTrashDirectory(
                         Path("sandbox/trash-directory"), 
-                        Path("sandbox").volume)
+                        volume_of("sandbox"))
 
         # test
         file_to_trash=Path("sandbox/dummy.txt")
@@ -194,7 +194,7 @@ DeletionDate=2007-07-23T23:45:07"""
 class TestTrashedFile(TestCase) :
     __dummy_datetime=datetime(2007, 7, 23, 23, 45, 07)
     def setUp(self):
-        self.xdg_data_home = Path("sandbox").join("XDG_DATA_HOME")
+        self.xdg_data_home = Path("sandbox/XDG_DATA_HOME")
         
     def test_init(self) :
         path = Path("/foo")
@@ -240,7 +240,6 @@ class TestTimeUtils(TestCase) :
         expected=datetime(2008,9,8,12,00,11)
         result=TimeUtils.parse_iso8601("2008-09-08T12:00:11")
         self.assertEqual(expected,result)
-
 class Method1VolumeTrashDirectoryTest(TestCase):
     def setUp(self):
         require_empty_dir('sandbox')
@@ -249,11 +248,11 @@ class Method1VolumeTrashDirectoryTest(TestCase):
     def test_check_when_no_sticky_bit(self):
         # prepare
         import subprocess
-        topdir = Path("sandbox").join("trash-dir")
+        topdir = Path("sandbox/trash-dir")
         mkdirs(topdir)
         assert subprocess.call(["chmod", "-t", topdir.path]) == 0
         volume = Volume(Path("/mnt/disk"), True)
-        instance = Method1VolumeTrashDirectory(topdir.join("123"), volume)
+        instance = Method1VolumeTrashDirectory(os.path.join(topdir,"123"), volume)
         
         instance.check()
         
@@ -261,11 +260,11 @@ class Method1VolumeTrashDirectoryTest(TestCase):
     def test_check_when_no_dir(self):
         # prepare
         import subprocess
-        topdir = Path("sandbox").join("trash-dir")
+        topdir = Path("sandbox/trash-dir")
         touch(topdir)
         assert subprocess.call(["chmod", "+t", topdir.path]) == 0
         volume = Volume(Path("/mnt/disk"), True)
-        instance = Method1VolumeTrashDirectory(topdir.join("123"), volume)
+        instance = Method1VolumeTrashDirectory(os.path.join(topdir,"123"), volume)
         
         instance.check()
 
@@ -273,25 +272,25 @@ class Method1VolumeTrashDirectoryTest(TestCase):
     def test_check_when_is_symlink(self):
         # prepare
         import subprocess
-        topdir = Path("sandbox").join("trash-dir")
+        topdir = Path("sandbox/trash-dir")
         mkdirs(topdir)
         assert subprocess.call(["chmod", "+t", topdir.path]) == 0
         
         topdir_link = Path("sandbox/trash-dir-link")
         topdir_link.write_link("./trash-dir")
         volume = Volume(Path("/mnt/disk"), True)
-        instance = Method1VolumeTrashDirectory(topdir_link.join("123"), volume)
+        instance = Method1VolumeTrashDirectory(os.path.join(topdir_link,"123"), volume)
         
         instance.check()
         
     def test_check_pass(self):
         # prepare
         import subprocess
-        topdir = Path("sandbox").join("trash-dir")
+        topdir = Path("sandbox/trash-dir")
         mkdirs(topdir)
         assert subprocess.call(["chmod", "+t", topdir.path]) == 0
         volume = Volume(Path("/mnt/disk"), True)
-        instance = Method1VolumeTrashDirectory(topdir.join("123"), volume)
+        instance = Method1VolumeTrashDirectory(os.path.join(topdir,"123"), volume)
         
         instance.check() # should pass
 
