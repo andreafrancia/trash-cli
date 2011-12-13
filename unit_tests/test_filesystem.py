@@ -21,27 +21,12 @@
 from __future__ import absolute_import
 
 import unittest
-from trashcli.trash import Volume
 from trashcli.trash import Path, has_sticky_bit, mkdirs
 import sys
 import os
 import subprocess
 from nose.tools import assert_equals
 from integration_tests.files import require_empty_dir
-
-class TestVolume(unittest.TestCase) :
-    def test_all(self) :
-
-	volumes = Volume.all()
-	self.assert_(len(list(volumes)) > 0)
-	for v in volumes:
-	    self.assert_(isinstance(v, Volume))
-
-    def testCmpVolumes(self) :
-        v1 = Volume(Path(os.sep))
-        v2 = Volume(Path(os.sep))
-
-        self.assert_(v1 == v2)
 
 def _is_mac_os():
     return sys.platform == 'darwin'

@@ -759,10 +759,10 @@ class TrashPutReporter:
 	self.logger = logger
 
     def unable_to_trash_dot_entries(self,file):
-	self.logger.warning("cannot trash %s `%s'" % (file.type_description(), file))
+	self.logger.warning("cannot trash %s `%s'" % (describe(file), file))
 
     def unable_to_trash_file(self,f):
-	self.logger.warning("cannot trash %s `%s'" % (f.type_description(), f))
+	self.logger.warning("cannot trash %s `%s'" % (describe(f), f))
 
     def file_has_been_trashed_in_as(self, trashee, trash_directory, destination):
 	self.logger.info("`%s' trashed in %s " % (trashee, trash_directory))
@@ -828,38 +828,41 @@ class Path (unipath.Path) :
         return "Path('%s')" % self.path
 
     def type_description(self):
-        """
-        Return a textual description of the file pointed by this path.
-        Options:
-         - "symbolic link"
-         - "directory"
-         - "`.' directory"
-         - "`..' directory"
-         - "regular file"
-         - "regular empty file"
-         - "entry"
-        """
-        if os.path.islink(self):
-            return 'symbolic link'
-        elif os.path.isdir(self):
-            if self == '.':
-                return 'directory'
-            elif self == '..':
-                return 'directory'
-            else:
-                if os.path.basename(self) == '.':
-                    return "`.' directory"
-                elif os.path.basename(self) == '..':
-                    return "`..' directory"
-                else:
-                    return 'directory'
-        elif os.path.isfile(self):
-            if os.path.getsize(self) == 0:
-                return 'regular empty file'
-            else:
-                return 'regular file'
+        return describe(self)
+
+def describe(path):
+    """
+    Return a textual description of the file pointed by this path.
+    Options:
+     - "symbolic link"
+     - "directory"
+     - "`.' directory"
+     - "`..' directory"
+     - "regular file"
+     - "regular empty file"
+     - "entry"
+    """
+    if os.path.islink(path):
+        return 'symbolic link'
+    elif os.path.isdir(path):
+        if path == '.':
+            return 'directory'
+        elif path == '..':
+            return 'directory'
         else:
-            return 'entry'
+            if os.path.basename(path) == '.':
+                return "`.' directory"
+            elif os.path.basename(path) == '..':
+                return "`..' directory"
+            else:
+                return 'directory'
+    elif os.path.isfile(path):
+        if os.path.getsize(path) == 0:
+            return 'regular empty file'
+        else:
+            return 'regular file'
+    else:
+        return 'entry'
 
 
 class Volume(object) :
@@ -871,7 +874,6 @@ class Volume(object) :
 
     @property
     def topdir(self) :
-        assert(isinstance(self.path, Path))
         return self.path
 
     def __cmp__(self, other) :
@@ -883,18 +885,8 @@ class Volume(object) :
     def __str__(self) :
         return str(self.path)
 
-    @staticmethod
-    def volume_of(path) :
-        return volume_of(path)
-
     def __repr__(self):
         return "[Path:%s]" % self.path
-
-    @staticmethod
-    def all() :
-	from trashcli.list_mount_points import mount_points
-        for mount_point in mount_points():
-            yield Volume(Path(mount_point))
 
 def volume_of(path) :
     path = os.path.realpath(path)
