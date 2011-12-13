@@ -1,8 +1,8 @@
 from unittest import TestCase
 from trashcli.trash import TrashDirectory
 from trashcli.trash import TrashInfo
-from trashcli.filesystem import Path
-from trashcli.filesystem import Volume
+from trashcli.trash import Path
+from trashcli.trash import Volume
 
 from datetime import datetime
 import os

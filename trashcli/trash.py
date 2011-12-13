@@ -28,8 +28,8 @@ logger=logging.getLogger('trashcli.trash')
 logger.setLevel(logging.WARNING)
 logger.addHandler(logging.StreamHandler())
 
-from .filesystem import Volume
-from .filesystem import Path
+#from .filesystem import Volume
+#from .filesystem import Path
 from .trash2 import contents_of
 
 class TrashDirectory:
@@ -294,15 +294,23 @@ class Method1VolumeTrashDirectory(VolumeTrashDirectory):
         VolumeTrashDirectory.__init__(self,path,volume)
 
     def check(self):
-        if not self.path.parent.isdir():
+        if not self.parent_is_dir():
             raise TopDirNotPresent("topdir should be a directory: %s"
                                    % self.path)
-        if self.path.parent.islink():
+        if self.parent_is_link():
             raise TopDirIsSymLink("topdir can't be a symbolic link: %s"
                                   % self.path)
-        if not self.path.parent.has_sticky_bit():
+        if not self.parent_has_sticky_bit():
             raise TopDirWithoutStickyBit("topdir should have the sticky bit: %s"
                                          % self.path)
+    def parent_is_dir(self):
+        return os.path.isdir(self.parent())
+    def parent_is_link(self):
+        return os.path.islink(self.parent())
+    def parent(self):
+        return os.path.dirname(self.path)
+    def parent_has_sticky_bit(self):
+        return has_sticky_bit(self.parent())
 
 def real_list_mount_points():
     from trashcli.list_mount_points import mount_points
@@ -782,4 +790,166 @@ def list_files_in_dir(path):
 def move(path, dest) :
     import shutil
     return shutil.move(path, str(dest))
+
+def has_sticky_bit(path):
+    import os
+    import stat
+    return (os.stat(path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
+import os
+import shutil
+import unipath
+
+class Path (unipath.Path) :
+    sep = '/'
+
+    @property
+    def path(self):
+        return str(self)
+
+    @property
+    def parent(self) :
+        return Path(os.path.dirname(self.path))
+
+    @property
+    def realpath(self) :
+        return Path(os.path.realpath(self.path))
+
+    @property
+    def basename(self) :
+        return self.name
+
+    def __join_str(self, path) :
+        return Path(os.path.join(self.path, path))
+
+    def __join_Path(self, path) :
+        assert(isinstance(path, Path))
+        if path.isabs() :
+            raise ValueError("File with relative path expected")
+        return self.__join_str(path.path)
+
+    def join(self, path) :
+        if(isinstance(path,Path)):
+            return self.__join_Path(path)
+        else:
+            return self.__join_str(str(path))
+
+    """
+    return Volume the volume where the file is
+    """
+    @property
+    def volume(self) :
+        return Volume.volume_of(self.path)
+
+    def remove(self) :
+        if(self.exists()):
+            try:
+                os.remove(self.path)
+            except:
+                return shutil.rmtree(self.path)
+
+    def exists(self) :
+        return os.path.exists(self.path)
+
+    def isdir(self) :
+        return os.path.isdir(self.path)
+
+    def islink(self) :
+        return os.path.islink(self.path)
+
+    def isabs(self) :
+        return os.path.isabs(self.path)
+
+    def __eq__(self, other) :
+        if self is other:
+            return True
+        if self.path == other:
+            return True
+        return False
+
+    def mkdir(self):
+        os.mkdir(self.path)
+
+    def mkdirs(self):
+        if self.isdir():
+            return
+        os.makedirs(self.path)
+
+    def __repr__(self):
+        return "Path('%s')" % self.path
+
+    def type_description(self):
+        """
+        Return a textual description of the file pointed by this path.
+        Options:
+         - "symbolic link"
+         - "directory"
+         - "`.' directory"
+         - "`..' directory"
+         - "regular file"
+         - "regular empty file"
+         - "entry"
+        """
+        if os.path.islink(self):
+            return 'symbolic link'
+        elif os.path.isdir(self):
+            if self == '.':
+                return 'directory'
+            elif self == '..':
+                return 'directory'
+            else:
+                if os.path.basename(self) == '.':
+                    return "`.' directory"
+                elif os.path.basename(self) == '..':
+                    return "`..' directory"
+                else:
+                    return 'directory'
+        elif os.path.isfile(self):
+            if os.path.getsize(self) == 0:
+                return 'regular empty file'
+            else:
+                return 'regular file'
+        else:
+            return 'entry'
+
+
+class Volume(object) :
+    def __init__(self,path, permissive = False):
+        assert(isinstance(path,Path))
+        if True or permissive or os.path.ismount(path.path) :
+            self.path=path
+        else:
+            raise ValueError("path is not a mount point:" + path)
+
+    @property
+    def topdir(self) :
+        assert(isinstance(self.path, Path))
+        return self.path
+
+    def __cmp__(self, other) :
+        if not isinstance(other, self.__class__) :
+            return False
+        else :
+            return cmp(self.path,other.path)
+
+    def __str__(self) :
+        return str(self.path)
+
+    @staticmethod
+    def volume_of(path) :
+        path = os.path.realpath(path)
+        while path != os.path.dirname(path):
+            if os.path.ismount(path):
+                break
+            path = os.path.dirname(path)
+        return Volume(Path(path))
+
+    def __repr__(self):
+        return "[Path:%s]" % self.path
+
+    @staticmethod
+    def all() :
+	from trashcli.list_mount_points import mount_points
+        for mount_point in mount_points():
+            yield Volume(Path(mount_point))
+
 

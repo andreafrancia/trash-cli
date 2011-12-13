@@ -34,8 +34,8 @@ from trashcli.trash import TrashInfo
 from trashcli.trash import VolumeTrashDirectory
 from trashcli.trash import TimeUtils
 from trashcli.trash import HomeTrashDirectory
-from trashcli.filesystem import Path
-from trashcli.filesystem import Volume
+from trashcli.trash import Path
+from trashcli.trash import Volume
 from trashcli.trash import TopDirIsSymLink
 from trashcli.trash import TopDirNotPresent
 from trashcli.trash import TopDirWithoutStickyBit
@@ -66,7 +66,7 @@ class TestTrashDirectory(TestCase) :
 
         # test
         file_to_trash=Path("sandbox/dummy.txt")
-        file_to_trash.touch()
+        touch(file_to_trash)
         result = instance.trash(file_to_trash)
         self.assertTrue(isinstance(result,TrashedFile))
         self.assertEquals(file_to_trash.absolute(), result.path)
@@ -227,7 +227,7 @@ class TestTrashedFile(TestCase) :
     def test_restore_create_needed_directories(self):
         trash_dir = HomeTrashDirectory(self.xdg_data_home)
         Path("sandbox/foo").mkdir()
-        Path("sandbox/foo/bar").touch()
+        touch(Path("sandbox/foo/bar"))
         instance = trash_dir.trash(Path("sandbox/foo/bar"))
         Path("sandbox/foo").remove()
         instance.restore()
@@ -261,7 +261,7 @@ class Method1VolumeTrashDirectoryTest(TestCase):
         # prepare
         import subprocess
         topdir = Path("sandbox").join("trash-dir")
-        topdir.touch()
+        touch(topdir)
         assert subprocess.call(["chmod", "+t", topdir.path]) == 0
         volume = Volume(Path("/mnt/disk"), True)
         instance = Method1VolumeTrashDirectory(topdir.join("123"), volume)
@@ -296,4 +296,5 @@ class Method1VolumeTrashDirectoryTest(TestCase):
 
 Path("./sandbox").remove()
 Path("./sandbox").mkdir()
-
+def touch(path):
+    open(path, 'a+').close()

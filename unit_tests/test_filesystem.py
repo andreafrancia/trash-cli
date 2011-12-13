@@ -21,8 +21,8 @@
 from __future__ import absolute_import
 
 import unittest
-from trashcli.filesystem import Volume
-from trashcli.filesystem import Path
+from trashcli.trash import Volume
+from trashcli.trash import Path, has_sticky_bit
 import sys
 import os
 import subprocess
@@ -151,7 +151,7 @@ class TestPath(unittest.TestCase) :
         instance=Path("sandbox/test-file")
         instance.remove()
         self.assertFalse(instance.exists())
-        instance.touch()
+        touch(instance)
         self.assertTrue(instance.exists())
         self.assertFalse(instance.isdir())
         instance.remove() # clean up
@@ -159,16 +159,16 @@ class TestPath(unittest.TestCase) :
     def test_has_sticky_bit_returns_true(self):
         Path("sandbox").mkdirs()
         sticky=Path("sandbox").join("sticky")
-        sticky.touch()
+        touch(sticky)
         assert subprocess.call(["chmod", "+t", "sandbox/sticky"]) == 0
-        assert sticky.has_sticky_bit()
+        assert has_sticky_bit(sticky)
         
     def test_has_sticky_bit_returns_false(self):
         Path("sandbox").mkdirs()
         non_sticky=Path("sandbox").join("non-sticky")
-        non_sticky.touch()
+        touch(non_sticky)
         assert subprocess.call(["chmod", "-t", "sandbox/non-sticky"]) == 0
-        assert not non_sticky.has_sticky_bit()
+        assert not has_sticky_bit(non_sticky)
 
 
     def test_type_descrition_for_directories(self):
@@ -181,7 +181,7 @@ class TestPath(unittest.TestCase) :
     def test_name_for_regular_files(self):
         Path("sandbox").mkdirs()
         Path("sandbox").join("non-empty").write_file("content")
-        Path("sandbox").join("empty").touch()
+        touch('sandbox/empty')
         
         assert_equals("regular file", Path("sandbox/non-empty").type_description())
         assert_equals("regular empty file", Path("sandbox/empty").type_description())
@@ -200,3 +200,6 @@ class TestPath(unittest.TestCase) :
         
         assert_equals("`.' directory", Path("./.").type_description())
         assert_equals("`..' directory", Path("./..").type_description())
+
+def touch(path):
+    open(path,'w').close()

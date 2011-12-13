@@ -19,7 +19,7 @@
 # 02110-1301, USA.
 
 from unittest import TestCase
-from trashcli.filesystem import Path
+from trashcli.trash import Path
 from trashcli.trash import HomeTrashDirectory
 from nose.tools import assert_equals
 from nose.tools import assert_true
@@ -126,7 +126,7 @@ class Sandbox():
         Create a file in sandbox with content
         """
         file=self.path.join(path)
-        file.touch()
+        touch(file)
         if content!=None :
             file.write_file(content)
 
@@ -141,3 +141,6 @@ class Sandbox():
         # sanity check
         assert not path.exists()
         return result
+
+def touch(path):
+    open(path,'a+').close()
