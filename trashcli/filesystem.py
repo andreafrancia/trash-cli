@@ -43,9 +43,6 @@ class Path (unipath.Path) :
     def basename(self) :
         return self.name
 
-    def move(self, dest) :
-        return shutil.move(self.path, str(dest))
-
     def __join_str(self, path) :
         return Path(os.path.join(self.path, path))
 
@@ -109,15 +106,6 @@ class Path (unipath.Path) :
 
     def touch(self):
         open(self.path, "w").close()
-
-    def read(self):
-        f=self.open()
-        result=f.read()
-        f.close()
-        return result
-
-    def open(self):
-        return open(self.path)
 
     def ismount(self):
         return os.path.ismount(self.path)

@@ -29,7 +29,7 @@ class TestTrashDirectory_persit_trash_info(TestCase) :
         self.assertEquals("""[Trash Info]
 Path=dummy-path
 DeletionDate=2007-01-01T00:00:00
-""", trash_info_file.read())
+""", read(trash_info_file))
 
     def test_persist_trash_info_first_100_times(self):
         self.test_persist_trash_info_first_time()
@@ -46,7 +46,7 @@ DeletionDate=2007-01-01T00:00:00
             self.assertEquals("""[Trash Info]
 Path=dummy-path
 DeletionDate=2007-01-01T00:00:00
-""", trash_info_file.read())
+""", read(trash_info_file))
 
     def test_persist_trash_info_other_times(self):
         self.test_persist_trash_info_first_100_times()
@@ -63,6 +63,8 @@ DeletionDate=2007-01-01T00:00:00
             self.assertEquals("""[Trash Info]
 Path=dummy-path
 DeletionDate=2007-01-01T00:00:00
-""", trash_info_file.read())
+""", read(trash_info_file))
 
+def read(path):
+    return file(path).read()
 

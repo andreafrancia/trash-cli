@@ -30,6 +30,7 @@ logger.addHandler(logging.StreamHandler())
 
 from .filesystem import Volume
 from .filesystem import Path
+from .trash2 import contents_of
 
 class TrashDirectory:
     """\
@@ -64,21 +65,23 @@ class TrashDirectory:
                    + "file.parent.volume = "
                         + str(path.parent.volume))
 
-        trash_info=TrashInfo(self._path_for_trashinfo(path),datetime.now())
+        trash_info = TrashInfo(self._path_for_trashinfo(path),
+                               datetime.now())
         
-        basename=trash_info.path.basename
-        trashinfo_file_content=trash_info.render()
-        (trash_info_file, trash_info_id)=self.persist_trash_info(basename, trashinfo_file_content)
+        basename = trash_info.path.basename
+        trashinfo_file_content = trash_info.render()
+        (trash_info_file, trash_info_id) = self.persist_trash_info(basename, 
+                                                                   trashinfo_file_content)
 
         trashed_file = self._create_trashed_file(trash_info_id,
-                                                 path.absolute(),
+                                                 Path(os.path.abspath(path)),
                                                  trash_info.deletion_date)
 
         if not self.files_dir.exists() :
             mkdirs_using_mode(self.files_dir, 0700)
 
         try :
-            path.move(trashed_file.actual_path)
+            move(path, trashed_file.actual_path)
         except IOError, e :
             remove_file(trash_info_file.path)
             raise e
@@ -125,13 +128,13 @@ class TrashDirectory:
 	    try:
 		yield self._create_trashed_file_from_info_file(info_file) 
 	    except ValueError:
-		logger.warning("Non parsable trashinfo file: %s" % info_file.path)
+		logger.warning("Non parsable trashinfo file: %s" % info_file)
 	    except IOError, e:
 		logger.warning(str(e))
 
-    def _create_trashed_file_from_info_file(self,info_file):
-	trash_id=self.calc_id(info_file)
-	trash_info = TrashInfo.parse(info_file.read())
+    def _create_trashed_file_from_info_file(self, info_file):
+	trash_id = self.calc_id(info_file)
+	trash_info = TrashInfo.parse(contents_of(info_file))
 	path = self._calc_original_location(trash_info.path)
 
 	trashed_file = self._create_trashed_file(trash_id, path,
@@ -239,8 +242,12 @@ class HomeTrashDirectory(TrashDirectory):
 
         # for the HomeTrashDirectory all path are stored as absolute
 
-        parent = fileToBeTrashed.realpath.parent
-        return parent.join(fileToBeTrashed.basename)
+        parent   = fileToBeTrashed.realpath.parent
+        realpath = os.path.realpath(fileToBeTrashed)
+        parent   = os.path.dirname(realpath)
+        basename = os.path.basename(fileToBeTrashed)
+        result   = os.path.join(parent,basename)
+        return Path(result)
 
 class VolumeTrashDirectory(TrashDirectory) :
     def __init__(self, path, volume) :
@@ -252,13 +259,17 @@ class VolumeTrashDirectory(TrashDirectory) :
         fileToBeTrashed = fileToBeTrashed.norm()
 
         # string representing the parent of the fileToBeTrashed
-        parent=fileToBeTrashed.parent.realpath
+        parent = os.path.dirname(fileToBeTrashed)
+        parent = os.path.realpath(parent)
+
         topdir=self.volume.path   # e.g. /mnt/disk-1
 
-        if parent.path.startswith(topdir.path+os.path.sep) :
-            parent = Path(parent.path[len(topdir.path+os.path.sep):])
+        if parent.startswith(topdir.path+os.path.sep) :
+            parent = Path(parent[len(topdir.path+os.path.sep):])
 
-        return parent.join(fileToBeTrashed.basename)
+        result = os.path.join(parent, os.path.basename(fileToBeTrashed))
+        result = Path(result)
+        return result
 
 class TopDirWithoutStickyBit(IOError):
     """
@@ -483,7 +494,7 @@ class TrashedFile:
         else:
             self.path.parent.mkdirs()
 
-        self.original_file.move(self.path)
+        move(self.original_file, self.path)
         remove_file(self.info_file.path)
 
     @property
@@ -768,4 +779,7 @@ def list_files_in_dir(path):
         result = Path(result)
         yield result
 
+def move(path, dest) :
+    import shutil
+    return shutil.move(path, str(dest))
 

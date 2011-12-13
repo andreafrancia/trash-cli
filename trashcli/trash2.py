@@ -3,13 +3,16 @@ import os
 def do_nothing(*argv, **argvk): pass
 class _FileReader:
     def contents_of(self, path):
-        return file(path).read()
+        return contents_of(path)
     def exists(self, path):
         return os.path.exists(path)
     def entries_if_dir_exists(self, path):
         if os.path.exists(path):
             for entry in os.listdir(path):
                 yield entry
+
+def contents_of(path):
+    return file(path).read()
 
 class _FileRemover:
     def remove_file(self, path):
