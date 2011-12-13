@@ -801,8 +801,15 @@ import unipath
 def parent_of(path):
     return Path(os.path.dirname(path))
 
-class Path (unipath.Path) :
+_base = os.path.supports_unicode_filenames and unicode or str
+class _Volume(_base) :
+    def __new__(class_, path):
+        return _base.__new__(class_, path)
+
+class Path(unipath.Path) :
     sep = '/'
+    def __new__(class_, path):
+        return _base.__new__(class_, path)
 
     @property
     def path(self):
@@ -861,24 +868,6 @@ def describe(path):
             return 'regular file'
     else:
         return 'entry'
-
-
-_base = os.path.supports_unicode_filenames and unicode or str
-class Volume(_base) :
-    def __new__(class_, path):
-        return _base.__new__(class_, path)
-
-    def __cmp__(self, other) :
-        if not isinstance(other, self.__class__) :
-            return False
-        else :
-            return cmp(self.path,other.path)
-
-    def __str__(self) :
-        return str(self.path)
-
-    def __repr__(self):
-        return "[Path:%s]" % self.path
 
 def volume_of(path) :
     path = os.path.realpath(path)

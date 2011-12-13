@@ -27,6 +27,7 @@ import os
 import subprocess
 from nose.tools import assert_equals
 from integration_tests.files import require_empty_dir
+clean_up=require_empty_dir
 
 def _is_mac_os():
     return sys.platform == 'darwin'
@@ -34,51 +35,13 @@ def _is_mac_os():
 def _is_cygwin():
     return sys.platform == 'cygwin' 
 
-
 class TestPath(unittest.TestCase) :
-    def test_constructor(self) :
-        Path("dummy/path")
-    
-    def test_eq(self) :
-        self.assertNotEquals(Path("."),Path(os.path.realpath(".")))
-        self.assertNotEquals(Path("foo"),Path("bar"))
-        self.assertEquals(Path("bar"),Path("bar"))
-        self.assertEquals(Path("foo"),Path("./foo").norm())
-        
-        list1=(Path('bar'), Path('bur'))
-        list2=(Path('bar'), Path('bur'))
-        list3=(Path('foo'), Path('bur'))
-        
-        assert list1 == list2
-        assert list1 != list3
-        
-    def test_parent(self) :
-        instance = Path("dummy/path")
-        self.assertEquals(Path("dummy"), instance.parent)
-    
-
-    def test_mkdir(self):
-        require_empty_dir('sandbox')
-        instance=Path("sandbox/test-dir")
-        instance.remove()
-        self.assertFalse(instance.exists())
-        instance.mkdir()
-        self.assertTrue(instance.exists())
-        self.assertTrue(instance.isdir())
-        instance.remove() # clean up
 
     def test_mkdirs_with_default_mode(self):
-        # prepare
-        Path("sandbox/test-dir").remove()
-        self.assertFalse(Path("sandbox/test-dir").exists())
-        # perform
-        instance=Path("sandbox/test-dir/sub-dir")
-        mkdirs(instance)
-        # test results
-        self.assertTrue(instance.exists())
-        self.assertTrue(instance.isdir())
-        # clean up
-        Path("sandbox/test-dir").remove()
+        require_empty_dir('sandbox')
+        mkdirs("sandbox/test-dir/sub-dir")
+        self.assertTrue(os.path.isdir("sandbox/test-dir/sub-dir"))
+        clean_up('sandbox')
 
     def test_touch(self):
         instance=Path("sandbox/test-file")

@@ -2,7 +2,6 @@ from unittest import TestCase
 from trashcli.trash import TrashDirectory
 from trashcli.trash import TrashInfo
 from trashcli.trash import Path
-from trashcli.trash import Volume
 
 from datetime import datetime
 import os
@@ -13,7 +12,7 @@ class TestTrashDirectory_persit_trash_info(TestCase) :
         self.trashdirectory_base_dir = Path(os.path.realpath("./sandbox/testTrashDirectory"))
         self.trashdirectory_base_dir.remove()
         
-        self.instance=TrashDirectory(self.trashdirectory_base_dir, Volume(Path("/")))
+        self.instance=TrashDirectory(self.trashdirectory_base_dir, "/")
         
     def test_persist_trash_info_first_time(self):
         trash_info=TrashInfo(Path("dummy-path"), datetime(2007,01,01))
