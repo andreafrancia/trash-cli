@@ -19,7 +19,6 @@ def _mount_points_from_df_output(df_output):
     def chomp(string):
 	return string.rstrip('\n')
 	
-    result = []
     skip_header()
     for line in df_output:
 	line = chomp(line)	
