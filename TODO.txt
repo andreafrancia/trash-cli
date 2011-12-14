@@ -12,8 +12,8 @@ Feature: Rewrite of trash-list
  x displays unknown date when .trashinfo does not contain DeletionDate
  x displays unknown date when .trashinfo contains an invalid DeletionDate
  x error when a .trashinfo does not contain the 'Path=' entry information
- - should check if the .Trash directory 1) has the sticky bit, 2) is not a 
-   symbolic link 
+ - should check that the $topdir/.Trash directory has the sticky bit
+ - should check that the $topdir/.Trash is not a symbolic link
  - exception when a .trashinfo from home trashdir contains a path that is not 
    absolute
  - it should print also the orphan files

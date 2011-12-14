@@ -2,7 +2,6 @@
 *.swp
 .DS_Store
 .local/
-.fake_root/
 .svn
 build/
 command-test/sandbox/
@@ -14,5 +13,6 @@ sandbox/
 scripts/
 test-volume.dmg
 test-volume/
+topdir/
 trash_cli.egg-info/
 XDG_DATA_HOME/
