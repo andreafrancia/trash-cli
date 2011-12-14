@@ -86,6 +86,19 @@ Report bugs to http://code.google.com/p/trash-cli/issues
         self.err.assert_equal_to(
                 "[Errno 13] Permission denied: "
                 "'XDG_DATA_HOME/Trash/info/unreadable.trashinfo'\n")
+    @istest
+    def should_warn_about_unexistent_path_entry(self):
+        def a_trashinfo_without_path():
+            return ("[TrashInfo]\n"
+                    "DeletionDate='2000-01-01T00:00:00'\n")
+        self.info_dir.add_file(a_trashinfo_without_path())
+
+        self.run()
+
+        self.err.assert_equal_to(
+                "Parse Error: XDG_DATA_HOME/Trash/info/1.trashinfo: "
+                "Unable to parse Path\n")
+        self.out.assert_equal_to('')
 
     def setUp(self):
         self.XDG_DATA_HOME = 'XDG_DATA_HOME'
@@ -161,10 +174,13 @@ class FakeInfoDir:
         import os
         return os.path.join(self.path, path_relative_to_info_dir)
     def add_file(self, contents):
-        write_file('%(info_dir)s/%(name)s.trashinfo' % {
-            'info_dir' : self.path,
-            'name' : str(self.number)}, contents)
+        path = '%(info_dir)s/%(name)s.trashinfo' % { 'info_dir' : self.path,
+                                                     'name' : str(self.number)}
+        write_file(path, contents)
+
         self.number = self.number + 1
+        self.path_of_last_file_added = path
+
     def add_trashinfo(self, escaped_path_entry, formatted_deletion_date):
         self.add_file(trashinfo(escaped_path_entry, formatted_deletion_date))
 
