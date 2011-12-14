@@ -2,25 +2,25 @@
 
 = Status of trash-cli on Unix/Linux systems =
 
- * Fedora: not included (2009-01-04)
- * Ubuntu: (included since 2008-07-16)
-   * Bug: https://bugs.launchpad.net/ubuntu/+bug/219601
-   * Included in jaunty(universe) and intrepid(universe)
- * OpenSUSE: (seems not included) (2009-01-04)
-   * Added in the OpenSuse whishlist http://en.opensuse.org/Wishlist_Base#T (2009-01-04)
- * Debian: 
-   * Included in [http://packages.debian.org/unstable/utils/trash-cli sid] as of version 0.1.10.28-2 (2009-01-04)
-   * Included in [http://packages.debian.org/lenny/trash-cli lenny] as of version 0.1.10.28-2 (2009-01-04)
- * Mandriva: (seems not included) (2009-01-04)
- * Archlinux: (seems included) 
+ - Fedora: not included (2009-01-04)
+ - Ubuntu: (included since 2008-07-16)
+   - Bug: https://bugs.launchpad.net/ubuntu/+bug/219601
+   - Included in jaunty(universe) and intrepid(universe)
+ - OpenSUSE: (seems not included) (2009-01-04)
+   - Added in the OpenSuse whishlist http://en.opensuse.org/Wishlist_Base#T (2009-01-04)
+ - Debian: 
+   - Included in [http://packages.debian.org/unstable/utils/trash-cli sid] as of version 0.1.10.28-2 (2009-01-04)
+   - Included in [http://packages.debian.org/lenny/trash-cli lenny] as of version 0.1.10.28-2 (2009-01-04)
+ - Mandriva: (seems not included) (2009-01-04)
+ - Archlinux: (seems included) 
    http://aur.archlinux.org/packages/trash-cli/ (2009-01-04)
- * Gentoo: (not yet included)
-   * Inclusion request: http://bugs.gentoo.org/238831
- * FreeBSD: ?
- * foresight linux: included
-   * updated on: 2009-04-13 
-   * trash-cli version: 0.1.10.r55
-   * source package: http://www.rpath.org/repos/foresight/troveInfo?t=trash-cli%3Asource
-   * binary package: http://www.rpath.org/repos/foresight/troveInfo?t=trash-cli
- * Other? If you've packaged trash-cli for another system (or need help doing so) let us know leaving a comment or mailing me.
+ - Gentoo: (not yet included)
+   - Inclusion request: http://bugs.gentoo.org/238831
+ - FreeBSD: ?
+ - foresight linux: included
+   - updated on: 2009-04-13 
+   - trash-cli version: 0.1.10.r55
+   - source package: http://www.rpath.org/repos/foresight/troveInfo?t=trash-cli%3Asource
+   - binary package: http://www.rpath.org/repos/foresight/troveInfo?t=trash-cli
+ - Other? If you've packaged trash-cli for another system (or need help doing so) let us know leaving a comment or mailing me.
 

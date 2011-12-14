@@ -1,4 +1,15 @@
-Seems that ReactOS projects has implemented a library for dealing with the Windows specific trashcan data structure.
+Some references about accessing Recycle Bin of Windows
+======================================================
 
-The code of the library is available from
-http://svn.reactos.org/svn/reactos/trunk/reactos/lib/recyclebin/
+Seems that ReactOS projects has implemented a library for dealing with the 
+Windows specific trashcan data structure:
+
+    http://svn.reactos.org/svn/reactos/trunk/reactos/lib/recyclebin/
+
+How to use SHFileOperation in python using pywin32:
+
+    http://timgolden.me.uk/python/win32_how_do_i/copy-a-file.html
+
+How to programmatically send folders and/or files to the recycle bin (in C#):
+
+    http://www.fmsinc.com/free/NewTips/NET/sendfoldertoreceyclebin.asp

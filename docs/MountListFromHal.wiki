@@ -1,4 +1,5 @@
-#summary Notes about using HAL (Hardware Abstraction Layer) to get the list of mount points.
+About using HAL (Hardware Abstraction Layer) to get the list of mount points.
+=============================================================================
 
 This [http://davyd.livejournal.com/206645.html article] explain how to use HAL from python.
 

@@ -16,5 +16,6 @@ vim THANKS
 svn diff > some-name-that-describe-changes.patch
 }}}
 
-Then you can send it to trash-cli@andreafrancia.it or you can attach to an open issue.
+Then you can send it to trash-cli@andreafrancia.it or you can attach to an 
+open issue.
 
