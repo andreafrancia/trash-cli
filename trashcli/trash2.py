@@ -31,7 +31,7 @@ class ListCmd():
                  file_reader  = _FileReader()):
         self.out         = out
         self.err         = err
-        self.infodirs    = InfoDirsFinder(environ, getuid, list_volumes)
+        self.infodirs    = ValidInfoDirs(environ, getuid, list_volumes)
         self.file_reader = file_reader
     def run(self, *argv):
         if len(argv)==0: argv = ['trash-list']
@@ -85,7 +85,7 @@ class EmptyCmd():
         self.now          = now
         self.file_reader  = file_reader 
         self.file_remover = file_remover
-        self.infodirs     = InfoDirsFinder(environ, getuid, list_volumes)
+        self.infodirs     = ValidInfoDirs(environ, getuid, list_volumes)
         self.version      = version
     def run(self, *argv):
         self.date_criteria = always
@@ -144,24 +144,36 @@ class Janitor:
         self.file_remover.remove_file_if_exists(trash.path_to_backup_copy())
         self.file_remover.remove_file(trash.path_to_trashinfo())
 
-class InfoDirsFinder:
+class ValidInfoDirs:
+    def __init__(self, environ, getuid, list_volumes):
+        self.available_dirs = (
+                AvailableInfoDirs(environ, getuid, list_volumes)
+                .for_each_infodir_and_volume)
+    def for_each_infodir(self, file_reader, action):
+        for info_dir_path, volume_path in self.available_dirs():
+            infodir = InfoDir(file_reader, info_dir_path, volume_path)
+            action(infodir)
+
+class AvailableInfoDirs:
     def __init__(self, environ, getuid, list_volumes):
         self.environ      = environ
         self.getuid       = getuid
         self.list_volumes = list_volumes
-    def for_each_infodir(self, file_reader, action):
-        for info_dir_path, volume_path in self._paths():
-            infodir = InfoDir(file_reader, info_dir_path, volume_path)
-            action(infodir)
-    def _paths(self):
-        from os.path import join 
+    def for_each_infodir_and_volume(self, action):
+        self.home_trashcan(action)
+        self.volume_trashcans(action)
+    def home_trashcan(self, action):
         if 'XDG_DATA_HOME' in self.environ:
-            yield ('%(XDG_DATA_HOME)s/Trash/info' % self.environ, '/')
+            action('%(XDG_DATA_HOME)s/Trash/info' % self.environ, '/')
         elif 'HOME' in self.environ:
-            yield ('%(HOME)s/.local/share/Trash/info' % self.environ, '/')
+            action('%(HOME)s/.local/share/Trash/info' % self.environ, '/')
+    def volume_trashcans(self, action):
         for volume in self.list_volumes():
-            yield (join(volume, '.Trash', str(self.getuid()), 'info'), volume)
-            yield (join(volume, '.Trash-%s' % self.getuid() , 'info'), volume)
+            from os.path import join 
+            action(join(volume, '.Trash', str(self.getuid()), 'info'), volume)
+            action(join(volume, '.Trash-%s' % self.getuid() , 'info'), volume)
+
+
 def always(deletion_date): return True
 class OlderThan:
     def __init__(self, days_ago, now):

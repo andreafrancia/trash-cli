@@ -1,25 +1,19 @@
-from trashcli.trash2 import InfoDirsFinder
-from nose.tools import assert_equals
+from trashcli.trash2 import AvailableInfoDirs
+from nose.tools import istest, assert_items_equal
 
-
-class Test_InfoDirs_path():
-    def test_no_path_if_no_environment_variables(self):
+@istest
+class Describe_AvailableInfoDirs:
+    def test_it_returns_nothing_on_no_environment_variable(self):
         self.with_environ({})
         self.should_return()   # nothing
 
     def test_it_honours_the_xdg_datahome(self):
-        self.with_environ(
-                {'XDG_DATA_HOME':'/alternate/xdg/data/home'})
-
-        self.should_return(
-                '/alternate/xdg/data/home/Trash/info')
+        self.with_environ({'XDG_DATA_HOME':'/alternate/xdg/data/home'})
+        self.should_return('/alternate/xdg/data/home/Trash/info')
 
     def test_it_uses_the_default_value_of_xdg_datahome(self):
-        self.with_environ(
-                {'HOME':'/home/foo'})
-
-        self.should_return(
-                '/home/foo/.local/share/Trash/info')
+        self.with_environ( {'HOME':'/home/foo'})
+        self.should_return('/home/foo/.local/share/Trash/info')
 
     def test_it_considers_trashcans_volumes(self):
         self.with_volumes('/mnt')
@@ -41,14 +35,20 @@ class Test_InfoDirs_path():
         self.list_volumes = lambda:volumes_paths
     def with_user_id(self, uid):
         self.getuid = lambda: uid
+
     def should_return(self, *expected_result):
-        infodirs = InfoDirsFinder(environ      = self.environ,
-                            getuid       = self.getuid,
-                            list_volumes = self.list_volumes)
-        result = set() 
-        for path,volume in infodirs._paths():
-            result.add(path)
-        assert_equals(set(expected_result), set(result))
+        finder = AvailableInfoDirs(
+                environ      = self.environ,
+                getuid       = self.getuid,
+                list_volumes = self.list_volumes)
+
+        result = []
+
+        finder.for_each_infodir_and_volume(
+                lambda path, volume: result.append(path))
+
+        assert_items_equal(expected_result, result)
+
     def setUp(self):
         self.environ      = {}
         self.getuid       = lambda:None
