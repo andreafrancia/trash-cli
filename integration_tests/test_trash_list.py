@@ -135,7 +135,7 @@ class describe_list_trash_with_top_trash_directory_type_1:
 
         self.run()
 
-        #raise SkipTest("work in progress")
+        raise SkipTest("work in progress")
         self.output_should_be("")
 
     @istest

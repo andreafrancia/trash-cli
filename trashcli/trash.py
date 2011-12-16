@@ -28,7 +28,7 @@ logger=logging.getLogger('trashcli.trash')
 logger.setLevel(logging.WARNING)
 logger.addHandler(logging.StreamHandler())
 
-from .trash2 import contents_of
+from .trash2 import contents_of, has_sticky_bit
 
 class TrashDirectory:
     """\
@@ -776,11 +776,6 @@ def list_files_in_dir(path):
 def move(path, dest) :
     import shutil
     return shutil.move(path, str(dest))
-
-def has_sticky_bit(path):
-    import os
-    import stat
-    return (os.stat(path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
 
 def mkdirs(path):
     if os.path.isdir(path):

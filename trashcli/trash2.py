@@ -146,33 +146,44 @@ class Janitor:
 
 class ValidInfoDirs:
     def __init__(self, environ, getuid, list_volumes):
-        self.available_dirs = (
-                AvailableInfoDirs(environ, getuid, list_volumes)
-                .for_each_infodir_and_volume)
+        self.trash_dirs = AvailableTrashDir(environ, getuid, list_volumes)
     def for_each_infodir(self, file_reader, action):
-        for info_dir_path, volume_path in self.available_dirs():
+        def action2(info_dir_path, volume_path):
             infodir = InfoDir(file_reader, info_dir_path, volume_path)
             action(infodir)
+        self.trash_dirs.for_home_trashcan(curry_add_info(action2))
+        self.trash_dirs.for_each_volume_trashcans(curry_add_info(action2))
 
-class AvailableInfoDirs:
-    def __init__(self, environ, getuid, list_volumes):
-        self.environ      = environ
-        self.getuid       = getuid
-        self.list_volumes = list_volumes
+def curry_add_info(on_info_dir):
+    def on_trash_dir(trash_dir, volume):
+        import os
+        info_dir = os.path.join(trash_dir, 'info')
+        on_info_dir(info_dir, volume)
+    return on_trash_dir
+
+class AvailableTrashDir:
+    def __init__(self, environ, getuid, list_volumes, 
+                 is_sticky_dir= lambda path: True):
+        self.environ       = environ
+        self.getuid        = getuid
+        self.list_volumes  = list_volumes
+        self.is_sticky_dir = is_sticky_dir
     def for_each_infodir_and_volume(self, action):
-        self.home_trashcan(action)
-        self.volume_trashcans(action)
-    def home_trashcan(self, action):
+        self.for_home_trashcan(action)
+        self.for_each_volume_trashcans(action)
+    def for_home_trashcan(self, action):
         if 'XDG_DATA_HOME' in self.environ:
-            action('%(XDG_DATA_HOME)s/Trash/info' % self.environ, '/')
+            action('%(XDG_DATA_HOME)s/Trash' % self.environ, '/')
         elif 'HOME' in self.environ:
-            action('%(HOME)s/.local/share/Trash/info' % self.environ, '/')
-    def volume_trashcans(self, action):
+            action('%(HOME)s/.local/share/Trash' % self.environ, '/')
+    def for_each_volume_trashcans(self, action):
+        from os.path import join
         for volume in self.list_volumes():
-            from os.path import join 
-            action(join(volume, '.Trash', str(self.getuid()), 'info'), volume)
-            action(join(volume, '.Trash-%s' % self.getuid() , 'info'), volume)
-
+            top_trash_dir = join(volume, '.Trash')
+            if self.is_sticky_dir(top_trash_dir):
+                action(join(top_trash_dir, str(self.getuid())), volume)
+            
+            action(join(volume, '.Trash-%s' % self.getuid()), volume)
 
 def always(deletion_date): return True
 class OlderThan:
@@ -301,4 +312,9 @@ def parse_path(contents):
         if line.startswith('Path='):
             return urllib.unquote(line[len('Path='):])
     raise ParseError('Unable to parse Path')
+
+def has_sticky_bit(path):
+    import os
+    import stat
+    return (os.stat(path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
 
