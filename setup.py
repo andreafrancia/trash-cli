@@ -1,7 +1,4 @@
-#!/usr/bin/env python
 # Copyright (C) 2007-2011 Andrea Francia Trivolzio(PV) Italy
-# Distributed under the GPLv2 license (see the COPYING file).
-# Distributed without any warranty.
 
 import ez_setup; ez_setup.use_setuptools()
 from setuptools import setup

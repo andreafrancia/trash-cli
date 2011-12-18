@@ -1,3 +1,5 @@
+# Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
+
 from trashcli.trash2 import InfoDir
 class TestInfoDir_finding_orphans:
     def test(self):

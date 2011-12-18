@@ -1,3 +1,5 @@
+# Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
+
 import os
 
 def do_nothing(*argv, **argvk): pass

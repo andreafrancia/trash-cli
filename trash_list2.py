@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# Copyright (C) 2007-2009 Andrea Francia Trivolzio(PV) Italy
+# Copyright (C) 2007-2011 Andrea Francia Trivolzio(PV) Italy
 
 import sys, os
 from trashcli.trash2 import ListCmd

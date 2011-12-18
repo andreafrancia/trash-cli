@@ -1,3 +1,5 @@
+# Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
+
 import os
 def create_cmdenv(default_cwd="./sandbox", home_env=os.path.abspath("./sandbox/home")):
     import trashcli

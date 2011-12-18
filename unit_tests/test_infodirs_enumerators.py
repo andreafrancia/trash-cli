@@ -1,8 +1,8 @@
-from trashcli.trash2 import AvailableTrashDir
-from nose.tools import istest, assert_items_equal, assert_in, assert_not_in
+# Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-import fudge
-from fudge.inspector import arg
+from trashcli.trash2 import AvailableTrashDir
+from nose.tools import istest, assert_in, assert_not_in
+
 @istest
 class Describe_AvailableInfoDirs:
     @istest

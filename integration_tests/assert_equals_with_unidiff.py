@@ -1,3 +1,5 @@
+# Copyright (C) 2009-2011 Andrea Francia Trivolzio(PV) Italy
+
 def assert_equals_with_unidiff(expected, actual):
     def unidiff(expected, actual):
         import difflib

@@ -1,3 +1,5 @@
+# Copyright (C) 2007-2011 Andrea Francia Trivolzio(PV) Italy
+
 from nose.tools import (assert_true, assert_equals)
 from unittest import TestCase
 from trashcli.trash import GlobalTrashCan

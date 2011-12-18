@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# Copyright (C) 2007-2009 Andrea Francia Trivolzio(PV) Italy
+# Copyright (C) 2007-20!! Andrea Francia Trivolzio(PV) Italy
 
 import sys
 from trashcli.trash import List

@@ -1,3 +1,5 @@
+# Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
+
 from nose.tools import assert_equals
 
 def having_file(path):

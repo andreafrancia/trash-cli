@@ -1,3 +1,5 @@
+# Copyright (C) 2008-2011 Andrea Francia Trivolzio(PV) Italy
+
 from unittest import TestCase
 from trashcli.trash import TrashDirectory
 from trashcli.trash import TrashInfo

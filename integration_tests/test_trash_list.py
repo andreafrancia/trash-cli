@@ -1,3 +1,5 @@
+# Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
+
 from trashcli.trash2 import ListCmd
 from trashcli.trash  import has_sticky_bit
 from StringIO import StringIO
