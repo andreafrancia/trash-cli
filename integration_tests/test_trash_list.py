@@ -1,10 +1,9 @@
 from trashcli.trash2 import ListCmd
 from trashcli.trash  import has_sticky_bit
 from StringIO import StringIO
-from files import write_file, require_empty_dir
+from files import write_file, require_empty_dir, make_sticky_dir
 from nose import SkipTest
 from nose.tools import istest
-
 
 @istest
 class Describe_trash_list_output:
@@ -198,20 +197,10 @@ def trashinfo(escaped_path_entry, formatted_deletion_date):
             "Path=%s\n" % escaped_path_entry + 
             "DeletionDate=%s\n" % formatted_deletion_date)
 
-def make_sticky_dir(path):
-    import os
-    os.mkdir(path)
-    set_sticky_bit(path)
-def set_sticky_bit(path):
-    import os
-    import stat
-    os.chmod(path, os.stat(path).st_mode | stat.S_ISVTX)
-
 def ensure_non_sticky_dir(path):
     import os
     assert os.path.isdir(path)
     assert not has_sticky_bit(path)
-
 
 class TrashListRunner:
     def __init__(self, environ={}):
@@ -255,5 +244,4 @@ class OutputCollector:
         text = self.stream.getvalue()
         from nose.tools import assert_regexp_matches
         assert_regexp_matches(text, regex)
-
 

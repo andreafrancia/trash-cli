@@ -14,7 +14,8 @@ Feature: Rewrite of trash-list
  x error when a .trashinfo does not contain the 'Path=' entry information
  - should check that the $topdir/.Trash directory has the sticky bit
     x now AvailableTrashDir check through a has_sticky bit helper
-    - write the has_sticky_dir for the real filesystem
+    x write the is_sticky_dir for the real filesystem
+    - move is_sticky_dir to trash2.py 
     - find the way of inject the has_sticky_dir (from _FileSystem?)
     - remove the SkipTest
  - should check that the $topdir/.Trash is not a symbolic link
