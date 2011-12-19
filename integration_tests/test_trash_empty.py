@@ -5,7 +5,9 @@ from trashcli.trash2 import EmptyCmd
 
 from StringIO import StringIO
 import os
-from files import write_file, require_empty_dir
+from files import write_file, require_empty_dir, make_dirs, set_sticky_bit
+from files import having_file
+
 
 class TestEmptyCmd():
     def setUp(self):
@@ -20,14 +22,14 @@ class TestEmptyCmd():
             environ = self.environ).run('trash-empty')
 
     def test_it_removes_an_info_file(self):
-        touch(                    '.local/Trash/info/foo.trashinfo')
+        having_file(              '.local/Trash/info/foo.trashinfo')
         self.run()
         assert not os.path.exists('.local/Trash/info/foo.trashinfo')
 
     def test_it_removes_multiple_info_files(self):
-        touch('.local/Trash/info/foo.trashinfo')
-        touch('.local/Trash/info/bar.trashinfo')
-        touch('.local/Trash/info/baz.trashinfo')
+        having_file('.local/Trash/info/foo.trashinfo')
+        having_file('.local/Trash/info/bar.trashinfo')
+        having_file('.local/Trash/info/baz.trashinfo')
         assert_not_equals([],list(os.listdir('.local/Trash/info/')))
 
         self.run()
@@ -35,8 +37,8 @@ class TestEmptyCmd():
         assert_equals([],list(os.listdir('.local/Trash/info/')))
 
     def test_it_removes_files(self):
-        touch('.local/Trash/info/foo.trashinfo')
-        touch('.local/Trash/files/foo')
+        having_file('.local/Trash/info/foo.trashinfo')
+        having_file('.local/Trash/files/foo')
         assert_not_equals([],list(os.listdir('.local/Trash/files/')))
 
         self.run()
@@ -44,14 +46,14 @@ class TestEmptyCmd():
         assert_equals([],list(os.listdir('.local/Trash/files/')))
     
     def test_it_keep_unknown_files_in_infodir(self):
-        touch('.local/Trash/info/not-a-trashinfo')
+        having_file('.local/Trash/info/not-a-trashinfo')
 
         self.run()
 
         assert os.path.exists('.local/Trash/info/not-a-trashinfo')
 
     def test_it_removes_orphan_files(self):
-        touch(                    '.local/Trash/files/a-file-without-any-associated-trashinfo')
+        having_file(              '.local/Trash/files/a-file-without-any-associated-trashinfo')
         assert os.path.exists(    '.local/Trash/files/a-file-without-any-associated-trashinfo')
 
         self.run()
@@ -104,7 +106,9 @@ class TestEmptyCmdWithTime:
 class TestEmptyCmdWithMultipleVolumes:
     def test_it_removes_trashinfos_from_method_1_dir(self):
         require_empty_dir('.fake_root')
-        touch('.fake_root/media/external-disk/.Trash/123/info/foo.trashinfo')
+        make_dirs('.fake_root/media/external-disk/.Trash/')
+        set_sticky_bit('.fake_root/media/external-disk/.Trash/')
+        having_file('.fake_root/media/external-disk/.Trash/123/info/foo.trashinfo')
         empty=EmptyCmd(
                 out          = StringIO(),
                 err          = StringIO(),
@@ -116,7 +120,7 @@ class TestEmptyCmdWithMultipleVolumes:
         assert not os.path.exists('.fake_root/media/external-disk/.Trash/123/info/foo.trashinfo')
     def test_it_removes_trashinfos_from_method_2_dir(self):
         require_empty_dir('.fake_root')
-        touch('.fake_root/media/external-disk/.Trash-123/info/foo.trashinfo')
+        having_file('.fake_root/media/external-disk/.Trash-123/info/foo.trashinfo')
         empty=EmptyCmd(
                 out          = StringIO(),
                 err          = StringIO(),
@@ -158,10 +162,6 @@ class TestTrashEmpty_on_version():
 trash-empty 1.2.3
 """)
     pass
-
-def touch(filename):
-    write_file(filename, '')
-    assert os.path.isfile(filename)
 
 def date(yyyy_mm_dd):
     from datetime import datetime

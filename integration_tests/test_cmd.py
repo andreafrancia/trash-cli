@@ -2,10 +2,7 @@
 
 from cmd import Command
 from unittest import TestCase
-from nose.tools import raises
-from nose.tools import assert_equals
-from nose.tools import assert_true
-from nose.tools import assert_not_equals
+from nose.tools import raises, assert_equals, assert_true, assert_not_equals
 
 class CommandTest(TestCase):
     def test_run_returns_exit_code(self):

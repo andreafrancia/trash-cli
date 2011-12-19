@@ -4,14 +4,18 @@ import os
 
 def do_nothing(*argv, **argvk): pass
 class _FileReader:
-    def contents_of(self, path):
-        return contents_of(path)
-    def exists(self, path):
-        return os.path.exists(path)
+    def __init__(self):
+        self.contents_of = contents_of
+        self.exists = os.path.exists
+        self.is_sticky_dir = is_sticky_dir
     def entries_if_dir_exists(self, path):
         if os.path.exists(path):
             for entry in os.listdir(path):
                 yield entry
+
+def is_sticky_dir(path):
+    import os
+    return os.path.isdir(path) and has_sticky_bit(path)
 
 def contents_of(path):
     return file(path).read()
@@ -30,11 +34,15 @@ class ListCmd():
     def __init__(self, out, err, environ, 
                  getuid       = os.getuid,
                  list_volumes = mount_points,
+                 is_sticky_dir = is_sticky_dir,
                  file_reader  = _FileReader()):
+
         self.out         = out
         self.err         = err
-        self.infodirs    = ValidInfoDirs(environ, getuid, list_volumes)
         self.file_reader = file_reader
+        self.infodirs    = AvailableTrashDir(environ, getuid, list_volumes,
+                                             is_sticky_dir)
+
     def run(self, *argv):
         if len(argv)==0: argv = ['trash-list']
         program_name=argv[0]
@@ -76,33 +84,43 @@ Report bugs to http://code.google.com/p/trash-cli/issues\
 
 class EmptyCmd():
     def __init__(self, out, err, environ, 
-                 now          = datetime.now,
-                 file_reader  = _FileReader(),
-                 list_volumes = mount_points,
-                 getuid       = os.getuid,
-                 file_remover = _FileRemover(),
-                 version      = version):
+                 now           = datetime.now,
+                 file_reader   = _FileReader(),
+                 list_volumes  = mount_points,
+                 getuid        = os.getuid,
+                 is_sticky_dir = is_sticky_dir,
+                 file_remover  = _FileRemover(),
+                 version       = version):
+
         self.out          = out
         self.err          = err
-        self.now          = now
         self.file_reader  = file_reader 
+        self.infodirs     = AvailableTrashDir(environ, getuid, list_volumes,
+                                              is_sticky_dir)
+
+        self.now          = now
         self.file_remover = file_remover
-        self.infodirs     = ValidInfoDirs(environ, getuid, list_volumes)
         self.version      = version
+
     def run(self, *argv):
         self.date_criteria = always
-        action             = self._delete_according_criteria
+        self.action        = self._delete_according_criteria
+        self.parse(argv)
+    def parse(self, argv):
         self.program_name  = argv[0]
+        printer=HelpAndVersionPrinter(self.out, 
+                                      self.version,
+                                      self.program_name)
         for arg in argv[1:]:
             if arg == '--help' or arg == '-h':
-                action = self.print_help
+                self.action = printer.print_help
                 break
             if arg == '--version' :
-                action = self.print_version
+                self.action = printer.print_version
                 break
-            elif self.is_int(arg):
+            if self.is_int(arg):
                 self.date_criteria = OlderThan(int(arg), self.now)
-        action()
+        self.action()
     def is_int(self, text):
         try:
             int(text)
@@ -115,6 +133,25 @@ class EmptyCmd():
     def _empty_trashdir_according_criteria(self, info_dir):
         janitor=Janitor(self.date_criteria, self.file_remover)
         janitor.swep(info_dir)
+    def print_help(self):
+        self.out.write("""\
+Usage: %(program_name)s [days]
+
+Purge trashed files.
+
+Options:
+  --version   show program's version number and exit
+  -h, --help  show this help message and exit
+
+Report bugs to http://code.google.com/p/trash-cli/issues
+""" % {
+        'program_name':self.program_name
+        })
+class HelpAndVersionPrinter:
+    def __init__(self, out, version, program_name):
+        self.out          = out
+        self.version      = version
+        self.program_name = program_name
     def print_version(self):
         self.out.write("%s %s\n" % (self.program_name, self.version))
     def print_help(self):
@@ -146,16 +183,6 @@ class Janitor:
         self.file_remover.remove_file_if_exists(trash.path_to_backup_copy())
         self.file_remover.remove_file(trash.path_to_trashinfo())
 
-class ValidInfoDirs:
-    def __init__(self, environ, getuid, list_volumes):
-        self.trash_dirs = AvailableTrashDir(environ, getuid, list_volumes)
-    def for_each_infodir(self, file_reader, action):
-        def action2(info_dir_path, volume_path):
-            infodir = InfoDir(file_reader, info_dir_path, volume_path)
-            action(infodir)
-        self.trash_dirs.for_home_trashcan(curry_add_info(action2))
-        self.trash_dirs.for_each_volume_trashcans(curry_add_info(action2))
-
 def curry_add_info(on_info_dir):
     def on_trash_dir(trash_dir, volume):
         import os
@@ -170,6 +197,12 @@ class AvailableTrashDir:
         self.getuid        = getuid
         self.list_volumes  = list_volumes
         self.is_sticky_dir = is_sticky_dir
+    def for_each_infodir(self, file_reader, action):
+        def action2(info_dir_path, volume_path):
+            infodir = InfoDir(file_reader, info_dir_path, volume_path)
+            action(infodir)
+        self.for_home_trashcan(curry_add_info(action2))
+        self.for_each_volume_trashcans(curry_add_info(action2))
     def for_each_infodir_and_volume(self, action):
         self.for_home_trashcan(action)
         self.for_each_volume_trashcans(action)

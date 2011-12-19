@@ -109,12 +109,10 @@ Report bugs to http://code.google.com/p/trash-cli/issues
         self.info_dir      = FakeInfoDir(self.XDG_DATA_HOME+'/Trash/info')
         self.add_trashinfo = self.info_dir.add_trashinfo
 
-        self.runner = TrashListRunner( environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME})
-        self.output_should_be = self.runner.output_should_be
-        self.error_should_be  = self.runner.error_should_be
-
-    def run(self, *argv):
-        self.runner.run(argv)
+        runner = TrashListRunner( environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME})
+        self.output_should_be = runner.output_should_be
+        self.error_should_be  = runner.error_should_be
+        self.run = runner
 
 @istest
 class describe_list_trash_with_top_trash_directory_type_1:
@@ -136,7 +134,6 @@ class describe_list_trash_with_top_trash_directory_type_1:
 
         self.run()
 
-        raise SkipTest("work in progress")
         self.output_should_be("")
 
     @istest
@@ -151,14 +148,12 @@ class describe_list_trash_with_top_trash_directory_type_1:
     def setUp(self):
         require_empty_dir('topdir')
 
-        self.runner = TrashListRunner()
-        self.runner.set_fake_uid(123)
-        self.runner.add_volume('topdir')
+        runner = TrashListRunner()
+        runner.set_fake_uid(123)
+        runner.add_volume('topdir')
 
-        self.output_should_be = self.runner.output_should_be
-
-    def run(self, *argv):
-        self.runner.run(argv)
+        self.run = runner
+        self.output_should_be = runner.output_should_be
 
 class FakeInfoDir:
     def __init__(self, path):
@@ -211,6 +206,8 @@ class TrashListRunner:
         self.environ     = environ
         self.fake_getuid = self.error
         self.volumes     = []
+    def __call__(self, *argv):
+        self.run(argv)
     def run(self,argv):
         ListCmd(
             out = self.stdout,

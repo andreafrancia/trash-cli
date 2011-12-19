@@ -1,6 +1,6 @@
 # Copyright (C) 2008-2011 Andrea Francia Trivolzio(PV) Italy
 
-from trashcli.trash import has_sticky_bit, mkdirs
+from trashcli.trash import has_sticky_bit, mkdirs, is_sticky_dir
 
 from .files import require_empty_dir, having_file, set_sticky_bit
 import os
@@ -45,10 +45,6 @@ class Test_is_sticky_dir:
 
     def setUp(self):
         require_empty_dir('sandbox')
-
-def is_sticky_dir(path):
-    import os
-    return os.path.isdir(path) and has_sticky_bit(path)
 
 def run(command):
     import subprocess

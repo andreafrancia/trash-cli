@@ -15,9 +15,12 @@ Feature: Rewrite of trash-list
  - should check that the $topdir/.Trash directory has the sticky bit
     x now AvailableTrashDir check through a has_sticky bit helper
     x write the is_sticky_dir for the real filesystem
-    - move is_sticky_dir to trash2.py 
-    - find the way of inject the has_sticky_dir (from _FileSystem?)
-    - remove the SkipTest
+    x move is_sticky_dir to trash2.py 
+    x inject the has_sticky_dir (from _FileSystem?)
+    - clean up the empty-trash tests
+    - add a maker for method 1 .Trash directories for tests
+    - review duplication between EmptyCmd and ListCmd
+ - should print version on --version
  - should check that the $topdir/.Trash is not a symbolic link
  - exception when a .trashinfo from home trashdir contains a path that is not 
    absolute

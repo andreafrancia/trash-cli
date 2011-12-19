@@ -10,7 +10,7 @@ logger=logging.getLogger('trashcli.trash')
 logger.setLevel(logging.WARNING)
 logger.addHandler(logging.StreamHandler())
 
-from .trash2 import contents_of, has_sticky_bit
+from .trash2 import contents_of, has_sticky_bit, is_sticky_dir
 
 class TrashDirectory:
     """\
