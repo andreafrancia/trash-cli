@@ -30,6 +30,27 @@ from .list_mount_points import mount_points
 from . import version
 from datetime import datetime
 
+class Parser:
+    def __init__(self):
+        self.help_action    = do_nothing
+        self.default_action = do_nothing
+    def __call__(self, argv):
+        self.argv = argv
+        from getopt import getopt
+        options, arguments = getopt(self.argv[1:], 'h', ['help'])
+    
+        for option, value in options:
+            if option == '--help':
+                self.help_action(self.program_name())
+            return
+        self.default_action()
+    def program_name(self):
+        return self.argv[0]
+    def on_help(self, help_action):
+        self.help_action = help_action
+    def as_default(self, default_action):
+        self.default_action = default_action
+
 class ListCmd():
     def __init__(self, out, err, environ, 
                  getuid       = os.getuid,
@@ -44,15 +65,16 @@ class ListCmd():
                                              is_sticky_dir)
 
     def run(self, *argv):
-        if len(argv)==0: argv = ['trash-list']
-        program_name=argv[0]
-        import getopt
-        options, arguments = getopt.getopt(argv[1:], 'h', ['help'])
-    
-        for option, value in options:
-            if option == '--help':
-                self.println("""\
-Usage: %s [OPTIONS...]
+        parse=Parser()
+        parse.on_help(self.print_help)
+        parse.as_default(self.list_trash)
+        parse(argv)
+    def list_trash(self):
+        self.infodirs.for_each_infodir(self.file_reader,
+                                       self.list_contents)
+    def print_help(self, program_name):
+        self.println("""\
+Usage: %(program_name)s [OPTIONS...]
 
 List trashed files
 
@@ -61,10 +83,8 @@ Options:
   -h, --help  show this help message and exit
 
 Report bugs to http://code.google.com/p/trash-cli/issues\
-""" % program_name)
-            return
-        self.infodirs.for_each_infodir(self.file_reader,
-                                       self.list_contents)
+""" % locals())
+
     def list_contents(self, info_dir):
         info_dir.each_parsed_trashinfo(
                 on_parse       = self.print_entry,

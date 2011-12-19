@@ -208,6 +208,8 @@ class TrashListRunner:
     def __call__(self, *argv):
         self.run(argv)
     def run(self,argv):
+        if argv==(): 
+            argv='trash-list'
         ListCmd(
             out = self.stdout,
             err = self.stderr,
