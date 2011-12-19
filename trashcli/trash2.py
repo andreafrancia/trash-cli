@@ -34,6 +34,7 @@ class Parser:
     def __init__(self):
         self.help_action    = do_nothing
         self.default_action = do_nothing
+        self.version_action = do_nothing
     def __call__(self, argv):
         self.argv = argv
         from getopt import getopt
@@ -48,6 +49,8 @@ class Parser:
         return self.argv[0]
     def on_help(self, help_action):
         self.help_action = help_action
+    def on_version(self, version_action):
+        self.version_action = version_action
     def as_default(self, default_action):
         self.default_action = default_action
 
@@ -138,8 +141,7 @@ class EmptyCmd():
             if arg == '--version' :
                 self.action = printer.print_version
                 break
-            if self.is_int(arg):
-                self.date_criteria = OlderThan(int(arg), self.now)
+            self.date_criteria = OlderThan(int(arg), self.now)
         self.action()
     def is_int(self, text):
         try:
