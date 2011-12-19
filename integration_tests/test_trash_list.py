@@ -4,7 +4,6 @@ from trashcli.trash2 import ListCmd
 from trashcli.trash  import has_sticky_bit
 from StringIO import StringIO
 from files import write_file, require_empty_dir, make_sticky_dir
-from nose import SkipTest
 from nose.tools import istest
 
 @istest

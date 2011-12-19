@@ -1,6 +1,6 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from nose.tools import assert_equals, assert_not_equals
+from nose.tools import assert_equals, assert_items_equal
 from trashcli.trash2 import EmptyCmd
 
 from StringIO import StringIO
@@ -8,57 +8,90 @@ import os
 from files import write_file, require_empty_dir, make_dirs, set_sticky_bit
 from files import having_file
 
-
 class TestEmptyCmd():
-    def setUp(self):
-        require_empty_dir('.local')
-        self.out=StringIO()
-        self.err=StringIO()
-        self.environ = { 'XDG_DATA_HOME': '.local' }
+    def test_it_removes_an_info_file(self):
+        self.trash.having_trashinfo('foo.trashinfo')
+
+        self.run()
+
+        self.info_dir.should_be_empty()
+
+    def test_it_removes_multiple_info_files(self):
+
+        self.trash.having_three_trashinfo()
+
+        self.run()
+
+        self.info_dir.should_be_empty()
+
+    def test_it_removes_files(self):
+        self.trash.having_one_trashed_file()
+
+        self.run()
+
+        self.files_dir.should_be_empty()
+    
+    def test_it_keep_unknown_files_in_infodir(self):
+        self.info_dir.having_file('not-a-trashinfo')
+
+        self.run()
+
+        self.info_dir.assert_contains_file('not-a-trashinfo')
+
+    def test_it_removes_orphan_files(self):
+        self.files_dir.having_orphan_file()
+
+        self.run()
+
+        self.files_dir.should_be_empty()
+
     def run(self):
         EmptyCmd(
             out = self.out, 
             err = self.err, 
             environ = self.environ).run('trash-empty')
 
-    def test_it_removes_an_info_file(self):
-        having_file(              '.local/Trash/info/foo.trashinfo')
-        self.run()
-        assert not os.path.exists('.local/Trash/info/foo.trashinfo')
-
-    def test_it_removes_multiple_info_files(self):
-        having_file('.local/Trash/info/foo.trashinfo')
-        having_file('.local/Trash/info/bar.trashinfo')
-        having_file('.local/Trash/info/baz.trashinfo')
-        assert_not_equals([],list(os.listdir('.local/Trash/info/')))
-
-        self.run()
-
-        assert_equals([],list(os.listdir('.local/Trash/info/')))
-
-    def test_it_removes_files(self):
-        having_file('.local/Trash/info/foo.trashinfo')
-        having_file('.local/Trash/files/foo')
-        assert_not_equals([],list(os.listdir('.local/Trash/files/')))
-
-        self.run()
-
-        assert_equals([],list(os.listdir('.local/Trash/files/')))
-    
-    def test_it_keep_unknown_files_in_infodir(self):
-        having_file('.local/Trash/info/not-a-trashinfo')
-
-        self.run()
-
-        assert os.path.exists('.local/Trash/info/not-a-trashinfo')
-
-    def test_it_removes_orphan_files(self):
-        having_file(              '.local/Trash/files/a-file-without-any-associated-trashinfo')
-        assert os.path.exists(    '.local/Trash/files/a-file-without-any-associated-trashinfo')
-
-        self.run()
-
-        assert not os.path.exists('.local/Trash/files/a-file-without-any-associated-trashinfo')
+    def setUp(self):
+        require_empty_dir('.local')
+        self.out=StringIO()
+        self.err=StringIO()
+        self.environ = { 'XDG_DATA_HOME': '.local' }
+        class Dir:
+            def __init__(self, path):
+                self.path = path
+            def having_file(self, child):
+                having_file(os.path.join(self.path, child))
+            def should_be_empty(self):
+                assert self.is_empty()
+            def is_empty(self):
+                return len(os.listdir(self.path)) == 0
+            def having_orphan_file(self):
+                # this method makes sense only for files_dir
+                self.having_file('a-file-without-any-associated-trashinfo')
+                self.assert_contains_file('a-file-without-any-associated-trashinfo')
+            def assert_contains_file(self, child):
+                assert os.path.exists(os.path.join(self.path, child))
+        info_dir  = '.local/Trash/info'
+        files_dir = '.local/Trash/files'
+        self.info_dir  = Dir(info_dir)
+        self.files_dir = Dir(files_dir)
+        class TrashDir:
+            def having_trashinfo(self, basename_of_trashinfo):
+                having_file(os.path.join(info_dir, basename_of_trashinfo))
+            def having_three_trashinfo(self):
+                self.having_trashinfo('foo.trashinfo')
+                self.having_trashinfo('bar.trashinfo')
+                self.having_trashinfo('baz.trashinfo')
+                assert_items_equal(['foo.trashinfo', 
+                                    'bar.trashinfo',
+                                    'baz.trashinfo'], os.listdir(info_dir))
+            def having_one_trashed_file(self):
+                self.having_trashinfo('foo.trashinfo')
+                having_file(files_dir +'/foo')
+                self.files_dir_should_not_be_empty()
+            def files_dir_should_not_be_empty(self):
+                assert len(os.listdir(files_dir)) != 0
+        self.trash     = TrashDir()
 
 class TestEmptyCmdWithTime:
 
@@ -161,7 +194,6 @@ class TestTrashEmpty_on_version():
         assert_equals(out.getvalue(), """\
 trash-empty 1.2.3
 """)
-    pass
 
 def date(yyyy_mm_dd):
     from datetime import datetime
