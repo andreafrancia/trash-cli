@@ -17,9 +17,9 @@ Feature: Rewrite of trash-list
     x write the is_sticky_dir for the real filesystem
     x move is_sticky_dir to trash2.py 
     x inject the has_sticky_dir (from _FileSystem?)
-    - clean up the empty-trash tests
-    - add a maker for method 1 .Trash directories for tests
-    - review duplication between EmptyCmd and ListCmd
+    x clean up the empty-trash tests
+    x add a maker for method 1 .Trash directories for tests
+    x review duplication between EmptyCmd and ListCmd
  - should print version on --version
  - should check that the $topdir/.Trash is not a symbolic link
  - exception when a .trashinfo from home trashdir contains a path that is not 

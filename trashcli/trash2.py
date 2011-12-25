@@ -30,64 +30,37 @@ from .list_mount_points import mount_points
 from . import version
 from datetime import datetime
 
-class Parser:
-    def __init__(self):
-        self.help_action    = do_nothing
-        self.default_action = do_nothing
-        self.version_action = do_nothing
-    def __call__(self, argv):
-        self.argv = argv
-        from getopt import getopt
-        options, arguments = getopt(self.argv[1:], 'h', ['help'])
-    
-        for option, value in options:
-            if option == '--help':
-                self.help_action(self.program_name())
-            return
-        self.default_action()
-    def program_name(self):
-        return self.argv[0]
-    def on_help(self, help_action):
-        self.help_action = help_action
-    def on_version(self, version_action):
-        self.version_action = version_action
-    def as_default(self, default_action):
-        self.default_action = default_action
-
 class ListCmd():
     def __init__(self, out, err, environ, 
-                 getuid       = os.getuid,
-                 list_volumes = mount_points,
+                 getuid        = os.getuid,
+                 list_volumes  = mount_points,
                  is_sticky_dir = is_sticky_dir,
-                 file_reader  = _FileReader()):
+                 file_reader   = _FileReader(),
+                 version       = version):
 
         self.out         = out
         self.err         = err
         self.file_reader = file_reader
         self.infodirs    = AvailableTrashDir(environ, getuid, list_volumes,
                                              is_sticky_dir)
+        self.version     = version
 
     def run(self, *argv):
         parse=Parser()
-        parse.on_help(self.print_help)
+        parse.on_help(PrintHelp(self.description, self.println))
+        parse.on_version(PrintVersion(self.println, self.version))
         parse.as_default(self.list_trash)
         parse(argv)
     def list_trash(self):
         self.infodirs.for_each_infodir(self.file_reader,
                                        self.list_contents)
-    def print_help(self, program_name):
-        self.println("""\
-Usage: %(program_name)s [OPTIONS...]
-
-List trashed files
-
-Options:
-  --version   show program's version number and exit
-  -h, --help  show this help message and exit
-
-Report bugs to http://code.google.com/p/trash-cli/issues\
-""" % locals())
-
+    def description(self, program_name, printer):
+        printer.usage('Usage: %s [OPTIONS...]' % program_name)
+        printer.summary('List trashed files')
+        printer.options(
+           "  --version   show program's version number and exit",
+           "  -h, --help  show this help message and exit")
+        printer.bug_reporting()
     def list_contents(self, info_dir):
         info_dir.each_parsed_trashinfo(
                 on_parse       = self.print_entry,
@@ -104,6 +77,38 @@ Report bugs to http://code.google.com/p/trash-cli/issues\
         self.out.write(line+'\n')
     def error(self, line):
         self.err.write(line+'\n')
+
+class Parser:
+    def __init__(self):
+        self.help_action    = do_nothing
+        self.default_action = do_nothing
+        self.version_action = do_nothing
+        self.argument_action = do_nothing
+    def __call__(self, argv):
+        self.argv = argv
+        from getopt import getopt
+        options, arguments = getopt(self.argv[1:], 'h', ['help','version'])
+    
+        for option, value in options:
+            if option == '--help' or option == '-h':
+                self.help_action(self.program_name())
+                return
+            if option == '--version':
+                self.version_action(self.program_name())
+                return
+        for argument in arguments:
+            self.argument_action(argument)
+        self.default_action()
+    def program_name(self):
+        return self.argv[0]
+    def on_help(self, help_action):
+        self.help_action = help_action
+    def on_version(self, version_action):
+        self.version_action = version_action
+    def on_argument(self, argument_action):
+        self.argument_action = argument_action
+    def as_default(self, default_action):
+        self.default_action = default_action
 
 class EmptyCmd():
     def __init__(self, out, err, environ, 
@@ -127,22 +132,23 @@ class EmptyCmd():
 
     def run(self, *argv):
         self.date_criteria = always
-        self.action        = self._delete_according_criteria
-        self.parse(argv)
-    def parse(self, argv):
-        self.program_name  = argv[0]
-        printer=HelpAndVersionPrinter(self.out, 
-                                      self.version,
-                                      self.program_name)
-        for arg in argv[1:]:
-            if arg == '--help' or arg == '-h':
-                self.action = printer.print_help
-                break
-            if arg == '--version' :
-                self.action = printer.print_version
-                break
-            self.date_criteria = OlderThan(int(arg), self.now)
-        self.action()
+        parse = Parser()
+        parse.on_help(PrintHelp(self.description, self.println))
+        parse.on_version(PrintVersion(self.println, self.version))
+        parse.on_argument(self.set_deletion_date_criteria)
+        parse.as_default(self._delete_according_criteria)
+        parse(argv)
+
+    def set_deletion_date_criteria(self, arg):
+        self.date_criteria = OlderThan(int(arg), self.now)
+
+    def description(self, program_name, printer):
+        printer.usage('Usage: %s [days]' % program_name)
+        printer.summary('Purge trashed files.')
+        printer.options(
+           "  --version   show program's version number and exit",
+           "  -h, --help  show this help message and exit")
+        printer.bug_reporting()
     def is_int(self, text):
         try:
             int(text)
@@ -155,41 +161,39 @@ class EmptyCmd():
     def _empty_trashdir_according_criteria(self, info_dir):
         janitor=Janitor(self.date_criteria, self.file_remover)
         janitor.swep(info_dir)
-    def print_help(self):
-        self.out.write("""\
-Usage: %(program_name)s [days]
+    def println(self, line):
+        self.out.write(line + '\n')
 
-Purge trashed files.
+class PrintHelp:
+    def __init__(self, description, println):
+        class Printer:
+            def __init__(self, println):
+                self.println = println
+            def usage(self, usage):
+                self.println(usage)
+                self.println('')
+            def summary(self, summary):
+                self.println(summary)
+                self.println('')
+            def options(self, *line_describing_option):
+                self.println('Options:')
+                for line in line_describing_option:
+                    self.println(line)
+                self.println('')
+            def bug_reporting(self):
+                self.println("Report bugs to http://code.google.com/p/trash-cli/issues")
+        self.description  = description
+        self.printer      = Printer(println)
 
-Options:
-  --version   show program's version number and exit
-  -h, --help  show this help message and exit
+    def __call__(self, program_name):
+        self.description(program_name, self.printer)
 
-Report bugs to http://code.google.com/p/trash-cli/issues
-""" % {
-        'program_name':self.program_name
-        })
-class HelpAndVersionPrinter:
-    def __init__(self, out, version, program_name):
-        self.out          = out
+class PrintVersion:
+    def __init__(self, println, version):
+        self.println      = println
         self.version      = version
-        self.program_name = program_name
-    def print_version(self):
-        self.out.write("%s %s\n" % (self.program_name, self.version))
-    def print_help(self):
-        self.out.write("""\
-Usage: %(program_name)s [days]
-
-Purge trashed files.
-
-Options:
-  --version   show program's version number and exit
-  -h, --help  show this help message and exit
-
-Report bugs to http://code.google.com/p/trash-cli/issues
-""" % {
-        'program_name':self.program_name
-        })
+    def __call__(self, program_name):
+        self.println("%s %s" % (program_name, self.version))
 
 class Janitor:
     def __init__(self, date_criteria, file_remover):
