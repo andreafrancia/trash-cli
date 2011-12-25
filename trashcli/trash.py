@@ -567,38 +567,6 @@ class TimeUtils:
         t=time.strptime(text,  "%Y-%m-%dT%H:%M:%S")
         return datetime(t.tm_year, t.tm_mon, t.tm_mday,
                         t.tm_hour, t.tm_min, t.tm_sec)
-class List:
-    def __init__(self, out):
-        self.out = out
-
-    def main(self, *argv):
-        program_name=argv[0]
-        import getopt
-        options, arguments = getopt.getopt(argv[1:], 'h', ['help'])
-    
-        for option, value in options:
-            if option == '--help':
-                self._println("""\
-Usage: %s
-
-List trashed files
-
-Options:
-  --version   show program's version number and exit
-  -h, --help  show this help message and exit
-
-Report bugs to http://code.google.com/p/trash-cli/issues\
-""" % program_name)
-            return
-
-        trashsystem = GlobalTrashCan()
-        for trashed_file in trashsystem.trashed_files() :
-            self._println("%s %s" % (trashed_file.deletion_date, trashed_file.path))
-
-    def _println(self,line):
-        self.out.write(line)
-        self.out.write('\n')
-
 import shutil
 def remove_file(path):
     if(os.path.exists(path)):
