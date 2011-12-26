@@ -182,18 +182,3 @@ test_trash-empty_removes_trash() {
         assertEquals 0 "$(_trash-list | wc -l)"
 }
 
-test_trash-list_on_non_trashinfo_files_in_info_dir() {
-        rm -Rf "$XDG_DATA_HOME/Trash"
-        mkdir --parent "$XDG_DATA_HOME/Trash/info"
-        touch "$XDG_DATA_HOME/info/non-trashinfo" #garbage: not ending with .trashinfo
-        _trash-list
-        assertEquals "$?" 0
-}
-
-test_trash-list_on_invalid_info() {
-        rm -Rf "$XDG_DATA_HOME/Trash"
-        mkdir --parent "$XDG_DATA_HOME/Trash/info"
-        echo "An invalid trashinfo" > "$XDG_DATA_HOME/info/invalid.trashinfo"
-        _trash-list
-        assertEquals "$?" 0
-}
