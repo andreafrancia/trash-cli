@@ -1,5 +1,3 @@
-Environment:
- - use distribute as default
 Feature: Rewrite of trash-list
  x set up integration test for ListCmd
  x when there's not trashed file
@@ -12,19 +10,15 @@ Feature: Rewrite of trash-list
  x displays unknown date when .trashinfo does not contain DeletionDate
  x displays unknown date when .trashinfo contains an invalid DeletionDate
  x error when a .trashinfo does not contain the 'Path=' entry information
- - should check that the $topdir/.Trash directory has the sticky bit
-    x now AvailableTrashDir check through a has_sticky bit helper
-    x write the is_sticky_dir for the real filesystem
-    x move is_sticky_dir to trash2.py 
-    x inject the has_sticky_dir (from _FileSystem?)
-    x clean up the empty-trash tests
-    x add a maker for method 1 .Trash directories for tests
-    x review duplication between EmptyCmd and ListCmd
+ x should check that the $topdir/.Trash directory has the sticky bit
  x should print version on --version
  - should check that the $topdir/.Trash is not a symbolic link
  - exception when a .trashinfo from home trashdir contains a path that is not 
    absolute
  - it should print also the orphan files
+
+Environment:
+ - use distribute as default
 
 Features for trash-put rewrite:
  - should refuse to create the $topdir/.Trash/$uid directory if the 

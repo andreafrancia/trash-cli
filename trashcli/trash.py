@@ -13,10 +13,6 @@ logger.addHandler(logging.StreamHandler())
 from .trash2 import contents_of, has_sticky_bit, is_sticky_dir
 
 class TrashDirectory:
-    """\
-    Represent a trash directory.
-    For example $XDG_DATA_HOME/Trash
-    """
     def __init__(self, path, volume) :
         self.path = os.path.normpath(path)
         self.volume = volume
@@ -24,13 +20,6 @@ class TrashDirectory:
     def __str__(self) :
         return str(self.path)
 
-    def __repr__(self) :
-        return "TrashDirectory(\"%s\", \"%s\")" % (self.path, self.volume)
-
-    """\
-    Trash the specified file.
-    returns the TrashedFile
-    """
     def trash(self, path):
         from datetime import datetime
         path = os.path.normpath(path)
@@ -614,13 +603,15 @@ class NoWrapFormatter(IndentedHelpFormatter) :
         "[Does not] format a text, return the text as it is."
         return text
 
+from . import version
+
 class TrashPutCmd:
     def __init__(self, stdout, stderr):
 	self.stdout=stdout
 	self.stderr=stderr
 
-    def run(self,argv):
-	parser = self.get_option_parser()
+    def run(self, argv):
+	parser = self.get_option_parser(os.path.basename(argv[0]))
 	(options, args) = parser.parse_args(argv[1:])
 
 	if len(args) <= 0:
@@ -628,7 +619,7 @@ class TrashPutCmd:
 
 	reporter=TrashPutReporter(self.get_logger(options.verbose,argv[0]))
 
-	self.trashcan=GlobalTrashCan(reporter=reporter)
+	self.trashcan = GlobalTrashCan(reporter=reporter)
 	self.trash_all(args)
 
     def trash_all(self, args):
@@ -638,11 +629,11 @@ class TrashPutCmd:
     def trash(self, arg):
         self.trashcan.trash(arg)
 
-    def get_option_parser(self):
-	from trashcli import version
+    def get_option_parser(self, program_name):
 	from optparse import OptionParser
 
-	parser = OptionParser(usage="%prog [OPTION]... FILE...",
+	parser = OptionParser(prog=program_name,
+                              usage="%prog [OPTION]... FILE...",
 			      description="Put files in trash",
 			      version="%%prog %s" % version,
 			      formatter=NoWrapFormatter(),
@@ -677,7 +668,21 @@ Report bugs to http://code.google.com/p/trash-cli/issues""")
 			  action="store_true",
 			  help="explain what is being done",
 			  dest="verbose")
-	return parser
+        def patched_print_help():
+            encoding = parser._get_encoding(self.stdout)
+            self.stdout.write(parser.format_help().encode(encoding, "replace"))
+        def patched_error(msg):
+            parser.print_usage(self.stderr)
+            parser.exit(2, "%s: error: %s\n" % (program_name, msg))
+        def patched_exit(status=0, msg=None):
+            if msg: self.stderr.write(msg)
+            import sys
+            sys.exit(status)
+
+        parser.print_help = patched_print_help
+        parser.error = patched_error
+        parser.exit = patched_exit
+        return parser
 
     def get_logger(self,verbose,argv0):
 	import os.path

@@ -80,31 +80,41 @@ class ListCmd():
 
 class Parser:
     def __init__(self):
-        self.help_action    = do_nothing
         self.default_action = do_nothing
-        self.version_action = do_nothing
         self.argument_action = do_nothing
+        self.short_options = ''
+        self.long_options = []
+        self.actions = dict()
     def __call__(self, argv):
-        self.argv = argv
+        program_name = argv[0]
         from getopt import getopt
-        options, arguments = getopt(self.argv[1:], 'h', ['help','version'])
+        options, arguments = getopt(argv[1:], 
+                                    self.short_options, 
+                                    self.long_options)
     
         for option, value in options:
-            if option == '--help' or option == '-h':
-                self.help_action(self.program_name())
-                return
-            if option == '--version':
-                self.version_action(self.program_name())
+            if option in self.actions:
+                self.actions[option](program_name)
                 return
         for argument in arguments:
             self.argument_action(argument)
         self.default_action()
-    def program_name(self):
-        return self.argv[0]
-    def on_help(self, help_action):
-        self.help_action = help_action
-    def on_version(self, version_action):
-        self.version_action = version_action
+    def on_help(self, action):
+        self.add_option('help', action, 'h')
+
+    def on_version(self, action):
+        self.add_option('version', action)
+
+    def add_option(self, long_option, action, short_aliases=''):
+        self.long_options.append(long_option)
+        self.actions['--' + long_option] = action
+        for short_alias in short_aliases:
+            self.add_short_option(short_alias, action)
+
+    def add_short_option(self, short_option, action):
+        self.short_options += short_option
+        self.actions['-' + short_option] = action
+
     def on_argument(self, argument_action):
         self.argument_action = argument_action
     def as_default(self, default_action):
