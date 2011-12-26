@@ -1,11 +1,13 @@
 *.pyc
 *.swp
+.coverage
 .DS_Store
 .local/
 .svn
 build/
 command-test/sandbox/
 command-test/test-volume.img
+cover/
 dist/
 env/
 nose-*.egg/
