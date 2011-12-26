@@ -4,7 +4,8 @@ from nose.tools import assert_equals
 import os, shutil
 
 def having_file(path):
-    make_dirs(os.path.dirname(path))
+    dirname=os.path.dirname(path)
+    if dirname != '': make_dirs(dirname)
     open(path,'w').close()
     assert os.path.isfile(path)
 
@@ -18,6 +19,9 @@ def require_empty_dir(path):
     if os.path.exists(path): shutil.rmtree(path)
     make_dirs(path)
 
+def having_empty_dir(path):
+    require_empty_dir(path)
+
 def make_dirs(path):
     if not os.path.isdir(path):
         os.makedirs(path)
@@ -30,4 +34,7 @@ def make_sticky_dir(path):
 def set_sticky_bit(path):
     import stat
     os.chmod(path, os.stat(path).st_mode | stat.S_ISVTX)
+
+def touch(path):
+    open(path,'a+').close()
 

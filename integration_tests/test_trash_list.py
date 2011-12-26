@@ -2,9 +2,9 @@
 
 from trashcli.trash2 import ListCmd
 from trashcli.trash  import has_sticky_bit
-from StringIO import StringIO
 from files import write_file, require_empty_dir, make_sticky_dir
 from nose.tools import istest
+from .output_collector import OutputCollector
 
 @istest
 class Describe_trash_list_output:
@@ -227,21 +227,4 @@ class TrashListRunner:
         self.stdout.assert_equal_to(expected_value)
     def error_should_be(self, expected_value):
         self.stderr.assert_equal_to(expected_value)
-
-class OutputCollector:
-    def __init__(self):
-        self.stream = StringIO()
-    def write(self,data):
-        self.stream.write(data)
-    def assert_equal_to(self, expected):
-        return self.should_be(expected)
-    def should_be(self, expected):
-        from assert_equals_with_unidiff import assert_equals_with_unidiff
-        assert_equals_with_unidiff(expected, self.stream.getvalue())
-    def getvalue(self):
-        return self.stream.getvalue()
-    def assert_matches(self, regex):
-        text = self.stream.getvalue()
-        from nose.tools import assert_regexp_matches
-        assert_regexp_matches(text, regex)
 

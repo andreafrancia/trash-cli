@@ -41,3 +41,8 @@ class TestDescritions:
         
         assert_equals("symbolic link", describe("sandbox/symlink"))
 
+    def test_name_for_non_existent_entries(self):
+
+        assert not os.path.exists('non-existent')
+
+        assert_equals("non existent", describe('non-existent'))

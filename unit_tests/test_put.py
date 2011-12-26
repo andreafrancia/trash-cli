@@ -1,6 +1,6 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from nose.tools import assert_equals, istest
+from nose.tools import istest
 from StringIO import StringIO
 from trashcli.trash import TrashPutCmd
 from integration_tests.assert_equals_with_unidiff import assert_equals_with_unidiff

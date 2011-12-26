@@ -39,5 +39,3 @@ class MountPointFromDirTest(unittest.TestCase):
 
 	self.assertEquals(['/', '/Volumes/with white spaces'], list(mount_points))
 
-if __name__ == '__main__':
-    unittest.main()

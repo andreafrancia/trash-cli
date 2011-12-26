@@ -1,119 +1,111 @@
 # Copyright (C) 2009-2011 Andrea Francia Trivolzio(PV) Italy
 
-from unittest import TestCase
-from trashcli.trash import mkdirs
-from trashcli.trash import HomeTrashDirectory
-from integration_tests.files import require_empty_dir
-from nose.tools import assert_equals
-from nose.tools import assert_true
-from nose.tools import assert_false
+from nose.tools import istest
+from .files import having_file, require_empty_dir, touch, having_empty_dir
+from trashcli.trash import TrashPutCmd
+from StringIO import StringIO
 
-class PutTest(TestCase):
+@istest
+class describe_trash_put_command_when_deleting_a_file:
+
+    @istest
+    def it_should_remove_the_file(self):
+
+        file_should_have_been_deleted('sandbox/foo')
+
+    @istest
+    def it_should_remove_it_silently(self):
+
+        self.output_should_be_equal_to('')
 
     def setUp(self):
-        from common import create_cmdenv
-        self.cmdenv = create_cmdenv()
-        self.sandbox = Sandbox()
+        require_empty_dir('sandbox')
 
-    # Rule of Silence: When a program has nothing surprising to say, it should say nothing.
-    # See also:
-    #  - issue #32
-    #  - http://www.catb.org/~esr/writings/taouu/taouu.html#rule-silence
-    def test_silence_rule(self):
-        self.sandbox.create_file('foo')
-        self.cmdenv.run('trash-put', 'foo').assert_result(output="")
+        having_file('sandbox/foo')
+        self.run_trashput('sandbox/foo')
+
+    def run_trashput(self, *args):
+        self.out = StringIO()
+        self.err = StringIO()
+        cmd = TrashPutCmd(stdout = self.out, stderr = self.err)
+        cmd.run(['trash-put'] + list(args))
+
+    def output_should_be_equal_to(self, expected):
+        actual = self.out.getvalue()
+        assert actual == expected
+
+import os
+exists = os.path.exists
+@istest
+class describe_trash_put_command2:
 
     def test_dot_argument_is_skipped(self):
-        self.sandbox.create_file('other_argument')
-        result = self.cmdenv.run("trash-put", ".","other_argument")
+        having_file('other_argument')
+
+        self.run_trash_put("trash-put", ".", "other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
-        assert_equals(result.stderr,"trash-put: cannot trash directory `.'\n")
+        self.stderr_should_be(
+                "trash-put: cannot trash directory `.'\n")
 
         # the remaining arguments should be processed
-        assert_false(self.sandbox.exists('other_argument'))
+        assert not exists('other_argument')
 
     def test_dot_dot_argument_is_skipped(self):
-        self.sandbox.create_file('other_argument')
-        result = self.cmdenv.run("trash-put", "..", "other_argument")
+        having_file('other_argument')
+
+        self.run_trash_put("trash-put", "..", "other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
-
-        assert_equals(result.stderr,"trash-put: cannot trash directory `..'\n")
+        self.stderr_should_be(
+            "trash-put: cannot trash directory `..'\n")
 
         # the remaining arguments should be processed
-        assert_false(self.sandbox.exists('other_argument'))
+        assert not exists('other_argument')
 
     def test_dot_argument_is_skipped_even_in_subdirs(self):
-        self.sandbox.mkdir('foo')
-        self.sandbox.create_file('other_argument')
-        result = self.cmdenv.run("trash-put", "foo/.","other_argument")
+        having_empty_dir('sandbox/')
+        having_file('other_argument')
+
+        self.run_trash_put("trash-put", "sandbox/.", "other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
-        assert_equals(result.stderr,
-            "trash-put: cannot trash `.' directory `foo/.'\n")
+        self.stderr_should_be(
+            "trash-put: cannot trash `.' directory `sandbox/.'\n")
 
         # the remaining arguments should be processed
-        assert_false(self.sandbox.exists('other_argument'))
-        assert_true(self.sandbox.exists('foo'))
+        assert not exists('other_argument')
+        assert exists('sandbox')
 
     def test_dot_dot_argument_is_skipped_even_in_subdirs(self):
-        self.sandbox.mkdir('foo')
-        self.sandbox.create_file('other_argument')
-        result = self.cmdenv.run("trash-put", "foo/..", "other_argument")
+        having_empty_dir('sandbox')
+        having_file('other_argument')
+
+        self.run_trash_put("trash-put", "sandbox/..", "other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
-        assert_equals(result.stderr,
-            "trash-put: cannot trash `..' directory `foo/..'\n")
+        self.stderr_should_be(
+            "trash-put: cannot trash `..' directory `sandbox/..'\n")
 
         # the remaining arguments should be processed
-        assert_false(self.sandbox.exists('other_argument'))
-        assert_true(self.sandbox.exists('foo'))
+        assert not exists('other_argument')
+        assert exists('sandbox')
 
-class Sandbox():
-    """
-    A sandbox where executing commands under tests
-    """
-    def __init__(self):
-        self.path="./sandbox"
-        require_empty_dir(self.path)
-        mkdirs(self.path)
-        self.trashdir = HomeTrashDirectory(
-                        './sandbox/home/.local/share/Trash')
+    def run_trash_put(self, *argv):
+        from .output_collector import OutputCollector
+        self.out = OutputCollector()
+        self.err = OutputCollector()
+        cmd = TrashPutCmd(stdout = self.out, stderr = self.err)
+        cmd.run(list(argv))
 
-    def create_file(self, path, content=None):
-        """
-        Create a file in sandbox with content
-        """
-        import os
-        file=os.path.join(self.path,path)
-        touch(file)
-        if content!=None :
-            file.write_file(content)
+    def stderr_should_be(self, expected):
+        self.err.should_be(expected)
 
-        return file
+def file_should_have_been_deleted(path):
+    import os
+    assert not os.path.exists('sandbox/foo')
 
-    def trash(self, path):
-        """
-        Trash the file in the trash dir at sandbox/home/.local/share/Trash
-        """
-        result = self.trashdir.trash(path)
-
-        # sanity check
-        assert not path.exists()
-        return result
-
-    def mkdir(self,subdir):
-        import os
-        path=os.path.join(self.path, subdir)
-        os.mkdir(path)
-    def exists(self, path):
-        import os
-        return os.path.exists(os.path.join(self.path, path))
-
-def touch(path):
-    open(path,'a+').close()

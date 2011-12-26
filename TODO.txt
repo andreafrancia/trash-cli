@@ -1,5 +1,5 @@
 Command trash-put:
- - revise trash-put tests
+ x revise trash-put tests
  - write test for lines 331-335
  - consolidate self._possible_trash_directories_for() with AvailableTrashDir
  - test to be ported to nose:

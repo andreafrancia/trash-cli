@@ -48,7 +48,7 @@ class TrashDirectory:
         try :
             move(path, trashed_file.actual_path)
         except IOError, e :
-            remove_file(trash_info_file.path)
+            remove_file(trash_info_file)
             raise e
 
         return trashed_file
@@ -397,12 +397,6 @@ class GlobalTrashCan:
             action(
                     info_path = trashedfile.original_file,
                     path      = trashedfile.info_file)
-    def for_all_files_trashed_more_than(self, days_ago, action):
-        for trashedfile in self.trashed_files() :
-            delta=self.now()-trashedfile.deletion_date
-            if delta.days >= days_ago :
-                action(info_path=trashedfile.original_file.path,
-                       path=trashedfile.info_file.path)
 
 class TrashedFile:
     """
@@ -752,6 +746,7 @@ def describe(path):
      - "`..' directory"
      - "regular file"
      - "regular empty file"
+     - "non existent"
      - "entry"
     """
     if os.path.islink(path):
@@ -773,6 +768,8 @@ def describe(path):
             return 'regular empty file'
         else:
             return 'regular file'
+    elif not os.path.exists(path):
+        return 'non existent'
     else:
         return 'entry'
 
