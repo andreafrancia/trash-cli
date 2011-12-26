@@ -1,14 +1,15 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from nose.tools import assert_equals
-from unittest import TestCase
+from nose.tools import assert_equals, istest
 from StringIO import StringIO
 from trashcli.trash import TrashPutCmd
 from integration_tests.assert_equals_with_unidiff import assert_equals_with_unidiff
 
-class TrashPutCmd_Test:
+@istest
+class Describe_TrashPutCmd:
 
-    def test_on_help(self):
+    @istest
+    def on_help_option_print_help(self):
 	self.run('--help')
         self.stdout_should_be('''\
 Usage: trash-put [OPTION]... FILE...
@@ -34,15 +35,18 @@ use one of these commands:
 Report bugs to http://code.google.com/p/trash-cli/issues
 ''')
 
-    def test_should_skip_dot_entry(self):
+    @istest
+    def it_should_skip_dot_entry(self):
 	self.run('.')
 	self.stderr_should_be("trash-put: cannot trash directory `.'\n")
     
-    def test_should_skip_dotdot_entry(self):
+    @istest
+    def it_should_skip_dotdot_entry(self):
 	self.run('..')
 	self.stderr_should_be("trash-put: cannot trash directory `..'\n")
 
-    def test_on_no_arguments(self):
+    @istest
+    def it_should_print_usage_on_no_argument(self):
         self.run()
         self.stderr_should_be( 
             'Usage: trash-put [OPTION]... FILE...\n'

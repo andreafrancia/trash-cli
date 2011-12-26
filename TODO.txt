@@ -1,4 +1,20 @@
-Feature: Rewrite of trash-list
+Command trash-put:
+ - revise trash-put tests
+ - write test for lines 331-335
+ - consolidate self._possible_trash_directories_for() with AvailableTrashDir
+ - test to be ported to nose:
+    - print version
+    - trash in home trashcan
+    - trash in volume trashcan 1
+    - trash in volume trashcan 2
+ - it should trash to $topdir/.Trash-UID when $topdir/.Trash is not suitable
+    - when $topdir/.Trash does not exists 
+    - when $topdir/.Trash is a symlink
+    - when $topdir/.Trash is not sticky
+ - should refuse to create the $topdir/.Trash/$uid directory if the 
+   $topdir/.Trash is not sticky
+
+Command trash-list:
  x set up integration test for ListCmd
  x when there's not trashed file
  x when there's only one trashed file
@@ -19,10 +35,6 @@ Feature: Rewrite of trash-list
 
 Environment:
  - use distribute as default
-
-Features for trash-put rewrite:
- - should refuse to create the $topdir/.Trash/$uid directory if the 
-   $topdir/.Trash is not sticky
 
 Features backlog:
  - trash-empty with unreadable trashinfo
