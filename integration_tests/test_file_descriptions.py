@@ -30,7 +30,7 @@ class TestDescritions:
         write_file("sandbox/non-empty", "contents")
         assert_equals("regular file", describe("sandbox/non-empty"))
 
-    def tesT_name_for_empty_file(self):
+    def test_name_for_empty_file(self):
 
         having_file('sandbox/empty')
         assert_equals("regular empty file", describe("sandbox/empty"))
