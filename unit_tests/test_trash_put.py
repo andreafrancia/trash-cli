@@ -6,7 +6,7 @@ from trashcli.trash import TrashPutCmd
 from integration_tests.assert_equals_with_unidiff import assert_equals_with_unidiff
 
 @istest
-class Describe_TrashPutCmd:
+class describe_TrashPutCmd:
 
     @istest
     def on_help_option_print_help(self):

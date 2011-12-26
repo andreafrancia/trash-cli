@@ -1,9 +1,8 @@
 # Copyright (C) 2009-2011 Andrea Francia Trivolzio(PV) Italy
 
 from nose.tools import istest
-from .files import having_file, require_empty_dir, touch, having_empty_dir
+from .files import having_file, require_empty_dir, having_empty_dir
 from trashcli.trash import TrashPutCmd
-from StringIO import StringIO
 
 @istest
 class describe_trash_put_command_when_deleting_a_file:
@@ -16,33 +15,32 @@ class describe_trash_put_command_when_deleting_a_file:
     @istest
     def it_should_remove_it_silently(self):
 
-        self.output_should_be_equal_to('')
+        self.output_should_be('')
+
+    def a_trashinfo_file_should_have_been_created(self):
+        pass
+        
+
 
     def setUp(self):
         require_empty_dir('sandbox')
 
         having_file('sandbox/foo')
-        self.run_trashput('sandbox/foo')
+        self.run_trashput = TrashPutRunner()
+        self.stderr_should_be = self.run_trashput.err.should_be
+        self.output_should_be = self.run_trashput.out.should_be
 
-    def run_trashput(self, *args):
-        self.out = StringIO()
-        self.err = StringIO()
-        cmd = TrashPutCmd(stdout = self.out, stderr = self.err)
-        cmd.run(['trash-put'] + list(args))
-
-    def output_should_be_equal_to(self, expected):
-        actual = self.out.getvalue()
-        assert actual == expected
+        self.run_trashput('trash-put', 'sandbox/foo')
 
 import os
 exists = os.path.exists
 @istest
-class describe_trash_put_command2:
+class describe_trash_put_command_on_dot_arguments:
 
     def test_dot_argument_is_skipped(self):
         having_file('other_argument')
 
-        self.run_trash_put("trash-put", ".", "other_argument")
+        self.run_trashput("trash-put", ".", "other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
@@ -55,7 +53,7 @@ class describe_trash_put_command2:
     def test_dot_dot_argument_is_skipped(self):
         having_file('other_argument')
 
-        self.run_trash_put("trash-put", "..", "other_argument")
+        self.run_trashput("trash-put", "..", "other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
@@ -69,7 +67,7 @@ class describe_trash_put_command2:
         having_empty_dir('sandbox/')
         having_file('other_argument')
 
-        self.run_trash_put("trash-put", "sandbox/.", "other_argument")
+        self.run_trashput("trash-put", "sandbox/.", "other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
@@ -84,7 +82,7 @@ class describe_trash_put_command2:
         having_empty_dir('sandbox')
         having_file('other_argument')
 
-        self.run_trash_put("trash-put", "sandbox/..", "other_argument")
+        self.run_trashput("trash-put", "sandbox/..", "other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
@@ -95,15 +93,20 @@ class describe_trash_put_command2:
         assert not exists('other_argument')
         assert exists('sandbox')
 
-    def run_trash_put(self, *argv):
+    def setUp(self):
+        self.run_trashput = TrashPutRunner()
+        self.stderr_should_be = self.run_trashput.err.should_be
+        
+class TrashPutRunner:
+    def __init__(self):
         from .output_collector import OutputCollector
         self.out = OutputCollector()
         self.err = OutputCollector()
-        cmd = TrashPutCmd(stdout = self.out, stderr = self.err)
-        cmd.run(list(argv))
-
-    def stderr_should_be(self, expected):
-        self.err.should_be(expected)
+    def __call__(self, *argv):
+        TrashPutCmd( 
+            stdout = self.out, 
+            stderr = self.err
+        ).run(list(argv))
 
 def file_should_have_been_deleted(path):
     import os

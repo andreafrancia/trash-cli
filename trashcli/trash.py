@@ -600,9 +600,10 @@ class NoWrapFormatter(IndentedHelpFormatter) :
 from . import version
 
 class TrashPutCmd:
-    def __init__(self, stdout, stderr):
-	self.stdout=stdout
-	self.stderr=stderr
+    def __init__(self, stdout, stderr, environ = os.environ):
+	self.stdout  = stdout
+	self.stderr  = stderr
+	self.environ = environ
 
     def run(self, argv):
 	parser = self.get_option_parser(os.path.basename(argv[0]))
@@ -613,7 +614,9 @@ class TrashPutCmd:
 
 	reporter=TrashPutReporter(self.get_logger(options.verbose,argv[0]))
 
-	self.trashcan = GlobalTrashCan(reporter=reporter)
+	self.trashcan = GlobalTrashCan(
+                reporter = reporter,
+                environ  = self.environ)
 	self.trash_all(args)
 
     def trash_all(self, args):

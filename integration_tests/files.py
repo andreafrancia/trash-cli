@@ -1,6 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
 from nose.tools import assert_equals
+from trashcli.trash  import has_sticky_bit
 import os, shutil
 
 def having_file(path):
@@ -37,4 +38,17 @@ def set_sticky_bit(path):
 
 def touch(path):
     open(path,'a+').close()
+
+def ensure_non_sticky_dir(path):
+    import os
+    assert os.path.isdir(path)
+    assert not has_sticky_bit(path)
+
+def make_unreadable_file(path):
+    write_file(path, '')
+    import os
+    os.chmod(path, 0)
+    from nose.tools import assert_raises
+    with assert_raises(IOError):
+        file(path).read()
 

@@ -1,8 +1,8 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
 from trashcli.trash2 import ListCmd
-from trashcli.trash  import has_sticky_bit
-from files import write_file, require_empty_dir, make_sticky_dir
+from files import (write_file, require_empty_dir, make_sticky_dir,
+                   ensure_non_sticky_dir, make_unreadable_file)
 from nose.tools import istest
 from .output_collector import OutputCollector
 
@@ -180,23 +180,10 @@ class FakeInfoDir:
     def add_trashinfo(self, escaped_path_entry, formatted_deletion_date):
         self.add_file(trashinfo(escaped_path_entry, formatted_deletion_date))
 
-def make_unreadable_file(path):
-    write_file(path, '')
-    import os
-    os.chmod(path, 0)
-    from nose.tools import assert_raises
-    with assert_raises(IOError):
-        file(path).read()
-
 def trashinfo(escaped_path_entry, formatted_deletion_date):
     return ("[TrashInfo]\n" + 
             "Path=%s\n" % escaped_path_entry + 
             "DeletionDate=%s\n" % formatted_deletion_date)
-
-def ensure_non_sticky_dir(path):
-    import os
-    assert os.path.isdir(path)
-    assert not has_sticky_bit(path)
 
 class TrashListRunner:
     def __init__(self, environ={}):
