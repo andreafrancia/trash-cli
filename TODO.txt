@@ -1,8 +1,9 @@
 Command trash-put:
  x revise trash-put tests
+ x consolidate trash2.py in trash.py
+ - change all '[TrashInfo]' to '[Trash Info]'
  - test to be ported to nose:
     - trash in home trashcan
-       - consolidate trash2.py in trash.py
     - print version
     - trash in volume trashcan 1
     - trash in volume trashcan 2

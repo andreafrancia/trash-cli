@@ -9,8 +9,9 @@ def having_file(path):
     if dirname != '': make_dirs(dirname)
     open(path,'w').close()
     assert os.path.isfile(path)
+make_empty_file = having_file
 
-def write_file(filename, contents):
+def write_file(filename, contents=''):
     parent = os.path.dirname(filename)
     if not os.path.isdir(parent): os.makedirs(parent)
     file(filename, 'w').write(contents)

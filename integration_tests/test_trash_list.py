@@ -2,9 +2,12 @@
 
 from trashcli.trash import ListCmd
 from files import (write_file, require_empty_dir, make_sticky_dir,
-                   ensure_non_sticky_dir, make_unreadable_file)
+                   ensure_non_sticky_dir, make_unreadable_file,
+                   make_empty_file)
 from nose.tools import istest
 from .output_collector import OutputCollector
+from trashinfo import (a_trashinfo, a_trashinfo_without_date,
+                       a_trashinfo_with_invalid_date)
 
 @istest
 class Describe_trash_list_output:
@@ -27,16 +30,13 @@ Report bugs to http://code.google.com/p/trash-cli/issues
     def should_output_nothing_if_no_files(self):
 
         self.run()
-
         self.output_should_be('')
 
     @istest
     def should_output_deletion_date_and_path_of_trash(self):
 
         self.add_trashinfo('/aboslute/path', '2001-02-03T23:55:59')
-
         self.run()
-
         self.output_should_be( "2001-02-03 23:55:59 /aboslute/path\n")
 
     @istest
@@ -53,34 +53,27 @@ Report bugs to http://code.google.com/p/trash-cli/issues
 
     @istest
     def should_output_question_mark_if_deletion_date_is_not_present(self):
-        self.info_dir.make_file('without-date.trashinfo', 
-                ("[TrashInfo]\n"
-                 "Path=/path\n"))
+        self.info_dir.having_file(a_trashinfo_without_date())
         self.run()
         self.output_should_be("????-??-?? ??:??:?? /path\n")
 
     @istest
     def should_output_question_marks_if_deletion_date_is_invalid(self):
-        self.info_dir.make_file('without-date.trashinfo', 
-                ("[TrashInfo]\n"
-                 "Path=/path\n"
-                 "DeletionDate=Wrong Date"))
+        self.info_dir.having_file(a_trashinfo_with_invalid_date())
         self.run()
         self.output_should_be("????-??-?? ??:??:?? /path\n")
 
     @istest
     def should_warn_about_empty_trashinfos(self):
         self.info_dir.touch('empty.trashinfo')
-
         self.run()
-
         self.error_should_be(
                 "Parse Error: XDG_DATA_HOME/Trash/info/empty.trashinfo: "
                 "Unable to parse Path\n")
 
     @istest
     def should_warn_about_unreadable_trashinfo(self):
-        self.info_dir.make_unreadable_file('unreadable.trashinfo')
+        self.info_dir.having_unreadable('unreadable.trashinfo')
 
         self.run()
 
@@ -92,7 +85,7 @@ Report bugs to http://code.google.com/p/trash-cli/issues
         def a_trashinfo_without_path():
             return ("[TrashInfo]\n"
                     "DeletionDate='2000-01-01T00:00:00'\n")
-        self.info_dir.add_file(a_trashinfo_without_path())
+        self.info_dir.having_file(a_trashinfo_without_path())
 
         self.run()
 
@@ -158,32 +151,24 @@ class FakeInfoDir:
     def __init__(self, path):
         self.path = path
         self.number = 1
-    def make_file(self, path_relative_to_info_dir, contents):
-        path = self.real_path(path_relative_to_info_dir)
-        write_file(path, contents)
     def touch(self, path_relative_to_info_dir):
-        self.make_file(path_relative_to_info_dir, '')
-    def make_unreadable_file(self, path_relative_to_info_dir):
-        path = self.real_path(path_relative_to_info_dir)
+        make_empty_file(self.join(path_relative_to_info_dir))
+    def having_unreadable(self, path_relative_to_info_dir):
+        path = self.join(path_relative_to_info_dir)
         make_unreadable_file(path)
-    def real_path(self, path_relative_to_info_dir):
+    def join(self, path_relative_to_info_dir):
         import os
         return os.path.join(self.path, path_relative_to_info_dir)
-    def add_file(self, contents):
+    def having_file(self, contents):
         path = '%(info_dir)s/%(name)s.trashinfo' % { 'info_dir' : self.path,
-                                                     'name' : str(self.number)}
+                                                     'name'     : str(self.number)}
         write_file(path, contents)
 
-        self.number = self.number + 1
+        self.number += 1
         self.path_of_last_file_added = path
 
     def add_trashinfo(self, escaped_path_entry, formatted_deletion_date):
-        self.add_file(trashinfo(escaped_path_entry, formatted_deletion_date))
-
-def trashinfo(escaped_path_entry, formatted_deletion_date):
-    return ("[TrashInfo]\n" + 
-            "Path=%s\n" % escaped_path_entry + 
-            "DeletionDate=%s\n" % formatted_deletion_date)
+        self.having_file(a_trashinfo(escaped_path_entry, formatted_deletion_date))
 
 class TrashListRunner:
     def __init__(self, environ={}):

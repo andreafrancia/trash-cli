@@ -3,7 +3,6 @@
 from __future__ import absolute_import
 
 import os
-import random
 import logging
 
 logger=logging.getLogger('trashcli.trash')
@@ -12,7 +11,7 @@ logger.addHandler(logging.StreamHandler())
 
 class TrashDirectory:
     def __init__(self, path, volume) :
-        self.path = os.path.normpath(path)
+        self.path   = os.path.normpath(path)
         self.volume = volume
 
     def __str__(self) :
@@ -152,6 +151,7 @@ class TrashDirectory:
             elif index < 100:
                 suffix = "_%d" % index
             else :
+                import random
                 suffix = "_%d" % random.randint(0, 65535)
 
             base_id = basename
@@ -383,12 +383,9 @@ class GlobalTrashCan:
         trash_directory_path = os.path.join(volume, dirname)
         return VolumeTrashDirectory(trash_directory_path,volume)
     def _home_trash_dir_path(self):
-        if 'XDG_DATA_HOME' in self.environ:
-            XDG_DATA_HOME = self.environ['XDG_DATA_HOME']
-        else :
-	    XDG_DATA_HOME = self.environ['HOME'] + '/.local/share'
-        return XDG_DATA_HOME + "/Trash"
-	
+        result = []
+        home_trashcan_if_possible(self.environ, result.append)
+        return result[0]
 
     def for_all_trashed_file(self, action):
         for trashedfile in self.trashed_files():
@@ -557,37 +554,43 @@ def remove_file(path):
             return shutil.rmtree(path)
 
 class RestoreCmd:
-    def __init__(self):
-        pass
+    def __init__(self, stdout, stderr, environ, exit, input):
+        self.out      = stdout
+        self.err      = stderr
+        self.environ  = environ
+        self.exit     = exit
+        self.input    = input
+        self.trashcan = GlobalTrashCan( environ = self.environ)
     def run(self):
-        trashcan = GlobalTrashCan()
-
         def is_trashed_from_curdir(trashedfile):
             dir = os.path.realpath(os.curdir)
-            if trashedfile.path.path.startswith(dir + os.path.sep) :
+            if trashedfile.path.startswith(dir + os.path.sep) :
                 return True
 
         trashed_files = []
         i = 0
-        for trashedfile in filter(is_trashed_from_curdir, trashcan.trashed_files()) :
+        for trashedfile in filter(is_trashed_from_curdir, self.trashcan.trashed_files()) :
             trashed_files.append(trashedfile)
-            print "%4d %s %s" % (i, trashedfile.deletion_date, trashedfile.path)
+            self.println("%4d %s %s" % (i, trashedfile.deletion_date, trashedfile.path))
             i += 1
 
         if len(trashed_files) == 0 :
-            print "No files trashed from current dir ('%s')" % os.path.realpath(os.curdir)
+            self.println("No files trashed from current dir ('%s')" % os.path.realpath(os.curdir))
         else :
             index=raw_input("What file to restore [0..%d]: " % (len(trashed_files)-1))
             if index == "" :
-                print "Exiting"
+                self.println("Exiting")
             else :
                 index = int(index)
                 try:
                     trashed_files[index].restore()
                 except IOError, e:
-                    import sys
-                    print >> sys.stderr, str(e)
-                    sys.exit(1)	
+                    self.printerr(e)
+                    self.exit(1)
+    def println(self, line):
+        self.out.write(line + '\n')
+    def printerr(self, msg):
+        self.err.write('%s\n' % msg)
 
 from optparse import IndentedHelpFormatter
 class NoWrapFormatter(IndentedHelpFormatter) :
@@ -812,7 +815,6 @@ class _FileRemover:
         if os.path.exists(path): self.remove_file(path)
 
 from .list_mount_points import mount_points
-from . import version
 from datetime import datetime
 
 class ListCmd():
@@ -1028,10 +1030,9 @@ class AvailableTrashDir:
         self.for_home_trashcan(action)
         self.for_each_volume_trashcans(action)
     def for_home_trashcan(self, action):
-        if 'XDG_DATA_HOME' in self.environ:
-            action('%(XDG_DATA_HOME)s/Trash' % self.environ, '/')
-        elif 'HOME' in self.environ:
-            action('%(HOME)s/.local/share/Trash' % self.environ, '/')
+        def return_result_with_volume(trashcan_path):
+            action(trashcan_path, '/')
+        home_trashcan_if_possible(self.environ, return_result_with_volume)
     def for_each_volume_trashcans(self, action):
         from os.path import join
         for volume in self.list_volumes():
@@ -1040,6 +1041,12 @@ class AvailableTrashDir:
                 action(join(top_trash_dir, str(self.getuid())), volume)
             
             action(join(volume, '.Trash-%s' % self.getuid()), volume)
+
+def home_trashcan_if_possible(environ, action):
+    if 'XDG_DATA_HOME' in environ:
+        action('%(XDG_DATA_HOME)s/Trash' % environ)
+    elif 'HOME' in environ:
+        action('%(HOME)s/.local/share/Trash' % environ)
 
 def always(deletion_date): return True
 class OlderThan:

@@ -9,7 +9,7 @@ class OutputCollector:
     def should_be(self, expected):
         from assert_equals_with_unidiff import assert_equals_with_unidiff
         assert_equals_with_unidiff(expected, self.stream.getvalue())
-    def assert_matches(self, regex):
+    def should_match(self, regex):
         text = self.stream.getvalue()
         from nose.tools import assert_regexp_matches
         assert_regexp_matches(text, regex)

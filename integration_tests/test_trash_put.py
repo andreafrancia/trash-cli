@@ -100,7 +100,7 @@ class describe_trash_put_command_on_dot_arguments:
         self.stderr_should_be = self.run_trashput.err.should_be
         
 class TrashPutRunner:
-    def __init__(self, environ = {}):
+    def __init__(self, environ = os.environ):
         from .output_collector import OutputCollector
         self.out     = OutputCollector()
         self.err     = OutputCollector()
@@ -109,7 +109,7 @@ class TrashPutRunner:
         TrashPutCmd( 
             stdout  = self.out,
             stderr  = self.err,
-#            environ = self.environ
+            environ = self.environ
         ).run(list(argv))
 
 def file_should_have_been_deleted(path):
