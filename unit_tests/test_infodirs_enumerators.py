@@ -1,6 +1,6 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from trashcli.trash2 import AvailableTrashDir
+from trashcli.trash import AvailableTrashDir
 from nose.tools import istest, assert_in, assert_not_in
 
 @istest

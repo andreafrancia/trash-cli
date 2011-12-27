@@ -3,7 +3,7 @@
 import sys
 import os
 
-from trashcli.trash2 import EmptyCmd
+from trashcli.trash import EmptyCmd
 
 def main():
     EmptyCmd(

@@ -1,8 +1,9 @@
 Command trash-put:
  x revise trash-put tests
  - test to be ported to nose:
-    - print version
     - trash in home trashcan
+       - consolidate trash2.py in trash.py
+    - print version
     - trash in volume trashcan 1
     - trash in volume trashcan 2
  - it should trash to $topdir/.Trash-UID when $topdir/.Trash is not suitable

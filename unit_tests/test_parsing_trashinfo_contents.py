@@ -3,8 +3,8 @@
 from nose.tools import assert_equals, assert_raises
 from nose.tools import istest
 
-from trashcli.trash2 import parse_deletion_date
-from trashcli.trash2 import parse_path
+from trashcli.trash import parse_deletion_date
+from trashcli.trash import parse_path
 
 def test_how_to_parse_date_from_trashinfo():
     from datetime import datetime
@@ -12,7 +12,7 @@ def test_how_to_parse_date_from_trashinfo():
     assert_equals(datetime(2000,12,31,23,59,58), parse_deletion_date('DeletionDate=2000-12-31T23:59:58\n'))
     assert_equals(datetime(2000,12,31,23,59,58), parse_deletion_date('[TrashInfo]\nDeletionDate=2000-12-31T23:59:58'))
 
-from trashcli.trash2 import maybe_parse_deletion_date
+from trashcli.trash import maybe_parse_deletion_date
 UNKNOWN_DATE='????-??-?? ??:??:??'
 @istest
 class describe_maybe_parse_deletion_date:
@@ -42,7 +42,7 @@ def test_how_to_parse_original_path():
     assert_equals('/path/to/be/escaped', parse_path('Path=%2Fpath%2Fto%2Fbe%2Fescaped'))
 
 
-from trashcli.trash2 import LazyTrashInfoParser, ParseError
+from trashcli.trash import LazyTrashInfoParser, ParseError
 
 class TestParsing:
     def test_1(self):

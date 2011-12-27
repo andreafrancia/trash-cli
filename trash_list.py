@@ -1,7 +1,7 @@
 # Copyright (C) 2007-2011 Andrea Francia Trivolzio(PV) Italy
 
 import sys, os
-from trashcli.trash2 import ListCmd
+from trashcli.trash import ListCmd
 
 def main():
     ListCmd(

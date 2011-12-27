@@ -1,6 +1,6 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from trashcli.trash2 import ListCmd
+from trashcli.trash import ListCmd
 from files import (write_file, require_empty_dir, make_sticky_dir,
                    ensure_non_sticky_dir, make_unreadable_file)
 from nose.tools import istest

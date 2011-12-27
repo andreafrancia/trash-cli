@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
 from nose.tools import assert_equals, assert_items_equal
-from trashcli.trash2 import EmptyCmd
+from trashcli.trash import EmptyCmd
 
 from StringIO import StringIO
 import os
