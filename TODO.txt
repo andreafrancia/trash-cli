@@ -1,11 +1,26 @@
 TODO:
- x revise trash-put tests
- x consolidate trash2.py in trash.py
- x change all '[TrashInfo]' to '[Trash Info]'
- x consolidate parsers for trashinfo
- x restore-trash:
-    x write tests for restore-trash:
- - trash-put tests:
+ - trash-empty with unreadable trashinfo
+
+Design to be fixed:
+ - get rid of logging package
+ - get rid of the IOError exception raising on file is not in the same volume
+ - consolidate TrashDirectory abstract and the AvailableTrashDir abstraction
+ - get rid of TrashDirectory.info_dir and files_dir properties
+ - remove all the duplication 
+    - all_info_files, trashed_files and for_all_trashed_files
+ - restore the stress test for persist trashinfo (not sure)
+ - remove NullReporter if not used
+ - get rid of TrashInfo abstraction
+ - get rid of TimeUtils.parse_iso8601 if not used
+ - rename remove_file in to remove_existing_file
+ - remove the shutil.rmtree branch from remove_file  (line 518)
+ - refactor TrashPutCmd for simplicity
+ - remove duplication between trash-put command line parser and Parser used by
+   trash-list and trash-empty
+ - remove AvailableTrashDir.for_each_infodir_and_volume if not used
+
+Test to be ported to nosetests:
+ - trash-put:
     - trash in home trashcan
     - print version
     - trash in volume trashcan 1
@@ -40,10 +55,8 @@ Environment:
  - use distribute as default
 
 Features backlog:
- - trash-empty with unreadable trashinfo
  - support alias rmdir=trash-put
  - don't use world writable trash
- - trash-empty should empty even the mac trash directory
  - enable trash-put home fallback
  - trash-empty removes files until a certain amount of space has been restored
  - trash-list <directory-name>
@@ -53,4 +66,5 @@ Features backlog:
  - trash-restore --trashed-on="Apr 15, 08" <path>
  - trash-empty --from=/.Trash
  - trash-rm '*.o'
+ - trash-empty should empty even the mac trash directory
 
