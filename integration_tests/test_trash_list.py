@@ -6,8 +6,11 @@ from files import (write_file, require_empty_dir, make_sticky_dir,
                    make_empty_file)
 from nose.tools import istest
 from .output_collector import OutputCollector
-from trashinfo import (a_trashinfo, a_trashinfo_without_date,
-                       a_trashinfo_with_invalid_date)
+from trashinfo import (
+        a_trashinfo, 
+        a_trashinfo_without_date,
+        a_trashinfo_without_path,
+        a_trashinfo_with_invalid_date)
 
 @istest
 class Describe_trash_list_output:
@@ -82,9 +85,6 @@ Report bugs to http://code.google.com/p/trash-cli/issues
                 "'XDG_DATA_HOME/Trash/info/unreadable.trashinfo'\n")
     @istest
     def should_warn_about_unexistent_path_entry(self):
-        def a_trashinfo_without_path():
-            return ("[TrashInfo]\n"
-                    "DeletionDate='2000-01-01T00:00:00'\n")
         self.info_dir.having_file(a_trashinfo_without_path())
 
         self.run()

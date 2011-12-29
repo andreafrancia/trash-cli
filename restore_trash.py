@@ -9,7 +9,7 @@ def main():
         stderr  = sys.stderr,
         environ = os.environ,
         exit    = sys.exit,
-        input   = input
+        input   = raw_input
     ).run()
 
 if __name__ == '__main__':

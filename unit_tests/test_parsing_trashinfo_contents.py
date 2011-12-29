@@ -10,7 +10,7 @@ def test_how_to_parse_date_from_trashinfo():
     from datetime import datetime
     assert_equals(datetime(2000,12,31,23,59,58), parse_deletion_date('DeletionDate=2000-12-31T23:59:58'))
     assert_equals(datetime(2000,12,31,23,59,58), parse_deletion_date('DeletionDate=2000-12-31T23:59:58\n'))
-    assert_equals(datetime(2000,12,31,23,59,58), parse_deletion_date('[TrashInfo]\nDeletionDate=2000-12-31T23:59:58'))
+    assert_equals(datetime(2000,12,31,23,59,58), parse_deletion_date('[Trash Info]\nDeletionDate=2000-12-31T23:59:58'))
 
 from trashcli.trash import maybe_parse_deletion_date
 UNKNOWN_DATE='????-??-?? ??:??:??'
@@ -46,7 +46,7 @@ from trashcli.trash import LazyTrashInfoParser, ParseError
 
 class TestParsing:
     def test_1(self):
-        parser = LazyTrashInfoParser(lambda:("[TrashInfo]\n"
+        parser = LazyTrashInfoParser(lambda:("[Trash Info]\n"
                                              "Path=/foo.txt\n"), volume_path = '/')
         assert_equals('/foo.txt', parser.original_location())
 
@@ -58,16 +58,12 @@ class TestLazyTrashInfoParser_with_empty_trashinfo:
         with assert_raises(ParseError):
             self.parser.original_location()
 
-    #def test_it_raises_error_on_parsing_deletion_date(self):
-    #    with assert_raises(ParseError):
-    #        self.parser.deletion_date()
-
 def a_trashinfo_without_deletion_date():
-    return ("[TrashInfo]\n"
+    return ("[Trash Info]\n"
             "Path=foo.txt\n")
 
 def make_trashinfo(date):
-    return ("[TrashInfo]\n"
+    return ("[Trash Info]\n"
             "Path=foo.txt\n"
             "DeletionDate=%s" % date)
 def an_empty_trashinfo():

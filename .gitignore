@@ -1,5 +1,6 @@
 *.pyc
 *.swp
+*.tmp
 .coverage
 .DS_Store
 .local/

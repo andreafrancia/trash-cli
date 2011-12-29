@@ -1,8 +1,11 @@
-Command trash-put:
+TODO:
  x revise trash-put tests
  x consolidate trash2.py in trash.py
- - change all '[TrashInfo]' to '[Trash Info]'
- - test to be ported to nose:
+ x change all '[TrashInfo]' to '[Trash Info]'
+ x consolidate parsers for trashinfo
+ x restore-trash:
+    x write tests for restore-trash:
+ - trash-put tests:
     - trash in home trashcan
     - print version
     - trash in volume trashcan 1

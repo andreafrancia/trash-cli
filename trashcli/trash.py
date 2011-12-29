@@ -84,10 +84,6 @@ class TrashDirectory:
             pass
 
     def trashed_files(self) :
-        """
-        List trashed files.
-        Returns a generator for each trashed file in dir.
-        """
 	for info_file in self.all_info_files():
 	    try:
 		yield self._create_trashed_file_from_info_file(info_file) 
@@ -98,11 +94,15 @@ class TrashDirectory:
 
     def _create_trashed_file_from_info_file(self, info_file):
 	trash_id = self.calc_id(info_file)
-	trash_info = TrashInfo.parse(contents_of(info_file))
-	path = self._calc_original_location(trash_info.path)
 
-	trashed_file = self._create_trashed_file(trash_id, path,
-					trash_info.deletion_date)
+        trash_info2   = LazyTrashInfoParser(lambda:contents_of(info_file),
+                                            self.volume)
+        path          = trash_info2.original_location()
+        deletion_date = trash_info2.deletion_date()
+
+	trashed_file = self._create_trashed_file(
+                trash_id, path, deletion_date)
+
 	return trashed_file
 
     def _create_trashed_file(self, trash_id, path, deletion_date):
@@ -490,44 +490,8 @@ class TrashInfo:
 
     @staticmethod
     def parse(data):
-        from StringIO import StringIO
-        import urllib
-        import re
-        path = None
-        deletion_date = None
-
-        stream = StringIO(data)
-        line = stream.readline().rstrip('\n')
-        if line != "[Trash Info]":
-            raise ValueError()
-
-        try :
-            line = stream.readline().rstrip('\n')
-        except :
-            raise ValueError()
-
-        match = re.match("^Path=(.*)$", line)
-        if match == None :
-            raise ValueError()
-        try :
-            path = urllib.unquote(match.groups()[0])
-        except IndexError:
-            raise ValueError()
-
-        try :
-            line = stream.readline().rstrip('\n')
-        except :
-            raise ValueError()
-
-        match = re.match("^DeletionDate=(.*)$", line)
-        if match == None :
-            raise ValueError()
-        try :
-            deletion_date_string=match.groups()[0] # as string
-            deletion_date=TimeUtils.parse_iso8601(deletion_date_string)
-        except IndexError:
-            raise ValueError()
-
+        path = parse_path(data)
+        deletion_date = parse_deletion_date(data)
         return TrashInfo(path, deletion_date)
 
     def render(self) :
@@ -553,31 +517,29 @@ def remove_file(path):
         except:
             return shutil.rmtree(path)
 
+def getcwd_as_realpath(): return os.path.realpath(os.curdir)
+
 class RestoreCmd:
-    def __init__(self, stdout, stderr, environ, exit, input):
+    def __init__(self, stdout, stderr, environ, exit, input, 
+                 curdir = getcwd_as_realpath):
         self.out      = stdout
         self.err      = stderr
         self.environ  = environ
         self.exit     = exit
         self.input    = input
         self.trashcan = GlobalTrashCan( environ = self.environ)
+        self.curdir   = curdir
     def run(self):
-        def is_trashed_from_curdir(trashedfile):
-            dir = os.path.realpath(os.curdir)
-            if trashedfile.path.startswith(dir + os.path.sep) :
-                return True
 
         trashed_files = []
-        i = 0
-        for trashedfile in filter(is_trashed_from_curdir, self.trashcan.trashed_files()) :
-            trashed_files.append(trashedfile)
-            self.println("%4d %s %s" % (i, trashedfile.deletion_date, trashedfile.path))
-            i += 1
+        self.for_all_trashed_file_in_dir(trashed_files.append, self.curdir())
 
         if len(trashed_files) == 0 :
-            self.println("No files trashed from current dir ('%s')" % os.path.realpath(os.curdir))
+            self.report_no_files_found()
         else :
-            index=raw_input("What file to restore [0..%d]: " % (len(trashed_files)-1))
+            for i, trashedfile in enumerate(trashed_files):
+                self.println("%4d %s %s" % (i, trashedfile.deletion_date, trashedfile.path))
+            index=self.input("What file to restore [0..%d]: " % (len(trashed_files)-1))
             if index == "" :
                 self.println("Exiting")
             else :
@@ -587,6 +549,14 @@ class RestoreCmd:
                 except IOError, e:
                     self.printerr(e)
                     self.exit(1)
+    def for_all_trashed_file_in_dir(self, action, dir):
+        def is_trashed_from_curdir(trashedfile):
+            return trashedfile.path.startswith(dir + os.path.sep) 
+        for trashedfile in filter(is_trashed_from_curdir, 
+                                  self.trashcan.trashed_files()) :
+            action(trashedfile)
+    def report_no_files_found(self):
+        self.println("No files trashed from current dir ('%s')" % self.curdir())
     def println(self, line):
         self.out.write(line + '\n')
     def printerr(self, msg):
