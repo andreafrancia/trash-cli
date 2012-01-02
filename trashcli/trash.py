@@ -534,7 +534,7 @@ class RestoreCmd:
         trashed_files = []
         self.for_all_trashed_file_in_dir(trashed_files.append, self.curdir())
 
-        if len(trashed_files) == 0 :
+        if not trashed_files:
             self.report_no_files_found()
         else :
             for i, trashedfile in enumerate(trashed_files):
@@ -798,8 +798,10 @@ class ListCmd():
         self.out         = out
         self.err         = err
         self.file_reader = file_reader
-        self.infodirs    = AvailableTrashDir(environ, getuid, list_volumes,
-                                             is_sticky_dir)
+        self.infodirs    = AvailableTrashDirs(environ, 
+                                              getuid, 
+                                              list_volumes,
+                                              is_sticky_dir)
         self.version     = version
 
     def run(self, *argv):
@@ -809,8 +811,8 @@ class ListCmd():
         parse.as_default(self.list_trash)
         parse(argv)
     def list_trash(self):
-        self.infodirs.for_each_infodir(self.file_reader,
-                                       self.list_contents)
+        self.infodirs.for_each_infodir(
+                self.file_reader, self.list_contents)
     def description(self, program_name, printer):
         printer.usage('Usage: %s [OPTIONS...]' % program_name)
         printer.summary('List trashed files')
@@ -890,8 +892,10 @@ class EmptyCmd():
         self.out          = out
         self.err          = err
         self.file_reader  = file_reader 
-        self.infodirs     = AvailableTrashDir(environ, getuid, list_volumes,
-                                              is_sticky_dir)
+        self.infodirs     = AvailableTrashDirs(environ,
+                                               getuid, 
+                                               list_volumes,
+                                               is_sticky_dir)
 
         self.now          = now
         self.file_remover = file_remover
@@ -905,10 +909,8 @@ class EmptyCmd():
         parse.on_argument(self.set_deletion_date_criteria)
         parse.as_default(self._delete_according_criteria)
         parse(argv)
-
     def set_deletion_date_criteria(self, arg):
         self.date_criteria = OlderThan(int(arg), self.now)
-
     def description(self, program_name, printer):
         printer.usage('Usage: %s [days]' % program_name)
         printer.summary('Purge trashed files.')
@@ -925,9 +927,15 @@ class EmptyCmd():
     def _delete_according_criteria(self):
         self.infodirs.for_each_infodir(self.file_reader,
                                        self._empty_trashdir_according_criteria)
-    def _empty_trashdir_according_criteria(self, info_dir):
-        janitor=Janitor(self.date_criteria, self.file_remover)
-        janitor.swep(info_dir)
+    def _empty_trashdir_according_criteria(self, infodir):
+        infodir.for_all_files_satisfying(self.date_criteria,
+                                         self.remove_trash)
+        infodir.for_all_orphans(self.remove_file)
+    def remove_file(self, path):
+        self.file_remover.remove_file(path)
+    def remove_trash(self, trash):
+        self.file_remover.remove_file_if_exists(trash.path_to_backup_copy())
+        self.file_remover.remove_file(trash.path_to_trashinfo())
     def println(self, line):
         self.out.write(line + '\n')
 
@@ -962,20 +970,6 @@ class PrintVersion:
     def __call__(self, program_name):
         self.println("%s %s" % (program_name, self.version))
 
-class Janitor:
-    def __init__(self, date_criteria, file_remover):
-        self.date_criteria = date_criteria
-        self.file_remover = file_remover
-    def swep(self, infodir):
-        infodir.for_all_files_satisfying(self.date_criteria,
-                self.remove_trash)
-        infodir.for_all_orphans(self.remove_file)
-    def remove_file(self, path):
-        self.file_remover.remove_file(path)
-    def remove_trash(self, trash):
-        self.file_remover.remove_file_if_exists(trash.path_to_backup_copy())
-        self.file_remover.remove_file(trash.path_to_trashinfo())
-
 def curry_add_info(on_info_dir):
     def on_trash_dir(trash_dir, volume):
         import os
@@ -983,9 +977,8 @@ def curry_add_info(on_info_dir):
         on_info_dir(info_dir, volume)
     return on_trash_dir
 
-class AvailableTrashDir:
-    def __init__(self, environ, getuid, list_volumes, 
-                 is_sticky_dir= lambda path: True):
+class AvailableTrashDirs:
+    def __init__(self, environ, getuid, list_volumes, is_sticky_dir):
         self.environ       = environ
         self.getuid        = getuid
         self.list_volumes  = list_volumes
@@ -994,12 +987,12 @@ class AvailableTrashDir:
         def action2(info_dir_path, volume_path):
             infodir = InfoDir(file_reader, info_dir_path, volume_path)
             action(infodir)
-        self.for_home_trashcan(curry_add_info(action2))
+        self.for_home_trashcan_info_dir_path(curry_add_info(action2))
         self.for_each_volume_trashcans(curry_add_info(action2))
-    def for_each_infodir_and_volume(self, action):
-        self.for_home_trashcan(action)
+    def for_each_trashdir_and_volume(self, action):
+        self.for_home_trashcan_info_dir_path(action)
         self.for_each_volume_trashcans(action)
-    def for_home_trashcan(self, action):
+    def for_home_trashcan_info_dir_path(self, action):
         def return_result_with_volume(trashcan_path):
             action(trashcan_path, '/')
         home_trashcan_if_possible(self.environ, return_result_with_volume)
@@ -1026,13 +1019,6 @@ class OlderThan:
     def __call__(self, deletion_date):
         return deletion_date < self.limit_date
 
-class FilterByDateCriteria:
-    def __init__(self, date_criteria, action):
-        self.date_criteria = date_criteria
-        self.action        = action
-    def __call__(self, trashinfo, parsed):
-        if self.date_criteria(parsed.deletion_date()):
-            self.action(trashinfo)
 class InfoDir:
     def __init__(self, file_reader, path, volume_path):
         self.path        = path
@@ -1048,8 +1034,10 @@ class InfoDir:
     def _entries_if_dir_exists(self, path):
         return self.file_reader.entries_if_dir_exists(path)
     def for_all_files_satisfying(self, date_criteria, action):
-        self.each_trashinfo_lazily_parsed(
-                FilterByDateCriteria(date_criteria, action))
+        def it_satisfies_date_criteria(trashinfo, parsed):
+            if date_criteria(parsed.deletion_date()):
+                action(trashinfo)
+        self.each_trashinfo_lazily_parsed(it_satisfies_date_criteria)
 
     def each_trashinfo_lazily_parsed(self, action):
         for trashinfo in self._trashinfos():

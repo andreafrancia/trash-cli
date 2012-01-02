@@ -112,6 +112,18 @@ class describe_trash_empty_invoked_with_N_days_as_argument:
         self.run_trash_empty('2')
 
         self.file_should_have_been_removed_from_trashcan('foo')
+        
+    @istest
+    def it_should_kept_files_with_invalid_deletion_date(self):
+        from nose import SkipTest
+        raise SkipTest()
+
+        self.having_a_trashed_file('foo', 'Invalid Date')
+        self.having_now_is('2000-01-01')
+    
+        self.run_trash_empty('2')
+
+        self.file_should_have_been_kept_in_trashcan('foo')
 
     def setUp(self):
         self.xdg_data_home   = 'XDG_DATA_HOME'
@@ -136,7 +148,7 @@ class describe_trash_empty_invoked_with_N_days_as_argument:
 class TrashEmptyRunner:
     def __init__(self, XDG_DATA_HOME):
         self.XDG_DATA_HOME = XDG_DATA_HOME
-        self.now = lambda: None
+        self.now = now_not_set
     def __call__(self, *args):
         EmptyCmd(
             out = StringIO(), 
@@ -146,6 +158,7 @@ class TrashEmptyRunner:
         ).run('trash-empty', *args)
     def set_now(self, yyyy_mm_dd):
         self.now = lambda: date(yyyy_mm_dd)
+def now_not_set(): raise RuntimeError('now_not_set')
 
 class TestEmptyCmdWithMultipleVolumes:
     def test_it_removes_trashinfos_from_method_1_dir(self):
