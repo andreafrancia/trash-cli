@@ -56,18 +56,6 @@ class Describe_AvailableInfoDirs_on_volume_trashcans:
     def having_XDG_DATA_HOME(self, XDG_DATA_HOME):
         self.environ['XDG_DATA_HOME'] = XDG_DATA_HOME
 
-@istest
-def test():
-    result = collector()
-    AvailableTrashDirs(
-        environ       = dict(XDG_DATA_HOME='~/.local/share'),
-        getuid        = lambda: 0,
-        list_volumes  = lambda: [],
-        is_sticky_dir = lambda path: False
-    ).for_home_trashcan_info_dir_path(result)
-
-    assert result.trash_dirs == ['~/.local/share/Trash']
-
 def not_important_for_now(): None
 
 class collector:
@@ -76,4 +64,3 @@ class collector:
     def __call__(self, trash_dir, volume):
         self.trash_dirs.append(trash_dir)
         
-

@@ -1,7 +1,11 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from trashcli.trash import InfoDir
-class TestInfoDir_finding_orphans:
+from nose.tools import assert_equals, istest
+from trashcli.trash import TrashDir
+from mock import Mock
+
+from trashcli.trash import TrashDir
+class TestTrashDir_finding_orphans:
     def test(self):
         self.fs.create_fake_file('/info/foo.trashinfo')
 
@@ -19,7 +23,7 @@ class TestInfoDir_finding_orphans:
     def setUp(self):
         self.orphan_found=[]
         self.fs = FakeFileSystem()
-        self.infodir=InfoDir(self.fs, '/info', None)
+        self.infodir=TrashDir(self.fs, '/', None)
 
     def find_orphan(self):
         self.infodir.for_all_orphans(self.orphan_found.append)

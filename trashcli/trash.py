@@ -811,8 +811,11 @@ class ListCmd():
         parse.as_default(self.list_trash)
         parse(argv)
     def list_trash(self):
-        self.infodirs.for_each_infodir(
-                self.file_reader, self.list_contents)
+        def list_contents(trash_dir, volume_path):
+            info_dir_path = os.path.join(trash_dir, 'info')
+            infodir = TrashDir(self.file_reader, trash_dir, volume_path)
+            self.list_contents(infodir)
+        self.infodirs.for_each_trashdir_and_volume(list_contents)
     def description(self, program_name, printer):
         printer.usage('Usage: %s [OPTIONS...]' % program_name)
         printer.summary('List trashed files')
@@ -970,13 +973,6 @@ class PrintVersion:
     def __call__(self, program_name):
         self.println("%s %s" % (program_name, self.version))
 
-def curry_add_info(on_info_dir):
-    def on_trash_dir(trash_dir, volume):
-        import os
-        info_dir = os.path.join(trash_dir, 'info')
-        on_info_dir(info_dir, volume)
-    return on_trash_dir
-
 class AvailableTrashDirs:
     def __init__(self, environ, getuid, list_volumes, is_sticky_dir):
         self.environ       = environ
@@ -984,19 +980,19 @@ class AvailableTrashDirs:
         self.list_volumes  = list_volumes
         self.is_sticky_dir = is_sticky_dir
     def for_each_infodir(self, file_reader, action):
-        def action2(info_dir_path, volume_path):
-            infodir = InfoDir(file_reader, info_dir_path, volume_path)
+        def action2(trash_dir, volume_path):
+            info_dir_path = os.path.join(trash_dir, 'info')
+            infodir = TrashDir(file_reader, trash_dir, volume_path)
             action(infodir)
-        self.for_home_trashcan_info_dir_path(curry_add_info(action2))
-        self.for_each_volume_trashcans(curry_add_info(action2))
+        self.for_each_trashdir_and_volume(action2)
     def for_each_trashdir_and_volume(self, action):
-        self.for_home_trashcan_info_dir_path(action)
-        self.for_each_volume_trashcans(action)
-    def for_home_trashcan_info_dir_path(self, action):
+        self._for_home_trashcan_info_dir_path(action)
+        self._for_each_volume_trashcans(action)
+    def _for_home_trashcan_info_dir_path(self, action):
         def return_result_with_volume(trashcan_path):
             action(trashcan_path, '/')
         home_trashcan_if_possible(self.environ, return_result_with_volume)
-    def for_each_volume_trashcans(self, action):
+    def _for_each_volume_trashcans(self, action):
         from os.path import join
         for volume in self.list_volumes():
             top_trash_dir = join(volume, '.Trash')
@@ -1019,18 +1015,26 @@ class OlderThan:
     def __call__(self, deletion_date):
         return deletion_date < self.limit_date
 
-class InfoDir:
+class Dir:
+    def __init__(self, path, entries_if_dir_exists):
+        self.path                  = path
+        self.entries_if_dir_exists = entries_if_dir_exists
+    def entries(self):
+        return self.entries_if_dir_exists(self.path)
+    def full_path(self, entry):
+        return os.path.join(self.path, entry)
+class TrashDir:
     def __init__(self, file_reader, path, volume_path):
-        self.path        = path
-        self.file_reader = file_reader
-        self.volume_path = volume_path
+        self.trash_dir_path = path
+        self.file_reader    = file_reader
+        self.volume_path    = volume_path
+        self.files_dir      = Dir(self._files_dir(), 
+                                  self.file_reader.entries_if_dir_exists)
     def for_all_orphans(self, action):
-        for entry in self._files():
+        for entry in self.files_dir.entries():
             trashinfo_path = self._trashinfo_path_from_file(entry)
-            file_path = os.path.join(self._files_dir(), entry)
+            file_path = self.files_dir.full_path(entry)
             if not self.file_reader.exists(trashinfo_path): action(file_path)
-    def _files(self):
-        return self._entries_if_dir_exists(self._files_dir())
     def _entries_if_dir_exists(self, path):
         return self.file_reader.entries_if_dir_exists(path)
     def for_all_files_satisfying(self, date_criteria, action):
@@ -1078,21 +1082,21 @@ class InfoDir:
                 return os.path.join(self.files_dir, entry)
             def path_to_trashinfo(self):
                 return os.path.join(self.info_dir, self.entry)
-        return TrashInfo(self.path, 
+        return TrashInfo(self._info_dir(), 
                          self._files_dir(), 
                          entry, 
                          self.file_reader, 
                          self.volume_path)
+    def _info_dir(self):
+        return os.path.join(self.trash_dir_path, 'info')
     def _trashinfo_path_from_file(self, file_entry):
-        return os.path.join(self.path, file_entry + '.trashinfo')
+        return os.path.join(self._info_dir(), file_entry + '.trashinfo')
     def _files_dir(self):
-        return os.path.join(os.path.dirname(self.path), 'files')
+        return os.path.join(self.trash_dir_path, 'files')
     def _trashinfo_entries(self):
-        for entry in self._entries_if_dir_exists(self.path):
+        for entry in self._entries_if_dir_exists(self._info_dir()):
             if entry.endswith('.trashinfo'):
                 yield entry
-    def _trashinfo_path(self, entry):
-        return os.path.join(self.path, entry)
 
 class ParseError(ValueError): pass
 

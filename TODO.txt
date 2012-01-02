@@ -1,5 +1,10 @@
 TODO:
  - trash-empty with unreadable trashinfo
+   x fix InfoDir name mismatch (InfoDir --> TrashDir)
+     x fix unit_tests/test_infodir.py   
+   - extract Dir class from TrashDir
+   - apply the Dir class to Trash/files dir
+   - apply the Dir class to Trash/info dir
 
 Design to be fixed:
  - get rid of logging package
