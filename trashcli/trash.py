@@ -761,7 +761,7 @@ def write_file(path, contents):
     f.close()
 
 def do_nothing(*argv, **argvk): pass
-class _FileReader:
+class _FileSystemReader:
     def __init__(self):
         self.contents_of = contents_of
         self.exists = os.path.exists
@@ -792,7 +792,7 @@ class ListCmd():
                  getuid        = os.getuid,
                  list_volumes  = mount_points,
                  is_sticky_dir = is_sticky_dir,
-                 file_reader   = _FileReader(),
+                 file_reader   = _FileSystemReader(),
                  version       = version):
 
         self.out         = out
@@ -803,6 +803,7 @@ class ListCmd():
                                               list_volumes,
                                               is_sticky_dir)
         self.version     = version
+        self.read_file   = FileReader(self.file_reader.contents_of)
 
     def run(self, *argv):
         parse=Parser()
@@ -811,10 +812,31 @@ class ListCmd():
         parse.as_default(self.list_trash)
         parse(argv)
     def list_trash(self):
-        def list_contents(trash_dir, volume_path):
-            trashdir = TrashDir(self.file_reader, trash_dir, volume_path)
-            self.list_contents(trashdir)
-        self.infodirs.for_each_trashdir_and_volume(list_contents)
+        self.infodirs.for_each_trashdir_and_volume(self.list_contents)
+    def list_contents(self, trash_dir, volume_path):
+        class ParseTrashInfo2:
+            def __init__(self, on_parse, on_error):
+                self.on_parse = on_parse
+                self.on_error = on_error
+            def __call__(self, contents):
+                parser = LazyTrashInfoParser(lambda: contents, volume_path)
+                try:
+                    maybe_deletion_date = maybe_date(parser.deletion_date)
+                    original_location   = parser.original_location()
+                except ParseError, e:
+                    self.on_error(e.message)
+                else:
+                    self.on_parse(maybe_deletion_date, original_location)
+        self.trashdir = TrashDir(self.file_reader, trash_dir, volume_path)
+        self.trashdir.each_trashinfo(
+            lambda path: self.read_file(
+                path,
+                on_read_error = self.print_read_error,
+                on_contents   = ParseTrashInfo2(
+                    on_parse = self.print_entry,
+                    on_error = lambda reason: self.print_parse_error(path, reason)),
+                ))
+
     def description(self, program_name, printer):
         printer.usage('Usage: %s [OPTIONS...]' % program_name)
         printer.summary('List trashed files')
@@ -822,11 +844,6 @@ class ListCmd():
            "  --version   show program's version number and exit",
            "  -h, --help  show this help message and exit")
         printer.bug_reporting()
-    def list_contents(self, info_dir):
-        info_dir.each_parsed_trashinfo(
-                on_parse       = self.print_entry,
-                on_read_error  = self.print_read_error,
-                on_parse_error = self.print_parse_error)
     def print_parse_error(self, offending_file, reason):
         self.error("Parse Error: %s: %s" % (offending_file, reason))
     def print_read_error(self, error):
@@ -838,6 +855,17 @@ class ListCmd():
         self.out.write(line+'\n')
     def error(self, line):
         self.err.write(line+'\n')
+
+class FileReader:
+    def __init__(self, contents_of):
+        self.contents_of = contents_of
+    def __call__(self, path, on_read_error, on_contents):
+        try:
+            contents = self.contents_of(path)
+        except IOError,e :
+            on_read_error(e)
+        else:
+            on_contents(contents)
 
 class Parser:
     def __init__(self):
@@ -884,7 +912,7 @@ class Parser:
 class EmptyCmd():
     def __init__(self, out, err, environ,
                  now           = datetime.now,
-                 file_reader   = _FileReader(),
+                 file_reader   = _FileSystemReader(),
                  list_volumes  = mount_points,
                  getuid        = os.getuid,
                  is_sticky_dir = is_sticky_dir,
@@ -1073,30 +1101,6 @@ class TrashDir:
             if not self.file_reader.exists(trashinfo_path): action(file_path)
     def _entries_if_dir_exists(self, path):
         return self.file_reader.entries_if_dir_exists(path)
-
-    def each_trashinfo_lazily_parsed(self, action):
-        for trashinfo in self._trashinfos():
-
-            file_being_parsed = trashinfo.path_to_trashinfo()
-            def contents(): return self.file_reader.contents_of(file_being_parsed)
-            parser = LazyTrashInfoParser(contents, self.volume_path)
-
-            action(trashinfo, parser)
-
-    def each_parsed_trashinfo(self, on_parse, on_read_error, on_parse_error):
-        class WakingUpParser:
-            def __call__(self, trashinfo, parser):
-                try:
-                    maybe_deletion_date = maybe_date(parser.deletion_date)
-                    original_location   = parser.original_location()
-                except ParseError, e:
-                    on_parse_error(trashinfo.path_to_trashinfo(), e.message)
-                except IOError, e:
-                    on_read_error(e)
-                else:
-                    on_parse(maybe_deletion_date, original_location)
-
-        self.each_trashinfo_lazily_parsed(WakingUpParser())
 
     def each_trashinfo(self, action):
         for entry in self._trashinfo_entries():

@@ -16,7 +16,7 @@ class TestDescritions:
         assert_equals("directory", describe("sandbox"))
         
     def test_on_dot_directories(self):
-        
+
         assert_equals("`.' directory",  describe("sandbox/."))
         assert_equals("`.' directory",  describe("./."))
 
@@ -34,11 +34,11 @@ class TestDescritions:
 
         having_file('sandbox/empty')
         assert_equals("regular empty file", describe("sandbox/empty"))
-                
+
     def test_name_for_symbolic_links(self):
 
         os.symlink('nowhere', "sandbox/symlink")
-        
+
         assert_equals("symbolic link", describe("sandbox/symlink"))
 
     def test_name_for_non_existent_entries(self):

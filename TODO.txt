@@ -59,6 +59,7 @@ Features backlog:
  - don't use world writable trash
  - enable trash-put home fallback
  - trash-empty removes files until a certain amount of space has been restored
+ - trash-list --raw
  - trash-list <directory-name>
  - trash-list -R <directory-name>                 # recursive
  - trash-restore <path>                           # restore the newest
