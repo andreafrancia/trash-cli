@@ -2,15 +2,13 @@
 
 from nose.tools import assert_equals, istest
 from trashcli.trash import TrashDir
-from mock import Mock
 
-from trashcli.trash import TrashDir
 class TestTrashDir_finding_orphans:
     def test(self):
         self.fs.create_fake_file('/info/foo.trashinfo')
 
         self.find_orphan()
-        
+
         assert_equals([], self.orphan_found)
 
     def test2(self):
@@ -23,12 +21,40 @@ class TestTrashDir_finding_orphans:
     def setUp(self):
         self.orphan_found=[]
         self.fs = FakeFileSystem()
-        self.infodir=TrashDir(self.fs, '/', None)
+        self.trashdir=TrashDir(self.fs, '/', None)
 
     def find_orphan(self):
-        self.infodir.for_all_orphans(self.orphan_found.append)
+        self.trashdir.each_orphan(self.orphan_found.append)
 
-from nose.tools import assert_equals
+from trashcli.trash import EachTrashInfo
+
+@istest
+class describe_EachTrashInfo:
+    @istest
+    def it_should_list_trashinfos(self):
+        self.having_directory('~/.local/share/Trash',
+                              containing = ['foo.trashinfo'])
+        self.trashinfos_found(in_trashdir='~/.local/share/Trash',
+                              should_be=['~/.local/share/Trash/info/foo.trashinfo'])
+
+    @istest
+    def it_should_not_list_other_files(self):
+        self.having_directory('~/.local/share/Trash',
+                              containing = ['foo.non-a-trashinfo'])
+        self.trashinfos_found(in_trashdir='~/.local/share/Trash',
+                              should_be=[])
+
+    def having_directory(self, path, containing):
+        self.list_dir = lambda path: {
+                path : containing
+        }[path]
+    def trashinfos_found(self, in_trashdir, should_be):
+        result = []
+
+        finder = EachTrashInfo(self.list_dir, result.append)
+        finder.trashdir(in_trashdir)
+
+        assert result == list(should_be)
 
 class FakeFileSystem:
     def __init__(self):
@@ -68,7 +94,7 @@ class TestFakeFileSystem:
         assert self.fs.exists('/filename')
     def test_create_fake_dir(self):
         self.fs.create_fake_dir('/etc', 'passwd', 'shadow', 'hosts')
-        
+
         assert_equals(set(['passwd', 'shadow', 'hosts']),
                       set(self.fs.entries_if_dir_exists('/etc')))
 

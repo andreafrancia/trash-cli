@@ -34,7 +34,7 @@ class describe_trash_empty:
         self.run_trash_empty()
 
         self.files_dir.should_be_empty()
-    
+
     @istest
     def it_should_keep_unknown_files_found_in_infodir(self):
         self.having_file_in_info_dir('not-a-trashinfo')
@@ -73,7 +73,7 @@ class describe_trash_empty:
         self.having_a_trashinfo_in_trashcan('foo.trashinfo')
         self.having_a_trashinfo_in_trashcan('bar.trashinfo')
         self.having_a_trashinfo_in_trashcan('baz.trashinfo')
-        assert_items_equal(['foo.trashinfo', 
+        assert_items_equal(['foo.trashinfo',
                             'bar.trashinfo',
                             'baz.trashinfo'], os.listdir(self.info_dir_path))
     def having_one_trashed_file(self):
@@ -85,7 +85,7 @@ class describe_trash_empty:
     def having_file_in_info_dir(self, filename):
         having_file(os.path.join(self.info_dir_path, filename))
     def having_orphan_file_in_files_dir(self):
-        complete_path = os.path.join(self.files_dir_path, 
+        complete_path = os.path.join(self.files_dir_path,
                                      'a-file-without-any-associated-trashinfo')
         having_file(complete_path)
         assert os.path.exists(complete_path)
@@ -112,15 +112,12 @@ class describe_trash_empty_invoked_with_N_days_as_argument:
         self.run_trash_empty('2')
 
         self.file_should_have_been_removed_from_trashcan('foo')
-        
+
     @istest
     def it_should_kept_files_with_invalid_deletion_date(self):
-        from nose import SkipTest
-        raise SkipTest()
-
         self.having_a_trashed_file('foo', 'Invalid Date')
         self.having_now_is('2000-01-01')
-    
+
         self.run_trash_empty('2')
 
         self.file_should_have_been_kept_in_trashcan('foo')
@@ -133,7 +130,7 @@ class describe_trash_empty_invoked_with_N_days_as_argument:
 
     def having_a_trashed_file(self, name, date):
         contents = "DeletionDate=%sT00:00:00\n" % date
-        write_file(self.trashinfo(name), contents) 
+        write_file(self.trashinfo(name), contents)
 
     def trashinfo(self, name):
         return '%(dirname)s/Trash/info/%(name)s.trashinfo' % {
@@ -151,8 +148,8 @@ class TrashEmptyRunner:
         self.now = now_not_set
     def __call__(self, *args):
         EmptyCmd(
-            out = StringIO(), 
-            err = StringIO(), 
+            out = StringIO(),
+            err = StringIO(),
             environ = { 'XDG_DATA_HOME': self.XDG_DATA_HOME },
             now = self.now
         ).run('trash-empty', *args)

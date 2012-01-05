@@ -9,7 +9,7 @@ class Describe_AvailableInfoDirs_on_volume_trashcans:
     def the_method_2_is_always_in(self):
         self.having_uid(123)
         self.having_volumes('/usb')
-        
+
         assert_in('/usb/.Trash-123', self.trashdirs())
 
     @istest
@@ -37,8 +37,8 @@ class Describe_AvailableInfoDirs_on_volume_trashcans:
     def trashdirs(self):
         result = collector()
         AvailableTrashDirs(
-            environ=self.environ, 
-            getuid=lambda:self.uid, 
+            environ=self.environ,
+            getuid=lambda:self.uid,
             list_volumes=lambda:self.volumes,
             is_sticky_dir=lambda path: self.Trash_dir_is_sticky
         ).for_each_trashdir_and_volume(result)
@@ -63,4 +63,4 @@ class collector:
         self.trash_dirs = []
     def __call__(self, trash_dir, volume):
         self.trash_dirs.append(trash_dir)
-        
+

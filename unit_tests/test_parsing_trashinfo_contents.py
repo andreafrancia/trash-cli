@@ -3,6 +3,36 @@
 from nose.tools import assert_equals, assert_raises
 from nose.tools import istest
 
+from datetime import datetime
+import fudge
+
+from trashcli.trash import ParseTrashInfo
+@istest
+class describe_ParseTrashInfo:
+
+    @istest
+    @fudge.test
+    def it_should_parse_the_date(self):
+        result = (fudge.Fake().expects_call()
+                    .with_args(datetime(1970,1,1,0,0,0)))
+
+        self.parse = ParseTrashInfo(on_deletion_date = result)
+
+        self.parse( '[Trash Info]\n'
+                    'Path=foo\n'
+                    'DeletionDate=1970-01-01T00:00:00\n')
+
+    @istest
+    @fudge.test
+    def it_should_parse_the_path(self):
+        result = (fudge.Fake().expects_call().with_args('foo'))
+
+        self.parse = ParseTrashInfo(on_path = result)
+
+        self.parse( '[Trash Info]\n'
+                    'Path=foo\n'
+                    'DeletionDate=1970-01-01T00:00:00\n')
+
 from trashcli.trash import parse_deletion_date
 from trashcli.trash import parse_path
 
@@ -13,6 +43,7 @@ def test_how_to_parse_date_from_trashinfo():
     assert_equals(datetime(2000,12,31,23,59,58), parse_deletion_date('[Trash Info]\nDeletionDate=2000-12-31T23:59:58'))
 
 from trashcli.trash import maybe_parse_deletion_date
+
 UNKNOWN_DATE='????-??-?? ??:??:??'
 @istest
 class describe_maybe_parse_deletion_date:
@@ -32,10 +63,6 @@ class describe_maybe_parse_deletion_date:
         invalid_date='A long time ago'
         assert_equals(UNKNOWN_DATE,
                       maybe_parse_deletion_date(make_trashinfo(invalid_date)))
-
-def test_parsing_invalid_dates():
-    with assert_raises(ValueError):
-        parse_deletion_date('DeletionDate=Wrong Date')
 
 def test_how_to_parse_original_path():
     assert_equals('foo.txt',             parse_path('Path=foo.txt'))
