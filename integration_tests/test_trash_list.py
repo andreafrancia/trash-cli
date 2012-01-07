@@ -13,7 +13,7 @@ from trashinfo import (
         a_trashinfo_with_invalid_date)
 
 @istest
-class Describe_trash_list_output:
+class describe_trash_list_output:
     @istest
     def should_output_the_help_message(self):
         self.run('trash-list', '--help')
@@ -107,6 +107,36 @@ Report bugs to http://code.google.com/p/trash-cli/issues
         self.run = runner
 
 @istest
+class describe_trash_list_with_raw_option:
+    def setup(self):
+        from nose import SkipTest; raise SkipTest()
+        self.having_XDG_DATA_HOME('XDG_DATA_HOME')
+        self.running('trash-list', '--raw')
+    @istest
+    def output_should_contains_trashinfo_paths(self):
+        from nose import SkipTest; raise SkipTest()
+        self.having_trashinfo('foo.trashinfo')
+        self.output_should_contain_line(
+            'XDG_DATA_HOME/Trash/info/foo.trashinfo')
+    @istest
+    def output_should_contains_backup_copy_paths(self):
+        from nose import SkipTest; raise SkipTest()
+        self.having_trashinfo('foo.trashinfo')
+        self.output_should_contain_line(
+            'XDG_DATA_HOME/Trash/files/foo')
+
+    def having_XDG_DATA_HOME(self, value):
+        self.XDG_DATA_HOME = value
+    def running(self, *argv):
+        runner = TrashListRunner( environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME})
+        runner.run(argv)
+        self.output = runner.output()
+    def output_should_contain_line(self, line):
+        assert line in self.output_lines()
+    def output_lines(self):
+        return [line.rstrip('\n') for line in self.output.splitlines()]
+
+@istest
 class describe_list_trash_with_top_trash_directory_type_1:
     @istest
     def should_list_method_1_trashcan_contents(self):
@@ -180,7 +210,7 @@ class TrashListRunner:
     def __call__(self, *argv):
         self.run(argv)
     def run(self,argv):
-        if argv==(): 
+        if argv==():
             argv='trash-list'
         ListCmd(
             out = self.stdout,
@@ -199,4 +229,6 @@ class TrashListRunner:
         self.stdout.assert_equal_to(expected_value)
     def error_should_be(self, expected_value):
         self.stderr.assert_equal_to(expected_value)
+    def output(self):
+        return self.stdout.getvalue()
 

@@ -2,6 +2,7 @@ class OutputCollector:
     def __init__(self):
         from StringIO import StringIO
         self.stream = StringIO()
+        self.getvalue = self.stream.getvalue
     def write(self,data):
         self.stream.write(data)
     def assert_equal_to(self, expected):

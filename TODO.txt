@@ -46,6 +46,8 @@ Command trash-list:
  x error when a .trashinfo does not contain the 'Path=' entry information
  x should check that the $topdir/.Trash directory has the sticky bit
  x should print version on --version
+ - with --raw option should print raw files
+    x Parser should accept custom options
  - should check that the $topdir/.Trash is not a symbolic link
  - exception when a .trashinfo from home trashdir contains a path that is not 
    absolute

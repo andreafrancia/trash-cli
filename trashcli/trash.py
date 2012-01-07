@@ -33,7 +33,7 @@ class TrashDirectory:
 
         basename = os.path.basename(trash_info.path)
         trashinfo_file_content = trash_info.render()
-        (trash_info_file, trash_info_id) = self.persist_trash_info(basename, 
+        (trash_info_file, trash_info_id) = self.persist_trash_info(basename,
                                                                    trashinfo_file_content)
 
         trashed_file = self._create_trashed_file(trash_info_id,
@@ -44,7 +44,7 @@ class TrashDirectory:
 
         try :
             move(path, trashed_file.actual_path)
-        except IOError, e :
+        except IOError as e :
             remove_file(trash_info_file)
             raise e
 
@@ -89,7 +89,7 @@ class TrashDirectory:
                 yield self._create_trashed_file_from_info_file(info_file) 
             except ValueError:
                 logger.warning("Non parsable trashinfo file: %s" % info_file)
-            except IOError, e:
+            except IOError as e:
                 logger.warning(str(e))
 
     def _create_trashed_file_from_info_file(self, info_file):
@@ -546,7 +546,7 @@ class RestoreCmd:
                 index = int(index)
                 try:
                     trashed_files[index].restore()
-                except IOError, e:
+                except IOError as e:
                     self.printerr(e)
                     self.exit(1)
     def for_all_trashed_file_in_dir(self, action, dir):
@@ -814,29 +814,33 @@ class ListCmd():
     def list_trash(self):
         self.infodirs.for_each_trashdir_and_volume(self.list_contents)
     def list_contents(self, trash_dir, volume_path):
-        class ParseTrashInfo2:
-            def __init__(self, on_parse, on_error):
-                self.on_parse = on_parse
+        class ParseTrashInfo:
+            def __init__(self, on_success, on_error):
+                self.on_success = on_success
                 self.on_error = on_error
             def __call__(self, contents):
-                parser = LazyTrashInfoParser(lambda: contents, volume_path)
+                deletion_date = parse_deletion_date(contents) or unknown_date()
                 try:
-                    maybe_deletion_date = maybe_date(parser.deletion_date)
-                    original_location   = parser.original_location()
-                except ParseError, e:
-                    self.on_error(e.message)
+                    path = parse_path(contents)
+                except ParseError:
+                    self.on_error('Unable to parse Path')
                 else:
-                    self.on_parse(maybe_deletion_date, original_location)
-        self.trashdir = TrashDir(self.file_reader, trash_dir, volume_path)
-        self.trashdir.each_trashinfo(
+                    original_location = os.path.join(volume_path, path)
+                    self.on_success(deletion_date, original_location)
+
+        trashdir = TrashDir(self.file_reader, trash_dir, volume_path)
+        trashdir.each_trashinfo(
             lambda path: self.read_file(
                 path,
                 on_read_error = self.print_read_error,
-                on_contents   = ParseTrashInfo2(
-                    on_parse = self.print_entry,
-                    on_error = lambda reason: self.print_parse_error(path, reason)),
+                on_contents   = ParseTrashInfo(
+                    on_success = self.print_entry,
+                    on_error   = self.error_printer(path)),
                 ))
-
+    def error_printer(self, path):
+        def print_error(reason):
+            self.print_parse_error(path, reason)
+        return print_error
     def description(self, program_name, printer):
         printer.usage('Usage: %s [OPTIONS...]' % program_name)
         printer.summary('List trashed files')
@@ -862,7 +866,7 @@ class FileReader:
     def __call__(self, path, on_read_error, on_contents):
         try:
             contents = self.contents_of(path)
-        except IOError,e :
+        except IOError as e :
             on_read_error(e)
         else:
             on_contents(contents)
