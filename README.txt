@@ -7,7 +7,7 @@ trash-cli provides the following commands:
   * trash-put           trashes files and directories. 
   * trash-empty         empty the trashcan(s).
   * trash-list          list trashed file.
-  * restore-trash       restore a trashed file.
+  * trash-restore       restore a trashed file.
 
 For each file the name, original path, deletion date, and permissions
 are recorded. The trash command allow trash multiple files with the 
@@ -53,7 +53,7 @@ Search for a file in the trashcan::
 
 Restore a trashed file
     
-    $ restore-trash
+    $ trash-restore
     0 2007-08-30 12:36:00 /home/andrea/foo
     1 2007-08-30 12:39:41 /home/andrea/bar
     2 2007-08-30 12:39:41 /home/andrea/bar2
@@ -97,9 +97,9 @@ interested, ask to Debian/Ubuntu to upgrade their version of trash-cli.
 Information
 ===========
 
-       Website: http://code.google.com/p/trash-cli/
- Download page: http://code.google.com/p/trash-cli/wiki/Download
-Report bugs to: http://code.google.com/p/trash-cli/issues/list
+       Website: https://github.com/andreafrancia/trash-cli
+ Download page: https://github.com/andreafrancia/trash-cli/downloads
+Report bugs to: https://github.com/andreafrancia/trash-cli/issues
 
 Features list
 =============
