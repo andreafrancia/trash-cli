@@ -23,7 +23,7 @@ setup(
         'console_scripts' : [
             'trash-list    = trash_list:main',
             'trash-put     = trash_put:main',
-            'restore-trash = restore_trash:main',
+            'trash-restore = restore_trash:main',
             'volume-of     = volume_of:main',
             'trash-empty   = trash_empty:main'
         ]
