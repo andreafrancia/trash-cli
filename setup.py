@@ -21,11 +21,10 @@ setup(
     test_suite = "nose.collector",
     entry_points = {
         'console_scripts' : [
-            'trash-list    = trash_list:main',
-            'trash-put     = trash_put:main',
-            'restore-trash = restore_trash:main',
-            'volume-of     = volume_of:main',
-            'trash-empty   = trash_empty:main'
+            'trash-list    = trashcli.cmds:list',
+            'trash-put     = trashcli.cmds:put',
+            'restore-trash = trashcli.cmds:restore',
+            'trash-empty   = trashcli.cmds:empty'
         ]
     },
     data_files = [('man/man1', ['man/man1/trash-empty.1',
