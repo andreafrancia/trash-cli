@@ -780,7 +780,11 @@ def contents_of(path):
 
 class _FileRemover:
     def remove_file(self, path):
-        return os.remove(path)
+        try:
+            return os.remove(path)
+        except OSError:
+            shutil.rmtree(path)
+
     def remove_file_if_exists(self,path):
         if os.path.exists(path): self.remove_file(path)
 

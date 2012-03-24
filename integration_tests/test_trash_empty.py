@@ -51,6 +51,12 @@ class describe_trash_empty:
 
         self.files_dir.should_be_empty()
 
+    @istest
+    def it_should_purge_also_directories(self):
+        os.makedirs("XDG_DATA_HOME/Trash/files/a-dir")
+
+        self.run_trash_empty()
+
     def setUp(self):
         class DirChecker:
             def __init__(self, path):
