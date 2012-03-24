@@ -16,7 +16,7 @@ class describe_trash_empty:
 
         self.run_trash_empty()
 
-        self.info_dir.should_be_empty()
+        self.assert_dir_empty(self.info_dir_path)
 
     @istest
     def it_should_remove_all_the_infofiles(self):
@@ -25,7 +25,7 @@ class describe_trash_empty:
 
         self.run_trash_empty()
 
-        self.info_dir.should_be_empty()
+        self.assert_dir_empty(self.info_dir_path)
 
     @istest
     def it_should_remove_the_backup_files(self):
@@ -33,7 +33,7 @@ class describe_trash_empty:
 
         self.run_trash_empty()
 
-        self.files_dir.should_be_empty()
+        self.assert_dir_empty(self.files_dir_path)
 
     @istest
     def it_should_keep_unknown_files_found_in_infodir(self):
@@ -41,7 +41,7 @@ class describe_trash_empty:
 
         self.run_trash_empty()
 
-        self.info_dir.should_contains_file('not-a-trashinfo')
+        self.assert_dir_contains(self.info_dir_path, 'not-a-trashinfo')
 
     @istest
     def but_it_should_remove_orphan_files_from_the_files_dir(self):
@@ -49,7 +49,7 @@ class describe_trash_empty:
 
         self.run_trash_empty()
 
-        self.files_dir.should_be_empty()
+        self.assert_dir_empty(self.files_dir_path)
 
     @istest
     def it_should_purge_also_directories(self):
@@ -58,21 +58,14 @@ class describe_trash_empty:
         self.run_trash_empty()
 
     def setUp(self):
-        class DirChecker:
-            def __init__(self, path):
-                self.path = path
-            def should_be_empty(self):
-                assert self.is_empty()
-            def is_empty(self):
-                return len(os.listdir(self.path)) == 0
-            def should_contains_file(self, child):
-                assert os.path.exists(os.path.join(self.path, child))
         require_empty_dir('XDG_DATA_HOME')
         self.info_dir_path   = 'XDG_DATA_HOME/Trash/info'
         self.files_dir_path  = 'XDG_DATA_HOME/Trash/files'
-        self.info_dir        = DirChecker(self.info_dir_path)
-        self.files_dir       = DirChecker(self.files_dir_path)
         self.run_trash_empty = TrashEmptyRunner('XDG_DATA_HOME')
+    def assert_dir_empty(self, path):
+        assert len(os.listdir(path)) == 0
+    def assert_dir_contains(self, path, filename):
+        assert os.path.exists(os.path.join(path, filename))
     def having_a_trashinfo_in_trashcan(self, basename_of_trashinfo):
         having_file(os.path.join(self.info_dir_path, basename_of_trashinfo))
     def having_three_trashinfo_in_trashcan(self):
