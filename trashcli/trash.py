@@ -799,8 +799,8 @@ class ListCmd():
                  file_reader   = _FileSystemReader(),
                  version       = version):
 
-        self.out         = out
-        self.err         = err
+        self.output      = self.Output(out, err)
+        self.err         = self.output.err
         self.file_reader = file_reader
         self.infodirs    = AvailableTrashDirs(environ,
                                               getuid,
@@ -811,18 +811,18 @@ class ListCmd():
 
     def run(self, *argv):
         parse=Parser()
-        parse.on_help(PrintHelp(self.description, self.println))
-        parse.on_version(PrintVersion(self.println, self.version))
+        parse.on_help(PrintHelp(self.description, self.output.println))
+        parse.on_version(PrintVersion(self.output.println, self.version))
         parse.as_default(self.list_trash)
         parse(argv)
     def list_trash(self):
         self.infodirs.for_each_trashdir_and_volume(self.list_contents)
     def list_contents(self, trash_dir, volume_path):
-        class ParseTrashInfo:
+        class TrashInfo:
             def __init__(self, on_success, on_error):
                 self.on_success = on_success
                 self.on_error = on_error
-            def __call__(self, contents):
+            def parse(self, contents):
                 deletion_date = parse_deletion_date(contents) or unknown_date()
                 try:
                     path = parse_path(contents)
@@ -834,16 +834,15 @@ class ListCmd():
 
         trashdir = TrashDir(self.file_reader, trash_dir, volume_path)
         trashdir.each_trashinfo(
-            lambda path: self.read_file(
-                path,
-                on_read_error = self.print_read_error,
-                on_contents   = ParseTrashInfo(
-                    on_success = self.print_entry,
-                    on_error   = self.error_printer(path)),
+            lambda path: self.read_file( path,
+                on_read_error = self.output.print_read_error,
+                on_contents   = TrashInfo(
+                    on_success = self.output.print_entry,
+                    on_error   = self.error_printer(path)).parse,
                 ))
     def error_printer(self, path):
         def print_error(reason):
-            self.print_parse_error(path, reason)
+            self.output.print_parse_error(path, reason)
         return print_error
     def description(self, program_name, printer):
         printer.usage('Usage: %s [OPTIONS...]' % program_name)
@@ -852,17 +851,20 @@ class ListCmd():
            "  --version   show program's version number and exit",
            "  -h, --help  show this help message and exit")
         printer.bug_reporting()
-    def print_parse_error(self, offending_file, reason):
-        self.error("Parse Error: %s: %s" % (offending_file, reason))
-    def print_read_error(self, error):
-        self.error(str(error))
-    def print_entry(self, maybe_deletion_date, original_location):
-        self.println("%s %s" %(maybe_deletion_date,
-                               original_location))
-    def println(self, line):
-        self.out.write(line+'\n')
-    def error(self, line):
-        self.err.write(line+'\n')
+    class Output:
+        def __init__(self, out, err):
+            self.out = out
+            self.err = err
+        def print_entry(self, maybe_deletion_date, original_location):
+            self.println("%s %s" %(maybe_deletion_date, original_location))
+        def println(self, line):
+            self.out.write(line+'\n')
+        def error(self, line):
+            self.err.write(line+'\n')
+        def print_read_error(self, error):
+            self.error(str(error))
+        def print_parse_error(self, offending_file, reason):
+            self.error("Parse Error: %s: %s" % (offending_file, reason))
 
 class FileReader:
     def __init__(self, contents_of):

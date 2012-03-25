@@ -29,6 +29,10 @@ def make_dirs(path):
         os.makedirs(path)
     assert os.path.isdir(path)
 
+def make_parent_for(path):
+    parent = os.path.dirname(path)
+    make_dirs(parent)
+
 def make_sticky_dir(path):
     os.mkdir(path)
     set_sticky_bit(path)
