@@ -103,11 +103,15 @@ Report bugs to: http://code.google.com/p/trash-cli/issues/list
 
 Features list
 =============
-- Command line interface compatible with on of the rm command. You can alias rm with trash.
-- Remembers original path, deletion time and file permissions of each trashed file.
-- Compatible with the KDE trash.
-- Implements the FreeDesktop.org Trash Specification
-- Works with volume other than the home volume (e.g. USB pen or another partition).
+
+ - Command line interface compatible with on of the rm command. You can alias 
+   rm with trash.
+ - Remembers original path, deletion time and file permissions of each trashed 
+   file.
+ - Compatible with the KDE trash.
+ - Implements the FreeDesktop.org Trash Specification
+ - Works with volume other than the home volume (e.g. USB pen or another 
+   partition).
 
 Development
 ===========
