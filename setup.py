@@ -27,7 +27,7 @@ setup(
             'trash-empty   = trashcli.cmds:empty'
         ]
     },
-    data_files = [('man/man1', ['man/man1/trash-empty.1',
+    data_files = [('share/man/man1', ['man/man1/trash-empty.1',
                                 'man/man1/trash-list.1',
                                 'man/man1/trash-restore.1',
                                 'man/man1/trash-put.1'])],
