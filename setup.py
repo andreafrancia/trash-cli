@@ -22,6 +22,7 @@ setup(
     entry_points = {
         'console_scripts' : [
             'trash-list    = trashcli.cmds:list',
+            'trash         = trashcli.cmds:put',
             'trash-put     = trashcli.cmds:put',
             'restore-trash = trashcli.cmds:restore',
             'trash-empty   = trashcli.cmds:empty'
