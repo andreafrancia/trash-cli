@@ -37,6 +37,10 @@ def make_sticky_dir(path):
     os.mkdir(path)
     set_sticky_bit(path)
 
+def make_unsticky_dir(path):
+    os.mkdir(path)
+    ensure_non_sticky_dir(path)
+
 def set_sticky_bit(path):
     import stat
     os.chmod(path, os.stat(path).st_mode | stat.S_ISVTX)

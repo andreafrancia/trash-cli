@@ -802,12 +802,12 @@ class ListCmd():
         self.output      = self.Output(out, err)
         self.err         = self.output.err
         self.file_reader = file_reader
-        self.infodirs    = AvailableTrashDirs(environ,
+        self.contents_of = file_reader.contents_of
+        self.trashdirs   = AvailableTrashDirs(environ,
                                               getuid,
                                               list_volumes,
                                               is_sticky_dir)
         self.version     = version
-        self.read_file   = FileReader(self.file_reader.contents_of)
 
     def run(self, *argv):
         parse=Parser()
@@ -816,34 +816,27 @@ class ListCmd():
         parse.as_default(self.list_trash)
         parse(argv)
     def list_trash(self):
-        self.infodirs.for_each_trashdir_and_volume(self.list_contents)
+        self.trashdirs.for_each_trashdir_and_volume(self.list_contents,
+                self.output)
     def list_contents(self, trash_dir, volume_path):
-        class TrashInfo:
-            def __init__(self, on_success, on_error):
-                self.on_success = on_success
-                self.on_error = on_error
-            def parse(self, contents):
-                deletion_date = parse_deletion_date(contents) or unknown_date()
-                try:
-                    path = parse_path(contents)
-                except ParseError:
-                    self.on_error('Unable to parse Path')
-                else:
-                    original_location = os.path.join(volume_path, path)
-                    self.on_success(deletion_date, original_location)
-
+        self.output.set_volume_path(volume_path)
         trashdir = TrashDir(self.file_reader, trash_dir, volume_path)
-        trashdir.each_trashinfo(
-            lambda path: self.read_file( path,
-                on_read_error = self.output.print_read_error,
-                on_contents   = TrashInfo(
-                    on_success = self.output.print_entry,
-                    on_error   = self.error_printer(path)).parse,
-                ))
-    def error_printer(self, path):
-        def print_error(reason):
-            self.output.print_parse_error(path, reason)
-        return print_error
+        class Log:
+            def print_trashinfo(_, path):
+                try:
+                    contents = self.contents_of(path)
+                except IOError as e :
+                    self.output.print_read_error(e)
+                else:
+                    deletion_date = parse_deletion_date(contents) or unknown_date()
+                    try:
+                        path = parse_path(contents)
+                    except ParseError:
+                        self.output.print_parse_path_error(path)
+                    else:
+                        self.output.print_entry(deletion_date, path)
+        log = Log()
+        trashdir.each_trashinfo(log.print_trashinfo)
     def description(self, program_name, printer):
         printer.usage('Usage: %s [OPTIONS...]' % program_name)
         printer.summary('List trashed files')
@@ -855,27 +848,24 @@ class ListCmd():
         def __init__(self, out, err):
             self.out = out
             self.err = err
-        def print_entry(self, maybe_deletion_date, original_location):
-            self.println("%s %s" %(maybe_deletion_date, original_location))
         def println(self, line):
             self.out.write(line+'\n')
         def error(self, line):
             self.err.write(line+'\n')
         def print_read_error(self, error):
             self.error(str(error))
-        def print_parse_error(self, offending_file, reason):
-            self.error("Parse Error: %s: %s" % (offending_file, reason))
+        def print_parse_path_error(self, offending_file):
+            self.error("Parse Error: %s: Unable to parse Path." % (offending_file))
 
-class FileReader:
-    def __init__(self, contents_of):
-        self.contents_of = contents_of
-    def __call__(self, path, on_read_error, on_contents):
-        try:
-            contents = self.contents_of(path)
-        except IOError as e :
-            on_read_error(e)
-        else:
-            on_contents(contents)
+        def top_trashdir_skipped_because_parent_not_sticky(self, trashdir):
+            self.error("TrashDir skipped because parent not sticky: %s"
+                    % trashdir)
+        def set_volume_path(self, volume_path):
+            self.volume_path = volume_path
+        def print_entry(self, maybe_deletion_date, relative_location):
+            import os
+            original_location = os.path.join(self.volume_path, relative_location)
+            self.println("%s %s" %(maybe_deletion_date, original_location))
 
 class Parser:
     def __init__(self):
@@ -932,6 +922,7 @@ class EmptyCmd():
         self.out          = out
         self.err          = err
         self.file_reader  = file_reader
+        self.contents_of  = file_reader.contents_of
         self.trashdirs    = AvailableTrashDirs(environ,
                                                getuid,
                                                list_volumes,
@@ -1058,35 +1049,34 @@ class AvailableTrashDirs:
         self.getuid        = getuid
         self.list_volumes  = list_volumes
         self.is_sticky_dir = is_sticky_dir
-    def for_each_infodir(self, file_reader, action):
-        def action2(trash_dir, volume_path):
-            infodir = TrashDir(file_reader, trash_dir, volume_path)
-            action(infodir)
-        self.for_each_trashdir_and_volume(action2)
-    def for_each_trashdir(self, action):
-        def output_result(path, volume): action(path)
-        self.for_each_trashdir_and_volume(output_result)
-    def for_each_trashdir_and_volume(self, action):
-        self._for_home_trashcan_info_dir_path(action)
-        self._for_each_volume_trashcans(action)
-    def _for_home_trashcan_info_dir_path(self, action):
+    def do_nothing(trash_dir, volume): pass
+    class NullLog:
+        def top_trashdir_skipped_because_parent_not_sticky(self, trashdir): pass
+    def for_each_trashdir_and_volume(self, action = do_nothing, 
+                                           error_log = NullLog()):
+        self._for_home_trashcan(action)
+        self._for_each_volume_trashcan(action, error_log)
+    def _for_home_trashcan(self, out):
         def return_result_with_volume(trashcan_path):
-            action(trashcan_path, '/')
+            out(trashcan_path, '/')
         home_trashcan_if_possible(self.environ, return_result_with_volume)
-    def _for_each_volume_trashcans(self, action):
+    def _for_each_volume_trashcan(self, action, error_log):
         from os.path import join
         for volume in self.list_volumes():
             top_trash_dir = join(volume, '.Trash')
             if self.is_sticky_dir(top_trash_dir):
                 action(join(top_trash_dir, str(self.getuid())), volume)
+            else:
+                error_log.top_trashdir_skipped_because_parent_not_sticky(
+                        join(top_trash_dir, str(self.getuid())))
 
             action(join(volume, '.Trash-%s' % self.getuid()), volume)
 
-def home_trashcan_if_possible(environ, action):
+def home_trashcan_if_possible(environ, out):
     if 'XDG_DATA_HOME' in environ:
-        action('%(XDG_DATA_HOME)s/Trash' % environ)
+        out('%(XDG_DATA_HOME)s/Trash' % environ)
     elif 'HOME' in environ:
-        action('%(HOME)s/.local/share/Trash' % environ)
+        out('%(HOME)s/.local/share/Trash' % environ)
 
 class Dir:
     def __init__(self, path, entries_if_dir_exists):

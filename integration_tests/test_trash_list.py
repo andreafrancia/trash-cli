@@ -2,8 +2,8 @@
 
 from trashcli.trash import ListCmd
 from files import (write_file, require_empty_dir, make_sticky_dir,
-                   ensure_non_sticky_dir, make_unreadable_file,
-                   make_empty_file, make_parent_for)
+                   ensure_non_sticky_dir, make_unsticky_dir,
+                   make_unreadable_file, make_empty_file, make_parent_for)
 from nose.tools import istest
 from .output_collector import OutputCollector
 from trashinfo import (
@@ -11,39 +11,55 @@ from trashinfo import (
         a_trashinfo_without_date,
         a_trashinfo_without_path,
         a_trashinfo_with_invalid_date)
+from textwrap import dedent
+
+class Setup(object):
+    def setUp(self):
+        require_empty_dir('XDG_DATA_HOME')
+        require_empty_dir('topdir')
+
+        self.user = TrashListUser(
+                environ = {'XDG_DATA_HOME': 'XDG_DATA_HOME'})
+
+        self.home_trashcan = FakeTrashDir('XDG_DATA_HOME/Trash')
+        self.add_trashinfo = self.home_trashcan.add_trashinfo
 
 @istest
-class describe_trash_list_output:
+class describe_trash_list(Setup):
     @istest
     def should_output_the_help_message(self):
+
         self.user.run('trash-list', '--help')
-        self.user.should_read_output("""\
-Usage: trash-list [OPTIONS...]
 
-List trashed files
+        self.user.should_read_output(dedent("""\
+            Usage: trash-list [OPTIONS...]
 
-Options:
-  --version   show program's version number and exit
-  -h, --help  show this help message and exit
+            List trashed files
 
-Report bugs to http://code.google.com/p/trash-cli/issues
-""")
+            Options:
+              --version   show program's version number and exit
+              -h, --help  show this help message and exit
+
+            Report bugs to http://code.google.com/p/trash-cli/issues
+        """))
 
     @istest
-    def should_output_nothing_if_no_files(self):
+    def should_output_nothing_when_trashcan_is_empty(self):
 
         self.user.run_trash_list()
+
         self.user.should_read_output('')
 
     @istest
-    def should_output_deletion_date_and_path_of_trash(self):
-
+    def should_output_deletion_date_and_path(self):
         self.add_trashinfo('/aboslute/path', '2001-02-03T23:55:59')
+
         self.user.run_trash_list()
+
         self.user.should_read_output( "2001-02-03 23:55:59 /aboslute/path\n")
 
     @istest
-    def should_works_also_with_multiple_files(self):
+    def should_output_info_for_multiple_files(self):
         self.add_trashinfo("/file1", "2000-01-01T00:00:01")
         self.add_trashinfo("/file2", "2000-01-01T00:00:02")
         self.add_trashinfo("/file3", "2000-01-01T00:00:03")
@@ -55,24 +71,31 @@ Report bugs to http://code.google.com/p/trash-cli/issues
                                       "2000-01-01 00:00:03 /file3\n")
 
     @istest
-    def should_output_question_mark_if_deletion_date_is_not_present(self):
+    def should_output_unknown_dates_with_question_marks(self):
+
         self.home_trashcan.having_file(a_trashinfo_without_date())
+
         self.user.run_trash_list()
+
         self.user.should_read_output("????-??-?? ??:??:?? /path\n")
 
     @istest
-    def should_output_question_marks_if_deletion_date_is_invalid(self):
+    def should_output_invalid_dates_using_question_marks(self):
         self.home_trashcan.having_file(a_trashinfo_with_invalid_date())
+
         self.user.run_trash_list()
+
         self.user.should_read_output("????-??-?? ??:??:?? /path\n")
 
     @istest
     def should_warn_about_empty_trashinfos(self):
         self.home_trashcan.touch('empty.trashinfo')
+
         self.user.run_trash_list()
+
         self.user.should_read_error(
                 "Parse Error: XDG_DATA_HOME/Trash/info/empty.trashinfo: "
-                "Unable to parse Path\n")
+                "Unable to parse Path.\n")
 
     @istest
     def should_warn_about_unreadable_trashinfo(self):
@@ -91,11 +114,19 @@ Report bugs to http://code.google.com/p/trash-cli/issues
 
         self.user.should_read_error(
                 "Parse Error: XDG_DATA_HOME/Trash/info/1.trashinfo: "
-                "Unable to parse Path\n")
+                "Unable to parse Path.\n")
         self.user.should_read_output('')
 
+@istest
+class describe_TrashList_WhenAFileIsTrashedInTopTrashDir(Setup):
+    def setUp(self):
+        super(type(self),self).setUp()
+        self.top_trashdir1 = FakeTrashDir('topdir/.Trash/123')
+        self.user.set_fake_uid(123)
+        self.user.add_volume('topdir')
+
     @istest
-    def should_list_contebts_of_primary_trashdir(self):
+    def should_listed_when_the_dir_is_sticky(self):
         make_sticky_dir('topdir/.Trash')
         self.top_trashdir1.add_trashinfo('file1', '2000-01-01T00:00:00')
 
@@ -104,7 +135,15 @@ Report bugs to http://code.google.com/p/trash-cli/issues
         self.user.should_read_output("2000-01-01 00:00:00 topdir/file1\n")
 
     @istest
-    def should_ignore_contents_of_non_sticky_trash_dirs(self):
+    def should_report_errors_when_the_dir_is_not_sticky(self):
+        make_unsticky_dir('topdir/.Trash')
+
+        self.user.run_trash_list()
+
+        self.user.should_read_error("TrashDir skipped because parent not sticky: topdir/.Trash/123\n")
+
+    @istest
+    def should_ignored_when_the_dir_is_not_sticky(self):
         self.top_trashdir1.add_trashinfo('file1', '2000-01-01T00:00:00')
         ensure_non_sticky_dir('topdir/.Trash')
 
@@ -113,30 +152,7 @@ Report bugs to http://code.google.com/p/trash-cli/issues
         self.user.should_read_output("")
 
     @istest
-    def should_list_contents_of_alternate_trashdir(self):
-        self.top_trashdir2.add_trashinfo('file', '2000-01-01T00:00:00')
-
-        self.user.run_trash_list()
-
-        self.user.should_read_output("2000-01-01 00:00:00 topdir/file\n")
-
-    def setUp(self):
-        require_empty_dir('XDG_DATA_HOME')
-        require_empty_dir('topdir')
-
-        self.user = TrashListUser(
-                environ = {'XDG_DATA_HOME': 'XDG_DATA_HOME'})
-        self.user.set_fake_uid(123)
-        self.user.add_volume('topdir')
-
-        self.home_trashcan = FakeTrashDir('XDG_DATA_HOME/Trash')
-        self.top_trashdir1 = FakeTrashDir('topdir/.Trash/123')
-        self.top_trashdir2 = FakeTrashDir('topdir/.Trash-123')
-
-        self.add_trashinfo = self.home_trashcan.add_trashinfo
-
-    @istest
-    def it_should_not_show_the_contents_when_Trash_is_a_symlink(self):
+    def it_should_ignore_Trash_is_a_symlink(self):
         make_a_symlink_to_a_dir('topdir/.Trash')
         self.top_trashdir1.add_trashinfo('file1', '2000-01-01T00:00:00')
 
@@ -153,6 +169,19 @@ Report bugs to http://code.google.com/p/trash-cli/issues
         with assert_raises(AssertionError):
             self.user.should_read_error('Skipping topdir/.Trash: is a symlink ')
 
+@istest
+class describe_when_a_file_is_in_alternate_top_trashdir(Setup):
+    @istest
+    def should_list_contents_of_alternate_trashdir(self):
+        self.user.set_fake_uid(123)
+        self.user.add_volume('topdir')
+        self.top_trashdir2 = FakeTrashDir('topdir/.Trash-123')
+        self.top_trashdir2.add_trashinfo('file', '2000-01-01T00:00:00')
+
+        self.user.run_trash_list()
+
+        self.user.should_read_output("2000-01-01 00:00:00 topdir/file\n")
+
 from nose.tools import assert_raises
 
 def make_a_symlink_to_a_dir(path):
@@ -165,7 +194,6 @@ def make_a_symlink_to_a_dir(path):
 @istest
 class describe_trash_list_with_raw_option:
     def setup(self):
-        from nose import SkipTest; raise SkipTest()
         self.having_XDG_DATA_HOME('XDG_DATA_HOME')
         self.running('trash-list', '--raw')
     @istest

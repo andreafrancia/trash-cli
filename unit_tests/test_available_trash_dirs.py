@@ -64,3 +64,16 @@ class collector:
     def __call__(self, trash_dir, volume):
         self.trash_dirs.append(trash_dir)
 
+from mock import MagicMock
+@istest
+class Describe_AvailableTrashDirs:
+    def test_it_should_report_when_topdir_is_a_symlink(self):
+        error_log = MagicMock()
+        dirs = AvailableTrashDirs(environ =  {}, 
+                                 getuid = lambda:123, 
+                                 list_volumes = lambda: ['/topdir'],
+                                 is_sticky_dir = lambda dir: False)
+
+        dirs.for_each_trashdir_and_volume(error_log = error_log)
+
+        error_log.top_trashdir_skipped_because_parent_not_sticky.assert_called_with('/topdir/.Trash/123')
