@@ -1,3 +1,22 @@
+Features backlog:
+ - trash-list should check that the $topdir/.Trash is not a symbolic link
+ - trash-list should handle exception when a .trashinfo from home trashdir 
+   contains a path that is not absolute
+ - trash-list should print also the orphan files
+ - support alias rmdir=trash-put
+ - don't use world writable trash
+ - enable trash-put home fallback
+ - trash-empty removes files until a certain amount of space has been restored
+ - trash-list --raw
+ - trash-list <directory-name>
+ - trash-list -R <directory-name>                 # recursive
+ - trash-restore <path>                           # restore the newest
+ - trash-restore <path> <dest>                    # restore to a certain destination
+ - trash-restore --trashed-on="Apr 15, 08" <path>
+ - trash-empty --from=/.Trash
+ - trash-rm '*.o'
+ - trash-empty should empty even the mac trash directory
+
 Design to be fixed:
  - get rid of logging package
  - get rid of the IOError exception raising on file is not in the same volume
@@ -15,7 +34,6 @@ Design to be fixed:
  - remove duplication between trash-put command line parser and Parser used by
    trash-list and trash-empty
  - remove AvailableTrashDir.for_each_infodir_and_volume if not used
-
 Test to be ported to nosetests:
  - trash-put:
     - trash in home trashcan
@@ -28,44 +46,4 @@ Test to be ported to nosetests:
     - when $topdir/.Trash is not sticky
  - should refuse to create the $topdir/.Trash/$uid directory if the 
    $topdir/.Trash is not sticky
-
-Command trash-empty:
- x when run with `days` arguments skip .trashinfo with invalid date
-
-Command trash-list:
- x set up integration test for ListCmd
- x when there's not trashed file
- x when there's only one trashed file
- x when there are multiple trashed files
- x support for trashed files on volume 1 trashcan
- x support for trashed files on volume 2 trashcan
- x error when a .trashinfo is empty
- x error when a .trashinfo is not readable
- x displays unknown date when .trashinfo does not contain DeletionDate
- x displays unknown date when .trashinfo contains an invalid DeletionDate
- x error when a .trashinfo does not contain the 'Path=' entry information
- x should check that the $topdir/.Trash directory has the sticky bit
- x should print version on --version
- - should check that the $topdir/.Trash is not a symbolic link
- - exception when a .trashinfo from home trashdir contains a path that is not 
-   absolute
- - it should print also the orphan files
-
-Environment:
- - use distribute as default
-
-Features backlog:
- - support alias rmdir=trash-put
- - don't use world writable trash
- - enable trash-put home fallback
- - trash-empty removes files until a certain amount of space has been restored
- - trash-list --raw
- - trash-list <directory-name>
- - trash-list -R <directory-name>                 # recursive
- - trash-restore <path>                           # restore the newest
- - trash-restore <path> <dest>                    # restore to a certain destination
- - trash-restore --trashed-on="Apr 15, 08" <path>
- - trash-empty --from=/.Trash
- - trash-rm '*.o'
- - trash-empty should empty even the mac trash directory
 
