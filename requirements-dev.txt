@@ -1,3 +1,4 @@
 nose==1.1.2
-mock==0.7.2
+mock==0.8.0
 fudge==1.0.3
+dingus==0.3.2
