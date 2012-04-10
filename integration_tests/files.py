@@ -39,11 +39,23 @@ def make_sticky_dir(path):
 
 def make_unsticky_dir(path):
     os.mkdir(path)
-    ensure_non_sticky_dir(path)
+    unset_sticky_bit(path)
+
+def make_dir_unsticky(path):
+    assert_is_dir(path)
+    unset_sticky_bit(path)
+
+def assert_is_dir(path):
+    assert os.path.isdir(path)
 
 def set_sticky_bit(path):
     import stat
     os.chmod(path, os.stat(path).st_mode | stat.S_ISVTX)
+
+def unset_sticky_bit(path):
+    import stat
+    os.chmod(path, os.stat(path).st_mode & ~ stat.S_ISVTX)
+    assert not has_sticky_bit(path)
 
 def touch(path):
     open(path,'a+').close()

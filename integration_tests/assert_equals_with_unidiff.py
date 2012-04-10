@@ -6,7 +6,9 @@ def assert_equals_with_unidiff(expected, actual):
         expected=expected.splitlines(1)
         actual=actual.splitlines(1)
 
-        diff=difflib.unified_diff(expected, actual)
+        diff=difflib.unified_diff(expected, actual, 
+                                 fromfile='Expected', tofile='Actual', 
+                                 lineterm='\n', n=10)
 
         return ''.join(diff)
     from nose.tools import assert_equals

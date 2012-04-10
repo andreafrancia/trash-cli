@@ -1,0 +1,5 @@
+Features:
+ x trash-list should check that the $topdir/.Trash is a sticky dir
+    x trash-list should report when $topdir/.Trash is not sticky
+ x trash-list should check that the $topdir/.Trash is not a symbolic link
+    x and should warn when it is

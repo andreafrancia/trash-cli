@@ -1,5 +1,6 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
+import os
 from trashcli.trash import ListCmd
 from files import (write_file, require_empty_dir, make_sticky_dir,
                    ensure_non_sticky_dir, make_unsticky_dir,
@@ -23,9 +24,15 @@ class Setup(object):
 
         self.home_trashcan = FakeTrashDir('XDG_DATA_HOME/Trash')
         self.add_trashinfo = self.home_trashcan.add_trashinfo
+    def when_dir_is_sticky(self, path):
+        make_sticky_dir(path)
+    def when_dir_exists_unsticky(self, path):
+        make_unsticky_dir(path)
+
 
 @istest
 class describe_trash_list(Setup):
+
     @istest
     def should_output_the_help_message(self):
 
@@ -118,7 +125,7 @@ class describe_trash_list(Setup):
         self.user.should_read_output('')
 
 @istest
-class describe_TrashList_WhenAFileIsTrashedInTopTrashDir(Setup):
+class with_a_top_trash_dir(Setup):
     def setUp(self):
         super(type(self),self).setUp()
         self.top_trashdir1 = FakeTrashDir('topdir/.Trash/123')
@@ -126,26 +133,36 @@ class describe_TrashList_WhenAFileIsTrashedInTopTrashDir(Setup):
         self.user.add_volume('topdir')
 
     @istest
-    def should_listed_when_the_dir_is_sticky(self):
-        make_sticky_dir('topdir/.Trash')
-        self.top_trashdir1.add_trashinfo('file1', '2000-01-01T00:00:00')
+    def should_list_its_contents_if_parent_is_sticky(self):
+        self.when_dir_is_sticky('topdir/.Trash')
+        self.and_contains_a_valid_trashinfo()
 
         self.user.run_trash_list()
 
         self.user.should_read_output("2000-01-01 00:00:00 topdir/file1\n")
-
+    
     @istest
-    def should_report_errors_when_the_dir_is_not_sticky(self):
-        make_unsticky_dir('topdir/.Trash')
+    def and_should_warn_if_parent_is_not_sticky(self):
+        self.when_dir_exists_unsticky('topdir/.Trash')
+        self.and_dir_exists('topdir/.Trash/123')
 
         self.user.run_trash_list()
 
         self.user.should_read_error("TrashDir skipped because parent not sticky: topdir/.Trash/123\n")
 
     @istest
-    def should_ignored_when_the_dir_is_not_sticky(self):
-        self.top_trashdir1.add_trashinfo('file1', '2000-01-01T00:00:00')
-        ensure_non_sticky_dir('topdir/.Trash')
+    def but_it_should_not_warn_when_the_parent_is_unsticky_but_there_is_no_trashdir(self):
+        self.when_dir_exists_unsticky('topdir/.Trash')
+        self.but_does_not_exists_any('topdir/.Trash/123')
+
+        self.user.run_trash_list()
+
+        self.user.should_read_error("")
+
+    @istest
+    def should_ignore_trash_from_a_unsticky_topdir(self):
+        self.when_dir_exists_unsticky('topdir/.Trash')
+        self.and_contains_a_valid_trashinfo()
 
         self.user.run_trash_list()
 
@@ -153,21 +170,33 @@ class describe_TrashList_WhenAFileIsTrashedInTopTrashDir(Setup):
 
     @istest
     def it_should_ignore_Trash_is_a_symlink(self):
-        make_a_symlink_to_a_dir('topdir/.Trash')
-        self.top_trashdir1.add_trashinfo('file1', '2000-01-01T00:00:00')
+        self.when_is_a_symlink_to_a_dir('topdir/.Trash')
+        self.and_contains_a_valid_trashinfo()
 
         self.user.run_trash_list()
 
         self.user.should_read_output('')
 
     @istest
-    def it_should_notify_when_Trash_is_a_symlink(self):
-        make_a_symlink_to_a_dir('topdir/.Trash')
+    def and_should_warn_about_it(self):
+        self.when_is_a_symlink_to_a_dir('topdir/.Trash')
+        self.and_contains_a_valid_trashinfo()
 
         self.user.run_trash_list()
 
-        with assert_raises(AssertionError):
-            self.user.should_read_error('Skipping topdir/.Trash: is a symlink ')
+        self.user.should_read_error('TrashDir skipped because parent not sticky: topdir/.Trash/123\n')
+    def but_does_not_exists_any(self, path):
+        assert not os.path.exists(path)
+    def and_dir_exists(self, path):
+        os.mkdir(path)
+        assert os.path.isdir(path)
+    def and_contains_a_valid_trashinfo(self):
+        self.top_trashdir1.add_trashinfo('file1', '2000-01-01T00:00:00')
+    def when_is_a_symlink_to_a_dir(self, path):
+        dest = "%s-dest" % path
+        os.mkdir(dest)
+        rel_dest = os.path.basename(dest)
+        os.symlink(rel_dest, path)
 
 @istest
 class describe_when_a_file_is_in_alternate_top_trashdir(Setup):
@@ -183,13 +212,6 @@ class describe_when_a_file_is_in_alternate_top_trashdir(Setup):
         self.user.should_read_output("2000-01-01 00:00:00 topdir/file\n")
 
 from nose.tools import assert_raises
-
-def make_a_symlink_to_a_dir(path):
-    import os
-    dest = "%s-dest" % path
-    os.mkdir(dest)
-    rel_dest = os.path.basename(dest)
-    os.symlink(rel_dest, path)
 
 @istest
 class describe_trash_list_with_raw_option:
@@ -255,12 +277,15 @@ class TrashListUser:
     def run_trash_list(self):
         self.run('trash-list')
     def run(self,*argv):
+        from trashcli.trash import FileSystemReader
+        file_reader = FileSystemReader()
+        file_reader.list_volumes = lambda: self.volumes
         ListCmd(
-            out = self.stdout,
-            err = self.stderr,
-            environ = self.environ,
-            getuid = self.fake_getuid,
-            list_volumes = lambda: self.volumes
+            out         = self.stdout,
+            err         = self.stderr,
+            environ     = self.environ,
+            getuid      = self.fake_getuid,
+            file_reader = file_reader,
         ).run(*argv)
     def set_fake_uid(self, uid):
         self.fake_getuid = lambda: uid

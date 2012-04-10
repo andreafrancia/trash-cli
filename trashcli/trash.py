@@ -10,7 +10,7 @@ logger.setLevel(logging.WARNING)
 logger.addHandler(logging.StreamHandler())
 
 class TrashDirectory:
-    def __init__(self, path, volume) :
+    def __init__(self, path, volume) : # TODO: contents_of should be injected
         self.path   = os.path.normpath(path)
         self.volume = volume
 
@@ -86,7 +86,7 @@ class TrashDirectory:
     def trashed_files(self) :
         for info_file in self.all_info_files():
             try:
-                yield self._create_trashed_file_from_info_file(info_file) 
+                yield self._create_trashed_file_from_info_file(info_file)
             except ValueError:
                 logger.warning("Non parsable trashinfo file: %s" % info_file)
             except IOError as e:
@@ -761,22 +761,25 @@ def write_file(path, contents):
     f.close()
 
 def do_nothing(*argv, **argvk): pass
-class _FileSystemReader:
-    def __init__(self):
-        self.contents_of = contents_of
-        self.exists = os.path.exists
-        self.is_sticky_dir = is_sticky_dir
+class FileSystemReader:
     def entries_if_dir_exists(self, path):
         if os.path.exists(path):
             for entry in os.listdir(path):
                 yield entry
+    def is_sticky_dir(self, path):
+        import os
+        return os.path.isdir(path) and has_sticky_bit(path)
+    def list_volumes(self):
+        return mount_points()
+    def exists(self, path):
+        return os.path.exists(path)
+    def is_symlink(self, path):
+        return os.path.islink(path)
+    def contents_of(self, path):
+        return file(path).read()
 
-def is_sticky_dir(path):
-    import os
-    return os.path.isdir(path) and has_sticky_bit(path)
-
-def contents_of(path):
-    return file(path).read()
+def contents_of(path): # TODO remove
+    return FileSystemReader().contents_of(path)
 
 class _FileRemover:
     def remove_file(self, path):
@@ -791,12 +794,11 @@ class _FileRemover:
 from .list_mount_points import mount_points
 from datetime import datetime
 
-class ListCmd():
+class ListCmd:
     def __init__(self, out, err, environ,
                  getuid        = os.getuid,
                  list_volumes  = mount_points,
-                 is_sticky_dir = is_sticky_dir,
-                 file_reader   = _FileSystemReader(),
+                 file_reader   = FileSystemReader(),
                  version       = version):
 
         self.output      = self.Output(out, err)
@@ -805,8 +807,7 @@ class ListCmd():
         self.contents_of = file_reader.contents_of
         self.trashdirs   = AvailableTrashDirs(environ,
                                               getuid,
-                                              list_volumes,
-                                              is_sticky_dir)
+                                              fs = file_reader)
         self.version     = version
 
     def run(self, *argv):
@@ -816,8 +817,7 @@ class ListCmd():
         parse.as_default(self.list_trash)
         parse(argv)
     def list_trash(self):
-        self.trashdirs.for_each_trashdir_and_volume(self.list_contents,
-                self.output)
+        self.trashdirs.list_trashdirs(self.list_contents, self.output)
     def list_contents(self, trash_dir, volume_path):
         self.output.set_volume_path(volume_path)
         trashdir = TrashDir(self.file_reader, trash_dir, volume_path)
@@ -859,6 +859,9 @@ class ListCmd():
 
         def top_trashdir_skipped_because_parent_not_sticky(self, trashdir):
             self.error("TrashDir skipped because parent not sticky: %s"
+                    % trashdir)
+        def top_trashdir_skipped_because_parent_is_symlink(self, trashdir):
+            self.error("TrashDir skipped because parent is symlink: %s"
                     % trashdir)
         def set_volume_path(self, volume_path):
             self.volume_path = volume_path
@@ -912,10 +915,9 @@ class Parser:
 class EmptyCmd():
     def __init__(self, out, err, environ,
                  now           = datetime.now,
-                 file_reader   = _FileSystemReader(),
+                 file_reader   = FileSystemReader(),
                  list_volumes  = mount_points,
                  getuid        = os.getuid,
-                 is_sticky_dir = is_sticky_dir,
                  file_remover  = _FileRemover(),
                  version       = version):
 
@@ -923,10 +925,15 @@ class EmptyCmd():
         self.err          = err
         self.file_reader  = file_reader
         self.contents_of  = file_reader.contents_of
+        class Fs: #TODO remove the need of this class
+            def __init__(self):
+                self.list_volumes = list_volumes
+                self.is_sticky_dir = file_reader.is_sticky_dir
+                self.exists        = file_reader.exists
+                self.is_symlink    = file_reader.is_symlink
         self.trashdirs    = AvailableTrashDirs(environ,
                                                getuid,
-                                               list_volumes,
-                                               is_sticky_dir)
+                                               fs = Fs())
 
         self.now          = now
         self.file_remover = file_remover
@@ -957,7 +964,7 @@ class EmptyCmd():
         except ValueError:
             return False
     def _empty_all_trashdirs(self):
-        self.trashdirs.for_each_trashdir_and_volume(self._empty_trashdir)
+        self.trashdirs.list_trashdirs(self._empty_trashdir)
 
     def _empty_trashdir(self, trash_dir, volume_path):
         trashdir = TrashDir(self.file_reader, trash_dir, volume_path)
@@ -1044,18 +1051,20 @@ class PrintVersion:
         self.println("%s %s" % (program_name, self.version))
 
 class AvailableTrashDirs:
-    def __init__(self, environ, getuid, list_volumes, is_sticky_dir):
+    def __init__(self, environ, getuid, fs=None):
         self.environ       = environ
         self.getuid        = getuid
-        self.list_volumes  = list_volumes
-        self.is_sticky_dir = is_sticky_dir
+        self.fs            = fs
+        self.list_volumes  = fs.list_volumes
+        self.is_sticky_dir = fs.is_sticky_dir
+        self.exists        = fs.exists
     def do_nothing(trash_dir, volume): pass
     class NullLog:
         def top_trashdir_skipped_because_parent_not_sticky(self, trashdir): pass
-    def for_each_trashdir_and_volume(self, action = do_nothing, 
-                                           error_log = NullLog()):
-        self._for_home_trashcan(action)
-        self._for_each_volume_trashcan(action, error_log)
+        def top_trashdir_skipped_because_parent_is_symlink(self, trashdir): pass
+    def list_trashdirs(self, out = do_nothing, error_log = NullLog()):
+        self._for_home_trashcan(out)
+        self._for_each_volume_trashcan(out, error_log)
     def _for_home_trashcan(self, out):
         def return_result_with_volume(trashcan_path):
             out(trashcan_path, '/')
@@ -1063,14 +1072,19 @@ class AvailableTrashDirs:
     def _for_each_volume_trashcan(self, action, error_log):
         from os.path import join
         for volume in self.list_volumes():
-            top_trash_dir = join(volume, '.Trash')
-            if self.is_sticky_dir(top_trash_dir):
-                action(join(top_trash_dir, str(self.getuid())), volume)
-            else:
-                error_log.top_trashdir_skipped_because_parent_not_sticky(
-                        join(top_trash_dir, str(self.getuid())))
+            parent_trashdir = join(volume, '.Trash')
+            top_trashdir = join(parent_trashdir, str(self.getuid()))
+            alt_top_trashdir = join(volume, '.Trash-%s' % self.getuid())
+            if self.exists(top_trashdir):
+                if self.is_sticky_dir(parent_trashdir):
+                    if not self.fs.is_symlink(parent_trashdir):
+                        action(top_trashdir, volume)
+                    else:
+                        error_log.top_trashdir_skipped_because_parent_is_symlink(top_trashdir)
+                else:
+                    error_log.top_trashdir_skipped_because_parent_not_sticky(top_trashdir)
 
-            action(join(volume, '.Trash-%s' % self.getuid()), volume)
+            action(alt_top_trashdir, volume)
 
 def home_trashcan_if_possible(environ, out):
     if 'XDG_DATA_HOME' in environ:
@@ -1211,7 +1225,7 @@ def parse_path(contents):
             return urllib.unquote(line[len('Path='):])
     raise ParseError('Unable to parse Path')
 
-def has_sticky_bit(path):
+def has_sticky_bit(path): # TODO move to FileSystemReader
     import os
     import stat
     return (os.stat(path).st_mode & stat.S_ISVTX) == stat.S_ISVTX

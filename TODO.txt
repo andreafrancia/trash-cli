@@ -1,7 +1,6 @@
 Features backlog:
- - trash-list should check that the $topdir/.Trash is not a symbolic link
- - trash-list should handle exception when a .trashinfo from home trashdir 
-   contains a path that is not absolute
+ - trash-list should handle .trashinfo from home trashdir that contains 
+   relative path
  - trash-list should print also the orphan files
  - support alias rmdir=trash-put
  - don't use world writable trash

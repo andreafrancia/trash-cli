@@ -7,23 +7,40 @@ from StringIO import StringIO
 import os
 from files import write_file, require_empty_dir, make_dirs, set_sticky_bit
 from files import having_file
+from mock import MagicMock
 
 @istest
 class describe_trash_empty:
+
+    def setUp(self):
+        require_empty_dir('XDG_DATA_HOME')
+        self.info_dir_path   = 'XDG_DATA_HOME/Trash/info'
+        self.files_dir_path  = 'XDG_DATA_HOME/Trash/files'
+        self.environ = {'XDG_DATA_HOME':'XDG_DATA_HOME'}
+        now = MagicMock(side_effect=RuntimeError)
+        self.empty_cmd = EmptyCmd(
+            out = StringIO(),
+            err = StringIO(),
+            environ = self.environ,
+            now = now
+        )
+
+    def user_run_trash_empty(self):
+        self.empty_cmd.run('trash-empty')
+
     @istest
     def it_should_remove_an_info_file(self):
         self.having_a_trashinfo_in_trashcan('foo.trashinfo')
 
-        self.run_trash_empty()
+        self.user_run_trash_empty()
 
         self.assert_dir_empty(self.info_dir_path)
 
     @istest
     def it_should_remove_all_the_infofiles(self):
-
         self.having_three_trashinfo_in_trashcan()
 
-        self.run_trash_empty()
+        self.user_run_trash_empty()
 
         self.assert_dir_empty(self.info_dir_path)
 
@@ -31,7 +48,7 @@ class describe_trash_empty:
     def it_should_remove_the_backup_files(self):
         self.having_one_trashed_file()
 
-        self.run_trash_empty()
+        self.user_run_trash_empty()
 
         self.assert_dir_empty(self.files_dir_path)
 
@@ -39,7 +56,7 @@ class describe_trash_empty:
     def it_should_keep_unknown_files_found_in_infodir(self):
         self.having_file_in_info_dir('not-a-trashinfo')
 
-        self.run_trash_empty()
+        self.user_run_trash_empty()
 
         self.assert_dir_contains(self.info_dir_path, 'not-a-trashinfo')
 
@@ -47,7 +64,7 @@ class describe_trash_empty:
     def but_it_should_remove_orphan_files_from_the_files_dir(self):
         self.having_orphan_file_in_files_dir()
 
-        self.run_trash_empty()
+        self.user_run_trash_empty()
 
         self.assert_dir_empty(self.files_dir_path)
 
@@ -55,19 +72,17 @@ class describe_trash_empty:
     def it_should_purge_also_directories(self):
         os.makedirs("XDG_DATA_HOME/Trash/files/a-dir")
 
-        self.run_trash_empty()
+        self.user_run_trash_empty()
 
-    def setUp(self):
-        require_empty_dir('XDG_DATA_HOME')
-        self.info_dir_path   = 'XDG_DATA_HOME/Trash/info'
-        self.files_dir_path  = 'XDG_DATA_HOME/Trash/files'
-        self.run_trash_empty = TrashEmptyRunner('XDG_DATA_HOME')
     def assert_dir_empty(self, path):
         assert len(os.listdir(path)) == 0
+
     def assert_dir_contains(self, path, filename):
         assert os.path.exists(os.path.join(path, filename))
+
     def having_a_trashinfo_in_trashcan(self, basename_of_trashinfo):
         having_file(os.path.join(self.info_dir_path, basename_of_trashinfo))
+
     def having_three_trashinfo_in_trashcan(self):
         self.having_a_trashinfo_in_trashcan('foo.trashinfo')
         self.having_a_trashinfo_in_trashcan('bar.trashinfo')
@@ -75,14 +90,18 @@ class describe_trash_empty:
         assert_items_equal(['foo.trashinfo',
                             'bar.trashinfo',
                             'baz.trashinfo'], os.listdir(self.info_dir_path))
+
     def having_one_trashed_file(self):
         self.having_a_trashinfo_in_trashcan('foo.trashinfo')
         having_file(self.files_dir_path +'/foo')
         self.files_dir_should_not_be_empty()
+
     def files_dir_should_not_be_empty(self):
         assert len(os.listdir(self.files_dir_path)) != 0
+
     def having_file_in_info_dir(self, filename):
         having_file(os.path.join(self.info_dir_path, filename))
+
     def having_orphan_file_in_files_dir(self):
         complete_path = os.path.join(self.files_dir_path,
                                      'a-file-without-any-associated-trashinfo')
@@ -91,41 +110,54 @@ class describe_trash_empty:
 
 @istest
 class describe_trash_empty_invoked_with_N_days_as_argument:
+    def setUp(self):
+        require_empty_dir('XDG_DATA_HOME')
+        self.xdg_data_home   = 'XDG_DATA_HOME'
+        self.environ = {'XDG_DATA_HOME':'XDG_DATA_HOME'}
+        self.now = MagicMock(side_effect=RuntimeError)
+        self.empty_cmd=EmptyCmd(
+            out = StringIO(),
+            err = StringIO(),
+            environ = self.environ,
+            now = self.now
+        )
+
+    def user_run_trash_empty(self, *args):
+        self.empty_cmd.run('trash-empty', *args)
+
+    def set_clock_at(self, yyyy_mm_dd):
+        self.now.side_effect = lambda:date(yyyy_mm_dd)
+
+        def date(yyyy_mm_dd):
+            from datetime import datetime
+            return datetime.strptime(yyyy_mm_dd, '%Y-%m-%d')
 
     @istest
     def it_should_keep_files_newer_than_N_days(self):
-
         self.having_a_trashed_file('foo', '2000-01-01')
-        self.having_now_is('2000-01-01')
+        self.set_clock_at('2000-01-01')
 
-        self.run_trash_empty('2')
+        self.user_run_trash_empty('2')
 
         self.file_should_have_been_kept_in_trashcan('foo')
 
     @istest
     def it_should_remove_files_older_than_N_days(self):
-
         self.having_a_trashed_file('foo', '1999-01-01')
-        self.having_now_is('2000-01-01')
+        self.set_clock_at('2000-01-01')
 
-        self.run_trash_empty('2')
+        self.user_run_trash_empty('2')
 
         self.file_should_have_been_removed_from_trashcan('foo')
 
     @istest
     def it_should_kept_files_with_invalid_deletion_date(self):
         self.having_a_trashed_file('foo', 'Invalid Date')
-        self.having_now_is('2000-01-01')
+        self.set_clock_at('2000-01-01')
 
-        self.run_trash_empty('2')
+        self.user_run_trash_empty('2')
 
         self.file_should_have_been_kept_in_trashcan('foo')
-
-    def setUp(self):
-        self.xdg_data_home   = 'XDG_DATA_HOME'
-        self.run_trash_empty = TrashEmptyRunner(self.xdg_data_home)
-        self.having_now_is   = self.run_trash_empty.set_now
-        require_empty_dir(self.xdg_data_home)
 
     def having_a_trashed_file(self, name, date):
         contents = "DeletionDate=%sT00:00:00\n" % date
@@ -141,49 +173,35 @@ class describe_trash_empty_invoked_with_N_days_as_argument:
     def file_should_have_been_removed_from_trashcan(self, trashinfo_name):
         assert not os.path.exists(self.trashinfo(trashinfo_name))
 
-class TrashEmptyRunner:
-    def __init__(self, XDG_DATA_HOME):
-        self.XDG_DATA_HOME = XDG_DATA_HOME
-        self.now = now_not_set
-    def __call__(self, *args):
-        EmptyCmd(
-            out = StringIO(),
-            err = StringIO(),
-            environ = { 'XDG_DATA_HOME': self.XDG_DATA_HOME },
-            now = self.now
-        ).run('trash-empty', *args)
-    def set_now(self, yyyy_mm_dd):
-        self.now = lambda: date(yyyy_mm_dd)
-def now_not_set(): raise RuntimeError('now_not_set')
-
 class TestEmptyCmdWithMultipleVolumes:
-    def test_it_removes_trashinfos_from_method_1_dir(self):
-        require_empty_dir('.fake_root')
-        make_dirs('.fake_root/media/external-disk/.Trash/')
-        set_sticky_bit('.fake_root/media/external-disk/.Trash/')
-        having_file('.fake_root/media/external-disk/.Trash/123/info/foo.trashinfo')
-        empty=EmptyCmd(
+    def setUp(self):
+        require_empty_dir('topdir')
+        self.empty=EmptyCmd(
                 out          = StringIO(),
                 err          = StringIO(),
                 environ      = {},
                 getuid       = lambda: 123,
-                list_volumes = lambda: ['.fake_root/media/external-disk'],
-                )
-        empty.run('trash-empty')
-        assert not os.path.exists('.fake_root/media/external-disk/.Trash/123/info/foo.trashinfo')
-    def test_it_removes_trashinfos_from_method_2_dir(self):
-        require_empty_dir('.fake_root')
-        having_file('.fake_root/media/external-disk/.Trash-123/info/foo.trashinfo')
-        empty=EmptyCmd(
-                out          = StringIO(),
-                err          = StringIO(),
-                environ      = {},
-                getuid       = lambda: 123,
-                list_volumes = lambda: ['.fake_root/media/external-disk'],
-                )
-        empty.run('trash-empty')
-        assert not os.path.exists('.fake_root/media/external-disk/.Trash-123/info/foo.trashinfo')
+                list_volumes = lambda: ['topdir'],)
 
+    def test_it_removes_trashinfos_from_method_1_dir(self):
+        self.make_proper_top_trash_dir('topdir/.Trash')
+        having_file('topdir/.Trash/123/info/foo.trashinfo')
+
+        self.empty.run('trash-empty')
+
+        assert not os.path.exists('topdir/.Trash/123/info/foo.trashinfo')
+    def test_it_removes_trashinfos_from_method_2_dir(self):
+        having_file('topdir/.Trash-123/info/foo.trashinfo')
+
+        self.empty.run('trash-empty')
+
+        assert not os.path.exists('topdir/.Trash-123/info/foo.trashinfo')
+
+    def make_proper_top_trash_dir(self, path):
+        make_dirs(path)
+        set_sticky_bit(path)
+
+from textwrap import dedent
 class TestTrashEmpty_on_help:
     def test_help_output(self):
         err, out = StringIO(), StringIO()
@@ -191,17 +209,17 @@ class TestTrashEmpty_on_help:
                        out = out,
                        environ = {},)
         cmd.run('trash-empty', '--help')
-        assert_equals(out.getvalue(), """\
-Usage: trash-empty [days]
+        assert_equals(out.getvalue(), dedent("""\
+            Usage: trash-empty [days]
 
-Purge trashed files.
+            Purge trashed files.
 
-Options:
-  --version   show program's version number and exit
-  -h, --help  show this help message and exit
+            Options:
+              --version   show program's version number and exit
+              -h, --help  show this help message and exit
 
-Report bugs to http://code.google.com/p/trash-cli/issues
-""")
+            Report bugs to http://code.google.com/p/trash-cli/issues
+            """))
 
 class TestTrashEmpty_on_version():
     def test_it_print_version(self):
@@ -211,11 +229,7 @@ class TestTrashEmpty_on_version():
                        environ = {},
                        version = '1.2.3')
         cmd.run('trash-empty', '--version')
-        assert_equals(out.getvalue(), """\
-trash-empty 1.2.3
-""")
-
-def date(yyyy_mm_dd):
-    from datetime import datetime
-    return datetime.strptime(yyyy_mm_dd, '%Y-%m-%d')
+        assert_equals(out.getvalue(), dedent("""\
+            trash-empty 1.2.3
+            """))
 

@@ -1,6 +1,6 @@
 # Copyright (C) 2008-2011 Andrea Francia Trivolzio(PV) Italy
 
-from trashcli.trash import has_sticky_bit, mkdirs, is_sticky_dir
+from trashcli.trash import has_sticky_bit, mkdirs, FileSystemReader
 
 from .files import require_empty_dir, having_file, set_sticky_bit
 import os
@@ -29,6 +29,7 @@ class TestWithInSandbox:
     def setUp(self):
         require_empty_dir('sandbox')
 
+is_sticky_dir=FileSystemReader().is_sticky_dir
 class Test_is_sticky_dir:
 
     def test_dir_non_sticky(self):
