@@ -1,5 +1,15 @@
-Features:
- x trash-list should check that the $topdir/.Trash is a sticky dir
-    x trash-list should report when $topdir/.Trash is not sticky
- x trash-list should check that the $topdir/.Trash is not a symbolic link
-    x and should warn when it is
+trash-list
+ - it checks that the $topdir/.Trash is a sticky dir
+    - it reports when $topdir/.Trash is not sticky
+ - it checks that the $topdir/.Trash is not a symbolic link
+    - and it warns the user otherwise
+ - it lists contents from both Home TrashDir and Volume TrashDirs (both 
+   methods)
+ - it warns when an empty .trashinfo is found
+ - it warns when an unreadable .trashinfo is found
+ - is tolerant with .trashinfo that does not contains a DeletionDate
+ - is tolerant with .trashinfo that contains an invalid DeletionDate
+ - it warns when a .trashinfo does not contains the Path entry
+ - print version information on --version
+trash-empty:
+ - when run with `days` argument it should skip .trashinfo with invalid date
