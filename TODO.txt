@@ -12,11 +12,13 @@ Features backlog:
  - trash-restore <path>                           # restore the newest
  - trash-restore <path> <dest>                    # restore to a certain destination
  - trash-restore --trashed-on="Apr 15, 08" <path>
+ - trash-restore --version
  - trash-empty --from=/.Trash
  - trash-rm '*.o'
  - trash-empty should empty even the mac trash directory
 
-Design to be fixed:
+To be fixed:
+ - invalidate Google Code download and put a redirect to PyPi
  - get rid of logging package
  - get rid of the IOError exception raising on file is not in the same volume
  - consolidate TrashDirectory abstract and the AvailableTrashDir abstraction
@@ -28,11 +30,7 @@ Design to be fixed:
  - get rid of TrashInfo abstraction
  - get rid of TimeUtils.parse_iso8601 if not used
  - rename remove_file in to remove_existing_file
- - remove the shutil.rmtree branch from remove_file  (line 518)
  - refactor TrashPutCmd for simplicity
- - remove duplication between trash-put command line parser and Parser used by
-   trash-list and trash-empty
- - remove AvailableTrashDir.for_each_infodir_and_volume if not used
 Test to be ported to nosetests:
  - trash-put:
     - trash in home trashcan

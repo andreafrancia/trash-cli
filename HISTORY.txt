@@ -1,3 +1,14 @@
+0.12.4:
+ - Reintroduced `trash` command as alias to `trash-put`
+ - Now trash-list checks for $topdir/.Trash having sticky bit and not being a
+   symlink and warns when these requirements are not met.
+ - Now trash-list handles empty, unreadable or malformed .trashinfo
+ - Now `trash-emtpy <days>` skips .trsahinfos with invalid dates
+ - Removed Unipath dependency
+ - Switched from googlecode to github
+ - Removed tests written in Bash
+ - Complete rewrite of trash-list and trash-empty
+
 0.11.3:
  - Now works also on Mac OS X
  - Fixed #55: restore-trash sets all-write permissions for the destination directory

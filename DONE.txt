@@ -13,3 +13,5 @@ trash-list
  - print version information on --version
 trash-empty:
  - when run with `days` argument it should skip .trashinfo with invalid date
+ - print help on --help
+ - print version on --version
