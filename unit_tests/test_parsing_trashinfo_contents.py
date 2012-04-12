@@ -4,34 +4,33 @@ from nose.tools import assert_equals, assert_raises
 from nose.tools import istest
 
 from datetime import datetime
-import fudge
+from mock import MagicMock
 
 from trashcli.trash import ParseTrashInfo
+
 @istest
-class describe_ParseTrashInfo:
+class describe_ParseTrashInfo2:
+    @istest
+    def it_should_parse_date(self):
+        out = MagicMock()
+        parse = ParseTrashInfo(on_deletion_date = out)
+
+        parse('[Trash Info]\n'
+              'Path=foo\n'
+              'DeletionDate=1970-01-01T00:00:00\n')
+        
+        out.assert_called_with(datetime(1970,1,1,0,0,0))
 
     @istest
-    @fudge.test
-    def it_should_parse_the_date(self):
-        result = (fudge.Fake().expects_call()
-                    .with_args(datetime(1970,1,1,0,0,0)))
-
-        self.parse = ParseTrashInfo(on_deletion_date = result)
+    def it_should_parse_path(self):
+        out = MagicMock()
+        self.parse = ParseTrashInfo(on_path = out)
 
         self.parse( '[Trash Info]\n'
                     'Path=foo\n'
                     'DeletionDate=1970-01-01T00:00:00\n')
 
-    @istest
-    @fudge.test
-    def it_should_parse_the_path(self):
-        result = (fudge.Fake().expects_call().with_args('foo'))
-
-        self.parse = ParseTrashInfo(on_path = result)
-
-        self.parse( '[Trash Info]\n'
-                    'Path=foo\n'
-                    'DeletionDate=1970-01-01T00:00:00\n')
+        out.assert_called_with('foo')
 
 from trashcli.trash import parse_deletion_date
 from trashcli.trash import parse_path

@@ -1,11 +1,15 @@
 from trashcli.trash import Parser
-from dingus import Dingus
+from mock import MagicMock
+from nose.tools import istest
 
-def test_parser():
-    on_raw = Dingus()
-    parser = Parser()
-    parser.add_option('raw', on_raw)
+@istest
+class describe_Parser():
+    @istest
+    def it_calls_the_actions_passing_the_program_name(self):
+        on_raw = MagicMock()
+        parser = Parser()
+        parser.add_option('raw', on_raw)
 
-    parser(['trash-list', '--raw'])
+        parser(['trash-list', '--raw'])
 
-    assert on_raw.calls('()')
+        on_raw.assert_called_with('trash-list')
