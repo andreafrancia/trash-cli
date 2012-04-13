@@ -5,9 +5,8 @@ Register the new version of the software on pypi
 
   python setup register
 
-Then create a tarball and upload it to google and pypi:
+Then create a tarball and upload it to pypi:
   
-  python setup.py sdist upload google_upload --src
-
+  python setup.py sdist upload
 
 -EOF

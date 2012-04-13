@@ -2,34 +2,37 @@
 trash-cli - Command Line Interface to FreeDesktop.org Trash.
 ============================================================
 
-trash-cli provides the following commands:
+trash-cli trashes files recording the original path, deletion date, and 
+permissions. It uses the same trashcan of KDE, GNOME, and XFCE, but you can 
+call it from the command line (and scripts).
+
+You can use these commands:
 
   * trash-put           trashes files and directories. 
   * trash-empty         empty the trashcan(s).
   * trash-list          list trashed file.
   * restore-trash       restore a trashed file.
 
-For each file the name, original path, deletion date, and permissions
-are recorded. The trash command allow trash multiple files with the 
-same name. trash-cli uses the same trashcan of KDE, GNOME and XFCE.
-
-Installation
-============
-Requirements:
-
- - python == 2.7 (2.6 may also work)
- - python-setuptools (e.g. apt-get install python-setuptools)
-
-Installation:
+How to get it (the easy way)
+============================
+ - Get python 2.7 (2.6 may also work)
+ - Get setuptools (e.g. apt-get install python-setuptools)
+ - Install with this command::
  
- sudo easy_install trash-cli
+     sudo easy_install trash-cli
 
 Installation from sources
 =========================
 
-Install with::
+::
 
-  $ sudo python setup.py install
+    # grab the latest sources
+    wget https://github.com/andreafrancia/trash-cli/tarball/master 
+    
+    # unpack and install
+    tar xfz andreafrancia-trash-cli-xxxxxxxx.tar.gz
+    cd andreafrancia-trash-cli-xxxxxxxx
+    sudo python setup.py install
 
 Usage
 =====
@@ -87,31 +90,30 @@ Example::
     $ trash-list
     2008-02-19 20:11:34 /home/einar/today
 
-Packages from Debian/Ubuntu
-===========================
+Using it as 'rm' alias
+======================
 
-Don't use apt-get, this would install a very old version of trash-cli that 
-contain a serious bug that could destroy your data.  Please, if you are 
-interested, ask to Debian/Ubuntu to upgrade their version of trash-cli.
+`trash-put` accept all the options that GNU `rm` does, if you prefer (I don't)
+you can set up this alias in your .bashrc::
 
-Information
-===========
+    alias rm='trash-put'
 
-       Website: http://code.google.com/p/trash-cli/
- Download page: http://code.google.com/p/trash-cli/wiki/Download
-Report bugs to: http://code.google.com/p/trash-cli/issues/list
+At the present the semantic of trash-put is sligthly different from the one of
+`rm`, for example, while `rm` requires `-R` for deleting directories 
+`trash-put` does not. This may change in future.
 
-Features list
-=============
+Keep in mind that Bash aliases are used only in interactive shells, so using 
+this alias should not interfere with scripts that expects to use `rm`.
 
- - Command line interface compatible with on of the rm command. You can alias 
-   rm with trash.
- - Remembers original path, deletion time and file permissions of each trashed 
-   file.
- - Compatible with the KDE trash.
- - Implements the FreeDesktop.org Trash Specification
- - Works with volume other than the home volume (e.g. USB pen or another 
-   partition).
+Bugs and feedback
+=================
+
+If you discover a bug please report it to:
+
+    https://github.com/andreafrancia/trash-cli/issues
+
+You can reach me via email at me@andreafrancia.it .  For twitter use 
+@andreafrancia or #trashcli
 
 Development
 ===========
@@ -120,7 +122,7 @@ Environment setup::
 
     virtualenv env --no-site-packages
     source env/bin/activate
-    pip install -r requirements.txt -r requirements-dev.txt
+    pip install -r requirements-dev.txt
 
 Running tests::
 

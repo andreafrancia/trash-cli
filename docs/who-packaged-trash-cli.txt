@@ -1,6 +1,5 @@
-#summary Which distribution include the trash-cli package and which not
-
-= Status of trash-cli on Unix/Linux systems =
+Which are the distributions packaged trash-cli?
+===============================================
 
  - Fedora: not included (2009-01-04)
  - Ubuntu: (included since 2008-07-16)
