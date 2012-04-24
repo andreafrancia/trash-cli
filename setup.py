@@ -2,7 +2,6 @@
 
 import ez_setup; ez_setup.use_setuptools()
 from setuptools import setup
-from setuptools import find_packages
 
 import sys
 sys.path.append('.')
@@ -17,7 +16,7 @@ setup(
     description = 'Command line interface to FreeDesktop.org Trash.',
     license = 'GPL v2',
     long_description = file("README.txt").read(),
-    packages = find_packages(exclude=["tests", "tests.*"]),
+    packages = ['trashcli', 'integration_tests', 'unit_tests'],
     test_suite = "nose.collector",
     entry_points = {
         'console_scripts' : [
@@ -30,7 +29,7 @@ setup(
     },
     data_files = [('share/man/man1', ['man/man1/trash-empty.1',
                                       'man/man1/trash-list.1',
-                                      'man/man1/trash-restore.1',
+                                      'man/man1/restore-trash.1',
                                       'man/man1/trash-put.1'])],
     tests_require = file("requirements-dev.txt").readlines(),
 )
