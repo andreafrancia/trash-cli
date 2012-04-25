@@ -3,20 +3,20 @@ trash-cli - Command Line Interface to FreeDesktop.org Trash.
 ============================================================
 
 trash-cli trashes files recording the original path, deletion date, and 
-permissions. It uses the same trashcan of KDE, GNOME, and XFCE, but you can 
-call it from the command line (and scripts).
+permissions. It uses the same trashcan used by KDE, GNOME, and XFCE, but you 
+can invoke it from the command line (and scripts).
 
-You can use these commands:
+It provides these commands:
 
-  * trash-put           trashes files and directories. 
-  * trash-empty         empty the trashcan(s).
-  * trash-list          list trashed file.
-  * restore-trash       restore a trashed file.
+ * trash-put           trashes files and directories. 
+ * trash-empty         empty the trashcan(s).
+ * trash-list          list trashed file.
+ * restore-trash       restore a trashed file.
 
-How to get it (the easy way)
-============================
- - Get python 2.7 (2.6 may also work)
- - Get setuptools (e.g. apt-get install python-setuptools)
+Installation (the easy way)
+===========================
+ - You need python 2.7 (2.6 may also work)
+ - You need setuptools (e.g. `apt-get install python-setuptools` on Debian)
  - Install with this command::
  
      sudo easy_install trash-cli
