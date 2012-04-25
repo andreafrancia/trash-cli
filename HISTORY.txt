@@ -1,3 +1,9 @@
+0.12.4.24:
+ - Fixes a packaging problem of the previous release which prevented the 
+   installation via easy_install and/or pip (see 
+   https://github.com/andreafrancia/trash-cli/issues/5)
+ - Fixes the name of the man page for restore-trash.
+
 0.12.4:
  - Reintroduced `trash` command as alias to `trash-put`
  - Now trash-list checks for $topdir/.Trash having sticky bit and not being a
