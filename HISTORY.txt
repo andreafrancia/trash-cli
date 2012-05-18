@@ -9,7 +9,7 @@
  - Now trash-list checks for $topdir/.Trash having sticky bit and not being a
    symlink and warns when these requirements are not met.
  - Now trash-list handles empty, unreadable or malformed .trashinfo
- - Now `trash-emtpy <days>` skips .trsahinfos with invalid dates
+ - Now `trash-emtpy <days>` skips .trashinfos with invalid DeletionDates
  - Removed Unipath dependency
  - Switched from googlecode to github
  - Removed tests written in Bash
