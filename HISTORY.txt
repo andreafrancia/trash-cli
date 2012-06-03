@@ -1,5 +1,5 @@
 Development:
- - add Donate button
+ - add Donate button on README
 
 0.12.4.24:
  - Fixes a packaging problem of the previous release which prevented the 

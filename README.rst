@@ -1,17 +1,7 @@
 trash-cli - Command Line Interface to FreeDesktop.org Trash.
 ============================================================
 
-.. <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=93L6PYT4WBN5A">
-      <img alt="Donate!" src="https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif" />
-   </a>
-   <!--
-
 |Donate|_
-
-.. |Donate| image:: https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif
-.. _Donate: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=93L6PYT4WBN5A
-
-.. -->
 
 trash-cli trashes files recording the original path, deletion date, and 
 permissions. It uses the same trashcan used by KDE, GNOME, and XFCE, but you 
@@ -152,4 +142,7 @@ Profiling unit tests::
     nosetests --with-profile --profile-stats-file stats.pf --profile-restrict=unit_tests unit_tests
     gprof2dot -w  -f pstats stats.pf | dot -Tsvg >| stats.svg
     open stats.svg
+
+.. |Donate| image:: https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif
+.. _Donate: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=93L6PYT4WBN5A
 
