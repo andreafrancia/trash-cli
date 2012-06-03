@@ -1,3 +1,6 @@
+Development:
+ - add Donate button
+
 0.12.4.24:
  - Fixes a packaging problem of the previous release which prevented the 
    installation via easy_install and/or pip (see 
