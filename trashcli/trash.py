@@ -1,6 +1,7 @@
 # Copyright (C) 2007-2011 Andrea Francia Trivolzio(PV) Italy
-
 from __future__ import absolute_import
+
+version='0.12.6'
 
 import os
 import logging
@@ -445,7 +446,7 @@ class TrashedFile:
     def restore(self, dest=None) :
         if dest is not None:
             raise NotImplementedError("not yet supported")
-        if os.path.exists(self.path): 
+        if os.path.exists(self.path):
             raise IOError('Refusing to overwrite existing file "%s".' % os.path.basename(self.path))
         else:
             parent = os.path.dirname(self.path)
@@ -520,7 +521,7 @@ def remove_file(path):
 def getcwd_as_realpath(): return os.path.realpath(os.curdir)
 
 class RestoreCmd:
-    def __init__(self, stdout, stderr, environ, exit, input, 
+    def __init__(self, stdout, stderr, environ, exit, input,
                  curdir = getcwd_as_realpath):
         self.out      = stdout
         self.err      = stderr
@@ -551,8 +552,8 @@ class RestoreCmd:
                     self.exit(1)
     def for_all_trashed_file_in_dir(self, action, dir):
         def is_trashed_from_curdir(trashedfile):
-            return trashedfile.path.startswith(dir + os.path.sep) 
-        for trashedfile in filter(is_trashed_from_curdir, 
+            return trashedfile.path.startswith(dir + os.path.sep)
+        for trashedfile in filter(is_trashed_from_curdir,
                                   self.trashcan.trashed_files()) :
             action(trashedfile)
     def report_no_files_found(self):
@@ -567,8 +568,6 @@ class NoWrapFormatter(IndentedHelpFormatter) :
     def _format_text(self, text) :
         "[Does not] format a text, return the text as it is."
         return text
-
-from . import version
 
 class TrashPutCmd:
     def __init__(self, stdout, stderr, environ = os.environ):

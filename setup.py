@@ -5,11 +5,11 @@ from setuptools import setup
 
 import sys
 sys.path.append('.')
-import trashcli
+from trashcli import trash
 
 setup(
     name = 'trash-cli',
-    version = trashcli.version,
+    version = trash.version,
     author = 'Andrea Francia',
     author_email = 'me@andreafrancia.it',
     url = 'https://github.com/andreafrancia/trash-cli',
