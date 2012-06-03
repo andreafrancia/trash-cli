@@ -34,7 +34,7 @@ Search for a file in the trashcan::
     2007-08-30 12:36:00 /home/andrea/foo
     2007-08-30 12:39:41 /home/andrea/foo
 
-Restore a trashed file
+Restore a trashed file::
     
     $ restore-trash
     0 2007-08-30 12:36:00 /home/andrea/foo
