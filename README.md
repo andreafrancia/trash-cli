@@ -1,41 +1,31 @@
-============================================================
 trash-cli - Command Line Interface to FreeDesktop.org Trash.
 ============================================================
+
+.. <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=93L6PYT4WBN5A">
+      <img alt="Donate!" src="https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif" />
+   </a>
+   <!--
+
+|Donate|_
+
+.. |Donate| image:: https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif
+.. _Donate: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=93L6PYT4WBN5A
+
+.. -->
 
 trash-cli trashes files recording the original path, deletion date, and 
 permissions. It uses the same trashcan used by KDE, GNOME, and XFCE, but you 
 can invoke it from the command line (and scripts).
 
-It provides these commands:
+It provides these commands::
 
- * trash-put           trashes files and directories. 
- * trash-empty         empty the trashcan(s).
- * trash-list          list trashed file.
- * restore-trash       restore a trashed file.
-
-Installation (the easy way)
-===========================
- - You need python 2.7 (2.6 may also work)
- - You need setuptools (e.g. `apt-get install python-setuptools` on Debian)
- - Install with this command::
- 
-     sudo easy_install trash-cli
-
-Installation from sources
-=========================
-
-::
-
-    # grab the latest sources
-    wget https://github.com/andreafrancia/trash-cli/tarball/master 
-    
-    # unpack and install
-    tar xfz andreafrancia-trash-cli-xxxxxxxx.tar.gz
-    cd andreafrancia-trash-cli-xxxxxxxx
-    sudo python setup.py install
+    trash-put           trashes files and directories. 
+    trash-empty         empty the trashcan(s).
+    trash-list          list trashed file.
+    restore-trash       restore a trashed file.
 
 Usage
-=====
+-----
 
 Trash a file::
 
@@ -91,7 +81,7 @@ Example::
     2008-02-19 20:11:34 /home/einar/today
 
 Using it as 'rm' alias
-======================
+----------------------
 
 `trash-put` accept all the options that GNU `rm` does, if you prefer (I don't)
 you can set up this alias in your .bashrc::
@@ -105,8 +95,34 @@ At the present the semantic of trash-put is sligthly different from the one of
 Keep in mind that Bash aliases are used only in interactive shells, so using 
 this alias should not interfere with scripts that expects to use `rm`.
 
+Installation (the easy way)
+---------------------------
+
+Requirements:
+
+ - Python 2.7 
+ - setuptools (use `apt-get install python-setuptools` on 
+   Debian)
+
+Installation command::
+ 
+    easy_install trash-cli
+
+Installation from sources
+-------------------------
+
+::
+
+    # grab the latest sources
+    wget https://github.com/andreafrancia/trash-cli/tarball/master 
+    
+    # unpack and install
+    tar xfz andreafrancia-trash-cli-xxxxxxxx.tar.gz
+    cd andreafrancia-trash-cli-xxxxxxxx
+    sudo python setup.py install
+
 Bugs and feedback
-=================
+-----------------
 
 If you discover a bug please report it to:
 
@@ -116,7 +132,7 @@ You can reach me via email at me@andreafrancia.it .  For twitter use
 @andreafrancia or #trashcli
 
 Development
-===========
+-----------
 
 Environment setup::
 

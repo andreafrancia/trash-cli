@@ -15,7 +15,7 @@ setup(
     url = 'https://github.com/andreafrancia/trash-cli',
     description = 'Command line interface to FreeDesktop.org Trash.',
     license = 'GPL v2',
-    long_description = file("README.txt").read(),
+    long_description = file("README.md").read(),
     packages = ['trashcli', 'integration_tests', 'unit_tests'],
     test_suite = "nose.collector",
     entry_points = {
