@@ -876,20 +876,31 @@ class Parser:
         self.short_options = ''
         self.long_options = []
         self.actions = dict()
+        self._on_invalid_option = do_nothing
+
     def __call__(self, argv):
         program_name = argv[0]
-        from getopt import getopt
-        options, arguments = getopt(argv[1:],
-                                    self.short_options,
-                                    self.long_options)
+        from getopt import getopt, GetoptError
 
-        for option, value in options:
-            if option in self.actions:
-                self.actions[option](program_name)
-                return
-        for argument in arguments:
-            self.argument_action(argument)
-        self.default_action()
+        try:
+            options, arguments = getopt(argv[1:],
+                                        self.short_options,
+                                        self.long_options)
+        except GetoptError, e:
+            invalid_option = e.opt
+            self._on_invalid_option(program_name, invalid_option)
+        else:
+            for option, value in options:
+                if option in self.actions:
+                    self.actions[option](program_name)
+                    return
+            for argument in arguments:
+                self.argument_action(argument)
+            self.default_action()
+
+    def on_invalid_option(self, action):
+        self._on_invalid_option = action
+
     def on_help(self, action):
         self.add_option('help', action, 'h')
 
@@ -910,6 +921,10 @@ class Parser:
         self.argument_action = argument_action
     def as_default(self, default_action):
         self.default_action = default_action
+
+# Error codes (from os on *nix, hard coded for Windows):
+EX_USAGE = getattr(os, 'EX_USAGE', 64)
+EX_OK    = getattr(os, 'EX_OK'   ,  0)
 
 class EmptyCmd():
     def __init__(self, out, err, environ,
@@ -940,12 +955,24 @@ class EmptyCmd():
 
     def run(self, *argv):
         self._maybe_delete = self._delete_both
+        self.exit_code     = EX_OK
+
         parse = Parser()
         parse.on_help(PrintHelp(self.description, self.println))
         parse.on_version(PrintVersion(self.println, self.version))
         parse.on_argument(self.set_deletion_date_criteria)
         parse.as_default(self._empty_all_trashdirs)
+        parse.on_invalid_option(self.report_invalid_option_usage)
+
         parse(argv)
+
+        return self.exit_code
+
+    def report_invalid_option_usage(self, program_name, option):
+        self.err.write(
+            "{program_name}: invalid option -- '{option}'\n".format(**locals()))
+        self.exit_code |= EX_USAGE
+
     def set_deletion_date_criteria(self, arg):
         self.max_age_in_days = int(arg)
         self._maybe_delete = self._delete_according_date

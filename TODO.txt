@@ -31,6 +31,7 @@ To be fixed:
  - get rid of TimeUtils.parse_iso8601 if not used
  - rename remove_file in to remove_existing_file
  - refactor TrashPutCmd for simplicity
+
 Test to be ported to nosetests:
  - trash-put:
     - trash in home trashcan
@@ -43,4 +44,11 @@ Test to be ported to nosetests:
     - when $topdir/.Trash is not sticky
  - should refuse to create the $topdir/.Trash/$uid directory if the 
    $topdir/.Trash is not sticky
+
+Bug reported on external trackers:
+ x trash-empty crashed with GetoptError in short_has_arg(): option -2 not 
+   recognized, 
+   url: https://bugs.launchpad.net/ubuntu/+source/trash-cli/+bug/1015877
+   status: solved on Thu Jun 21 12:50:03 CEST 2012
+ 
 

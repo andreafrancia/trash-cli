@@ -1,6 +1,8 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from nose.tools import assert_equals, assert_items_equal, istest
+from nose.tools import (assert_equals,
+                        assert_items_equal,
+                        istest)
 from trashcli.trash import EmptyCmd
 
 from StringIO import StringIO
@@ -232,4 +234,37 @@ class TestTrashEmpty_on_version():
         assert_equals(out.getvalue(), dedent("""\
             trash-empty 1.2.3
             """))
+
+class describe_trash_empty_command_line__on_invalid_options():
+    def setUp(self):
+        self.err, self.out = StringIO(), StringIO()
+        self.cmd = EmptyCmd(
+                       err = self.err,
+                       out = self.out,
+                       environ = {})
+
+    def it_should_fail(self):
+
+        self.exit_code = self.cmd.run('trash-empty', '-2')
+
+        exit_code_for_command_line_usage = 64
+        assert_equals(exit_code_for_command_line_usage, self.exit_code)
+
+    def it_should_complain_to_the_standard_error(self):
+
+        self.exit_code = self.cmd.run('trash-empty', '-2')
+
+        assert_equals(self.err.getvalue(), dedent("""\
+                trash-empty: invalid option -- '2'
+                """))
+
+    def test_with_a_different_option(self):
+
+        self.cmd.run('trash-empty', '-3')
+
+        assert_equals(self.err.getvalue(), dedent("""\
+                trash-empty: invalid option -- '3'
+                """))
+
+
 

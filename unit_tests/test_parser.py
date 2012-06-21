@@ -13,3 +13,13 @@ class describe_Parser():
         parser(['trash-list', '--raw'])
 
         on_raw.assert_called_with('trash-list')
+
+    @istest
+    def how_getopt_works_with_an_invalid_option(self):
+        invalid_option_callback = MagicMock()
+        parser = Parser()
+        parser.on_invalid_option(invalid_option_callback)
+
+        parser(['command-name', '-x'])
+
+        invalid_option_callback.assert_called_with('command-name', 'x')

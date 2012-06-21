@@ -22,7 +22,7 @@ def restore():
 
 def empty():
     from trashcli.trash import EmptyCmd
-    EmptyCmd(
+    return EmptyCmd(
         out=sys.stdout,
         err=sys.stderr,
         environ=os.environ,
