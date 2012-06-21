@@ -9,4 +9,8 @@ Then create a tarball and upload it to pypi:
   
   python setup.py sdist upload
 
+Now you can tag the repo status:
+
+  git tag $(python setup.py --version)
+
 -EOF
