@@ -1,12 +1,39 @@
 To build a release
 ------------------
-
-Register the new version of the software on pypi
-
-  python setup register
-
-Then create a tarball and upload it to pypi:
+Update the version number:
   
+  vim trashcli/trash.py
+
+Run all tests:
+
+  nosetests
+
+
+Test the installation from tarball:
+  
+    python setup.py sdist
+    tarball=trash-cli-0.12.7.tar.gz
+
+    scp dist/$tarball root@192.168.56.101:
+
+    ssh root@192.168.56.101 "
+        tar xvfz $tarball
+        cd ${tarball%%.tar.gz}
+        python setup.py install
+        trash-put --help
+    "
+
+Test the installation using easy_install:
+
+    ssh root@192.168.56.101 "
+        apt-get install python-setuptools
+        easy_install "$tarball"
+        trash-put --help
+    "
+
+Register and upload:
+
+  python setup.py register
   python setup.py sdist upload
 
 Now you can tag the repo status:
