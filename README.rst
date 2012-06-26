@@ -52,7 +52,7 @@ Remove all files from the trashcan::
 
 Remove only the files that have been deleted before <days> ago::
     
-    $ trash-empy <days>
+    $ trash-empty <days>
 
 Example::
 
