@@ -1,6 +1,7 @@
 List of web pages that cite trash-cli, with the date when I discovered the 
 page, sorted by discovery date (newest before):
 
+ - 2012-07-18 http://crunchbanglinux.org/forums/topic/20818/trashbin-cli/
  - 2012-07-02 http://www.hecticgeek.com/2012/06/access-trash-command-line-ubuntu-linux-trash-cli/
  - 2009-07-24 http://www.emacswiki.org/emacs/SystemTrash
  - 2009-03-29 2008-12-27 http://blog.goo.ne.jp/xxxfishbonexxx/e/45508969110d67f141226b68eab205ce japanese? blog post about installing? trash-cli
