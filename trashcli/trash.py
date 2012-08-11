@@ -11,11 +11,14 @@ logger.setLevel(logging.WARNING)
 logger.addHandler(logging.StreamHandler())
 
 class TrashDirectory:
-    def __init__(self, path, volume) : # TODO: contents_of should be injected
+    def __init__(self, path, volume):
         self.path   = os.path.normpath(path)
         self.volume = volume
 
     def __str__(self) :
+        return self.name()
+
+    def name(self):
         return str(self.path)
 
     def store_absolute_paths(self):
@@ -194,12 +197,11 @@ class TrashDirectory:
 class HomeTrashDirectory(TrashDirectory):
     def __init__(self, path) :
         TrashDirectory.__init__(self, path, volume_of(path))
-        self.store_absolute_paths()
 
-    def __str__(self):
+    def name(self):
         import re
         import posixpath
-        result=TrashDirectory.__str__(self)
+        result=self.path
         try:
             home_dir=os.environ['HOME']
             home_dir = posixpath.normpath(home_dir)
@@ -212,7 +214,6 @@ class HomeTrashDirectory(TrashDirectory):
 class VolumeTrashDirectory(TrashDirectory) :
     def __init__(self, path, volume) :
         TrashDirectory.__init__(self,path, volume)
-        self.store_relative_paths()
 
 class PathForTrashInfo:
     def __init__(self):
@@ -260,9 +261,9 @@ class TopDirIsSymLink(IOError):
     """
     pass
 
-class Method1VolumeTrashDirectory(VolumeTrashDirectory):
+class Method1VolumeTrashDirectory(TrashDirectory):
     def __init__(self, path, volume) :
-        VolumeTrashDirectory.__init__(self,path,volume)
+        TrashDirectory.__init__(self,path,volume)
 
     def check(self):
         if not self.parent_is_dir():
@@ -342,7 +343,7 @@ class GlobalTrashCan:
                     trashed_file = trash_dir.trash(file)
                     self.reporter.file_has_been_trashed_in_as(
                           file,
-                          trashed_file.trash_directory,
+                          trashed_file.trash_directory.name,
                           trashed_file.original_file)
                     return
 
@@ -377,6 +378,7 @@ class GlobalTrashCan:
         yield self._volume_trash_dir2(volume)
     def _home_trash_dir(self) :
         trash_dir = HomeTrashDirectory(self._home_trash_dir_path())
+        trash_dir.store_absolute_paths()
         return trash_dir
     def _volume_trash_dir1(self,volume):
         """
@@ -385,6 +387,7 @@ class GlobalTrashCan:
         uid = self.getuid()
         trash_directory_path = os.path.join(volume, '.Trash', str(uid))
         trash_dir = Method1VolumeTrashDirectory(trash_directory_path,volume)
+        trash_dir.store_relative_paths()
         return trash_dir
     def _volume_trash_dir2(self, volume) :
         """
@@ -393,7 +396,8 @@ class GlobalTrashCan:
         uid = self.getuid()
         dirname=".Trash-%s" % str(uid)
         trash_directory_path = os.path.join(volume, dirname)
-        trash_dir = VolumeTrashDirectory(trash_directory_path,volume)
+        trash_dir = TrashDirectory(trash_directory_path,volume)
+        trash_dir.store_relative_paths()
         return trash_dir
     def _home_trash_dir_path(self):
         result = []
