@@ -5,8 +5,37 @@ from StringIO import StringIO
 from trashcli.trash import TrashPutCmd
 from integration_tests.assert_equals_with_unidiff import assert_equals_with_unidiff
 
+class TrashPutTest:
+    def run(self, *arg):
+        self.stderr = StringIO()
+        self.stdout = StringIO()
+        args = ['trash-put'] + list(arg)
+        cmd = TrashPutCmd(self.stdout, self.stderr)
+        self._collect_exit_code(lambda:cmd.run(args))
+
+    def _collect_exit_code(self, main_function):
+        self.actual_exit_code = 0
+        try:
+            result=main_function()
+            if result is not None:
+                self.actual_exit_code=result
+        except SystemExit, e:
+            self.actual_exit_code = e.code
+
+    def stderr_should_be(self, expected_err):
+        assert_equals_with_unidiff(expected_err, self._actual_stderr())
+
+    def stdout_should_be(self, expected_out):
+        assert_equals_with_unidiff(expected_out, self._actual_stdout())
+
+    def _actual_stderr(self):
+        return self.stderr.getvalue()
+
+    def _actual_stdout(self):
+        return self.stdout.getvalue()
+
 @istest
-class describe_TrashPutCmd:
+class describe_TrashPutCmd(TrashPutTest):
 
     @istest
     def on_help_option_print_help(self):
@@ -54,31 +83,4 @@ Report bugs to http://code.google.com/p/trash-cli/issues
             'trash-put: error: Please specify the files to trash.\n')
         self.stdout_should_be('')
 
-    def run(self, *arg):
-        self.stderr=StringIO()
-        self.stdout=StringIO()
-        args=['trash-put'] + list(arg)
-        cmd=TrashPutCmd(self.stdout, self.stderr)
-        self.detect_and_save_exit_code(lambda:cmd.run(args))
-
-    def detect_and_save_exit_code(self, main_function):
-        self.actual_exit_code=0
-        try:
-            result=main_function()
-            if result is not None:
-                self.actual_exit_code=result
-        except SystemExit, e:
-            self.actual_exit_code=e.code
-
-    def stderr_should_be(self, expected_err):
-        assert_equals_with_unidiff(expected_err, self.actual_stderr())
-
-    def stdout_should_be(self, expected_out):
-        assert_equals_with_unidiff(expected_out, self.actual_stdout())
-
-    def actual_stderr(self):
-        return self.stderr.getvalue()
-
-    def actual_stdout(self):
-        return self.stdout.getvalue()
 
