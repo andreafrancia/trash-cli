@@ -1,0 +1,6 @@
+Bug reported on external trackers:
+ x trash-empty crashed with GetoptError in short_has_arg(): option -2 not 
+   recognized, 
+   url: https://bugs.launchpad.net/ubuntu/+source/trash-cli/+bug/1015877
+   status: solved on Thu Jun 21 12:50:03 CEST 2012
+

@@ -317,7 +317,7 @@ class GlobalTrashCan:
             for trashedfile in trash_dir.trashed_files():
                 yield trashedfile
 
-    def trash(self,file) :
+    def trash(self, file) :
         """
         Trash a file in the appropriate trash directory.
         If the file belong to the same volume of the trash home directory it
@@ -364,23 +364,31 @@ class GlobalTrashCan:
 
     def _trash_directories(self) :
         """Return a generator of all TrashDirectories in the filesystem"""
-        yield self._home_trash_dir()
+        for td in self._home_trash_dir():
+            yield td
         for mount_point in self.list_mount_points():
             volume = mount_point
             yield self._volume_trash_dir1(volume)
             yield self._volume_trash_dir2(volume)
     def _possible_trash_directories_for(self,file):
-        yield self._home_trash_dir()
+        for td in self._home_trash_dir():
+            yield td
         for td in self.trash_directories_for_volume(self.volume_of_parent(file)):
             yield td
-    def trash_directories_for_volume(self,volume):
+    def trash_directories_for_volume(self, volume):
         yield self._volume_trash_dir1(volume)
         yield self._volume_trash_dir2(volume)
     def _home_trash_dir(self) :
-        trash_dir = HomeTrashDirectory(self._home_trash_dir_path())
-        trash_dir.store_absolute_paths()
-        return trash_dir
-    def _volume_trash_dir1(self,volume):
+        paths = []
+        home_trashcan_if_possible(self.environ, paths.append)
+
+        result = []
+        for trash_dir_path in paths:
+            trash_dir = HomeTrashDirectory(trash_dir_path)
+            trash_dir.store_absolute_paths()
+            result.append(trash_dir)
+        return result
+    def _volume_trash_dir1(self, volume):
         """
         Return the method (1) volume trash dir ($topdir/.Trash/$uid).
         """
@@ -399,10 +407,6 @@ class GlobalTrashCan:
         trash_dir = TrashDirectory(trash_directory_path,volume)
         trash_dir.store_relative_paths()
         return trash_dir
-    def _home_trash_dir_path(self):
-        result = []
-        home_trashcan_if_possible(self.environ, result.append)
-        return result[0]
 
     def for_all_trashed_file(self, action):
         for trashedfile in self.trashed_files():
@@ -598,7 +602,7 @@ class TrashPutCmd:
         if len(args) <= 0:
             parser.error("Please specify the files to trash.")
 
-        reporter=TrashPutReporter(self.get_logger(options.verbose,argv[0]))
+        reporter = TrashPutReporter(self.get_logger(options.verbose,argv[0]))
 
         self.trashcan = GlobalTrashCan(
                 reporter = reporter,

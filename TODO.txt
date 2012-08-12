@@ -1,3 +1,53 @@
+Working on:
+ - Fixing exit code when fail to trash files:
+    - decide exit code values
+    - document exit code values (in manpages)
+    - write a test testing trash-put with non-existent
+       x clean up test_trash_put.py
+           x describe_trash_put --> when_
+          
+    - implement and refactor:
+       - find a better name for TrashPutReporter
+       - make TrashPutReport store exit code, initialized to SUCCESS
+       - make TrashPutCmd#run return the exit_code from the reporter 
+
+ - Removing the TrashDirectory hierarchy:
+    - Remove HomeTrashDirectory
+       - move the behaviour of name() to TrashDirectory
+       - remove import in test_trash.py
+          - make HomeTrashDirectory a factory for TestTrashedFile
+    - Remove references to VolumeTrashDirectory
+       - trash.py
+       - test_trash.py
+    - Collapse check:
+       - Move Method1VolumeTrashDirectory:check to a Strategy
+         - trash.py
+         - test_trash.py
+            - in Method1VolumeTrashDirectoryTest factor out "chmod +/-t dir"
+
+TrashDirectory collaborators:
+   - os.path.normpath
+   - os.path.basename
+   - os.path.abspath
+   - os.path.exists
+   - os.path.join
+   - os.path.isabs
+   - os.chmod
+   - os.open/os.write/os.close
+   - TrashInfo
+   - TrashedFile
+   - datetime
+   - shutil.move
+
+GlobalTrashCan
+ - enumerates possible TrashDirectories for a file to be trashed
+ - enumerates all trashed files
+ - trash a file in the right location
+ - knows when a file should be skipped
+ - knows when a file can be trashed in a TrashDir
+ - enumerates all TrashDir of a Volume
+ - compose method 1 and method 2 TrashDir
+
 Features backlog:
  - trash-list should handle .trashinfo from home trashdir that contains 
    relative path
@@ -17,11 +67,10 @@ Features backlog:
  - trash-rm '*.o'
  - trash-empty should empty even the mac trash directory
 
-To be fixed:
+Design todo:
  - invalidate Google Code download and put a redirect to PyPi
  - get rid of logging package
  - get rid of the IOError exception raising on file is not in the same volume
- - consolidate TrashDirectory abstract and the AvailableTrashDir abstraction
  - get rid of TrashDirectory.info_dir and files_dir properties
  - remove all the duplication 
     - all_info_files, trashed_files and for_all_trashed_files
@@ -45,10 +94,5 @@ Test to be ported to nosetests:
  - should refuse to create the $topdir/.Trash/$uid directory if the 
    $topdir/.Trash is not sticky
 
-Bug reported on external trackers:
- x trash-empty crashed with GetoptError in short_has_arg(): option -2 not 
-   recognized, 
-   url: https://bugs.launchpad.net/ubuntu/+source/trash-cli/+bug/1015877
-   status: solved on Thu Jun 21 12:50:03 CEST 2012
  
 

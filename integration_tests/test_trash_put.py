@@ -5,7 +5,7 @@ from .files import having_file, require_empty_dir, having_empty_dir
 from trashcli.trash import TrashPutCmd
 
 @istest
-class describe_trash_put_command_when_deleting_a_file:
+class when_deleting_a_file:
 
     @istest
     def it_should_remove_the_file(self):
@@ -18,7 +18,7 @@ class describe_trash_put_command_when_deleting_a_file:
         self.output_should_be('')
 
     def a_trashinfo_file_should_have_been_created(self):
-        
+
         file('sandbox/XDG_DATA_HOME/Trash/info/foo.trashinfo').read()
 
     def setUp(self):
@@ -28,16 +28,14 @@ class describe_trash_put_command_when_deleting_a_file:
         self.run_trashput = TrashPutRunner(
                 environ = {'XDG_DATA_HOME': 'sandbox/XDG_DATA_HOME' }
         )
-        
+
         self.stderr_should_be = self.run_trashput.err.should_be
         self.output_should_be = self.run_trashput.out.should_be
 
         self.run_trashput('trash-put', 'sandbox/foo')
 
-import os
-exists = os.path.exists
 @istest
-class describe_trash_put_command_on_dot_arguments:
+class when_fed_with_dot_arguments:
 
     def test_dot_argument_is_skipped(self):
         having_file('other_argument')
@@ -98,7 +96,8 @@ class describe_trash_put_command_on_dot_arguments:
     def setUp(self):
         self.run_trashput = TrashPutRunner()
         self.stderr_should_be = self.run_trashput.err.should_be
-        
+
+import os
 class TrashPutRunner:
     def __init__(self, environ = os.environ):
         from .output_collector import OutputCollector
@@ -106,7 +105,7 @@ class TrashPutRunner:
         self.err     = OutputCollector()
         self.environ = environ
     def __call__(self, *argv):
-        TrashPutCmd( 
+        TrashPutCmd(
             stdout  = self.out,
             stderr  = self.err,
             environ = self.environ
@@ -116,3 +115,4 @@ def file_should_have_been_deleted(path):
     import os
     assert not os.path.exists('sandbox/foo')
 
+exists = os.path.exists
