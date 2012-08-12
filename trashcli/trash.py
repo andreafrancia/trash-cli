@@ -24,7 +24,17 @@ class TrashDirectory:
         return self.name()
 
     def name(self):
-        return str(self.path)
+        import re
+        import posixpath
+        result=self.path
+        try:
+            home_dir=os.environ['HOME']
+            home_dir = posixpath.normpath(home_dir)
+            if home_dir != '':
+                result=re.sub('^'+ re.escape(home_dir)+os.path.sep, '~' + os.path.sep,result)
+        except KeyError:
+            pass
+        return result
 
     def store_absolute_paths(self):
         self.path_for_trash_info = PathForTrashInfo()
@@ -202,19 +212,6 @@ class TrashDirectory:
 class HomeTrashDirectory(TrashDirectory):
     def __init__(self, path) :
         TrashDirectory.__init__(self, path, volume_of(path))
-
-    def name(self):
-        import re
-        import posixpath
-        result=self.path
-        try:
-            home_dir=os.environ['HOME']
-            home_dir = posixpath.normpath(home_dir)
-            if home_dir != '':
-                result=re.sub('^'+ re.escape(home_dir)+os.path.sep, '~' + os.path.sep,result)
-        except KeyError:
-            pass
-        return result
 
 class VolumeTrashDirectory(TrashDirectory) :
     def __init__(self, path, volume) :
