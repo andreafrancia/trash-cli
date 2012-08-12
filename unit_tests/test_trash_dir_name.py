@@ -1,9 +1,9 @@
 from unittest import TestCase
 from nose.tools import assert_equals
 import os
-from trashcli.trash import HomeTrashDirectory
+from trashcli.trash import TrashDirectory
 
-class TestHomeTrashDirectory(TestCase) :
+class TestTrashDirectory(TestCase) :
 
     def test_str_uses_tilde(self):
         os.environ['HOME']='/home/user'
@@ -31,7 +31,7 @@ class TestHomeTrashDirectory(TestCase) :
         self.assert_name_is('/foo/Trash')
 
     def assert_name_is(self, expected_name):
-        trash_dir = HomeTrashDirectory(self.trash_dir)
+        trash_dir = TrashDirectory(self.trash_dir, '/')
         assert_equals(expected_name, trash_dir.name())
 
 

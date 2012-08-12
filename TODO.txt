@@ -1,19 +1,4 @@
 Working on:
- - Fixing exit code when fail to trash files:
-    x decide exit code values:
-        0 -- all files have been trashed
-        1 -- some file has not been trashed
-    X document exit code values (in manpages)
-    x write a test testing trash-put with non-existent
-       x clean up test_trash_put.py
-           x describe_trash_put --> when_
-          
-    - implement and refactor:
-       x make TrashPutReport store exit code, initialized to SUCCESS
-       x make TrashPutCmd#run return the exit_code from the reporter 
-       - put logger inside TrashPutReporter
-       - find a better name for TrashPutReporter
-
  - Removing the TrashDirectory hierarchy:
     - Remove HomeTrashDirectory
        - move the behaviour of name() to TrashDirectory

@@ -209,10 +209,6 @@ class TrashDirectory:
         """
         pass
 
-class HomeTrashDirectory(TrashDirectory):
-    def __init__(self, path) :
-        TrashDirectory.__init__(self, path, volume_of(path))
-
 class VolumeTrashDirectory(TrashDirectory) :
     def __init__(self, path, volume) :
         TrashDirectory.__init__(self,path, volume)
@@ -391,7 +387,7 @@ class GlobalTrashCan:
 
         result = []
         for trash_dir_path in paths:
-            trash_dir = HomeTrashDirectory(trash_dir_path)
+            trash_dir = TrashDirectory(trash_dir_path, volume_of(trash_dir_path))
             trash_dir.store_absolute_paths()
             result.append(trash_dir)
         return result

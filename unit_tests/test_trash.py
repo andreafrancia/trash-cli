@@ -11,7 +11,6 @@ from trashcli.trash import TrashedFile
 from trashcli.trash import TrashInfo
 from trashcli.trash import VolumeTrashDirectory
 from trashcli.trash import TimeUtils
-from trashcli.trash import HomeTrashDirectory
 from trashcli.trash import mkdirs, volume_of
 from trashcli.trash import TopDirIsSymLink
 from trashcli.trash import TopDirNotPresent
@@ -32,7 +31,7 @@ class TestTrashDirectory(TestCase) :
 
     def test_trash(self) :
         #instance
-        instance=VolumeTrashDirectory("sandbox/trash-directory",
+        instance=TrashDirectory("sandbox/trash-directory",
                                       volume_of("sandbox"))
         instance.store_relative_paths()
 
@@ -67,13 +66,6 @@ class TestTrashDirectory(TestCase) :
         assert_equals("/mnt/disk/foo", instance._calc_original_location("foo"))
 
 class TestVolumeTrashDirectory(TestCase) :
-    def test_init(self) :
-        path = "/mnt/disk/.Trash/123"
-        volume = volume_of("/mnt/disk")
-        instance = VolumeTrashDirectory(path, volume)
-        self.assertEquals(path, instance.path)
-        self.assertEquals(volume, instance.volume)
-
     def test_path_for_trashinfo (self) :
         path = "/mnt/disk/.Trash-123"
         volume = "/mnt/volume"
@@ -126,7 +118,7 @@ class TestTrashedFile(TestCase) :
         deletion_date = datetime(2001,01,01)
         info_file = "/home/user/.local/share/Trash/info/foo.trashinfo"
         actual_path = ("/home/user/.local/share/Trash/files/foo")
-        trash_directory = HomeTrashDirectory('/home/user/.local/share/Trash')
+        trash_directory = TrashDirectory('/home/user/.local/share/Trash', '/')
 
         instance = TrashedFile(path, deletion_date, info_file, actual_path,
                               trash_directory)
@@ -143,7 +135,7 @@ class TestTrashedFile(TestCase) :
         deletion_date = datetime(2001,01,01)
         info_file = "/home/user/.local/share/Trash/info/foo.trashinfo"
         actual_path = "/home/user/.local/share/Trash/files/foo"
-        trash_directory = HomeTrashDirectory('/home/user/.local/share/Trash')
+        trash_directory = TrashDirectory('/home/user/.local/share/Trash', '/')
 
         TrashedFile(path, deletion_date, info_file, actual_path,
                     trash_directory)
