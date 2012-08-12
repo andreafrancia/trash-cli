@@ -5,6 +5,7 @@ from StringIO import StringIO
 from trashcli.trash import TrashPutCmd
 from integration_tests.assert_equals_with_unidiff import assert_equals_with_unidiff
 
+
 class TrashPutTest:
     def run(self, *arg):
         self.stderr = StringIO()

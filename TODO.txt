@@ -1,15 +1,18 @@
 Working on:
  - Fixing exit code when fail to trash files:
-    - decide exit code values
-    - document exit code values (in manpages)
-    - write a test testing trash-put with non-existent
+    x decide exit code values:
+        0 -- all files have been trashed
+        1 -- some file has not been trashed
+    X document exit code values (in manpages)
+    x write a test testing trash-put with non-existent
        x clean up test_trash_put.py
            x describe_trash_put --> when_
           
     - implement and refactor:
+       x make TrashPutReport store exit code, initialized to SUCCESS
+       x make TrashPutCmd#run return the exit_code from the reporter 
+       - put logger inside TrashPutReporter
        - find a better name for TrashPutReporter
-       - make TrashPutReport store exit code, initialized to SUCCESS
-       - make TrashPutCmd#run return the exit_code from the reporter 
 
  - Removing the TrashDirectory hierarchy:
     - Remove HomeTrashDirectory
@@ -24,6 +27,22 @@ Working on:
          - trash.py
          - test_trash.py
             - in Method1VolumeTrashDirectoryTest factor out "chmod +/-t dir"
+
+TrashPutCmd dependencies:
+   - stderr
+   - stdout
+   - environ
+   - (internal) reporter 
+   - (internal) GlobalTrashCan
+   - (internal) Logger
+
+GlobalTrashCan dependencies:
+   - environ
+   - reporter
+   - getuid
+   - list_mount_points
+   - datetime.now
+
 
 TrashDirectory collaborators:
    - os.path.normpath

@@ -4,7 +4,7 @@ import sys,os
 
 def put():
     from trashcli.trash import TrashPutCmd
-    TrashPutCmd(
+    return TrashPutCmd(
         sys.stdout,
         sys.stderr
     ).run(sys.argv)

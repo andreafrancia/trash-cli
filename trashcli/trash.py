@@ -10,6 +10,11 @@ logger=logging.getLogger('trashcli.trash')
 logger.setLevel(logging.WARNING)
 logger.addHandler(logging.StreamHandler())
 
+# Error codes (from os on *nix, hard coded for Windows):
+EX_OK    = getattr(os, 'EX_OK'   ,  0)
+EX_USAGE = getattr(os, 'EX_USAGE', 64)
+EX_IOERR = getattr(os, 'EX_IOERR', 74)
+
 class TrashDirectory:
     def __init__(self, path, volume):
         self.path   = os.path.normpath(path)
@@ -289,6 +294,10 @@ def real_list_mount_points():
     for mount_point in mount_points():
         yield mount_point
 
+class NullObject:
+    def __getattr__(self, name):
+        return lambda *argl,**args:None
+
 class GlobalTrashCan:
     """
     Represent the TrashCan that contains all trashed files.
@@ -348,7 +357,8 @@ class GlobalTrashCan:
                     return
 
                 except (IOError, OSError), error:
-                    self.reporter.unable_to_trash_file_in_because(file, trash_dir, error)
+                    self.reporter.unable_to_trash_file_in_because(
+                            file, trash_dir.name(), str(error))
 
         self.reporter.unable_to_trash_file(file)
 
@@ -609,6 +619,11 @@ class TrashPutCmd:
                 environ  = self.environ)
         self.trash_all(args)
 
+        if reporter.all_files_have_been_trashed:
+            return EX_OK
+        else:
+            return EX_IOERR
+
     def trash_all(self, args):
         for arg in args :
             self.trash(arg)
@@ -688,21 +703,25 @@ Report bugs to http://code.google.com/p/trash-cli/issues""")
         return MyLogger(self.stderr)
 
 class TrashPutReporter:
-    def __init__(self, logger):
+    def __init__(self, logger = NullObject()):
         self.logger = logger
+        self.all_files_have_been_trashed = True
 
     def unable_to_trash_dot_entries(self,file):
         self.logger.warning("cannot trash %s `%s'" % (describe(file), file))
 
     def unable_to_trash_file(self,f):
         self.logger.warning("cannot trash %s `%s'" % (describe(f), f))
+        self.all_files_have_been_trashed = False
 
     def file_has_been_trashed_in_as(self, trashee, trash_directory, destination):
         self.logger.info("`%s' trashed in %s " % (trashee, trash_directory))
 
-    def unable_to_trash_file_in_because(self, file_to_be_trashed, trash_directory, error):
-        self.logger.info("Failed to trash %s in %s, because :%s" % (file_to_be_trashed,
-            trash_directory, error))
+    def unable_to_trash_file_in_because(self,
+                                        file_to_be_trashed,
+                                        trash_directory, error):
+        self.logger.info("Failed to trash %s in %s, because :%s" %
+                         (file_to_be_trashed, trash_directory, error))
 
 def mkdirs_using_mode(path, mode):
     if os.path.isdir(path):
@@ -941,10 +960,6 @@ class Parser:
         self.argument_action = argument_action
     def as_default(self, default_action):
         self.default_action = default_action
-
-# Error codes (from os on *nix, hard coded for Windows):
-EX_USAGE = getattr(os, 'EX_USAGE', 64)
-EX_OK    = getattr(os, 'EX_OK'   ,  0)
 
 class EmptyCmd():
     def __init__(self, out, err, environ,
