@@ -1,12 +1,12 @@
 Working on:
  - Removing the TrashDirectory hierarchy:
-    - Remove HomeTrashDirectory
-       - move the behaviour of name() to TrashDirectory
-       - remove import in test_trash.py
-          - make HomeTrashDirectory a factory for TestTrashedFile
-    - Remove references to VolumeTrashDirectory
-       - trash.py
-       - test_trash.py
+    x Remove HomeTrashDirectory
+       x move the behaviour of name() to TrashDirectory
+       x remove import in test_trash.py
+          x make HomeTrashDirectory a factory for TestTrashedFile
+    x Remove references to VolumeTrashDirectory from:
+       x trash.py
+       x test_trash.py
     - Collapse check:
        - Move Method1VolumeTrashDirectory:check to a Strategy
          - trash.py

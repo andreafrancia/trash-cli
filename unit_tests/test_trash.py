@@ -9,7 +9,6 @@ __license__="GPL"
 from trashcli.trash import TrashDirectory
 from trashcli.trash import TrashedFile
 from trashcli.trash import TrashInfo
-from trashcli.trash import VolumeTrashDirectory
 from trashcli.trash import TimeUtils
 from trashcli.trash import mkdirs, volume_of
 from trashcli.trash import TopDirIsSymLink
@@ -65,22 +64,20 @@ class TestTrashDirectory(TestCase) :
 
         assert_equals("/mnt/disk/foo", instance._calc_original_location("foo"))
 
-class TestVolumeTrashDirectory(TestCase) :
-    def test_path_for_trashinfo (self) :
-        path = "/mnt/disk/.Trash-123"
-        volume = "/mnt/volume"
-        instance = VolumeTrashDirectory(path, volume)
-        instance.store_relative_paths()
+class TestHowPathAreStored:
+    def setUp(self) :
+        self.trash_dir = TrashDirectory("/mnt/disk/.Trash-123", "/mnt/volume")
+        self.trash_dir.store_relative_paths()
 
-        # path for VolumeTrashDirectory are relative as possible
-        fileToBeTrashed=("/mnt/volume/directory/test.txt")
-        result=instance._path_for_trashinfo(fileToBeTrashed)
-        self.assertEquals("directory/test.txt", result)
+    def test_internal_path_are_stored_relative(self):
+        fileToBeTrashed = ("/mnt/volume/directory/test.txt")
+        result = self.trash_dir._path_for_trashinfo(fileToBeTrashed)
+        assert_equals("directory/test.txt", result)
 
-        # path for VolumeTrashDirectory are relative as possible
-        fileToBeTrashed=("/mnt/other-volume/directory/test.txt")
-        result=instance._path_for_trashinfo(fileToBeTrashed)
-        self.assertEquals("/mnt/other-volume/directory/test.txt",result)
+    def test_path_outside_the_volume_are_stored_absolute(self):
+        fileToBeTrashed = ("/mnt/other-volume/directory/test.txt")
+        result = self.trash_dir._path_for_trashinfo(fileToBeTrashed)
+        assert_equals("/mnt/other-volume/directory/test.txt",result)
 
 class TestTrashInfo(TestCase) :
     def test_parse(self) :

@@ -209,10 +209,6 @@ class TrashDirectory:
         """
         pass
 
-class VolumeTrashDirectory(TrashDirectory) :
-    def __init__(self, path, volume) :
-        TrashDirectory.__init__(self,path, volume)
-
 class PathForTrashInfo:
     def __init__(self):
         pass
