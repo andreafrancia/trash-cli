@@ -15,8 +15,8 @@
 /nose-*.egg/
 /sandbox/
 /scripts/
-/test-volume.dmg
-/test-volume/
+/test-disk.img
+/test-disk
 /topdir/
 /trash_cli.egg-info/
 /XDG_DATA_HOME/

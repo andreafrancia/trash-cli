@@ -1,0 +1,32 @@
+#!/bin/bash
+# Copyright (C) 2007-2009 Andrea Francia Trivolzio(PV) Italy
+
+set -o errexit
+
+mount_point="test-disk"
+device_image="test-disk.img"
+
+main() {
+    clean-up
+    create-image
+    mount-the-image
+    echo "test-volume mounted as '$mount_point'"
+}
+
+clean-up() {
+    sudo umount "$mount_point" || true
+    rm -fv "$device_image"
+}
+
+create-image() {
+    dd if=/dev/zero of="$device_image" bs=$((1024*1024)) count=1 
+    /sbin/mke2fs -F "$device_image"
+}
+
+mount-the-image() {
+    mkdir --parents "$mount_point"
+    sudo mount -t ext2 "$device_image" "$mount_point" -o loop
+    sudo chmod a+rwx "$mount_point"
+}
+
+main
