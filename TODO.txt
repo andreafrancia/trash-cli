@@ -1,3 +1,35 @@
+Feature: don't use world writable trash dirs
+TODO:
+ x Consolidate tests about store_absolute/relative_paths from test_trash and 
+   test_trash_info
+ - Method1VolumeTrashDirectory --> remove super class TrashDirectory
+    -> make TrashDirectory.trash() testable
+        -> relax dependency of TrashDirectory.trash() from path_for_trash_info
+        -> Collapse _path_for_trashinfo
+            -> make TrashDirectory.trash() testable
+               -> write integration test for trash-put warning 'dir is not 
+                  sticky' (in test_trash_put:trash_put_stderr
+                   -> add a fake volume support in TrashPutCmd
+                      -> make GlobalTrashCan able to be configured for adding 
+                         fake volume
+
+ - consolidate use of enumeration of file between trash-list and trash-restore
+ - consolidate the enumeration of TrashDirs between trash-list/restore and
+   trash-put
+ - on trash-list:
+    - don't list contents of world writable TrashDirs
+    - print warning on stderr
+ - on trash-restore:
+    - don't list contents of world writable TrashDirs
+    - print warning on stderr
+ - on trash-empty:
+    - maybe delete without problem
+ - on trash-put:
+    - don't use world writable TrashDirs
+    - print warning on stderr
+
+
+
 Working on:
  - Removing the TrashDirectory hierarchy:
     x Remove HomeTrashDirectory

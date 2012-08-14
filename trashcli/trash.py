@@ -19,6 +19,7 @@ class TrashDirectory:
     def __init__(self, path, volume):
         self.path   = os.path.normpath(path)
         self.volume = volume
+        self.checker = None
 
     def __str__(self) :
         return self.name()
@@ -46,7 +47,10 @@ class TrashDirectory:
 
     def trash(self, path):
         path = os.path.normpath(path)
-        self.check()
+        if self.checker:
+            #self.checker.check(path)
+            pass
+        self.check(self.path)
 
         if not self.volume == volume_of(parent_of(path)) :
             raise IOError("file is not in the same volume of trash directory!\n"
@@ -201,12 +205,7 @@ class TrashDirectory:
 
         raise IOError()
 
-    def check(self):
-        """
-        Perform a sanity check of this trash directory.
-        If the check is not passed the directory can be used for trashing,
-        listing or restoring files.
-        """
+    def check(self, trash_dir_path):
         pass
 
 class PathForTrashInfo:
@@ -259,24 +258,25 @@ class Method1VolumeTrashDirectory(TrashDirectory):
     def __init__(self, path, volume) :
         TrashDirectory.__init__(self,path,volume)
 
-    def check(self):
-        if not self.parent_is_dir():
+    def check(self, trash_dir_path):
+        self.trash_dir_path = trash_dir_path
+        if not self._parent_is_dir():
             raise TopDirNotPresent("topdir should be a directory: %s"
-                                   % self.path)
-        if self.parent_is_link():
+                                   % self.trash_dir_path)
+        if self._parent_is_link():
             raise TopDirIsSymLink("topdir can't be a symbolic link: %s"
-                                  % self.path)
-        if not self.parent_has_sticky_bit():
+                                  % self.trash_dir_path)
+        if not self._parent_has_sticky_bit():
             raise TopDirWithoutStickyBit("topdir should have the sticky bit: %s"
-                                         % self.path)
-    def parent_is_dir(self):
-        return os.path.isdir(self.parent())
-    def parent_is_link(self):
-        return os.path.islink(self.parent())
-    def parent(self):
-        return os.path.dirname(self.path)
-    def parent_has_sticky_bit(self):
-        return has_sticky_bit(self.parent())
+                                         % self.trash_dir_path)
+    def _parent_is_dir(self):
+        return os.path.isdir(self._parent())
+    def _parent_is_link(self):
+        return os.path.islink(self._parent())
+    def _parent_has_sticky_bit(self):
+        return has_sticky_bit(self._parent())
+    def _parent(self):
+        return os.path.dirname(self.trash_dir_path)
 
 def real_list_mount_points():
     from trashcli.list_mount_points import mount_points
@@ -341,7 +341,7 @@ class GlobalTrashCan:
                     trashed_file = trash_dir.trash(file)
                     self.reporter.file_has_been_trashed_in_as(
                           file,
-                          trashed_file.trash_directory.name,
+                          trashed_file.trash_directory.name(),
                           trashed_file.original_file)
                     return
 
@@ -704,7 +704,7 @@ class TrashPutReporter:
         self.all_files_have_been_trashed = False
 
     def file_has_been_trashed_in_as(self, trashee, trash_directory, destination):
-        self.logger.info("`%s' trashed in %s " % (trashee, trash_directory))
+        self.logger.info("`%s' trashed in %s" % (trashee, trash_directory))
 
     def unable_to_trash_file_in_because(self,
                                         file_to_be_trashed,

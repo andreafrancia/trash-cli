@@ -1,10 +1,11 @@
-from nose.tools import assert_equals
 from trashcli.trash import TrashDirectory
+from nose.tools import assert_equals
 
 class TestTrashInfoPath:
     def test_for_absolute_paths(self):
         self.dir = TrashDirectory('/volume/.Trash', '/volume')
         self.dir.store_absolute_paths()
+
         self.assert_path_for_trashinfo_is('/file'            , '/file')
         self.assert_path_for_trashinfo_is('/file'            , '/dir/../file')
         self.assert_path_for_trashinfo_is('/outside/file'    , '/outside/file')
@@ -14,6 +15,7 @@ class TestTrashInfoPath:
     def test_for_relative_paths(self):
         self.dir = TrashDirectory('/volume/.Trash', '/volume')
         self.dir.store_relative_paths()
+
         self.assert_path_for_trashinfo_is('/file'         , '/file')
         self.assert_path_for_trashinfo_is('/file'         , '/dir/../file')
         self.assert_path_for_trashinfo_is('/outside/file' , '/outside/file')

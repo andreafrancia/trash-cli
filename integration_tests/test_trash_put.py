@@ -29,6 +29,16 @@ class TrashPutTest:
         self.exit_code = cmd.run(list(argv))
 
 @istest
+class trash_put_stderr(TrashPutTest):
+    @istest
+    def should_tell_where_a_file_is_trashed(self):
+        having_file('foo')
+        self.run_trashput('trash-put', '-v', 'foo')
+
+        self.stderr_should_be("trash-put: `foo' trashed in "
+                              "sandbox/XDG_DATA_HOME/Trash\n")
+
+@istest
 class exit_code(TrashPutTest):
     @istest
     def should_be_zero_on_success(self):
