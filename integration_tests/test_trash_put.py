@@ -1,8 +1,11 @@
 # Copyright (C) 2009-2011 Andrea Francia Trivolzio(PV) Italy
+import os
 
 from nose.tools import istest, assert_equals, assert_not_equals
+
 from .files import having_file, require_empty_dir, having_empty_dir
 from trashcli.trash import TrashPutCmd
+
 
 class TrashPutTest:
 
@@ -37,6 +40,36 @@ class trash_put_stderr(TrashPutTest):
 
         self.stderr_should_be("trash-put: `foo' trashed in "
                               "sandbox/XDG_DATA_HOME/Trash\n")
+@istest
+class when_trash_dir_is_not_sticky(TrashPutTest):
+    @istest
+    def shoult_print_a_warning(self):
+        having_empty_dir('fake-vol/.Trash')
+        having_file('fake-vol/foo')
+        cmd = TrashPutCmd(
+            stdout  = self.out,
+            stderr  = self.err,
+            environ = self.environ
+        )
+        cmd.add_fake_volume('fake-vol')
+
+        cmd.run(['trash-put', '-v', 'fake-vol/foo'])
+
+        from nose.tools import assert_raises
+        with assert_raises(AssertionError):
+            self.stderr_should_be('trash-put: unsecure trash dir, '
+                                'should be sticky: fake-vol/.Trash\n')
+@istest
+def temp_test_for_volume_of():
+    from trashcli.trash import volume_of
+    assert_equals('/Volumes/HandBrake-0.9.6-MacOSX.6_GUI_x86_64',
+                  volume_of('/Volumes/HandBrake-0.9.6-MacOSX.6_GUI_x86_64/HandBrake.app'))
+
+    assert_equals('/dev', volume_of('/dev/afsc_type5'))
+    assert_equals('/dev', volume_of('/dev/../dev/fd/..'))
+
+
+
 
 @istest
 class exit_code(TrashPutTest):
@@ -146,5 +179,4 @@ def file_should_have_been_deleted(path):
     import os
     assert not os.path.exists('sandbox/foo')
 
-import os
 exists = os.path.exists

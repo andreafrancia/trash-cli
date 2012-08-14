@@ -4,15 +4,19 @@ from nose.tools import istest
 from trashcli.trash import GlobalTrashCan
 
 class TestGlobalTrashCan:
-    @istest
-    def should_report_when_trash_fail(self):
-        reporter = Mock()
+    def setUp(self):
+        self.reporter = Mock()
 
-        trashcan = GlobalTrashCan(environ = dict(),
-                                  reporter = reporter,
+        self.trashcan = GlobalTrashCan(environ = dict(),
+                                  reporter = self.reporter,
                                   getuid = lambda:123,
                                   list_mount_points = None,
                                   now = None)
 
-        trashcan.trash('non-existent')
-        trashcan.reporter.unable_to_trash_file.assert_called_with('non-existent')
+    @istest
+    def should_report_when_trash_fail(self):
+
+        self.trashcan.trash('non-existent')
+        self.reporter.unable_to_trash_file.assert_called_with('non-existent')
+
+

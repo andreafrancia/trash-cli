@@ -278,10 +278,27 @@ class Method1VolumeTrashDirectory(TrashDirectory):
     def _parent(self):
         return os.path.dirname(self.trash_dir_path)
 
+class Fstab:
+    def mount_points(self):
+        from trashcli.list_mount_points import mount_points
+        for mount_point in mount_points():
+            yield mount_point
+
+    def volume_of(self, path):
+        path = os.path.realpath(path)
+        while path != os.path.dirname(path):
+            if self._ismount(path):
+                break
+            path = os.path.dirname(path)
+        return path
+
+    def _ismount(self, path):
+        return os.path.ismount(path)
+        mount_points = list(self.mount_points())
+        return path in mount_points
+
 def real_list_mount_points():
-    from trashcli.list_mount_points import mount_points
-    for mount_point in mount_points():
-        yield mount_point
+    return Fstab().mount_points()
 
 class NullObject:
     def __getattr__(self, name):
@@ -302,11 +319,13 @@ class GlobalTrashCan:
                  reporter          = NullReporter(),
                  getuid            = os.getuid,
                  list_mount_points = real_list_mount_points,
+                 fstab             = Fstab(),
                  now               = datetime.now):
         self.getuid            = getuid
         self.environ           = environ
         self.reporter          = reporter
         self.list_mount_points = list_mount_points
+        self.fstab             = fstab
         self.now               = now
 
     def trashed_files(self):
@@ -355,21 +374,23 @@ class GlobalTrashCan:
         basename = os.path.basename(file)
         return (basename == ".") or (basename == "..")
 
+    def volume_of(self, path):
+        return self.fstab.volume_of(path)
     def volume_of_parent(self, file):
-        return volume_of(parent_of(file))
+        return self.volume_of(parent_of(file))
 
     def file_could_be_trashed_in(self,file_to_be_trashed,trash_dir_path):
-        return volume_of(trash_dir_path) == self.volume_of_parent(file_to_be_trashed)
+        return self.volume_of(trash_dir_path) == self.volume_of_parent(file_to_be_trashed)
 
     def _trash_directories(self) :
         """Return a generator of all TrashDirectories in the filesystem"""
         for td in self._home_trash_dir():
             yield td
-        for mount_point in self.list_mount_points():
+        for mount_point in self.fstab.mount_points():
             volume = mount_point
             yield self._volume_trash_dir1(volume)
             yield self._volume_trash_dir2(volume)
-    def _possible_trash_directories_for(self,file):
+    def _possible_trash_directories_for(self, file):
         for td in self._home_trash_dir():
             yield td
         for td in self.trash_directories_for_volume(self.volume_of_parent(file)):
@@ -383,7 +404,7 @@ class GlobalTrashCan:
 
         result = []
         for trash_dir_path in paths:
-            trash_dir = TrashDirectory(trash_dir_path, volume_of(trash_dir_path))
+            trash_dir = TrashDirectory(trash_dir_path, self.volume_of(trash_dir_path))
             trash_dir.store_absolute_paths()
             result.append(trash_dir)
         return result
@@ -593,6 +614,15 @@ class TrashPutCmd:
         self.stdout  = stdout
         self.stderr  = stderr
         self.environ = environ
+        self.fstab   = Fstab()
+
+    def add_fake_volume(self, volume_path):
+        class FakeFstab:
+            def mount_points(self): return [volume_path]
+            def volume_of(self, path):
+                raise ParseError()
+                return volume_path
+        self.fstab = FakeFstab()
 
     def run(self, argv):
         parser = self.get_option_parser(os.path.basename(argv[0]))
@@ -605,6 +635,7 @@ class TrashPutCmd:
 
         self.trashcan = GlobalTrashCan(
                 reporter = reporter,
+                fstab = Fstab(),
                 environ  = self.environ)
         self.trash_all(args)
 
@@ -775,12 +806,7 @@ def describe(path):
         return 'entry'
 
 def volume_of(path) :
-    path = os.path.realpath(path)
-    while path != os.path.dirname(path):
-        if os.path.ismount(path):
-            break
-        path = os.path.dirname(path)
-    return path
+    return Fstab().volume_of(path)
 
 def write_file(path, contents):
     f = open(path, 'w')

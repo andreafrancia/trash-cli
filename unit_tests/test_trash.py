@@ -10,7 +10,6 @@ from trashcli.trash import TrashDirectory
 from trashcli.trash import TrashedFile
 from trashcli.trash import TrashInfo
 from trashcli.trash import TimeUtils
-from trashcli.trash import volume_of
 
 from datetime import datetime
 import os
@@ -23,40 +22,30 @@ import shutil
 class TestTrashDirectory(TestCase) :
 
     def test_trash(self) :
-        #instance
-        instance=TrashDirectory("sandbox/trash-directory",
-                                      volume_of("sandbox"))
-        instance.store_relative_paths()
+        trash_dir=TrashDirectory("sandbox/trash-directory", '/')
+        trash_dir.store_relative_paths()
 
         # test
         file_to_trash="sandbox/dummy.txt"
         touch(file_to_trash)
-        result = instance.trash(file_to_trash)
+        result = trash_dir.trash(file_to_trash)
         self.assertTrue(isinstance(result,TrashedFile))
         self.assertEquals(abspath(file_to_trash), result.path)
         self.assertTrue(result.deletion_date is not None)
-
-    def test_get_info_dir(self):
-        instance=TrashDirectory( "/mnt/disk/.Trash-123", volume_of("/mnt/disk"))
-        self.assertEquals("/mnt/disk/.Trash-123/info", instance.info_dir)
-
-    def test_get_files_dir(self):
-        instance=TrashDirectory( "/mnt/disk/.Trash-123", volume_of("/mnt/disk"))
-        self.assertEquals("/mnt/disk/.Trash-123/files", instance.files_dir)
 
     def test_calc_id(self):
         trash_info_file = "/home/user/.local/share/Trash/info/foo.trashinfo"
         self.assertEquals('foo',TrashDirectory.calc_id(trash_info_file))
 
     def test_calc_original_location_when_absolute(self) :
-        instance = TrashDirectory( "/mnt/disk/.Trash-123", volume_of("/mnt/disk"))
+        trash_dir = TrashDirectory( "/mnt/disk/.Trash-123", "/mnt/disk")
 
-        assert_equals("/foo", instance._calc_original_location("/foo"))
+        assert_equals("/foo", trash_dir._calc_original_location("/foo"))
 
     def test_calc_original_location_when_relative(self) :
-        instance = TrashDirectory( "/mnt/disk/.Trash-123", "/mnt/disk")
+        trash_dir = TrashDirectory( "/mnt/disk/.Trash-123", "/mnt/disk")
 
-        assert_equals("/mnt/disk/foo", instance._calc_original_location("foo"))
+        assert_equals("/mnt/disk/foo", trash_dir._calc_original_location("foo"))
 
 class TestTrashInfo(TestCase) :
     def test_parse(self) :

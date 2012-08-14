@@ -10,8 +10,14 @@ TODO:
                -> write integration test for trash-put warning 'dir is not 
                   sticky' (in test_trash_put:trash_put_stderr
                    -> add a fake volume support in TrashPutCmd
-                      -> make GlobalTrashCan able to be configured for adding 
+                      -> make TrashPutCmd able to be configured for adding 
                          fake volume
+                          -> make GlobalTrashCan.volume_of which uses data 
+                             from list of volumes instead of using the other
+                             strategy
+                               -> write a FakeFstab with consistent volume_of 
+                               and list_mount_points (tested, the one I wrote 
+                               seems not to work)
 
  - consolidate use of enumeration of file between trash-list and trash-restore
  - consolidate the enumeration of TrashDirs between trash-list/restore and
