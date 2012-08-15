@@ -7,17 +7,29 @@ TODO:
         -> relax dependency of TrashDirectory.trash() from path_for_trash_info
         -> Collapse _path_for_trashinfo
             -> make TrashDirectory.trash() testable
-               -> write integration test for trash-put warning 'dir is not 
+               x> write integration test for trash-put warning 'dir is not 
                   sticky' (in test_trash_put:trash_put_stderr
-                   -> add a fake volume support in TrashPutCmd
-                      -> make TrashPutCmd able to be configured for adding 
+                   x> add a fake volume support in TrashPutCmd
+                      x> make TrashPutCmd able to be configured for adding 
                          fake volume
-                          -> make GlobalTrashCan.volume_of which uses data 
+                          x> make GlobalTrashCan.volume_of which uses data 
                              from list of volumes instead of using the other
                              strategy
-                               -> write a FakeFstab with consistent volume_of 
+                               x> write a FakeFstab with consistent volume_of 
                                and list_mount_points (tested, the one I wrote 
                                seems not to work)
+
+Clean-up:
+
+Where volume_of is used:
+ x test_trash_put:temp_test_for_volume_of
+ - TrashDirectory.trash (check of trash-dir in the same volume)
+ - GlobalTrashCan.volume_of (usato in varie parti) ~~> self.fstab.volume_of
+Where mount_points is used:
+ - real_list_mount_points
+ ]
+
+
 
  - consolidate use of enumeration of file between trash-list and trash-restore
  - consolidate the enumeration of TrashDirs between trash-list/restore and

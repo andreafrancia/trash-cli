@@ -40,6 +40,8 @@ class trash_put_stderr(TrashPutTest):
 
         self.stderr_should_be("trash-put: `foo' trashed in "
                               "sandbox/XDG_DATA_HOME/Trash\n")
+
+from trashcli.trash import FakeFstab
 @istest
 class when_trash_dir_is_not_sticky(TrashPutTest):
     @istest
@@ -51,22 +53,42 @@ class when_trash_dir_is_not_sticky(TrashPutTest):
             stderr  = self.err,
             environ = self.environ
         )
-        cmd.add_fake_volume('fake-vol')
+        cmd.fstab = FakeFstab()
+        cmd.fstab.add_mount('fake-vol')
+
 
         cmd.run(['trash-put', '-v', 'fake-vol/foo'])
 
-        from nose.tools import assert_raises
-        with assert_raises(AssertionError):
-            self.stderr_should_be('trash-put: unsecure trash dir, '
-                                'should be sticky: fake-vol/.Trash\n')
-@istest
-def temp_test_for_volume_of():
-    from trashcli.trash import volume_of
-    assert_equals('/Volumes/HandBrake-0.9.6-MacOSX.6_GUI_x86_64',
-                  volume_of('/Volumes/HandBrake-0.9.6-MacOSX.6_GUI_x86_64/HandBrake.app'))
+        should_fail(lambda:
+        self.stderr_should_be('trash-put: unsecure trash dir, '
+                                'should be sticky: fake-vol/.Trash\n'))
+        self.stderr_should_be("trash-put: `fake-vol/foo' trashed in sandbox/XDG_DATA_HOME/Trash\n")
 
-    assert_equals('/dev', volume_of('/dev/afsc_type5'))
-    assert_equals('/dev', volume_of('/dev/../dev/fd/..'))
+def should_fail(func):
+    from nose.tools import assert_raises
+    with assert_raises(AssertionError):
+        func()
+
+class TestTempGlobalTrashCan:
+    def test_something(self):
+        from trashcli.trash import GlobalTrashCan
+        from nose.tools import assert_items_equal
+        from mock import Mock
+        having_file('fake-vol/foo')
+        fstab = FakeFstab()
+        fstab.add_mount('fake-vol')
+        reporter = Mock()
+        trashcan = GlobalTrashCan(
+                    environ = {},
+                    reporter = reporter, fstab = fstab)
+
+        should_fail(lambda:
+            assert_equals('fake-vol', fstab.volume_of('fake-vol/foo')))
+
+
+        result = list(trashcan._possible_trash_directories_for('fake-vol/foo'))
+
+
 
 
 
