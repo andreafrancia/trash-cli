@@ -9,25 +9,24 @@ TODO:
             -> make TrashDirectory.trash() testable
                x> write integration test for trash-put warning 'dir is not 
                   sticky' (in test_trash_put:trash_put_stderr
-                   x> add a fake volume support in TrashPutCmd
-                      x> make TrashPutCmd able to be configured for adding 
-                         fake volume
-                          x> make GlobalTrashCan.volume_of which uses data 
-                             from list of volumes instead of using the other
-                             strategy
-                               x> write a FakeFstab with consistent volume_of 
-                               and list_mount_points (tested, the one I wrote 
-                               seems not to work)
+               - make the test pass <--- WIP
+
+In order to finish integration test in trash-put:
+ x add a fake volume support in TrashPutCmd
+ x make TrashPutCmd able to be configured for adding fake volume
+ x make GlobalTrashCan.volume_of which uses data from list of volumes instead 
+   of using the other strategy
+ x write a FakeFstab with consistent volume_of and list_mount_points (tested, 
+   the one I wrote seems not to work)
+ x TrashPutCmd should be configurable in fake volumes
+ x FakeIsMount should support relative mounts
+    x VolumeOf should use normpath instead of realpath
+       x TrashDirectory problem on non volume path should be fixed
+
 
 Clean-up:
-
-Where volume_of is used:
- x test_trash_put:temp_test_for_volume_of
- - TrashDirectory.trash (check of trash-dir in the same volume)
- - GlobalTrashCan.volume_of (usato in varie parti) ~~> self.fstab.volume_of
-Where mount_points is used:
- - real_list_mount_points
- ]
+ - remove duplication between GlobalTrashCan Home, method1 and method2 
+   creation
 
 
 

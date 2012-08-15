@@ -58,12 +58,6 @@ class TrashDirectory:
             pass
         self.check(self.path)
 
-        if not self.volume == self.volume_of(parent_of(path)) :
-            raise IOError("file is not in the same volume of trash directory!\n"
-                   + "self.volume = " + str(self.volume) + ", \n"
-                   + "file.parent.volume = "
-                        + str(self.volume_of(parent_of(path))))
-
         from datetime import datetime
         trash_info = TrashInfo(self._path_for_trashinfo(path),
                                datetime.now())
@@ -347,7 +341,7 @@ class VolumeOf:
         self._ismount = ismount
 
     def __call__(self, path):
-        path = os.path.realpath(path)
+        path = os.path.normpath(path)
         while path != os.path.dirname(path):
             if self._ismount(path):
                 break
@@ -469,6 +463,7 @@ class GlobalTrashCan:
         uid = self.getuid()
         trash_directory_path = os.path.join(volume, '.Trash', str(uid))
         trash_dir = Method1VolumeTrashDirectory(trash_directory_path,volume)
+        trash_dir.volume_of = self.volume_of
         trash_dir.store_relative_paths()
         return trash_dir
     def _volume_trash_dir2(self, volume) :
@@ -479,6 +474,7 @@ class GlobalTrashCan:
         dirname=".Trash-%s" % str(uid)
         trash_directory_path = os.path.join(volume, dirname)
         trash_dir = TrashDirectory(trash_directory_path,volume)
+        trash_dir.volume_of = self.volume_of
         trash_dir.store_relative_paths()
         return trash_dir
 
@@ -664,11 +660,11 @@ class NoWrapFormatter(IndentedHelpFormatter) :
         return text
 
 class TrashPutCmd:
-    def __init__(self, stdout, stderr, environ = os.environ):
+    def __init__(self, stdout, stderr, environ = os.environ, fstab = Fstab()):
         self.stdout  = stdout
         self.stderr  = stderr
         self.environ = environ
-        self.fstab   = Fstab()
+        self.fstab   = fstab
 
     def add_fake_volume(self, volume_path):
         class FakeFstab:

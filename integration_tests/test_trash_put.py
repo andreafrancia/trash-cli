@@ -2,10 +2,11 @@
 import os
 
 from nose.tools import istest, assert_equals, assert_not_equals
+from nose.tools import assert_in
+from nose import SkipTest
 
 from .files import having_file, require_empty_dir, having_empty_dir
 from trashcli.trash import TrashPutCmd
-
 
 class TrashPutTest:
 
@@ -19,6 +20,7 @@ class TrashPutTest:
         from .output_collector import OutputCollector
         self.out     = OutputCollector()
         self.err     = OutputCollector()
+        self.fstab   = FakeFstab()
 
         self.stderr_should_be = self.err.should_be
         self.output_should_be = self.out.should_be
@@ -27,9 +29,11 @@ class TrashPutTest:
         cmd = TrashPutCmd(
             stdout  = self.out,
             stderr  = self.err,
-            environ = self.environ
+            environ = self.environ,
+            fstab   = self.fstab
         )
         self.exit_code = cmd.run(list(argv))
+        self.stderr = self.err.getvalue()
 
 @istest
 class trash_put_stderr(TrashPutTest):
@@ -38,60 +42,46 @@ class trash_put_stderr(TrashPutTest):
         having_file('foo')
         self.run_trashput('trash-put', '-v', 'foo')
 
-        self.stderr_should_be("trash-put: `foo' trashed in "
-                              "sandbox/XDG_DATA_HOME/Trash\n")
+        assert_in("trash-put: `foo' trashed in sandbox/XDG_DATA_HOME/Trash",
+                  self.stderr.splitlines())
+
 
 from trashcli.trash import FakeFstab
+from textwrap import dedent
 @istest
 class when_trash_dir_is_not_sticky(TrashPutTest):
     @istest
     def shoult_print_a_warning(self):
         having_empty_dir('fake-vol/.Trash')
         having_file('fake-vol/foo')
-        cmd = TrashPutCmd(
-            stdout  = self.out,
-            stderr  = self.err,
-            environ = self.environ
-        )
-        cmd.fstab = FakeFstab()
-        cmd.fstab.add_mount('fake-vol')
+        self.fstab.add_mount('fake-vol')
 
 
-        cmd.run(['trash-put', '-v', 'fake-vol/foo'])
+        self.run_trashput('trash-put', '-v', 'fake-vol/foo')
 
-        should_fail(lambda:
-        self.stderr_should_be('trash-put: unsecure trash dir, '
-                                'should be sticky: fake-vol/.Trash\n'))
-        self.stderr_should_be("trash-put: `fake-vol/foo' trashed in sandbox/XDG_DATA_HOME/Trash\n")
+        raise SkipTest()
+        self.assert_line_in_text( 'trash-put: unsecure trash dir, '
+                'should be sticky: fake-vol/.Trash\n', self.stderr)
+
+    def assert_line_in_text(self, line, text):
+        assert_in(line, text.splitlines(), dedent('''\
+                Line not found in text
+                Line:
+
+                %s
+
+                Text:
+
+                ---
+                %s---''')
+                %(repr(line), text))
+
+
 
 def should_fail(func):
     from nose.tools import assert_raises
     with assert_raises(AssertionError):
         func()
-
-class TestTempGlobalTrashCan:
-    def test_something(self):
-        from trashcli.trash import GlobalTrashCan
-        from nose.tools import assert_items_equal
-        from mock import Mock
-        having_file('fake-vol/foo')
-        fstab = FakeFstab()
-        fstab.add_mount('fake-vol')
-        reporter = Mock()
-        trashcan = GlobalTrashCan(
-                    environ = {},
-                    reporter = reporter, fstab = fstab)
-
-        should_fail(lambda:
-            assert_equals('fake-vol', fstab.volume_of('fake-vol/foo')))
-
-
-        result = list(trashcan._possible_trash_directories_for('fake-vol/foo'))
-
-
-
-
-
 
 @istest
 class exit_code(TrashPutTest):

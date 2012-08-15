@@ -21,18 +21,6 @@ import shutil
 
 class TestTrashDirectory(TestCase) :
 
-    def test_trash(self) :
-        trash_dir=TrashDirectory("sandbox/trash-directory", '/')
-        trash_dir.store_relative_paths()
-
-        # test
-        file_to_trash="sandbox/dummy.txt"
-        touch(file_to_trash)
-        result = trash_dir.trash(file_to_trash)
-        self.assertTrue(isinstance(result,TrashedFile))
-        self.assertEquals(abspath(file_to_trash), result.path)
-        self.assertTrue(result.deletion_date is not None)
-
     def test_calc_id(self):
         trash_info_file = "/home/user/.local/share/Trash/info/foo.trashinfo"
         self.assertEquals('foo',TrashDirectory.calc_id(trash_info_file))

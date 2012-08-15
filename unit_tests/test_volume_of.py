@@ -1,6 +1,6 @@
 from trashcli.trash import VolumeOf
 from trashcli.trash import FakeIsMount
-from nose.tools import assert_equals, istest, assert_not_equals
+from nose.tools import assert_equals, istest
 
 class TestVolumeOf:
     @istest
@@ -18,6 +18,5 @@ class TestVolumeOf:
         ismount.add_mount('rel-vol')
         volume_of = VolumeOf(ismount = ismount)
 
-        #TODO: should be equal instead!
-        assert_not_equals('rel-vol', volume_of('rel-vol/foo'))
+        assert_equals('rel-vol', volume_of('rel-vol/foo'))
 
