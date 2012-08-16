@@ -4,6 +4,7 @@ from integration_tests.files import require_empty_dir
 from integration_tests.files import touch
 from integration_tests.files import unset_sticky_bit
 from integration_tests.files import set_sticky_bit
+from integration_tests.files import having_file
 
 from trashcli.trash import mkdirs
 from trashcli.trash import TopDirIsSymLink
@@ -47,21 +48,21 @@ class TestMethod1VolumeTrashDirectory:
         self.checker.check('sandbox/trash-dir/123')
 
 from nose.tools import assert_equals
-from nose import SkipTest
-from mock import Mock
+from mock import Mock, call
 from trashcli.trash import TrashDirectory
 class Test:
     def test_something(self):
         assert_equals(1,1)
         checker = Mock()
         check = Mock()
-        trash_dir = TrashDirectory('/', '/')
+        having_file('foo')
+        trash_dir = TrashDirectory('sandbox/trash-dir', '/')
         trash_dir.check = check
         trash_dir.checker = checker
-        raise SkipTest()
         trash_dir.path_for_trash_info = Mock()
+        trash_dir.path_for_trash_info.for_file.return_value = 'example.trashinfo'
 
         trash_dir.trash('foo')
 
         assert_equals([], checker.mock_calls)
-        assert_equals([], check.mock_calls)
+        assert_equals([call('sandbox/trash-dir')], check.mock_calls)

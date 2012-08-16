@@ -59,8 +59,8 @@ class TrashDirectory:
         self.check(self.path)
 
         from datetime import datetime
-        trash_info = TrashInfo(self._path_for_trashinfo(path),
-                               datetime.now())
+        trash_info_path = self.path_for_trash_info.for_file(path)
+        trash_info = TrashInfo(trash_info_path, datetime.now())
 
         basename = os.path.basename(trash_info.path)
         trashinfo_file_content = trash_info.render()
@@ -161,9 +161,6 @@ class TrashDirectory:
 
     def _calc_path_for_info_file(self, trash_id) :
         return os.path.join(self.info_dir, '%s.trashinfo' % trash_id)
-
-    def _path_for_trashinfo(self, file_to_be_trashed) :
-        return self.path_for_trash_info.for_file(file_to_be_trashed)
 
     """
     Create a .trashinfo file in the $trash/info directory.
@@ -411,6 +408,9 @@ class GlobalTrashCan:
                           trashed_file.original_file)
                     return
 
+                except TopDirWithoutStickyBit:
+                    self.reporter.found_unsecure_trash_dir(
+                            os.path.dirname(trash_dir.path))
                 except (IOError, OSError), error:
                     self.reporter.unable_to_trash_file_in_because(
                             file, trash_dir.name(), str(error))
@@ -787,6 +787,9 @@ class TrashPutReporter:
     def file_has_been_trashed_in_as(self, trashee, trash_directory, destination):
         self.logger.info("`%s' trashed in %s" % (trashee, trash_directory))
 
+    def found_unsecure_trash_dir(self, trash_dir_path):
+        self.logger.info("found unsecure .Trash dir (should be sticky): %s"
+                % trash_dir_path)
     def unable_to_trash_file_in_because(self,
                                         file_to_be_trashed,
                                         trash_directory, error):

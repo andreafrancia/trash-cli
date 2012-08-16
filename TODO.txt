@@ -3,32 +3,43 @@ TODO:
  x Consolidate tests about store_absolute/relative_paths from test_trash and 
    test_trash_info
  - Method1VolumeTrashDirectory --> remove super class TrashDirectory
-    -> make TrashDirectory.trash() testable
-        -> relax dependency of TrashDirectory.trash() from path_for_trash_info
-        -> Collapse _path_for_trashinfo
-            -> make TrashDirectory.trash() testable
-               x> write integration test for trash-put warning 'dir is not 
-                  sticky' (in test_trash_put:trash_put_stderr
-               - make the test pass <--- WIP
+    - status:
+        - wrote a characterization test in 
+          test_method1_security_check.py:Test:test_something
+        - need to:
+           - call the checker instead of TrashDir.check
+           - configure the checker during the creation of the TrashDir within
+             the GlobalTrashCan:_possible_trash_directories_for
+           - think whether would be better check before for insicureness of 
+             directories
+           - think who will use this responsbility (sicureness of directories)
+             among the other commands.
+           - maybe adding other tests for spec-ing the behaviour in other 
+             unsecure cases it become more easy to understand how to organize
+             the code
 
-In order to finish integration test in trash-put:
- x add a fake volume support in TrashPutCmd
- x make TrashPutCmd able to be configured for adding fake volume
- x make GlobalTrashCan.volume_of which uses data from list of volumes instead 
-   of using the other strategy
- x write a FakeFstab with consistent volume_of and list_mount_points (tested, 
-   the one I wrote seems not to work)
- x TrashPutCmd should be configurable in fake volumes
- x FakeIsMount should support relative mounts
-    x VolumeOf should use normpath instead of realpath
-       x TrashDirectory problem on non volume path should be fixed
-
+Things Done:
+ x> make TrashDirectory.trash() testable
+    x add a fake volume support in TrashPutCmd
+    x make TrashPutCmd able to be configured for adding fake volume
+    x make GlobalTrashCan.volume_of which uses data from list of volumes instead 
+      of using the other strategy
+    x write a FakeFstab with consistent volume_of and list_mount_points (tested, 
+      the one I wrote seems not to work)
+    x TrashPutCmd should be configurable in fake volumes
+    x FakeIsMount should support relative mounts
+       x VolumeOf should use normpath instead of realpath
+          x TrashDirectory problem on non volume path should be fixed
+    x> relax dependency of TrashDirectory.trash() from path_for_trash_info
+    x> Collapse _path_for_trashinfo
+       x> make TrashDirectory.trash() testable
+          x> write integration test for trash-put warning 'dir is not 
+             sticky' (in test_trash_put:trash_put_stderr
+          x make the test pass <--- WIP
 
 Clean-up:
  - remove duplication between GlobalTrashCan Home, method1 and method2 
    creation
-
-
 
  - consolidate use of enumeration of file between trash-list and trash-restore
  - consolidate the enumeration of TrashDirs between trash-list/restore and

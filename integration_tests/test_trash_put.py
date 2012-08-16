@@ -3,7 +3,6 @@ import os
 
 from nose.tools import istest, assert_equals, assert_not_equals
 from nose.tools import assert_in
-from nose import SkipTest
 
 from .files import having_file, require_empty_dir, having_empty_dir
 from trashcli.trash import TrashPutCmd
@@ -59,9 +58,9 @@ class when_trash_dir_is_not_sticky(TrashPutTest):
 
         self.run_trashput('trash-put', '-v', 'fake-vol/foo')
 
-        raise SkipTest()
-        self.assert_line_in_text( 'trash-put: unsecure trash dir, '
-                'should be sticky: fake-vol/.Trash\n', self.stderr)
+        self.assert_line_in_text(
+                'trash-put: found unsecure .Trash dir (should be sticky): '
+                'fake-vol/.Trash', self.stderr)
 
     def assert_line_in_text(self, line, text):
         assert_in(line, text.splitlines(), dedent('''\

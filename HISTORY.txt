@@ -1,3 +1,6 @@
+after 0.12.7:
+ - Now `trash-put -v` will warning if it foudn a unsticky .Trash dir.
+
 0.12.7:
  - fixed trash-empty crashed with GetoptError in short_has_arg(): option -2 
    not recognized (see 
