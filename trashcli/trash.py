@@ -54,9 +54,7 @@ class TrashDirectory:
     def trash(self, path):
         path = os.path.normpath(path)
         if self.checker:
-            #self.checker.check(path)
-            pass
-        self.check(self.path)
+            self.checker.check(self.path)
 
         from datetime import datetime
         trash_info_path = self.path_for_trash_info.for_file(path)
@@ -202,9 +200,6 @@ class TrashDirectory:
 
         raise IOError()
 
-    def check(self, trash_dir_path):
-        pass
-
 class PathForTrashInfo:
     def __init__(self):
         pass
@@ -251,9 +246,7 @@ class TopDirIsSymLink(IOError):
     """
     pass
 
-class Method1VolumeTrashDirectory(TrashDirectory):
-    def __init__(self, path, volume) :
-        TrashDirectory.__init__(self,path,volume)
+class Method1VolumeTrashDirectory:
 
     def check(self, trash_dir_path):
         self.trash_dir_path = trash_dir_path
@@ -362,13 +355,11 @@ class GlobalTrashCan:
                  environ           = os.environ,
                  reporter          = NullReporter(),
                  getuid            = os.getuid,
-                 list_mount_points = real_list_mount_points,
                  fstab             = Fstab(),
                  now               = datetime.now):
         self.getuid            = getuid
         self.environ           = environ
         self.reporter          = reporter
-        self.list_mount_points = list_mount_points
         self.fstab             = fstab
         self.now               = now
 
@@ -462,9 +453,10 @@ class GlobalTrashCan:
         """
         uid = self.getuid()
         trash_directory_path = os.path.join(volume, '.Trash', str(uid))
-        trash_dir = Method1VolumeTrashDirectory(trash_directory_path,volume)
+        trash_dir = TrashDirectory(trash_directory_path,volume)
         trash_dir.volume_of = self.volume_of
         trash_dir.store_relative_paths()
+        trash_dir.checker = Method1VolumeTrashDirectory()
         return trash_dir
     def _volume_trash_dir2(self, volume) :
         """
@@ -665,14 +657,6 @@ class TrashPutCmd:
         self.stderr  = stderr
         self.environ = environ
         self.fstab   = fstab
-
-    def add_fake_volume(self, volume_path):
-        class FakeFstab:
-            def mount_points(self): return [volume_path]
-            def volume_of(self, path):
-                raise ParseError()
-                return volume_path
-        self.fstab = FakeFstab()
 
     def run(self, argv):
         parser = self.get_option_parser(os.path.basename(argv[0]))

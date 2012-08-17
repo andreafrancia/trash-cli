@@ -17,7 +17,7 @@ import os
 class TestMethod1VolumeTrashDirectory:
     def setUp(self):
         require_empty_dir('sandbox')
-        self.checker = Method1VolumeTrashDirectory('/', None)
+        self.checker = Method1VolumeTrashDirectory()
 
     @raises(TopDirWithoutStickyBit)
     def test_check_when_no_sticky_bit(self):
@@ -54,15 +54,12 @@ class Test:
     def test_something(self):
         assert_equals(1,1)
         checker = Mock()
-        check = Mock()
         having_file('foo')
         trash_dir = TrashDirectory('sandbox/trash-dir', '/')
-        trash_dir.check = check
         trash_dir.checker = checker
         trash_dir.path_for_trash_info = Mock()
         trash_dir.path_for_trash_info.for_file.return_value = 'example.trashinfo'
 
         trash_dir.trash('foo')
 
-        assert_equals([], checker.mock_calls)
-        assert_equals([call('sandbox/trash-dir')], check.mock_calls)
+        assert_equals([call.check('sandbox/trash-dir')], checker.mock_calls)

@@ -10,7 +10,6 @@ class TestGlobalTrashCan:
         self.trashcan = GlobalTrashCan(environ = dict(),
                                   reporter = self.reporter,
                                   getuid = lambda:123,
-                                  list_mount_points = None,
                                   now = None)
 
     @istest

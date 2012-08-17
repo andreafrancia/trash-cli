@@ -55,7 +55,6 @@ class when_trash_dir_is_not_sticky(TrashPutTest):
         having_file('fake-vol/foo')
         self.fstab.add_mount('fake-vol')
 
-
         self.run_trashput('trash-put', '-v', 'fake-vol/foo')
 
         self.assert_line_in_text(

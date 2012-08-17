@@ -1,22 +1,35 @@
 Feature: don't use world writable trash dirs
 TODO:
- x Consolidate tests about store_absolute/relative_paths from test_trash and 
+ x Consolidate tests about store_absolute/relative_paths from test_trash and
    test_trash_info
- - Method1VolumeTrashDirectory --> remove super class TrashDirectory
+ x Method1VolumeTrashDirectory --> remove super class TrashDirectory
     - status:
-        - wrote a characterization test in 
+        x wrote a characterization test in
           test_method1_security_check.py:Test:test_something
-        - need to:
-           - call the checker instead of TrashDir.check
-           - configure the checker during the creation of the TrashDir within
+        x need to:
+           x call the checker instead of TrashDir.check
+           x configure the checker during the creation of the TrashDir within
              the GlobalTrashCan:_possible_trash_directories_for
-           - think whether would be better check before for insicureness of 
-             directories
-           - think who will use this responsbility (sicureness of directories)
-             among the other commands.
-           - maybe adding other tests for spec-ing the behaviour in other 
-             unsecure cases it become more easy to understand how to organize
-             the code
+
+ - trash-put unit tests independent from the filesystem:
+    - inject filesystem for TrashDirectory
+       - use of filesystem:
+          - os.open
+          - os.path.abspath
+          - os.path.normpath
+          - os.path.isabs
+          - os.path.basename
+          - os.path.join
+          - volume_of
+          - TrashInfo
+          - move
+          - remove_file
+          - mkdirs_using_mode
+          - list_files_in_dir
+          - TrashedFile
+       - tests for TrashDirectory:
+       - ??? all_info_files is still used
+
 
 Things Done:
  x> make TrashDirectory.trash() testable
