@@ -291,8 +291,10 @@ class Fstab(AbstractFstab):
 
 class FakeFstab:
     def __init__(self):
+        import os
         self.ismount = FakeIsMount()
         self.volume_of = VolumeOf(ismount = self.ismount)
+        self.volume_of.abspath = os.path.normpath
 
     def mount_points(self):
         return self.ismount.mount_points()
@@ -329,9 +331,11 @@ class FakeIsMount:
 class VolumeOf:
     def __init__(self, ismount):
         self._ismount = ismount
+        import os
+        self.abspath = os.path.abspath
 
     def __call__(self, path):
-        path = os.path.normpath(path)
+        path = self.abspath(path)
         while path != os.path.dirname(path):
             if self._ismount(path):
                 break

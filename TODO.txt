@@ -3,14 +3,6 @@ TODO:
  x Consolidate tests about store_absolute/relative_paths from test_trash and
    test_trash_info
  x Method1VolumeTrashDirectory --> remove super class TrashDirectory
-    - status:
-        x wrote a characterization test in
-          test_method1_security_check.py:Test:test_something
-        x need to:
-           x call the checker instead of TrashDir.check
-           x configure the checker during the creation of the TrashDir within
-             the GlobalTrashCan:_possible_trash_directories_for
-
  - trash-put unit tests independent from the filesystem:
     - inject filesystem for TrashDirectory
        - use of filesystem:
@@ -29,26 +21,6 @@ TODO:
           - TrashedFile
        - tests for TrashDirectory:
        - ??? all_info_files is still used
-
-
-Things Done:
- x> make TrashDirectory.trash() testable
-    x add a fake volume support in TrashPutCmd
-    x make TrashPutCmd able to be configured for adding fake volume
-    x make GlobalTrashCan.volume_of which uses data from list of volumes instead 
-      of using the other strategy
-    x write a FakeFstab with consistent volume_of and list_mount_points (tested, 
-      the one I wrote seems not to work)
-    x TrashPutCmd should be configurable in fake volumes
-    x FakeIsMount should support relative mounts
-       x VolumeOf should use normpath instead of realpath
-          x TrashDirectory problem on non volume path should be fixed
-    x> relax dependency of TrashDirectory.trash() from path_for_trash_info
-    x> Collapse _path_for_trashinfo
-       x> make TrashDirectory.trash() testable
-          x> write integration test for trash-put warning 'dir is not 
-             sticky' (in test_trash_put:trash_put_stderr
-          x make the test pass <--- WIP
 
 Clean-up:
  - remove duplication between GlobalTrashCan Home, method1 and method2 
