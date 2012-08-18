@@ -18,4 +18,3 @@ class TestGlobalTrashCan:
         self.trashcan.trash('non-existent')
         self.reporter.unable_to_trash_file.assert_called_with('non-existent')
 
-

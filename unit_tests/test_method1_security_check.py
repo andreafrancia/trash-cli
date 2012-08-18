@@ -47,19 +47,3 @@ class TestMethod1VolumeTrashDirectory:
 
         self.checker.check('sandbox/trash-dir/123')
 
-from nose.tools import assert_equals
-from mock import Mock, call
-from trashcli.trash import TrashDirectory
-class Test:
-    def test_something(self):
-        assert_equals(1,1)
-        checker = Mock()
-        having_file('foo')
-        trash_dir = TrashDirectory('sandbox/trash-dir', '/')
-        trash_dir.checker = checker
-        trash_dir.path_for_trash_info = Mock()
-        trash_dir.path_for_trash_info.for_file.return_value = 'example.trashinfo'
-
-        trash_dir.trash('foo')
-
-        assert_equals([call.check('sandbox/trash-dir')], checker.mock_calls)
