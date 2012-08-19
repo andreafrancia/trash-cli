@@ -1,62 +1,55 @@
-Feature: don't use world writable trash dirs
-TODO:
- x Consolidate tests about store_absolute/relative_paths from test_trash and
-   test_trash_info
- x Method1VolumeTrashDirectory --> remove super class TrashDirectory
- - trash-put unit tests independent from the filesystem:
-    - inject filesystem for TrashDirectory
-       - use of filesystem:
-          - os.open
-          - os.path.abspath
-          - os.path.normpath
-          - os.path.isabs
-          - os.path.basename
-          - os.path.join
-          - volume_of
-          - TrashInfo
-          - move
-          - remove_file
-          - mkdirs_using_mode
-          - list_files_in_dir
-          - TrashedFile
-       - tests for TrashDirectory:
-       - ??? all_info_files is still used
+Feature: trash-rm
 
-Clean-up:
- - remove duplication between GlobalTrashCan Home, method1 and method2 
-   creation
+Usage example:
 
- - consolidate use of enumeration of file between trash-list and trash-restore
- - consolidate the enumeration of TrashDirs between trash-list/restore and
-   trash-put
- - on trash-list:
-    - don't list contents of world writable TrashDirs
-    - print warning on stderr
- - on trash-restore:
-    - don't list contents of world writable TrashDirs
-    - print warning on stderr
- - on trash-empty:
-    - maybe delete without problem
- - on trash-put:
-    - don't use world writable TrashDirs
-    - print warning on stderr
+    > trash-list
+    2010-11-15 19:27:29 /home/kfrance/handbook/introduction.html
+    2010-11-15 19:27:25 /home/kfrance/handbook/activities.html
+    2011-02-21 09:23:37 /home/kfrance/dissertation/src/bad_creature.o
+    2011-02-21 09:23:37 /home/kfrance/dissertation/src/Color_gene.o
+    2011-02-21 09:23:37 /home/kfrance/dissertation/src/Perceptron.o
+    > trash-rm '*.o'
+    > trash-list
+    2010-11-15 19:27:29 /home/kfrance/handbook/introduction.html
+    2010-11-15 19:27:25 /home/kfrance/handbook/activities.html
+
+How commands get the list of trashed_files?
+
+ - trash-list
+    - AvailableTrashDirs
+       - FileSystemReader
+ - trash-empty
+    - AvailableTrashDirs
+       - FileSystemReader
+ - trash-put
+    - GlobalTrashCan (_possible_trash_directories_for)
+       - _home_trash_dir
+       - trash_directories_for_volume
+ - restore-trash
+    - GlobalTrashCan.trashed_files
+       - all_info_files
+       - _create_trashed_file_from_info_file
+ - trash-rm:
+     - def list_files_to(self, output)
+         for file in files:
+            out.garbage(original_path, info_file, original_file)
+         
+      
+      
 
 
 
-Working on:
- - Removing the TrashDirectory hierarchy:
-    x Remove HomeTrashDirectory
-       x move the behaviour of name() to TrashDirectory
-       x remove import in test_trash.py
-          x make HomeTrashDirectory a factory for TestTrashedFile
-    x Remove references to VolumeTrashDirectory from:
-       x trash.py
-       x test_trash.py
-    - Collapse check:
-       - Move Method1VolumeTrashDirectory:check to a Strategy
-         - trash.py
-         - test_trash.py
-            - in Method1VolumeTrashDirectoryTest factor out "chmod +/-t dir"
+Design todo:
+ - get rid of logging package
+ - get rid of TrashDirectory.info_dir and files_dir properties
+ - remove all the duplication 
+    - all_info_files, trashed_files and for_all_trashed_files
+ - restore the stress test for persist trashinfo (not sure)
+ - remove NullReporter if not used
+ - get rid of TrashInfo abstraction
+ - get rid of TimeUtils.parse_iso8601 if not used
+ - rename remove_file in to remove_existing_file
+ - refactor TrashPutCmd for simplicity
 
 TrashPutCmd dependencies:
    - stderr
@@ -73,7 +66,6 @@ GlobalTrashCan dependencies:
    - list_mount_points
    - datetime.now
 
-
 TrashDirectory collaborators:
    - os.path.normpath
    - os.path.basename
@@ -88,7 +80,7 @@ TrashDirectory collaborators:
    - datetime
    - shutil.move
 
-GlobalTrashCan
+GlobalTrashCan responsibilies:
  - enumerates possible TrashDirectories for a file to be trashed
  - enumerates all trashed files
  - trash a file in the right location
@@ -116,20 +108,6 @@ Features backlog:
  - trash-rm '*.o'
  - trash-empty should empty even the mac trash directory
 
-Design todo:
- - invalidate Google Code download and put a redirect to PyPi
- - get rid of logging package
- - get rid of the IOError exception raising on file is not in the same volume
- - get rid of TrashDirectory.info_dir and files_dir properties
- - remove all the duplication 
-    - all_info_files, trashed_files and for_all_trashed_files
- - restore the stress test for persist trashinfo (not sure)
- - remove NullReporter if not used
- - get rid of TrashInfo abstraction
- - get rid of TimeUtils.parse_iso8601 if not used
- - rename remove_file in to remove_existing_file
- - refactor TrashPutCmd for simplicity
-
 Test to be ported to nosetests:
  - trash-put:
     - trash in home trashcan
@@ -143,5 +121,4 @@ Test to be ported to nosetests:
  - should refuse to create the $topdir/.Trash/$uid directory if the 
    $topdir/.Trash is not sticky
 
- 
 

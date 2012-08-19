@@ -4,7 +4,6 @@ from integration_tests.files import require_empty_dir
 from integration_tests.files import touch
 from integration_tests.files import unset_sticky_bit
 from integration_tests.files import set_sticky_bit
-from integration_tests.files import having_file
 
 from trashcli.trash import mkdirs
 from trashcli.trash import TopDirIsSymLink

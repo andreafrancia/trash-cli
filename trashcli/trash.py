@@ -908,26 +908,27 @@ class ListCmd:
         parse.as_default(self.list_trash)
         parse(argv)
     def list_trash(self):
-        self.trashdirs.list_trashdirs(self.list_contents, self.output)
+        self.list_trash2()
+    def list_trash2(self):
+        self.trashdirs.list_trashdirs(
+                self.list_contents, self.output)
     def list_contents(self, trash_dir, volume_path):
         self.output.set_volume_path(volume_path)
         trashdir = TrashDir(self.file_reader, trash_dir, volume_path)
-        class Log:
-            def print_trashinfo(_, path):
-                try:
-                    contents = self.contents_of(path)
-                except IOError as e :
-                    self.output.print_read_error(e)
-                else:
-                    deletion_date = parse_deletion_date(contents) or unknown_date()
-                    try:
-                        path = parse_path(contents)
-                    except ParseError:
-                        self.output.print_parse_path_error(path)
-                    else:
-                        self.output.print_entry(deletion_date, path)
-        log = Log()
-        trashdir.each_trashinfo(log.print_trashinfo)
+        trashdir.each_trashinfo(self._print_trashinfo)
+    def _print_trashinfo(self, path):
+        try:
+            contents = self.contents_of(path)
+        except IOError as e :
+            self.output.print_read_error(e)
+        else:
+            deletion_date = parse_deletion_date(contents) or unknown_date()
+            try:
+                path = parse_path(contents)
+            except ParseError:
+                self.output.print_parse_path_error(path)
+            else:
+                self.output.print_entry(deletion_date, path)
     def description(self, program_name, printer):
         printer.usage('Usage: %s [OPTIONS...]' % program_name)
         printer.summary('List trashed files')
