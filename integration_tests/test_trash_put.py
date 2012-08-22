@@ -5,6 +5,7 @@ from nose.tools import istest, assert_equals, assert_not_equals
 from nose.tools import assert_in
 
 from .files import having_file, require_empty_dir, having_empty_dir
+from .files import make_sticky_dir
 from trashcli.trash import TrashPutCmd
 
 class TrashPutTest:
@@ -48,31 +49,57 @@ class trash_put_stderr(TrashPutTest):
 from trashcli.trash import FakeFstab
 from textwrap import dedent
 @istest
-class when_trash_dir_is_not_sticky(TrashPutTest):
-    @istest
-    def shoult_print_a_warning(self):
-        having_empty_dir('fake-vol/.Trash')
-        having_file('fake-vol/foo')
+class TestUnsecureTrashDirMessages(TrashPutTest):
+    def setUp(self):
+        TrashPutTest.setUp(self)
+        having_empty_dir('fake-vol')
         self.fstab.add_mount('fake-vol')
+        having_file('fake-vol/foo')
+
+    @istest
+    def when_is_unsticky(self):
+        having_empty_dir('fake-vol/.Trash')
 
         self.run_trashput('trash-put', '-v', 'fake-vol/foo')
 
-        self.assert_line_in_text(
+        assert_line_in_text(
                 'trash-put: found unsecure .Trash dir (should be sticky): '
                 'fake-vol/.Trash', self.stderr)
 
-    def assert_line_in_text(self, line, text):
-        assert_in(line, text.splitlines(), dedent('''\
-                Line not found in text
-                Line:
+    @istest
+    def when_it_is_not_a_dir(self):
+        having_file('fake-vol/.Trash')
 
-                %s
+        self.run_trashput('trash-put', '-v', 'fake-vol/foo')
 
-                Text:
+        assert_line_in_text(
+                'trash-put: found unusable .Trash dir (should be a dir): '
+                'fake-vol/.Trash', self.stderr)
 
-                ---
-                %s---''')
-                %(repr(line), text))
+    @istest
+    def when_is_a_symlink(self):
+        make_sticky_dir('fake-vol/link-destination')
+        os.symlink('link-destination', 'fake-vol/.Trash')
+
+        self.run_trashput('trash-put', '-v', 'fake-vol/foo')
+
+        assert_line_in_text(
+                'trash-put: found unsecure .Trash dir (should not be a symlink): '
+                'fake-vol/.Trash', self.stderr)
+
+
+def assert_line_in_text(line, text):
+    assert_in(line, text.splitlines(), dedent('''\
+            Line not found in text
+            Line:
+
+            %s
+
+            Text:
+
+            ---
+            %s---''')
+            %(repr(line), text))
 
 
 

@@ -19,7 +19,10 @@ class TrashDirectory:
     def __init__(self, path, volume):
         self.path   = os.path.normpath(path)
         self.volume = volume
-        self.checker = None
+        class all_is_ok_checker:
+            def valid_to_be_written(self, a, b): pass
+            def check(self, a):pass
+        self.checker = all_is_ok_checker()
 
     def __str__(self) :
         return self.name()
@@ -54,7 +57,28 @@ class TrashDirectory:
     def trash(self, path):
         path = os.path.normpath(path)
         if self.checker:
-            self.checker.check(self.path)
+            class ValidationOutput:
+                def not_valid_should_be_a_dir(_):
+                    raise TopDirNotPresent("topdir should be a directory: %s"
+                                        % self.path)
+                def not_valid_parent_should_not_be_a_symlink(_):
+                    raise TopDirIsSymLink("topdir can't be a symbolic link: %s"
+                                        % self.path)
+                def not_valid_parent_should_be_sticky(_):
+                    raise TopDirWithoutStickyBit("topdir should have the sticky bit: %s"
+                                        % self.path)
+                def is_valid(self):
+                    pass
+            output = ValidationOutput()
+            class FileSystem:
+                def isdir(self, path):
+                    return os.path.isdir(path)
+                def islink(self, path):
+                    return os.path.islink(path)
+                def has_sticky_bit(self, path):
+                    return has_sticky_bit(path)
+            self.checker.fs = FileSystem()
+            self.checker.valid_to_be_written(self.path, output)
 
         from datetime import datetime
         trash_info_path = self.path_for_trash_info.for_file(path)
@@ -228,46 +252,6 @@ class PathForTrashInfo:
         return os.path.realpath(parent)
 
 
-class TopDirWithoutStickyBit(IOError):
-    """
-    Raised when $topdir/.Trash doesn't have the sticky bit.
-    """
-    pass
-
-class TopDirNotPresent(IOError):
-    """
-    Raised when $topdir/.Trash is not a dir.
-    """
-    pass
-
-class TopDirIsSymLink(IOError):
-    """
-    Raised when $topdir/.Trash is a simbolic link.
-    """
-    pass
-
-class Method1VolumeTrashDirectory:
-
-    def check(self, trash_dir_path):
-        self.trash_dir_path = trash_dir_path
-        if not self._parent_is_dir():
-            raise TopDirNotPresent("topdir should be a directory: %s"
-                                   % self.trash_dir_path)
-        if self._parent_is_link():
-            raise TopDirIsSymLink("topdir can't be a symbolic link: %s"
-                                  % self.trash_dir_path)
-        if not self._parent_has_sticky_bit():
-            raise TopDirWithoutStickyBit("topdir should have the sticky bit: %s"
-                                         % self.trash_dir_path)
-    def _parent_is_dir(self):
-        return os.path.isdir(self._parent())
-    def _parent_is_link(self):
-        return os.path.islink(self._parent())
-    def _parent_has_sticky_bit(self):
-        return has_sticky_bit(self._parent())
-    def _parent(self):
-        return os.path.dirname(self.trash_dir_path)
-
 class NullObject:
     def __getattr__(self, name):
         return lambda *argl,**args:None
@@ -394,6 +378,17 @@ class GlobalTrashCan:
             return
 
         for trash_dir in self._possible_trash_directories_for(file):
+            try:
+                trash_dir.checker.check(trash_dir.path)
+            except TopDirIsSymLink:
+                self.reporter.found_unsercure_trash_dir_symlink(
+                        os.path.dirname(trash_dir.path))
+            except TopDirNotPresent:
+                self.reporter.found_unusable_trash_dir_not_a_dir(
+                        os.path.dirname(trash_dir.path))
+            except TopDirWithoutStickyBit:
+                self.reporter.found_unsecure_trash_dir_unsticky(
+                        os.path.dirname(trash_dir.path))
             if self.file_could_be_trashed_in(file, trash_dir.path):
                 try:
                     trashed_file = trash_dir.trash(file)
@@ -403,8 +398,14 @@ class GlobalTrashCan:
                           trashed_file.original_file)
                     return
 
+                except TopDirIsSymLink:
+                    self.reporter.found_unsercure_trash_dir_symlink(
+                            os.path.dirname(trash_dir.path))
+                except TopDirNotPresent:
+                    self.reporter.found_unusable_trash_dir_not_a_dir(
+                            os.path.dirname(trash_dir.path))
                 except TopDirWithoutStickyBit:
-                    self.reporter.found_unsecure_trash_dir(
+                    self.reporter.found_unsecure_trash_dir_unsticky(
                             os.path.dirname(trash_dir.path))
                 except (IOError, OSError), error:
                     self.reporter.unable_to_trash_file_in_because(
@@ -460,7 +461,7 @@ class GlobalTrashCan:
         trash_dir = TrashDirectory(trash_directory_path,volume)
         trash_dir.volume_of = self.volume_of
         trash_dir.store_relative_paths()
-        trash_dir.checker = Method1VolumeTrashDirectory()
+        trash_dir.checker = TopTrashDirRules(None)
         return trash_dir
     def _volume_trash_dir2(self, volume) :
         """
@@ -775,7 +776,13 @@ class TrashPutReporter:
     def file_has_been_trashed_in_as(self, trashee, trash_directory, destination):
         self.logger.info("`%s' trashed in %s" % (trashee, trash_directory))
 
-    def found_unsecure_trash_dir(self, trash_dir_path):
+    def found_unsercure_trash_dir_symlink(self, trash_dir_path):
+        self.logger.info("found unsecure .Trash dir (should not be a symlink): %s"
+                % trash_dir_path)
+    def found_unusable_trash_dir_not_a_dir(self, trash_dir_path):
+        self.logger.info("found unusable .Trash dir (should be a dir): %s"
+                % trash_dir_path)
+    def found_unsecure_trash_dir_unsticky(self, trash_dir_path):
         self.logger.info("found unsecure .Trash dir (should be sticky): %s"
                 % trash_dir_path)
     def unable_to_trash_file_in_because(self,
@@ -896,9 +903,9 @@ class ListCmd:
         self.err         = self.output.err
         self.file_reader = file_reader
         self.contents_of = file_reader.contents_of
-        self.trashdirs   = AvailableTrashDirs(environ,
-                                              getuid,
-                                              fs = file_reader)
+        self.trashdirs   = TrashDirs(environ,
+                                     getuid,
+                                     fs = file_reader)
         self.version     = version
 
     def run(self, *argv):
@@ -1034,9 +1041,9 @@ class EmptyCmd():
                 self.is_sticky_dir = file_reader.is_sticky_dir
                 self.exists        = file_reader.exists
                 self.is_symlink    = file_reader.is_symlink
-        self.trashdirs    = AvailableTrashDirs(environ,
-                                               getuid,
-                                               fs = Fs())
+        self.trashdirs    = TrashDirs(environ,
+                                      getuid,
+                                      fs = Fs())
 
         self.now          = now
         self.file_remover = file_remover
@@ -1165,14 +1172,11 @@ class PrintVersion:
     def __call__(self, program_name):
         self.println("%s %s" % (program_name, self.version))
 
-class AvailableTrashDirs:
-    def __init__(self, environ, getuid, fs=None):
+class TrashDirs:
+    def __init__(self, environ, getuid, fs):
         self.environ       = environ
         self.getuid        = getuid
         self.fs            = fs
-        self.list_volumes  = fs.list_volumes
-        self.is_sticky_dir = fs.is_sticky_dir
-        self.exists        = fs.exists
     def do_nothing(trash_dir, volume): pass
     class NullLog:
         def top_trashdir_skipped_because_parent_not_sticky(self, trashdir): pass
@@ -1186,20 +1190,76 @@ class AvailableTrashDirs:
         home_trashcan_if_possible(self.environ, return_result_with_volume)
     def _for_each_volume_trashcan(self, action, error_log):
         from os.path import join
-        for volume in self.list_volumes():
-            parent_trashdir = join(volume, '.Trash')
-            top_trashdir = join(parent_trashdir, str(self.getuid()))
+        for volume in self.fs.list_volumes():
+            top_trashdir_path = join(volume, '.Trash/%s' % self.getuid())
             alt_top_trashdir = join(volume, '.Trash-%s' % self.getuid())
-            if self.exists(top_trashdir):
-                if self.is_sticky_dir(parent_trashdir):
-                    if not self.fs.is_symlink(parent_trashdir):
-                        action(top_trashdir, volume)
-                    else:
-                        error_log.top_trashdir_skipped_because_parent_is_symlink(top_trashdir)
-                else:
-                    error_log.top_trashdir_skipped_because_parent_not_sticky(top_trashdir)
+            class IsValidOutput:
+                def not_valid_parent_should_not_be_a_symlink(self):
+                    error_log.top_trashdir_skipped_because_parent_is_symlink(top_trashdir_path)
+                def not_valid_parent_should_be_sticky(self):
+                    error_log.top_trashdir_skipped_because_parent_not_sticky(top_trashdir_path)
+                def is_valid(self):
+                    action(top_trashdir_path, volume)
+
+            top_trashdir2 = TopTrashDirRules(self.fs)
+            top_trashdir2.valid_to_be_read(top_trashdir_path, IsValidOutput())
 
             action(alt_top_trashdir, volume)
+
+class TopTrashDirRules:
+    def __init__(self, fs):
+        self.fs = fs
+    def valid_to_be_read(self, path, output):
+        parent_trashdir = os.path.dirname(path)
+        if not self.fs.exists(path):
+            return
+        if not self.fs.is_sticky_dir(parent_trashdir):
+            output.not_valid_parent_should_be_sticky()
+            return
+        if self.fs.is_symlink(parent_trashdir):
+            output.not_valid_parent_should_not_be_a_symlink()
+            return
+        else:
+            output.is_valid()
+    def check(self, trash_dir_path):
+        class ValidationOutput:
+            def not_valid_should_be_a_dir(self):
+                raise TopDirNotPresent("topdir should be a directory: %s"
+                                    % trash_dir_path)
+            def not_valid_parent_should_not_be_a_symlink(self):
+                raise TopDirIsSymLink("topdir can't be a symbolic link: %s"
+                                    % trash_dir_path)
+            def not_valid_parent_should_be_sticky(self):
+                raise TopDirWithoutStickyBit("topdir should have the sticky bit: %s"
+                                    % trash_dir_path)
+            def is_valid(self):
+                pass
+        output = ValidationOutput()
+        class FileSystem:
+            def isdir(self, path):
+                return os.path.isdir(path)
+            def islink(self, path):
+                return os.path.islink(path)
+            def has_sticky_bit(self, path):
+                return has_sticky_bit(path)
+        self.fs = FileSystem()
+        self.valid_to_be_written(trash_dir_path, output)
+    def valid_to_be_written(self, trash_dir_path, output):
+        parent = os.path.dirname(trash_dir_path)
+        if not self.fs.isdir(parent):
+            output.not_valid_should_be_a_dir()
+            return
+        if self.fs.islink(parent):
+            output.not_valid_parent_should_not_be_a_symlink()
+            return
+        if not self.fs.has_sticky_bit(parent):
+            output.not_valid_parent_should_be_sticky()
+            return
+        output.is_valid()
+
+class TopDirWithoutStickyBit(IOError): pass
+class TopDirNotPresent(IOError): pass
+class TopDirIsSymLink(IOError): pass
 
 def home_trashcan_if_possible(environ, out):
     if 'XDG_DATA_HOME' in environ:
