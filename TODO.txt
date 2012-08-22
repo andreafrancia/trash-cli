@@ -16,11 +16,6 @@ Usage example:
 TODO:
  - prepare a list_trashinfos that list all trashinfo from all known valid 
    trashdirectories
-    - prepare a list_valid_trash_directories
- - change list_trashdirs to behave with a object as destination
- - unificare Method1VolumeTrashDirectory.check con i controlli in 
-   TrashDirs._for_each_volume_trashcan
-    - trasformare in Method1TrashDir(path).is_valid, 
         
 
 

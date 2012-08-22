@@ -56,29 +56,6 @@ class TrashDirectory:
 
     def trash(self, path):
         path = os.path.normpath(path)
-        if self.checker:
-            class ValidationOutput:
-                def not_valid_should_be_a_dir(_):
-                    raise TopDirNotPresent("topdir should be a directory: %s"
-                                        % self.path)
-                def not_valid_parent_should_not_be_a_symlink(_):
-                    raise TopDirIsSymLink("topdir can't be a symbolic link: %s"
-                                        % self.path)
-                def not_valid_parent_should_be_sticky(_):
-                    raise TopDirWithoutStickyBit("topdir should have the sticky bit: %s"
-                                        % self.path)
-                def is_valid(self):
-                    pass
-            output = ValidationOutput()
-            class FileSystem:
-                def isdir(self, path):
-                    return os.path.isdir(path)
-                def islink(self, path):
-                    return os.path.islink(path)
-                def has_sticky_bit(self, path):
-                    return has_sticky_bit(path)
-            self.checker.fs = FileSystem()
-            self.checker.valid_to_be_written(self.path, output)
 
         from datetime import datetime
         trash_info_path = self.path_for_trash_info.for_file(path)
@@ -378,8 +355,30 @@ class GlobalTrashCan:
             return
 
         for trash_dir in self._possible_trash_directories_for(file):
+
             try:
-                trash_dir.checker.check(trash_dir.path)
+                class ValidationOutput:
+                    def not_valid_should_be_a_dir(_):
+                        raise TopDirNotPresent("topdir should be a directory: %s"
+                                            % trash_dir.path)
+                    def not_valid_parent_should_not_be_a_symlink(_):
+                        raise TopDirIsSymLink("topdir can't be a symbolic link: %s"
+                                            % trash_dir.path)
+                    def not_valid_parent_should_be_sticky(_):
+                        raise TopDirWithoutStickyBit("topdir should have the sticky bit: %s"
+                                            % trash_dir.path)
+                    def is_valid(self):
+                        pass
+                output = ValidationOutput()
+                class FileSystem:
+                    def isdir(self, path):
+                        return os.path.isdir(path)
+                    def islink(self, path):
+                        return os.path.islink(path)
+                    def has_sticky_bit(self, path):
+                        return has_sticky_bit(path)
+                trash_dir.checker.fs = FileSystem()
+                trash_dir.checker.valid_to_be_written(trash_dir.path, output)
             except TopDirIsSymLink:
                 self.reporter.found_unsercure_trash_dir_symlink(
                         os.path.dirname(trash_dir.path))
@@ -389,6 +388,7 @@ class GlobalTrashCan:
             except TopDirWithoutStickyBit:
                 self.reporter.found_unsecure_trash_dir_unsticky(
                         os.path.dirname(trash_dir.path))
+
             if self.file_could_be_trashed_in(file, trash_dir.path):
                 try:
                     trashed_file = trash_dir.trash(file)
@@ -398,15 +398,6 @@ class GlobalTrashCan:
                           trashed_file.original_file)
                     return
 
-                except TopDirIsSymLink:
-                    self.reporter.found_unsercure_trash_dir_symlink(
-                            os.path.dirname(trash_dir.path))
-                except TopDirNotPresent:
-                    self.reporter.found_unusable_trash_dir_not_a_dir(
-                            os.path.dirname(trash_dir.path))
-                except TopDirWithoutStickyBit:
-                    self.reporter.found_unsecure_trash_dir_unsticky(
-                            os.path.dirname(trash_dir.path))
                 except (IOError, OSError), error:
                     self.reporter.unable_to_trash_file_in_because(
                             file, trash_dir.name(), str(error))
@@ -1209,6 +1200,7 @@ class TrashDirs:
 class TopTrashDirRules:
     def __init__(self, fs):
         self.fs = fs
+
     def valid_to_be_read(self, path, output):
         parent_trashdir = os.path.dirname(path)
         if not self.fs.exists(path):
@@ -1221,29 +1213,7 @@ class TopTrashDirRules:
             return
         else:
             output.is_valid()
-    def check(self, trash_dir_path):
-        class ValidationOutput:
-            def not_valid_should_be_a_dir(self):
-                raise TopDirNotPresent("topdir should be a directory: %s"
-                                    % trash_dir_path)
-            def not_valid_parent_should_not_be_a_symlink(self):
-                raise TopDirIsSymLink("topdir can't be a symbolic link: %s"
-                                    % trash_dir_path)
-            def not_valid_parent_should_be_sticky(self):
-                raise TopDirWithoutStickyBit("topdir should have the sticky bit: %s"
-                                    % trash_dir_path)
-            def is_valid(self):
-                pass
-        output = ValidationOutput()
-        class FileSystem:
-            def isdir(self, path):
-                return os.path.isdir(path)
-            def islink(self, path):
-                return os.path.islink(path)
-            def has_sticky_bit(self, path):
-                return has_sticky_bit(path)
-        self.fs = FileSystem()
-        self.valid_to_be_written(trash_dir_path, output)
+
     def valid_to_be_written(self, trash_dir_path, output):
         parent = os.path.dirname(trash_dir_path)
         if not self.fs.isdir(parent):

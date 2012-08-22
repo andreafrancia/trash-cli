@@ -87,7 +87,6 @@ class TestUnsecureTrashDirMessages(TrashPutTest):
                 'trash-put: found unsecure .Trash dir (should not be a symlink): '
                 'fake-vol/.Trash', self.stderr)
 
-
 def assert_line_in_text(line, text):
     assert_in(line, text.splitlines(), dedent('''\
             Line not found in text
