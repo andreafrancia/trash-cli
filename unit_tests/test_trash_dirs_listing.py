@@ -2,6 +2,7 @@
 
 from trashcli.trash import TrashDirs
 from nose.tools import istest, assert_in, assert_not_in
+from mock import Mock
 
 @istest
 class TestTrashDirs_listing:
@@ -35,7 +36,11 @@ class TestTrashDirs_listing:
         assert_in('~/.local/share/Trash', self.trashdirs())
 
     def trashdirs(self):
-        result = collector()
+        result = []
+        def append(trash_dir, volume):
+            result.append(trash_dir)
+        collect = Mock()
+        collect.found_trash_dir.side_effect = append
         class FileReader:
             def list_volumes(_):
                 return self.volumes
@@ -49,8 +54,8 @@ class TestTrashDirs_listing:
             environ=self.environ,
             getuid=lambda:self.uid,
             fs = FileReader(),
-        ).list_trashdirs(result)
-        return result.trash_dirs
+        ).list_trashdirs(collect)
+        return result
 
     def setUp(self):
         self.uid = -1
@@ -61,12 +66,6 @@ class TestTrashDirs_listing:
     def having_non_sticky_Trash_dir(self): self.Trash_dir_is_sticky = False
 
 def not_important_for_now(): None
-
-class collector:
-    def __init__(self):
-        self.trash_dirs = []
-    def __call__(self, trash_dir, volume):
-        self.trash_dirs.append(trash_dir)
 
 from nose.tools import assert_equals
 from mock import MagicMock
@@ -85,7 +84,7 @@ class Describe_AvailableTrashDirs_when_parent_is_unsticky:
         self.fs.exists.side_effect = (
                 lambda path: {'/topdir/.Trash/123':True}[path])
 
-        self.dirs.list_trashdirs(error_log = self.error_log)
+        self.dirs.list_trashdirs(self.error_log)
 
         (self.error_log.top_trashdir_skipped_because_parent_not_sticky.
                 assert_called_with('/topdir/.Trash/123'))
@@ -94,7 +93,7 @@ class Describe_AvailableTrashDirs_when_parent_is_unsticky:
         self.fs.exists.side_effect = (
                 lambda path: {'/topdir/.Trash/123':False}[path])
 
-        self.dirs.list_trashdirs(error_log = self.error_log)
+        self.dirs.list_trashdirs(self.error_log)
 
         assert_equals([], self.error_log.
                 top_trashdir_skipped_because_parent_not_sticky.mock_calls)
@@ -114,7 +113,7 @@ class Describe_AvailableTrashDirs_when_parent_is_symlink:
         self.fs.is_sticky_dir.return_value = True
         self.fs.is_symlink.return_value    = True
 
-        self.dirs.list_trashdirs(error_log = self.error_log)
+        self.dirs.list_trashdirs(self.error_log)
 
         (self.error_log.top_trashdir_skipped_because_parent_is_symlink.
                 assert_called_with('/topdir/.Trash/123'))

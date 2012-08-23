@@ -28,7 +28,7 @@ class TrashDirectory:
         return self.name()
 
     def __repr__(self):
-        return 'TrashDir(%s,%s)' % (repr(self.path), repr(self.volume))
+        return 'TrashDirectory(%s,%s)' % (repr(self.path), repr(self.volume))
 
     def name(self):
         import re
@@ -228,7 +228,6 @@ class PathForTrashInfo:
         parent   = os.path.dirname(self.normalized_path)
         return os.path.realpath(parent)
 
-
 class NullObject:
     def __getattr__(self, name):
         return lambda *argl,**args:None
@@ -244,7 +243,6 @@ class AbstractFstab(object):
         return volume_of(path)
     def mount_points(self):
         return self.ismount.mount_points()
-
 
 class Fstab(AbstractFstab):
     def __init__(self):
@@ -906,11 +904,11 @@ class ListCmd:
         parse.as_default(self.list_trash)
         parse(argv)
     def list_trash(self):
-        self.list_trash2()
-    def list_trash2(self):
-        self.trashdirs.list_trashdirs(
-                self.list_contents, self.output)
-    def list_contents(self, trash_dir, volume_path):
+        self.list_all_trashinfos_by_volume()
+    def list_all_trashinfos_by_volume(self):
+        self.output.found_trash_dir = self._list_contents
+        self.trashdirs.list_trashdirs(self.output)
+    def _list_contents(self, trash_dir, volume_path):
         self.output.set_volume_path(volume_path)
         trashdir = TrashDir(self.file_reader, trash_dir, volume_path)
         trashdir.each_trashinfo(self._print_trashinfo)
@@ -1077,13 +1075,12 @@ class EmptyCmd():
         except ValueError:
             return False
     def _empty_all_trashdirs(self):
-        self.trashdirs.list_trashdirs(self._empty_trashdir)
-
-    def _empty_trashdir(self, trash_dir, volume_path):
-        trashdir = TrashDir(self.file_reader, trash_dir, volume_path)
-        trashdir.each_trashinfo(self._maybe_delete)
-        trashdir.each_orphan(self.remove_file)
-
+        harvester = Harvester(self.trashdirs, self.file_reader)
+        class Log:
+            found_trashinfo = self._maybe_delete
+            found_orphan = self.remove_file
+        out = Log()
+        harvester.list_all_trashinfos_and_orphans(out)
     def _delete_according_date(self, trashinfo_path):
         contents = self.file_reader.contents_of(trashinfo_path)
         ParseTrashInfo(
@@ -1100,6 +1097,20 @@ class EmptyCmd():
         self.file_remover.remove_file(trashinfo_path)
     def println(self, line):
         self.out.write(line + '\n')
+
+class Harvester:
+    def __init__(self, trashdirs, file_reader):
+        self.trashdirs = trashdirs
+        self.file_reader = file_reader
+    def list_all_trashinfos_and_orphans(self, out):
+        class Log:
+            def found_trash_dir(_, trash_dir, volume_path):
+                trashdir = TrashDir(self.file_reader, trash_dir, volume_path)
+                trashdir.each_trashinfo(out.found_trashinfo)
+                trashdir.each_orphan(out.found_orphan)
+            def top_trashdir_skipped_because_parent_not_sticky(self, trashdir): pass
+            def top_trashdir_skipped_because_parent_is_symlink(self, trashdir): pass
+        self.trashdirs.list_trashdirs(Log())
 
 class IfDate:
     def __init__(self, date_criteria, then):
@@ -1119,7 +1130,6 @@ def path_of_backup_copy(path_to_trashinfo):
     from os.path import dirname as parent_of, join, basename
     trash_dir = parent_of(parent_of(path_to_trashinfo))
     return join(trash_dir, 'files', basename(path_to_trashinfo)[:-len('.trashinfo')])
-
 
 class EachTrashInfo:
     def __init__(self, list_dir, on_trashinfo):
@@ -1168,34 +1178,34 @@ class TrashDirs:
         self.environ       = environ
         self.getuid        = getuid
         self.fs            = fs
-    def do_nothing(trash_dir, volume): pass
     class NullLog:
+        def found_trash_dir(self, trashdir, volume): pass
         def top_trashdir_skipped_because_parent_not_sticky(self, trashdir): pass
         def top_trashdir_skipped_because_parent_is_symlink(self, trashdir): pass
-    def list_trashdirs(self, out = do_nothing, error_log = NullLog()):
-        self._for_home_trashcan(out)
-        self._for_each_volume_trashcan(out, error_log)
-    def _for_home_trashcan(self, out):
+    def list_trashdirs(self, log = NullLog()):
+        self._for_home_trashcan(log)
+        self._for_each_volume_trashcan(log)
+    def _for_home_trashcan(self, log):
         def return_result_with_volume(trashcan_path):
-            out(trashcan_path, '/')
+            log.found_trash_dir(trashcan_path, '/')
         home_trashcan_if_possible(self.environ, return_result_with_volume)
-    def _for_each_volume_trashcan(self, action, error_log):
+    def _for_each_volume_trashcan(self, log):
         from os.path import join
         for volume in self.fs.list_volumes():
             top_trashdir_path = join(volume, '.Trash/%s' % self.getuid())
             alt_top_trashdir = join(volume, '.Trash-%s' % self.getuid())
             class IsValidOutput:
                 def not_valid_parent_should_not_be_a_symlink(self):
-                    error_log.top_trashdir_skipped_because_parent_is_symlink(top_trashdir_path)
+                    log.top_trashdir_skipped_because_parent_is_symlink(top_trashdir_path)
                 def not_valid_parent_should_be_sticky(self):
-                    error_log.top_trashdir_skipped_because_parent_not_sticky(top_trashdir_path)
+                    log.top_trashdir_skipped_because_parent_not_sticky(top_trashdir_path)
                 def is_valid(self):
-                    action(top_trashdir_path, volume)
+                    log.found_trash_dir(top_trashdir_path, volume)
 
             top_trashdir2 = TopTrashDirRules(self.fs)
             top_trashdir2.valid_to_be_read(top_trashdir_path, IsValidOutput())
 
-            action(alt_top_trashdir, volume)
+            log.found_trash_dir(alt_top_trashdir, volume)
 
 class TopTrashDirRules:
     def __init__(self, fs):
