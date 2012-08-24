@@ -16,6 +16,8 @@ Usage example:
 TODO:
  - prepare a list_trashinfos that list all trashinfo from all known valid 
    trashdirectories
+    x factor out list_all_trashinfos_and_orphans
+    x factor out list_all_trashinfos_by_volume
         
 
 

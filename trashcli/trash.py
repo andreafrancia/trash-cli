@@ -890,12 +890,10 @@ class ListCmd:
 
         self.output      = self.Output(out, err)
         self.err         = self.output.err
-        self.file_reader = file_reader
         self.contents_of = file_reader.contents_of
-        self.trashdirs   = TrashDirs(environ,
-                                     getuid,
-                                     fs = file_reader)
+        trashdirs        = TrashDirs(environ, getuid, fs = file_reader)
         self.version     = version
+        self.harvester   = Harvester(trashdirs, file_reader)
 
     def run(self, *argv):
         parse=Parser()
@@ -904,14 +902,13 @@ class ListCmd:
         parse.as_default(self.list_trash)
         parse(argv)
     def list_trash(self):
-        self.list_all_trashinfos_by_volume()
-    def list_all_trashinfos_by_volume(self):
-        self.output.found_trash_dir = self._list_contents
-        self.trashdirs.list_trashdirs(self.output)
-    def _list_contents(self, trash_dir, volume_path):
-        self.output.set_volume_path(volume_path)
-        trashdir = TrashDir(self.file_reader, trash_dir, volume_path)
-        trashdir.each_trashinfo(self._print_trashinfo)
+        class Log():
+            on_volume = self.output.set_volume_path
+            on_trashinfo = self._print_trashinfo
+            top_trashdir_skipped_because_parent_not_sticky = self.output.top_trashdir_skipped_because_parent_not_sticky
+            top_trashdir_skipped_because_parent_is_symlink = self.output.top_trashdir_skipped_because_parent_is_symlink
+        out = Log()
+        self.harvester.list_all_trashinfos_by_volume(out)
     def _print_trashinfo(self, path):
         try:
             contents = self.contents_of(path)
@@ -944,7 +941,6 @@ class ListCmd:
             self.error(str(error))
         def print_parse_path_error(self, offending_file):
             self.error("Parse Error: %s: Unable to parse Path." % (offending_file))
-
         def top_trashdir_skipped_because_parent_not_sticky(self, trashdir):
             self.error("TrashDir skipped because parent not sticky: %s"
                     % trashdir)
@@ -1030,9 +1026,8 @@ class EmptyCmd():
                 self.is_sticky_dir = file_reader.is_sticky_dir
                 self.exists        = file_reader.exists
                 self.is_symlink    = file_reader.is_symlink
-        self.trashdirs    = TrashDirs(environ,
-                                      getuid,
-                                      fs = Fs())
+        trashdirs      = TrashDirs(environ, getuid, fs = Fs())
+        self.harvester = Harvester(trashdirs, self.file_reader)
 
         self.now          = now
         self.file_remover = file_remover
@@ -1075,12 +1070,11 @@ class EmptyCmd():
         except ValueError:
             return False
     def _empty_all_trashdirs(self):
-        harvester = Harvester(self.trashdirs, self.file_reader)
         class Log:
             found_trashinfo = self._maybe_delete
             found_orphan = self.remove_file
         out = Log()
-        harvester.list_all_trashinfos_and_orphans(out)
+        self.harvester.list_all_trashinfos_and_orphans(out)
     def _delete_according_date(self, trashinfo_path):
         contents = self.file_reader.contents_of(trashinfo_path)
         ParseTrashInfo(
@@ -1111,6 +1105,16 @@ class Harvester:
             def top_trashdir_skipped_because_parent_not_sticky(self, trashdir): pass
             def top_trashdir_skipped_because_parent_is_symlink(self, trashdir): pass
         self.trashdirs.list_trashdirs(Log())
+    def list_all_trashinfos_by_volume(self, out):
+        class Log():
+            def found_trash_dir(_, trash_dir, volume_path):
+                out.on_volume(volume_path)
+                trashdir = TrashDir(self.file_reader, trash_dir, volume_path)
+                trashdir.each_trashinfo(out.on_trashinfo)
+            top_trashdir_skipped_because_parent_not_sticky = out.top_trashdir_skipped_because_parent_not_sticky
+            top_trashdir_skipped_because_parent_is_symlink = out.top_trashdir_skipped_because_parent_is_symlink
+        log = Log()
+        self.trashdirs.list_trashdirs(log)
 
 class IfDate:
     def __init__(self, date_criteria, then):
