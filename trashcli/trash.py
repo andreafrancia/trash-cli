@@ -1007,7 +1007,7 @@ class Parser:
     def as_default(self, default_action):
         self.default_action = default_action
 
-class EmptyCmd():
+class EmptyCmd:
     def __init__(self, out, err, environ,
                  now           = datetime.now,
                  file_reader   = FileSystemReader(),
@@ -1019,7 +1019,6 @@ class EmptyCmd():
         self.out          = out
         self.err          = err
         self.file_reader  = file_reader
-        self.contents_of  = file_reader.contents_of
         class Fs: #TODO remove the need of this class
             def __init__(self):
                 self.list_volumes = list_volumes
@@ -1029,18 +1028,36 @@ class EmptyCmd():
         trashdirs      = TrashDirs(environ, getuid, fs = Fs())
         self.harvester = Harvester(trashdirs, self.file_reader)
 
-        self.now          = now
         self.file_remover = file_remover
         self.version      = version
 
-    def run(self, *argv):
         self._maybe_delete = self._delete_both
+        class ExpiryDate:
+            def __init__(self, contents_of, now):
+                self._contents_of = contents_of
+                self.now = now
+            def set_max_age_in_days(self2, arg):
+                self2.max_age_in_days = int(arg)
+                self._maybe_delete = self2._delete_according_date
+            def _delete_according_date(self2, trashinfo_path):
+                contents = self2._contents_of(trashinfo_path)
+                ParseTrashInfo(
+                    on_deletion_date=IfDate(
+                        OlderThan(self2.max_age_in_days, self2.now),
+                        lambda: self._delete_both(trashinfo_path)
+                    ),
+                )(contents)
+        self._expiry_date = ExpiryDate(
+                self.file_reader.contents_of, now)
+
+
+    def run(self, *argv):
         self.exit_code     = EX_OK
 
         parse = Parser()
         parse.on_help(PrintHelp(self.description, self.println))
         parse.on_version(PrintVersion(self.println, self.version))
-        parse.on_argument(self.set_deletion_date_criteria)
+        parse.on_argument(self._expiry_date.set_max_age_in_days)
         parse.as_default(self._empty_all_trashdirs)
         parse.on_invalid_option(self.report_invalid_option_usage)
 
@@ -1053,9 +1070,6 @@ class EmptyCmd():
             "{program_name}: invalid option -- '{option}'\n".format(**locals()))
         self.exit_code |= EX_USAGE
 
-    def set_deletion_date_criteria(self, arg):
-        self.max_age_in_days = int(arg)
-        self._maybe_delete = self._delete_according_date
     def description(self, program_name, printer):
         printer.usage('Usage: %s [days]' % program_name)
         printer.summary('Purge trashed files.')
@@ -1075,14 +1089,6 @@ class EmptyCmd():
             found_orphan = self.remove_file
         out = Log()
         self.harvester.list_all_trashinfos_and_orphans(out)
-    def _delete_according_date(self, trashinfo_path):
-        contents = self.file_reader.contents_of(trashinfo_path)
-        ParseTrashInfo(
-            on_deletion_date=IfDate(
-                OlderThan(self.max_age_in_days, self.now),
-                lambda: self._delete_both(trashinfo_path)
-            ),
-        )(contents)
     def remove_file(self, path):
         self.file_remover.remove_file(path)
     def _delete_both(self, trashinfo_path):

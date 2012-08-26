@@ -18,6 +18,7 @@ TODO:
    trashdirectories
     x factor out list_all_trashinfos_and_orphans
     x factor out list_all_trashinfos_by_volume
+    - factor out from Trash-empty the deletion of the trash
         
 
 

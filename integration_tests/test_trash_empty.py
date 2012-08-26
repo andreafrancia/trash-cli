@@ -12,7 +12,7 @@ from files import having_file
 from mock import MagicMock
 
 @istest
-class describe_trash_empty:
+class WhenCalledWithoutArguments:
 
     def setUp(self):
         require_empty_dir('XDG_DATA_HOME')
@@ -111,7 +111,7 @@ class describe_trash_empty:
         assert os.path.exists(complete_path)
 
 @istest
-class describe_trash_empty_invoked_with_N_days_as_argument:
+class When_invoked_with_N_days_as_argument:
     def setUp(self):
         require_empty_dir('XDG_DATA_HOME')
         self.xdg_data_home   = 'XDG_DATA_HOME'
