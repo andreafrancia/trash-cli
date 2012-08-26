@@ -18,8 +18,12 @@ TODO:
    trashdirectories
     x factor out list_all_trashinfos_and_orphans
     x factor out list_all_trashinfos_by_volume
-    - factor out from Trash-empty the deletion of the trash
-        
+    x factor out ExpiryDate and Deletion from EmptyCmd: only moving out left
+    - remove second argument from out.garbage in TestTrashRmCmd  
+    - factor out from ExpiryDate the deletion of the trash
+    - move TrasmRmCmd to trash.py
+    - create trash-rm command entry point
+    - add behaviour of trash-rm for when to arguments
 
 
 How commands get the list of trashed_files?

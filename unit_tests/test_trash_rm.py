@@ -1,4 +1,4 @@
-from nose.tools import assert_equals, istest, assert_items_equal
+from nose.tools import istest, assert_items_equal
 from mock import Mock, call
 
 class TestTrashRmCmd:
@@ -12,8 +12,8 @@ class TestTrashRmCmd:
         self.cmd.clean_up_matching('*')
 
         assert_items_equal([
-            call.release('info/foo', 'files/foo'),
-            call.release('info/bar', 'files/bar'),
+            call.release('info/foo'),
+            call.release('info/bar'),
             ], self.trashcan.mock_calls)
 
     @istest
@@ -26,7 +26,7 @@ class TestTrashRmCmd:
         self.cmd.clean_up_matching('foo')
 
         assert_items_equal([
-            call.release('info/foo', 'files/foo'),
+            call.release('info/foo'),
             ], self.trashcan.mock_calls)
 
     @istest
@@ -41,8 +41,8 @@ class TestTrashRmCmd:
         self.cmd.clean_up_matching('*.o')
 
         assert_items_equal([
-            call.release('info/foo.o', 'files/foo.o'),
-            call.release('info/bar.o', 'files/bar.o'),
+            call.release('info/foo.o'),
+            call.release('info/bar.o'),
             ], self.trashcan.mock_calls)
 
     def setUp(self):
@@ -75,4 +75,4 @@ class TrashCanCleaner:
     def __init__(self, trashcan):
         self.trashcan = trashcan
     def garbage(self, original_path, info_file, backup_copy):
-        self.trashcan.release(info_file, backup_copy)
+        self.trashcan.release(info_file)
