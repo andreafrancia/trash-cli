@@ -1,12 +1,14 @@
 from nose.tools import istest, assert_items_equal
 from mock import Mock, call
 
+from trashcli.rm import TrashRmCmd
+
 class TestTrashRmCmd:
     @istest
     def a_star_matches_all(self):
         self.trash_contents.list_files_to = lambda out:(
-            out.garbage('/foo', 'info/foo', 'files/foo'),
-            out.garbage('/bar', 'info/bar', 'files/bar')
+            out.garbage('/foo', 'info/foo'),
+            out.garbage('/bar', 'info/bar')
             )
 
         self.cmd.clean_up_matching('*')
@@ -19,8 +21,8 @@ class TestTrashRmCmd:
     @istest
     def basename_matches(self):
         self.trash_contents.list_files_to = lambda out:(
-            out.garbage('/foo', 'info/foo', 'files/foo'),
-            out.garbage('/bar', 'info/bar', 'files/bar')
+            out.garbage('/foo', 'info/foo'),
+            out.garbage('/bar', 'info/bar')
             )
 
         self.cmd.clean_up_matching('foo')
@@ -32,10 +34,10 @@ class TestTrashRmCmd:
     @istest
     def example_with_star_dot_o(self):
         self.trash_contents.list_files_to = lambda out:(
-            out.garbage('/foo.h', 'info/foo.h', 'files/foo.h'),
-            out.garbage('/foo.c', 'info/foo.c', 'files/foo.c'),
-            out.garbage('/foo.o', 'info/foo.o', 'files/foo.o'),
-            out.garbage('/bar.o', 'info/bar.o', 'files/bar.o')
+            out.garbage('/foo.h', 'info/foo.h'),
+            out.garbage('/foo.c', 'info/foo.c'),
+            out.garbage('/foo.o', 'info/foo.o'),
+            out.garbage('/bar.o', 'info/bar.o')
             )
 
         self.cmd.clean_up_matching('*.o')
@@ -50,29 +52,3 @@ class TestTrashRmCmd:
         self.trashcan = Mock()
         self.cmd = TrashRmCmd(self.trash_contents, self.trashcan)
 
-import os
-class TrashRmCmd:
-
-    def __init__(self, trash_contents, trashcan):
-        self.trash_contents = trash_contents
-        self.delete = TrashCanCleaner(trashcan)
-
-    def clean_up_matching(self, pattern):
-        self.filter = Pattern(pattern, self.delete)
-        self.trash_contents.list_files_to(self.filter)
-
-import fnmatch
-class Pattern:
-    def __init__(self, pattern, delete):
-        self.delete = delete
-        self.pattern = pattern
-    def garbage(self, original_path, info, file):
-        basename = os.path.basename(original_path)
-        if fnmatch.fnmatchcase(basename, self.pattern):
-            self.delete.garbage(original_path, info, file)
-
-class TrashCanCleaner:
-    def __init__(self, trashcan):
-        self.trashcan = trashcan
-    def garbage(self, original_path, info_file, backup_copy):
-        self.trashcan.release(info_file)

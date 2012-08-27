@@ -8,14 +8,12 @@ sys.path.append('.')
 from trashcli import trash
 
 setup(
-    name = 'trash-cli',
-    version = trash.version,
-    author = 'Andrea Francia',
-    author_email = 'me@andreafrancia.it',
+    name = 'trash-cli'        , version = trash.version                  ,
+    author = 'Andrea Francia' , author_email = 'andrea@andreafrancia.it' ,
     url = 'https://github.com/andreafrancia/trash-cli',
     description = 'Command line interface to FreeDesktop.org Trash.',
-    license = 'GPL v2',
     long_description = file("README.rst").read(),
+    license = 'GPL v2',
     packages = ['trashcli', 'integration_tests', 'unit_tests'],
     test_suite = "nose.collector",
     entry_points = {
@@ -24,7 +22,8 @@ setup(
             'trash         = trashcli.cmds:put',
             'trash-put     = trashcli.cmds:put',
             'restore-trash = trashcli.cmds:restore',
-            'trash-empty   = trashcli.cmds:empty'
+            'trash-empty   = trashcli.cmds:empty',
+            'trash-rm      = trashcli.cmds:rm',
         ]
     },
     data_files = [('share/man/man1', ['man/man1/trash-empty.1',

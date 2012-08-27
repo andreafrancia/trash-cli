@@ -891,8 +891,8 @@ class ListCmd:
         self.output      = self.Output(out, err)
         self.err         = self.output.err
         self.contents_of = file_reader.contents_of
-        trashdirs        = TrashDirs(environ, getuid, fs = file_reader)
         self.version     = version
+        trashdirs        = TrashDirs(environ, getuid, fs = file_reader)
         self.harvester   = Harvester(trashdirs, file_reader)
 
     def run(self, *argv):
@@ -1007,6 +1007,38 @@ class Parser:
     def as_default(self, default_action):
         self.default_action = default_action
 
+class CleanableTrashcan:
+    def __init__(self, file_remover):
+        self._file_remover = file_remover
+    def delete_orphan(self, path_to_backup_copy):
+        self._file_remover.remove_file(path_to_backup_copy)
+    def delete_trashinfo_and_backup_copy(self, trashinfo_path):
+        backup_copy = path_of_backup_copy(trashinfo_path)
+        self._file_remover.remove_file_if_exists(backup_copy)
+        self._file_remover.remove_file(trashinfo_path)
+
+class ExpiryDate:
+    def __init__(self, contents_of, now, trashcan):
+        self._contents_of  = contents_of
+        self._now          = now
+        self._maybe_delete = self._delete_unconditionally
+        self._trashcan = trashcan
+    def set_max_age_in_days(self, arg):
+        self.max_age_in_days = int(arg)
+        self._maybe_delete = self._delete_according_date
+    def delete_if_expired(self, trashinfo_path):
+        self._maybe_delete(trashinfo_path)
+    def _delete_according_date(self, trashinfo_path):
+        contents = self._contents_of(trashinfo_path)
+        ParseTrashInfo(
+            on_deletion_date=IfDate(
+                OlderThan(self.max_age_in_days, self._now),
+                lambda: self._delete_unconditionally(trashinfo_path)
+            ),
+        )(contents)
+    def _delete_unconditionally(self, trashinfo_path):
+        self._trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
+
 class EmptyCmd:
     def __init__(self, out, err, environ,
                  now           = datetime.now,
@@ -1019,46 +1051,19 @@ class EmptyCmd:
         self.out          = out
         self.err          = err
         self.file_reader  = file_reader
-        class Fs: #TODO remove the need of this class
+
+        class Fs:
             def __init__(self):
-                self.list_volumes = list_volumes
+                self.list_volumes  = list_volumes
                 self.is_sticky_dir = file_reader.is_sticky_dir
                 self.exists        = file_reader.exists
                 self.is_symlink    = file_reader.is_symlink
-        trashdirs      = TrashDirs(environ, getuid, fs = Fs())
-        self.harvester = Harvester(trashdirs, self.file_reader)
-
-        self.file_remover = file_remover
+        trashdirs         = TrashDirs(environ, getuid, fs = Fs())
+        self.harvester    = Harvester(trashdirs, self.file_reader)
         self.version      = version
-
-        class ExpiryDate:
-            def __init__(self, contents_of, now, file_remover):
-                self._contents_of  = contents_of
-                self._now          = now
-                self._maybe_delete = self._delete_unconditionally
-                self._file_remover = file_remover
-            def set_max_age_in_days(self, arg):
-                self.max_age_in_days = int(arg)
-                self._maybe_delete = self._delete_according_date
-            def delete_if_expired(self, path):
-                self._maybe_delete(path)
-            def _delete_according_date(self, trashinfo_path):
-                contents = self._contents_of(trashinfo_path)
-                ParseTrashInfo(
-                    on_deletion_date=IfDate(
-                        OlderThan(self.max_age_in_days, self._now),
-                        lambda: self._delete_both(trashinfo_path)
-                    ),
-                )(contents)
-            def _delete_unconditionally(self, trashinfo_path):
-                self._delete_both(trashinfo_path)
-            def _delete_both(self, trashinfo_path):
-                backup_copy = path_of_backup_copy(trashinfo_path)
-                self._file_remover.remove_file_if_exists(backup_copy)
-                self._file_remover.remove_file(trashinfo_path)
-
+        self._trashcan    = CleanableTrashcan(file_remover)
         self._expiry_date = ExpiryDate( self.file_reader.contents_of, now,
-                self.file_remover)
+                self._trashcan)
 
     def run(self, *argv):
         self.exit_code     = EX_OK
@@ -1095,7 +1100,7 @@ class EmptyCmd:
     def _empty_all_trashdirs(self):
         class Events:
             found_trashinfo = self._expiry_date.delete_if_expired
-            found_orphan = self.file_remover.remove_file
+            found_orphan = self._trashcan.delete_orphan
         self.harvester.list_all_trashinfos_and_orphans(Events())
     def println(self, line):
         self.out.write(line + '\n')
