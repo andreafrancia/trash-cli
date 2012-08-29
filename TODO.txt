@@ -22,7 +22,10 @@ TODO:
     x remove second argument from out.garbage in TestTrashRmCmd  
     x factor out from ExpiryDate the deletion of the trash
     x create trash-rm command entry point
-    - create Harvester.list_all_original_path
+    - create Harvester.list_all_original_path_with_trashinfo
+       - factor out ListableTrashCan (harvester+trashdirs)
+          - make ListCmd and EmptyCmd cases similar
+             x Make both not using list_volumes from FileSystemReader
     - add behaviour of trash-rm for when to arguments
     - move TrasmRmCmd to trash.py
 

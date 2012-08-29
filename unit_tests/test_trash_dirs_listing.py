@@ -42,8 +42,6 @@ class TestTrashDirs_listing:
         collect = Mock()
         collect.found_trash_dir.side_effect = append
         class FileReader:
-            def list_volumes(_):
-                return self.volumes
             def is_sticky_dir(_, path):
                 return self.Trash_dir_is_sticky
             def exists(_, path):
@@ -54,6 +52,7 @@ class TestTrashDirs_listing:
             environ=self.environ,
             getuid=lambda:self.uid,
             fs = FileReader(),
+            list_volumes = lambda: self.volumes,
         ).list_trashdirs(collect)
         return result
 
@@ -74,9 +73,11 @@ class Describe_AvailableTrashDirs_when_parent_is_unsticky:
     def setUp(self):
         self.error_log = MagicMock()
         self.fs = MagicMock()
-        self.dirs = TrashDirs(environ =  {}, getuid = lambda:123,
-                                       fs = self.fs)
-        self.fs.list_volumes.return_value = ['/topdir']
+        self.dirs = TrashDirs(environ = {},
+                              getuid = lambda:123,
+                              fs = self.fs,
+                              list_volumes = lambda: ['/topdir'],
+                              )
         self.fs.is_sticky_dir.side_effect = (
                 lambda path: {'/topdir/.Trash':False}[path])
 
@@ -103,9 +104,10 @@ class Describe_AvailableTrashDirs_when_parent_is_symlink:
     def setUp(self):
         self.error_log = MagicMock()
         self.fs = MagicMock()
-        self.dirs = TrashDirs(environ =  {}, getuid = lambda:123,
-                                       fs = self.fs)
-        self.fs.list_volumes.return_value = ['/topdir']
+        self.dirs = TrashDirs(environ = {},
+                              getuid = lambda:123,
+                              fs = self.fs,
+                              list_volumes = lambda: ['/topdir'])
         self.fs.exists.side_effect = (lambda path: {'/topdir/.Trash/123':True}[path])
 
 

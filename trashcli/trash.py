@@ -856,8 +856,6 @@ class FileSystemReader:
     def is_sticky_dir(self, path):
         import os
         return os.path.isdir(path) and has_sticky_bit(path)
-    def list_volumes(self):
-        return mount_points()
     def exists(self, path):
         return os.path.exists(path)
     def is_symlink(self, path):
@@ -878,13 +876,10 @@ class _FileRemover:
     def remove_file_if_exists(self,path):
         if os.path.exists(path): self.remove_file(path)
 
-from .list_mount_points import mount_points
 from datetime import datetime
 
 class ListCmd:
-    def __init__(self, out, err, environ,
-                 getuid        = os.getuid,
-                 list_volumes  = mount_points,
+    def __init__(self, out, err, environ, list_volumes, getuid,
                  file_reader   = FileSystemReader(),
                  version       = version):
 
@@ -892,8 +887,18 @@ class ListCmd:
         self.err         = self.output.err
         self.contents_of = file_reader.contents_of
         self.version     = version
-        trashdirs        = TrashDirs(environ, getuid, fs = file_reader)
-        self.harvester   = Harvester(trashdirs, file_reader)
+        class ListableTrashCan:
+            def __init__(self, environ, getuid, file_reader):
+                self.environ = environ
+                self.getuid = getuid
+                self.file_reader = file_reader
+            def list_all_trashinfos_by_volume(self, out):
+                trashdirs = TrashDirs(self.environ, self.getuid,
+                                      self.file_reader, list_volumes)
+                harvester = Harvester(trashdirs, self.file_reader)
+                harvester.list_all_trashinfos_by_volume(out)
+
+        self.harvester = ListableTrashCan(environ, getuid, file_reader)
 
     def run(self, *argv):
         parse=Parser()
@@ -1040,10 +1045,9 @@ class ExpiryDate:
         self._trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
 
 class EmptyCmd:
-    def __init__(self, out, err, environ,
+    def __init__(self, out, err, environ, list_volumes,
                  now           = datetime.now,
                  file_reader   = FileSystemReader(),
-                 list_volumes  = mount_points,
                  getuid        = os.getuid,
                  file_remover  = _FileRemover(),
                  version       = version):
@@ -1052,13 +1056,8 @@ class EmptyCmd:
         self.err          = err
         self.file_reader  = file_reader
 
-        class Fs:
-            def __init__(self):
-                self.list_volumes  = list_volumes
-                self.is_sticky_dir = file_reader.is_sticky_dir
-                self.exists        = file_reader.exists
-                self.is_symlink    = file_reader.is_symlink
-        trashdirs         = TrashDirs(environ, getuid, fs = Fs())
+        trashdirs         = TrashDirs(environ, getuid, file_reader,
+                                      list_volumes)
         self.harvester    = Harvester(trashdirs, self.file_reader)
         self.version      = version
         self._trashcan    = CleanableTrashcan(file_remover)
@@ -1191,10 +1190,11 @@ class PrintVersion:
         self.println("%s %s" % (program_name, self.version))
 
 class TrashDirs:
-    def __init__(self, environ, getuid, fs):
+    def __init__(self, environ, getuid, fs, list_volumes):
         self.environ       = environ
         self.getuid        = getuid
         self.fs            = fs
+        self.mount_points  = list_volumes
     class NullLog:
         def found_trash_dir(self, trashdir, volume): pass
         def top_trashdir_skipped_because_parent_not_sticky(self, trashdir): pass
@@ -1208,7 +1208,7 @@ class TrashDirs:
         home_trashcan_if_possible(self.environ, return_result_with_volume)
     def _for_each_volume_trashcan(self, log):
         from os.path import join
-        for volume in self.fs.list_volumes():
+        for volume in self.mount_points():
             top_trashdir_path = join(volume, '.Trash/%s' % self.getuid())
             alt_top_trashdir = join(volume, '.Trash-%s' % self.getuid())
             class IsValidOutput:

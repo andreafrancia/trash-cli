@@ -24,7 +24,8 @@ class WhenCalledWithoutArguments:
             out = StringIO(),
             err = StringIO(),
             environ = self.environ,
-            now = now
+            now = now,
+            list_volumes = no_volumes,
         )
 
     def user_run_trash_empty(self):
@@ -121,7 +122,8 @@ class When_invoked_with_N_days_as_argument:
             out = StringIO(),
             err = StringIO(),
             environ = self.environ,
-            now = self.now
+            now = self.now,
+            list_volumes = no_volumes,
         )
 
     def user_run_trash_empty(self, *args):
@@ -209,7 +211,8 @@ class TestTrashEmpty_on_help:
         err, out = StringIO(), StringIO()
         cmd = EmptyCmd(err = err,
                        out = out,
-                       environ = {},)
+                       environ = {},
+                       list_volumes = no_volumes,)
         cmd.run('trash-empty', '--help')
         assert_equals(out.getvalue(), dedent("""\
             Usage: trash-empty [days]
@@ -229,7 +232,8 @@ class TestTrashEmpty_on_version():
         cmd = EmptyCmd(err = err,
                        out = out,
                        environ = {},
-                       version = '1.2.3')
+                       version = '1.2.3',
+                       list_volumes = no_volumes,)
         cmd.run('trash-empty', '--version')
         assert_equals(out.getvalue(), dedent("""\
             trash-empty 1.2.3
@@ -241,7 +245,8 @@ class describe_trash_empty_command_line__on_invalid_options():
         self.cmd = EmptyCmd(
                        err = self.err,
                        out = self.out,
-                       environ = {})
+                       environ = {},
+                       list_volumes = no_volumes)
 
     def it_should_fail(self):
 
@@ -266,5 +271,6 @@ class describe_trash_empty_command_line__on_invalid_options():
                 trash-empty: invalid option -- '3'
                 """))
 
-
+def no_volumes():
+    return []
 

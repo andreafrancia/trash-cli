@@ -3,8 +3,8 @@
 import os
 from trashcli.trash import ListCmd
 from files import (write_file, require_empty_dir, make_sticky_dir,
-                   ensure_non_sticky_dir, make_unsticky_dir,
-                   make_unreadable_file, make_empty_file, make_parent_for)
+                   make_unsticky_dir, make_unreadable_file, make_empty_file,
+                   make_parent_for)
 from nose.tools import istest
 from .output_collector import OutputCollector
 from trashinfo import (
@@ -140,7 +140,7 @@ class with_a_top_trash_dir(Setup):
         self.user.run_trash_list()
 
         self.user.should_read_output("2000-01-01 00:00:00 topdir/file1\n")
-    
+
     @istest
     def and_should_warn_if_parent_is_not_sticky(self):
         self.when_dir_exists_unsticky('topdir/.Trash')
@@ -210,8 +210,6 @@ class describe_when_a_file_is_in_alternate_top_trashdir(Setup):
         self.user.run_trash_list()
 
         self.user.should_read_output("2000-01-01 00:00:00 topdir/file\n")
-
-from nose.tools import assert_raises
 
 @istest
 class describe_trash_list_with_raw_option:
@@ -286,6 +284,7 @@ class TrashListUser:
             environ     = self.environ,
             getuid      = self.fake_getuid,
             file_reader = file_reader,
+            list_volumes = lambda: self.volumes,
         ).run(*argv)
     def set_fake_uid(self, uid):
         self.fake_getuid = lambda: uid
