@@ -132,9 +132,10 @@ Environment setup::
 
 Running tests::
 
-    nosetests unit_tests                # unit tests
-    nosetests integration_tests         # integration tests
-    nosetests                           # run all tests
+    nosetests unit_tests           # run only unit tests
+    nosetests integration_tests    # run all integration tests
+    nosetests -A 'not stress_test' # run all tests but stress tests
+    nosetests                      # run all tests
 
 Profiling unit tests::
 
