@@ -1,6 +1,6 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from nose.tools import assert_equals, istest
+from nose.tools import assert_equals
 from trashcli.trash import TrashDir
 from trashcli.trash import TrashDirectory
 
@@ -31,36 +31,6 @@ class TestTrashDir_finding_orphans:
 
     def find_orphan(self):
         self.trashdir.each_orphan(self.orphan_found.append)
-
-from trashcli.trash import EachTrashInfo
-
-@istest
-class describe_EachTrashInfo:
-    @istest
-    def it_should_list_trashinfos(self):
-        self.having_directory('~/.local/share/Trash',
-                              containing = ['foo.trashinfo'])
-        self.trashinfos_found(in_trashdir='~/.local/share/Trash',
-                              should_be=['~/.local/share/Trash/info/foo.trashinfo'])
-
-    @istest
-    def it_should_not_list_other_files(self):
-        self.having_directory('~/.local/share/Trash',
-                              containing = ['foo.non-a-trashinfo'])
-        self.trashinfos_found(in_trashdir='~/.local/share/Trash',
-                              should_be=[])
-
-    def having_directory(self, path, containing):
-        self.list_dir = lambda path: {
-                path : containing
-        }[path]
-    def trashinfos_found(self, in_trashdir, should_be):
-        result = []
-
-        finder = EachTrashInfo(self.list_dir, result.append)
-        finder.trashdir(in_trashdir)
-
-        assert result == list(should_be)
 
 class FakeFileSystem:
     def __init__(self):

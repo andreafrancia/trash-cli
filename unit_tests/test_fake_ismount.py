@@ -1,7 +1,8 @@
+from trashcli.fstab import FakeIsMount
+
 from nose.tools import istest
 from nose.tools import assert_false
 from nose.tools import assert_true
-from trashcli.trash import FakeIsMount
 
 @istest
 class OnDefault:

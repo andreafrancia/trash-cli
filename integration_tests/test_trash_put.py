@@ -1,12 +1,13 @@
 # Copyright (C) 2009-2011 Andrea Francia Trivolzio(PV) Italy
-import os
+from trashcli.trash import TrashPutCmd
 
+import os
 from nose.tools import istest, assert_equals, assert_not_equals
 from nose.tools import assert_in
 
 from .files import having_file, require_empty_dir, having_empty_dir
 from .files import make_sticky_dir
-from trashcli.trash import TrashPutCmd
+from trashcli.fstab import FakeFstab
 
 class TrashPutTest:
 
@@ -46,7 +47,6 @@ class trash_put_stderr(TrashPutTest):
                   self.stderr.splitlines())
 
 
-from trashcli.trash import FakeFstab
 from textwrap import dedent
 @istest
 class TestUnsecureTrashDirMessages(TrashPutTest):

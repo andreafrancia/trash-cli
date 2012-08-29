@@ -1,6 +1,6 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from trashcli.trash import describe, write_file
+from trashcli.trash import describe
 from .files import require_empty_dir, having_file
 from nose.tools import assert_equals
 import os
@@ -46,3 +46,9 @@ class TestDescritions:
         assert not os.path.exists('non-existent')
 
         assert_equals("non existent", describe('non-existent'))
+
+def write_file(path, contents):
+    f = open(path, 'w')
+    f.write(contents)
+    f.close()
+

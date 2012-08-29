@@ -5,6 +5,7 @@ version='0.12.7'
 
 import os
 import logging
+from .fstab import Fstab
 
 logger=logging.getLogger('trashcli.trash')
 logger.setLevel(logging.WARNING)
@@ -50,9 +51,6 @@ class TrashDirectory:
     def store_relative_paths(self):
         self.path_for_trash_info = PathForTrashInfo()
         self.path_for_trash_info.make_paths_relatives_to(self.volume)
-
-    def volume_of(self, path):
-        return volume_of(path)
 
     def trash(self, path):
         path = os.path.normpath(path)
@@ -114,6 +112,7 @@ class TrashDirectory:
             pass
 
     def trashed_files(self) :
+        # Only used by restore-trash
         for info_file in self.all_info_files():
             try:
                 yield self._create_trashed_file_from_info_file(info_file)
@@ -202,9 +201,6 @@ class TrashDirectory:
         raise IOError()
 
 class PathForTrashInfo:
-    def __init__(self):
-        pass
-
     def make_paths_relatives_to(self, topdir):
         self.topdir = topdir
 
@@ -231,78 +227,6 @@ class PathForTrashInfo:
 class NullObject:
     def __getattr__(self, name):
         return lambda *argl,**args:None
-
-def real_list_mount_points():
-    return Fstab().mount_points()
-
-class AbstractFstab(object):
-    def __init__(self, ismount):
-        self.ismount = ismount
-    def volume_of(self, path):
-        volume_of = VolumeOf(ismount=self.ismount)
-        return volume_of(path)
-    def mount_points(self):
-        return self.ismount.mount_points()
-
-class Fstab(AbstractFstab):
-    def __init__(self):
-        AbstractFstab.__init__(self, OsIsMount())
-
-class FakeFstab:
-    def __init__(self):
-        import os
-        self.ismount = FakeIsMount()
-        self.volume_of = VolumeOf(ismount = self.ismount)
-        self.volume_of.abspath = os.path.normpath
-
-    def mount_points(self):
-        return self.ismount.mount_points()
-
-    def volume_of(self, path):
-        volume_of = VolumeOf(ismount=self.ismount)
-        return volume_of(path)
-
-    def add_mount(self, path):
-        self.ismount.add_mount(path)
-
-from trashcli.list_mount_points import mount_points as os_mount_points
-class OsIsMount:
-    def __call__(self, path):
-        return os.path.ismount(path)
-    def mount_points(self):
-        return os_mount_points()
-
-class FakeIsMount:
-    def __init__(self):
-        self.fakes = set(['/'])
-    def add_mount(self, path):
-        self.fakes.add(path)
-    def __call__(self, path):
-        if path == '/':
-            return True
-        path = os.path.normpath(path)
-        if path in self.fakes:
-            return True
-        return False
-    def mount_points(self):
-        return self.fakes.copy()
-
-class VolumeOf:
-    def __init__(self, ismount):
-        self._ismount = ismount
-        import os
-        self.abspath = os.path.abspath
-
-    def __call__(self, path):
-        path = self.abspath(path)
-        while path != os.path.dirname(path):
-            if self._ismount(path):
-                break
-            path = os.path.dirname(path)
-        return path
-
-def volume_of(path) :
-    return Fstab().volume_of(path)
 
 class GlobalTrashCan:
     """
@@ -348,7 +272,7 @@ class GlobalTrashCan:
         then try to trash in the second trash directory.
         """
 
-        if self.should_skipped_by_specs(file):
+        if self._should_skipped_by_specs(file):
             self.reporter.unable_to_trash_dot_entries(file)
             return
 
@@ -387,7 +311,7 @@ class GlobalTrashCan:
                 self.reporter.found_unsecure_trash_dir_unsticky(
                         os.path.dirname(trash_dir.path))
 
-            if self.file_could_be_trashed_in(file, trash_dir.path):
+            if self._file_could_be_trashed_in(file, trash_dir.path):
                 try:
                     trashed_file = trash_dir.trash(file)
                     self.reporter.file_has_been_trashed_in_as(
@@ -402,16 +326,14 @@ class GlobalTrashCan:
 
         self.reporter.unable_to_trash_file(file)
 
-    def should_skipped_by_specs(self, file):
+    def _should_skipped_by_specs(self, file):
         basename = os.path.basename(file)
         return (basename == ".") or (basename == "..")
 
     def volume_of(self, path):
         return self.fstab.volume_of(path)
-    def volume_of_parent(self, file):
-        return self.volume_of(parent_of(file))
 
-    def file_could_be_trashed_in(self,file_to_be_trashed,trash_dir_path):
+    def _file_could_be_trashed_in(self,file_to_be_trashed,trash_dir_path):
         return self.volume_of(trash_dir_path) == self.volume_of_parent(file_to_be_trashed)
 
     def _trash_directories(self) :
@@ -425,9 +347,11 @@ class GlobalTrashCan:
     def _possible_trash_directories_for(self, file):
         for td in self._home_trash_dir():
             yield td
-        for td in self.trash_directories_for_volume(self.volume_of_parent(file)):
+        for td in self._trash_directories_for_volume(self.volume_of_parent(file)):
             yield td
-    def trash_directories_for_volume(self, volume):
+    def volume_of_parent(self, file):
+        return self.volume_of(parent_of(file))
+    def _trash_directories_for_volume(self, volume):
         yield self._volume_trash_dir1(volume)
         yield self._volume_trash_dir2(volume)
     def _home_trash_dir(self) :
@@ -464,12 +388,6 @@ class GlobalTrashCan:
         trash_dir.store_relative_paths()
         return trash_dir
 
-    def for_all_trashed_file(self, action):
-        for trashedfile in self.trashed_files():
-            action(
-                    info_path = trashedfile.original_file,
-                    path      = trashedfile.info_file)
-
 class TrashedFile:
     """
     Represent a trashed file.
@@ -496,28 +414,12 @@ class TrashedFile:
         if not os.path.isabs(path):
             raise ValueError("Absolute path required.")
 
-        self._path = path
-        self._deletion_date = deletion_date
-        self._info_file = info_file
-        self._actual_path = actual_path
-        self._trash_directory = trash_directory
-
-    @property
-    def path(self) :
-        """
-        The path from where the file has been trashed
-        """
-        return self._path
-
-    @property
-    def actual_path(self):
-        return self._actual_path
-
-    original_file = actual_path
-
-    @property
-    def deletion_date(self) :
-        return self._deletion_date
+        self.path = path
+        self.deletion_date = deletion_date
+        self.info_file = info_file
+        self.actual_path = actual_path
+        self.trash_directory = trash_directory
+        self.original_file = actual_path
 
     def restore(self, dest=None) :
         if dest is not None:
@@ -531,45 +433,11 @@ class TrashedFile:
         move(self.original_file, self.path)
         remove_file(self.info_file)
 
-    @property
-    def info_file(self):
-        return self._info_file
-
-    @property
-    def trash_directory(self) :
-        return self._trash_directory
-
 class TrashInfo:
     def __init__(self, path, deletion_date):
-        from datetime import datetime
-        """Create a TrashInfo.
-
-        Keyword arguments:
-        path          -- the of the .trashinfo file (string or Path)
-        deletion_date -- the date of deletion, should be a datetime.
-        """
-        if not isinstance(deletion_date, datetime):
-            raise TypeError("deletion_date should be a datetime")
-        self._path = path
-        self._deletion_date = deletion_date
-
-    @staticmethod
-    def _format_date(deletion_date):
-        return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
-
-    @property
-    def deletion_date(self):
-        return self._deletion_date
-
-    @property
-    def path(self):
-        return self._path
-
-    @staticmethod
-    def parse(data):
-        path = parse_path(data)
-        deletion_date = parse_deletion_date(data)
-        return TrashInfo(path, deletion_date)
+        assert isinstance(deletion_date, datetime)
+        self.path = path
+        self.deletion_date = deletion_date
 
     def render(self) :
         import urllib
@@ -578,21 +446,20 @@ class TrashInfo:
         result += "DeletionDate=" + self._format_date(self.deletion_date) + "\n"
         return result
 
-class TimeUtils:
     @staticmethod
-    def parse_iso8601(text) :
-        import time
-        from datetime import datetime
-        t=time.strptime(text,  "%Y-%m-%dT%H:%M:%S")
-        return datetime(t.tm_year, t.tm_mon, t.tm_mday,
-                        t.tm_hour, t.tm_min, t.tm_sec)
+    def _format_date(deletion_date):
+        return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
+
+    @staticmethod
+    def parse(data):
+        path = parse_path(data)
+        deletion_date = parse_deletion_date(data)
+        return TrashInfo(path, deletion_date)
+
+import os
 import shutil
-def remove_file(path):
-    if(os.path.exists(path)):
-        try:
-            os.remove(path)
-        except:
-            return shutil.rmtree(path)
+from .fs import remove_file, has_sticky_bit
+from .fs import move,mkdirs, list_files_in_dir, mkdirs_using_mode, parent_of
 
 def getcwd_as_realpath(): return os.path.realpath(os.curdir)
 
@@ -780,30 +647,6 @@ class TrashPutReporter:
         self.logger.info("Failed to trash %s in %s, because :%s" %
                          (file_to_be_trashed, trash_directory, error))
 
-def mkdirs_using_mode(path, mode):
-    if os.path.isdir(path):
-        os.chmod(path, mode)
-        return
-    os.makedirs(path, mode)
-
-def list_files_in_dir(path):
-    for entry in os.listdir(path):
-        result = os.path.join(path, entry)
-        yield result
-
-def move(path, dest) :
-    import shutil
-    return shutil.move(path, str(dest))
-
-def mkdirs(path):
-    if os.path.isdir(path):
-        return
-    os.makedirs(path)
-
-import os
-
-def parent_of(path):
-    return os.path.dirname(path)
 
 def describe(path):
     """
@@ -842,41 +685,7 @@ def describe(path):
     else:
         return 'entry'
 
-def write_file(path, contents):
-    f = open(path, 'w')
-    f.write(contents)
-    f.close()
-
-def do_nothing(*argv, **argvk): pass
-class FileSystemReader:
-    def entries_if_dir_exists(self, path):
-        if os.path.exists(path):
-            for entry in os.listdir(path):
-                yield entry
-    def is_sticky_dir(self, path):
-        import os
-        return os.path.isdir(path) and has_sticky_bit(path)
-    def exists(self, path):
-        return os.path.exists(path)
-    def is_symlink(self, path):
-        return os.path.islink(path)
-    def contents_of(self, path):
-        return file(path).read()
-
-def contents_of(path): # TODO remove
-    return FileSystemReader().contents_of(path)
-
-class _FileRemover:
-    def remove_file(self, path):
-        try:
-            return os.remove(path)
-        except OSError:
-            shutil.rmtree(path)
-
-    def remove_file_if_exists(self,path):
-        if os.path.exists(path): self.remove_file(path)
-
-from datetime import datetime
+from .fs import FileSystemReader, contents_of, FileRemover
 
 class ListCmd:
     def __init__(self, out, err, environ, list_volumes, getuid,
@@ -948,6 +757,7 @@ class ListCmd:
             original_location = os.path.join(self.volume_path, relative_location)
             self.println("%s %s" %(maybe_deletion_date, original_location))
 
+def do_nothing(*argv, **argvk): pass
 class Parser:
     def __init__(self):
         self.default_action = do_nothing
@@ -1007,9 +817,13 @@ class CleanableTrashcan:
     def delete_orphan(self, path_to_backup_copy):
         self._file_remover.remove_file(path_to_backup_copy)
     def delete_trashinfo_and_backup_copy(self, trashinfo_path):
-        backup_copy = path_of_backup_copy(trashinfo_path)
+        backup_copy = self._path_of_backup_copy(trashinfo_path)
         self._file_remover.remove_file_if_exists(backup_copy)
         self._file_remover.remove_file(trashinfo_path)
+    def _path_of_backup_copy(self, path_to_trashinfo):
+        from os.path import dirname as parent_of, join, basename
+        trash_dir = parent_of(parent_of(path_to_trashinfo))
+        return join(trash_dir, 'files', basename(path_to_trashinfo)[:-len('.trashinfo')])
 
 class ExpiryDate:
     def __init__(self, contents_of, now, trashcan):
@@ -1035,35 +849,66 @@ class ExpiryDate:
 
 class ListableTrashCan:
     def __init__(self, environ, getuid, file_reader, list_volumes):
-        self.environ = environ
-        self.getuid = getuid
-        self.file_reader = file_reader
-        self.list_volumes = list_volumes
-        trashdirs = TrashDirs(self.environ, self.getuid,
-                                self.file_reader, self.list_volumes)
-        self.harvester = Harvester(trashdirs, self.file_reader)
+        trashdirs = TrashDirs(environ, getuid, file_reader, list_volumes)
+        self.harvester = Harvester(trashdirs, file_reader)
     def list_all_trashinfos_by_volume(self, out):
         self.harvester.list_all_trashinfos_by_volume(out)
+    def list_all_trashinfos_and_orphans(self, out):
+        self.harvester.list_all_trashinfos_and_orphans(out)
 
+class TrashDirs:
+    def __init__(self, environ, getuid, fs, list_volumes):
+        self.environ       = environ
+        self.getuid        = getuid
+        self.fs            = fs
+        self.mount_points  = list_volumes
+    class NullLog:
+        def found_trash_dir(self, trashdir, volume): pass
+        def top_trashdir_skipped_because_parent_not_sticky(self, trashdir): pass
+        def top_trashdir_skipped_because_parent_is_symlink(self, trashdir): pass
+    def list_trashdirs(self, log = NullLog()):
+        self._for_home_trashcan(log)
+        self._for_each_volume_trashcan(log)
+    def _for_home_trashcan(self, log):
+        def return_result_with_volume(trashcan_path):
+            log.found_trash_dir(trashcan_path, '/')
+        home_trashcan_if_possible(self.environ, return_result_with_volume)
+    def _for_each_volume_trashcan(self, log):
+        from os.path import join
+        for volume in self.mount_points():
+            top_trashdir_path = join(volume, '.Trash/%s' % self.getuid())
+            alt_top_trashdir = join(volume, '.Trash-%s' % self.getuid())
+            class IsValidOutput:
+                def not_valid_parent_should_not_be_a_symlink(self):
+                    log.top_trashdir_skipped_because_parent_is_symlink(top_trashdir_path)
+                def not_valid_parent_should_be_sticky(self):
+                    log.top_trashdir_skipped_because_parent_not_sticky(top_trashdir_path)
+                def is_valid(self):
+                    log.found_trash_dir(top_trashdir_path, volume)
+
+            top_trashdir2 = TopTrashDirRules(self.fs)
+            top_trashdir2.valid_to_be_read(top_trashdir_path, IsValidOutput())
+
+            log.found_trash_dir(alt_top_trashdir, volume)
+
+from datetime import datetime
 class EmptyCmd:
     def __init__(self, out, err, environ, list_volumes,
                  now           = datetime.now,
                  file_reader   = FileSystemReader(),
                  getuid        = os.getuid,
-                 file_remover  = _FileRemover(),
+                 file_remover  = FileRemover(),
                  version       = version):
 
         self.out          = out
         self.err          = err
         self.file_reader  = file_reader
-
-        trashdirs         = TrashDirs(environ, getuid, file_reader,
-                                      list_volumes)
-        self.harvester    = Harvester(trashdirs, self.file_reader)
+        self._listing     = ListableTrashCan(environ, getuid, file_reader,
+                                             list_volumes)
         self.version      = version
-        self._trashcan    = CleanableTrashcan(file_remover)
-        self._expiry_date = ExpiryDate( self.file_reader.contents_of, now,
-                self._trashcan)
+        self._cleaning    = CleanableTrashcan(file_remover)
+        self._expiry_date = ExpiryDate(file_reader.contents_of, now,
+                                       self._cleaning)
 
     def run(self, *argv):
         self.exit_code     = EX_OK
@@ -1100,8 +945,8 @@ class EmptyCmd:
     def _empty_all_trashdirs(self):
         class Events:
             found_trashinfo = self._expiry_date.delete_if_expired
-            found_orphan = self._trashcan.delete_orphan
-        self.harvester.list_all_trashinfos_and_orphans(Events())
+            found_orphan = self._cleaning.delete_orphan
+        self._listing.list_all_trashinfos_and_orphans(Events())
     def println(self, line):
         self.out.write(line + '\n')
 
@@ -1143,22 +988,6 @@ class OlderThan:
     def __call__(self, deletion_date):
         return deletion_date < self.limit_date
 
-def path_of_backup_copy(path_to_trashinfo):
-    from os.path import dirname as parent_of, join, basename
-    trash_dir = parent_of(parent_of(path_to_trashinfo))
-    return join(trash_dir, 'files', basename(path_to_trashinfo)[:-len('.trashinfo')])
-
-class EachTrashInfo:
-    def __init__(self, list_dir, on_trashinfo):
-        self.list_dir = list_dir
-        self.on_trashinfo = on_trashinfo
-    def trashdir(self, path):
-        import os
-        info_dir = os.path.join(path, 'info')
-        for entry in self.list_dir(path):
-            if entry.endswith('.trashinfo'):
-                self.on_trashinfo(os.path.join(info_dir, entry))
-
 class PrintHelp:
     def __init__(self, description, println):
         class Printer:
@@ -1189,41 +1018,6 @@ class PrintVersion:
         self.version      = version
     def __call__(self, program_name):
         self.println("%s %s" % (program_name, self.version))
-
-class TrashDirs:
-    def __init__(self, environ, getuid, fs, list_volumes):
-        self.environ       = environ
-        self.getuid        = getuid
-        self.fs            = fs
-        self.mount_points  = list_volumes
-    class NullLog:
-        def found_trash_dir(self, trashdir, volume): pass
-        def top_trashdir_skipped_because_parent_not_sticky(self, trashdir): pass
-        def top_trashdir_skipped_because_parent_is_symlink(self, trashdir): pass
-    def list_trashdirs(self, log = NullLog()):
-        self._for_home_trashcan(log)
-        self._for_each_volume_trashcan(log)
-    def _for_home_trashcan(self, log):
-        def return_result_with_volume(trashcan_path):
-            log.found_trash_dir(trashcan_path, '/')
-        home_trashcan_if_possible(self.environ, return_result_with_volume)
-    def _for_each_volume_trashcan(self, log):
-        from os.path import join
-        for volume in self.mount_points():
-            top_trashdir_path = join(volume, '.Trash/%s' % self.getuid())
-            alt_top_trashdir = join(volume, '.Trash-%s' % self.getuid())
-            class IsValidOutput:
-                def not_valid_parent_should_not_be_a_symlink(self):
-                    log.top_trashdir_skipped_because_parent_is_symlink(top_trashdir_path)
-                def not_valid_parent_should_be_sticky(self):
-                    log.top_trashdir_skipped_because_parent_not_sticky(top_trashdir_path)
-                def is_valid(self):
-                    log.found_trash_dir(top_trashdir_path, volume)
-
-            top_trashdir2 = TopTrashDirRules(self.fs)
-            top_trashdir2.valid_to_be_read(top_trashdir_path, IsValidOutput())
-
-            log.found_trash_dir(alt_top_trashdir, volume)
 
 class TopTrashDirRules:
     def __init__(self, fs):
@@ -1397,9 +1191,4 @@ def parse_path(contents):
         if line.startswith('Path='):
             return urllib.unquote(line[len('Path='):])
     raise ParseError('Unable to parse Path')
-
-def has_sticky_bit(path): # TODO move to FileSystemReader
-    import os
-    import stat
-    return (os.stat(path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
 

@@ -1,5 +1,5 @@
-from trashcli.trash import VolumeOf
-from trashcli.trash import FakeIsMount
+from trashcli.fstab import VolumeOf
+from trashcli.fstab import FakeIsMount
 from nose.tools import assert_equals, istest
 import os
 

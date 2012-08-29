@@ -9,7 +9,6 @@ __license__="GPL"
 from trashcli.trash import TrashDirectory
 from trashcli.trash import TrashedFile
 from trashcli.trash import TrashInfo
-from trashcli.trash import TimeUtils
 
 from datetime import datetime
 import os
@@ -103,12 +102,6 @@ class TestTrashedFile(TestCase) :
         shutil.rmtree("sandbox/foo")
         instance.restore()
         assert os.path.exists("sandbox/foo/bar")
-
-class TestTimeUtils(TestCase) :
-    def test_parse_iso8601(self) :
-        expected=datetime(2008,9,8,12,00,11)
-        result=TimeUtils.parse_iso8601("2008-09-08T12:00:11")
-        self.assertEqual(expected,result)
 
 def touch(path):
     open(path, 'a+').close()

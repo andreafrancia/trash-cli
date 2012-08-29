@@ -22,10 +22,37 @@ TODO:
     x remove second argument from out.garbage in TestTrashRmCmd  
     x factor out from ExpiryDate the deletion of the trash
     x create trash-rm command entry point
-    - create Harvester.list_all_original_path_with_trashinfo
-       - factor out ListableTrashCan (harvester+trashdirs)
-          - make ListCmd and EmptyCmd cases similar
-             x Make both not using list_volumes from FileSystemReader
+    - scrivere list_all_original_path_with_trashinfo
+       - capire a quale oggetto attaccarlo
+       - capire quanti oggetti di listing esistono e se ci sono delle 
+         duplicazioni, e se c'e' qualche cosa che non serve più
+       - TrashDirectory.trashed_files()
+       - GlobalTrashCan.trashed_files() 
+       - GlobalTrashCan._trash_directories()
+       - GlobalTrashCan._possible_trash_directories_for()
+       - GlobalTrashCan.trash_directories_for_volume()
+       - TrashDirs.list_trashdirs
+       - Harvester.list_all_trashinfos_and_orphans
+       - Harvester.list_all_trashinfos_by_volume
+       - TrashDir.each_orphan 
+       - TrashDir.each_trashinfo
+       - ListableTrashCan.list_all_trashinfos_by_volume
+       - ListableTrashCan.list_all_trashinfos_and_orphans
+
+
+       trashdir = TrashDirReader(file_reader)
+       trashdir.on_new_trash_directory = action
+       trashdir.on_trashinfo_found = action
+       trashdir.on_orphan_found = action
+       trashdir.on_trashdir_skipped_because_parent_not_sticky = action
+       trashdir.on_trashdir_skipped_because_parent_is_symlink = action
+
+       trashdir.analize_trash_directory(path, volume_path)
+
+       TODO:
+         - introdurre open in TrashDir
+
+          
     - add behaviour of trash-rm for when to arguments
     - move TrasmRmCmd to trash.py
 
