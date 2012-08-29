@@ -887,18 +887,8 @@ class ListCmd:
         self.err         = self.output.err
         self.contents_of = file_reader.contents_of
         self.version     = version
-        class ListableTrashCan:
-            def __init__(self, environ, getuid, file_reader):
-                self.environ = environ
-                self.getuid = getuid
-                self.file_reader = file_reader
-            def list_all_trashinfos_by_volume(self, out):
-                trashdirs = TrashDirs(self.environ, self.getuid,
-                                      self.file_reader, list_volumes)
-                harvester = Harvester(trashdirs, self.file_reader)
-                harvester.list_all_trashinfos_by_volume(out)
-
-        self.harvester = ListableTrashCan(environ, getuid, file_reader)
+        self.trashcan    = ListableTrashCan(environ, getuid, file_reader,
+                                            list_volumes)
 
     def run(self, *argv):
         parse=Parser()
@@ -912,8 +902,7 @@ class ListCmd:
             on_trashinfo = self._print_trashinfo
             top_trashdir_skipped_because_parent_not_sticky = self.output.top_trashdir_skipped_because_parent_not_sticky
             top_trashdir_skipped_because_parent_is_symlink = self.output.top_trashdir_skipped_because_parent_is_symlink
-        out = Log()
-        self.harvester.list_all_trashinfos_by_volume(out)
+        self.trashcan.list_all_trashinfos_by_volume(Log())
     def _print_trashinfo(self, path):
         try:
             contents = self.contents_of(path)
@@ -1043,6 +1032,18 @@ class ExpiryDate:
         )(contents)
     def _delete_unconditionally(self, trashinfo_path):
         self._trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
+
+class ListableTrashCan:
+    def __init__(self, environ, getuid, file_reader, list_volumes):
+        self.environ = environ
+        self.getuid = getuid
+        self.file_reader = file_reader
+        self.list_volumes = list_volumes
+        trashdirs = TrashDirs(self.environ, self.getuid,
+                                self.file_reader, self.list_volumes)
+        self.harvester = Harvester(trashdirs, self.file_reader)
+    def list_all_trashinfos_by_volume(self, out):
+        self.harvester.list_all_trashinfos_by_volume(out)
 
 class EmptyCmd:
     def __init__(self, out, err, environ, list_volumes,
