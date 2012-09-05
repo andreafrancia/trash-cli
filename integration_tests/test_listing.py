@@ -6,11 +6,15 @@ from trashcli.fs    import FileSystemReader
 from trashcli.trash import TrashDirs, Harvester
 from trashcli.trash import parse_path
 from trashcli.trash import do_nothing
+from trashcli.trash import TopTrashDirRules
 import os
 
 class Listing:
     def __init__(self, environ, getuid, file_reader, mount_points):
-        trashdirs        = TrashDirs(environ, getuid, file_reader, mount_points)
+        top_trashdir_rules = TopTrashDirRules(file_reader)
+        trashdirs        = TrashDirs(environ, getuid,
+                                     list_volumes = mount_points,
+                                     top_trashdir_rules = top_trashdir_rules)
         self.harvester   = Harvester(trashdirs, file_reader)
         self.contents_of = file_reader.contents_of
 

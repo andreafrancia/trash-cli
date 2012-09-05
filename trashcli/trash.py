@@ -696,7 +696,10 @@ class ListCmd:
         self.err         = self.output.err
         self.contents_of = file_reader.contents_of
         self.version     = version
-        self.trashdirs = TrashDirs(environ, getuid, file_reader, list_volumes)
+        top_trashdir_rules = TopTrashDirRules(file_reader)
+        self.trashdirs = TrashDirs(environ, getuid,
+                                   list_volumes = list_volumes,
+                                   top_trashdir_rules=top_trashdir_rules)
         self.harvester = Harvester(self.trashdirs, file_reader)
 
     def run(self, *argv):
@@ -847,11 +850,12 @@ class ExpiryDate:
         self._trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
 
 class TrashDirs:
-    def __init__(self, environ, getuid, fs, list_volumes):
-        self.environ       = environ
-        self.getuid        = getuid
-        self.fs            = fs
-        self.mount_points  = list_volumes
+    def __init__(self, environ, getuid, list_volumes,
+                       top_trashdir_rules, fs = None):
+        self.environ            = environ
+        self.getuid             = getuid
+        self.mount_points       = list_volumes
+        self.top_trashdir_rules = top_trashdir_rules
     class NullLog:
         def found_trash_dir(self, trashdir, volume): pass
         def top_trashdir_skipped_because_parent_not_sticky(self, trashdir): pass
@@ -876,8 +880,7 @@ class TrashDirs:
                 def is_valid(self):
                     log.found_trash_dir(top_trashdir_path, volume)
 
-            top_trashdir2 = TopTrashDirRules(self.fs)
-            top_trashdir2.valid_to_be_read(top_trashdir_path, IsValidOutput())
+            self.top_trashdir_rules.valid_to_be_read(top_trashdir_path, IsValidOutput())
 
             log.found_trash_dir(alt_top_trashdir, volume)
 
@@ -893,7 +896,10 @@ class EmptyCmd:
         self.out          = out
         self.err          = err
         self.file_reader  = file_reader
-        self.trashdirs = TrashDirs(environ, getuid, file_reader, list_volumes)
+        top_trashdir_rules = TopTrashDirRules(file_reader)
+        self.trashdirs = TrashDirs(environ, getuid,
+                list_volumes = list_volumes,
+                top_trashdir_rules = top_trashdir_rules)
         self.harvester = Harvester(self.trashdirs, file_reader)
         self.version      = version
         self._cleaning    = CleanableTrashcan(file_remover)

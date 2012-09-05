@@ -2,10 +2,13 @@ import os, sys
 
 def main(argv):
     from trashcli.trash import FileSystemReader, TrashDirs, Harvester
+    from trashcli.trash import TopTrashDirRules
     environ     = os.environ
     getuid      = os.getuid
     file_reader = FileSystemReader()
-    trashdirs   = TrashDirs(environ, getuid, fs     = file_reader)
+    top_trashdir_rules = TopTrashDirRules(file_reader)
+    trashdirs   = TrashDirs(environ, getuid,
+                            top_trashdir_rules = top_trashdir_rules)
     harvester   = Harvester(trashdirs, file_reader)
     print 'ciao'
     import sys

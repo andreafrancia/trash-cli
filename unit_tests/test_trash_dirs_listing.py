@@ -48,10 +48,16 @@ class TestTrashDirs_listing:
                 return True
             def is_symlink(_, path):
                 return False
+        class FakeTopTrashDirRules:
+            def valid_to_be_read(_, path, out):
+                if self.Trash_dir_is_sticky:
+                    out.is_valid()
+                else:
+                    out.not_valid_parent_should_be_sticky()
         TrashDirs(
             environ=self.environ,
             getuid=lambda:self.uid,
-            fs = FileReader(),
+            top_trashdir_rules = FakeTopTrashDirRules(),
             list_volumes = lambda: self.volumes,
         ).list_trashdirs(collect)
         return result
@@ -68,6 +74,7 @@ def not_important_for_now(): None
 
 from nose.tools import assert_equals
 from mock import MagicMock
+from trashcli.trash import TopTrashDirRules
 @istest
 class Describe_AvailableTrashDirs_when_parent_is_unsticky:
     def setUp(self):
@@ -75,7 +82,7 @@ class Describe_AvailableTrashDirs_when_parent_is_unsticky:
         self.fs = MagicMock()
         self.dirs = TrashDirs(environ = {},
                               getuid = lambda:123,
-                              fs = self.fs,
+                              top_trashdir_rules = TopTrashDirRules(self.fs),
                               list_volumes = lambda: ['/topdir'],
                               )
         self.fs.is_sticky_dir.side_effect = (
@@ -106,7 +113,7 @@ class Describe_AvailableTrashDirs_when_parent_is_symlink:
         self.fs = MagicMock()
         self.dirs = TrashDirs(environ = {},
                               getuid = lambda:123,
-                              fs = self.fs,
+                              top_trashdir_rules = TopTrashDirRules(self.fs),
                               list_volumes = lambda: ['/topdir'])
         self.fs.exists.side_effect = (lambda path: {'/topdir/.Trash/123':True}[path])
 
