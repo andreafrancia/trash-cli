@@ -39,7 +39,11 @@ TODO:
        X ListableTrashCan.list_all_trashinfos_and_orphans
     - add behaviour of trash-rm for when to arguments
     - fixtures for list_all_original_path_with_trashinfo:
-       - 
+       - trashdir = TrashDirFixture(path)
+       - trashdir.ensure_non_existent()
+       - trashdir.add_trashinfo_with_path(path)
+       - trashdir.add_trashinfo_with_deletion_date(date)
+
     - move TrasmRmCmd to trash.py
 
 

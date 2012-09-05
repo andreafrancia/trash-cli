@@ -13,13 +13,10 @@ def main(argv):
     pass
     return 8
 
-
 class TrashRmCmd:
-
     def __init__(self, trash_contents, trashcan):
         self.trash_contents = trash_contents
         self.delete = TrashCanCleaner(trashcan)
-
     def clean_up_matching(self, pattern):
         self.filter = Pattern(pattern, self.delete)
         self.trash_contents.list_files_to(self.filter)

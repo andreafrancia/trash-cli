@@ -945,22 +945,21 @@ class Harvester:
         self.file_reader = file_reader
         self.trashdir = TrashDir(self.file_reader)
 
-        self.on_trashinfo_found                            = do_nothing
         self.on_orphan_found                               = do_nothing
         self.on_trashinfo_found                            = do_nothing
-        self.on_trashdir_skipped_because_parent_not_sticky = do_nothing
-        self.on_trashdir_skipped_because_parent_is_symlink = do_nothing
         self.on_volume                                     = do_nothing
+        self.on_trashdir_skipped_because_parent_is_symlink = do_nothing
+        self.on_trashdir_skipped_because_parent_not_sticky = do_nothing
     def search(self):
         class Log:
             def found_trash_dir(_, trash_dir, volume_path):
-                self.analize_trash_directory(trash_dir, volume_path)
+                self._analize_trash_directory(trash_dir, volume_path)
             def top_trashdir_skipped_because_parent_not_sticky(_, trashdir):
                 self.on_trashdir_skipped_because_parent_not_sticky(trashdir)
             def top_trashdir_skipped_because_parent_is_symlink(_, trashdir):
                 self.on_trashdir_skipped_because_parent_is_symlink(trashdir)
         self.trashdirs.list_trashdirs(Log())
-    def analize_trash_directory(self, trash_dir_path, volume_path):
+    def _analize_trash_directory(self, trash_dir_path, volume_path):
         self.on_volume(volume_path)
         self.trashdir.open(trash_dir_path, volume_path)
         self.trashdir.each_trashinfo(self.on_trashinfo_found)
