@@ -19,7 +19,7 @@ TODO:
     - test for list_all_original_path_with_trashinfo:
        - make easier understand when a trashdir is skipped
           - remove dependency of Harvester from TrashDirs
-          - substitute the depedency of TrashDirs from fs with Validator
+          x substitute the depedency of TrashDirs from fs with Validator
 
 
 How commands get the list of trashed_files?

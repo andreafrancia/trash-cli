@@ -39,8 +39,6 @@ class TestTrashDirs_listing:
         result = []
         def append(trash_dir, volume):
             result.append(trash_dir)
-        collect = Mock()
-        collect.found_trash_dir.side_effect = append
         class FileReader:
             def is_sticky_dir(_, path):
                 return self.Trash_dir_is_sticky
@@ -54,12 +52,14 @@ class TestTrashDirs_listing:
                     out.is_valid()
                 else:
                     out.not_valid_parent_should_be_sticky()
-        TrashDirs(
+        trash_dirs = TrashDirs(
             environ=self.environ,
             getuid=lambda:self.uid,
             top_trashdir_rules = FakeTopTrashDirRules(),
             list_volumes = lambda: self.volumes,
-        ).list_trashdirs(collect)
+        )
+        trash_dirs.on_trash_dir_found = append
+        trash_dirs.list_trashdirs()
         return result
 
     def setUp(self):
@@ -78,13 +78,14 @@ from trashcli.trash import TopTrashDirRules
 @istest
 class Describe_AvailableTrashDirs_when_parent_is_unsticky:
     def setUp(self):
-        self.error_log = MagicMock()
         self.fs = MagicMock()
         self.dirs = TrashDirs(environ = {},
                               getuid = lambda:123,
                               top_trashdir_rules = TopTrashDirRules(self.fs),
                               list_volumes = lambda: ['/topdir'],
                               )
+        self.dirs.on_trashdir_skipped_because_parent_not_sticky = Mock()
+        self.dirs.on_trashdir_skipped_because_parent_is_symlink = Mock()
         self.fs.is_sticky_dir.side_effect = (
                 lambda path: {'/topdir/.Trash':False}[path])
 
@@ -92,38 +93,37 @@ class Describe_AvailableTrashDirs_when_parent_is_unsticky:
         self.fs.exists.side_effect = (
                 lambda path: {'/topdir/.Trash/123':True}[path])
 
-        self.dirs.list_trashdirs(self.error_log)
+        self.dirs.list_trashdirs()
 
-        (self.error_log.top_trashdir_skipped_because_parent_not_sticky.
+        (self.dirs.on_trashdir_skipped_because_parent_not_sticky.
                 assert_called_with('/topdir/.Trash/123'))
 
     def test_it_shouldnot_care_about_non_existent(self):
         self.fs.exists.side_effect = (
                 lambda path: {'/topdir/.Trash/123':False}[path])
 
-        self.dirs.list_trashdirs(self.error_log)
+        self.dirs.list_trashdirs()
 
-        assert_equals([], self.error_log.
-                top_trashdir_skipped_because_parent_not_sticky.mock_calls)
+        assert_equals([], self.dirs.on_trashdir_skipped_because_parent_not_sticky.mock_calls)
 
 @istest
 class Describe_AvailableTrashDirs_when_parent_is_symlink:
     def setUp(self):
-        self.error_log = MagicMock()
         self.fs = MagicMock()
         self.dirs = TrashDirs(environ = {},
                               getuid = lambda:123,
                               top_trashdir_rules = TopTrashDirRules(self.fs),
                               list_volumes = lambda: ['/topdir'])
         self.fs.exists.side_effect = (lambda path: {'/topdir/.Trash/123':True}[path])
+        self.symlink_error = Mock()
+        self.dirs.on_trashdir_skipped_because_parent_is_symlink = self.symlink_error
 
 
     def test_it_should_skip_symlink(self):
         self.fs.is_sticky_dir.return_value = True
         self.fs.is_symlink.return_value    = True
 
-        self.dirs.list_trashdirs(self.error_log)
+        self.dirs.list_trashdirs()
 
-        (self.error_log.top_trashdir_skipped_because_parent_is_symlink.
-                assert_called_with('/topdir/.Trash/123'))
+        self.symlink_error.assert_called_with('/topdir/.Trash/123')
 
