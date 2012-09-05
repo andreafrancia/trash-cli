@@ -16,35 +16,9 @@ Usage example:
 TODO:
  - prepare a list_trashinfos that list all trashinfo from all known valid 
    trashdirectories
-    x factor out list_all_trashinfos_and_orphans
-    x factor out list_all_trashinfos_by_volume
-    x factor out ExpiryDate and Deletion from EmptyCmd: only moving out left
-    x remove second argument from out.garbage in TestTrashRmCmd  
-    x factor out from ExpiryDate the deletion of the trash
-    x create trash-rm command entry point
-    - scrivere list_all_original_path_with_trashinfo
-       - capire quanti oggetti di listing esistono e se ci sono delle 
-         duplicazioni, e se c'e' qualche cosa che non serve più
-       - TrashDirectory.trashed_files()
-       - GlobalTrashCan.trashed_files() 
-       - GlobalTrashCan._trash_directories()
-       - GlobalTrashCan._possible_trash_directories_for()
-       - GlobalTrashCan.trash_directories_for_volume()
-       - TrashDirs.list_trashdirs
-       X Harvester.list_all_trashinfos_and_orphans
-       X Harvester.list_all_trashinfos_by_volume
-       - TrashDir.each_orphan 
-       - TrashDir.each_trashinfo
-       X ListableTrashCan.list_all_trashinfos_by_volume
-       X ListableTrashCan.list_all_trashinfos_and_orphans
-    - add behaviour of trash-rm for when to arguments
-    - fixtures for list_all_original_path_with_trashinfo:
-       - trashdir = TrashDirFixture(path)
-       - trashdir.ensure_non_existent()
-       - trashdir.add_trashinfo_with_path(path)
-       - trashdir.add_trashinfo_with_deletion_date(date)
-
-    - move TrasmRmCmd to trash.py
+    - test for list_all_original_path_with_trashinfo:
+       - make easier understand when a trashdir is skipped
+          - remove dependency of Harvester from TrashDirs
 
 
 How commands get the list of trashed_files?
