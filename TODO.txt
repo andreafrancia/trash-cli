@@ -14,12 +14,16 @@ Usage example:
     2010-11-15 19:27:25 /home/kfrance/handbook/activities.html
 
 TODO:
- - prepare a list_trashinfos that list all trashinfo from all known valid 
-   trashdirectories
-    - test for list_all_original_path_with_trashinfo:
-       - make easier understand when a trashdir is skipped
-          x remove dependency of Harvester from TrashDirs
-          x substitute the depedency of TrashDirs from fs with Validator
+ - add trash-rm command
+    x add trash-rm entry_point in setup.py
+       x add rm.py package to setup.py
+          x write test for trash-rm in entry-point
+    - check setup.py on Linux
+    - write integration test for trash-rm logic
+
+
+To clean:
+ - describe_trash_list -> test_trash_list
 
 
 How commands get the list of trashed_files?

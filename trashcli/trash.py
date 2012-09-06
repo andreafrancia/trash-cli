@@ -457,7 +457,6 @@ class TrashInfo:
         return TrashInfo(path, deletion_date)
 
 import os
-import shutil
 from .fs import remove_file, has_sticky_bit
 from .fs import move,mkdirs, list_files_in_dir, mkdirs_using_mode, parent_of
 

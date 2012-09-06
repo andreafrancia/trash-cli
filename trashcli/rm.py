@@ -1,18 +1,23 @@
 import os, sys
 
-def main(argv):
-    from trashcli.trash import FileSystemReader, TrashDirs, Harvester
-    from trashcli.trash import TopTrashDirRules
+def main():
+    from trashcli.trash             import FileSystemReader, TrashDirs, Harvester
+    from trashcli.trash             import TopTrashDirRules
+    from trashcli.list_mount_points import mount_points
     environ     = os.environ
     getuid      = os.getuid
     file_reader = FileSystemReader()
     top_trashdir_rules = TopTrashDirRules(file_reader)
     trashdirs   = TrashDirs(environ, getuid,
+                            list_volumes = mount_points,
                             top_trashdir_rules = top_trashdir_rules)
     harvester   = Harvester(file_reader)
     print 'ciao'
     import sys
-    sys.stderr.write('xxxxxx')
+    sys.stderr.write('Usage:\n'
+                     '    trash-rm PATTERN\n'
+                     '\n'
+                     'Please specify PATTERN')
     pass
     return 8
 
@@ -41,4 +46,4 @@ class TrashCanCleaner:
         self.trashcan.release(info_file)
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+    sys.exit(main())

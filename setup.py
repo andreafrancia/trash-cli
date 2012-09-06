@@ -23,7 +23,7 @@ setup(
             'trash-put     = trashcli.cmds:put',
             'restore-trash = trashcli.cmds:restore',
             'trash-empty   = trashcli.cmds:empty',
-            'trash-rm      = trashcli.cmds:rm',
+            'trash-rm      = trashcli.rm:main',
         ]
     },
     data_files = [('share/man/man1', ['man/man1/trash-empty.1',
