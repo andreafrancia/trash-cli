@@ -18,7 +18,7 @@ TODO:
    trashdirectories
     - test for list_all_original_path_with_trashinfo:
        - make easier understand when a trashdir is skipped
-          - remove dependency of Harvester from TrashDirs
+          x remove dependency of Harvester from TrashDirs
           x substitute the depedency of TrashDirs from fs with Validator
 
 

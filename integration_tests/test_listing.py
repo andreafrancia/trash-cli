@@ -12,18 +12,19 @@ import os
 class Listing:
     def __init__(self, environ, getuid, file_reader, mount_points):
         top_trashdir_rules = TopTrashDirRules(file_reader)
-        trashdirs        = TrashDirs(environ, getuid,
+        self.trashdirs        = TrashDirs(environ, getuid,
                                      list_volumes = mount_points,
                                      top_trashdir_rules = top_trashdir_rules)
-        self.harvester   = Harvester(trashdirs, file_reader)
+        self.harvester   = Harvester(file_reader)
         self.contents_of = file_reader.contents_of
 
         self.found_trash = do_nothing
         self.volume = None
 
     def search(self):
+        self.trashdirs.on_trash_dir_found = self.harvester._analize_trash_directory
         self.harvester.on_trashinfo_found = self._report
-        self.harvester.search()
+        self.trashdirs.list_trashdirs()
     def _report(self, trashinfo_path):
         trashinfo     = self.contents_of(trashinfo_path)
         original_path = parse_path(trashinfo)

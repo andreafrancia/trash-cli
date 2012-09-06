@@ -9,7 +9,7 @@ def main(argv):
     top_trashdir_rules = TopTrashDirRules(file_reader)
     trashdirs   = TrashDirs(environ, getuid,
                             top_trashdir_rules = top_trashdir_rules)
-    harvester   = Harvester(trashdirs, file_reader)
+    harvester   = Harvester(file_reader)
     print 'ciao'
     import sys
     sys.stderr.write('xxxxxx')

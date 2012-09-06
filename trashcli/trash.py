@@ -700,7 +700,7 @@ class ListCmd:
         self.trashdirs = TrashDirs(environ, getuid,
                                    list_volumes = list_volumes,
                                    top_trashdir_rules=top_trashdir_rules)
-        self.harvester = Harvester(self.trashdirs, file_reader)
+        self.harvester = Harvester(file_reader)
 
     def run(self, *argv):
         parse=Parser()
@@ -711,9 +711,12 @@ class ListCmd:
     def list_trash(self):
         self.harvester.on_volume = self.output.set_volume_path
         self.harvester.on_trashinfo_found = self._print_trashinfo
-        self.harvester.on_trashdir_skipped_because_parent_not_sticky = self.output.top_trashdir_skipped_because_parent_not_sticky
-        self.harvester.on_trashdir_skipped_because_parent_is_symlink = self.output.top_trashdir_skipped_because_parent_is_symlink
-        self.harvester.search()
+
+        self.trashdirs.on_trashdir_skipped_because_parent_not_sticky = self.output.top_trashdir_skipped_because_parent_not_sticky
+        self.trashdirs.on_trashdir_skipped_because_parent_is_symlink = self.output.top_trashdir_skipped_because_parent_is_symlink
+        self.trashdirs.on_trash_dir_found = self.harvester._analize_trash_directory
+
+        self.trashdirs.list_trashdirs()
     def _print_trashinfo(self, path):
         try:
             contents = self.contents_of(path)
@@ -900,7 +903,7 @@ class EmptyCmd:
         self.trashdirs = TrashDirs(environ, getuid,
                                    list_volumes = list_volumes,
                                    top_trashdir_rules = top_trashdir_rules)
-        self.harvester = Harvester(self.trashdirs, file_reader)
+        self.harvester = Harvester(file_reader)
         self.version      = version
         self._cleaning    = CleanableTrashcan(file_remover)
         self._expiry_date = ExpiryDate(file_reader.contents_of, now,
@@ -947,21 +950,13 @@ class EmptyCmd:
         self.out.write(line + '\n')
 
 class Harvester:
-    def __init__(self, trashdirs, file_reader):
-        self.trashdirs = trashdirs
+    def __init__(self, file_reader):
         self.file_reader = file_reader
         self.trashdir = TrashDir(self.file_reader)
 
         self.on_orphan_found                               = do_nothing
         self.on_trashinfo_found                            = do_nothing
         self.on_volume                                     = do_nothing
-        self.on_trashdir_skipped_because_parent_is_symlink = do_nothing
-        self.on_trashdir_skipped_because_parent_not_sticky = do_nothing
-    def search(self):
-        self.trashdirs.on_trash_dir_found = self._analize_trash_directory
-        self.trashdirs.on_trashdir_skipped_because_parent_not_sticky = self.on_trashdir_skipped_because_parent_not_sticky
-        self.trashdirs.on_trashdir_skipped_because_parent_is_symlink = self.on_trashdir_skipped_because_parent_is_symlink
-        self.trashdirs.list_trashdirs()
     def _analize_trash_directory(self, trash_dir_path, volume_path):
         self.on_volume(volume_path)
         self.trashdir.open(trash_dir_path, volume_path)
