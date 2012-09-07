@@ -7,10 +7,11 @@ class TestGlobalTrashCan:
     def setUp(self):
         self.reporter = Mock()
 
-        self.trashcan = GlobalTrashCan(environ = dict(),
-                                  reporter = self.reporter,
-                                  getuid = lambda:123,
-                                  now = None)
+        self.trashcan = GlobalTrashCan(
+                home_trashcan = Mock(),
+                reporter = self.reporter,
+                getuid = lambda:123,
+                now = None)
 
     @istest
     def should_report_when_trash_fail(self):

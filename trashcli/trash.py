@@ -228,6 +228,15 @@ class NullObject:
     def __getattr__(self, name):
         return lambda *argl,**args:None
 
+class HomeTrashCan:
+    def __init__(self, environ):
+        self.environ = environ
+    def path_to(self, out):
+        if 'XDG_DATA_HOME' in self.environ:
+            out('%(XDG_DATA_HOME)s/Trash' % self.environ)
+        elif 'HOME' in self.environ:
+            out('%(HOME)s/.local/share/Trash' % self.environ)
+
 class GlobalTrashCan:
     """
     Represent the TrashCan that contains all trashed files.
@@ -238,17 +247,16 @@ class GlobalTrashCan:
         def __getattr__(self,name):
             return lambda *argl,**args:None
     from datetime import datetime
-    def __init__(self,
-                 environ           = os.environ,
-                 reporter          = NullReporter(),
-                 getuid            = os.getuid,
-                 fstab             = Fstab(),
-                 now               = datetime.now):
-        self.getuid            = getuid
-        self.environ           = environ
-        self.reporter          = reporter
-        self.fstab             = fstab
-        self.now               = now
+    def __init__(self, home_trashcan,
+                       reporter = NullReporter(),
+                       getuid   = os.getuid,
+                       fstab    = Fstab(),
+                       now      = datetime.now):
+        self.getuid        = getuid
+        self.reporter      = reporter
+        self.fstab         = fstab
+        self.now           = now
+        self.home_trashcan = home_trashcan
 
     def trashed_files(self):
         """Return a generator of all TrashedFile(s)."""
@@ -356,7 +364,7 @@ class GlobalTrashCan:
         yield self._volume_trash_dir2(volume)
     def _home_trash_dir(self) :
         paths = []
-        home_trashcan_if_possible(self.environ, paths.append)
+        self.home_trashcan.path_to(paths.append)
 
         result = []
         for trash_dir_path in paths:
@@ -458,7 +466,7 @@ class TrashInfo:
 
 import os
 from .fs import remove_file, has_sticky_bit
-from .fs import move,mkdirs, list_files_in_dir, mkdirs_using_mode, parent_of
+from .fs import move, mkdirs, list_files_in_dir, mkdirs_using_mode, parent_of
 
 def getcwd_as_realpath(): return os.path.realpath(os.curdir)
 
@@ -467,10 +475,10 @@ class RestoreCmd:
                  curdir = getcwd_as_realpath):
         self.out      = stdout
         self.err      = stderr
-        self.environ  = environ
         self.exit     = exit
         self.input    = input
-        self.trashcan = GlobalTrashCan( environ = self.environ)
+        self.trashcan = GlobalTrashCan(
+                home_trashcan = HomeTrashCan(environ))
         self.curdir   = curdir
     def run(self):
 
@@ -530,7 +538,7 @@ class TrashPutCmd:
         self.trashcan = GlobalTrashCan(
                 reporter = reporter,
                 fstab = self.fstab,
-                environ  = self.environ)
+                home_trashcan = HomeTrashCan(self.environ))
         self.trash_all(args)
 
         if reporter.all_files_have_been_trashed:
@@ -852,39 +860,41 @@ class ExpiryDate:
         self._trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
 
 class TrashDirs:
-    def __init__(self, environ, getuid, list_volumes,
-                       top_trashdir_rules, fs = None):
-        self.environ            = environ
+    def __init__(self, environ, getuid, list_volumes, top_trashdir_rules):
         self.getuid             = getuid
         self.mount_points       = list_volumes
         self.top_trashdir_rules = top_trashdir_rules
+        self.home_trashcan      = HomeTrashCan(environ)
         # events
-        self.on_trash_dir_found = lambda trashdir, volume: None
+        self.on_trash_dir_found                            = lambda trashdir, volume: None
         self.on_trashdir_skipped_because_parent_not_sticky = lambda trashdir: None
         self.on_trashdir_skipped_because_parent_is_symlink = lambda trashdir: None
     def list_trashdirs(self):
-        self._for_home_trashcan()
+        self.emit_home_trashcan()
         self._for_each_volume_trashcan()
-    def _for_home_trashcan(self):
+    def emit_home_trashcan(self):
         def return_result_with_volume(trashcan_path):
             self.on_trash_dir_found(trashcan_path, '/')
-        home_trashcan_if_possible(self.environ, return_result_with_volume)
+        self.home_trashcan.path_to(return_result_with_volume)
     def _for_each_volume_trashcan(self):
-        from os.path import join
         for volume in self.mount_points():
-            top_trashdir_path = join(volume, '.Trash/%s' % self.getuid())
-            alt_top_trashdir = join(volume, '.Trash-%s' % self.getuid())
-            class IsValidOutput:
-                def not_valid_parent_should_not_be_a_symlink(_):
-                    self.on_trashdir_skipped_because_parent_is_symlink(top_trashdir_path)
-                def not_valid_parent_should_be_sticky(_):
-                    self.on_trashdir_skipped_because_parent_not_sticky(top_trashdir_path)
-                def is_valid(_):
-                    self.on_trash_dir_found(top_trashdir_path, volume)
-
-
-            self.top_trashdir_rules.valid_to_be_read(top_trashdir_path, IsValidOutput())
-            self.on_trash_dir_found(alt_top_trashdir, volume)
+            self.emit_trashcans_for(volume)
+    def emit_trashcans_for(self, volume):
+        self.emit_trashcan_1_for(volume)
+        self.emit_trashcan_2_for(volume)
+    def emit_trashcan_1_for(self,volume):
+        top_trashdir_path = os.path.join(volume, '.Trash/%s' % self.getuid())
+        class IsValidOutput:
+            def not_valid_parent_should_not_be_a_symlink(_):
+                self.on_trashdir_skipped_because_parent_is_symlink(top_trashdir_path)
+            def not_valid_parent_should_be_sticky(_):
+                self.on_trashdir_skipped_because_parent_not_sticky(top_trashdir_path)
+            def is_valid(_):
+                self.on_trash_dir_found(top_trashdir_path, volume)
+        self.top_trashdir_rules.valid_to_be_read(top_trashdir_path, IsValidOutput())
+    def emit_trashcan_2_for(self, volume):
+        alt_top_trashdir = os.path.join(volume, '.Trash-%s' % self.getuid())
+        self.on_trash_dir_found(alt_top_trashdir, volume)
 
 from datetime import datetime
 class EmptyCmd:
@@ -1040,12 +1050,6 @@ class TopTrashDirRules:
 class TopDirWithoutStickyBit(IOError): pass
 class TopDirNotPresent(IOError): pass
 class TopDirIsSymLink(IOError): pass
-
-def home_trashcan_if_possible(environ, out):
-    if 'XDG_DATA_HOME' in environ:
-        out('%(XDG_DATA_HOME)s/Trash' % environ)
-    elif 'HOME' in environ:
-        out('%(HOME)s/.local/share/Trash' % environ)
 
 class Dir:
     def __init__(self, path, entries_if_dir_exists):

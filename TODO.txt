@@ -18,9 +18,23 @@ TODO:
     x add trash-rm entry_point in setup.py
        x add rm.py package to setup.py
           x write test for trash-rm in entry-point
-    - check setup.py on Linux
+    - prepare a list_all_trashinfo_path function
+       - write for one file in home_trashdir
+          - write a test utility for creating trashinfo files
+                 def add_trashinfo(self, where, original_path):
+                      trashinfo_path = where
+                      write_file(trashinfo_path, "[Trash Info]\n"
+                                                 "Path=%s\n" 
+                                                 % original_path)
+          - function that parses original_path from trashinfo contents
+          - function that list all trashinfo in a TrashDir
+             - remove duplication
+                trash.py:106 TrashDirector.all_info_files 
+       - write for many files in home_trashdir
+       - write for method1 and method2 volume trashdirs
     - write integration test for trash-rm logic
-
+  - clean:
+     - list_trashdirs -> list_trashdirs_secure_for_read
 
 To clean:
  - describe_trash_list -> test_trash_list
