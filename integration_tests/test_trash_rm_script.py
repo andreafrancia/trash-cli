@@ -22,8 +22,3 @@ class WhenNoArgs:
     def test_should_print_usage_on_standard_error(self):
         assert_in("Usage:", self.stderr.splitlines())
 
-
-
-
-
-
