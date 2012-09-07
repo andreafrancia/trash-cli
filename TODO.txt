@@ -26,10 +26,15 @@ TODO:
                       write_file(trashinfo_path, "[Trash Info]\n"
                                                  "Path=%s\n" 
                                                  % original_path)
-          - function that parses original_path from trashinfo contents
+          - function that parses original_path from trashinfo path
           - function that list all trashinfo in a TrashDir
-             - remove duplication
-                trash.py:106 TrashDirector.all_info_files 
+             - remove duplication between 
+                 1) TrashDirectory.list_all_trashinfo_path
+                 2) TrashDir.each_trashinfo
+               this requires:
+                 - make TrashDirectory.list_all_trashinfo_path call TrashDir
+                   passing a FileSystemReader as file_reader
+                 x fix behaviour with a test
        - write for many files in home_trashdir
        - write for method1 and method2 volume trashdirs
     - write integration test for trash-rm logic

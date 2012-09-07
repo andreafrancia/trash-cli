@@ -16,6 +16,7 @@ EX_OK    = getattr(os, 'EX_OK'   ,  0)
 EX_USAGE = getattr(os, 'EX_USAGE', 64)
 EX_IOERR = getattr(os, 'EX_IOERR', 74)
 
+from .fs import list_files_in_dir
 class TrashDirectory:
     def __init__(self, path, volume):
         self.path   = os.path.normpath(path)
@@ -24,6 +25,10 @@ class TrashDirectory:
             def valid_to_be_written(self, a, b): pass
             def check(self, a):pass
         self.checker = all_is_ok_checker()
+        # events
+        def warn_non_trashinfo():
+            logger.warning("Non .trashinfo file in info dir")
+        self.on_non_trashinfo_found = warn_non_trashinfo
 
     def __str__(self) :
         return self.name()
@@ -105,7 +110,7 @@ class TrashDirectory:
         try :
             for info_file in list_files_in_dir(self.info_dir):
                 if not os.path.basename(info_file).endswith('.trashinfo') :
-                    logger.warning("Non .trashinfo file in info dir")
+                    self.on_non_trashinfo_found()
                 else :
                     yield info_file
         except OSError: # when directory does not exist
@@ -466,7 +471,7 @@ class TrashInfo:
 
 import os
 from .fs import remove_file, has_sticky_bit
-from .fs import move, mkdirs, list_files_in_dir, mkdirs_using_mode, parent_of
+from .fs import move, mkdirs, mkdirs_using_mode, parent_of
 
 def getcwd_as_realpath(): return os.path.realpath(os.curdir)
 
@@ -1061,7 +1066,7 @@ class Dir:
         return os.path.join(self.path, entry)
 
 class TrashDir:
-    def __init__(self, file_reader, path = None, volume_path = None):
+    def __init__(self, file_reader):
         self.file_reader    = file_reader
     def open(self, path, volume_path):
         self.trash_dir_path = path
@@ -1105,10 +1110,12 @@ class TrashDir:
         return os.path.join(self._info_dir(), file_entry + '.trashinfo')
     def _files_dir(self):
         return os.path.join(self.trash_dir_path, 'files')
-    def _trashinfo_entries(self):
+    def _trashinfo_entries(self, on_non_trashinfo=do_nothing):
         for entry in self._entries_if_dir_exists(self._info_dir()):
             if entry.endswith('.trashinfo'):
                 yield entry
+            else:
+                on_non_trashinfo()
 
 class ParseError(ValueError): pass
 
