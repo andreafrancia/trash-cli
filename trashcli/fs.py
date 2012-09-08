@@ -1,15 +1,17 @@
 import os, shutil
 
-class FileSystemReader:
+class FileSystemListing:
     def entries_if_dir_exists(self, path):
         if os.path.exists(path):
             for entry in os.listdir(path):
                 yield entry
+    def exists(self, path):
+        return os.path.exists(path)
+
+class FileSystemReader(FileSystemListing):
     def is_sticky_dir(self, path):
         import os
         return os.path.isdir(path) and has_sticky_bit(path)
-    def exists(self, path):
-        return os.path.exists(path)
     def is_symlink(self, path):
         return os.path.islink(path)
     def contents_of(self, path):

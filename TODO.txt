@@ -20,13 +20,13 @@ TODO:
           x write test for trash-rm in entry-point
     - prepare a list_all_trashinfo_path function
        - write for one file in home_trashdir
-          - write a test utility for creating trashinfo files
+          x write a test utility for creating trashinfo files
                  def add_trashinfo(self, where, original_path):
                       trashinfo_path = where
                       write_file(trashinfo_path, "[Trash Info]\n"
                                                  "Path=%s\n" 
                                                  % original_path)
-          - function that parses original_path from trashinfo path
+          - function that extrapolates original_path from trashinfo path
           - function that list all trashinfo in a TrashDir
              - remove duplication between 
                  1) TrashDirectory.list_all_trashinfo_path
@@ -34,7 +34,9 @@ TODO:
                this requires:
                  - make TrashDirectory.list_all_trashinfo_path call TrashDir
                    passing a FileSystemReader as file_reader
+                 - fix the logging behaviour 
                  x fix behaviour with a test
+                 - make RestoreCmd do not rely on yield
        - write for many files in home_trashdir
        - write for method1 and method2 volume trashdirs
     - write integration test for trash-rm logic

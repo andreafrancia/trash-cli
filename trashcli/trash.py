@@ -27,8 +27,9 @@ class TrashDirectory:
         self.checker = all_is_ok_checker()
         # events
         def warn_non_trashinfo():
-            logger.warning("Non .trashinfo file in info dir")
+            self.logger.warning("Non .trashinfo file in info dir")
         self.on_non_trashinfo_found = warn_non_trashinfo
+        self.logger = logger
 
     def __str__(self) :
         return self.name()
@@ -122,9 +123,9 @@ class TrashDirectory:
             try:
                 yield self._create_trashed_file_from_info_file(info_file)
             except ValueError:
-                logger.warning("Non parsable trashinfo file: %s" % info_file)
+                self.logger.warning("Non parsable trashinfo file: %s" % info_file)
             except IOError as e:
-                logger.warning(str(e))
+                self.logger.warning(str(e))
 
     def _create_trashed_file_from_info_file(self, info_file):
         trash_id = self.calc_id(info_file)
@@ -196,10 +197,10 @@ class TrashDirectory:
                                  0600)
                 os.write(handle, content)
                 os.close(handle)
-                logger.debug(".trashinfo created as %s." % dest)
+                self.logger.debug(".trashinfo created as %s." % dest)
                 return (dest, trash_id)
             except OSError:
-                logger.debug("Attempt for creating %s failed." % dest)
+                self.logger.debug("Attempt for creating %s failed." % dest)
 
             index += 1
 

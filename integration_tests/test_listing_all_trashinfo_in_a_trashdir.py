@@ -3,12 +3,15 @@ from trashcli.trash import TrashDirectory
 from files import require_empty_dir
 from files import write_file
 from nose.tools import assert_equals, assert_items_equal
+from mock import Mock, call
 
 class TestWhenListingTrashinfo:
     def setUp(self):
         require_empty_dir('sandbox')
         self.trash_dir = TrashDirectory('sandbox', '/')
-        self.trash_dir.on_non_trashinfo_found = lambda: None
+        self.logger = Mock()
+        self.trash_dir.logger = self.logger
+
 
     def test_should_list_a_trashinfo(self):
         write_file('sandbox/info/foo.trashinfo')
@@ -34,6 +37,13 @@ class TestWhenListingTrashinfo:
         result = self.list_trashinfos()
 
         assert_equals([], result)
+
+    def test_non_trashinfo_should_reported_as_a_warn(self):
+        write_file('sandbox/info/not-a-trashinfo')
+
+        self.list_trashinfos()
+
+        self.logger.warning.assert_called_with('Non .trashinfo file in info dir')
 
     def list_trashinfos(self):
         return list(self.trash_dir.all_info_files())
