@@ -150,12 +150,6 @@ class TrashDirectory:
                            actual_path,
                            self)
 
-    def _calc_original_location(self, path):
-        if os.path.isabs(path) :
-            return path
-        else :
-            return os.path.join(self.volume, path)
-
     @staticmethod
     def calc_id(trash_info_file):
         return os.path.basename(trash_info_file)[:-len('.trashinfo')]

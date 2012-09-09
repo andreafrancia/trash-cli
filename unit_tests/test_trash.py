@@ -2,10 +2,6 @@
 
 from __future__ import absolute_import
 
-__author__="Andrea Francia (andrea.francia@users.sourceforge.net)"
-__copyright__="Copyright (c) 2007 Andrea Francia"
-__license__="GPL"
-
 from trashcli.trash import TrashDirectory
 from trashcli.trash import TrashedFile
 from trashcli.trash import TrashInfo
@@ -17,22 +13,6 @@ from nose.tools import raises
 from nose.tools import assert_equals
 abspath = os.path.abspath
 import shutil
-
-class TestTrashDirectory(TestCase) :
-
-    def test_calc_id(self):
-        trash_info_file = "/home/user/.local/share/Trash/info/foo.trashinfo"
-        self.assertEquals('foo',TrashDirectory.calc_id(trash_info_file))
-
-    def test_calc_original_location_when_absolute(self) :
-        trash_dir = TrashDirectory( "/mnt/disk/.Trash-123", "/mnt/disk")
-
-        assert_equals("/foo", trash_dir._calc_original_location("/foo"))
-
-    def test_calc_original_location_when_relative(self) :
-        trash_dir = TrashDirectory( "/mnt/disk/.Trash-123", "/mnt/disk")
-
-        assert_equals("/mnt/disk/foo", trash_dir._calc_original_location("foo"))
 
 class TestTrashInfo(TestCase) :
     def test_parse(self) :
