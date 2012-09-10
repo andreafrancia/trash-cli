@@ -19,7 +19,7 @@ TODO:
        -> make the integration test pass
           -> trashcli.rm.Listing
              -> make trash_contents call TrashRmCmd.consider_trashed_file()
-          -> trashcli.rm.Removing
+          x> trashcli.rm.Removing
 
 Dirty code found:
  - lack of code coverage metric 

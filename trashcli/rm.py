@@ -33,9 +33,6 @@ class Main:
         path = parse_path(contents)
         complete_path = os.path.join(self.volume, path)
 
-
-
-
 def main():
     from trashcli.list_mount_points import mount_points
     main              = Main()
