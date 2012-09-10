@@ -1,54 +1,47 @@
 from nose.tools import istest, assert_items_equal
 from mock import Mock, call
 
-from trashcli.rm import TrashRmCmd
+from trashcli.rm import Filter
 
 class TestTrashRmCmd:
     @istest
     def a_star_matches_all(self):
-        self.trash_contents.list_files_to = lambda out:(
-            out.garbage('/foo', 'info/foo'),
-            out.garbage('/bar', 'info/bar')
-            )
 
-        self.cmd.clean_up_matching('*')
+        self.cmd.use_pattern('*')
+        self.cmd.delete_if_matches('/foo', 'info/foo')
+        self.cmd.delete_if_matches('/bar', 'info/bar')
 
         assert_items_equal([
-            call.release('info/foo'),
-            call.release('info/bar'),
-            ], self.trashcan.mock_calls)
+            call('info/foo'),
+            call('info/bar'),
+            ], self.delete_trashinfo_and_backup_copy.mock_calls)
 
     @istest
     def basename_matches(self):
-        self.trash_contents.list_files_to = lambda out:(
-            out.garbage('/foo', 'info/foo'),
-            out.garbage('/bar', 'info/bar')
-            )
 
-        self.cmd.clean_up_matching('foo')
+        self.cmd.use_pattern('foo')
+        self.cmd.delete_if_matches('/foo', 'info/foo'),
+        self.cmd.delete_if_matches('/bar', 'info/bar')
 
         assert_items_equal([
-            call.release('info/foo'),
-            ], self.trashcan.mock_calls)
+            call('info/foo'),
+            ], self.delete_trashinfo_and_backup_copy.mock_calls)
 
     @istest
     def example_with_star_dot_o(self):
-        self.trash_contents.list_files_to = lambda out:(
-            out.garbage('/foo.h', 'info/foo.h'),
-            out.garbage('/foo.c', 'info/foo.c'),
-            out.garbage('/foo.o', 'info/foo.o'),
-            out.garbage('/bar.o', 'info/bar.o')
-            )
 
-        self.cmd.clean_up_matching('*.o')
+        self.cmd.use_pattern('*.o')
+        self.cmd.delete_if_matches('/foo.h', 'info/foo.h'),
+        self.cmd.delete_if_matches('/foo.c', 'info/foo.c'),
+        self.cmd.delete_if_matches('/foo.o', 'info/foo.o'),
+        self.cmd.delete_if_matches('/bar.o', 'info/bar.o')
 
         assert_items_equal([
-            call.release('info/foo.o'),
-            call.release('info/bar.o'),
-            ], self.trashcan.mock_calls)
+            call('info/foo.o'),
+            call('info/bar.o'),
+            ], self.delete_trashinfo_and_backup_copy.mock_calls)
 
     def setUp(self):
-        self.trash_contents = Mock()
-        self.trashcan = Mock()
-        self.cmd = TrashRmCmd(self.trash_contents, self.trashcan)
+        self.delete_trashinfo_and_backup_copy = Mock()
+        self.cmd = Filter(self.delete_trashinfo_and_backup_copy)
 

@@ -14,12 +14,10 @@ Usage example:
     2010-11-15 19:27:25 /home/kfrance/handbook/activities.html
 
 TODO:
- - add trash-rm command
-    -> integrate all pieces in trashcli/rm.py
-       -> make the integration test pass
-          -> trashcli.rm.Listing
-             -> make trash_contents call TrashRmCmd.consider_trashed_file()
-          x> trashcli.rm.Removing
+ - trash-rm wrap-up
+    - fix newling in trash-rm usage
+    - write man page for trash-rm
+    - add a test for trash-put and method 1 trashdir
 
 Dirty code found:
  - lack of code coverage metric 
@@ -55,6 +53,7 @@ Features backlog:
  - trash-empty --from=/.Trash
  - trash-rm '*.o'
  - trash-empty should empty even the mac trash directory
+ - TRASH_DATE=2012-09-12 trash-put <file>
 
 Test to be ported to nosetests:
  - trash-put:

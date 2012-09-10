@@ -20,6 +20,8 @@ def write_file(filename, contents=''):
 def require_empty_dir(path):
     if os.path.exists(path): shutil.rmtree(path)
     make_dirs(path)
+    assert os.path.isdir(path)
+    assert_equals([], list(os.listdir(path)))
 
 def having_empty_dir(path):
     require_empty_dir(path)

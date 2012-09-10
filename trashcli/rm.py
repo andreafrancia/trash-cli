@@ -1,37 +1,39 @@
+import fnmatch
 import os, sys
+
+from trashcli.trash import TrashDir, parse_path
+from trashcli.trash import TrashDirs
+from trashcli.trash import TopTrashDirRules
+from trashcli.trash import CleanableTrashcan
+from trashcli.fs import FileSystemReader
+from trashcli.fs import FileRemover
 
 class Main:
     def run(self, argv):
+        args = argv[1:]
         self.exit_code = 0
-        from trashcli.trash             import FileSystemReader, TrashDirs, Harvester
-        from trashcli.trash             import TopTrashDirRules
-        environ     = self.environ
-        getuid      = self.getuid
-        file_reader = FileSystemReader()
-        top_trashdir_rules = TopTrashDirRules(file_reader)
-        trashdirs   = TrashDirs(environ, getuid,
-                                list_volumes = self.list_volumes,
-                                top_trashdir_rules = top_trashdir_rules)
-        harvester   = Harvester(file_reader)
-        trashdirs.on_trash_dir_found = harvester._analize_trash_directory
-        harvester.on_volume = self.set_volume
-        harvester.on_trashinfo_found = self.clean_if_matches
 
-        if not argv[1:]:
+        if not args:
             self.stderr.write('Usage:\n'
                             '    trash-rm PATTERN\n'
                             '\n'
                             'Please specify PATTERN')
             self.exit_code = 8
             return
-    def set_volume(self, volume):
-        self.volume = volume
 
-    def clean_if_matches(self, trashinfo_path):
-        from trashcli.trash import parse_path
-        contents = file(trashinfo_path).read()
-        path = parse_path(contents)
-        complete_path = os.path.join(self.volume, path)
+        trashcan = CleanableTrashcan(FileRemover())
+        cmd = Filter(trashcan.delete_trashinfo_and_backup_copy)
+        cmd.use_pattern(args[0])
+        file_reader = FileSystemReader()
+        listing = ListTrashinfos(cmd.delete_if_matches)
+        top_trashdir_rules = TopTrashDirRules(file_reader)
+        trashdirs   = TrashDirs(self.environ, self.getuid,
+                                list_volumes = self.list_volumes,
+                                top_trashdir_rules = top_trashdir_rules)
+        trashdirs.on_trash_dir_found = listing.list_from_volume_trashdir
+
+        trashdirs.list_trashdirs()
+
 
 def main():
     from trashcli.list_mount_points import mount_points
@@ -45,29 +47,32 @@ def main():
 
     return main.exit_code
 
-class TrashRmCmd:
-    def __init__(self, trash_contents, trashcan):
-        self.trash_contents = trash_contents
-        self.delete = TrashCanCleaner(trashcan)
-    def clean_up_matching(self, pattern):
-        self.filter = Pattern(pattern, self.delete)
-        self.trash_contents.list_files_to(self.filter)
-
-import fnmatch
-class Pattern:
-    def __init__(self, pattern, delete):
-        self.delete = delete
-        self.pattern = pattern
-    def garbage(self, original_path, info):
-        basename = os.path.basename(original_path)
-        if fnmatch.fnmatchcase(basename, self.pattern):
-            self.delete.garbage(original_path, info)
-
-class TrashCanCleaner:
+class Filter:
     def __init__(self, trashcan):
-        self.trashcan = trashcan
-    def garbage(self, original_path, info_file, backup_copy=None):
-        self.trashcan.release(info_file)
+        self.delete = trashcan
+    def use_pattern(self, pattern):
+        self.pattern = pattern
+    def delete_if_matches(self, original_location, info_file):
+        basename = os.path.basename(original_location)
+        if fnmatch.fnmatchcase(basename, self.pattern):
+            self.delete(info_file)
+
+class ListTrashinfos:
+    def __init__(self, out):
+        self.out = out
+    def list_from_home_trashdir(self, trashdir_path):
+        self.list_from_volume_trashdir(trashdir_path, '/')
+    def list_from_volume_trashdir(self, trashdir_path, volume):
+        self.volume = volume
+        self.trashdir = TrashDir(FileSystemReader())
+        self.trashdir.open(trashdir_path, volume)
+        self.trashdir.each_trashinfo(self._report_original_location)
+    def _report_original_location(self, trashinfo_path):
+        file_reader = FileSystemReader()
+        trashinfo = file_reader.contents_of(trashinfo_path)
+        path = parse_path(trashinfo)
+        complete_path = os.path.join(self.volume, path)
+        self.out(complete_path, trashinfo_path)
 
 if __name__ == '__main__':
     sys.exit(main())
