@@ -20,3 +20,7 @@ def a_trashinfo_without_path():
 def a_trashinfo_with_date(date):
     return ("[Trash Info]\n"
             "DeletionDate=%s\n" % date)
+
+def a_trashinfo_with_path(path):
+    return ("[Trash Info]\n"
+            "Path=%s\n" % path)

@@ -3,7 +3,7 @@ from trashcli.trash import TrashDirectory
 from files import require_empty_dir
 from files import write_file
 from nose.tools import assert_equals, assert_items_equal
-from mock import Mock, call
+from mock import Mock
 
 class TestWhenListingTrashinfo:
     def setUp(self):

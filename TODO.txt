@@ -15,113 +15,27 @@ Usage example:
 
 TODO:
  - add trash-rm command
-    x add trash-rm entry_point in setup.py
-       x add rm.py package to setup.py
-          x write test for trash-rm in entry-point
-    - prepare a list_all_trashinfo_path function
-       - write for one file in home_trashdir
-          x write a test utility for creating trashinfo files
-                 def add_trashinfo(self, where, original_path):
-                      trashinfo_path = where
-                      write_file(trashinfo_path, "[Trash Info]\n"
-                                                 "Path=%s\n" 
-                                                 % original_path)
-          - function that extrapolates original_path from trashinfo path
-          - function that list all trashinfo in a TrashDir
-             - remove duplication between 
-                 1) TrashDirectory.list_all_trashinfo_path
-                 2) TrashDir.each_trashinfo
-               this requires:
-                 - make TrashDirectory.list_all_trashinfo_path call TrashDir
-                   passing a FileSystemReader as file_reader
-                 - fix the logging behaviour 
-                 x fix behaviour with a test
-                 - make RestoreCmd do not rely on yield
-       - write for many files in home_trashdir
-       - write for method1 and method2 volume trashdirs
-    - write integration test for trash-rm logic
-  - clean:
-     - list_trashdirs -> list_trashdirs_secure_for_read
+    -> integrate all pieces in trashcli/rm.py
+       -> make the integration test pass
+          -> trashcli.rm.Listing
+             -> make trash_contents call TrashRmCmd.consider_trashed_file()
+          -> trashcli.rm.Removing
 
-To clean:
+Dirty code found:
+ - lack of code coverage metric 
+ - list_trashdirs -> list_trashdirs_secure_for_read
+ - duplication: 
+    - remove duplication between 
+        1) TrashDirectory.list_all_trashinfo_path
+        2) TrashDir.each_trashinfo
+      this requires:
+        - make TrashDirectory.list_all_trashinfo_path call TrashDir
+          passing a FileSystemReader as file_reader
+        - fix the logging behaviour 
+        x fix behaviour with a test
+        - make RestoreCmd do not rely on yield
  - describe_trash_list -> test_trash_list
-
-
-How commands get the list of trashed_files?
-
- - trash-list
-    - AvailableTrashDirs
-       - FileSystemReader
- - trash-empty
-    - AvailableTrashDirs
-       - FileSystemReader
- - trash-put
-    - GlobalTrashCan (_possible_trash_directories_for)
-       - _home_trash_dir
-       - trash_directories_for_volume
- - restore-trash
-    - GlobalTrashCan.trashed_files
-       - all_info_files
-       - _create_trashed_file_from_info_file
- - trash-rm:
-     - def list_files_to(self, output)
-         for file in files:
-            out.garbage(original_path, info_file, original_file)
-         
-      
-      
-
-
-
-Design todo:
- - get rid of logging package
- - get rid of TrashDirectory.info_dir and files_dir properties
- - remove all the duplication 
-    - all_info_files, trashed_files and for_all_trashed_files
- - restore the stress test for persist trashinfo (not sure)
- - remove NullReporter if not used
- - get rid of TrashInfo abstraction
- - get rid of TimeUtils.parse_iso8601 if not used
- - rename remove_file in to remove_existing_file
- - refactor TrashPutCmd for simplicity
-
-TrashPutCmd dependencies:
-   - stderr
-   - stdout
-   - environ
-   - (internal) reporter 
-   - (internal) GlobalTrashCan
-   - (internal) Logger
-
-GlobalTrashCan dependencies:
-   - environ
-   - reporter
-   - getuid
-   - list_mount_points
-   - datetime.now
-
-TrashDirectory collaborators:
-   - os.path.normpath
-   - os.path.basename
-   - os.path.abspath
-   - os.path.exists
-   - os.path.join
-   - os.path.isabs
-   - os.chmod
-   - os.open/os.write/os.close
-   - TrashInfo
-   - TrashedFile
-   - datetime
-   - shutil.move
-
-GlobalTrashCan responsibilies:
- - enumerates possible TrashDirectories for a file to be trashed
- - enumerates all trashed files
- - trash a file in the right location
- - knows when a file should be skipped
- - knows when a file can be trashed in a TrashDir
- - enumerates all TrashDir of a Volume
- - compose method 1 and method 2 TrashDir
+ - @property TrashDirectory.info_dir and files_dir
 
 Features backlog:
  - trash-list should handle .trashinfo from home trashdir that contains 
@@ -154,5 +68,4 @@ Test to be ported to nosetests:
     - when $topdir/.Trash is not sticky
  - should refuse to create the $topdir/.Trash/$uid directory if the 
    $topdir/.Trash is not sticky
-
 
