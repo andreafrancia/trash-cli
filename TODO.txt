@@ -1,39 +1,19 @@
 Feature: trash-rm
 
-Usage example:
-
-    > trash-list
-    2010-11-15 19:27:29 /home/kfrance/handbook/introduction.html
-    2010-11-15 19:27:25 /home/kfrance/handbook/activities.html
-    2011-02-21 09:23:37 /home/kfrance/dissertation/src/bad_creature.o
-    2011-02-21 09:23:37 /home/kfrance/dissertation/src/Color_gene.o
-    2011-02-21 09:23:37 /home/kfrance/dissertation/src/Perceptron.o
-    > trash-rm '*.o'
-    > trash-list
-    2010-11-15 19:27:29 /home/kfrance/handbook/introduction.html
-    2010-11-15 19:27:25 /home/kfrance/handbook/activities.html
-
 TODO:
  - trash-rm wrap-up
-    - fix newling in trash-rm usage
-    - write man page for trash-rm
+    x -> fix newling in trash-rm usage
+    - -> man page for trash-rm
+       - -> write man page for trash-rm
+          - -> remove duplication (man page example and actual behaviour)
+          - -> remove duplication about BUGS in man page 
+       - -> install the man page with setup.py
+   
+ - man pages:
+    - add DONATION to all pages
+    - make all BUGS to point to github
+    - unificate "SEE ALSO" for all man pages
     - add a test for trash-put and method 1 trashdir
-
-Dirty code found:
- - lack of code coverage metric 
- - list_trashdirs -> list_trashdirs_secure_for_read
- - duplication: 
-    - remove duplication between 
-        1) TrashDirectory.list_all_trashinfo_path
-        2) TrashDir.each_trashinfo
-      this requires:
-        - make TrashDirectory.list_all_trashinfo_path call TrashDir
-          passing a FileSystemReader as file_reader
-        - fix the logging behaviour 
-        x fix behaviour with a test
-        - make RestoreCmd do not rely on yield
- - describe_trash_list -> test_trash_list
- - @property TrashDirectory.info_dir and files_dir
 
 Features backlog:
  - trash-list should handle .trashinfo from home trashdir that contains 

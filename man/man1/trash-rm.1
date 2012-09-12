@@ -1,0 +1,42 @@
+.\" Copyright (C) 2012 Andrea Francia <andrea@andreafrancia.it>
+
+.TH "TRASH-RM" "1"
+
+.SH "NAME"
+trash-rm \- Removes files matching a pattern from the trash can
+
+.SH "SYNOPSIS"
+.B trash-rm
+.RI [ PATTERN ]
+
+.SH "DESCRIPTION"
+.PP
+Remove from the trash can all the files matching the PATTERN.
+
+.SH "EXAMPLE"
+.nf
+$ trash-rm foo      # Removes all files with name 'foo' in trash can
+$ trash-rm '*.c'    # Removes all files ending with '.o' in trash can
+.fi
+
+.SH "BUGS"
+Report bugs to http://code.google.com/p/trash-cli/issues
+
+.SH "CREDITS"
+Trash was written by Andrea Francia <andrea@andreafrancia.it>.
+The original version of trash-empty was contributed by Einar Orn Olason <eoo@hi.is>.
+The first version of manual pages was written by Steve Stalcup <vorian@ubuntu.com> 
+and was modified by Massimo Cavalleri <submax@tiscalinet.it>.
+
+.SH "COPYRIGHT"
+Both are released under the \s-1GNU\s0 General Public License, version 2.
+
+.SH "SEE ALSO"
+trash-put(1), 
+trash-list(1), 
+trash-empty(1),
+restore-trash(1), 
+and the FreeDesktop.org Trash Specification at 
+http://www.ramendik.ru/docs/trashspec.html.
+.br
+

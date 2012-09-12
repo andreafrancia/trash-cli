@@ -29,7 +29,8 @@ setup(
     data_files = [('share/man/man1', ['man/man1/trash-empty.1',
                                       'man/man1/trash-list.1',
                                       'man/man1/restore-trash.1',
-                                      'man/man1/trash-put.1'])],
+                                      'man/man1/trash-put.1',
+                                      'man/man1/trash-rm.1'])],
     tests_require = file("requirements-dev.txt").readlines(),
 )
 

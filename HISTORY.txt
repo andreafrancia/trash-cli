@@ -1,8 +1,7 @@
-after 0.12.7:
- - Now `trash-put -v` will warning if it foudn a unsticky .Trash dir.
- - (Code) Removed use of inheritance for TrashDirectory different type of 
-   objects
- - Swtiched from realpath to abspath
+0.12.9:
+ - Now `trash-put -v` will warning if it found a unsticky .Trash dir.
+ - New trash-rm command
+ - (Internal) Swtiched from realpath to abspath
 
 0.12.7:
  - fixed trash-empty crashed with GetoptError in short_has_arg(): option -2 
