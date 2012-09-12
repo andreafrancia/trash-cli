@@ -15,9 +15,9 @@ class Main:
 
         if not args:
             self.stderr.write('Usage:\n'
-                            '    trash-rm PATTERN\n'
-                            '\n'
-                            'Please specify PATTERN')
+                              '    trash-rm PATTERN\n'
+                              '\n'
+                              'Please specify PATTERN\n')
             self.exit_code = 8
             return
 
@@ -33,7 +33,6 @@ class Main:
         trashdirs.on_trash_dir_found = listing.list_from_volume_trashdir
 
         trashdirs.list_trashdirs()
-
 
 def main():
     from trashcli.list_mount_points import mount_points
