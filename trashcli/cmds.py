@@ -18,7 +18,7 @@ def restore():
         environ = os.environ,
         exit    = sys.exit,
         input   = raw_input
-    ).run()
+    ).run(sys.argv)
 
 def empty():
     from trashcli.trash import EmptyCmd

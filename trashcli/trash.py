@@ -472,7 +472,7 @@ def getcwd_as_realpath(): return os.path.realpath(os.curdir)
 
 class RestoreCmd:
     def __init__(self, stdout, stderr, environ, exit, input,
-                 curdir = getcwd_as_realpath):
+                 curdir = getcwd_as_realpath, version = version):
         self.out      = stdout
         self.err      = stderr
         self.exit     = exit
@@ -480,7 +480,12 @@ class RestoreCmd:
         self.trashcan = GlobalTrashCan(
                 home_trashcan = HomeTrashCan(environ))
         self.curdir   = curdir
-    def run(self):
+        self.version = version
+    def run(self, args):
+        if '--version' in args[1:]:
+            command = os.path.basename(args[0])
+            self.println('%s %s' %(command, self.version))
+            return
 
         trashed_files = []
         self.for_all_trashed_file_in_dir(trashed_files.append, self.curdir())
