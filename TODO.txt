@@ -4,16 +4,23 @@ TODO:
  - trash-rm wrap-up
     x -> fix newling in trash-rm usage
     - -> man page for trash-rm
-       - -> write man page for trash-rm
-          - -> remove duplication (man page example and actual behaviour)
-          - -> remove duplication about BUGS in man page 
+       x -> write man page for trash-rm
        - -> install the man page with setup.py
+          - -> switch to distutils
+            - -> make it install entry points
    
  - man pages:
     - add DONATION to all pages
     - make all BUGS to point to github
     - unificate "SEE ALSO" for all man pages
     - add a test for trash-put and method 1 trashdir
+    - duplication:
+       - remove duplication (man page example and actual behaviour)
+       - remove duplication about BUGS in man page 
+
+ - setup.py:
+    - test is a setuptools keyword, it does not work with distutils
+    - 'data_files' is a distutils keyword, it does not work with setuptools
 
 Features backlog:
  - trash-list should handle .trashinfo from home trashdir that contains 
