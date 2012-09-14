@@ -13,6 +13,7 @@ It provides these commands::
     trash-empty         empty the trashcan(s).
     trash-list          list trashed file.
     restore-trash       restore a trashed file.
+    trash-rm            remove individual files from trash can.
 
 Usage
 -----
@@ -70,6 +71,12 @@ Example::
     $ trash-list
     2008-02-19 20:11:34 /home/einar/today
 
+To remove only files matching a pattern::
+
+    $ trash-rm '*.o'
+
+Note: you need to use quotes in order to protect pattern from shell expansion.
+
 Using it as 'rm' alias
 ----------------------
 
@@ -91,8 +98,7 @@ Installation (the easy way)
 Requirements:
 
  - Python 2.7 
- - setuptools (use `apt-get install python-setuptools` on 
-   Debian)
+ - setuptools (use `apt-get install python-setuptools` on Debian)
 
 Installation command::
  
@@ -118,7 +124,7 @@ If you discover a bug please report it to:
 
     https://github.com/andreafrancia/trash-cli/issues
 
-You can reach me via email at me@andreafrancia.it .  For twitter use 
+You can reach me via email at andrea@andreafrancia.it .  For twitter use 
 @andreafrancia or #trashcli
 
 Development
