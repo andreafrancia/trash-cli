@@ -26,8 +26,6 @@ def main():
                                           'man/man1/restore-trash.1',
                                           'man/man1/trash-put.1',
                                           'man/man1/trash-rm.1'])],
-        test_suite = "nose.collector",
-        tests_require = file("requirements-dev.txt").readlines(),
     )
 
 from textwrap import dedent

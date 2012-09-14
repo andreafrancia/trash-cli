@@ -137,6 +137,10 @@ Running tests::
     nosetests -A 'not stress_test' # run all tests but stress tests
     nosetests                      # run all tests
 
+Check the installation process before release::
+
+    python check_release_installation.py
+
 Profiling unit tests::
 
     pip install gprof2dot
