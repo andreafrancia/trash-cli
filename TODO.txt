@@ -1,20 +1,10 @@
-Feature: trash-rm
-
 TODO:
-   
- - man pages:
-    - add test for checking man page installation
-    - add DONATION to all pages
-    - make all BUGS to point to github
-    - unificate "SEE ALSO" for all man pages
-    - add a test for trash-put and method 1 trashdir
-    - duplication:
-       - remove duplication (man page example and actual behaviour)
-       - remove duplication about BUGS in man page 
 
- - setup.py:
-    - test is a setuptools keyword, it does not work with distutils
-    - 'data_files' is a distutils keyword, it does not work with setuptools
+ - add an automated test for checking man page installation
+ x add DONATION to all pages
+ x make all BUGS to point to github
+ - unificate "SEE ALSO" for all man pages
+ - add a test for trash-put and method 1 trashdir
 
 Features backlog:
  - trash-list should handle .trashinfo from home trashdir that contains 
@@ -32,7 +22,6 @@ Features backlog:
  - trash-restore --trashed-on="Apr 15, 08" <path>
  - trash-restore --version
  - trash-empty --from=/.Trash
- - trash-rm '*.o'
  - trash-empty should empty even the mac trash directory
  - TRASH_DATE=2012-09-12 trash-put <file>
 
