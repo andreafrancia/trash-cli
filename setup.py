@@ -19,7 +19,7 @@ def main():
         description = 'Command line interface to FreeDesktop.org Trash.',
         long_description = file("README.rst").read(),
         license = 'GPL v2',
-        packages = ['trashcli', 'integration_tests', 'unit_tests'],
+        packages = ['trashcli'],
         scripts = bin_dir.created_scripts,
         data_files = [('share/man/man1', ['man/man1/trash-empty.1',
                                           'man/man1/trash-list.1',
