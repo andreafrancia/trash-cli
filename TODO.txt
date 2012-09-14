@@ -1,15 +1,9 @@
 Feature: trash-rm
 
 TODO:
- - trash-rm wrap-up
-    x -> fix newling in trash-rm usage
-    - -> man page for trash-rm
-       x -> write man page for trash-rm
-       - -> install the man page with setup.py
-          - -> switch to distutils
-            - -> make it install entry points
    
  - man pages:
+    - add test for checking man page installation
     - add DONATION to all pages
     - make all BUGS to point to github
     - unificate "SEE ALSO" for all man pages

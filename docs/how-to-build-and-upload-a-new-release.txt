@@ -3,42 +3,25 @@ How to build a release
 
 Update the version number:
   
-  vim trashcli/trash.py
-  version="$(python setup.py --version)"
+    vim trashcli/trash.py
+    version="$(python setup.py --version)"
 
 Run all tests:
 
-  nosetests
+    nosetests
 
 Test the installation from tarball:
   
     python setup.py sdist
-    tarball=trash-cli-${version:?}.tar.gz
-
-    scp dist/$tarball root@192.168.56.101:
-
-    ssh root@192.168.56.101 "
-        tar xvfz $tarball
-        cd ${tarball%%.tar.gz}
-        python setup.py install
-        trash-put --help
-    "
-
-Test the installation using easy_install:
-
-    ssh root@192.168.56.101 "
-        apt-get install python-setuptools
-        easy_install "$tarball"
-        trash-put --help
-    "
+    python check_release_installation.py
 
 Register and upload:
 
-  python setup.py register
-  python setup.py sdist upload
+    python setup.py register
+    python setup.py sdist upload
 
 Now you can tag the repo status:
 
-  git tag "${version:?}"
+    git tag "${version:?}"
 
 -EOF
