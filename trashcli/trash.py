@@ -470,6 +470,7 @@ from .fs import move, mkdirs, mkdirs_using_mode, parent_of
 
 def getcwd_as_realpath(): return os.path.realpath(os.curdir)
 
+import sys
 class RestoreCmd:
     def __init__(self, stdout, stderr, environ, exit, input,
                  curdir = getcwd_as_realpath, version = version):
@@ -481,7 +482,7 @@ class RestoreCmd:
                 home_trashcan = HomeTrashCan(environ))
         self.curdir   = curdir
         self.version = version
-    def run(self, args):
+    def run(self, args=sys.argv):
         if '--version' in args[1:]:
             command = os.path.basename(args[0])
             self.println('%s %s' %(command, self.version))

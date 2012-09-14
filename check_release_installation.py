@@ -1,9 +1,6 @@
 TARGET_HOST = '192.168.56.101'
 
-def main():
-    import nose
-    nose.runmodule()
-
+import nose
 from nose.tools import assert_equals, assert_not_equals
 import subprocess
 
@@ -89,4 +86,4 @@ class TestConnection:
         assert_equals(134, result.exit_code)
 
 if __name__ == '__main__':
-    main()
+    nose.runmodule()

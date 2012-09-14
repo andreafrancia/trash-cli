@@ -5,6 +5,7 @@
 .DS_Store
 .local/
 .svn
+/bin/
 /build/
 /command-test/sandbox/
 /command-test/test-volume.img
