@@ -1,4 +1,5 @@
 0.12.9:
+ - Switched to distutils.core (instead of setuptools)
  - Now `trash-put -v` will warning if it found a unsticky .Trash dir.
  - New trash-rm command
  - (Internal) Swtiched from realpath to abspath
