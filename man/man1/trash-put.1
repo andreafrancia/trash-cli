@@ -18,10 +18,10 @@
 .TH "TRASH" "1"
 
 .SH "NAME"
-trash \- Command line trash utility.
+trash-put \- Command line trash utility.
 
 .SH "SYNOPSIS"
-.B trash
+.B trash-put
 .RI [ arguments ]
 \&...
 
@@ -34,24 +34,26 @@ each trashed file.
 
 .SH "ARGUMENTS"
 .TP
-Names of files or directory to move in the trashcan.
+Names of files or directories to move in the trashcan.
 
 .SH "EXAMPLES"
 .nf
-$ cd /home/andrea/
-$ touch foo bar
-$ trash foo bar
+$ trash-put foo   # trashes foo 
 .fi
 
 .SH "BUGS"
-Report bugs to http://code.google.com/p/trash-cli/issues
+Report bugs to https://github.com/andreafrancia/trash-cli/issues or to
+andrea@andreafrancia.it
 
-.SH "AUTHORS"
-Trash was written by Andrea Francia
-<andreafrancia@users.sourceforge.net>
-and Einar Orn Olason <eoo@hi.is>.
-This manual page was written by Steve Stalcup <vorian@ubuntu.com>.
-Changes made by Massimo Cavalleri <submax@tiscalinet.it>.
+.SH "THANKS"
+Tweet (to @andreafrancia or #trash-cli) or donate 1, 2 or 5 euros using paypal:
+https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=93L6PYT4WBN5A
+
+.SH "CREDITS"
+Trash was written by Andrea Francia <andrea@andreafrancia.it>.
+The original version of trash-empty was contributed by Einar Orn Olason <eoo@hi.is>.
+The first version of manual pages was written by Steve Stalcup <vorian@ubuntu.com> 
+and was modified by Massimo Cavalleri <submax@tiscalinet.it>.
 
 .SH "SEE ALSO"
 trash-list(1), trash-restore(1), trash-empty(1), and the
