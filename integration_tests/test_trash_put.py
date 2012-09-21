@@ -1,5 +1,5 @@
 # Copyright (C) 2009-2011 Andrea Francia Trivolzio(PV) Italy
-from trashcli.trash import TrashPutCmd
+from trashcli.put import TrashPutCmd
 
 import os
 from nose.tools import istest, assert_equals, assert_not_equals

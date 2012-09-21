@@ -1,0 +1,34 @@
+How trash-put should choose in which trash directory the file should be trashed?
+================================================================================
+
+When user launches::
+
+  $ trash-put file-to-be-trashed
+
+the file can be trashed in:
+ 1. "home trash" ($XDG_DATA_HOME/Trash)
+ 2. primary top trash directory ($topdir/.Trash/$uid)
+ 3. alternate top trash directory ($topdir/.Trash-$uid)
+
+With these rules:
+ - Home Trash
+    1. when the file is in the same volume of the "home trash" should choose 
+       "home trash"
+    2. "home trash" should be available for each user
+    3. "home trash" if not present should created with no delay
+    4. "home trash" can be used as failsafe method, that means:
+         when the file is different volume but it fails to use both the top 
+         trash directories it chose "home trahs"
+ - Primary Top Trash Dir
+    1. in $topdir/.Trash can be created by an admin
+        - should be created by the admin
+        - should permit user to create $topdir/.Trash/$uid
+        - should not be a symbolic link
+        - the $topdir/.Trash/$uid should not writable by others
+    2. should be skipped if any of the conditions above is unsatisfied
+    3. The $topdir/.Trash/$uid should be automatically created without delay
+       if not present
+ - Alternate Top Trash dir
+    1. Should be created with any delay if needed
+
+EOF

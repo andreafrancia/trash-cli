@@ -1,10 +1,11 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from trashcli.trash import TrashPutCmd
+from trashcli.put import TrashPutCmd
 
-from nose.tools import istest
+from nose.tools import istest, assert_in, assert_equals, assert_not_equals
 from StringIO import StringIO
 from integration_tests.assert_equals_with_unidiff import assert_equals_with_unidiff
+from textwrap import dedent
 
 class TrashPutTest:
     def run(self, *arg):
@@ -15,13 +16,13 @@ class TrashPutTest:
         self._collect_exit_code(lambda:cmd.run(args))
 
     def _collect_exit_code(self, main_function):
-        self.actual_exit_code = 0
+        self.exit_code = 0
         try:
             result=main_function()
             if result is not None:
-                self.actual_exit_code=result
+                self.exit_code=result
         except SystemExit, e:
-            self.actual_exit_code = e.code
+            self.exit_code = e.code
 
     def stderr_should_be(self, expected_err):
         assert_equals_with_unidiff(expected_err, self._actual_stderr())
@@ -35,35 +36,52 @@ class TrashPutTest:
     def _actual_stdout(self):
         return self.stdout.getvalue()
 
+class TestWhenNoArgs(TrashPutTest):
+    def setUp(self):
+        self.run()
+
+    def test_should_report_usage(self):
+        assert_line_in_text('Usage: trash-put [OPTION]... FILE...',
+                            self.stderr.getvalue())
+    def test_exit_code_should_be_not_zero(self):
+        assert_equals(2, self.exit_code)
+
+
+def assert_line_in_text(expected_line, text):
+    assert_in(expected_line, text.splitlines(),
+                'Line not found in text\n'
+                'line: %s\n' % expected_line +
+                'text:\n%s\n' % format(text.splitlines()))
+
 @istest
 class describe_TrashPutCmd(TrashPutTest):
 
     @istest
     def on_help_option_print_help(self):
         self.run('--help')
-        self.stdout_should_be('''\
-Usage: trash-put [OPTION]... FILE...
+        self.stdout_should_be(dedent('''\
+            Usage: trash-put [OPTION]... FILE...
 
-Put files in trash
+            Put files in trash
 
-Options:
-  --version            show program's version number and exit
-  -h, --help           show this help message and exit
-  -d, --directory      ignored (for GNU rm compatibility)
-  -f, --force          ignored (for GNU rm compatibility)
-  -i, --interactive    ignored (for GNU rm compatibility)
-  -r, -R, --recursive  ignored (for GNU rm compatibility)
-  -v, --verbose        explain what is being done
+            Options:
+              --version            show program's version number and exit
+              -h, --help           show this help message and exit
+              -d, --directory      ignored (for GNU rm compatibility)
+              -f, --force          ignored (for GNU rm compatibility)
+              -i, --interactive    ignored (for GNU rm compatibility)
+              -r, -R, --recursive  ignored (for GNU rm compatibility)
+              -v, --verbose        explain what is being done
 
-To remove a file whose name starts with a `-', for example `-foo',
-use one of these commands:
+            To remove a file whose name starts with a `-', for example `-foo',
+            use one of these commands:
 
-    trash -- -foo
+                trash -- -foo
 
-    trash ./-foo
+                trash ./-foo
 
-Report bugs to http://code.google.com/p/trash-cli/issues
-''')
+            Report bugs to http://code.google.com/p/trash-cli/issues
+            '''))
 
     @istest
     def it_should_skip_dot_entry(self):

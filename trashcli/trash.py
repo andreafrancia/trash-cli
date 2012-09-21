@@ -1,7 +1,7 @@
 # Copyright (C) 2007-2011 Andrea Francia Trivolzio(PV) Italy
 from __future__ import absolute_import
 
-version='0.12.9.14'
+version='0.12.9.14~'
 
 import os
 import logging
@@ -223,10 +223,6 @@ class PathForTrashInfo:
     def _real_parent(self):
         parent   = os.path.dirname(self.normalized_path)
         return os.path.realpath(parent)
-
-class NullObject:
-    def __getattr__(self, name):
-        return lambda *argl,**args:None
 
 class HomeTrashCan:
     def __init__(self, environ):
@@ -519,185 +515,6 @@ class RestoreCmd:
     def printerr(self, msg):
         self.err.write('%s\n' % msg)
 
-from optparse import IndentedHelpFormatter
-class NoWrapFormatter(IndentedHelpFormatter) :
-    def _format_text(self, text) :
-        "[Does not] format a text, return the text as it is."
-        return text
-
-class TrashPutCmd:
-    def __init__(self, stdout, stderr, environ = os.environ, fstab = Fstab()):
-        self.stdout  = stdout
-        self.stderr  = stderr
-        self.environ = environ
-        self.fstab   = fstab
-
-    def run(self, argv):
-        parser = self.get_option_parser(os.path.basename(argv[0]))
-        (options, args) = parser.parse_args(argv[1:])
-
-        if len(args) <= 0:
-            parser.error("Please specify the files to trash.")
-
-        reporter = TrashPutReporter(self.get_logger(options.verbose,argv[0]))
-
-        self.trashcan = GlobalTrashCan(
-                reporter = reporter,
-                fstab = self.fstab,
-                home_trashcan = HomeTrashCan(self.environ))
-        self.trash_all(args)
-
-        if reporter.all_files_have_been_trashed:
-            return EX_OK
-        else:
-            return EX_IOERR
-
-    def trash_all(self, args):
-        for arg in args :
-            self.trash(arg)
-
-    def trash(self, arg):
-        self.trashcan.trash(arg)
-
-    def get_option_parser(self, program_name):
-        from optparse import OptionParser
-
-        parser = OptionParser(prog=program_name,
-                              usage="%prog [OPTION]... FILE...",
-                              description="Put files in trash",
-                              version="%%prog %s" % version,
-                              formatter=NoWrapFormatter(),
-                              epilog=
-"""To remove a file whose name starts with a `-', for example `-foo',
-use one of these commands:
-
-    trash -- -foo
-
-    trash ./-foo
-
-Report bugs to http://code.google.com/p/trash-cli/issues""")
-        parser.add_option("-d",
-                          "--directory",
-                          action="store_true",
-                          help="ignored (for GNU rm compatibility)")
-        parser.add_option("-f",
-                          "--force",
-                          action="store_true",
-                          help="ignored (for GNU rm compatibility)")
-        parser.add_option("-i",
-                          "--interactive",
-                          action="store_true",
-                          help="ignored (for GNU rm compatibility)")
-        parser.add_option("-r",
-                          "-R",
-                          "--recursive",
-                          action="store_true",
-                          help="ignored (for GNU rm compatibility)")
-        parser.add_option("-v",
-                          "--verbose",
-                          action="store_true",
-                          help="explain what is being done",
-                          dest="verbose")
-        def patched_print_help():
-            encoding = parser._get_encoding(self.stdout)
-            self.stdout.write(parser.format_help().encode(encoding, "replace"))
-        def patched_error(msg):
-            parser.print_usage(self.stderr)
-            parser.exit(2, "%s: error: %s\n" % (program_name, msg))
-        def patched_exit(status=0, msg=None):
-            if msg: self.stderr.write(msg)
-            import sys
-            sys.exit(status)
-
-        parser.print_help = patched_print_help
-        parser.error = patched_error
-        parser.exit = patched_exit
-        return parser
-
-    def get_logger(self,verbose,argv0):
-        import os.path
-        class MyLogger:
-            def __init__(self, stderr):
-                self.program_name = os.path.basename(argv0)
-                self.stderr=stderr
-            def info(self,message):
-                if verbose:
-                    self.emit(message)
-            def warning(self,message):
-                self.emit(message)
-            def emit(self, message):
-                self.stderr.write("%s: %s\n" % (self.program_name,message))
-
-        return MyLogger(self.stderr)
-
-class TrashPutReporter:
-    def __init__(self, logger = NullObject()):
-        self.logger = logger
-        self.all_files_have_been_trashed = True
-
-    def unable_to_trash_dot_entries(self,file):
-        self.logger.warning("cannot trash %s `%s'" % (describe(file), file))
-
-    def unable_to_trash_file(self,f):
-        self.logger.warning("cannot trash %s `%s'" % (describe(f), f))
-        self.all_files_have_been_trashed = False
-
-    def file_has_been_trashed_in_as(self, trashee, trash_directory, destination):
-        self.logger.info("`%s' trashed in %s" % (trashee, trash_directory))
-
-    def found_unsercure_trash_dir_symlink(self, trash_dir_path):
-        self.logger.info("found unsecure .Trash dir (should not be a symlink): %s"
-                % trash_dir_path)
-    def found_unusable_trash_dir_not_a_dir(self, trash_dir_path):
-        self.logger.info("found unusable .Trash dir (should be a dir): %s"
-                % trash_dir_path)
-    def found_unsecure_trash_dir_unsticky(self, trash_dir_path):
-        self.logger.info("found unsecure .Trash dir (should be sticky): %s"
-                % trash_dir_path)
-    def unable_to_trash_file_in_because(self,
-                                        file_to_be_trashed,
-                                        trash_directory, error):
-        self.logger.info("Failed to trash %s in %s, because :%s" %
-                         (file_to_be_trashed, trash_directory, error))
-
-
-def describe(path):
-    """
-    Return a textual description of the file pointed by this path.
-    Options:
-     - "symbolic link"
-     - "directory"
-     - "`.' directory"
-     - "`..' directory"
-     - "regular file"
-     - "regular empty file"
-     - "non existent"
-     - "entry"
-    """
-    if os.path.islink(path):
-        return 'symbolic link'
-    elif os.path.isdir(path):
-        if path == '.':
-            return 'directory'
-        elif path == '..':
-            return 'directory'
-        else:
-            if os.path.basename(path) == '.':
-                return "`.' directory"
-            elif os.path.basename(path) == '..':
-                return "`..' directory"
-            else:
-                return 'directory'
-    elif os.path.isfile(path):
-        if os.path.getsize(path) == 0:
-            return 'regular empty file'
-        else:
-            return 'regular file'
-    elif not os.path.exists(path):
-        return 'non existent'
-    else:
-        return 'entry'
-
 from .fs import FileSystemReader, contents_of, FileRemover
 
 class ListCmd:
@@ -950,12 +767,6 @@ class EmptyCmd:
            "  --version   show program's version number and exit",
            "  -h, --help  show this help message and exit")
         printer.bug_reporting()
-    def is_int(self, text):
-        try:
-            int(text)
-            return True
-        except ValueError:
-            return False
     def _empty_all_trashdirs(self):
         self.harvester.on_trashinfo_found = self._expiry_date.delete_if_expired
         self.harvester.on_orphan_found = self._cleaning.delete_orphan
@@ -1085,26 +896,6 @@ class TrashDir:
     def each_trashinfo(self, action):
         for entry in self._trashinfo_entries():
             action(os.path.join(self._info_dir(), entry))
-    def _trashinfos(self):
-        for entry in self._trashinfo_entries():
-            yield self._trashinfo(entry)
-    def _trashinfo(self, entry):
-        class TrashInfo:
-            def __init__(self, info_dir, files_dir, entry, file_reader,
-                         volume_path):
-                self.info_dir    = info_dir
-                self.files_dir   = files_dir
-                self.entry       = entry
-            def path_to_backup_copy(self):
-                entry = self.entry[:-len('.trashinfo')]
-                return os.path.join(self.files_dir, entry)
-            def path_to_trashinfo(self):
-                return os.path.join(self.info_dir, self.entry)
-        return TrashInfo(self._info_dir(),
-                         self._files_dir(),
-                         entry,
-                         self.file_reader,
-                         self.volume_path)
     def _info_dir(self):
         return os.path.join(self.trash_dir_path, 'info')
     def _trashinfo_path_from_file(self, file_entry):
@@ -1138,16 +929,6 @@ def maybe_parse_deletion_date(contents):
             on_invalid_date = lambda: result.collect(unknown_date())
     )(contents)
     return result.collected
-
-def maybe_date(parsing_closure):
-
-    try:
-        date = parsing_closure()
-    except ValueError:
-        return unknown_date()
-    else:
-        if date: return date
-    return unknown_date()
 
 def unknown_date():
     return '????-??-?? ??:??:??'

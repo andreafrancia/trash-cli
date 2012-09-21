@@ -6,9 +6,9 @@ import sys
 def main():
     sys.path.append('.')
     from trashcli import trash
+    bin_dir.add_script('trash'        , 'trashcli.put' , 'main')
+    bin_dir.add_script('trash-put'    , 'trashcli.put' , 'main')
     bin_dir.add_script('trash-list'   , 'trashcli.cmds', 'list')
-    bin_dir.add_script('trash'        , 'trashcli.cmds', 'put')
-    bin_dir.add_script('trash-put'    , 'trashcli.cmds', 'put')
     bin_dir.add_script('restore-trash', 'trashcli.cmds', 'restore')
     bin_dir.add_script('trash-empty'  , 'trashcli.cmds', 'empty')
     bin_dir.add_script('trash-rm'     , 'trashcli.rm'  , 'main')

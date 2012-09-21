@@ -2,14 +2,6 @@
 
 import sys,os
 
-def put():
-    from trashcli.trash import TrashPutCmd
-    return TrashPutCmd(
-        sys.stdout,
-        sys.stderr
-    ).run(sys.argv)
-
-
 def restore():
     from trashcli.trash import RestoreCmd
     RestoreCmd(

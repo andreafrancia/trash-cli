@@ -1,6 +1,6 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from trashcli.trash import describe
+from trashcli.put import describe
 from .files import require_empty_dir, having_file
 from nose.tools import assert_equals
 import os
