@@ -2,7 +2,7 @@
 
 from nose.tools import (assert_true, assert_equals)
 from unittest import TestCase
-from trashcli.trash import GlobalTrashCan
+from trashcli.put import GlobalTrashCan
 from mock import Mock
 
 class TestGlobalTrashCan(TestCase):

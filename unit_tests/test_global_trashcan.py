@@ -1,7 +1,7 @@
 from mock import Mock
 from nose.tools import istest
 
-from trashcli.trash import GlobalTrashCan
+from trashcli.put import GlobalTrashCan
 
 class TestGlobalTrashCan:
     def setUp(self):

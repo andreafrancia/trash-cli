@@ -5,14 +5,13 @@ from __future__ import absolute_import
 from trashcli.trash import TrashDirectory
 from trashcli.trash import TrashedFile
 from trashcli.trash import TrashInfo
+from integration_tests.files import write_file, require_empty_dir
 
 from datetime import datetime
 import os
 from unittest import TestCase
-from nose.tools import raises
 from nose.tools import assert_equals
 abspath = os.path.abspath
-import shutil
 
 class TestTrashInfo(TestCase) :
     def test_parse(self) :
@@ -61,25 +60,13 @@ class TestTrashedFile(TestCase) :
         assert_equals(instance.actual_path, actual_path)
         assert_equals(trash_directory, trash_directory)
 
-    @raises(ValueError)
-    def test_init_requires_absolute_paths(self):
-        path = "./relative-path"
-        deletion_date = datetime(2001,01,01)
-        info_file = "/home/user/.local/share/Trash/info/foo.trashinfo"
-        actual_path = "/home/user/.local/share/Trash/files/foo"
-        trash_directory = TrashDirectory('/home/user/.local/share/Trash', '/')
-
-        TrashedFile(path, deletion_date, info_file, actual_path,
-                    trash_directory)
-
-
     def test_restore_create_needed_directories(self):
-        trash_dir = TrashDirectory(self.xdg_data_home, '/')
-        trash_dir.store_absolute_paths()
-        os.mkdir("sandbox/foo")
-        touch("sandbox/foo/bar")
-        instance = trash_dir.trash("sandbox/foo/bar")
-        shutil.rmtree("sandbox/foo")
+        require_empty_dir('sandbox')
+
+        write_file('sandbox/TrashDir/files/bar')
+        instance = TrashedFile('sandbox/foo/bar',
+                               'deletion_date', 'info_file',
+                               'sandbox/TrashDir/files/bar', 'trash_dirctory')
         instance.restore()
         assert os.path.exists("sandbox/foo/bar")
 

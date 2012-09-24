@@ -17,26 +17,31 @@ EX_USAGE = getattr(os, 'EX_USAGE', 64)
 EX_IOERR = getattr(os, 'EX_IOERR', 74)
 
 from .fs import list_files_in_dir
+import os
+from .fs import remove_file
+from .fs import move, mkdirs, mkdirs_using_mode
 class TrashDirectory:
-    def __init__(self, path, volume):
-        self.path   = os.path.normpath(path)
-        self.volume = volume
-        class all_is_ok_checker:
-            def valid_to_be_written(self, a, b): pass
-            def check(self, a):pass
-        self.checker = all_is_ok_checker()
+    def __init__(self, path, volume, move = move):
+        self.path      = os.path.normpath(path)
+        self.volume    = volume
+        self.logger    = logger
+        self.info_dir  = os.path.join(self.path, 'info')
+        self.files_dir = os.path.join(self.path, 'files')
+        # used only by restore-trash {{{
         # events
         def warn_non_trashinfo():
             self.logger.warning("Non .trashinfo file in info dir")
         self.on_non_trashinfo_found = warn_non_trashinfo
-        self.logger = logger
+        # }}}
+        # used only by trash-put {{{
+        class all_is_ok_checker:
+            def valid_to_be_written(self, a, b): pass
+            def check(self, a):pass
+        self.checker = all_is_ok_checker()
+        self.move = move
+        # }}}
 
-    def __str__(self) :
-        return self.name()
-
-    def __repr__(self):
-        return 'TrashDirectory(%s,%s)' % (repr(self.path), repr(self.volume))
-
+    # used by trash-put {{{
     def name(self):
         import re
         import posixpath
@@ -67,107 +72,35 @@ class TrashDirectory:
 
         basename = os.path.basename(trash_info.path)
         trashinfo_file_content = trash_info.render()
-        (trash_info_file, trash_info_id) = self.persist_trash_info(basename,
-                                                                   trashinfo_file_content)
+        trash_info_file = self.persist_trash_info(
+                self.info_dir, basename, trashinfo_file_content)
 
-        trashed_file = self._create_trashed_file(trash_info_id,
-                                                 os.path.abspath(path),
-                                                 trash_info.deletion_date)
+        where_to_store_trashed_file = backup_file_path_from(trash_info_file)
 
         self.ensure_files_dir_exists()
 
         try :
-            move(path, trashed_file.actual_path)
+            self.move(path, where_to_store_trashed_file)
         except IOError as e :
             remove_file(trash_info_file)
             raise e
-
-        return trashed_file
+        result = dict()
+        result['trash_directory_name'] = self.name()
+        result['where_file_was_stored'] = where_to_store_trashed_file
+        return result
 
     def ensure_files_dir_exists(self):
         if not os.path.exists(self.files_dir) :
             mkdirs_using_mode(self.files_dir, 0700)
 
-    @property
-    def info_dir(self):
+    def persist_trash_info(self, info_dir, basename, content) :
         """
-        The $trash_dir/info dir that contains the .trashinfo files
-        as filesystem.Path.
+        Create a .trashinfo file in the $trash/info directory.
+        returns the created TrashInfoFile.
         """
-        result = os.path.join(self.path, 'info')
-        return result
 
-    @property
-    def files_dir(self):
-        """
-        The directory where original file where stored.
-        A Path instance.
-        """
-        result = os.path.join(self.path, 'files')
-        return result
-
-    def all_info_files(self) :
-        'Returns a generator of "Path"s'
-        try :
-            for info_file in list_files_in_dir(self.info_dir):
-                if not os.path.basename(info_file).endswith('.trashinfo') :
-                    self.on_non_trashinfo_found()
-                else :
-                    yield info_file
-        except OSError: # when directory does not exist
-            pass
-
-    def trashed_files(self) :
-        # Only used by restore-trash
-        for info_file in self.all_info_files():
-            try:
-                yield self._create_trashed_file_from_info_file(info_file)
-            except ValueError:
-                self.logger.warning("Non parsable trashinfo file: %s" % info_file)
-            except IOError as e:
-                self.logger.warning(str(e))
-
-    def _create_trashed_file_from_info_file(self, info_file):
-        trash_id = self.calc_id(info_file)
-
-        trash_info2   = LazyTrashInfoParser(lambda:contents_of(info_file),
-                                            self.volume)
-        path          = trash_info2.original_location()
-        deletion_date = trash_info2.deletion_date()
-
-        trashed_file = self._create_trashed_file(
-                trash_id, path, deletion_date)
-
-        return trashed_file
-
-    def _create_trashed_file(self, trash_id, path, deletion_date):
-        actual_path = self._calc_path_for_actual_file(trash_id)
-        info_file   = self._calc_path_for_info_file(trash_id)
-
-        return TrashedFile(path,
-                           deletion_date,
-                           info_file,
-                           actual_path,
-                           self)
-
-    @staticmethod
-    def calc_id(trash_info_file):
-        return os.path.basename(trash_info_file)[:-len('.trashinfo')]
-
-    def _calc_path_for_actual_file(self, trash_id) :
-        return os.path.join(self.files_dir, trash_id)
-
-    def _calc_path_for_info_file(self, trash_id) :
-        return os.path.join(self.info_dir, '%s.trashinfo' % trash_id)
-
-    """
-    Create a .trashinfo file in the $trash/info directory.
-    returns the created TrashInfoFile.
-    """
-    def persist_trash_info(self,basename,content) :
-
-        mkdirs_using_mode(self.info_dir, 0700)
-        os.chmod(self.info_dir,0700)
+        mkdirs_using_mode(info_dir, 0700)
+        os.chmod(info_dir,0700)
 
         # write trash info
         index = 0
@@ -184,7 +117,7 @@ class TrashDirectory:
             trash_id = base_id + suffix
             trash_info_basename = trash_id+".trashinfo"
 
-            dest = os.path.join(self.info_dir, trash_info_basename)
+            dest = os.path.join(info_dir, trash_info_basename)
             try :
                 handle = os.open(dest,
                                  os.O_RDWR | os.O_CREAT | os.O_EXCL,
@@ -192,13 +125,59 @@ class TrashDirectory:
                 os.write(handle, content)
                 os.close(handle)
                 self.logger.debug(".trashinfo created as %s." % dest)
-                return (dest, trash_id)
+                return dest
             except OSError:
                 self.logger.debug("Attempt for creating %s failed." % dest)
 
             index += 1
 
         raise IOError()
+
+    # }}}
+
+    # used by restore-trash {{{
+    def trashed_files(self) :
+        # Only used by restore-trash
+        for info_file in self.all_info_files():
+            try:
+                yield self._create_trashed_file_from_info_file(info_file)
+            except ValueError:
+                self.logger.warning("Non parsable trashinfo file: %s" % info_file)
+            except IOError as e:
+                self.logger.warning(str(e))
+
+    def all_info_files(self) :
+        'Returns a generator of "Path"s'
+        try :
+            for info_file in list_files_in_dir(self.info_dir):
+                if not os.path.basename(info_file).endswith('.trashinfo') :
+                    self.on_non_trashinfo_found()
+                else :
+                    yield info_file
+        except OSError: # when directory does not exist
+            pass
+
+    def _create_trashed_file_from_info_file(self, trashinfo_file_path):
+
+        trash_info2 = LazyTrashInfoParser(
+                lambda:contents_of(trashinfo_file_path), self.volume)
+
+        original_location = trash_info2.original_location()
+        deletion_date     = trash_info2.deletion_date()
+        backup_file_path  = backup_file_path_from(trashinfo_file_path)
+
+        return TrashedFile(original_location, deletion_date,
+                trashinfo_file_path, backup_file_path, self)
+
+    # }}}
+
+def backup_file_path_from(trashinfo_file_path):
+    trashinfo_basename = os.path.basename(trashinfo_file_path)
+    backupfile_basename = trashinfo_basename[:-len('.trashinfo')]
+    info_dir = os.path.dirname(trashinfo_file_path)
+    trash_dir = os.path.dirname(info_dir)
+    files_dir = os.path.join(trash_dir, 'files')
+    return os.path.join(files_dir, backupfile_basename)
 
 class PathForTrashInfo:
     def make_paths_relatives_to(self, topdir):
@@ -233,164 +212,48 @@ class HomeTrashCan:
         elif 'HOME' in self.environ:
             out('%(HOME)s/.local/share/Trash' % self.environ)
 
-class GlobalTrashCan:
-    """
-    Represent the TrashCan that contains all trashed files.
-    This class is the facade used by all trashcli commands
-    """
-
-    class NullReporter:
-        def __getattr__(self,name):
-            return lambda *argl,**args:None
-    from datetime import datetime
-    def __init__(self, home_trashcan,
-                       reporter = NullReporter(),
-                       getuid   = os.getuid,
-                       fstab    = Fstab(),
-                       now      = datetime.now):
-        self.getuid        = getuid
-        self.reporter      = reporter
-        self.fstab         = fstab
-        self.now           = now
+class TrashDirectories:
+    def __init__(self, home_trashcan, volume_of, getuid,
+                    mount_points):
         self.home_trashcan = home_trashcan
-
-    def trashed_files(self):
-        """Return a generator of all TrashedFile(s)."""
-        for trash_dir in self._trash_directories():
+        self.volume_of = volume_of
+        self.getuid = getuid
+        self.mount_points = mount_points
+    def all_trashed_files(self):
+        for trash_dir in self.all_trash_directories():
             for trashedfile in trash_dir.trashed_files():
                 yield trashedfile
-
-    def trash(self, file) :
-        """
-        Trash a file in the appropriate trash directory.
-        If the file belong to the same volume of the trash home directory it
-        will be trashed in the home trash directory.
-        Otherwise it will be trashed in one of the relevant volume trash
-        directories.
-
-        Each volume can have two trash directories, they are
-            - $volume/.Trash/$uid
-            - $volume/.Trash-$uid
-
-        Firstly the software attempt to trash the file in the first directory
-        then try to trash in the second trash directory.
-        """
-
-        if self._should_skipped_by_specs(file):
-            self.reporter.unable_to_trash_dot_entries(file)
-            return
-
-        for trash_dir in self._possible_trash_directories_for(file):
-
-            try:
-                class ValidationOutput:
-                    def not_valid_should_be_a_dir(_):
-                        raise TopDirNotPresent("topdir should be a directory: %s"
-                                            % trash_dir.path)
-                    def not_valid_parent_should_not_be_a_symlink(_):
-                        raise TopDirIsSymLink("topdir can't be a symbolic link: %s"
-                                            % trash_dir.path)
-                    def not_valid_parent_should_be_sticky(_):
-                        raise TopDirWithoutStickyBit("topdir should have the sticky bit: %s"
-                                            % trash_dir.path)
-                    def is_valid(self):
-                        pass
-                output = ValidationOutput()
-                class FileSystem:
-                    def isdir(self, path):
-                        return os.path.isdir(path)
-                    def islink(self, path):
-                        return os.path.islink(path)
-                    def has_sticky_bit(self, path):
-                        return has_sticky_bit(path)
-                trash_dir.checker.fs = FileSystem()
-                trash_dir.checker.valid_to_be_written(trash_dir.path, output)
-            except TopDirIsSymLink:
-                self.reporter.found_unsercure_trash_dir_symlink(
-                        os.path.dirname(trash_dir.path))
-            except TopDirNotPresent:
-                self.reporter.found_unusable_trash_dir_not_a_dir(
-                        os.path.dirname(trash_dir.path))
-            except TopDirWithoutStickyBit:
-                self.reporter.found_unsecure_trash_dir_unsticky(
-                        os.path.dirname(trash_dir.path))
-
-            if self._file_could_be_trashed_in(file, trash_dir.path):
-                try:
-                    trashed_file = trash_dir.trash(file)
-                    self.reporter.file_has_been_trashed_in_as(
-                          file,
-                          trashed_file.trash_directory.name(),
-                          trashed_file.original_file)
-                    return
-
-                except (IOError, OSError), error:
-                    self.reporter.unable_to_trash_file_in_because(
-                            file, trash_dir.name(), str(error))
-
-        self.reporter.unable_to_trash_file(file)
-
-    def _should_skipped_by_specs(self, file):
-        basename = os.path.basename(file)
-        return (basename == ".") or (basename == "..")
-
-    def volume_of(self, path):
-        return self.fstab.volume_of(path)
-
-    def _file_could_be_trashed_in(self,file_to_be_trashed,trash_dir_path):
-        return self.volume_of(trash_dir_path) == self.volume_of_parent(file_to_be_trashed)
-
-    def _trash_directories(self) :
-        """Return a generator of all TrashDirectories in the filesystem"""
-        for td in self._home_trash_dir():
-            yield td
-        for mount_point in self.fstab.mount_points():
-            volume = mount_point
-            yield self._volume_trash_dir1(volume)
-            yield self._volume_trash_dir2(volume)
-    def _possible_trash_directories_for(self, file):
-        for td in self._home_trash_dir():
-            yield td
-        for td in self._trash_directories_for_volume(self.volume_of_parent(file)):
-            yield td
-    def volume_of_parent(self, file):
-        return self.volume_of(parent_of(file))
-    def _trash_directories_for_volume(self, volume):
-        yield self._volume_trash_dir1(volume)
-        yield self._volume_trash_dir2(volume)
-    def _home_trash_dir(self) :
-        paths = []
-        self.home_trashcan.path_to(paths.append)
-
-        result = []
-        for trash_dir_path in paths:
+    def all_trash_directories(self):
+        trash_dirs = []
+        self.home_trash_dir(trash_dirs.append)
+        self.all_volume_trash_directories(trash_dirs.append)
+        return trash_dirs
+    def home_trash_dir(self, out=lambda trash_dir:None) :
+        def emit_trash_dir(trash_dir_path):
             trash_dir = TrashDirectory(trash_dir_path, self.volume_of(trash_dir_path))
-            trash_dir.volume_of = self.volume_of
             trash_dir.store_absolute_paths()
-            result.append(trash_dir)
-        return result
-    def _volume_trash_dir1(self, volume):
-        """
-        Return the method (1) volume trash dir ($topdir/.Trash/$uid).
-        """
+            out(trash_dir)
+        self.home_trashcan.path_to(emit_trash_dir)
+    def all_volume_trash_directories(self, out):
+        for volume in self.mount_points:
+            self.for_volume(volume,out)
+    def for_volume(self, volume, out=lambda trash_dir:None):
+        self._volume_trash_dir1(volume,out)
+        self._volume_trash_dir2(volume,out)
+    def _volume_trash_dir1(self, volume, out=lambda trash_dir:None):
         uid = self.getuid()
         trash_directory_path = os.path.join(volume, '.Trash', str(uid))
-        trash_dir = TrashDirectory(trash_directory_path,volume)
-        trash_dir.volume_of = self.volume_of
+        trash_dir = TrashDirectory(trash_directory_path, volume)
         trash_dir.store_relative_paths()
         trash_dir.checker = TopTrashDirRules(None)
-        return trash_dir
-    def _volume_trash_dir2(self, volume) :
-        """
-        Return the method (2) volume trash dir ($topdir/.Trash-$uid).
-        """
+        out(trash_dir)
+    def _volume_trash_dir2(self, volume, out=lambda trash_dir:None) :
         uid = self.getuid()
         dirname=".Trash-%s" % str(uid)
         trash_directory_path = os.path.join(volume, dirname)
         trash_dir = TrashDirectory(trash_directory_path,volume)
-        trash_dir.volume_of = self.volume_of
         trash_dir.store_relative_paths()
-        return trash_dir
+        out(trash_dir)
 
 class TrashedFile:
     """
@@ -408,16 +271,8 @@ class TrashedFile:
                      trash opeartion (instance of Path)
      - trash_directory :
     """
-    def __init__(self,
-                 path,
-                 deletion_date,
-                 info_file,
-                 actual_path,
-                 trash_directory) :
-
-        if not os.path.isabs(path):
-            raise ValueError("Absolute path required.")
-
+    def __init__(self, path, deletion_date, info_file, actual_path,
+            trash_directory):
         self.path = path
         self.deletion_date = deletion_date
         self.info_file = info_file
@@ -460,9 +315,6 @@ class TrashInfo:
         deletion_date = parse_deletion_date(data)
         return TrashInfo(path, deletion_date)
 
-import os
-from .fs import remove_file, has_sticky_bit
-from .fs import move, mkdirs, mkdirs_using_mode, parent_of
 
 def getcwd_as_realpath(): return os.path.realpath(os.curdir)
 
@@ -474,8 +326,12 @@ class RestoreCmd:
         self.err      = stderr
         self.exit     = exit
         self.input    = input
-        self.trashcan = GlobalTrashCan(
-                home_trashcan = HomeTrashCan(environ))
+        fstab = Fstab()
+        self.trashcan = TrashDirectories(
+                home_trashcan = HomeTrashCan(environ),
+                volume_of = fstab.volume_of,
+                getuid = os.getuid,
+                mount_points = fstab.mount_points())
         self.curdir   = curdir
         self.version = version
     def run(self, args=sys.argv):
@@ -506,7 +362,7 @@ class RestoreCmd:
         def is_trashed_from_curdir(trashedfile):
             return trashedfile.path.startswith(dir + os.path.sep)
         for trashedfile in filter(is_trashed_from_curdir,
-                                  self.trashcan.trashed_files()) :
+                                  self.trashcan.all_trashed_files()) :
             action(trashedfile)
     def report_no_files_found(self):
         self.println("No files trashed from current dir ('%s')" % self.curdir())
@@ -863,10 +719,6 @@ class TopTrashDirRules:
             output.not_valid_parent_should_be_sticky()
             return
         output.is_valid()
-
-class TopDirWithoutStickyBit(IOError): pass
-class TopDirNotPresent(IOError): pass
-class TopDirIsSymLink(IOError): pass
 
 class Dir:
     def __init__(self, path, entries_if_dir_exists):

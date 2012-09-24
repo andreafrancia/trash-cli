@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
 from nose.tools import assert_equals
-from trashcli.trash  import has_sticky_bit
+from trashcli.fs  import has_sticky_bit
 import os, shutil
 
 def having_file(path):

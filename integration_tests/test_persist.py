@@ -18,13 +18,16 @@ class TestTrashDirectory_persit_trash_info:
 
         self.instance=TrashDirectory(self.trashdirectory_base_dir, "/")
 
+    def persist_trash_info(self, basename, content):
+        return self.instance.persist_trash_info(
+                self.instance.info_dir, basename,content)
+
     def test_persist_trash_info_first_time(self):
         trash_info=TrashInfo("dummy-path", datetime(2007,01,01))
 
         basename=os.path.basename(trash_info.path)
         content=trash_info.render()
-        (trash_info_file, trash_info_id) = self.instance.persist_trash_info(basename,content)
-        assert_equals('dummy-path', trash_info_id)
+        trash_info_file = self.persist_trash_info(basename, content)
         assert_equals(join(self.trashdirectory_base_dir,'info', 'dummy-path.trashinfo'), trash_info_file)
 
         assert_equals(dedent("""\
@@ -41,10 +44,9 @@ class TestTrashDirectory_persit_trash_info:
 
             basename=os.path.basename(trash_info.path)
             content=trash_info.render()
-            (trash_info_file,
-                    trash_info_id)=self.instance.persist_trash_info(basename,content)
+            trash_info_file = self.persist_trash_info(basename, content)
 
-            assert_equals('dummy-path'+"_" + str(i), trash_info_id)
+            assert_equals("dummy-path_%s.trashinfo" % i, os.path.basename(trash_info_file))
             assert_equals(dedent("""\
                 [Trash Info]
                 Path=dummy-path
@@ -59,9 +61,8 @@ class TestTrashDirectory_persit_trash_info:
 
             basename=os.path.basename(trash_info.path)
             content=trash_info.render()
-            (trash_info_file,
-                    trash_info_id)=self.instance.persist_trash_info(basename,content)
-
+            trash_info_file = self.persist_trash_info(basename,content)
+            trash_info_id = os.path.basename(trash_info_file)
             assert_true(trash_info_id.startswith("dummy-path_"))
             assert_equals(dedent("""\
                 [Trash Info]

@@ -2,25 +2,22 @@ Currently working on: home-fallback
  - write the acceptance test
  - write the production code
     - make trash-put unit-testable
+      - inject atomic_write
+        - factor out atomic_write
+
     - split GlobalTrashCan in two classes (one for trash-put and one for 
       restore-trash)
-       x divide methods
-       x introduce hierarchy
-       x perform split
+       - divide methods
+       - introduce hierarchy
+       - perform split
        - fix constructors
           - split TrashDirectory (between trash-put and restore-trash)
-             x mark TrashDirectory methods usage
-             x adapt unit tests
+             - mark TrashDirectory methods usage
+             - adapt unit tests
              - split _home_trash_dir and _volume_trash_dir1/2 methods
        - remove hierarchy
  - clean:
     - update the bug link
-
-GlobalTrashCan
- trashed_files  <-- Restore Trash
- trash          <-- Trash Put
- volume_of
- volume_of_parent
 
 Backlog:
  - add a test for trash-put and method 1 trashdir
