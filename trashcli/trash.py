@@ -20,8 +20,17 @@ from .fs import list_files_in_dir
 import os
 from .fs import remove_file
 from .fs import move, mkdirs, mkdirs_using_mode
+def atomic_write(filename, content):
+    file_handle = os.open(filename, os.O_RDWR | os.O_CREAT | os.O_EXCL,
+            0600)
+    os.write(file_handle, content)
+    os.close(file_handle)
 class TrashDirectory:
-    def __init__(self, path, volume, move = move):
+    from datetime import datetime
+    def __init__(self, path, volume,
+            move = move,
+            atomic_write = atomic_write,
+            now= datetime.now):
         self.path      = os.path.normpath(path)
         self.volume    = volume
         self.logger    = logger
@@ -39,6 +48,8 @@ class TrashDirectory:
             def check(self, a):pass
         self.checker = all_is_ok_checker()
         self.move = move
+        self.atomic_write = atomic_write
+        self.now = now
         # }}}
 
     # used by trash-put {{{
@@ -66,14 +77,12 @@ class TrashDirectory:
     def trash(self, path):
         path = os.path.normpath(path)
 
-        from datetime import datetime
-        trash_info_path = self.path_for_trash_info.for_file(path)
-        trash_info = TrashInfo(trash_info_path, datetime.now())
+        original_location = self.path_for_trash_info.for_file(path)
 
-        basename = os.path.basename(trash_info.path)
-        trashinfo_file_content = trash_info.render()
-        trash_info_file = self.persist_trash_info(
-                self.info_dir, basename, trashinfo_file_content)
+        basename = os.path.basename(original_location)
+        content = self.format_trashinfo(original_location, self.now())
+        trash_info_file = self.persist_trash_info( self.info_dir, basename,
+                content)
 
         where_to_store_trashed_file = backup_file_path_from(trash_info_file)
 
@@ -88,6 +97,27 @@ class TrashDirectory:
         result['trash_directory_name'] = self.name()
         result['where_file_was_stored'] = where_to_store_trashed_file
         return result
+    def format_trashinfo(self, original_location, deletion_date):
+        class TrashInfo:
+            def __init__(self, path, deletion_date):
+                self.path = path
+                self.deletion_date = deletion_date
+            def render(self, path=None, deletion_date = None) :
+                import urllib
+                result = "[Trash Info]\n"
+                result += "Path=" + urllib.quote(self.path,'/') + "\n"
+                result += "DeletionDate=%s" % self._format_date(self.deletion_date) + "\n"
+                return result
+            @staticmethod
+            def _format_date(deletion_date):
+                return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
+
+        trash_info = TrashInfo(original_location, deletion_date)
+        trashinfo_file_content = trash_info.render(original_location, deletion_date)
+        return trashinfo_file_content
+    @staticmethod
+    def _format_date(deletion_date):
+        return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
 
     def ensure_files_dir_exists(self):
         if not os.path.exists(self.files_dir) :
@@ -119,11 +149,7 @@ class TrashDirectory:
 
             dest = os.path.join(info_dir, trash_info_basename)
             try :
-                handle = os.open(dest,
-                                 os.O_RDWR | os.O_CREAT | os.O_EXCL,
-                                 0600)
-                os.write(handle, content)
-                os.close(handle)
+                self.atomic_write(dest, content)
                 self.logger.debug(".trashinfo created as %s." % dest)
                 return dest
             except OSError:
@@ -291,30 +317,6 @@ class TrashedFile:
 
         move(self.original_file, self.path)
         remove_file(self.info_file)
-
-class TrashInfo:
-    def __init__(self, path, deletion_date):
-        assert isinstance(deletion_date, datetime)
-        self.path = path
-        self.deletion_date = deletion_date
-
-    def render(self) :
-        import urllib
-        result = "[Trash Info]\n"
-        result += "Path=" + urllib.quote(self.path,'/') + "\n"
-        result += "DeletionDate=" + self._format_date(self.deletion_date) + "\n"
-        return result
-
-    @staticmethod
-    def _format_date(deletion_date):
-        return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
-
-    @staticmethod
-    def parse(data):
-        path = parse_path(data)
-        deletion_date = parse_deletion_date(data)
-        return TrashInfo(path, deletion_date)
-
 
 def getcwd_as_realpath(): return os.path.realpath(os.curdir)
 

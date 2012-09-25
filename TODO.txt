@@ -13,6 +13,10 @@ Currently working on: home-fallback
        - fix constructors
           - split TrashDirectory (between trash-put and restore-trash)
              - mark TrashDirectory methods usage
+             - prepare unit tests
+                x inject atomic_write
+                x inject move
+                - remove class TrashInfo
              - adapt unit tests
              - split _home_trash_dir and _volume_trash_dir1/2 methods
        - remove hierarchy
