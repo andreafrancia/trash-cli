@@ -19,7 +19,9 @@ EX_IOERR = getattr(os, 'EX_IOERR', 74)
 from .fs import list_files_in_dir
 import os
 from .fs import remove_file
-from .fs import move, mkdirs, mkdirs_using_mode
+from .fs import move, mkdirs
+from .fs import mkdirs_using_mode as ensure_dir
+
 def atomic_write(filename, content):
     file_handle = os.open(filename, os.O_RDWR | os.O_CREAT | os.O_EXCL,
             0600)
@@ -28,9 +30,11 @@ def atomic_write(filename, content):
 class TrashDirectory:
     from datetime import datetime
     def __init__(self, path, volume,
-            move = move,
+            move         = move,
             atomic_write = atomic_write,
-            now= datetime.now):
+            now          = datetime.now,
+            remove_file  = remove_file,
+            ensure_dir   = ensure_dir):
         self.path      = os.path.normpath(path)
         self.volume    = volume
         self.logger    = logger
@@ -46,10 +50,12 @@ class TrashDirectory:
         class all_is_ok_checker:
             def valid_to_be_written(self, a, b): pass
             def check(self, a):pass
-        self.checker = all_is_ok_checker()
-        self.move = move
+        self.checker      = all_is_ok_checker()
+        self.move         = move
         self.atomic_write = atomic_write
-        self.now = now
+        self.now          = now
+        self.remove_file  = remove_file
+        self.ensure_dir   = ensure_dir
         # }}}
 
     # used by trash-put {{{
@@ -91,37 +97,25 @@ class TrashDirectory:
         try :
             self.move(path, where_to_store_trashed_file)
         except IOError as e :
-            remove_file(trash_info_file)
+            self.remove_file(trash_info_file)
             raise e
         result = dict()
         result['trash_directory_name'] = self.name()
         result['where_file_was_stored'] = where_to_store_trashed_file
         return result
     def format_trashinfo(self, original_location, deletion_date):
-        class TrashInfo:
-            def __init__(self, path, deletion_date):
-                self.path = path
-                self.deletion_date = deletion_date
-            def render(self, path=None, deletion_date = None) :
-                import urllib
-                result = "[Trash Info]\n"
-                result += "Path=" + urllib.quote(self.path,'/') + "\n"
-                result += "DeletionDate=%s" % self._format_date(self.deletion_date) + "\n"
-                return result
-            @staticmethod
-            def _format_date(deletion_date):
-                return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
-
-        trash_info = TrashInfo(original_location, deletion_date)
-        trashinfo_file_content = trash_info.render(original_location, deletion_date)
-        return trashinfo_file_content
-    @staticmethod
-    def _format_date(deletion_date):
-        return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
+        def format_date(deletion_date):
+            return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
+        def format_original_location(original_location):
+            import urllib
+            return urllib.quote(original_location,'/')
+        content = ("[Trash Info]\n" +
+                   "Path=%s\n" % format_original_location(original_location) +
+                   "DeletionDate=%s\n" % format_date(deletion_date))
+        return content
 
     def ensure_files_dir_exists(self):
-        if not os.path.exists(self.files_dir) :
-            mkdirs_using_mode(self.files_dir, 0700)
+        self.ensure_dir(self.files_dir, 0700)
 
     def persist_trash_info(self, info_dir, basename, content) :
         """
@@ -129,8 +123,7 @@ class TrashDirectory:
         returns the created TrashInfoFile.
         """
 
-        mkdirs_using_mode(info_dir, 0700)
-        os.chmod(info_dir,0700)
+        self.ensure_dir(info_dir, 0700)
 
         # write trash info
         index = 0
@@ -194,7 +187,6 @@ class TrashDirectory:
 
         return TrashedFile(original_location, deletion_date,
                 trashinfo_file_path, backup_file_path, self)
-
     # }}}
 
 def backup_file_path_from(trashinfo_file_path):
@@ -256,7 +248,8 @@ class TrashDirectories:
         return trash_dirs
     def home_trash_dir(self, out=lambda trash_dir:None) :
         def emit_trash_dir(trash_dir_path):
-            trash_dir = TrashDirectory(trash_dir_path, self.volume_of(trash_dir_path))
+            trash_dir = TrashDirectory(trash_dir_path,
+                                       self.volume_of(trash_dir_path))
             trash_dir.store_absolute_paths()
             out(trash_dir)
         self.home_trashcan.path_to(emit_trash_dir)
@@ -277,7 +270,7 @@ class TrashDirectories:
         uid = self.getuid()
         dirname=".Trash-%s" % str(uid)
         trash_directory_path = os.path.join(volume, dirname)
-        trash_dir = TrashDirectory(trash_directory_path,volume)
+        trash_dir = TrashDirectory(trash_directory_path, volume)
         trash_dir.store_relative_paths()
         out(trash_dir)
 

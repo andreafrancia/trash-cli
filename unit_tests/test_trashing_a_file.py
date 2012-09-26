@@ -1,6 +1,5 @@
 from trashcli.trash import TrashDirectory
 from mock import Mock
-from nose.tools import assert_equals
 from nose.tools import istest
 from mock import ANY
 
@@ -9,10 +8,14 @@ class TestTrashing:
         self.move = Mock()
         self.atomic_write = Mock()
         self.now = Mock()
+        self.remove_file = Mock()
+        self.ensure_dir = Mock()
         self.trashdir = TrashDirectory('~/.Trash', '/',
-                move = self.move,
+                move         = self.move,
                 atomic_write = self.atomic_write,
-                now = self.now)
+                now          = self.now,
+                remove_file  = self.remove_file,
+                ensure_dir   = self.ensure_dir)
         self.trashdir.store_relative_paths()
         path_for_trash_info = Mock()
         path_for_trash_info.for_file.return_value = 'foo'
@@ -34,6 +37,7 @@ class TestTrashing:
 
     @istest
     def trashinfo_should_contains_original_location_and_deletion_date(self):
+        from datetime import datetime
 
         self.now.return_value = datetime(2012, 9, 25, 21, 47, 39)
         self.trashdir.trash('foo')
@@ -43,9 +47,11 @@ class TestTrashing:
                 'Path=foo\n'
                 'DeletionDate=2012-09-25T21:47:39\n')
 
-from datetime import datetime
-class TestDeletionDateFormat:
-    def test_should_be_iso8601(self) :
-        date = datetime(2007, 7, 23, 23, 45, 07)
-        assert_equals("2007-07-23T23:45:07", TrashDirectory._format_date(date))
+    @istest
+    def should_rollback_trashinfo_creation_on_problems(self):
+        self.move.side_effect = IOError
 
+        try: self.trashdir.trash('foo')
+        except IOError: pass
+
+        self.remove_file.assert_called_with('~/.Trash/info/foo.trashinfo')
