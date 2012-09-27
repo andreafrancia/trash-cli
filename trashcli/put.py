@@ -55,37 +55,17 @@ class TrashPutCmd:
                               description="Put files in trash",
                               version="%%prog %s" % version,
                               formatter=NoWrapFormatter(),
-                              epilog=
-"""To remove a file whose name starts with a `-', for example `-foo',
-use one of these commands:
-
-    trash -- -foo
-
-    trash ./-foo
-
-Report bugs to http://code.google.com/p/trash-cli/issues""")
-        parser.add_option("-d",
-                          "--directory",
-                          action="store_true",
+                              epilog=epilog)
+        parser.add_option("-d", "--directory", action="store_true",
                           help="ignored (for GNU rm compatibility)")
-        parser.add_option("-f",
-                          "--force",
-                          action="store_true",
+        parser.add_option("-f", "--force", action="store_true",
                           help="ignored (for GNU rm compatibility)")
-        parser.add_option("-i",
-                          "--interactive",
-                          action="store_true",
+        parser.add_option("-i", "--interactive", action="store_true",
                           help="ignored (for GNU rm compatibility)")
-        parser.add_option("-r",
-                          "-R",
-                          "--recursive",
-                          action="store_true",
+        parser.add_option("-r", "-R", "--recursive", action="store_true",
                           help="ignored (for GNU rm compatibility)")
-        parser.add_option("-v",
-                          "--verbose",
-                          action="store_true",
-                          help="explain what is being done",
-                          dest="verbose")
+        parser.add_option("-v", "--verbose", action="store_true",
+                          help="explain what is being done", dest="verbose")
         def patched_print_help():
             encoding = parser._get_encoding(self.stdout)
             self.stdout.write(parser.format_help().encode(encoding, "replace"))
@@ -101,6 +81,16 @@ Report bugs to http://code.google.com/p/trash-cli/issues""")
         parser.error = patched_error
         parser.exit = patched_exit
         return parser
+
+epilog="""\
+To remove a file whose name starts with a `-', for example `-foo',
+use one of these commands:
+
+    trash -- -foo
+
+    trash ./-foo
+
+Report bugs to http://code.google.com/p/trash-cli/issues"""
 
 class MyLogger:
     def __init__(self, stderr):
@@ -246,54 +236,46 @@ class GlobalTrashCan:
             return
 
         for trash_dir in self._possible_trash_directories_for(file):
-
-            try:
-                class ValidationOutput:
-                    def not_valid_should_be_a_dir(_):
-                        raise TopDirNotPresent("topdir should be a directory: %s"
-                                            % trash_dir.path)
-                    def not_valid_parent_should_not_be_a_symlink(_):
-                        raise TopDirIsSymLink("topdir can't be a symbolic link: %s"
-                                            % trash_dir.path)
-                    def not_valid_parent_should_be_sticky(_):
-                        raise TopDirWithoutStickyBit("topdir should have the sticky bit: %s"
-                                            % trash_dir.path)
-                    def is_valid(self):
-                        pass
-                output = ValidationOutput()
-                class FileSystem:
-                    def isdir(self, path):
-                        return os.path.isdir(path)
-                    def islink(self, path):
-                        return os.path.islink(path)
-                    def has_sticky_bit(self, path):
-                        return has_sticky_bit(path)
-                trash_dir.checker.fs = FileSystem()
-                trash_dir.checker.valid_to_be_written(trash_dir.path, output)
-            except TopDirIsSymLink:
-                self.reporter.found_unsercure_trash_dir_symlink(
-                        os.path.dirname(trash_dir.path))
-            except TopDirNotPresent:
-                self.reporter.found_unusable_trash_dir_not_a_dir(
-                        os.path.dirname(trash_dir.path))
-            except TopDirWithoutStickyBit:
-                self.reporter.found_unsecure_trash_dir_unsticky(
-                        os.path.dirname(trash_dir.path))
-
-            if self._file_could_be_trashed_in(file, trash_dir.path):
-                try:
-                    trashed_file = trash_dir.trash(file)
-                    self.reporter.file_has_been_trashed_in_as(
-                          file,
-                          trashed_file['trash_directory_name'],
-                          trashed_file['where_file_was_stored'])
-                    return
-
-                except (IOError, OSError), error:
-                    self.reporter.unable_to_trash_file_in_because(
-                            file, trash_dir.name(), str(error))
+            if self._is_trash_dir_secure(trash_dir):
+                if self._file_could_be_trashed_in(file, trash_dir.path):
+                    try:
+                        trashed_file = trash_dir.trash(file)
+                        self.reporter.file_has_been_trashed_in_as(
+                            file,
+                            trashed_file['trash_directory_name'],
+                            trashed_file['where_file_was_stored'])
+                        return
+                    except (IOError, OSError), error:
+                        self.reporter.unable_to_trash_file_in_because(
+                                file, trash_dir.name(), str(error))
 
         self.reporter.unable_to_trash_file(file)
+    def _is_trash_dir_secure(self, trash_dir):
+        class FileSystem:
+            def isdir(self, path):
+                return os.path.isdir(path)
+            def islink(self, path):
+                return os.path.islink(path)
+            def has_sticky_bit(self, path):
+                return has_sticky_bit(path)
+        class ValidationOutput:
+            def __init__(self):
+                self.valid = False
+            def not_valid_should_be_a_dir(_):
+                self.reporter.found_unusable_trash_dir_not_a_dir(
+                        os.path.dirname(trash_dir.path))
+            def not_valid_parent_should_not_be_a_symlink(_):
+                self.reporter.found_unsercure_trash_dir_symlink(
+                        os.path.dirname(trash_dir.path))
+            def not_valid_parent_should_be_sticky(_):
+                self.reporter.found_unsecure_trash_dir_unsticky(
+                        os.path.dirname(trash_dir.path))
+            def is_valid(self):
+                self.valid = True
+        output = ValidationOutput()
+        trash_dir.checker.fs = FileSystem()
+        trash_dir.checker.valid_to_be_written(trash_dir.path, output)
+        return output.is_valid
 
     def _should_skipped_by_specs(self, file):
         basename = os.path.basename(file)
