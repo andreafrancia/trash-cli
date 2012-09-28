@@ -11,10 +11,10 @@ class TestGlobalTrashCan:
         self.reporter = Mock()
 
         self.trashcan = GlobalTrashCan(
-                home_trashcan = Mock(),
                 reporter = self.reporter,
                 getuid = lambda:123,
-                now = None)
+                now = None,
+                environ = dict())
 
     @istest
     def should_report_when_trash_fail(self):
@@ -38,7 +38,7 @@ class TestGlobalTrashCan2(TestCase):
         reporter=StubReporter()
         trashcan = GlobalTrashCan(
                 reporter=reporter,
-                home_trashcan = Mock(),
+                environ = dict(),
                 )
 
         trashcan.trash('.')

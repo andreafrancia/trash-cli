@@ -14,11 +14,11 @@ class TestHomeFallback:
         self.having_file('sandbox/other_partition/foo')
         out = Mock()
         self.trashcan = GlobalTrashCan(
-                home_trashcan = home_trashcan,
                 reporter = reporter,
                 getuid = lambda: 123,
                 fstab = self.fake_volume_of(mount_points),
                 now = None,
+                environ = dict(),
                 )
         self.trashcan._trash_file_in_directory = out
 

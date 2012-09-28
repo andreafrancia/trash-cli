@@ -38,7 +38,7 @@ class TrashPutCmd:
         self.trashcan = GlobalTrashCan(
                 reporter = self.reporter,
                 fstab = self.fstab,
-                home_trashcan = HomeTrashCan(self.environ))
+                environ = self.environ)
         self.trash_all(args)
 
         return self.reporter.exit_code()
@@ -193,7 +193,7 @@ class GlobalTrashCan:
         def __getattr__(self,name):
             return lambda *argl,**args:None
     from datetime import datetime
-    def __init__(self, home_trashcan,
+    def __init__(self, environ,
                        reporter = NullReporter(),
                        getuid   = os.getuid,
                        fstab    = Fstab(),
@@ -202,8 +202,8 @@ class GlobalTrashCan:
         self.reporter      = reporter
         self.fstab         = fstab
         self.now           = now
-        self.home_trashcan = home_trashcan
-        self.trash_directories = TrashDirectories(home_trashcan,
+        self.home_trashcan = HomeTrashCan(environ)
+        self.trash_directories = TrashDirectories(self.home_trashcan,
                 self.volume_of, getuid, fstab.mount_points())
 
     def trash(self, file) :
