@@ -188,16 +188,7 @@ def describe(path):
     else:
         return 'entry'
 
-class TopDirWithoutStickyBit(IOError): pass
-class TopDirNotPresent(IOError): pass
-class TopDirIsSymLink(IOError): pass
-
 class GlobalTrashCan:
-    """
-    Represent the TrashCan that contains all trashed files.
-    This class is the facade used by all trashcli commands
-    """
-
     class NullReporter:
         def __getattr__(self,name):
             return lambda *argl,**args:None
@@ -235,7 +226,9 @@ class GlobalTrashCan:
             self.reporter.unable_to_trash_dot_entries(file)
             return
 
-        for trash_dir in self._possible_trash_directories_for(file):
+        trash_dirs = self._possible_trash_directories_for(file)
+        file_has_been_trashed = False
+        for trash_dir in trash_dirs:
             if self._is_trash_dir_secure(trash_dir):
                 if self._file_could_be_trashed_in(file, trash_dir.path):
                     try:
@@ -244,12 +237,15 @@ class GlobalTrashCan:
                             file,
                             trashed_file['trash_directory_name'],
                             trashed_file['where_file_was_stored'])
-                        return
+                        file_has_been_trashed = True
+
                     except (IOError, OSError), error:
                         self.reporter.unable_to_trash_file_in_because(
                                 file, trash_dir.name(), str(error))
+            if file_has_been_trashed: break
 
-        self.reporter.unable_to_trash_file(file)
+        if not file_has_been_trashed:
+            self.reporter.unable_to_trash_file(file)
     def _is_trash_dir_secure(self, trash_dir):
         class FileSystem:
             def isdir(self, path):
@@ -295,5 +291,4 @@ class GlobalTrashCan:
         return trash_dirs
     def volume_of_parent(self, file):
         return self.volume_of(parent_of(file))
-
 
