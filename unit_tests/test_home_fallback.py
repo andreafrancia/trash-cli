@@ -8,7 +8,6 @@ from trashcli.put import GlobalTrashCan
 
 class TestHomeFallback:
     def test_should_use_home_trash_as_fallback(self):
-        home_trashcan = Mock()
         reporter = Mock()
         mount_points = ['/', 'sandbox/other_partition']
         self.having_file('sandbox/other_partition/foo')

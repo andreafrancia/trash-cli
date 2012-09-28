@@ -202,9 +202,8 @@ class GlobalTrashCan:
         self.reporter      = reporter
         self.fstab         = fstab
         self.now           = now
-        self.home_trashcan = HomeTrashCan(environ)
-        self.trash_directories = TrashDirectories(self.home_trashcan,
-                self.volume_of, getuid, fstab.mount_points())
+        self.trash_directories = TrashDirectories(self.volume_of, getuid,
+                fstab.mount_points(), environ)
 
     def trash(self, file) :
         """

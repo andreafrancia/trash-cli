@@ -231,9 +231,8 @@ class HomeTrashCan:
             out('%(HOME)s/.local/share/Trash' % self.environ)
 
 class TrashDirectories:
-    def __init__(self, home_trashcan, volume_of, getuid,
-                    mount_points):
-        self.home_trashcan = home_trashcan
+    def __init__(self, volume_of, getuid, mount_points, environ):
+        self.home_trashcan = HomeTrashCan(environ)
         self.volume_of = volume_of
         self.getuid = getuid
         self.mount_points = mount_points
@@ -323,13 +322,13 @@ class RestoreCmd:
         self.input    = input
         fstab = Fstab()
         self.trashcan = TrashDirectories(
-                home_trashcan = HomeTrashCan(environ),
-                volume_of = fstab.volume_of,
-                getuid = os.getuid,
-                mount_points = fstab.mount_points())
+                volume_of     = fstab.volume_of,
+                getuid        = os.getuid,
+                mount_points  = fstab.mount_points(),
+                environ       = environ)
         self.curdir   = curdir
         self.version = version
-    def run(self, args=sys.argv):
+    def run(self, args = sys.argv):
         if '--version' in args[1:]:
             command = os.path.basename(args[0])
             self.println('%s %s' %(command, self.version))
