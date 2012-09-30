@@ -46,12 +46,6 @@ def remove_file(path):
 def move(path, dest) :
     return shutil.move(path, str(dest))
 
-def mkdirs_using_mode(path, mode):
-    if os.path.isdir(path):
-        os.chmod(path, mode)
-        return
-    os.makedirs(path, mode)
-
 def list_files_in_dir(path):
     for entry in os.listdir(path):
         result = os.path.join(path, entry)
@@ -61,3 +55,15 @@ def mkdirs(path):
     if os.path.isdir(path):
         return
     os.makedirs(path)
+
+def atomic_write(filename, content):
+    file_handle = os.open(filename, os.O_RDWR | os.O_CREAT | os.O_EXCL,
+            0600)
+    os.write(file_handle, content)
+    os.close(file_handle)
+
+def ensure_dir(path, mode):
+    if os.path.isdir(path):
+        os.chmod(path, mode)
+        return
+    os.makedirs(path, mode)

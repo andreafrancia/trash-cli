@@ -1,5 +1,7 @@
 Currently working on: home-fallback
  - update the bug link in trash-put
+ - remove default from TrashDirectoryForPut __init__
+ - inject logger in TrashDirectoryForPut
 
 Backlog:
  - add a test for trash-put and method 1 trashdir

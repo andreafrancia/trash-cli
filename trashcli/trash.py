@@ -20,141 +20,18 @@ from .fs import list_files_in_dir
 import os
 from .fs import remove_file
 from .fs import move, mkdirs
-from .fs import mkdirs_using_mode as ensure_dir
 
-def atomic_write(filename, content):
-    file_handle = os.open(filename, os.O_RDWR | os.O_CREAT | os.O_EXCL,
-            0600)
-    os.write(file_handle, content)
-    os.close(file_handle)
 class TrashDirectory:
-    from datetime import datetime
-    def __init__(self, path, volume,
-            move         = move,
-            atomic_write = atomic_write,
-            now          = datetime.now,
-            remove_file  = remove_file,
-            ensure_dir   = ensure_dir):
+    def __init__(self, path, volume):
         self.path      = os.path.normpath(path)
         self.volume    = volume
         self.logger    = logger
         self.info_dir  = os.path.join(self.path, 'info')
         self.files_dir = os.path.join(self.path, 'files')
-        # used only by restore-trash {{{
-        # events
         def warn_non_trashinfo():
             self.logger.warning("Non .trashinfo file in info dir")
         self.on_non_trashinfo_found = warn_non_trashinfo
-        # }}}
-        # used only by trash-put {{{
-        class all_is_ok_checker:
-            def valid_to_be_written(self, a, b): pass
-            def check(self, a):pass
-        self.checker      = all_is_ok_checker()
-        self.move         = move
-        self.atomic_write = atomic_write
-        self.now          = now
-        self.remove_file  = remove_file
-        self.ensure_dir   = ensure_dir
-        # }}}
 
-    # used by trash-put {{{
-    def name(self):
-        import re
-        import posixpath
-        result=self.path
-        try:
-            home_dir=os.environ['HOME']
-            home_dir = posixpath.normpath(home_dir)
-            if home_dir != '':
-                result=re.sub('^'+ re.escape(home_dir)+os.path.sep, '~' + os.path.sep,result)
-        except KeyError:
-            pass
-        return result
-
-    def store_absolute_paths(self):
-        self.path_for_trash_info = PathForTrashInfo()
-        self.path_for_trash_info.make_absolutes_paths()
-
-    def store_relative_paths(self):
-        self.path_for_trash_info = PathForTrashInfo()
-        self.path_for_trash_info.make_paths_relatives_to(self.volume)
-
-    def trash(self, path):
-        path = os.path.normpath(path)
-
-        original_location = self.path_for_trash_info.for_file(path)
-
-        basename = os.path.basename(original_location)
-        content = self.format_trashinfo(original_location, self.now())
-        trash_info_file = self.persist_trash_info( self.info_dir, basename,
-                content)
-
-        where_to_store_trashed_file = backup_file_path_from(trash_info_file)
-
-        self.ensure_files_dir_exists()
-
-        try :
-            self.move(path, where_to_store_trashed_file)
-        except IOError as e :
-            self.remove_file(trash_info_file)
-            raise e
-        result = dict()
-        result['trash_directory_name'] = self.name()
-        result['where_file_was_stored'] = where_to_store_trashed_file
-        return result
-    def format_trashinfo(self, original_location, deletion_date):
-        def format_date(deletion_date):
-            return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
-        def format_original_location(original_location):
-            import urllib
-            return urllib.quote(original_location,'/')
-        content = ("[Trash Info]\n" +
-                   "Path=%s\n" % format_original_location(original_location) +
-                   "DeletionDate=%s\n" % format_date(deletion_date))
-        return content
-
-    def ensure_files_dir_exists(self):
-        self.ensure_dir(self.files_dir, 0700)
-
-    def persist_trash_info(self, info_dir, basename, content) :
-        """
-        Create a .trashinfo file in the $trash/info directory.
-        returns the created TrashInfoFile.
-        """
-
-        self.ensure_dir(info_dir, 0700)
-
-        # write trash info
-        index = 0
-        while True :
-            if index == 0 :
-                suffix = ""
-            elif index < 100:
-                suffix = "_%d" % index
-            else :
-                import random
-                suffix = "_%d" % random.randint(0, 65535)
-
-            base_id = basename
-            trash_id = base_id + suffix
-            trash_info_basename = trash_id+".trashinfo"
-
-            dest = os.path.join(info_dir, trash_info_basename)
-            try :
-                self.atomic_write(dest, content)
-                self.logger.debug(".trashinfo created as %s." % dest)
-                return dest
-            except OSError:
-                self.logger.debug("Attempt for creating %s failed." % dest)
-
-            index += 1
-
-        raise IOError()
-
-    # }}}
-
-    # used by restore-trash {{{
     def trashed_files(self) :
         # Only used by restore-trash
         for info_file in self.all_info_files():
@@ -187,7 +64,6 @@ class TrashDirectory:
 
         return TrashedFile(original_location, deletion_date,
                 trashinfo_file_path, backup_file_path, self)
-    # }}}
 
 def backup_file_path_from(trashinfo_file_path):
     trashinfo_basename = os.path.basename(trashinfo_file_path)
@@ -241,37 +117,27 @@ class TrashDirectories:
             for trashedfile in trash_dir.trashed_files():
                 yield trashedfile
     def all_trash_directories(self):
-        trash_dirs = []
-        self.home_trash_dir(trash_dirs.append)
-        self.all_volume_trash_directories(trash_dirs.append)
-        return trash_dirs
-    def home_trash_dir(self, out=lambda trash_dir:None) :
-        def emit_trash_dir(trash_dir_path):
-            trash_dir = TrashDirectory(trash_dir_path,
-                                       self.volume_of(trash_dir_path))
-            trash_dir.store_absolute_paths()
-            out(trash_dir)
-        self.home_trashcan.path_to(emit_trash_dir)
-    def all_volume_trash_directories(self, out):
+        collected = []
+        def add_trash_dir(path, volume):
+            collected.append(TrashDirectory(path, volume))
+
+        self.home_trash_dir(add_trash_dir)
         for volume in self.mount_points:
-            self.for_volume(volume,out)
-    def for_volume(self, volume, out=lambda trash_dir:None):
-        self._volume_trash_dir1(volume,out)
-        self._volume_trash_dir2(volume,out)
-    def _volume_trash_dir1(self, volume, out=lambda trash_dir:None):
-        uid = self.getuid()
-        trash_directory_path = os.path.join(volume, '.Trash', str(uid))
-        trash_dir = TrashDirectory(trash_directory_path, volume)
-        trash_dir.store_relative_paths()
-        trash_dir.checker = TopTrashDirRules(None)
-        out(trash_dir)
-    def _volume_trash_dir2(self, volume, out=lambda trash_dir:None) :
-        uid = self.getuid()
-        dirname=".Trash-%s" % str(uid)
-        trash_directory_path = os.path.join(volume, dirname)
-        trash_dir = TrashDirectory(trash_directory_path, volume)
-        trash_dir.store_relative_paths()
-        out(trash_dir)
+            self.volume_trash_dir1(volume, add_trash_dir)
+            self.volume_trash_dir2(volume, add_trash_dir)
+
+        return collected
+    def home_trash_dir(self, out) :
+        self.home_trashcan.path_to(lambda path:
+                out(path, self.volume_of(path)))
+    def volume_trash_dir1(self, volume, out):
+        out(
+            path   = os.path.join(volume, '.Trash/%s' % self.getuid()),
+            volume = volume)
+    def volume_trash_dir2(self, volume, out):
+        out(
+            path   = os.path.join(volume, ".Trash-%s" % self.getuid()),
+            volume = volume)
 
 class TrashedFile:
     """

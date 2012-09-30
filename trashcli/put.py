@@ -1,13 +1,19 @@
 import os
 import sys
 
-from .trash import HomeTrashCan
-from .trash import EX_OK, EX_IOERR
-from .trash import version
-from .trash import TrashDirectories
-from .fstab import Fstab
+from .fs import atomic_write
+from .fs import ensure_dir
 from .fs import has_sticky_bit
+from .fs import move
 from .fs import parent_of
+from .fstab import Fstab
+from .trash import EX_OK, EX_IOERR
+from .trash import PathForTrashInfo
+from .trash import TopTrashDirRules
+from .trash import TrashDirectories
+from .trash import backup_file_path_from
+from .trash import logger
+from .trash import version
 
 def main():
     return TrashPutCmd(
@@ -284,10 +290,146 @@ class GlobalTrashCan:
 
     def _possible_trash_directories_for(self, file):
         volume = self.volume_of_parent(file)
-        trash_dirs = []
-        self.trash_directories.home_trash_dir(trash_dirs.append)
-        self.trash_directories.for_volume(volume, trash_dirs.append)
-        return trash_dirs
+        possibilities = PossibleTrashDirectories()
+        self.trash_directories.home_trash_dir(possibilities.add_home_trash)
+        self.trash_directories.volume_trash_dir1(volume,
+                possibilities.add_top_trash_dir)
+        self.trash_directories.volume_trash_dir2(volume,
+                possibilities.add_alt_top_trash_dir)
+        return possibilities.trash_dirs
     def volume_of_parent(self, file):
         return self.volume_of(parent_of(file))
+
+class PossibleTrashDirectories:
+    def __init__(self):
+        self.trash_dirs = []
+    def add_home_trash(self, path, volume):
+        trash_dir = TrashDirectoryForPut(path, volume)
+        trash_dir.store_absolute_paths()
+        self.trash_dirs.append(trash_dir)
+    def add_top_trash_dir(self, path, volume):
+        trash_dir = TrashDirectoryForPut(path, volume)
+        trash_dir.store_relative_paths()
+        trash_dir.checker = TopTrashDirRules(None)
+        self.trash_dirs.append(trash_dir)
+    def add_alt_top_trash_dir(self, path, volume):
+        trash_dir = TrashDirectoryForPut(path, volume)
+        trash_dir.store_relative_paths()
+        self.trash_dirs.append(trash_dir)
+
+from .fs import remove_file
+class TrashDirectoryForPut:
+    from datetime import datetime
+    def __init__(self, path, volume,
+            now          = datetime.now,
+            move         = move,
+            atomic_write = atomic_write,
+            remove_file  = remove_file,
+            ensure_dir   = ensure_dir):
+        self.path      = os.path.normpath(path)
+        self.volume    = volume
+        self.logger    = logger
+        self.info_dir  = os.path.join(self.path, 'info')
+        self.files_dir = os.path.join(self.path, 'files')
+        class all_is_ok_checker:
+            def valid_to_be_written(self, a, b): pass
+            def check(self, a):pass
+        self.checker      = all_is_ok_checker()
+        self.move         = move
+        self.atomic_write = atomic_write
+        self.now          = now
+        self.remove_file  = remove_file
+        self.ensure_dir   = ensure_dir
+    def name(self):
+        import re
+        import posixpath
+        result=self.path
+        try:
+            home_dir=os.environ['HOME']
+            home_dir = posixpath.normpath(home_dir)
+            if home_dir != '':
+                result=re.sub('^'+ re.escape(home_dir)+os.path.sep, '~' + os.path.sep,result)
+        except KeyError:
+            pass
+        return result
+
+    def store_absolute_paths(self):
+        self.path_for_trash_info = PathForTrashInfo()
+        self.path_for_trash_info.make_absolutes_paths()
+
+    def store_relative_paths(self):
+        self.path_for_trash_info = PathForTrashInfo()
+        self.path_for_trash_info.make_paths_relatives_to(self.volume)
+
+    def trash(self, path):
+        path = os.path.normpath(path)
+
+        original_location = self.path_for_trash_info.for_file(path)
+
+        basename = os.path.basename(original_location)
+        content = self.format_trashinfo(original_location, self.now())
+        trash_info_file = self.persist_trash_info( self.info_dir, basename,
+                content)
+
+        where_to_store_trashed_file = backup_file_path_from(trash_info_file)
+
+        self.ensure_files_dir_exists()
+
+        try :
+            self.move(path, where_to_store_trashed_file)
+        except IOError as e :
+            self.remove_file(trash_info_file)
+            raise e
+        result = dict()
+        result['trash_directory_name'] = self.name()
+        result['where_file_was_stored'] = where_to_store_trashed_file
+        return result
+    def format_trashinfo(self, original_location, deletion_date):
+        def format_date(deletion_date):
+            return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
+        def format_original_location(original_location):
+            import urllib
+            return urllib.quote(original_location,'/')
+        content = ("[Trash Info]\n" +
+                   "Path=%s\n" % format_original_location(original_location) +
+                   "DeletionDate=%s\n" % format_date(deletion_date))
+        return content
+
+    def ensure_files_dir_exists(self):
+        self.ensure_dir(self.files_dir, 0700)
+
+    def persist_trash_info(self, info_dir, basename, content) :
+        """
+        Create a .trashinfo file in the $trash/info directory.
+        returns the created TrashInfoFile.
+        """
+
+        self.ensure_dir(info_dir, 0700)
+
+        # write trash info
+        index = 0
+        while True :
+            if index == 0 :
+                suffix = ""
+            elif index < 100:
+                suffix = "_%d" % index
+            else :
+                import random
+                suffix = "_%d" % random.randint(0, 65535)
+
+            base_id = basename
+            trash_id = base_id + suffix
+            trash_info_basename = trash_id+".trashinfo"
+
+            dest = os.path.join(info_dir, trash_info_basename)
+            try :
+                self.atomic_write(dest, content)
+                self.logger.debug(".trashinfo created as %s." % dest)
+                return dest
+            except OSError:
+                self.logger.debug("Attempt for creating %s failed." % dest)
+
+            index += 1
+
+        raise IOError()
 

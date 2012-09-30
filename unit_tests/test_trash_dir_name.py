@@ -1,7 +1,7 @@
 from unittest import TestCase
 from nose.tools import assert_equals
 import os
-from trashcli.trash import TrashDirectory
+from trashcli.put import TrashDirectoryForPut
 
 class TestTrashDirectory(TestCase) :
 
@@ -31,7 +31,7 @@ class TestTrashDirectory(TestCase) :
         self.assert_name_is('/foo/Trash')
 
     def assert_name_is(self, expected_name):
-        trash_dir = TrashDirectory(self.trash_dir, '/')
+        trash_dir = TrashDirectoryForPut(self.trash_dir, '/')
         assert_equals(expected_name, trash_dir.name())
 
 

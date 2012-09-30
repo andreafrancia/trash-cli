@@ -1,4 +1,4 @@
-from trashcli.trash import TrashDirectory
+from trashcli.put import TrashDirectoryForPut
 from mock import Mock
 from nose.tools import istest
 from mock import ANY
@@ -10,7 +10,7 @@ class TestTrashing:
         self.now = Mock()
         self.remove_file = Mock()
         self.ensure_dir = Mock()
-        self.trashdir = TrashDirectory('~/.Trash', '/',
+        self.trashdir = TrashDirectoryForPut('~/.Trash', '/',
                 move         = self.move,
                 atomic_write = self.atomic_write,
                 now          = self.now,
