@@ -1,9 +1,11 @@
 from trashcli.put import TrashDirectoryForPut
 from nose.tools import assert_equals
+from mock import Mock
 
 class TestHowOriginalLocationIsStored:
     def test_for_absolute_paths(self):
-        self.dir = TrashDirectoryForPut('/volume/.Trash', '/volume')
+        fs = Mock()
+        self.dir = TrashDirectoryForPut('/volume/.Trash', '/volume', fs = fs)
         self.dir.store_absolute_paths()
 
         self.assert_path_for_trashinfo_is('/file'            , '/file')
