@@ -1,31 +1,39 @@
-import os
-
-from mock import Mock
+from mock import Mock, call, ANY
 
 from trashcli.fstab import FakeFstab
 from trashcli.put import GlobalTrashCan
 from nose.tools import assert_equals
 
 class TestHomeFallback:
-    def test_should_use_home_trash_as_fallback(self):
-        reporter = Mock()
+    def setUp(self):
+        self.reporter = Mock()
         mount_points = ['/', 'sandbox/other_partition']
-        self.having_file('sandbox/other_partition/foo')
-        out = Mock()
+        self.fs = Mock()
         self.trashcan = GlobalTrashCan(
-                reporter = reporter,
+                reporter = self.reporter,
                 getuid = lambda: 123,
                 fstab = self.fake_volume_of(mount_points),
                 now = None,
                 environ = dict(),
-                )
-        self.trashcan._trash_file_in_directory = out
+                fs = self.fs)
+
+    def test_should_skip_top_trash_if_does_not_exists(self):
+        self.fs.mock_add_spec(['isdir', 'islink', 'move', 'atomic_write',
+            'remove_file', 'ensure_dir'])
+        self.fs.isdir.side_effect = lambda x:['.Trash'][False]
+        self.fs.islink.side_effect = lambda x:['.Trash'][False]
 
         self.trashcan.trash('sandbox/foo')
 
-    def having_file(self, path):
-        os.makedirs(os.path.dirname(path))
-        file(path, 'w' ).write('')
+        assert_equals([
+            call.isdir('.Trash'),
+            call.islink('.Trash'),
+            call.ensure_dir('.Trash/123/info', 448),
+            call.atomic_write('.Trash/123/info/foo.trashinfo', ANY),
+            call.ensure_dir('.Trash/123/files', 448),
+            call.move('sandbox/foo', '.Trash/123/files/foo')
+        ], self.fs.mock_calls)
+
     def fake_volume_of(self, volumes):
         fstab = FakeFstab()
         for vol in volumes:
@@ -53,3 +61,4 @@ class TestTrashDirectories:
                         '/.Trash-123',
                         '/mnt/.Trash/123',
                         '/mnt/.Trash-123'] , paths)
+

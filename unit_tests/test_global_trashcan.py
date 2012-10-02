@@ -5,41 +5,30 @@ from nose.tools import istest, assert_true, assert_equals
 
 from trashcli.put import GlobalTrashCan
 
-
 class TestGlobalTrashCan:
     def setUp(self):
         self.reporter = Mock()
+        self.fs = Mock()
 
         self.trashcan = GlobalTrashCan(
                 reporter = self.reporter,
                 getuid = lambda:123,
                 now = None,
-                environ = dict())
+                environ = dict(),
+                fs = self.fs)
 
     @istest
     def should_report_when_trash_fail(self):
+        self.fs.move.side_effect = IOError
 
         self.trashcan.trash('non-existent')
+
         self.reporter.unable_to_trash_file.assert_called_with('non-existent')
 
-class TestGlobalTrashCan2(TestCase):
-    def test_the_attempt_of_deleting_a_dot_directory_should_signaled_as_error(self):
+    @istest
+    def should_not_delete_a_dot_entru(self):
 
-        argument="."
+        self.trashcan.trash('.')
 
-        class StubReporter:
-            def __init__(self):
-                self.has_been_called=False
+        self.reporter.unable_to_trash_dot_entries.assert_called_with('.')
 
-            def unable_to_trash_dot_entries(self,file):
-                self.has_been_called=True
-                assert_equals(file, argument)
-
-        reporter=StubReporter()
-        trashcan = GlobalTrashCan(
-                reporter=reporter,
-                environ = dict(),
-                )
-
-        trashcan.trash('.')
-        assert_true(reporter.has_been_called)

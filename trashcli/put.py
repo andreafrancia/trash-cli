@@ -1,7 +1,6 @@
 import os
 import sys
 
-from .fs import has_sticky_bit
 from .fs import parent_of
 from .fstab import Fstab
 from .trash import EX_OK, EX_IOERR
@@ -191,6 +190,18 @@ def describe(path):
     else:
         return 'entry'
 
+class RealFs:
+    def __init__(self):
+        import os
+        from . import fs
+        self.move         = fs.move
+        self.atomic_write = fs.atomic_write
+        self.remove_file  = fs.remove_file
+        self.ensure_dir   = fs.ensure_dir
+        self.isdir = os.path.isdir
+        self.islink = os.path.islink
+        self.has_sticky_bit = fs.has_sticky_bit
+
 class GlobalTrashCan:
     class NullReporter:
         def __getattr__(self,name):
@@ -200,11 +211,13 @@ class GlobalTrashCan:
                        reporter = NullReporter(),
                        getuid   = os.getuid,
                        fstab    = Fstab(),
-                       now      = datetime.now):
+                       now      = datetime.now,
+                       fs       = RealFs()):
         self.getuid        = getuid
         self.reporter      = reporter
         self.fstab         = fstab
         self.now           = now
+        self.fs            = fs
         self.trash_directories = TrashDirectories(self.volume_of, getuid,
                 fstab.mount_points(), environ)
 
@@ -249,13 +262,6 @@ class GlobalTrashCan:
         if not file_has_been_trashed:
             self.reporter.unable_to_trash_file(file)
     def _is_trash_dir_secure(self, trash_dir):
-        class FileSystem:
-            def isdir(self, path):
-                return os.path.isdir(path)
-            def islink(self, path):
-                return os.path.islink(path)
-            def has_sticky_bit(self, path):
-                return has_sticky_bit(path)
         class ValidationOutput:
             def __init__(self):
                 self.valid = False
@@ -271,7 +277,7 @@ class GlobalTrashCan:
             def is_valid(self):
                 self.valid = True
         output = ValidationOutput()
-        trash_dir.checker.fs = FileSystem()
+        trash_dir.checker.fs = self.fs
         trash_dir.checker.valid_to_be_written(trash_dir.path, output)
         return output.is_valid
 
@@ -287,19 +293,24 @@ class GlobalTrashCan:
 
     def _possible_trash_directories_for(self, file):
         volume = self.volume_of_parent(file)
-        possibilities = PossibleTrashDirectories()
-        self.trash_directories.home_trash_dir(possibilities.add_home_trash)
-        self.trash_directories.volume_trash_dir1(volume,
-                possibilities.add_top_trash_dir)
-        self.trash_directories.volume_trash_dir2(volume,
-                possibilities.add_alt_top_trash_dir)
+        possibilities = PossibleTrashDirectories(self.fs)
+
+        self.trash_directories.home_trash_dir(
+                possibilities.add_home_trash)
+        self.trash_directories.volume_trash_dir1(
+                volume, possibilities.add_top_trash_dir)
+        self.trash_directories.volume_trash_dir2(
+                volume, possibilities.add_alt_top_trash_dir)
+
         return possibilities.trash_dirs
+
     def volume_of_parent(self, file):
         return self.volume_of(parent_of(file))
 
 class PossibleTrashDirectories:
-    def __init__(self):
+    def __init__(self, fs):
         self.trash_dirs = []
+        self.fs = fs
     def add_home_trash(self, path, volume):
         trash_dir = self._make_trash_dir(path, volume)
         trash_dir.store_absolute_paths()
@@ -314,16 +325,8 @@ class PossibleTrashDirectories:
         trash_dir.store_relative_paths()
         self.trash_dirs.append(trash_dir)
     def _make_trash_dir(self, path, volume):
-        fs = RealFs()
-        return TrashDirectoryForPut(path, volume, fs = fs)
+        return TrashDirectoryForPut(path, volume, fs = self.fs)
 
-class RealFs:
-    def __init__(self):
-        from . import fs
-        self.move         = fs.move
-        self.atomic_write = fs.atomic_write
-        self.remove_file  = fs.remove_file
-        self.ensure_dir   = fs.ensure_dir
 
 class TrashDirectoryForPut:
     from datetime import datetime
