@@ -567,19 +567,6 @@ class TopTrashDirRules:
         else:
             output.is_valid()
 
-    def valid_to_be_written(self, trash_dir_path, output):
-        parent = os.path.dirname(trash_dir_path)
-        if not self.fs.isdir(parent):
-            output.not_valid_should_be_a_dir()
-            return
-        if self.fs.islink(parent):
-            output.not_valid_parent_should_not_be_a_symlink()
-            return
-        if not self.fs.has_sticky_bit(parent):
-            output.not_valid_parent_should_be_sticky()
-            return
-        output.is_valid()
-
 class Dir:
     def __init__(self, path, entries_if_dir_exists):
         self.path                  = path

@@ -1,7 +1,7 @@
 from mock import Mock
 
 from integration_tests.files import require_empty_dir
-from trashcli.trash import TopTrashDirRules
+from trashcli.put import TopTrashDirWriteRules
 
 class TestMethod1VolumeTrashDirectory:
     def setUp(self):
@@ -10,7 +10,7 @@ class TestMethod1VolumeTrashDirectory:
         self.fs.isdir.return_value = True
         self.fs.islink.return_value = False
         self.fs.has_sticky_bit.return_value = True
-        self.checker = TopTrashDirRules(self.fs)
+        self.checker = TopTrashDirWriteRules(self.fs)
         self.out = Mock()
 
     def test_check_when_no_sticky_bit(self):

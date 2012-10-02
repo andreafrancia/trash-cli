@@ -5,7 +5,6 @@ from .fs import parent_of
 from .fstab import Fstab
 from .trash import EX_OK, EX_IOERR
 from .trash import PathForTrashInfo
-from .trash import TopTrashDirRules
 from .trash import TrashDirectories
 from .trash import backup_file_path_from
 from .trash import logger
@@ -136,7 +135,7 @@ class TrashPutReporter:
     def found_unsercure_trash_dir_symlink(self, trash_dir_path):
         self.logger.info("found unsecure .Trash dir (should not be a symlink): %s"
                 % trash_dir_path)
-    def found_unusable_trash_dir_not_a_dir(self, trash_dir_path):
+    def invalid_top_trash_is_not_a_dir(self, trash_dir_path):
         self.logger.info("found unusable .Trash dir (should be a dir): %s"
                 % trash_dir_path)
     def found_unsecure_trash_dir_unsticky(self, trash_dir_path):
@@ -241,9 +240,10 @@ class GlobalTrashCan:
             self.reporter.unable_to_trash_dot_entries(file)
             return
 
-        trash_dirs = self._possible_trash_directories_for(file)
+        candidates = PossibleTrashDirectories(self.fs)
+        candidates = self._possible_trash_directories_for(file, candidates)
         file_has_been_trashed = False
-        for trash_dir in trash_dirs:
+        for trash_dir in candidates.trash_dirs:
             if self._is_trash_dir_secure(trash_dir):
                 if self._file_could_be_trashed_in(file, trash_dir.path):
                     try:
@@ -266,7 +266,7 @@ class GlobalTrashCan:
             def __init__(self):
                 self.valid = False
             def not_valid_should_be_a_dir(_):
-                self.reporter.found_unusable_trash_dir_not_a_dir(
+                self.reporter.invalid_top_trash_is_not_a_dir(
                         os.path.dirname(trash_dir.path))
             def not_valid_parent_should_not_be_a_symlink(_):
                 self.reporter.found_unsercure_trash_dir_symlink(
@@ -279,7 +279,7 @@ class GlobalTrashCan:
         output = ValidationOutput()
         trash_dir.checker.fs = self.fs
         trash_dir.checker.valid_to_be_written(trash_dir.path, output)
-        return output.is_valid
+        return output.is_valid # <--- this is the BUG
 
     def _should_skipped_by_specs(self, file):
         basename = os.path.basename(file)
@@ -291,18 +291,17 @@ class GlobalTrashCan:
     def _file_could_be_trashed_in(self,file_to_be_trashed,trash_dir_path):
         return self.volume_of(trash_dir_path) == self.volume_of_parent(file_to_be_trashed)
 
-    def _possible_trash_directories_for(self, file):
+    def _possible_trash_directories_for(self, file, candidates):
         volume = self.volume_of_parent(file)
-        possibilities = PossibleTrashDirectories(self.fs)
 
         self.trash_directories.home_trash_dir(
-                possibilities.add_home_trash)
+                candidates.add_home_trash)
         self.trash_directories.volume_trash_dir1(
-                volume, possibilities.add_top_trash_dir)
+                volume, candidates.add_top_trash_dir)
         self.trash_directories.volume_trash_dir2(
-                volume, possibilities.add_alt_top_trash_dir)
+                volume, candidates.add_alt_top_trash_dir)
 
-        return possibilities.trash_dirs
+        return candidates
 
     def volume_of_parent(self, file):
         return self.volume_of(parent_of(file))
@@ -318,7 +317,7 @@ class PossibleTrashDirectories:
     def add_top_trash_dir(self, path, volume):
         trash_dir = self._make_trash_dir(path, volume)
         trash_dir.store_relative_paths()
-        trash_dir.checker = TopTrashDirRules(None)
+        trash_dir.checker = TopTrashDirWriteRules(None)
         self.trash_dirs.append(trash_dir)
     def add_alt_top_trash_dir(self, path, volume):
         trash_dir = self._make_trash_dir(path, volume)
@@ -326,7 +325,6 @@ class PossibleTrashDirectories:
         self.trash_dirs.append(trash_dir)
     def _make_trash_dir(self, path, volume):
         return TrashDirectoryForPut(path, volume, fs = self.fs)
-
 
 class TrashDirectoryForPut:
     from datetime import datetime
@@ -437,4 +435,21 @@ class TrashDirectoryForPut:
             index += 1
 
         raise IOError()
+
+class TopTrashDirWriteRules:
+    def __init__(self, fs):
+        self.fs = fs
+
+    def valid_to_be_written(self, trash_dir_path, output):
+        parent = os.path.dirname(trash_dir_path)
+        if not self.fs.isdir(parent):
+            output.not_valid_should_be_a_dir()
+            return
+        if self.fs.islink(parent):
+            output.not_valid_parent_should_not_be_a_symlink()
+            return
+        if not self.fs.has_sticky_bit(parent):
+            output.not_valid_parent_should_be_sticky()
+            return
+        output.is_valid()
 

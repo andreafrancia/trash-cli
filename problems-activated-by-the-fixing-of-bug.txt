@@ -1,0 +1,136 @@
+======================================================================
+FAIL: integration_tests.test_trash_put.exit_code.should_be_zero_on_success
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/local/Cellar/python/2.7.2/lib/python2.7/site-packages/nose/case.py", line 197, in runTest
+    self.test(*self.arg)
+  File "/Users/andrea/code/trash-cli/integration_tests/test_trash_put.py", line 116, in should_be_zero_on_success
+    self.exit_code_should_be_successfull()
+  File "/Users/andrea/code/trash-cli/integration_tests/test_trash_put.py", line 124, in exit_code_should_be_successfull
+    assert_equals(0, self.exit_code)
+AssertionError: 0 != 74
+
+======================================================================
+FAIL: integration_tests.test_trash_put.trash_put_stderr.should_tell_where_a_file_is_trashed
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/local/Cellar/python/2.7.2/lib/python2.7/site-packages/nose/case.py", line 197, in runTest
+    self.test(*self.arg)
+  File "/Users/andrea/code/trash-cli/integration_tests/test_trash_put.py", line 47, in should_tell_where_a_file_is_trashed
+    self.stderr.splitlines())
+AssertionError: "trash-put: `foo' trashed in sandbox/XDG_DATA_HOME/Trash" not found in ['trash-put: found unsecure .Trash dir (should be sticky): .Trash', "trash-put: cannot trash regular empty file `foo'"]
+
+======================================================================
+FAIL: integration_tests.test_trash_put.when_deleting_a_file.it_should_remove_the_file
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/local/Cellar/python/2.7.2/lib/python2.7/site-packages/nose/case.py", line 197, in runTest
+    self.test(*self.arg)
+  File "/Users/andrea/code/trash-cli/integration_tests/test_trash_put.py", line 141, in it_should_remove_the_file
+    file_should_have_been_deleted('sandbox/foo')
+  File "/Users/andrea/code/trash-cli/integration_tests/test_trash_put.py", line 216, in file_should_have_been_deleted
+    assert not os.path.exists('sandbox/foo')
+AssertionError
+
+======================================================================
+FAIL: integration_tests.test_trash_put.when_fed_with_dot_arguments.test_dot_argument_is_skipped
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/local/Cellar/python/2.7.2/lib/python2.7/site-packages/nose/case.py", line 197, in runTest
+    self.test(*self.arg)
+  File "/Users/andrea/code/trash-cli/integration_tests/test_trash_put.py", line 166, in test_dot_argument_is_skipped
+    "trash-put: cannot trash directory `.'\n")
+  File "/Users/andrea/code/trash-cli/integration_tests/output_collector.py", line 13, in should_be
+    assert_equals_with_unidiff(expected, self.stream.getvalue())
+  File "/Users/andrea/code/trash-cli/integration_tests/assert_equals_with_unidiff.py", line 19, in assert_equals_with_unidiff
+    unidiff(expected, actual))
+AssertionError: 
+Expected:"trash-put: cannot trash directory `.'\n"
+  Actual:"trash-put: cannot trash directory `.'\ntrash-put: cannot trash regular empty file `other_argument'\n"
+--- Expected
++++ Actual
+@@ -1 +1,2 @@
+ trash-put: cannot trash directory `.'
++trash-put: cannot trash regular empty file `other_argument'
+
+
+======================================================================
+FAIL: integration_tests.test_trash_put.when_fed_with_dot_arguments.test_dot_argument_is_skipped_even_in_subdirs
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/local/Cellar/python/2.7.2/lib/python2.7/site-packages/nose/case.py", line 197, in runTest
+    self.test(*self.arg)
+  File "/Users/andrea/code/trash-cli/integration_tests/test_trash_put.py", line 193, in test_dot_argument_is_skipped_even_in_subdirs
+    "trash-put: cannot trash `.' directory `sandbox/.'\n")
+  File "/Users/andrea/code/trash-cli/integration_tests/output_collector.py", line 13, in should_be
+    assert_equals_with_unidiff(expected, self.stream.getvalue())
+  File "/Users/andrea/code/trash-cli/integration_tests/assert_equals_with_unidiff.py", line 19, in assert_equals_with_unidiff
+    unidiff(expected, actual))
+AssertionError: 
+Expected:"trash-put: cannot trash `.' directory `sandbox/.'\n"
+  Actual:"trash-put: cannot trash `.' directory `sandbox/.'\ntrash-put: cannot trash regular empty file `other_argument'\n"
+--- Expected
++++ Actual
+@@ -1 +1,2 @@
+ trash-put: cannot trash `.' directory `sandbox/.'
++trash-put: cannot trash regular empty file `other_argument'
+
+
+======================================================================
+FAIL: integration_tests.test_trash_put.when_fed_with_dot_arguments.test_dot_dot_argument_is_skipped
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/local/Cellar/python/2.7.2/lib/python2.7/site-packages/nose/case.py", line 197, in runTest
+    self.test(*self.arg)
+  File "/Users/andrea/code/trash-cli/integration_tests/test_trash_put.py", line 179, in test_dot_dot_argument_is_skipped
+    "trash-put: cannot trash directory `..'\n")
+  File "/Users/andrea/code/trash-cli/integration_tests/output_collector.py", line 13, in should_be
+    assert_equals_with_unidiff(expected, self.stream.getvalue())
+  File "/Users/andrea/code/trash-cli/integration_tests/assert_equals_with_unidiff.py", line 19, in assert_equals_with_unidiff
+    unidiff(expected, actual))
+AssertionError: 
+Expected:"trash-put: cannot trash directory `..'\n"
+  Actual:"trash-put: cannot trash directory `..'\ntrash-put: cannot trash regular empty file `other_argument'\n"
+--- Expected
++++ Actual
+@@ -1 +1,2 @@
+ trash-put: cannot trash directory `..'
++trash-put: cannot trash regular empty file `other_argument'
+
+
+======================================================================
+FAIL: integration_tests.test_trash_put.when_fed_with_dot_arguments.test_dot_dot_argument_is_skipped_even_in_subdirs
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/local/Cellar/python/2.7.2/lib/python2.7/site-packages/nose/case.py", line 197, in runTest
+    self.test(*self.arg)
+  File "/Users/andrea/code/trash-cli/integration_tests/test_trash_put.py", line 208, in test_dot_dot_argument_is_skipped_even_in_subdirs
+    "trash-put: cannot trash `..' directory `sandbox/..'\n")
+  File "/Users/andrea/code/trash-cli/integration_tests/output_collector.py", line 13, in should_be
+    assert_equals_with_unidiff(expected, self.stream.getvalue())
+  File "/Users/andrea/code/trash-cli/integration_tests/assert_equals_with_unidiff.py", line 19, in assert_equals_with_unidiff
+    unidiff(expected, actual))
+AssertionError: 
+Expected:"trash-put: cannot trash `..' directory `sandbox/..'\n"
+  Actual:"trash-put: cannot trash `..' directory `sandbox/..'\ntrash-put: cannot trash regular empty file `other_argument'\n"
+--- Expected
++++ Actual
+@@ -1 +1,2 @@
+ trash-put: cannot trash `..' directory `sandbox/..'
++trash-put: cannot trash regular empty file `other_argument'
+
+
+======================================================================
+FAIL: unit_tests.test_home_fallback.TestHomeFallback.test_should_skip_top_trash_if_does_not_exists
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/local/Cellar/python/2.7.2/lib/python2.7/site-packages/nose/case.py", line 197, in runTest
+    self.test(*self.arg)
+  File "/Users/andrea/code/trash-cli/unit_tests/test_home_fallback.py", line 45, in test_should_skip_top_trash_if_does_not_exists
+    ], self.fs.mock_calls)
+AssertionError: [call.isdir('.Trash'), call.islink('.Trash'), call.ensure_dir('.Trash/123/info', 448), call.atomic_write('.Trash/123/info/foo.trashinfo', <ANY>), call.ensure_dir('.Trash/123/files', 448), call.move('sandbox/foo', '.Trash/123/files/foo')] != [call.isdir('.Trash'), call.islink('.Trash')]
+
+----------------------------------------------------------------------
+Ran 162 tests in 0.925s
+
+FAILED (SKIP=2, failures=8)
