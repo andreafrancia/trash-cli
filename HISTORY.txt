@@ -1,3 +1,7 @@
+after:
+ - Fixed bug (trash-put creates $topdir/.Trash even it should not)
+ - Fixed bug (trash-put uses $topdir/.Trash/$uid even if unsecure)
+
 0.12.9:
  - Switched to distutils.core (instead of setuptools)
  - Now `trash-put -v` will warning if it found a unsticky .Trash dir.
