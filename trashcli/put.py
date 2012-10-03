@@ -257,6 +257,7 @@ class GlobalTrashCan:
                     except (IOError, OSError), error:
                         self.reporter.unable_to_trash_file_in_because(
                                 file, trash_dir.name(), str(error))
+
             if file_has_been_trashed: break
 
         if not file_has_been_trashed:
@@ -264,22 +265,25 @@ class GlobalTrashCan:
     def _is_trash_dir_secure(self, trash_dir):
         class ValidationOutput:
             def __init__(self):
-                self.valid = False
+                self.valid = True
             def not_valid_should_be_a_dir(_):
                 self.reporter.invalid_top_trash_is_not_a_dir(
                         os.path.dirname(trash_dir.path))
+                self.valid = False
             def not_valid_parent_should_not_be_a_symlink(_):
                 self.reporter.found_unsercure_trash_dir_symlink(
                         os.path.dirname(trash_dir.path))
+                self.valid = False
             def not_valid_parent_should_be_sticky(_):
                 self.reporter.found_unsecure_trash_dir_unsticky(
                         os.path.dirname(trash_dir.path))
+                self.valid = False
             def is_valid(self):
                 self.valid = True
         output = ValidationOutput()
         trash_dir.checker.fs = self.fs
         trash_dir.checker.valid_to_be_written(trash_dir.path, output)
-        return output.is_valid # <--- this is the BUG
+        return output.valid
 
     def _should_skipped_by_specs(self, file):
         basename = os.path.basename(file)

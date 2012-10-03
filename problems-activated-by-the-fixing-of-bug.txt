@@ -18,7 +18,9 @@ Traceback (most recent call last):
     self.test(*self.arg)
   File "/Users/andrea/code/trash-cli/integration_tests/test_trash_put.py", line 47, in should_tell_where_a_file_is_trashed
     self.stderr.splitlines())
-AssertionError: "trash-put: `foo' trashed in sandbox/XDG_DATA_HOME/Trash" not found in ['trash-put: found unsecure .Trash dir (should be sticky): .Trash', "trash-put: cannot trash regular empty file `foo'"]
+AssertionError: "trash-put: `foo' trashed in sandbox/XDG_DATA_HOME/Trash" not 
+found in ['trash-put: found unsecure .Trash dir (should be sticky): .Trash', 
+"trash-put: cannot trash regular empty file `foo'"]
 
 ======================================================================
 FAIL: integration_tests.test_trash_put.when_deleting_a_file.it_should_remove_the_file
@@ -46,7 +48,8 @@ Traceback (most recent call last):
     unidiff(expected, actual))
 AssertionError: 
 Expected:"trash-put: cannot trash directory `.'\n"
-  Actual:"trash-put: cannot trash directory `.'\ntrash-put: cannot trash regular empty file `other_argument'\n"
+  Actual:"trash-put: cannot trash directory `.'\ntrash-put: cannot trash 
+  regular empty file `other_argument'\n"
 --- Expected
 +++ Actual
 @@ -1 +1,2 @@
@@ -128,7 +131,11 @@ Traceback (most recent call last):
     self.test(*self.arg)
   File "/Users/andrea/code/trash-cli/unit_tests/test_home_fallback.py", line 45, in test_should_skip_top_trash_if_does_not_exists
     ], self.fs.mock_calls)
-AssertionError: [call.isdir('.Trash'), call.islink('.Trash'), call.ensure_dir('.Trash/123/info', 448), call.atomic_write('.Trash/123/info/foo.trashinfo', <ANY>), call.ensure_dir('.Trash/123/files', 448), call.move('sandbox/foo', '.Trash/123/files/foo')] != [call.isdir('.Trash'), call.islink('.Trash')]
+AssertionError: [call.isdir('.Trash'), call.islink('.Trash'), 
+call.ensure_dir('.Trash/123/info', 448), 
+call.atomic_write('.Trash/123/info/foo.trashinfo', <ANY>), 
+call.ensure_dir('.Trash/123/files', 448), call.move('sandbox/foo', 
+'.Trash/123/files/foo')] != [call.isdir('.Trash'), call.islink('.Trash')]
 
 ----------------------------------------------------------------------
 Ran 162 tests in 0.925s
