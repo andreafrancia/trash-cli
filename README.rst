@@ -1,4 +1,4 @@
-trash-cli - Command Line Interface to FreeDesktop.org Trash.
+-cli - Command Line Interface to FreeDesktop.org Trash.
 ============================================================
 
 |Donate|_

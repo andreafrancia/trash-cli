@@ -9,6 +9,7 @@ from .trash import TrashDirectories
 from .trash import backup_file_path_from
 from .trash import logger
 from .trash import version
+from datetime import datetime
 
 def main():
     return TrashPutCmd(
@@ -21,7 +22,7 @@ class TrashPutCmd:
         self.stdout   = stdout
         self.stderr   = stderr
         self.environ  = environ
-        self.fstab    = fstab
+        self.fstab    = fstab #TODO
         self.logger   = MyLogger(self.stderr)
         self.reporter = TrashPutReporter(self.logger)
 
@@ -38,8 +39,11 @@ class TrashPutCmd:
 
         self.trashcan = GlobalTrashCan(
                 reporter = self.reporter,
-                fstab = self.fstab,
-                environ = self.environ)
+                volume_of = self.fstab.volume_of,
+                environ = self.environ,
+                fs = RealFs(),
+                getuid = os.getuid,
+                now = datetime.now)
         self.trash_all(args)
 
         return self.reporter.exit_code()
@@ -205,20 +209,14 @@ class GlobalTrashCan:
     class NullReporter:
         def __getattr__(self,name):
             return lambda *argl,**args:None
-    from datetime import datetime
-    def __init__(self, environ,
-                       reporter = NullReporter(),
-                       getuid   = os.getuid,
-                       fstab    = Fstab(),
-                       now      = datetime.now,
-                       fs       = RealFs()):
+    def __init__(self, environ, volume_of, reporter, fs, getuid, now):
         self.getuid        = getuid
         self.reporter      = reporter
-        self.fstab         = fstab
+        self.volume_of     = volume_of
         self.now           = now
         self.fs            = fs
-        self.trash_directories = TrashDirectories(self.volume_of, getuid,
-                fstab.mount_points(), environ)
+        self.trash_directories = TrashDirectories(
+                self.volume_of, getuid, None, environ)
 
     def trash(self, file) :
         """
@@ -250,7 +248,7 @@ class GlobalTrashCan:
                         trashed_file = trash_dir.trash(file)
                         self.reporter.file_has_been_trashed_in_as(
                             file,
-                            trashed_file['trash_directory_name'],
+                            trashed_file['trash_directory'],
                             trashed_file['where_file_was_stored'])
                         file_has_been_trashed = True
 
@@ -262,6 +260,7 @@ class GlobalTrashCan:
 
         if not file_has_been_trashed:
             self.reporter.unable_to_trash_file(file)
+
     def _is_trash_dir_secure(self, trash_dir):
         class ValidationOutput:
             def __init__(self):
@@ -288,9 +287,6 @@ class GlobalTrashCan:
     def _should_skipped_by_specs(self, file):
         basename = os.path.basename(file)
         return (basename == ".") or (basename == "..")
-
-    def volume_of(self, path):
-        return self.fstab.volume_of(path)
 
     def _file_could_be_trashed_in(self,file_to_be_trashed,trash_dir_path):
         return self.volume_of(trash_dir_path) == self.volume_of_parent(file_to_be_trashed)
@@ -348,17 +344,7 @@ class TrashDirectoryForPut:
         self.remove_file  = fs.remove_file
         self.ensure_dir   = fs.ensure_dir
     def name(self):
-        import re
-        import posixpath
-        result=self.path
-        try:
-            home_dir=os.environ['HOME']
-            home_dir = posixpath.normpath(home_dir)
-            if home_dir != '':
-                result=re.sub('^'+ re.escape(home_dir)+os.path.sep, '~' + os.path.sep,result)
-        except KeyError:
-            pass
-        return result
+        return shrinkuser(self.path, os.environ)
 
     def store_absolute_paths(self):
         self.path_for_trash_info = PathForTrashInfo()
@@ -388,7 +374,7 @@ class TrashDirectoryForPut:
             self.remove_file(trash_info_file)
             raise e
         result = dict()
-        result['trash_directory_name'] = self.name()
+        result['trash_directory'] = self.name()
         result['where_file_was_stored'] = where_to_store_trashed_file
         return result
     def format_trashinfo(self, original_location, deletion_date):
@@ -439,6 +425,19 @@ class TrashDirectoryForPut:
             index += 1
 
         raise IOError()
+
+def shrinkuser(path, environ):
+    import posixpath
+    import re
+    try:
+        home_dir = environ['HOME']
+        home_dir = posixpath.normpath(home_dir)
+        if home_dir != '':
+            path = re.sub('^' + re.escape(home_dir + os.path.sep),
+                            '~' + os.path.sep, path)
+    except KeyError:
+        pass
+    return path
 
 class TopTrashDirWriteRules:
     def __init__(self, fs):

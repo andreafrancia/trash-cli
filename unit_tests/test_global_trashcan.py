@@ -1,7 +1,5 @@
-from unittest import TestCase
-
 from mock import Mock
-from nose.tools import istest, assert_true, assert_equals
+from nose.tools import istest
 
 from trashcli.put import GlobalTrashCan
 
@@ -9,8 +7,11 @@ class TestGlobalTrashCan:
     def setUp(self):
         self.reporter = Mock()
         self.fs = Mock()
+        self.volume_of = Mock()
+        self.volume_of.return_value = '/'
 
         self.trashcan = GlobalTrashCan(
+                volume_of = self.volume_of,
                 reporter = self.reporter,
                 getuid = lambda:123,
                 now = None,
@@ -31,4 +32,27 @@ class TestGlobalTrashCan:
         self.trashcan.trash('.')
 
         self.reporter.unable_to_trash_dot_entries.assert_called_with('.')
+
+    @istest
+    def bug(self):
+        self.fs.mock_add_spec([
+            'move',
+            'atomic_write',
+            'remove_file',
+            'ensure_dir',
+
+            'isdir',
+            'islink',
+            'has_sticky_bit',
+            ], True)
+        self.fs.islink.side_effect = (lambda path: {
+            '/.Trash':False
+            }[path])
+        self.volume_of.side_effect = (lambda path: {
+            '/foo': '/',
+            '': '/',
+            '/.Trash/123': '/',
+            }[path])
+
+        self.trashcan.trash('foo')
 

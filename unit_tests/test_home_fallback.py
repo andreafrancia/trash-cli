@@ -12,7 +12,7 @@ class TestHomeFallback:
         self.trashcan = GlobalTrashCan(
                 reporter = self.reporter,
                 getuid = lambda: 123,
-                fstab = self.fake_volume_of(mount_points),
+                volume_of = self.fake_volume_of(mount_points),
                 now = None,
                 environ = dict(),
                 fs = self.fs)
@@ -38,7 +38,7 @@ class TestHomeFallback:
         fstab = FakeFstab()
         for vol in volumes:
             fstab.add_mount(vol)
-        return fstab
+        return fstab.volume_of
 
 from trashcli.trash import TrashDirectories
 class TestTrashDirectories:

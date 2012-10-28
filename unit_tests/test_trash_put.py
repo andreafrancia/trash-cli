@@ -2,7 +2,7 @@
 
 from trashcli.put import TrashPutCmd
 
-from nose.tools import istest, assert_in, assert_equals, assert_not_equals
+from nose.tools import istest, assert_in, assert_equals
 from StringIO import StringIO
 from integration_tests.assert_equals_with_unidiff import assert_equals_with_unidiff
 from textwrap import dedent
