@@ -4,8 +4,16 @@
 .coverage
 .DS_Store
 .local/
-.svn
-/bin/
+
+# generated executables
+/restore-trash
+/trash-empty
+/trash-list
+/trash-put
+/trash-rm
+/trash
+
+# other things
 /build/
 /command-test/sandbox/
 /command-test/test-volume.img
