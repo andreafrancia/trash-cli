@@ -135,7 +135,8 @@ class TrashPutReporter:
         self.logger.warning("cannot trash %s `%s'" % (describe(f), f))
         self.some_file_has_not_be_trashed = True
     def file_has_been_trashed_in_as(self, trashee, trash_directory, destination):
-        self.logger.info("`%s' trashed in %s" % (trashee, trash_directory))
+        self.logger.info("`%s' trashed in %s" % (trashee,
+                                                 shrinkuser(trash_directory)))
     def found_unsercure_trash_dir_symlink(self, trash_dir_path):
         self.logger.info("found unsecure .Trash dir (should not be a symlink): %s"
                 % trash_dir_path)
@@ -148,8 +149,8 @@ class TrashPutReporter:
     def unable_to_trash_file_in_because(self,
                                         file_to_be_trashed,
                                         trash_directory, error):
-        self.logger.info("Failed to trash %s in %s, because :%s" %
-                         (file_to_be_trashed, trash_directory, error))
+        self.logger.info("Failed to trash %s in %s, because :%s" % (
+           file_to_be_trashed, shrinkuser(trash_directory), error))
     def exit_code(self):
         if not self.some_file_has_not_be_trashed:
             return EX_OK
@@ -197,12 +198,12 @@ class RealFs:
     def __init__(self):
         import os
         from . import fs
-        self.move         = fs.move
-        self.atomic_write = fs.atomic_write
-        self.remove_file  = fs.remove_file
-        self.ensure_dir   = fs.ensure_dir
-        self.isdir = os.path.isdir
-        self.islink = os.path.islink
+        self.move           = fs.move
+        self.atomic_write   = fs.atomic_write
+        self.remove_file    = fs.remove_file
+        self.ensure_dir     = fs.ensure_dir
+        self.isdir          = os.path.isdir
+        self.islink         = os.path.islink
         self.has_sticky_bit = fs.has_sticky_bit
 
 class GlobalTrashCan:
@@ -254,7 +255,7 @@ class GlobalTrashCan:
 
                     except (IOError, OSError), error:
                         self.reporter.unable_to_trash_file_in_because(
-                                file, trash_dir.name(), str(error))
+                                file, trash_dir.path, str(error))
 
             if file_has_been_trashed: break
 
@@ -343,8 +344,6 @@ class TrashDirectoryForPut:
         self.atomic_write = fs.atomic_write
         self.remove_file  = fs.remove_file
         self.ensure_dir   = fs.ensure_dir
-    def name(self):
-        return shrinkuser(self.path, os.environ)
 
     def store_absolute_paths(self):
         self.path_for_trash_info = PathForTrashInfo()
@@ -374,9 +373,10 @@ class TrashDirectoryForPut:
             self.remove_file(trash_info_file)
             raise e
         result = dict()
-        result['trash_directory'] = self.name()
+        result['trash_directory'] = self.path
         result['where_file_was_stored'] = where_to_store_trashed_file
         return result
+
     def format_trashinfo(self, original_location, deletion_date):
         def format_date(deletion_date):
             return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
@@ -426,7 +426,7 @@ class TrashDirectoryForPut:
 
         raise IOError()
 
-def shrinkuser(path, environ):
+def shrinkuser(path, environ=os.environ):
     import posixpath
     import re
     try:

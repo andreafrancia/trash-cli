@@ -45,9 +45,7 @@ class TestGlobalTrashCan:
             'islink',
             'has_sticky_bit',
             ], True)
-        self.fs.islink.side_effect = (lambda path: {
-            '/.Trash':False
-            }[path])
+        self.fs.islink.side_effect = (lambda path: { '/.Trash':False }[path])
         self.volume_of.side_effect = (lambda path: {
             '/foo': '/',
             '': '/',
