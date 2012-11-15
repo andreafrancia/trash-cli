@@ -73,30 +73,6 @@ def backup_file_path_from(trashinfo_file_path):
     files_dir = os.path.join(trash_dir, 'files')
     return os.path.join(files_dir, backupfile_basename)
 
-class PathForTrashInfo:
-    def make_paths_relatives_to(self, topdir):
-        self.topdir = topdir
-
-    def make_absolutes_paths(self):
-        self.topdir = None
-
-    def for_file(self, path):
-        self.normalized_path = os.path.normpath(path)
-
-        basename = os.path.basename(self.normalized_path)
-        parent   = self._real_parent()
-
-        if self.topdir != None:
-            if (parent == self.topdir) or parent.startswith(self.topdir+os.path.sep) :
-                parent = parent[len(self.topdir+os.path.sep):]
-
-        result   = os.path.join(parent, basename)
-        return result
-
-    def _real_parent(self):
-        parent   = os.path.dirname(self.normalized_path)
-        return os.path.realpath(parent)
-
 class HomeTrashCan:
     def __init__(self, environ):
         self.environ = environ

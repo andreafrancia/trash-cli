@@ -1,5 +1,7 @@
 Currently working on: home-fallback
- - update the bug link in trash-put
+ - update the bug link in trash-put,
+    - remove path_for_trash_info injection
+    - make storing absolute paths the default
  - remove default from TrashDirectoryForPut __init__
  - inject logger in TrashDirectoryForPut
 

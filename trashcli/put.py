@@ -4,7 +4,6 @@ import sys
 from .fs import parent_of
 from .fstab import Fstab
 from .trash import EX_OK, EX_IOERR
-from .trash import PathForTrashInfo
 from .trash import TrashDirectories
 from .trash import backup_file_path_from
 from .trash import logger
@@ -329,7 +328,8 @@ class PossibleTrashDirectories:
 
 class TrashDirectoryForPut:
     from datetime import datetime
-    def __init__(self, path, volume, now = datetime.now, fs = RealFs()):
+    def __init__(self, path, volume, now = datetime.now, fs = RealFs(),
+                 realpath = os.path.realpath):
         self.path      = os.path.normpath(path)
         self.volume    = volume
         self.logger    = logger
@@ -344,13 +344,14 @@ class TrashDirectoryForPut:
         self.atomic_write = fs.atomic_write
         self.remove_file  = fs.remove_file
         self.ensure_dir   = fs.ensure_dir
+        self.realpath     = realpath
+
+        self.path_for_trash_info = OriginalLocation(self.realpath)
 
     def store_absolute_paths(self):
-        self.path_for_trash_info = PathForTrashInfo()
         self.path_for_trash_info.make_absolutes_paths()
 
     def store_relative_paths(self):
-        self.path_for_trash_info = PathForTrashInfo()
         self.path_for_trash_info.make_paths_relatives_to(self.volume)
 
     def trash(self, path):
@@ -456,3 +457,30 @@ class TopTrashDirWriteRules:
             return
         output.is_valid()
 
+class OriginalLocation:
+    def __init__(self, realpath):
+        self.realpath = realpath
+        self.make_absolutes_paths()
+
+    def make_paths_relatives_to(self, topdir):
+        self.topdir = topdir
+
+    def make_absolutes_paths(self):
+        self.topdir = None
+
+    def for_file(self, path):
+        self.normalized_path = os.path.normpath(path)
+
+        basename = os.path.basename(self.normalized_path)
+        parent   = self._real_parent()
+
+        if self.topdir != None:
+            if (parent == self.topdir) or parent.startswith(self.topdir+os.path.sep) :
+                parent = parent[len(self.topdir+os.path.sep):]
+
+        result   = os.path.join(parent, basename)
+        return result
+
+    def _real_parent(self):
+        parent   = os.path.dirname(self.normalized_path)
+        return self.realpath(parent)

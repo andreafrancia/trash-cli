@@ -3,7 +3,6 @@
 import os
 
 from nose.tools import assert_equals, assert_true
-from mock import Mock
 
 from integration_tests.files import require_empty_dir
 from trashcli.put import TrashDirectoryForPut

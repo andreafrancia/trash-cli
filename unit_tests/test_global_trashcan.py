@@ -54,3 +54,18 @@ class TestGlobalTrashCan:
 
         self.trashcan.trash('foo')
 
+    def test_what_happen_when_trashing_with_trash_dir(self):
+        from trashcli.put import TrashDirectoryForPut
+        fs = Mock()
+        now = Mock()
+        fs.mock_add_spec([
+            'move', 'atomic_write', 'remove_file', 'ensure_dir',
+            ], True)
+
+        from nose import SkipTest
+        raise SkipTest()
+
+        trash_dir = TrashDirectoryForPut('/path', '/volume', now, fs)
+
+        trash_dir.trash('garbage')
+
