@@ -104,18 +104,18 @@ Installation command::
  
     easy_install trash-cli
 
-Installation from sources
--------------------------
+Install from sources
+--------------------
 
-::
+System-wide installation::
 
-    # grab the latest sources
-    wget https://github.com/andreafrancia/trash-cli/tarball/master 
-    
-    # unpack and install
-    tar xfz andreafrancia-trash-cli-xxxxxxxx.tar.gz
-    cd andreafrancia-trash-cli-xxxxxxxx
+    git clone https://github.com/andreafrancia/trash-cli.git
     sudo python setup.py install
+
+User-only installation::
+
+    git clone https://github.com/andreafrancia/trash-cli.git
+    python setup.py install --user
 
 Bugs and feedback
 -----------------
