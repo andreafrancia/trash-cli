@@ -73,23 +73,32 @@ Example::
 
 To remove only files matching a pattern::
 
-    $ trash-rm '*.o'
+    $ trash-rm \*.o
 
 Note: you need to use quotes in order to protect pattern from shell expansion.
 
-Using it as 'rm' alias
-----------------------
+Can I alias `rm` to `trash-put`?
+--------------------------------
 
-`trash-put` accept all the options that GNU `rm` does, if you prefer (I don't)
-you can set up this alias in your .bashrc::
+You can but you shouldn't. In the early days I thought it was good idea do
+that but now I changed my mind. 
 
-    alias rm='trash-put'
+The interface of `trash-put` seems to be compatible with `rm` it has a
+different semantic that will cause you problems. For example, while `rm`
+requires `-R` for deleting directories `trash-put` does not.
 
-At the present the semantic of trash-put is sligthly different from the one of
-`rm`, for example, while `rm` requires `-R` for deleting directories 
-`trash-put` does not. This may change in future.
+But sometimes I forgot to use `trash-put`, really can't I?
+----------------------------------------------------------
 
-Keep in mind that Bash aliases are used only in interactive shells, so using 
+You may alias `rm` to something that will remind you to not use it::
+
+    alias rm='echo "This is not the command you are looking for."; false'
+
+If you really want use `rm` simply prepend a slash::
+
+    \rm file-without-hope
+
+Note that Bash aliases are used only in interactive shells, so using 
 this alias should not interfere with scripts that expects to use `rm`.
 
 Installation (the easy way)
@@ -124,8 +133,7 @@ If you discover a bug please report it to:
 
     https://github.com/andreafrancia/trash-cli/issues
 
-You can reach me via email at andrea@andreafrancia.it .  For twitter use 
-@andreafrancia or #trashcli
+Mail me at andrea@andreafrancia.it, on twitter I'm @andreafrancia.
 
 Development
 -----------
