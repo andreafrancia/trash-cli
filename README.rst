@@ -77,6 +77,14 @@ To remove only files matching a pattern::
 
 Note: you need to use quotes in order to protect pattern from shell expansion.
 
+How to create a top level .Trash dir?
+-------------------------------------
+::
+    sudo mkdir --parent /.Trash
+    sudo chmod a+rw /.Trash
+    sudo chmod +t /.Trash
+
+
 Can I alias `rm` to `trash-put`?
 --------------------------------
 
