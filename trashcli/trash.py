@@ -33,7 +33,7 @@ class TrashDirectory:
         self.on_non_trashinfo_found = warn_non_trashinfo
 
     def trashed_files(self) :
-        # Only used by restore-trash
+        # Only used by trash-restore
         for info_file in self.all_info_files():
             try:
                 yield self._create_trashed_file_from_info_file(info_file)

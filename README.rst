@@ -12,7 +12,7 @@ It provides these commands::
     trash-put           trashes files and directories. 
     trash-empty         empty the trashcan(s).
     trash-list          list trashed file.
-    restore-trash       restore a trashed file.
+    trash-restore       restore a trashed file.
     trash-rm            remove individual files from trash can.
 
 Usage
@@ -37,7 +37,7 @@ Search for a file in the trashcan::
 
 Restore a trashed file::
     
-    $ restore-trash
+    $ trash-restore
     0 2007-08-30 12:36:00 /home/andrea/foo
     1 2007-08-30 12:39:41 /home/andrea/bar
     2 2007-08-30 12:39:41 /home/andrea/bar2

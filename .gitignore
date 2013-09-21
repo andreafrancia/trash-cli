@@ -6,7 +6,7 @@
 .local/
 
 # generated executables
-/restore-trash
+/trash-restore
 /trash-empty
 /trash-list
 /trash-put
