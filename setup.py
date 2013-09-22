@@ -9,7 +9,7 @@ def main():
     scripts.add_script('trash'        , 'trashcli.put' , 'main')
     scripts.add_script('trash-put'    , 'trashcli.put' , 'main')
     scripts.add_script('trash-list'   , 'trashcli.cmds', 'list')
-    scripts.add_script('restore-trash', 'trashcli.cmds', 'restore')
+    scripts.add_script('trash-restore', 'trashcli.cmds', 'restore')
     scripts.add_script('trash-empty'  , 'trashcli.cmds', 'empty')
     scripts.add_script('trash-rm'     , 'trashcli.rm'  , 'main')
     setup(
@@ -23,7 +23,7 @@ def main():
         scripts = scripts.created_scripts,
         data_files = [('share/man/man1', ['man/man1/trash-empty.1',
                                           'man/man1/trash-list.1',
-                                          'man/man1/restore-trash.1',
+                                          'man/man1/trash-restore.1',
                                           'man/man1/trash-put.1',
                                           'man/man1/trash-rm.1'])],
     )
