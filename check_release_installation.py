@@ -28,7 +28,7 @@ class LinuxBox:
         self.ssh = Connection(address)
         self.executables = [
                 'trash-put', 'trash-list', 'trash-rm', 'trash-empty',
-                'restore-trash', 'trash']
+                'trash-restore', 'trash']
         self.tarball="trash-cli-%s.tar.gz" % version
         self.installation_method = installation_method
     def clean_any_prior_installation(self):
