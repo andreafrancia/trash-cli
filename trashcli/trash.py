@@ -188,9 +188,14 @@ class RestoreCmd:
             if index == "" :
                 self.println("Exiting")
             else :
-                index = int(index)
                 try:
+                    index = int(index)
+                    if (index < 0 or index >= len(trashed_files)):
+                        raise IndexError("Out of range")
                     trashed_files[index].restore()
+                except (ValueError, IndexError) as e:
+                    self.printerr("Invalid entry")
+                    self.exit(1)
                 except IOError as e:
                     self.printerr(e)
                     self.exit(1)
