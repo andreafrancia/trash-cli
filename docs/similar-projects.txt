@@ -132,7 +132,7 @@ and GIO is in GLib:
 
 Safe RM
 =======
-URL: http://www.safe-rm.org.nz/
+URL: https://launchpad.net/safe-rm
 
 Safe RM does not talk about Trash Cans. The program alert you whenewer you
 attempt to delete files known to be important.  
