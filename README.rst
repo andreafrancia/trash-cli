@@ -11,7 +11,7 @@ It provides these commands::
 
     trash-put           trashes files and directories. 
     trash-empty         empty the trashcan(s).
-    trash-list          list trashed file.
+    trash-list          list trashed files.
     trash-restore       restore a trashed file.
     trash-rm            remove individual files from trash can.
 
@@ -51,7 +51,7 @@ Remove all files from the trashcan::
 
     $ trash-empty
 
-Remove only the files that have been deleted before <days> ago::
+Remove only the files that have been deleted more than <days> ago::
     
     $ trash-empty <days>
 
@@ -80,6 +80,7 @@ Note: you need to use quotes in order to protect pattern from shell expansion.
 How to create a top level .Trash dir?
 -------------------------------------
 ::
+
     sudo mkdir --parent /.Trash
     sudo chmod a+rw /.Trash
     sudo chmod +t /.Trash
@@ -88,7 +89,7 @@ How to create a top level .Trash dir?
 Can I alias `rm` to `trash-put`?
 --------------------------------
 
-You can but you shouldn't. In the early days I thought it was good idea do
+You can but you shouldn't. In the early days I thought it was a good idea do
 that but now I changed my mind. 
 
 The interface of `trash-put` seems to be compatible with `rm` it has a
