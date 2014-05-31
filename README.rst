@@ -9,11 +9,11 @@ can invoke it from the command line (and scripts).
 
 It provides these commands::
 
-    trash-put           trashes files and directories. 
+    trash-put           trash files and directories. 
     trash-empty         empty the trashcan(s).
     trash-list          list trashed files.
     trash-restore       restore a trashed file.
-    trash-rm            remove individual files from trash can.
+    trash-rm            remove individual files from the trashcan.
 
 Usage
 -----
@@ -71,47 +71,52 @@ Example::
     $ trash-list
     2008-02-19 20:11:34 /home/einar/today
 
-To remove only files matching a pattern::
+Remove only files matching a pattern::
 
     $ trash-rm \*.o
 
-Note: you need to use quotes in order to protect pattern from shell expansion.
+Note: you need to use quotes in order to protect the pattern from shell expansion.
+
+FAQ
+---
 
 How to create a top level .Trash dir?
--------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ::
 
     sudo mkdir --parent /.Trash
     sudo chmod a+rw /.Trash
     sudo chmod +t /.Trash
 
-
 Can I alias `rm` to `trash-put`?
---------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can but you shouldn't. In the early days I thought it was a good idea do
+You can but you shouldn't. In the early days I thought it was a good idea to do
 that but now I changed my mind. 
 
-The interface of `trash-put` seems to be compatible with `rm` it has a
-different semantic that will cause you problems. For example, while `rm`
+Although the interface of `trash-put` seems to be compatible with `rm`, it has
+different semantics which will cause you problems. For example, while `rm`
 requires `-R` for deleting directories `trash-put` does not.
 
-But sometimes I forgot to use `trash-put`, really can't I?
-----------------------------------------------------------
+But sometimes I forget to use `trash-put`, really can't I?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You may alias `rm` to something that will remind you to not use it::
+You could alias `rm` to something that will remind you to not use it::
 
     alias rm='echo "This is not the command you are looking for."; false'
 
-If you really want use `rm` simply prepend a slash::
+Then, if you really want to use `rm`, simply prepend a slash to bypass the alias::
 
     \rm file-without-hope
 
 Note that Bash aliases are used only in interactive shells, so using 
-this alias should not interfere with scripts that expects to use `rm`.
+this alias should not interfere with scripts that expect to use `rm`.
 
-Installation (the easy way)
----------------------------
+Installation
+------------
+
+The easy way
+~~~~~~~~~~~~
 
 Requirements:
 
@@ -122,27 +127,29 @@ Installation command::
  
     easy_install trash-cli
 
-Install from sources
---------------------
+From sources
+~~~~~~~~~~~~
 
 System-wide installation::
 
     git clone https://github.com/andreafrancia/trash-cli.git
+    cd trash-cli
     sudo python setup.py install
 
 User-only installation::
 
     git clone https://github.com/andreafrancia/trash-cli.git
+    cd trash-cli
     python setup.py install --user
 
 Bugs and feedback
 -----------------
 
-If you discover a bug please report it to:
+If you discover a bug please report it here:
 
     https://github.com/andreafrancia/trash-cli/issues
 
-Mail me at andrea@andreafrancia.it, on twitter I'm @andreafrancia.
+You can also email me to andrea@andreafrancia.it. On Twitter I'm @andreafrancia.
 
 Development
 -----------
