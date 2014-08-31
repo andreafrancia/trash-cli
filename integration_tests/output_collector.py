@@ -9,6 +9,14 @@ class OutputCollector:
         self.stream.write(data)
     def assert_equal_to(self, expected):
         return self.should_be(expected)
+    def assert_equal_any_order(self, expected):
+        actual_sorted = sorted(self.stream.getvalue().splitlines(1))
+        actual = "".join(actual_sorted)
+
+        expected_sorted = sorted(expected.splitlines(1))
+        expected = "".join(expected_sorted)
+
+        assert_equals_with_unidiff(expected, actual)
     def should_be(self, expected):
         assert_equals_with_unidiff(expected, self.stream.getvalue())
     def should_match(self, regex):
