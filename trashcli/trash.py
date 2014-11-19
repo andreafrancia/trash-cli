@@ -81,6 +81,8 @@ class HomeTrashCan:
             out('%(XDG_DATA_HOME)s/Trash' % self.environ)
         elif 'HOME' in self.environ:
             out('%(HOME)s/.local/share/Trash' % self.environ)
+        else:
+            out('%s/.local/share/Trash' % os.path.expanduser('~'))
 
 class TrashDirectories:
     def __init__(self, volume_of, getuid, mount_points, environ):
