@@ -27,8 +27,8 @@ def _mount_points_from_df_output(df_output):
 	yield line.split(None, 5)[-1]
 
 def _mounted_filesystems_from_getmnt() :
-    from ctypes import Structure, c_char_p, c_int, c_void_p, cdll, POINTER
-    from ctypes.util import find_library
+    from ctypes import (
+        c_char_p, c_int, c_void_p, cdll, POINTER, pythonapi, Structure, util)
     import sys
     class Filesystem:
         def __init__(self, mount_dir, type, name) :
@@ -49,26 +49,23 @@ def _mounted_filesystems_from_getmnt() :
     if sys.platform == "cygwin":
         libc_name = "cygwin1.dll"
     else:
-        libc_name = find_library("c")
-
-    if libc_name == None :
-        libc_name="/lib/libc.so.6" # fix for my Gentoo 4.0
-
+        libc_name = util.find_library("c") or "/lib/libc.so.6" # fix for my Gentoo 4.0
     libc = cdll.LoadLibrary(libc_name)
     libc.getmntent.restype = POINTER(mntent_struct)
-    libc.fopen.restype = c_void_p
+    PyFile_AsFile = pythonapi.PyFile_AsFile
+    PyFile_AsFile.argtypes = [pythonapi.py_object]
 
-    f = libc.fopen("/proc/mounts", "r")
-    if f==None:
-        f = libc.fopen("/etc/mtab", "r")
-        if f == None:
+    try:
+        f = open("/proc/mounts")
+    except IOError:
+        try:
+            f = open("/etc/mtab")
+        except IOError:
             raise IOError("Unable to open /proc/mounts nor /etc/mtab")
 
-    while True:
-        entry = libc.getmntent(f)
-        if bool(entry) == False:
-            libc.fclose(f)
-            break
+    for entry in iter(lambda: libc.getmntent(PyFile_AsFile(f)), None):
         yield Filesystem(entry.contents.mnt_dir,
                          entry.contents.mnt_type,
                          entry.contents.mnt_fsname)
+
+    f.close()
