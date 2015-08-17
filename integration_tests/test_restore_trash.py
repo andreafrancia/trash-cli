@@ -15,6 +15,30 @@ class describe_restore_trash:
         self.output_should_match('No files trashed from current dir.+')
 
     @istest
+    def it_should_error_when_user_input_is_not_a_number(self):
+
+        self.having_a_trashed_file('/foo/bar')
+        self.when_running_restore_trash( from_dir='/foo',
+                                         with_user_typing = '-@notanumber')
+        self.error_should_be('Invalid entry\n')
+
+    @istest
+    def it_should_error_when_user_input_is_too_small(self):
+
+        self.having_a_trashed_file('/foo/bar')
+        self.when_running_restore_trash( from_dir='/foo',
+                                         with_user_typing = '-1')
+        self.error_should_be('Invalid entry\n')
+
+    @istest
+    def it_should_error_when_user_input_is_too_large(self):
+
+        self.having_a_trashed_file('/foo/bar')
+        self.when_running_restore_trash( from_dir='/foo',
+                                         with_user_typing = '1')
+        self.error_should_be('Invalid entry\n')
+
+    @istest
     def it_should_show_the_file_deleted_from_the_current_dir(self):
 
         self.having_a_trashed_file('/foo/bar')
