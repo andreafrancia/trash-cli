@@ -190,6 +190,7 @@ class RestoreCmd:
             else :
                 try:
                     indexes = index.split(',')
+                    indexes.sort(reverse=True) #restore largest index first
                     for index in indexes:
                         index = int(index.strip())
                         if (index < 0 or index >= len(trashed_files)):
