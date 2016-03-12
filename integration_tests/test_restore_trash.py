@@ -4,7 +4,7 @@ from trashcli.trash import RestoreCmd
 
 from .files import require_empty_dir
 from .output_collector import OutputCollector
-from trashinfo import a_trashinfo
+from .trashinfo import a_trashinfo
 
 @istest
 class describe_restore_trash:

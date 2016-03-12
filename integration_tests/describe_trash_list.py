@@ -2,12 +2,12 @@
 
 import os
 from trashcli.trash import ListCmd
-from files import (write_file, require_empty_dir, make_sticky_dir,
+from .files import (write_file, require_empty_dir, make_sticky_dir,
                    make_unsticky_dir, make_unreadable_file, make_empty_file,
                    make_parent_for)
 from nose.tools import istest
 from .output_collector import OutputCollector
-from trashinfo import (
+from .trashinfo import (
         a_trashinfo,
         a_trashinfo_without_date,
         a_trashinfo_without_path,

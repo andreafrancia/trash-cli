@@ -1,7 +1,7 @@
 from nose.tools import istest, assert_equals, assert_in
 import subprocess
 from subprocess import STDOUT, PIPE, check_output, call, Popen
-from assert_equals_with_unidiff import assert_equals_with_unidiff as assert_equals
+from .assert_equals_with_unidiff import assert_equals_with_unidiff as assert_equals
 from textwrap import dedent
 
 from pprint import pprint

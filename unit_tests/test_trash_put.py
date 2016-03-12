@@ -21,7 +21,7 @@ class TrashPutTest:
             result=main_function()
             if result is not None:
                 self.exit_code=result
-        except SystemExit, e:
+        except SystemExit as e:
             self.exit_code = e.code
 
     def stderr_should_be(self, expected_err):

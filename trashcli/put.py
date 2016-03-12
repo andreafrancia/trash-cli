@@ -252,7 +252,7 @@ class GlobalTrashCan:
                             trashed_file['where_file_was_stored'])
                         file_has_been_trashed = True
 
-                    except (IOError, OSError), error:
+                    except (IOError, OSError) as error:
                         self.reporter.unable_to_trash_file_in_because(
                                 file, trash_dir.path, str(error))
 
@@ -390,7 +390,7 @@ class TrashDirectoryForPut:
         return content
 
     def ensure_files_dir_exists(self):
-        self.ensure_dir(self.files_dir, 0700)
+        self.ensure_dir(self.files_dir, 0o700)
 
     def persist_trash_info(self, info_dir, basename, content) :
         """
@@ -398,7 +398,7 @@ class TrashDirectoryForPut:
         returns the created TrashInfoFile.
         """
 
-        self.ensure_dir(info_dir, 0700)
+        self.ensure_dir(info_dir, 0o700)
 
         # write trash info
         index = 0
