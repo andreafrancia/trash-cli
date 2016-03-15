@@ -2,7 +2,12 @@
 
 from trashcli.trash import TrashDirs
 from nose.tools import istest, assert_in, assert_not_in
-from mock import Mock
+
+# Try Python 3 import; if ImportError occurs, use Python 2 import
+try:
+    from unittest.mock import Mock
+except ImportError:
+    from mock import Mock
 
 @istest
 class TestTrashDirs_listing:
@@ -72,8 +77,14 @@ class TestTrashDirs_listing:
 
 def not_important_for_now(): None
 
-from nose.tools import assert_equals
-from mock import MagicMock
+from nose.tools import assert_equal
+
+# Try Python 3 import; if ImportError occurs, use Python 2 import
+try:
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import MagicMock
+
 from trashcli.trash import TopTrashDirRules
 @istest
 class Describe_AvailableTrashDirs_when_parent_is_unsticky:
@@ -104,7 +115,7 @@ class Describe_AvailableTrashDirs_when_parent_is_unsticky:
 
         self.dirs.list_trashdirs()
 
-        assert_equals([], self.dirs.on_trashdir_skipped_because_parent_not_sticky.mock_calls)
+        assert_equal([], self.dirs.on_trashdir_skipped_because_parent_not_sticky.mock_calls)
 
 @istest
 class Describe_AvailableTrashDirs_when_parent_is_symlink:

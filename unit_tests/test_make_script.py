@@ -1,7 +1,18 @@
 from textwrap import dedent
-from nose.tools import assert_equals
-import mock
-from mock import Mock
+from nose.tools import assert_equal
+
+# Try Python 3 import; if ImportError occurs, use Python 2 import
+try:
+    from unittest import mock
+except ImportError:
+    import mock
+
+# Try Python 3 import; if ImportError occurs, use Python 2 import
+try:
+    from unittest.mock import Mock
+except ImportError:
+    from mock import Mock
+
 from setup import Scripts
 
 class TestMakeScript:
@@ -34,7 +45,7 @@ class TestMakeScript:
             from trashcli.cmds import put as main
             sys.exit(main())
             """)
-        assert_equals(expected, contents,
+        assert_equal(expected, contents,
                       "Expected:\n---\n%s---\n"
                       "Actual  :\n---\n%s---\n"
                       % (expected, contents))
@@ -46,8 +57,8 @@ class TestListOfCreatedScripts:
                 write_file           = Mock())
 
     def test_is_empty_on_start_up(self):
-        assert_equals(self.bindir.created_scripts, [])
+        assert_equal(self.bindir.created_scripts, [])
 
     def test_collect_added_script(self):
         self.bindir.add_script('foo-command', 'foo-module', 'main')
-        assert_equals(self.bindir.created_scripts, ['foo-command'])
+        assert_equal(self.bindir.created_scripts, ['foo-command'])

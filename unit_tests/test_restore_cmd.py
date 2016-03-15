@@ -1,6 +1,11 @@
 from trashcli.trash import RestoreCmd
-from nose.tools import assert_equals
-from StringIO import StringIO
+from nose.tools import assert_equal
+
+# Try Python 2 import; if ImportError occurs, use Python 3 import
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 class TestTrashRestoreCmd:
     def test_should_print_version(self):
@@ -14,5 +19,5 @@ class TestTrashRestoreCmd:
 
         cmd.run(['trash-restore', '--version'])
 
-        assert_equals('trash-restore 1.2.3\n', stdout.getvalue())
+        assert_equal('trash-restore 1.2.3\n', stdout.getvalue())
 

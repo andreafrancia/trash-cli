@@ -1,8 +1,12 @@
 from trashcli.fstab import FakeFstab
 
-from nose.tools import assert_equals
-from nose.tools import istest
-from nose.tools import assert_items_equal
+from nose.tools import assert_equal, istest
+
+# Try Python 2 import; if ImportError occurs, use Python 3 import
+try:
+    from nose.tools import assert_items_equal
+except ImportError:
+    from nose.tools import assert_count_equal as assert_items_equal
 
 class TestFakeFstab:
     def setUp(self):
@@ -28,7 +32,7 @@ class TestFakeFstab:
     def test_something(self):
         fstab = FakeFstab()
         fstab.add_mount('/fake')
-        assert_equals('/fake', fstab.volume_of('/fake/foo'))
+        assert_equal('/fake', fstab.volume_of('/fake/foo'))
 
     def assert_mount_points_are(self, *expected_mounts):
         expected_mounts = list(expected_mounts)

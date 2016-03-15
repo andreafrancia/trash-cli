@@ -1,4 +1,4 @@
-from nose.tools import assert_equals
+from nose.tools import assert_equal
 from trashcli.put import shrinkuser
 
 class TestTrashDirectoryName:
@@ -32,5 +32,5 @@ class TestTrashDirectoryName:
 
     def assert_name_is(self, expected_name):
         shrinked = shrinkuser(self.trash_dir, self.environ)
-        assert_equals(expected_name, shrinked)
+        assert_equal(expected_name, shrinked)
 

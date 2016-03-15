@@ -1,7 +1,11 @@
 from trashcli.put import TrashDirectoryForPut
-from mock import Mock
 from nose.tools import istest
-from mock import ANY
+
+# Try Python 3 import; if ImportError occurs, use Python 2 import
+try:
+    from unittest.mock import Mock, ANY
+except ImportError:
+    from mock import Mock, ANY
 
 class TestTrashing:
     def setUp(self):

@@ -1,6 +1,6 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from nose.tools import assert_equals
+from nose.tools import assert_equal
 from trashcli.fs  import has_sticky_bit
 import os, shutil
 
@@ -14,14 +14,14 @@ make_empty_file = having_file
 def write_file(filename, contents=''):
     parent = os.path.dirname(filename)
     if not os.path.isdir(parent): os.makedirs(parent)
-    file(filename, 'w').write(contents)
-    assert_equals(file(filename).read(), contents)
+    open(filename, 'wt').write(contents)
+    assert_equal(open(filename).read(), contents)
 
 def require_empty_dir(path):
     if os.path.exists(path): shutil.rmtree(path)
     make_dirs(path)
     assert os.path.isdir(path)
-    assert_equals([], list(os.listdir(path)))
+    assert_equal([], list(os.listdir(path)))
 
 def having_empty_dir(path):
     require_empty_dir(path)
@@ -73,5 +73,5 @@ def make_unreadable_file(path):
     os.chmod(path, 0)
     from nose.tools import assert_raises
     with assert_raises(IOError):
-        file(path).read()
+        open(path).read()
 

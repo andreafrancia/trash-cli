@@ -2,7 +2,7 @@
 from trashcli.put import TrashPutCmd
 
 import os
-from nose.tools import istest, assert_equals, assert_not_equals
+from nose.tools import istest, assert_equal, assert_not_equal
 from nose.tools import assert_in
 
 from .files import having_file, require_empty_dir, having_empty_dir
@@ -56,7 +56,7 @@ class when_deleting_an_existing_file(TrashPutTest):
 
     @istest
     def a_trashinfo_file_should_have_been_created(self):
-        file('sandbox/XDG_DATA_HOME/Trash/info/foo.trashinfo').read()
+        open('sandbox/XDG_DATA_HOME/Trash/info/foo.trashinfo').read()
 
 @istest
 class when_deleting_an_existing_file_in_verbose_mode(TrashPutTest):
@@ -71,7 +71,7 @@ class when_deleting_an_existing_file_in_verbose_mode(TrashPutTest):
 
     @istest
     def should_be_succesfull(self):
-        assert_equals(0, self.exit_code)
+        assert_equal(0, self.exit_code)
 
 @istest
 class when_deleting_a_non_existing_file(TrashPutTest):
@@ -80,7 +80,7 @@ class when_deleting_a_non_existing_file(TrashPutTest):
 
     @istest
     def should_be_succesfull(self):
-        assert_not_equals(0, self.exit_code)
+        assert_not_equal(0, self.exit_code)
 
 @istest
 class when_fed_with_dot_arguments(TrashPutTest):

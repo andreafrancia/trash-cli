@@ -1,4 +1,8 @@
-from mock import Mock
+# Try Python 3 import; if ImportError occurs, use Python 2 import
+try:
+    from unittest.mock import Mock
+except ImportError:
+    from mock import Mock
 
 from integration_tests.files import require_empty_dir
 from trashcli.put import TopTrashDirWriteRules

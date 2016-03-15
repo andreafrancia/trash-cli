@@ -623,7 +623,11 @@ class ParseTrashInfo:
         self.found_path = on_path
     def __call__(self, contents):
         from datetime import datetime
-        import urllib
+# Try Python 3 import; if ImportError occurs, use Python 2 import
+        try:
+            from urllib.parse import unquote
+        except ImportError:
+            from urllib import unquote
         for line in contents.split('\n'):
             if line.startswith('DeletionDate='):
                 try:
@@ -634,7 +638,7 @@ class ParseTrashInfo:
                     self.found_deletion_date(date)
 
             if line.startswith('Path='):
-                path=urllib.unquote(line[len('Path='):])
+                path=unquote(line[len('Path='):])
                 self.found_path(path)
 
 class Basket:
@@ -648,9 +652,19 @@ def parse_deletion_date(contents):
     return result.collected
 
 def parse_path(contents):
-    import urllib
-    for line in contents.split('\n'):
+# Try Python 3 import; if ImportError occurs, use Python 2 import
+    try:
+        from urllib.parse import unquote
+    except ImportError:
+        from urllib import unquote
+    if isinstance(contents, str):
+#       Python 2:
+        output = contents
+    else:
+#       Python 3:
+        output = bytes.decode(contents)
+    for line in output.split('\n'):
         if line.startswith('Path='):
-            return urllib.unquote(line[len('Path='):])
+            return unquote(line[len('Path='):])
     raise ParseError('Unable to parse Path')
 

@@ -15,7 +15,7 @@ class FileSystemReader(FileSystemListing):
     def is_symlink(self, path):
         return os.path.islink(path)
     def contents_of(self, path):
-        return file(path).read()
+        return open(path).read()
 
 class FileRemover:
     def remove_file(self, path):
@@ -59,7 +59,12 @@ def mkdirs(path):
 def atomic_write(filename, content):
     file_handle = os.open(filename, os.O_RDWR | os.O_CREAT | os.O_EXCL,
             0o600)
-    os.write(file_handle, content)
+    if isinstance(content, str):
+#       Encode Python 3 unicode:
+        os.write(file_handle, content.encode())
+    else:
+#       Python 2:
+        os.write(file_handle, content)
     os.close(file_handle)
 
 def ensure_dir(path, mode):

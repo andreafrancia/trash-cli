@@ -71,8 +71,17 @@ class TrashPutCmd:
         parser.add_option("-v", "--verbose", action="store_true",
                           help="explain what is being done", dest="verbose")
         def patched_print_help():
-            encoding = parser._get_encoding(self.stdout)
-            self.stdout.write(parser.format_help().encode(encoding, "replace"))
+            got_encoding = True
+# Try Python 2 way; if AttributError occurs, set Python 3 way without encoding
+            try:
+                encoding = parser._get_encoding(self.stdout)
+            except AttributeError:
+                got_encoding = False
+            if got_encoding:
+                self.stdout.write(parser.format_help().encode(encoding, "replace"))
+            else:
+                self.stdout.write(parser.format_help())
+
         def patched_error(msg):
             parser.print_usage(self.stderr)
             parser.exit(2, "%s: error: %s\n" % (program_name, msg))
@@ -382,8 +391,12 @@ class TrashDirectoryForPut:
         def format_date(deletion_date):
             return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
         def format_original_location(original_location):
-            import urllib
-            return urllib.quote(original_location,'/')
+# Try Python 3 import; if ImportError occurs, use Python 2 import
+             try:
+                 from urllib.parse import quote
+             except ImportError:
+                 from urllib import quote
+             return quote(original_location,'/')
         content = ("[Trash Info]\n" +
                    "Path=%s\n" % format_original_location(original_location) +
                    "DeletionDate=%s\n" % format_date(deletion_date))

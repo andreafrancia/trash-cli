@@ -1,7 +1,6 @@
-from nose.tools import istest, assert_equals, assert_in
+from nose.tools import istest, assert_in
 import subprocess
 from subprocess import STDOUT, PIPE, check_output, call, Popen
-from .assert_equals_with_unidiff import assert_equals_with_unidiff as assert_equals
 from textwrap import dedent
 
 from pprint import pprint
@@ -20,5 +19,11 @@ class WhenNoArgs:
         self.returncode = process.returncode
 
     def test_should_print_usage_on_standard_error(self):
-        assert_in("Usage:", self.stderr.splitlines())
+        content = self.stderr
+        if isinstance(content, str):
+#           Python 2:
+            assert_in("Usage:", content.splitlines())
+        else:
+#           Python 3:
+            assert_in("Usage:", content.decode().splitlines())
 

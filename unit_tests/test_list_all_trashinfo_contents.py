@@ -1,5 +1,14 @@
-from mock import Mock, call
-from nose.tools import assert_equals, assert_items_equal
+# Try Python 3 import; if ImportError occurs, use Python 2 import
+try:
+    from unittest.mock import Mock, call
+except ImportError:
+    from mock import Mock, call
+
+# Try Python 2 import; if ImportError occurs, use Python 3 import
+try:
+    from nose.tools import assert_items_equal
+except ImportError:
+    from nose.tools import assert_count_equal as assert_items_equal
 
 class TestListing:
     def setUp(self):

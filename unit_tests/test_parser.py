@@ -1,5 +1,11 @@
 from trashcli.trash import Parser
-from mock import MagicMock
+
+# Try Python 3 import; if ImportError occurs, use Python 2 import
+try:
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import MagicMock
+
 from nose.tools import istest
 
 @istest
