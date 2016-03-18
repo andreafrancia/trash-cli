@@ -1,4 +1,4 @@
-import os, shutil
+import os, shutil, sys
 
 class FileSystemListing:
     def entries_if_dir_exists(self, path):
@@ -59,7 +59,7 @@ def mkdirs(path):
 def atomic_write(filename, content):
     file_handle = os.open(filename, os.O_RDWR | os.O_CREAT | os.O_EXCL,
             0o600)
-    if isinstance(content, str):
+    if sys.version_info > (3,):
 #       Encode Python 3 unicode:
         os.write(file_handle, content.encode())
     else:
