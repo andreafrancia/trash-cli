@@ -1,4 +1,3 @@
-*.bak
 *.pyc
 *.swp
 *.tmp
@@ -7,13 +6,12 @@
 .local/
 
 # generated executables
-/trash-restore*
-/trash-empty*
-/trash-list*
-/trash-put*
-/trash-rm*
+/trash-restore
+/trash-empty
+/trash-list
+/trash-put
+/trash-rm
 /trash
-/trash34
 
 # other things
 /build/
