@@ -1,3 +1,9 @@
+ - try whether I can use Vagrant to create a test environment
+ - Can't replicate bugs on Linux machine fast enough because I haven't any Linux machine
+ - Understand whether problem exposed in issue #61 happen can ben replicated on an Ubuntu https://github.com/andreafrancia/trash-cli/issues/61
+ - Understand whether problem exposed in issue #61 happen can ben replicated on Fedora https://github.com/andreafrancia/trash-cli/issues/61
+ - Reply to the python3 pull request
+
 Currently working on: home-fallback
  - update the bug link in trash-put,
     - remove path_for_trash_info injection
