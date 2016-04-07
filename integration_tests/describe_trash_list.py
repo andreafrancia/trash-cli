@@ -223,11 +223,6 @@ class describe_trash_list_with_raw_option:
         user = TrashListUser( environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME})
         user.run(argv)
         self.output = user.output()
-    def output_should_contain_line(self, line):
-        assert line in self.output_lines()
-    def output_lines(self):
-        return [line.rstrip('\n') for line in self.output.splitlines()]
-
 
 class FakeTrashDir:
     def __init__(self, path):
