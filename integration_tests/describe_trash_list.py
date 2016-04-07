@@ -217,19 +217,6 @@ class describe_trash_list_with_raw_option:
     def setup(self):
         self.having_XDG_DATA_HOME('XDG_DATA_HOME')
         self.running('trash-list', '--raw')
-    @istest
-    def output_should_contains_trashinfo_paths(self):
-        from nose import SkipTest; raise SkipTest()
-        self.having_trashinfo('foo.trashinfo')
-        self.output_should_contain_line(
-            'XDG_DATA_HOME/Trash/info/foo.trashinfo')
-    @istest
-    def output_should_contains_backup_copy_paths(self):
-        from nose import SkipTest; raise SkipTest()
-        self.having_trashinfo('foo.trashinfo')
-        self.output_should_contain_line(
-            'XDG_DATA_HOME/Trash/files/foo')
-
     def having_XDG_DATA_HOME(self, value):
         self.XDG_DATA_HOME = value
     def running(self, *argv):
