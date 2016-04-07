@@ -28,8 +28,8 @@ class Setup(object):
         make_sticky_dir(path)
     def when_dir_exists_unsticky(self, path):
         make_unsticky_dir(path)
-    def user_run_trash_list(self):
-        self.user.run_trash_list()
+    def user_run_trash_list(self, *args):
+        self.user.run_trash_list(*args)
 
 @istest
 class describe_trash_list(Setup):
