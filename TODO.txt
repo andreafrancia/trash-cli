@@ -2,6 +2,7 @@
  - Fix the problem in issue #61 (should be tested on Linux Box like a precise64 vagrant)
  - Have a way to automatically test also on Linux (e.g. Vagrant)
  - Reply to the python3 pull request
+ - DONE.txt -vs- man pages
 
 Currently working on: home-fallback
  - update the bug link in trash-put,
