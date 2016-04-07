@@ -212,18 +212,6 @@ class describe_when_a_file_is_in_alternate_top_trashdir(Setup):
 
         self.user.should_read_output("2000-01-01 00:00:00 topdir/file\n")
 
-@istest
-class describe_trash_list_with_raw_option:
-    def setup(self):
-        self.having_XDG_DATA_HOME('XDG_DATA_HOME')
-        self.running('trash-list', '--raw')
-    def having_XDG_DATA_HOME(self, value):
-        self.XDG_DATA_HOME = value
-    def running(self, *argv):
-        user = TrashListUser( environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME})
-        user.run(argv)
-        self.output = user.output()
-
 class FakeTrashDir:
     def __init__(self, path):
         self.path = path + '/info'
