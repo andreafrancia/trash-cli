@@ -1,7 +1,7 @@
 Author
 ------
 
-Andrea Francia andreafrancia@users.sourceforge.net
+Andrea Francia trash-cli@andreafrancia.it
 
 Thanks to
 ---------
