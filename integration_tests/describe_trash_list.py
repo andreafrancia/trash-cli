@@ -37,7 +37,7 @@ class describe_trash_list(Setup):
     @istest
     def should_output_the_help_message(self):
 
-        self.user.run('trash-list', '--help')
+        self.user.run_trash_list('--help')
 
         self.user.should_read_output(dedent("""\
             Usage: trash-list [OPTIONS...]
@@ -273,8 +273,8 @@ class TrashListUser:
         self.environ     = environ
         self.fake_getuid = self.error
         self.volumes     = []
-    def run_trash_list(self):
-        self.run('trash-list')
+    def run_trash_list(self, *args):
+        self.run('trash-list', *args)
     def run(self,*argv):
         from trashcli.trash import FileSystemReader
         file_reader = FileSystemReader()
