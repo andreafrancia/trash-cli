@@ -37,7 +37,7 @@ class describe_trash_list(Setup):
     @istest
     def should_output_the_help_message(self):
 
-        self.user.run_trash_list('--help')
+        self.user_run_trash_list('--help')
 
         self.user.should_read_output(dedent("""\
             Usage: trash-list [OPTIONS...]
