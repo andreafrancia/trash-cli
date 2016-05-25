@@ -2,8 +2,14 @@
 
 from trashcli.put import TrashPutCmd
 
-from nose.tools import istest, assert_in, assert_equals
-from StringIO import StringIO
+from nose.tools import istest, assert_in, assert_equal
+
+# Try Python 2 import; if ImportError occurs, use Python 3 import
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
 from integration_tests.assert_equals_with_unidiff import assert_equals_with_unidiff
 from textwrap import dedent
 
@@ -21,7 +27,7 @@ class TrashPutTest:
             result=main_function()
             if result is not None:
                 self.exit_code=result
-        except SystemExit, e:
+        except SystemExit as e:
             self.exit_code = e.code
 
     def stderr_should_be(self, expected_err):
@@ -44,7 +50,7 @@ class TestWhenNoArgs(TrashPutTest):
         assert_line_in_text('Usage: trash-put [OPTION]... FILE...',
                             self.stderr.getvalue())
     def test_exit_code_should_be_not_zero(self):
-        assert_equals(2, self.exit_code)
+        assert_equal(2, self.exit_code)
 
 
 def assert_line_in_text(expected_line, text):

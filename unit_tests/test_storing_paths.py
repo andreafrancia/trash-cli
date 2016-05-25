@@ -1,6 +1,11 @@
 from trashcli.put import TrashDirectoryForPut
-from nose.tools import assert_equals
-from mock import Mock
+from nose.tools import assert_equal
+
+# Try Python 3 import; if ImportError occurs, use Python 2 import
+try:
+    from unittest.mock import Mock
+except ImportError:
+    from mock import Mock
 
 class TestHowOriginalLocationIsStored:
     def test_for_absolute_paths(self):
@@ -26,4 +31,4 @@ class TestHowOriginalLocationIsStored:
 
     def assert_path_for_trashinfo_is(self, expected_value, file_to_be_trashed):
         result = self.dir.path_for_trash_info.for_file(file_to_be_trashed)
-        assert_equals(expected_value, result)
+        assert_equal(expected_value, result)

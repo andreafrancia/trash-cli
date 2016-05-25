@@ -4,7 +4,7 @@ from trashcli.trash import RestoreCmd
 
 from .files import require_empty_dir
 from .output_collector import OutputCollector
-from trashinfo import a_trashinfo
+from .trashinfo import a_trashinfo
 
 @istest
 class describe_restore_trash:
@@ -56,7 +56,7 @@ class describe_restore_trash:
                 with_user_typing = '0')
 
         self.file_should_have_been_restored('foo')
-    
+
     @istest
     def it_should_exit_gracefully_when_user_selects_nothing(self):
 
@@ -71,7 +71,7 @@ class describe_restore_trash:
     def it_should_refuse_overwriting_existing_file(self):
 
         self.having_a_file_trashed_from_current_dir('foo')
-        file('foo', 'a+').close()
+        open('foo', 'a+').close()
         os.chmod('foo', 000)
         self.when_running_restore_trash(from_dir=current_dir(),
                                         with_user_typing = '0')

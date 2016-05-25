@@ -1,10 +1,18 @@
-from StringIO import StringIO
-from mock import Mock, ANY
+try:
+    from io import StringIO
+except ImportError:
+    from StringIO import StringIO
+
+try:
+    from unittest.mock import Mock, ANY
+except ImportError:
+    from mock import Mock, ANY
+
 from nose.tools import assert_false, assert_raises
 
-from files import require_empty_dir, write_file
+from .files import require_empty_dir, write_file
 from trashcli.rm import Main, ListTrashinfos
-from trashinfo import a_trashinfo_with_path
+from .trashinfo import a_trashinfo_with_path
 
 
 class TestTrashRm:

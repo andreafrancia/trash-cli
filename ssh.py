@@ -1,4 +1,4 @@
-from nose.tools import assert_equals
+from nose.tools import assert_equal
 import subprocess
 
 class Connection:
@@ -25,7 +25,7 @@ class Connection:
             self.stderr = stderr
             self.exit_code = exit_code
         def assert_no_err(self):
-            assert_equals('', self.stderr)
+            assert_equal('', self.stderr)
         def assert_succesful(self):
             assert self.exit_code == 0
 

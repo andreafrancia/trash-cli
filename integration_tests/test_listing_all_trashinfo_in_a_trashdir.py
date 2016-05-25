@@ -1,9 +1,20 @@
 from trashcli.trash import TrashDirectory
 
-from files import require_empty_dir
-from files import write_file
-from nose.tools import assert_equals, assert_items_equal
-from mock import Mock
+from .files import require_empty_dir
+from .files import write_file
+from nose.tools import assert_equal
+
+# Try Python 2 import; if ImportError occurs, use Python 3 import
+try:
+    from nose.tools import assert_items_equal
+except ImportError:
+    from nose.tools import assert_count_equal as assert_items_equal
+
+# Try Python 3 import; if ImportError occurs, use Python 2 import
+try:
+    from unittest.mock import Mock
+except ImportError:
+    from mock import Mock
 
 class TestWhenListingTrashinfo:
     def setUp(self):
@@ -18,7 +29,7 @@ class TestWhenListingTrashinfo:
 
         result = self.list_trashinfos()
 
-        assert_equals(['sandbox/info/foo.trashinfo'], result)
+        assert_equal(['sandbox/info/foo.trashinfo'], result)
 
     def test_should_list_multiple_trashinfo(self):
         write_file('sandbox/info/foo.trashinfo')
@@ -36,7 +47,7 @@ class TestWhenListingTrashinfo:
 
         result = self.list_trashinfos()
 
-        assert_equals([], result)
+        assert_equal([], result)
 
     def test_non_trashinfo_should_reported_as_a_warn(self):
         write_file('sandbox/info/not-a-trashinfo')

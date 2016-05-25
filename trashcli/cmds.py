@@ -4,13 +4,24 @@ import sys,os
 
 def restore():
     from trashcli.trash import RestoreCmd
-    RestoreCmd(
-        stdout  = sys.stdout,
-        stderr  = sys.stderr,
-        environ = os.environ,
-        exit    = sys.exit,
-        input   = raw_input
-    ).run(sys.argv)
+# Try Python 2 raw_input function; if NameError occurs, use Python 3 input function
+    try:
+        RestoreCmd(
+            stdout  = sys.stdout,
+            stderr  = sys.stderr,
+            environ = os.environ,
+            exit    = sys.exit,
+            input   = raw_input
+        ).run(sys.argv)
+    except NameError:
+        RestoreCmd(
+            stdout  = sys.stdout,
+            stderr  = sys.stderr,
+            environ = os.environ,
+            exit    = sys.exit,
+            input   = input
+        ).run(sys.argv)
+
 
 def empty():
     from trashcli.trash import EmptyCmd

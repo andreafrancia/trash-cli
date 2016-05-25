@@ -1,8 +1,12 @@
-from mock import Mock, call, ANY
+# Try Python 3 import; if ImportError occurs, use Python 2 import
+try:
+    from unittest.mock import Mock, call, ANY
+except ImportError:
+    from mock import Mock, call, ANY
 
 from trashcli.fstab import FakeFstab
 from trashcli.put import GlobalTrashCan
-from nose.tools import assert_equals
+from nose.tools import assert_equal
 
 class TestHomeFallback:
     def setUp(self):
@@ -25,7 +29,7 @@ class TestHomeFallback:
 
         self.trashcan.trash('sandbox/foo')
 
-        assert_equals([
+        assert_equal([
             call.isdir('.Trash'),
             call.islink('.Trash'),
             call.ensure_dir('.Trash/123/info', 448),
@@ -54,9 +58,9 @@ class TestTrashDirectories:
                 environ      = self.environ)
 
         result = trash_dirs.all_trash_directories()
-        paths = map(lambda td: td.path, result)
+        paths = [td.path for td in result]
 
-        assert_equals( ['~/.local/share/Trash',
+        assert_equal( ['~/.local/share/Trash',
                         '/.Trash/123',
                         '/.Trash-123',
                         '/mnt/.Trash/123',
