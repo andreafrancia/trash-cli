@@ -27,6 +27,6 @@ class Connection:
         def assert_no_err(self):
             assert_equals('', self.stderr)
         def assert_succesful(self):
-            assert self.exit_code == 0
+            assert self.exit_code == 0, "Failed:\n - stderr:%s" % self.stderr
 
 
