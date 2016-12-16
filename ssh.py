@@ -5,12 +5,12 @@ class Connection:
     def __init__(self, target_host):
         self.target_host = target_host
     def run(self, *user_command):
-        ssh_invocation = ['ssh', self.target_host, '-oVisualHostKey=false']
+        ssh_invocation = ['ssh', '-Fssh-config', self.target_host, '-oVisualHostKey=false']
         command = ssh_invocation + list(user_command)
         exit_code, stderr, stdout = self._run_command(command)
         return self.ExecutionResult(stdout, stderr, exit_code)
     def put(self, source_file):
-        scp_command = ['scp', source_file, self.target_host + ':']
+        scp_command = ['scp', '-Fssh-config', source_file, self.target_host + ':']
         exit_code, stderr, stdout = self._run_command(scp_command)
         assert 0 == exit_code
     def _run_command(self, command):

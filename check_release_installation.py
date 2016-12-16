@@ -1,4 +1,4 @@
-TARGET_HOST = '192.168.56.101'
+TARGET_HOST = 'default'
 
 import nose
 from nose.tools import assert_equals, assert_not_equals
@@ -12,7 +12,7 @@ def main():
     check_installation(easy_install_installation)
 
 def check_installation(installation_method):
-    tc = LinuxBox('root@' + TARGET_HOST, installation_method)
+    tc = LinuxBox(TARGET_HOST, installation_method)
     print "== Cleaning any prior software installation"
     tc.clean_any_prior_installation()
     print "== Copying software"
@@ -37,7 +37,7 @@ class LinuxBox:
             self._remove_executable(executable)
             self._assert_command_removed(executable)
     def _remove_executable(self, executable):
-        self.ssh.run('rm -f $(which %s)' % executable).assert_succesful()
+        self.ssh.run('sudo rm -f $(which %s)' % executable).assert_succesful()
     def _assert_command_removed(self, executable):
         result = self.ssh.run('which %s' % executable)
         command_not_existent_exit_code_for_which = 1
@@ -63,10 +63,10 @@ def normal_installation(tarball, check_run):
     directory = strip_end(tarball, '.tar.gz')
     check_run('tar xfvz %s' % tarball)
     check_run('cd %s && '
-              'python setup.py install' % directory)
+              'sudo python setup.py install' % directory)
 
 def easy_install_installation(tarball, check_run):
-    check_run('easy_install %s' % tarball)
+    check_run('sudo easy_install %s' % tarball)
 
 def strip_end(text, suffix):
     if not text.endswith(suffix):
