@@ -17,7 +17,11 @@ def main():
     ).run(sys.argv)
 
 class TrashPutCmd:
-    def __init__(self, stdout, stderr, environ = os.environ, fstab = Fstab()):
+    def __init__(self,
+                 stdout,
+                 stderr,
+                 environ = os.environ,
+                 fstab = Fstab()):
         self.stdout   = stdout
         self.stderr   = stderr
         self.environ  = environ
