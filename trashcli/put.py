@@ -328,11 +328,11 @@ class PossibleTrashDirectories:
         trash_dir.store_relative_paths()
         self.trash_dirs.append(trash_dir)
     def _make_trash_dir(self, path, volume):
-        return TrashDirectoryForPut(path, volume, fs = self.fs)
+        return TrashDirectoryForPut(path, volume, datetime.now, self.fs)
 
 class TrashDirectoryForPut:
     from datetime import datetime
-    def __init__(self, path, volume, now = datetime.now, fs = RealFs(),
+    def __init__(self, path, volume, now, fs = RealFs(),
                  realpath = os.path.realpath):
         self.path      = os.path.normpath(path)
         self.volume    = volume
