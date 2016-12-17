@@ -332,8 +332,8 @@ class PossibleTrashDirectories:
 
 class TrashDirectoryForPut:
     from datetime import datetime
-    def __init__(self, path, volume, now, fs,
-                 realpath = os.path.realpath):
+    def __init__(self, path, volume, now, fs):
+        realpath = os.path.realpath
         self.path      = os.path.normpath(path)
         self.volume    = volume
         self.logger    = logger
