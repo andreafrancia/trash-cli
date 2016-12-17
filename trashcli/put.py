@@ -333,7 +333,6 @@ class PossibleTrashDirectories:
 class TrashDirectoryForPut:
     from datetime import datetime
     def __init__(self, path, volume, now, fs):
-        realpath = os.path.realpath
         self.path      = os.path.normpath(path)
         self.volume    = volume
         self.logger    = logger
@@ -348,7 +347,7 @@ class TrashDirectoryForPut:
         self.atomic_write = fs.atomic_write
         self.remove_file  = fs.remove_file
         self.ensure_dir   = fs.ensure_dir
-        self.realpath     = realpath
+        self.realpath     = os.path.realpath
 
         self.path_for_trash_info = OriginalLocation(self.realpath)
 
