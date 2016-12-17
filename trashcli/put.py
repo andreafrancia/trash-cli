@@ -21,13 +21,13 @@ class TrashPutCmd:
                  stdout,
                  stderr,
                  environ = os.environ,
-                 fstab = Fstab()):
-        self.stdout   = stdout
-        self.stderr   = stderr
-        self.environ  = environ
-        self.fstab    = fstab #TODO
-        self.logger   = MyLogger(self.stderr)
-        self.reporter = TrashPutReporter(self.logger)
+                 volume_of = Fstab().volume_of):
+        self.stdout    = stdout
+        self.stderr    = stderr
+        self.environ   = environ
+        self.volume_of = volume_of
+        self.logger    = MyLogger(self.stderr)
+        self.reporter  = TrashPutReporter(self.logger)
 
     def run(self, argv):
         program_name = os.path.basename(argv[0])
@@ -42,7 +42,7 @@ class TrashPutCmd:
 
         self.trashcan = GlobalTrashCan(
                 reporter = self.reporter,
-                volume_of = self.fstab.volume_of,
+                volume_of = self.volume_of,
                 environ = self.environ,
                 fs = RealFs(),
                 getuid = os.getuid,
