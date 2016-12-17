@@ -347,9 +347,8 @@ class TrashDirectoryForPut:
         self.atomic_write = fs.atomic_write
         self.remove_file  = fs.remove_file
         self.ensure_dir   = fs.ensure_dir
-        realpath     = os.path.realpath
 
-        self.path_for_trash_info = OriginalLocation(realpath)
+        self.path_for_trash_info = OriginalLocation(os.path.realpath)
 
     def store_absolute_paths(self):
         self.path_for_trash_info.make_absolutes_paths()
