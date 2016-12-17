@@ -243,7 +243,7 @@ class GlobalTrashCan:
             return
 
         candidates = PossibleTrashDirectories(self.fs)
-        candidates = self._possible_trash_directories_for(file, candidates)
+        self._possible_trash_directories_for(file, candidates)
         file_has_been_trashed = False
         for trash_dir in candidates.trash_dirs:
             if self._is_trash_dir_secure(trash_dir):
@@ -304,8 +304,6 @@ class GlobalTrashCan:
                 volume, candidates.add_top_trash_dir)
         self.trash_directories.volume_trash_dir2(
                 volume, candidates.add_alt_top_trash_dir)
-
-        return candidates
 
     def volume_of_parent(self, file):
         return self.volume_of(parent_of(file))
