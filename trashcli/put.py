@@ -304,6 +304,7 @@ class GlobalTrashCan:
                 volume, candidates.add_top_trash_dir)
         self.trash_directories.volume_trash_dir2(
                 volume, candidates.add_alt_top_trash_dir)
+        return candidates
 
     def volume_of_parent(self, file):
         return self.volume_of(parent_of(file))
@@ -463,10 +464,10 @@ class OriginalLocation:
         self.make_absolutes_paths()
 
     def make_paths_relatives_to(self, topdir):
-        self.topdir = topdir
+        self.path_maker = TopDirRelativePaths(topdir)
 
     def make_absolutes_paths(self):
-        self.topdir = None
+        self.path_maker = AbsolutePaths()
 
     def for_file(self, path):
         self.normalized_path = os.path.normpath(path)
@@ -474,13 +475,22 @@ class OriginalLocation:
         basename = os.path.basename(self.normalized_path)
         parent   = self._real_parent()
 
-        if self.topdir != None:
-            if (parent == self.topdir) or parent.startswith(self.topdir+os.path.sep) :
-                parent = parent[len(self.topdir+os.path.sep):]
+        parent = self.path_maker.calc_parent_path(parent)
 
-        result   = os.path.join(parent, basename)
-        return result
+        return os.path.join(parent, basename)
 
     def _real_parent(self):
-        parent   = os.path.dirname(self.normalized_path)
+        parent = os.path.dirname(self.normalized_path)
         return self.realpath(parent)
+
+class TopDirRelativePaths:
+    def __init__(self, topdir):
+        self.topdir = topdir
+    def calc_parent_path(self, parent):
+        if (parent == self.topdir) or parent.startswith(self.topdir+os.path.sep) :
+            parent = parent[len(self.topdir+os.path.sep):]
+        return parent
+
+class AbsolutePaths:
+    def calc_parent_path(self, parent):
+        return parent
