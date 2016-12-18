@@ -17,13 +17,13 @@ class TestDescritions:
 
     def test_on_dot_directories(self):
 
-        assert_equals("`.' directory",  describe("sandbox/."))
-        assert_equals("`.' directory",  describe("./."))
+        assert_equals("'.' directory",  describe("sandbox/."))
+        assert_equals("'.' directory",  describe("./."))
 
     def test_on_dot_dot_directories(self):
 
-        assert_equals("`..' directory", describe("./.."))
-        assert_equals("`..' directory", describe("sandbox/.."))
+        assert_equals("'..' directory", describe("./.."))
+        assert_equals("'..' directory", describe("sandbox/.."))
 
     def test_name_for_regular_files_non_empty_files(self):
 

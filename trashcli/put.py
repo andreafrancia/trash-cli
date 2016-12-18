@@ -94,7 +94,7 @@ class TrashPutCmd:
         return parser
 
 epilog="""\
-To remove a file whose name starts with a `-', for example `-foo',
+To remove a file whose name starts with a '-', for example '-foo',
 use one of these commands:
 
     trash -- -foo
@@ -136,12 +136,12 @@ class TrashPutReporter:
         self.some_file_has_not_be_trashed = False
         self.no_argument_specified = False
     def unable_to_trash_dot_entries(self,file):
-        self.logger.warning("cannot trash %s `%s'" % (describe(file), file))
+        self.logger.warning("cannot trash %s '%s'" % (describe(file), file))
     def unable_to_trash_file(self,f):
-        self.logger.warning("cannot trash %s `%s'" % (describe(f), f))
+        self.logger.warning("cannot trash %s '%s'" % (describe(f), f))
         self.some_file_has_not_be_trashed = True
     def file_has_been_trashed_in_as(self, trashee, trash_directory, destination):
-        self.logger.info("`%s' trashed in %s" % (trashee,
+        self.logger.info("'%s' trashed in %s" % (trashee,
                                                  shrinkuser(trash_directory)))
     def found_unsercure_trash_dir_symlink(self, trash_dir_path):
         self.logger.info("found unsecure .Trash dir (should not be a symlink): %s"
@@ -169,8 +169,8 @@ def describe(path):
     Options:
      - "symbolic link"
      - "directory"
-     - "`.' directory"
-     - "`..' directory"
+     - "'.' directory"
+     - "'..' directory"
      - "regular file"
      - "regular empty file"
      - "non existent"
@@ -185,9 +185,9 @@ def describe(path):
             return 'directory'
         else:
             if os.path.basename(path) == '.':
-                return "`.' directory"
+                return "'.' directory"
             elif os.path.basename(path) == '..':
-                return "`..' directory"
+                return "'..' directory"
             else:
                 return 'directory'
     elif os.path.isfile(path):

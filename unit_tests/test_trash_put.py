@@ -80,7 +80,7 @@ class describe_TrashPutCmd(TrashPutTest):
               -r, -R, --recursive  ignored (for GNU rm compatibility)
               -v, --verbose        explain what is being done
 
-            To remove a file whose name starts with a `-', for example `-foo',
+            To remove a file whose name starts with a '-', for example '-foo',
             use one of these commands:
 
                 trash -- -foo
@@ -93,12 +93,12 @@ class describe_TrashPutCmd(TrashPutTest):
     @istest
     def it_should_skip_dot_entry(self):
         self.run('.')
-        self.stderr_should_be("trash-put: cannot trash directory `.'\n")
+        self.stderr_should_be("trash-put: cannot trash directory '.'\n")
 
     @istest
     def it_should_skip_dotdot_entry(self):
         self.run('..')
-        self.stderr_should_be("trash-put: cannot trash directory `..'\n")
+        self.stderr_should_be("trash-put: cannot trash directory '..'\n")
 
     @istest
     def it_should_print_usage_on_no_argument(self):

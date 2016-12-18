@@ -66,7 +66,7 @@ class when_deleting_an_existing_file_in_verbose_mode(TrashPutTest):
 
     @istest
     def should_tell_where_a_file_is_trashed(self):
-        assert_in("trash-put: `sandbox/foo' trashed in sandbox/XDG_DATA_HOME/Trash",
+        assert_in("trash-put: 'sandbox/foo' trashed in sandbox/XDG_DATA_HOME/Trash",
                   self.stderr.splitlines())
 
     @istest
@@ -96,7 +96,7 @@ class when_fed_with_dot_arguments(TrashPutTest):
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
         self.stderr_should_be(
-                "trash-put: cannot trash directory `.'\n")
+                "trash-put: cannot trash directory '.'\n")
 
         # the remaining arguments should be processed
         assert not exists('other_argument')
@@ -108,7 +108,7 @@ class when_fed_with_dot_arguments(TrashPutTest):
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
         self.stderr_should_be(
-            "trash-put: cannot trash directory `..'\n")
+            "trash-put: cannot trash directory '..'\n")
 
         # the remaining arguments should be processed
         assert not exists('other_argument')
@@ -120,7 +120,7 @@ class when_fed_with_dot_arguments(TrashPutTest):
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
         self.stderr_should_be(
-            "trash-put: cannot trash `.' directory `sandbox/.'\n")
+            "trash-put: cannot trash '.' directory 'sandbox/.'\n")
 
         # the remaining arguments should be processed
         assert not exists('other_argument')
@@ -133,7 +133,7 @@ class when_fed_with_dot_arguments(TrashPutTest):
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
         self.stderr_should_be(
-            "trash-put: cannot trash `..' directory `sandbox/..'\n")
+            "trash-put: cannot trash '..' directory 'sandbox/..'\n")
 
         # the remaining arguments should be processed
         assert not exists('other_argument')
