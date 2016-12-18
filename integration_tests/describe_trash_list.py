@@ -74,9 +74,9 @@ class describe_trash_list(Setup):
 
         self.user_run_trash_list()
 
-        self.user.should_read_output( "2000-01-01 00:00:01 /file1\n"
-                                      "2000-01-01 00:00:02 /file2\n"
-                                      "2000-01-01 00:00:03 /file3\n")
+        self.user.should_read_output_any_order( "2000-01-01 00:00:01 /file1\n"
+                                                "2000-01-01 00:00:02 /file2\n"
+                                                "2000-01-01 00:00:03 /file3\n")
 
     @istest
     def should_output_unknown_dates_with_question_marks(self):
@@ -265,6 +265,8 @@ class TrashListUser:
         raise ValueError()
     def should_read_output(self, expected_value):
         self.stdout.assert_equal_to(expected_value)
+    def should_read_output_any_order(self, expected_value):
+        self.stdout.assert_equal_any_order(expected_value)
     def should_read_error(self, expected_value):
         self.stderr.assert_equal_to(expected_value)
     def output(self):
