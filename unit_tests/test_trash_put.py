@@ -46,6 +46,16 @@ class TestWhenNoArgs(TrashPutTest):
     def test_exit_code_should_be_not_zero(self):
         assert_equals(2, self.exit_code)
 
+class TestTrashPutWithWrongOption(TrashPutTest):
+    def test_something(self):
+        self.run('--wrong-option')
+        self.stderr_should_be(dedent('''\
+            Usage: trash-put [OPTION]... FILE...
+
+            trash-put: error: no such option: --wrong-option
+            '''))
+        self.stdout_should_be('')
+        assert_equals(2, self.exit_code)
 
 def assert_line_in_text(expected_line, text):
     assert_in(expected_line, text.splitlines(),
