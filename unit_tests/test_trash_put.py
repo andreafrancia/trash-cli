@@ -17,12 +17,9 @@ class TrashPutTest:
 
     def _collect_exit_code(self, main_function):
         self.exit_code = 0
-        try:
-            result=main_function()
-            if result is not None:
-                self.exit_code=result
-        except SystemExit, e:
-            self.exit_code = e.code
+        result=main_function()
+        if result is not None:
+            self.exit_code=result
 
     def stderr_should_be(self, expected_err):
         assert_equals_with_unidiff(expected_err, self._actual_stderr())

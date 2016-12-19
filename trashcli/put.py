@@ -34,11 +34,14 @@ class TrashPutCmd:
         self.logger.use_program_name(program_name)
 
         parser = self.get_option_parser(program_name)
-        (options, args) = parser.parse_args(argv[1:])
-        if options.verbose: self.logger.be_verbose()
+        try:
+            (options, args) = parser.parse_args(argv[1:])
+            if options.verbose: self.logger.be_verbose()
 
-        if len(args) <= 0:
-            parser.error("Please specify the files to trash.")
+            if len(args) <= 0:
+                parser.error("Please specify the files to trash.")
+        except SystemExit,e:
+            return e.code
 
         self.trashcan = GlobalTrashCan(
                 reporter = self.reporter,
