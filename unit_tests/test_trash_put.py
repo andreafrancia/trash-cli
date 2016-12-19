@@ -87,7 +87,7 @@ class describe_TrashPutCmd(TrashPutTest):
 
                 trash ./-foo
 
-            Report bugs to http://code.google.com/p/trash-cli/issues
+            Report bugs to https://github.com/andreafrancia/trash-cli/issues
             '''))
 
     @istest

@@ -48,7 +48,7 @@ class describe_trash_list(Setup):
               --version   show program's version number and exit
               -h, --help  show this help message and exit
 
-            Report bugs to http://code.google.com/p/trash-cli/issues
+            Report bugs to https://github.com/andreafrancia/trash-cli/issues
         """))
 
     @istest

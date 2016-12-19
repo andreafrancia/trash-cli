@@ -101,7 +101,7 @@ use one of these commands:
 
     trash ./-foo
 
-Report bugs to http://code.google.com/p/trash-cli/issues"""
+Report bugs to https://github.com/andreafrancia/trash-cli/issues"""
 
 class MyLogger:
     def __init__(self, stderr):

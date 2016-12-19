@@ -517,7 +517,7 @@ class PrintHelp:
                     self.println(line)
                 self.println('')
             def bug_reporting(self):
-                self.println("Report bugs to http://code.google.com/p/trash-cli/issues")
+                self.println("Report bugs to https://github.com/andreafrancia/trash-cli/issues")
         self.description  = description
         self.printer      = Printer(println)
 

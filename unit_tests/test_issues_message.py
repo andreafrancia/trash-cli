@@ -14,7 +14,7 @@ class TestTrashPutIssueMessage:
         cmd.run(['', '--help'])
 
         self.assert_last_line_of_output_is(
-                'Report bugs to http://code.google.com/p/trash-cli/issues')
+                'Report bugs to https://github.com/andreafrancia/trash-cli/issues')
 
     def test_trash_empty_last_line(self):
         from trashcli.trash import EmptyCmd
@@ -23,7 +23,7 @@ class TestTrashPutIssueMessage:
         cmd.run('', '--help')
 
         self.assert_last_line_of_output_is(
-                'Report bugs to http://code.google.com/p/trash-cli/issues')
+                'Report bugs to https://github.com/andreafrancia/trash-cli/issues')
 
     def test_trash_list_last_line(self):
         from trashcli.trash import ListCmd
@@ -32,7 +32,7 @@ class TestTrashPutIssueMessage:
         cmd.run('', '--help')
 
         self.assert_last_line_of_output_is(
-                'Report bugs to http://code.google.com/p/trash-cli/issues')
+                'Report bugs to https://github.com/andreafrancia/trash-cli/issues')
 
     def assert_last_line_of_output_is(self, expected):
         output = self.out.getvalue()
