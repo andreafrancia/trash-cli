@@ -31,8 +31,9 @@ class Setup(object):
     def user_run_trash_list(self, *args):
         self.user.run_trash_list(*args)
     def user_should_read_output(self, expected_output):
-        actual_output = self.user.stdout
-        actual_output.assert_equal_to(expected_output)
+        from assert_equals_with_unidiff import assert_equals_with_unidiff
+        assert_equals_with_unidiff(expected_output,
+                                   self.user.actual_output())
 
 @istest
 class describe_trash_list(Setup):
@@ -269,5 +270,7 @@ class TrashListUser:
     def should_read_error(self, expected_value):
         self.stderr.assert_equal_to(expected_value)
     def output(self):
+        return self.stdout.getvalue()
+    def actual_output(self):
         return self.stdout.getvalue()
 
