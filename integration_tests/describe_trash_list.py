@@ -14,6 +14,7 @@ from trashinfo import (
         a_trashinfo_with_invalid_date)
 from textwrap import dedent
 
+from assert_equals_with_unidiff import assert_equals_with_unidiff
 class Setup(object):
     def setUp(self):
         require_empty_dir('XDG_DATA_HOME')
@@ -31,16 +32,14 @@ class Setup(object):
     def user_run_trash_list(self, *args):
         self.user.run_trash_list(*args)
     def user_should_read_output_any_order(self, expected_output):
-        expected_output = "\n".join(sorted(expected_output.splitlines()))
         actual_output = self.user.actual_output()
-        actual_output = "\n".join(sorted(actual_output.splitlines()))
-        from assert_equals_with_unidiff import assert_equals_with_unidiff
-        assert_equals_with_unidiff(expected_output,
-                                   actual_output)
+        assert_equals_with_unidiff(sort_lines(expected_output),
+                                   sort_lines(actual_output))
     def user_should_read_output(self, expected_output):
-        from assert_equals_with_unidiff import assert_equals_with_unidiff
         assert_equals_with_unidiff(expected_output,
                                    self.user.actual_output())
+def sort_lines(lines):
+    return "\n".join(sorted(lines.splitlines()))
 
 @istest
 class describe_trash_list(Setup):
