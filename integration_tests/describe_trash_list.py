@@ -31,7 +31,7 @@ class Setup(object):
     def user_run_trash_list(self, *args):
         self.user.run_trash_list(*args)
     def user_should_read_output(self, expected_output):
-        self.user.should_read_output(expected_output)
+        self.user.stdout.assert_equal_to(expected_output)
 
 @istest
 class describe_trash_list(Setup):
@@ -265,8 +265,6 @@ class TrashListUser:
         self.volumes.append(mount_point)
     def error(self):
         raise ValueError()
-    def should_read_output(self, expected_value):
-        self.stdout.assert_equal_to(expected_value)
     def should_read_error(self, expected_value):
         self.stderr.assert_equal_to(expected_value)
     def output(self):
