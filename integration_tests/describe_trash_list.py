@@ -30,6 +30,13 @@ class Setup(object):
         make_unsticky_dir(path)
     def user_run_trash_list(self, *args):
         self.user.run_trash_list(*args)
+    def user_should_read_output_any_order(self, expected_output):
+        expected_output = "\n".join(sorted(expected_output.splitlines()))
+        actual_output = self.user.actual_output()
+        actual_output = "\n".join(sorted(actual_output.splitlines()))
+        from assert_equals_with_unidiff import assert_equals_with_unidiff
+        assert_equals_with_unidiff(expected_output,
+                                   actual_output)
     def user_should_read_output(self, expected_output):
         from assert_equals_with_unidiff import assert_equals_with_unidiff
         assert_equals_with_unidiff(expected_output,
@@ -78,7 +85,8 @@ class describe_trash_list(Setup):
 
         self.user_run_trash_list()
 
-        self.user_should_read_output( "2000-01-01 00:00:01 /file1\n"
+        self.user_should_read_output_any_order(
+                                      "2000-01-01 00:00:01 /file1\n"
                                       "2000-01-01 00:00:02 /file2\n"
                                       "2000-01-01 00:00:03 /file3\n")
 
