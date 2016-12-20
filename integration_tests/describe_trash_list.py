@@ -31,7 +31,8 @@ class Setup(object):
     def user_run_trash_list(self, *args):
         self.user.run_trash_list(*args)
     def user_should_read_output(self, expected_output):
-        self.user.stdout.assert_equal_to(expected_output)
+        actual_output = self.user.stdout
+        actual_output.assert_equal_to(expected_output)
 
 @istest
 class describe_trash_list(Setup):
