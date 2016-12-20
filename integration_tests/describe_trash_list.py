@@ -30,6 +30,8 @@ class Setup(object):
         make_unsticky_dir(path)
     def user_run_trash_list(self, *args):
         self.user.run_trash_list(*args)
+    def user_should_read_output(self, expected_output):
+        self.user.should_read_output(expected_output)
 
 @istest
 class describe_trash_list(Setup):
@@ -39,7 +41,7 @@ class describe_trash_list(Setup):
 
         self.user_run_trash_list('--help')
 
-        self.user.should_read_output(dedent("""\
+        self.user_should_read_output(dedent("""\
             Usage: trash-list [OPTIONS...]
 
             List trashed files
@@ -56,7 +58,7 @@ class describe_trash_list(Setup):
 
         self.user_run_trash_list()
 
-        self.user.should_read_output('')
+        self.user_should_read_output('')
 
     @istest
     def should_output_deletion_date_and_path(self):
@@ -64,7 +66,7 @@ class describe_trash_list(Setup):
 
         self.user_run_trash_list()
 
-        self.user.should_read_output( "2001-02-03 23:55:59 /aboslute/path\n")
+        self.user_should_read_output( "2001-02-03 23:55:59 /aboslute/path\n")
 
     @istest
     def should_output_info_for_multiple_files(self):
@@ -74,7 +76,7 @@ class describe_trash_list(Setup):
 
         self.user_run_trash_list()
 
-        self.user.should_read_output( "2000-01-01 00:00:01 /file1\n"
+        self.user_should_read_output( "2000-01-01 00:00:01 /file1\n"
                                       "2000-01-01 00:00:02 /file2\n"
                                       "2000-01-01 00:00:03 /file3\n")
 
@@ -85,7 +87,7 @@ class describe_trash_list(Setup):
 
         self.user_run_trash_list()
 
-        self.user.should_read_output("????-??-?? ??:??:?? /path\n")
+        self.user_should_read_output("????-??-?? ??:??:?? /path\n")
 
     @istest
     def should_output_invalid_dates_using_question_marks(self):
@@ -93,7 +95,7 @@ class describe_trash_list(Setup):
 
         self.user_run_trash_list()
 
-        self.user.should_read_output("????-??-?? ??:??:?? /path\n")
+        self.user_should_read_output("????-??-?? ??:??:?? /path\n")
 
     @istest
     def should_warn_about_empty_trashinfos(self):
@@ -123,7 +125,7 @@ class describe_trash_list(Setup):
         self.user.should_read_error(
                 "Parse Error: XDG_DATA_HOME/Trash/info/1.trashinfo: "
                 "Unable to parse Path.\n")
-        self.user.should_read_output('')
+        self.user_should_read_output('')
 
 @istest
 class with_a_top_trash_dir(Setup):
@@ -140,7 +142,7 @@ class with_a_top_trash_dir(Setup):
 
         self.user_run_trash_list()
 
-        self.user.should_read_output("2000-01-01 00:00:00 topdir/file1\n")
+        self.user_should_read_output("2000-01-01 00:00:00 topdir/file1\n")
 
     @istest
     def and_should_warn_if_parent_is_not_sticky(self):
@@ -167,7 +169,7 @@ class with_a_top_trash_dir(Setup):
 
         self.user_run_trash_list()
 
-        self.user.should_read_output("")
+        self.user_should_read_output("")
 
     @istest
     def it_should_ignore_Trash_is_a_symlink(self):
@@ -176,7 +178,7 @@ class with_a_top_trash_dir(Setup):
 
         self.user_run_trash_list()
 
-        self.user.should_read_output('')
+        self.user_should_read_output('')
 
     @istest
     def and_should_warn_about_it(self):
@@ -210,7 +212,7 @@ class describe_when_a_file_is_in_alternate_top_trashdir(Setup):
 
         self.user_run_trash_list()
 
-        self.user.should_read_output("2000-01-01 00:00:00 topdir/file\n")
+        self.user_should_read_output("2000-01-01 00:00:00 topdir/file\n")
 
 class FakeTrashDir:
     def __init__(self, path):
