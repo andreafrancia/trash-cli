@@ -89,43 +89,6 @@ class TrashDirectories:
             path   = os.path.join(volume, ".Trash-%s" % self.getuid()),
             volume = volume)
 
-class TrashedFile:
-    """
-    Represent a trashed file.
-    Each trashed file is persisted in two files:
-     - $trash_dir/info/$id.trashinfo
-     - $trash_dir/files/$id
-
-    Properties:
-     - path : the original path from where the file has been trashed
-     - deletion_date : the time when the file has been trashed (instance of
-                       datetime)
-     - info_file : the file that contains information (instance of Path)
-     - actual_path : the path where the trashed file has been placed after the
-                     trash opeartion (instance of Path)
-     - trash_directory :
-    """
-    def __init__(self, path, deletion_date, info_file, actual_path,
-            trash_directory):
-        self.path = path
-        self.deletion_date = deletion_date
-        self.info_file = info_file
-        self.actual_path = actual_path
-        self.trash_directory = trash_directory
-        self.original_file = actual_path
-
-    def restore(self, dest=None) :
-        if dest is not None:
-            raise NotImplementedError("not yet supported")
-        if os.path.exists(self.path):
-            raise IOError('Refusing to overwrite existing file "%s".' % os.path.basename(self.path))
-        else:
-            parent = os.path.dirname(self.path)
-            mkdirs(parent)
-
-        move(self.original_file, self.path)
-        remove_file(self.info_file)
-
 def getcwd_as_realpath(): return os.path.realpath(os.curdir)
 
 import sys
@@ -221,6 +184,43 @@ class LazyTrashInfoParser:
         return parse_path(self.contents())
     def original_location(self):
         return os.path.join(self.volume_path, self._path())
+
+class TrashedFile:
+    """
+    Represent a trashed file.
+    Each trashed file is persisted in two files:
+     - $trash_dir/info/$id.trashinfo
+     - $trash_dir/files/$id
+
+    Properties:
+     - path : the original path from where the file has been trashed
+     - deletion_date : the time when the file has been trashed (instance of
+                       datetime)
+     - info_file : the file that contains information (instance of Path)
+     - actual_path : the path where the trashed file has been placed after the
+                     trash opeartion (instance of Path)
+     - trash_directory :
+    """
+    def __init__(self, path, deletion_date, info_file, actual_path,
+            trash_directory):
+        self.path = path
+        self.deletion_date = deletion_date
+        self.info_file = info_file
+        self.actual_path = actual_path
+        self.trash_directory = trash_directory
+        self.original_file = actual_path
+
+    def restore(self, dest=None) :
+        if dest is not None:
+            raise NotImplementedError("not yet supported")
+        if os.path.exists(self.path):
+            raise IOError('Refusing to overwrite existing file "%s".' % os.path.basename(self.path))
+        else:
+            parent = os.path.dirname(self.path)
+            mkdirs(parent)
+
+        move(self.original_file, self.path)
+        remove_file(self.info_file)
 
 from .fs import FileSystemReader, contents_of, FileRemover
 
