@@ -32,16 +32,6 @@ class TrashDirectory:
             self.logger.warning("Non .trashinfo file in info dir")
         self.on_non_trashinfo_found = warn_non_trashinfo
 
-    def trashed_files(self) :
-        # Only used by trash-restore
-        for info_file in self.all_info_files():
-            try:
-                yield self._create_trashed_file_from_info_file(info_file)
-            except ValueError:
-                self.logger.warning("Non parsable trashinfo file: %s" % info_file)
-            except IOError as e:
-                self.logger.warning(str(e))
-
     def all_info_files(self) :
         'Returns a generator of "Path"s'
         try :
@@ -203,8 +193,17 @@ class RestoreCmd:
             action(trashedfile)
     def all_trashed_files(self):
         for trash_dir in self.trashcan.all_trash_directories():
-            for trashedfile in trash_dir.trashed_files():
+            for trashedfile in self.trashed_files(trash_dir):
                 yield trashedfile
+    def trashed_files(self, trash_dir) :
+        for info_file in trash_dir.all_info_files():
+            try:
+                yield trash_dir._create_trashed_file_from_info_file(info_file)
+            except ValueError:
+                trash_dir.logger.warning("Non parsable trashinfo file: %s" % info_file)
+            except IOError as e:
+                trash_dir.logger.warning(str(e))
+
     def report_no_files_found(self):
         self.println("No files trashed from current dir ('%s')" % self.curdir())
     def println(self, line):
