@@ -211,6 +211,17 @@ class RestoreCmd:
     def printerr(self, msg):
         self.err.write('%s\n' % msg)
 
+class LazyTrashInfoParser:
+    def __init__(self, contents, volume_path):
+        self.contents    = contents
+        self.volume_path = volume_path
+    def deletion_date(self):
+        return parse_deletion_date(self.contents())
+    def _path(self):
+        return parse_path(self.contents())
+    def original_location(self):
+        return os.path.join(self.volume_path, self._path())
+
 from .fs import FileSystemReader, contents_of, FileRemover
 
 class ListCmd:
@@ -589,17 +600,6 @@ class TrashDir:
                 on_non_trashinfo()
 
 class ParseError(ValueError): pass
-
-class LazyTrashInfoParser:
-    def __init__(self, contents, volume_path):
-        self.contents    = contents
-        self.volume_path = volume_path
-    def deletion_date(self):
-        return parse_deletion_date(self.contents())
-    def _path(self):
-        return parse_path(self.contents())
-    def original_location(self):
-        return os.path.join(self.volume_path, self._path())
 
 def maybe_parse_deletion_date(contents):
     result = Basket(unknown_date())
