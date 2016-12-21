@@ -204,7 +204,6 @@ class RestoreCmd:
         return TrashedFile(original_location, deletion_date,
                 trashinfo_file_path, backup_file_path, trash_dir)
 
-
     def report_no_files_found(self):
         self.println("No files trashed from current dir ('%s')" % self.curdir())
     def println(self, line):
