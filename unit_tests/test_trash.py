@@ -2,7 +2,7 @@
 
 from __future__ import absolute_import
 
-from trashcli.trash import TrashedFile
+from trashcli.restore import TrashedFile
 from integration_tests.files import write_file, require_empty_dir
 
 import os

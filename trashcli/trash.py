@@ -518,6 +518,3 @@ def parse_path(contents):
             return urllib.unquote(line[len('Path='):])
     raise ParseError('Unable to parse Path')
 
-# RestoreCmd {{{
-from .restore import TrashedFile
-# }}}
