@@ -519,7 +519,6 @@ def parse_path(contents):
     raise ParseError('Unable to parse Path')
 
 # RestoreCmd {{{
-from .fstab import Fstab
 from .fs import mkdirs
 from .restore import RestoreCmd
 from .restore import LazyTrashInfoParser
