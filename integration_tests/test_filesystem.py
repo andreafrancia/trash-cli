@@ -1,6 +1,7 @@
 # Copyright (C) 2008-2011 Andrea Francia Trivolzio(PV) Italy
 
-from trashcli.trash import mkdirs, FileSystemReader
+from trashcli.trash import FileSystemReader
+from trashcli.fs import mkdirs
 from trashcli.fs import has_sticky_bit
 
 from .files import require_empty_dir, having_file, set_sticky_bit
