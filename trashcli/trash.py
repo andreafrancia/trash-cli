@@ -18,7 +18,6 @@ EX_IOERR = getattr(os, 'EX_IOERR', 74)
 from .fs import list_files_in_dir
 import os
 from .fs import remove_file
-from .fs import move, mkdirs
 
 class TrashDirectory:
     def __init__(self, path, volume):
@@ -91,8 +90,11 @@ class TrashDirectories:
 # RestoreCmd {{{
 
 import sys
+import os
 from .fstab import Fstab
 from .trash import TrashDirectories
+from .fs import move, mkdirs
+from .fs import remove_file
 
 def getcwd_as_realpath(): return os.path.realpath(os.curdir)
 
@@ -226,6 +228,7 @@ class TrashedFile:
         move(self.original_file, self.path)
         remove_file(self.info_file)
 
+# }}}
 from .fs import FileSystemReader, contents_of, FileRemover
 
 class ListCmd:
