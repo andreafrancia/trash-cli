@@ -5,7 +5,6 @@ version='0.12.10.3~'
 
 import os
 import logging
-from .fstab import Fstab
 
 logger=logging.getLogger('trashcli.trash')
 logger.setLevel(logging.WARNING)
@@ -92,6 +91,8 @@ class TrashDirectories:
 # RestoreCmd {{{
 
 import sys
+from .fstab import Fstab
+from .trash import TrashDirectories
 
 def getcwd_as_realpath(): return os.path.realpath(os.curdir)
 
