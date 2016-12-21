@@ -89,9 +89,12 @@ class TrashDirectories:
             path   = os.path.join(volume, ".Trash-%s" % self.getuid()),
             volume = volume)
 
-def getcwd_as_realpath(): return os.path.realpath(os.curdir)
+# RestoreCmd {{{
 
 import sys
+
+def getcwd_as_realpath(): return os.path.realpath(os.curdir)
+
 class RestoreCmd:
     def __init__(self, stdout, stderr, environ, exit, input,
                  curdir = getcwd_as_realpath, version = version):
