@@ -519,6 +519,5 @@ def parse_path(contents):
     raise ParseError('Unable to parse Path')
 
 # RestoreCmd {{{
-from .restore import LazyTrashInfoParser
 from .restore import TrashedFile
 # }}}

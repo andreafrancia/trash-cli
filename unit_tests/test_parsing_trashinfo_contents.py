@@ -68,7 +68,8 @@ def test_how_to_parse_original_path():
     assert_equals('/path/to/be/escaped', parse_path('Path=%2Fpath%2Fto%2Fbe%2Fescaped'))
 
 
-from trashcli.trash import LazyTrashInfoParser, ParseError
+from trashcli.restore import LazyTrashInfoParser
+from trashcli.trash import ParseError
 
 class TestParsing:
     def test_1(self):
