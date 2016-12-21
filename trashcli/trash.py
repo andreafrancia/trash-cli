@@ -88,10 +88,6 @@ class TrashDirectories:
         self.volume_of = volume_of
         self.getuid = getuid
         self.mount_points = mount_points
-    def all_trashed_files(self):
-        for trash_dir in self.all_trash_directories():
-            for trashedfile in trash_dir.trashed_files():
-                yield trashedfile
     def all_trash_directories(self):
         collected = []
         def add_trash_dir(path, volume):
@@ -203,8 +199,12 @@ class RestoreCmd:
         def is_trashed_from_curdir(trashedfile):
             return trashedfile.path.startswith(dir + os.path.sep)
         for trashedfile in filter(is_trashed_from_curdir,
-                                  self.trashcan.all_trashed_files()) :
+                                  self.all_trashed_files()) :
             action(trashedfile)
+    def all_trashed_files(self):
+        for trash_dir in self.trashcan.all_trash_directories():
+            for trashedfile in trash_dir.trashed_files():
+                yield trashedfile
     def report_no_files_found(self):
         self.println("No files trashed from current dir ('%s')" % self.curdir())
     def println(self, line):
