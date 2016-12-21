@@ -3,7 +3,7 @@
 import sys,os
 
 def restore():
-    from trashcli.trash import RestoreCmd
+    from trashcli.restore import RestoreCmd
     RestoreCmd(
         stdout  = sys.stdout,
         stderr  = sys.stderr,

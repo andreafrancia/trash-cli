@@ -1,4 +1,4 @@
-from trashcli.trash import RestoreCmd
+from trashcli.restore import RestoreCmd
 from nose.tools import assert_equals
 from StringIO import StringIO
 

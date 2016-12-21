@@ -1,6 +1,6 @@
 import os
 from nose.tools import istest
-from trashcli.trash import RestoreCmd
+from trashcli.restore import RestoreCmd
 
 from .files import require_empty_dir
 from .output_collector import OutputCollector
