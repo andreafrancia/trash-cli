@@ -43,18 +43,6 @@ class TrashDirectory:
         except OSError: # when directory does not exist
             pass
 
-    def _create_trashed_file_from_info_file(self, trashinfo_file_path):
-
-        trash_info2 = LazyTrashInfoParser(
-                lambda:contents_of(trashinfo_file_path), self.volume)
-
-        original_location = trash_info2.original_location()
-        deletion_date     = trash_info2.deletion_date()
-        backup_file_path  = backup_file_path_from(trashinfo_file_path)
-
-        return TrashedFile(original_location, deletion_date,
-                trashinfo_file_path, backup_file_path, self)
-
 def backup_file_path_from(trashinfo_file_path):
     trashinfo_basename = os.path.basename(trashinfo_file_path)
     backupfile_basename = trashinfo_basename[:-len('.trashinfo')]
@@ -198,11 +186,24 @@ class RestoreCmd:
     def trashed_files(self, trash_dir) :
         for info_file in trash_dir.all_info_files():
             try:
-                yield trash_dir._create_trashed_file_from_info_file(info_file)
+                yield self._create_trashed_file_from_info_file(info_file, trash_dir)
             except ValueError:
                 trash_dir.logger.warning("Non parsable trashinfo file: %s" % info_file)
             except IOError as e:
                 trash_dir.logger.warning(str(e))
+
+    def _create_trashed_file_from_info_file(self, trashinfo_file_path, trash_dir):
+
+        trash_info2 = LazyTrashInfoParser(
+                lambda:contents_of(trashinfo_file_path), trash_dir.volume)
+
+        original_location = trash_info2.original_location()
+        deletion_date     = trash_info2.deletion_date()
+        backup_file_path  = backup_file_path_from(trashinfo_file_path)
+
+        return TrashedFile(original_location, deletion_date,
+                trashinfo_file_path, backup_file_path, trash_dir)
+
 
     def report_no_files_found(self):
         self.println("No files trashed from current dir ('%s')" % self.curdir())
