@@ -13,7 +13,7 @@ from .trash import backup_file_path_from
 
 def getcwd_as_realpath(): return os.path.realpath(os.curdir)
 
-class RestoreCmd:
+class RestoreCmd(object):
     def __init__(self, stdout, stderr, environ, exit, input,
                  curdir = getcwd_as_realpath, version = version):
         self.out      = stdout
