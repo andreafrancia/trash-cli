@@ -59,7 +59,7 @@ class HomeTrashCan:
             out('%(HOME)s/.local/share/Trash' % self.environ)
 
 class TrashDirectories:
-    def __init__(self, volume_of, getuid, mount_points, environ):
+    def __init__(self, volume_of, getuid, environ):
         self.home_trashcan = HomeTrashCan(environ)
         self.volume_of = volume_of
         self.getuid = getuid

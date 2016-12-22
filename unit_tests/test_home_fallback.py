@@ -51,7 +51,6 @@ class TestTrashDirectories:
         trash_dirs = TrashDirectories(
                 volume_of    = self.volume_of,
                 getuid       = self.getuid,
-                mount_points = self.mount_points,
                 environ      = self.environ)
 
         result = all_trash_directories(trash_dirs, self.mount_points)

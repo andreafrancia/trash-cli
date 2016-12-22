@@ -26,7 +26,6 @@ class RestoreCmd(object):
         self.trashcan = TrashDirectories(
                 volume_of     = fstab.volume_of,
                 getuid        = os.getuid,
-                mount_points  = self.mount_points,
                 environ       = environ)
         self.curdir   = curdir
         self.version = version

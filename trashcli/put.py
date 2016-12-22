@@ -223,7 +223,7 @@ class GlobalTrashCan:
         self.now           = now
         self.fs            = fs
         self.trash_directories = TrashDirectories(
-                self.volume_of, getuid, None, environ)
+                self.volume_of, getuid, environ)
 
     def trash(self, file) :
         """
