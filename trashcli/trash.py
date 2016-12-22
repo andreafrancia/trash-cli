@@ -65,16 +65,8 @@ class TrashDirectories:
         self.getuid = getuid
         self.mount_points = mount_points
     def all_trash_directories(self):
-        collected = []
-        def add_trash_dir(path, volume):
-            collected.append(TrashDirectory(path, volume))
-
-        self.home_trash_dir(add_trash_dir)
-        for volume in self.mount_points:
-            self.volume_trash_dir1(volume, add_trash_dir)
-            self.volume_trash_dir2(volume, add_trash_dir)
-
-        return collected
+        from .restore import all_trash_directories2
+        return all_trash_directories2(self, self.mount_points)
     def home_trash_dir(self, out) :
         self.home_trashcan.path_to(lambda path:
                 out(path, self.volume_of(path)))

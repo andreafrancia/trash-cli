@@ -7,6 +7,7 @@ from .trash import parse_path
 from .trash import parse_deletion_date
 from .trash import version
 from .fstab import Fstab
+from .trash import TrashDirectory
 from .trash import TrashDirectories
 from .fs import contents_of
 from .trash import backup_file_path_from
@@ -97,6 +98,18 @@ class RestoreCmd(object):
         self.out.write(line + '\n')
     def printerr(self, msg):
         self.err.write('%s\n' % msg)
+
+def all_trash_directories2(trash_directories, mount_points):
+    collected = []
+    def add_trash_dir(path, volume):
+        collected.append(TrashDirectory(path, volume))
+
+    trash_directories.home_trash_dir(add_trash_dir)
+    for volume in mount_points:
+        trash_directories.volume_trash_dir1(volume, add_trash_dir)
+        trash_directories.volume_trash_dir2(volume, add_trash_dir)
+
+    return collected
 
 class LazyTrashInfoParser:
     def __init__(self, contents, volume_path):
