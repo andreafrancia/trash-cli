@@ -63,7 +63,6 @@ class TrashDirectories:
         self.home_trashcan = HomeTrashCan(environ)
         self.volume_of = volume_of
         self.getuid = getuid
-        self.mount_points = mount_points
     def home_trash_dir(self, out) :
         self.home_trashcan.path_to(lambda path:
                 out(path, self.volume_of(path)))
