@@ -42,21 +42,23 @@ class RestoreCmd:
         else :
             for i, trashedfile in enumerate(trashed_files):
                 self.println("%4d %s %s" % (i, trashedfile.deletion_date, trashedfile.path))
-            index=self.input("What file to restore [0..%d]: " % (len(trashed_files)-1))
-            if index == "" :
-                self.println("Exiting")
-            else :
-                try:
-                    index = int(index)
-                    if (index < 0 or index >= len(trashed_files)):
-                        raise IndexError("Out of range")
-                    trashed_files[index].restore()
-                except (ValueError, IndexError) as e:
-                    self.printerr("Invalid entry")
-                    self.exit(1)
-                except IOError as e:
-                    self.printerr(e)
-                    self.exit(1)
+            self.restore_asking_the_user(trashed_files)
+    def restore_asking_the_user(self, trashed_files):
+        index=self.input("What file to restore [0..%d]: " % (len(trashed_files)-1))
+        if index == "" :
+            self.println("Exiting")
+        else :
+            try:
+                index = int(index)
+                if (index < 0 or index >= len(trashed_files)):
+                    raise IndexError("Out of range")
+                trashed_files[index].restore()
+            except (ValueError, IndexError) as e:
+                self.printerr("Invalid entry")
+                self.exit(1)
+            except IOError as e:
+                self.printerr(e)
+                self.exit(1)
     def for_all_trashed_file_in_dir(self, action, dir):
         def is_trashed_from_curdir(trashedfile):
             return trashedfile.path.startswith(dir + os.path.sep)
