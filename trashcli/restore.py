@@ -68,7 +68,7 @@ class RestoreCmd(object):
                                   self.all_trashed_files()) :
             action(trashedfile)
     def all_trashed_files(self):
-        for trash_dir in all_trash_directories2(self.trashcan, self.mount_points):
+        for trash_dir in all_trash_directories(self.trashcan, self.mount_points):
             for trashedfile in self.trashed_files(trash_dir):
                 yield trashedfile
     def trashed_files(self, trash_dir) :
@@ -99,7 +99,7 @@ class RestoreCmd(object):
     def printerr(self, msg):
         self.err.write('%s\n' % msg)
 
-def all_trash_directories2(trash_directories, mount_points):
+def all_trash_directories(trash_directories, mount_points):
     collected = []
     def add_trash_dir(path, volume):
         collected.append(TrashDirectory(path, volume))

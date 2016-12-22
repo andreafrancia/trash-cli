@@ -41,7 +41,7 @@ class TestHomeFallback:
         return fstab.volume_of
 
 from trashcli.trash import TrashDirectories
-from trashcli.restore import all_trash_directories2 as all_trash_directories
+from trashcli.restore import all_trash_directories
 class TestTrashDirectories:
     def test_list_all_directories(self):
         self.volume_of = Mock()
