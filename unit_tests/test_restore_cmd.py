@@ -56,6 +56,32 @@ class TestTrashRestoreCmd:
         assert_true(os.path.exists('parent/path'))
         assert_equals('original', contents_of('parent/path'))
 
+    def test_until_the_restore_unit(self):
+        from trashcli.fs import remove_file
+        from trashcli.fs import contents_of
+        self.user_reply = '0'
+        file('orig_file', 'w').write('original')
+        file('info_file', 'w').write('')
+        remove_file('parent/path')
+        remove_file('parent')
+
+        trashed_file = TrashedFile(
+                'parent/path',
+                None,
+                'info_file',
+                'orig_file',
+                None)
+        from trashcli import fs
+        trashed_file.fs = fs
+
+        self.cmd.restore_asking_the_user([trashed_file])
+
+        assert_equals('', self.stdout.getvalue())
+        assert_equals('', self.stderr.getvalue())
+        assert_true(not os.path.exists('info_file'))
+        assert_true(not os.path.exists('orig_file'))
+        assert_true(os.path.exists('parent/path'))
+        assert_equals('original', contents_of('parent/path'))
     def test_with_no_args_and_files_in_trashcan(self):
         class thing(object):
             pass
