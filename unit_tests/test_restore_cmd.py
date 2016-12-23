@@ -66,8 +66,8 @@ class TestTrashRestoreCmd:
                 'orig_file',
                 None)
         fs = Mock()
-        trashed_file.fs = fs
-        trashed_file.path_exists = lambda _: False
+        self.cmd.fs = fs
+        self.cmd.path_exists = lambda _: False
 
         self.cmd.restore_asking_the_user([trashed_file])
 
@@ -129,6 +129,7 @@ class TestTrashedFileRestore:
     def setUp(self):
         self.remove_file_if_exists('parent/path')
         self.remove_dir_if_exists('parent')
+        self.cmd = RestoreCmd(None, None, None, None, None)
 
     def test_restore(self):
         trashed_file = TrashedFile('parent/path',
@@ -139,7 +140,7 @@ class TestTrashedFileRestore:
         open('orig','w').close()
         open('info_file','w').close()
 
-        trashed_file.restore()
+        self.cmd.restore(trashed_file)
 
         assert_true(os.path.exists('parent/path'))
         assert_true(not os.path.exists('info_file'))

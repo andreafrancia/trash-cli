@@ -27,6 +27,8 @@ class RestoreCmd(object):
                 environ       = environ)
         self.curdir   = curdir
         self.version = version
+        self.fs = fs
+        self.path_exists = os.path.exists
     def run(self, args = sys.argv):
         if '--version' in args[1:]:
             command = os.path.basename(args[0])
@@ -52,13 +54,15 @@ class RestoreCmd(object):
                 if (index < 0 or index >= len(trashed_files)):
                     raise IndexError("Out of range")
                 trashed_file = trashed_files[index]
-                restore(trashed_file, trashed_file.path_exists, trashed_file.fs)
+                self.restore(trashed_file)
             except (ValueError, IndexError) as e:
                 self.printerr("Invalid entry")
                 self.exit(1)
             except IOError as e:
                 self.printerr(e)
                 self.exit(1)
+    def restore(self, trashed_file):
+        restore(trashed_file, self.path_exists, self.fs)
     def for_all_trashed_file_in_dir(self, action, dir):
         def is_trashed_from_curdir(trashedfile):
             return trashedfile.path.startswith(dir + os.path.sep)
