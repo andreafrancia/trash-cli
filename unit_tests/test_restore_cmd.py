@@ -164,15 +164,8 @@ class TestTrashedFileRestore:
         if os.path.exists(dir):
             os.rmdir(dir)
 
-from trashcli.restore import TrashedFile
-from integration_tests.files import write_file, require_empty_dir
-
-import os
-from unittest import TestCase
-
-class TestTrashedFile(TestCase) :
-
     def test_restore_create_needed_directories(self):
+        from integration_tests.files import write_file, require_empty_dir
         require_empty_dir('sandbox')
 
         write_file('sandbox/TrashDir/files/bar')
