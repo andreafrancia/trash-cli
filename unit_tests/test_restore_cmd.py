@@ -64,3 +64,12 @@ class TestTrashRestoreCmd:
         assert_equals('Invalid entry\n', self.stderr.getvalue())
         assert_equals('', self.stdout.getvalue())
         assert_equals(1, self.exit_status)
+
+    def test_when_user_reply_with_out_of_range_number(self):
+        self.user_reply = '100'
+
+        self.cmd.restore_asking_the_user([])
+
+        assert_equals('Invalid entry\n', self.stderr.getvalue())
+        assert_equals('', self.stdout.getvalue())
+        assert_equals(1, self.exit_status)
