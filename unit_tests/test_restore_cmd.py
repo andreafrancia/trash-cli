@@ -9,7 +9,7 @@ class TestTrashRestoreCmd:
                               stderr=None,
                               environ=None,
                               exit = None,
-                              input=None,
+                              input =lambda x: self.user_reply,
                               version = None)
 
     def test_should_print_version(self):
@@ -45,3 +45,9 @@ class TestTrashRestoreCmd:
         assert_equals("   0 None None\n"
                 "Exiting\n",
                 self.stdout.getvalue())
+    def test_when_user_reply_with_empty_string(self):
+        self.user_reply = ''
+
+        self.cmd.restore_asking_the_user([])
+
+        assert_equals('Exiting\n', self.stdout.getvalue())
