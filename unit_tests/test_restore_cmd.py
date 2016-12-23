@@ -57,24 +57,17 @@ class TestTrashRestoreCmd:
         assert_equals('original', contents_of('parent/path'))
 
     def test_until_the_restore_unit(self):
-        from trashcli.fs import remove_file
-        from trashcli.fs import contents_of
+        from mock import Mock, call
         self.user_reply = '0'
-        file('orig_file', 'w').write('original')
-        file('info_file', 'w').write('')
-        remove_file('parent/path')
-        remove_file('parent')
-
         trashed_file = TrashedFile(
                 'parent/path',
                 None,
                 'info_file',
                 'orig_file',
                 None)
-        from trashcli import fs
-        from mock import Mock, call
         fs = Mock()
         trashed_file.fs = fs
+        trashed_file.path_exists = lambda _: False
 
         self.cmd.restore_asking_the_user([trashed_file])
 
@@ -85,6 +78,7 @@ class TestTrashRestoreCmd:
             , call.move('orig_file', 'parent/path')
             , call.remove_file('info_file')
             ], fs.mock_calls)
+
     def test_with_no_args_and_files_in_trashcan(self):
         class thing(object):
             pass
