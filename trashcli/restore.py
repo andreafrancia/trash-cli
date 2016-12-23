@@ -93,7 +93,7 @@ class RestoreCmd(object):
         backup_file_path  = backup_file_path_from(trashinfo_file_path)
 
         return TrashedFile(original_location, deletion_date,
-                trashinfo_file_path, backup_file_path, trash_dir)
+                trashinfo_file_path, backup_file_path)
 
     def report_no_files_found(self):
         self.println("No files trashed from current dir ('%s')" % self.curdir())
@@ -141,8 +141,7 @@ class TrashedFile:
                      trash opeartion (instance of Path)
      - trash_directory :
     """
-    def __init__(self, path, deletion_date, info_file, actual_path,
-            trash_directory):
+    def __init__(self, path, deletion_date, info_file, actual_path):
         self.path = path
         self.deletion_date = deletion_date
         self.info_file = info_file

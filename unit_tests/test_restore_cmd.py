@@ -44,8 +44,7 @@ class TestTrashRestoreCmd:
                 'parent/path',
                 None,
                 'info_file',
-                'orig_file',
-                None)
+                'orig_file')
 
         self.cmd.restore_asking_the_user([trashed_file])
 
@@ -62,8 +61,7 @@ class TestTrashRestoreCmd:
                 'parent/path',
                 None,
                 'info_file',
-                'orig_file',
-                None)
+                'orig_file')
         fs = Mock()
         self.cmd.fs = fs
         self.cmd.path_exists = lambda _: False
@@ -135,8 +133,7 @@ class TestTrashedFileRestore:
         trashed_file = TrashedFile('parent/path',
                                    None,
                                    'info_file',
-                                   'orig',
-                                   None)
+                                   'orig')
         open('orig','w').close()
         open('info_file','w').close()
 
@@ -146,7 +143,7 @@ class TestTrashedFileRestore:
         assert_true(not os.path.exists('info_file'))
 
     def test_restore_over_existing_file(self):
-        trashed_file = TrashedFile('path',None,None,None,None)
+        trashed_file = TrashedFile('path',None,None,None)
         open('path','w').close()
 
         assert_raises(IOError, lambda:
@@ -171,7 +168,7 @@ class TestTrashedFileRestore:
         write_file('sandbox/TrashDir/files/bar')
         instance = TrashedFile('sandbox/foo/bar',
                                'deletion_date', 'info_file',
-                               'sandbox/TrashDir/files/bar', 'trash_dirctory')
+                               'sandbox/TrashDir/files/bar')
         self.cmd.restore(instance)
         assert os.path.exists("sandbox/foo/bar")
 
