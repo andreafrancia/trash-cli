@@ -147,7 +147,6 @@ class TrashedFile:
         self.deletion_date = deletion_date
         self.info_file = info_file
         self.actual_path = actual_path
-        self.trash_directory = trash_directory
         self.original_file = actual_path
 
 def restore(trashed_file, path_exists, fs):
