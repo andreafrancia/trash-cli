@@ -154,9 +154,6 @@ class TrashedFile:
         self.fs = fs
         self.path_exists = os.path.exists
 
-    def restore(self) :
-        restore(self, self.path_exists, self.fs)
-
 def restore(trashed_file, path_exists, fs):
     if path_exists(trashed_file.path):
         raise IOError('Refusing to overwrite existing file "%s".' % os.path.basename(trashed_file.path))
