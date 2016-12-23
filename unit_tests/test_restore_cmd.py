@@ -5,12 +5,16 @@ from StringIO import StringIO
 class TestTrashRestoreCmd:
     def setUp(self):
         self.stdout = StringIO()
+        self.stderr = StringIO()
         self.cmd = RestoreCmd(stdout=self.stdout,
-                              stderr=None,
+                              stderr=self.stderr,
                               environ=None,
-                              exit = None,
+                              exit = self.capture_exit_status,
                               input =lambda x: self.user_reply,
                               version = None)
+
+    def capture_exit_status(self, exit_status):
+        self.exit_status = exit_status
 
     def test_should_print_version(self):
         self.cmd.version = '1.2.3'
@@ -51,3 +55,12 @@ class TestTrashRestoreCmd:
         self.cmd.restore_asking_the_user([])
 
         assert_equals('Exiting\n', self.stdout.getvalue())
+
+    def test_when_user_reply_with_empty_string(self):
+        self.user_reply = 'non numeric'
+
+        self.cmd.restore_asking_the_user([])
+
+        assert_equals('Invalid entry\n', self.stderr.getvalue())
+        assert_equals('', self.stdout.getvalue())
+        assert_equals(1, self.exit_status)
