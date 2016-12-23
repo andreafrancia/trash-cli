@@ -72,16 +72,19 @@ class TestTrashRestoreCmd:
                 'orig_file',
                 None)
         from trashcli import fs
+        from mock import Mock, call
+        fs = Mock()
         trashed_file.fs = fs
 
         self.cmd.restore_asking_the_user([trashed_file])
 
         assert_equals('', self.stdout.getvalue())
         assert_equals('', self.stderr.getvalue())
-        assert_true(not os.path.exists('info_file'))
-        assert_true(not os.path.exists('orig_file'))
-        assert_true(os.path.exists('parent/path'))
-        assert_equals('original', contents_of('parent/path'))
+        assert_equals([
+            call.mkdirs('parent')
+            , call.move('orig_file', 'parent/path')
+            , call.remove_file('info_file')
+            ], fs.mock_calls)
     def test_with_no_args_and_files_in_trashcan(self):
         class thing(object):
             pass
