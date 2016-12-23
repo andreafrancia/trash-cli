@@ -58,7 +58,6 @@ class TestTrashRestoreCmd:
 
     def test_until_the_restore_unit(self):
         from mock import Mock, call
-        self.user_reply = '0'
         trashed_file = TrashedFile(
                 'parent/path',
                 None,
@@ -69,6 +68,7 @@ class TestTrashRestoreCmd:
         self.cmd.fs = fs
         self.cmd.path_exists = lambda _: False
 
+        self.user_reply = '0'
         self.cmd.restore_asking_the_user([trashed_file])
 
         assert_equals('', self.stdout.getvalue())
