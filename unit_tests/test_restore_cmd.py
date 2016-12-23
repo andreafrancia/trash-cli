@@ -75,14 +75,41 @@ class TestTrashRestoreCmd:
         assert_equals(1, self.exit_status)
 
 from trashcli.restore import TrashedFile
-from nose.tools import assert_raises
+from nose.tools import assert_raises, assert_true
+import os
 class TestTrashedFileRestore:
-    def test_restore(self):
-        trashed_file = TrashedFile('path',None,None,None,None)
+    def setUp(self):
+        self.remove_file_if_exists('parent/path')
+        self.remove_dir_if_exists('parent')
 
+    def test_restore(self):
+        trashed_file = TrashedFile('parent/path',
+                                   None,
+                                   'info_file',
+                                   'orig',
+                                   None)
+        open('orig','w').close()
+        open('info_file','w').close()
+
+        trashed_file.restore()
+
+        assert_true(os.path.exists('parent/path'))
+        assert_true(not os.path.exists('info_file'))
+
+    def test_restore_over_existing_file(self):
+        trashed_file = TrashedFile('path',None,None,None,None)
         open('path','w').close()
+
         assert_raises(IOError, trashed_file.restore)
 
     def tearDown(self):
-        import os
-        os.unlink('path')
+        self.remove_file_if_exists('path')
+        self.remove_file_if_exists('parent/path')
+        self.remove_dir_if_exists('parent')
+
+    def remove_file_if_exists(self, path):
+        if os.path.lexists(path):
+            os.unlink(path)
+    def remove_dir_if_exists(self, dir):
+        if os.path.exists(dir):
+            os.rmdir(dir)
