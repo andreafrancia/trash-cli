@@ -9,6 +9,7 @@ from .trash import TrashDirectory
 from .trash import TrashDirectories
 from .fs import contents_of
 from .trash import backup_file_path_from
+import fs
 
 def getcwd_as_realpath(): return os.path.realpath(os.curdir)
 
@@ -124,9 +125,6 @@ class LazyTrashInfoParser:
     def original_location(self):
         return os.path.join(self.volume_path, self._path())
 
-from .fs import move, mkdirs
-from .fs import remove_file
-import fs
 class TrashedFile:
     """
     Represent a trashed file.
