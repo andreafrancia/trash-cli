@@ -73,3 +73,16 @@ class TestTrashRestoreCmd:
         assert_equals('Invalid entry\n', self.stderr.getvalue())
         assert_equals('', self.stdout.getvalue())
         assert_equals(1, self.exit_status)
+
+from trashcli.restore import TrashedFile
+from nose.tools import assert_raises
+class TestTrashedFileRestore:
+    def test_restore(self):
+        trashed_file = TrashedFile('path',None,None,None,None)
+
+        open('path','w').close()
+        assert_raises(IOError, trashed_file.restore)
+
+    def tearDown(self):
+        import os
+        os.unlink('path')
