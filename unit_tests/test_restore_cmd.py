@@ -172,6 +172,6 @@ class TestTrashedFileRestore:
         instance = TrashedFile('sandbox/foo/bar',
                                'deletion_date', 'info_file',
                                'sandbox/TrashDir/files/bar', 'trash_dirctory')
-        instance.restore()
+        self.cmd.restore(instance)
         assert os.path.exists("sandbox/foo/bar")
 
