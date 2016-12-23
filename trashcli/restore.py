@@ -151,8 +151,6 @@ class TrashedFile:
         self.actual_path = actual_path
         self.trash_directory = trash_directory
         self.original_file = actual_path
-        self.fs = fs
-        self.path_exists = os.path.exists
 
 def restore(trashed_file, path_exists, fs):
     if path_exists(trashed_file.path):
