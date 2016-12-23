@@ -1,8 +1,6 @@
 import os
 import sys
 
-from .fs import move, mkdirs
-from .fs import remove_file
 from .trash import parse_path
 from .trash import parse_deletion_date
 from .trash import version
@@ -121,6 +119,9 @@ class LazyTrashInfoParser:
     def original_location(self):
         return os.path.join(self.volume_path, self._path())
 
+from .fs import move, mkdirs
+from .fs import remove_file
+import fs
 class TrashedFile:
     """
     Represent a trashed file.
@@ -151,7 +152,7 @@ class TrashedFile:
             raise IOError('Refusing to overwrite existing file "%s".' % os.path.basename(self.path))
         else:
             parent = os.path.dirname(self.path)
-            mkdirs(parent)
+            fs.mkdirs(parent)
 
-        move(self.original_file, self.path)
-        remove_file(self.info_file)
+        fs.move(self.original_file, self.path)
+        fs.remove_file(self.info_file)
