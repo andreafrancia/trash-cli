@@ -51,7 +51,8 @@ class RestoreCmd(object):
                 index = int(index)
                 if (index < 0 or index >= len(trashed_files)):
                     raise IndexError("Out of range")
-                trashed_files[index].restore()
+                trashed_file = trashed_files[index]
+                restore(trashed_file, trashed_file.path_exists, trashed_file.fs)
             except (ValueError, IndexError) as e:
                 self.printerr("Invalid entry")
                 self.exit(1)
@@ -150,11 +151,15 @@ class TrashedFile:
         self.path_exists = os.path.exists
 
     def restore(self) :
-        if self.path_exists(self.path):
-            raise IOError('Refusing to overwrite existing file "%s".' % os.path.basename(self.path))
-        else:
-            parent = os.path.dirname(self.path)
-            self.fs.mkdirs(parent)
+        restore(self, self.path_exists, self.fs)
 
-        self.fs.move(self.original_file, self.path)
-        self.fs.remove_file(self.info_file)
+def restore(trashed_file, path_exists, fs):
+    if path_exists(trashed_file.path):
+        raise IOError('Refusing to overwrite existing file "%s".' % os.path.basename(trashed_file.path))
+    else:
+        parent = os.path.dirname(trashed_file.path)
+        fs.mkdirs(parent)
+
+    fs.move(trashed_file.original_file, trashed_file.path)
+    fs.remove_file(trashed_file.info_file)
+
