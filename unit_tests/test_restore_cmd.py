@@ -162,7 +162,6 @@ class TestTrashedFileRestore:
             os.rmdir(dir)
 
     def test_restore_create_needed_directories(self):
-        from integration_tests.files import write_file, require_empty_dir
         require_empty_dir('sandbox')
 
         write_file('sandbox/TrashDir/files/bar')
@@ -171,4 +170,35 @@ class TestTrashedFileRestore:
                                'sandbox/TrashDir/files/bar')
         self.cmd.restore(instance)
         assert os.path.exists("sandbox/foo/bar")
+
+from integration_tests.files import write_file, require_empty_dir
+from mock import Mock
+import datetime
+from trashcli.fs import remove_file
+class Test_create_trashed_file_from_info_file:
+    def test_something(self):
+        cmd = RestoreCmd(None, None, {}, None, None)
+        trash_dir = Mock([])
+        trash_dir.volume = '/volume'
+        require_empty_dir('info')
+        file('info/info_path.trashinfo', 'w').write(
+                'Path=name\nDeletionDate=2001-01-01T10:10:10')
+
+        trashed_file = cmd._create_trashed_file_from_info_file(
+                'info/info_path.trashinfo',
+                trash_dir)
+
+        assert_equals('/volume/name' , trashed_file.path)
+        assert_equals(datetime.datetime(2001, 1, 1, 10, 10, 10),
+                      trashed_file.deletion_date)
+        assert_equals('info/info_path.trashinfo' , trashed_file.info_file)
+        assert_equals('files/info_path' , trashed_file.actual_path)
+
+    def tearDown(self):
+        remove_file('info/info_path.trashinfo')
+        remove_dir_if_exists('info')
+
+def remove_dir_if_exists(dir):
+    if os.path.exists(dir):
+        os.rmdir(dir)
 
