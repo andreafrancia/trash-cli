@@ -149,7 +149,8 @@ class TestTrashedFileRestore:
         trashed_file = TrashedFile('path',None,None,None,None)
         open('path','w').close()
 
-        assert_raises(IOError, trashed_file.restore)
+        assert_raises(IOError, lambda:
+                self.cmd.restore(trashed_file))
 
     def tearDown(self):
         self.remove_file_if_exists('path')
