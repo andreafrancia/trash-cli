@@ -76,29 +76,19 @@ class RestoreCmd(object):
             action(trashedfile)
     def all_trashed_files(self):
         for trash_dir in self.all_trash_directories2():
-            for trashedfile in self.trashed_files(trash_dir):
-                yield trashedfile
-    def trashed_files(self, trash_dir) :
-        for info_file in trash_dir.all_info_files():
-            try:
-                yield self.make_trashed_file(info_file, trash_dir.volume)
-            except ValueError:
-                trash_dir.logger.warning("Non parsable trashinfo file: %s" % info_file)
-            except IOError as e:
-                trash_dir.logger.warning(str(e))
-    def make_trashed_file(self,
-                          trashinfo_file_path,
-                          trash_dir_volume):
-
-        trash_info = TrashInfoParser(self.contents_of(trashinfo_file_path),
-                                     trash_dir_volume)
-
-        original_location = trash_info.original_location()
-        deletion_date     = trash_info.deletion_date()
-        backup_file_path  = backup_file_path_from(trashinfo_file_path)
-
-        return TrashedFile(original_location, deletion_date,
-                trashinfo_file_path, backup_file_path)
+            for info_file in trash_dir.all_info_files():
+                try:
+                    trash_info = TrashInfoParser(self.contents_of(info_file),
+                                                 trash_dir.volume)
+                    original_location = trash_info.original_location()
+                    deletion_date     = trash_info.deletion_date()
+                    backup_file_path  = backup_file_path_from(info_file)
+                    yield TrashedFile(original_location, deletion_date,
+                            info_file, backup_file_path)
+                except ValueError:
+                    trash_dir.logger.warning("Non parsable trashinfo file: %s" % info_file)
+                except IOError as e:
+                    trash_dir.logger.warning(str(e))
     def report_no_files_found(self):
         self.println("No files trashed from current dir ('%s')" % self.curdir())
     def println(self, line):
