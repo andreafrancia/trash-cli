@@ -88,7 +88,7 @@ class RestoreCmd(object):
 
     def _create_trashed_file_from_info_file(self, trashinfo_file_path, trash_dir):
 
-        trash_info2 = LazyTrashInfoParser(
+        trash_info2 = TrashInfoParser(
                 lambda:contents_of(trashinfo_file_path), trash_dir.volume)
 
         original_location = trash_info2.original_location()
@@ -117,7 +117,7 @@ def all_trash_directories(trash_directories, mount_points):
 
     return collected
 
-class LazyTrashInfoParser:
+class TrashInfoParser:
     def __init__(self, contents, volume_path):
         self.contents    = contents()
         self.volume_path = volume_path
@@ -126,6 +126,7 @@ class LazyTrashInfoParser:
     def original_location(self):
         path = parse_path(self.contents)
         return os.path.join(self.volume_path, path)
+LazyTrashInfoParser=TrashInfoParser
 
 class TrashedFile:
     """
