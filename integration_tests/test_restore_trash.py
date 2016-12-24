@@ -81,7 +81,7 @@ class describe_restore_trash:
         require_empty_dir('XDG_DATA_HOME')
 
         trashcan = TrashCan('XDG_DATA_HOME/Trash')
-        self.having_a_trashed_file = trashcan.make_trashed_file
+        self.having_a_trashed_file = trashcan.write_trashed_file
 
         out = OutputCollector()
         err = OutputCollector()
@@ -120,7 +120,7 @@ class RestoreTrashRunner:
 class TrashCan:
     def __init__(self, path):
         self.path = path
-    def make_trashed_file(self, path):
+    def write_trashed_file(self, path):
         from .files import write_file
         write_file('%s/info/foo.trashinfo' % self.path, a_trashinfo(path))
         write_file('%s/files/foo' % self.path)
