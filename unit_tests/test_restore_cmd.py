@@ -8,7 +8,7 @@ class TestTrashRestoreCmd:
         self.stderr = StringIO()
         self.cmd = RestoreCmd(stdout=self.stdout,
                               stderr=self.stderr,
-                              environ=None,
+                              environ={},
                               exit = self.capture_exit_status,
                               input =lambda x: self.user_reply,
                               version = None)
@@ -23,7 +23,6 @@ class TestTrashRestoreCmd:
         assert_equals('trash-restore 1.2.3\n', self.stdout.getvalue())
 
     def test_with_no_args_and_no_files_in_trashcan(self):
-        self.cmd.trashcan.home_trashcan.environ = {}
         self.cmd.curdir = lambda: "cwd"
 
         self.cmd.run(['trash-restore'])
