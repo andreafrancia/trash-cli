@@ -175,7 +175,7 @@ from integration_tests.files import write_file, require_empty_dir
 from mock import Mock
 import datetime
 from trashcli.fs import remove_file
-class Test_create_trashed_file_from_info_file:
+class TestRestoreCmdListing:
     def test_something(self):
         cmd = RestoreCmd(None, None, {}, None, None)
         require_empty_dir('info')
