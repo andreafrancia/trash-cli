@@ -28,6 +28,7 @@ class RestoreCmd(object):
         self.version = version
         self.fs = fs
         self.path_exists = os.path.exists
+        self.contents_of = contents_of
     def run(self, args = sys.argv):
         if '--version' in args[1:]:
             command = os.path.basename(args[0])
@@ -99,7 +100,7 @@ class RestoreCmd(object):
                           trashinfo_file_path,
                           trash_dir_volume):
 
-        trash_info = TrashInfoParser(contents_of(trashinfo_file_path),
+        trash_info = TrashInfoParser(self.contents_of(trashinfo_file_path),
                                      trash_dir_volume)
 
         original_location = trash_info.original_location()
@@ -108,7 +109,6 @@ class RestoreCmd(object):
 
         return TrashedFile(original_location, deletion_date,
                 trashinfo_file_path, backup_file_path)
-
     def report_no_files_found(self):
         self.println("No files trashed from current dir ('%s')" % self.curdir())
     def println(self, line):
