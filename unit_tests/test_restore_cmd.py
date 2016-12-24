@@ -79,13 +79,13 @@ class TestTrashRestoreCmd:
     def test_with_no_args_and_files_in_trashcan(self):
         class thing(object):
             pass
-        def some_files(append, _):
+        def some_files():
             t = thing()
             t.deletion_date = None
             t.path = None
-            append(t)
+            return [t]
         self.cmd.curdir = lambda: "cwd"
-        self.cmd.for_all_trashed_file_in_dir = some_files
+        self.cmd.all_trashed_files_in_dir = some_files
         self.cmd.input = lambda _ : ""
 
         self.cmd.run(['trash-restore'])
