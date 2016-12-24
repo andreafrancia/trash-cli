@@ -48,15 +48,14 @@ class TestTrashDirectories:
         self.getuid = lambda:123
         self.mount_points = ['/', '/mnt']
         self.environ = {'HOME': '~'}
-        trash_dirs = TrashDirectories(
+        all_trash_directories = AllTrashDirectories(
                 volume_of    = self.volume_of,
                 getuid       = self.getuid,
-                environ      = self.environ)
-        all_trash_directories = AllTrashDirectories(
+                environ      = self.environ,
                 mount_points = self.mount_points
                 )
 
-        result = all_trash_directories.all_trash_directories(trash_dirs)
+        result = all_trash_directories.all_trash_directories()
         paths = map(lambda td: td.path, result)
 
         assert_equals( ['~/.local/share/Trash',
