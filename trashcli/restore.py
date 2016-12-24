@@ -126,7 +126,6 @@ class TrashInfoParser:
     def original_location(self):
         path = parse_path(self.contents)
         return os.path.join(self.volume_path, path)
-LazyTrashInfoParser=TrashInfoParser
 
 class TrashedFile:
     """
