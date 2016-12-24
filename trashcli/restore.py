@@ -86,8 +86,8 @@ class RestoreCmd(object):
 
     def _create_trashed_file_from_info_file(self, trashinfo_file_path, trash_dir):
 
-        trash_info2 = TrashInfoParser(
-                contents_of(trashinfo_file_path), trash_dir.volume)
+        trash_info2 = TrashInfoParser(contents_of(trashinfo_file_path),
+                                      trash_dir.volume)
 
         original_location = trash_info2.original_location()
         deletion_date     = trash_info2.deletion_date()
