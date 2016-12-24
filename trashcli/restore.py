@@ -66,9 +66,7 @@ class RestoreCmd(object):
         restore(trashed_file, self.path_exists, self.fs)
     def all_trashed_files_in_dir(self):
         trashed_files = []
-        self.for_all_trashed_file_in_dir(trashed_files.append, self.curdir())
-        return trashed_files
-    def for_all_trashed_file_in_dir(self, action, dir):
+        dir = self.curdir()
         def is_trashed_from_curdir(trashedfile):
             return trashedfile.path.startswith(dir + os.path.sep)
         for trash_dir in self.all_trash_directories2():
@@ -84,11 +82,12 @@ class RestoreCmd(object):
                                               info_file,
                                               backup_file_path)
                     if is_trashed_from_curdir(trashedfile):
-                        action(trashedfile)
+                        trashed_files.append(trashedfile)
                 except ValueError:
                     trash_dir.logger.warning("Non parsable trashinfo file: %s" % info_file)
                 except IOError as e:
                     trash_dir.logger.warning(str(e))
+        return trashed_files
     def report_no_files_found(self):
         self.println("No files trashed from current dir ('%s')" % self.curdir())
     def println(self, line):
