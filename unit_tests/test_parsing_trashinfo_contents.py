@@ -77,7 +77,7 @@ class TestParsing:
                                              "Path=/foo.txt\n"), volume_path = '/')
         assert_equals('/foo.txt', parser.original_location())
 
-class TestLazyTrashInfoParser_with_empty_trashinfo:
+class TestTrashInfoParser_with_empty_trashinfo:
     def setUp(self):
         self.parser = TrashInfoParser(contents=an_empty_trashinfo, volume_path='/')
 
