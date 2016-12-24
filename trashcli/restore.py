@@ -19,14 +19,6 @@ class RestoreCmd(object):
         self.exit     = exit
         self.input    = input
         self.environ  = environ
-
-        fstab = Fstab()
-        self.mount_points = fstab.mount_points()
-        self.trashcan = TrashDirectories(
-                volume_of     = fstab.volume_of,
-                getuid        = os.getuid,
-                environ       = self.environ)
-
         self.curdir   = curdir
         self.version = version
         self.fs = fs
@@ -76,6 +68,12 @@ class RestoreCmd(object):
                                   self.all_trashed_files()) :
             action(trashedfile)
     def all_trashed_files(self):
+        fstab = Fstab()
+        self.mount_points = fstab.mount_points()
+        self.trashcan = TrashDirectories(
+                volume_of     = fstab.volume_of,
+                getuid        = os.getuid,
+                environ       = self.environ)
         for trash_dir in self.all_trash_directories(self.trashcan, self.mount_points):
             for trashedfile in self.trashed_files(trash_dir):
                 yield trashedfile
