@@ -184,7 +184,7 @@ class Test_create_trashed_file_from_info_file:
         file('info/info_path.trashinfo', 'w').write(
                 'Path=name\nDeletionDate=2001-01-01T10:10:10')
 
-        trashed_file = cmd._create_trashed_file_from_info_file(
+        trashed_file = cmd.make_trashed_file(
                 'info/info_path.trashinfo',
                 trash_dir)
 
