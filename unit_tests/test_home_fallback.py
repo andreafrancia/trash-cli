@@ -52,9 +52,11 @@ class TestTrashDirectories:
                 volume_of    = self.volume_of,
                 getuid       = self.getuid,
                 environ      = self.environ)
-        all_trash_directories = AllTrashDirectories()
+        all_trash_directories = AllTrashDirectories(
+                mount_points = self.mount_points
+                )
 
-        result = all_trash_directories.all_trash_directories(trash_dirs, self.mount_points)
+        result = all_trash_directories.all_trash_directories(trash_dirs)
         paths = map(lambda td: td.path, result)
 
         assert_equals( ['~/.local/share/Trash',

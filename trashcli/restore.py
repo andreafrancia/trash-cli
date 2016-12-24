@@ -72,13 +72,13 @@ class RestoreCmd(object):
             for trashedfile in self.trashed_files(trash_dir):
                 yield trashedfile
     def all_trash_directories2(self):
-        all_trash_directories = AllTrashDirectories()
         fstab = Fstab()
         mount_points = fstab.mount_points()
+        all_trash_directories = AllTrashDirectories(mount_points)
         trash_directories = TrashDirectories(volume_of = fstab.volume_of,
                                              getuid    = os.getuid,
                                              environ   = self.environ)
-        return all_trash_directories.all_trash_directories(trash_directories, mount_points)
+        return all_trash_directories.all_trash_directories(trash_directories)
 
     def trashed_files(self, trash_dir) :
         for info_file in trash_dir.all_info_files():
@@ -121,13 +121,15 @@ class TrashInfoParser:
         return os.path.join(self.volume_path, path)
 
 class AllTrashDirectories:
-    def all_trash_directories(self, trash_directories, mount_points):
+    def __init__(self, mount_points):
+        self.mount_points = mount_points
+    def all_trash_directories(self, trash_directories):
         collected = []
         def add_trash_dir(path, volume):
             collected.append(TrashDirectory(path, volume))
 
         trash_directories.home_trash_dir(add_trash_dir)
-        for volume in mount_points:
+        for volume in self.mount_points:
             trash_directories.volume_trash_dir1(volume, add_trash_dir)
             trash_directories.volume_trash_dir2(volume, add_trash_dir)
 
