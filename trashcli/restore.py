@@ -18,12 +18,14 @@ class RestoreCmd(object):
         self.err      = stderr
         self.exit     = exit
         self.input    = input
+
         fstab = Fstab()
         self.mount_points = fstab.mount_points()
         self.trashcan = TrashDirectories(
                 volume_of     = fstab.volume_of,
                 getuid        = os.getuid,
                 environ       = environ)
+
         self.curdir   = curdir
         self.version = version
         self.fs = fs
