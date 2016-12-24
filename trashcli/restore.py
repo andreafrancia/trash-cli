@@ -72,7 +72,7 @@ class RestoreCmd(object):
                                   self.all_trashed_files()) :
             action(trashedfile)
     def all_trashed_files(self):
-        for trash_dir in all_trash_directories(self.trashcan, self.mount_points):
+        for trash_dir in self.all_trash_directories(self.trashcan, self.mount_points):
             for trashedfile in self.trashed_files(trash_dir):
                 yield trashedfile
     def all_trash_directories(self, trashcan, mount_points):
