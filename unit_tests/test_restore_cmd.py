@@ -188,7 +188,6 @@ class Test_create_trashed_file_from_info_file:
         cmd.all_trash_directories = lambda x,y: [trash_dir]
         trashed_files = []
 
-        #trashed_files = list(cmd.all_trashed_files())
         cmd.for_all_trashed_file_in_dir(trashed_files.append, '/volume')
 
         trashed_file = trashed_files[0]
