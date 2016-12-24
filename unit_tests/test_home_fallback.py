@@ -42,8 +42,10 @@ class TestHomeFallback:
 
 from trashcli.trash import TrashDirectories
 from trashcli.restore import all_trash_directories
+from trashcli.restore import RestoreCmd
 class TestTrashDirectories:
     def test_list_all_directories(self):
+        cmd = RestoreCmd(None, None, None, None, None)
         self.volume_of = Mock()
         self.getuid = lambda:123
         self.mount_points = ['/', '/mnt']
@@ -53,7 +55,7 @@ class TestTrashDirectories:
                 getuid       = self.getuid,
                 environ      = self.environ)
 
-        result = all_trash_directories(trash_dirs, self.mount_points)
+        result = cmd.all_trash_directories(trash_dirs, self.mount_points)
         paths = map(lambda td: td.path, result)
 
         assert_equals( ['~/.local/share/Trash',
