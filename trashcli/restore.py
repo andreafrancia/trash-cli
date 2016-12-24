@@ -84,7 +84,9 @@ class RestoreCmd(object):
             except IOError as e:
                 trash_dir.logger.warning(str(e))
 
-    def _create_trashed_file_from_info_file(self, trashinfo_file_path, trash_dir):
+    def _create_trashed_file_from_info_file(self,
+                                            trashinfo_file_path,
+                                            trash_dir):
 
         trash_info = TrashInfoParser(contents_of(trashinfo_file_path),
                                      trash_dir.volume)
