@@ -123,10 +123,9 @@ class LazyTrashInfoParser:
         self.volume_path = volume_path
     def deletion_date(self):
         return parse_deletion_date(self.contents())
-    def _path(self):
-        return parse_path(self.contents())
     def original_location(self):
-        return os.path.join(self.volume_path, self._path())
+        path = parse_path(self.contents())
+        return os.path.join(self.volume_path, path)
 
 class TrashedFile:
     """
