@@ -1,8 +1,6 @@
 import os
 import sys
 
-from .trash import parse_path
-from .trash import parse_deletion_date
 from .trash import version
 from .fstab import Fstab
 from .trash import TrashDirectory
@@ -117,6 +115,8 @@ def all_trash_directories(trash_directories, mount_points):
 
     return collected
 
+from .trash import parse_path
+from .trash import parse_deletion_date
 class TrashInfoParser:
     def __init__(self, contents, volume_path):
         self.contents    = contents
