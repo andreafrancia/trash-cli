@@ -189,7 +189,7 @@ class Test_create_trashed_file_from_info_file:
         trashed_files = []
 
         cmd.curdir = lambda: '/volume'
-        trashed_files = cmd.all_trashed_files_in_dir(None)
+        trashed_files = cmd.all_trashed_files_in_dir()
 
         trashed_file = trashed_files[0]
         assert_equals('/volume/name' , trashed_file.path)
