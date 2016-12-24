@@ -85,7 +85,6 @@ class TestTrashRestoreCmd:
             t.deletion_date = None
             t.path = None
             append(t)
-        self.cmd.trashcan.home_trashcan.environ = {}
         self.cmd.curdir = lambda: "cwd"
         self.cmd.for_all_trashed_file_in_dir = some_files
         self.cmd.input = lambda _ : ""
