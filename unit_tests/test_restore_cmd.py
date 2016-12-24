@@ -183,10 +183,10 @@ class Test_create_trashed_file_from_info_file:
         require_empty_dir('info')
         file('info/info_path.trashinfo', 'w').write(
                 'Path=name\nDeletionDate=2001-01-01T10:10:10')
+        path_to_trashinfo = 'info/info_path.trashinfo'
+        trash_dir.all_info_files = Mock([], return_value=[path_to_trashinfo])
 
-        trashed_file = cmd.make_trashed_file(
-                'info/info_path.trashinfo',
-                trash_dir)
+        trashed_file = list(cmd.trashed_files(trash_dir))[0]
 
         assert_equals('/volume/name' , trashed_file.path)
         assert_equals(datetime.datetime(2001, 1, 1, 10, 10, 10),
