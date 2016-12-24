@@ -178,12 +178,12 @@ from trashcli.fs import remove_file
 class Test_create_trashed_file_from_info_file:
     def test_something(self):
         cmd = RestoreCmd(None, None, {}, None, None)
-        trash_dir = Mock([])
-        trash_dir.volume = '/volume'
         require_empty_dir('info')
         file('info/info_path.trashinfo', 'w').write(
                 'Path=name\nDeletionDate=2001-01-01T10:10:10')
         path_to_trashinfo = 'info/info_path.trashinfo'
+        trash_dir = Mock([])
+        trash_dir.volume = '/volume'
         trash_dir.all_info_files = Mock([], return_value=[path_to_trashinfo])
 
         trashed_file = list(cmd.trashed_files(trash_dir))[0]

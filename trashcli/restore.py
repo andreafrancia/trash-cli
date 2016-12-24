@@ -78,17 +78,17 @@ class RestoreCmd(object):
     def trashed_files(self, trash_dir) :
         for info_file in trash_dir.all_info_files():
             try:
-                yield self.make_trashed_file(info_file, trash_dir)
+                yield self.make_trashed_file(info_file, trash_dir.volume)
             except ValueError:
                 trash_dir.logger.warning("Non parsable trashinfo file: %s" % info_file)
             except IOError as e:
                 trash_dir.logger.warning(str(e))
     def make_trashed_file(self,
                           trashinfo_file_path,
-                          trash_dir):
+                          trash_dir_volume):
 
         trash_info = TrashInfoParser(contents_of(trashinfo_file_path),
-                                     trash_dir.volume)
+                                     trash_dir_volume)
 
         original_location = trash_info.original_location()
         deletion_date     = trash_info.deletion_date()
