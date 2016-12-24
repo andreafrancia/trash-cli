@@ -44,16 +44,11 @@ from trashcli.trash import TrashDirectories
 from trashcli.restore import AllTrashDirectories
 class TestTrashDirectories:
     def test_list_all_directories(self):
-        self.volume_of = Mock()
-        self.getuid = lambda:123
-        self.mount_points = ['/', '/mnt']
-        self.environ = {'HOME': '~'}
         all_trash_directories = AllTrashDirectories(
-                volume_of    = self.volume_of,
-                getuid       = self.getuid,
-                environ      = self.environ,
-                mount_points = self.mount_points
-                )
+                volume_of    = Mock(),
+                getuid       = lambda:123,
+                environ      = {'HOME': '~'},
+                mount_points = ['/', '/mnt'])
 
         result = all_trash_directories.all_trash_directories()
         paths = map(lambda td: td.path, result)
