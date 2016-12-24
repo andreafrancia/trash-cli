@@ -185,8 +185,9 @@ class Test_create_trashed_file_from_info_file:
         trash_dir = Mock([])
         trash_dir.volume = '/volume'
         trash_dir.all_info_files = Mock([], return_value=[path_to_trashinfo])
+        cmd.all_trash_directories = lambda x,y: [trash_dir]
 
-        trashed_file = list(cmd.trashed_files(trash_dir))[0]
+        trashed_file = list(cmd.all_trashed_files())[0]
 
         assert_equals('/volume/name' , trashed_file.path)
         assert_equals(datetime.datetime(2001, 1, 1, 10, 10, 10),
