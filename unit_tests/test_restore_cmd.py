@@ -171,9 +171,30 @@ class TestTrashedFileRestore:
         self.cmd.restore(instance)
         assert os.path.exists("sandbox/foo/bar")
 
-from integration_tests.files import write_file, require_empty_dir
-from mock import Mock
 import datetime
+from mock import Mock
+class TestRestoreCmdListingUnit:
+    def test_something(self):
+        cmd = RestoreCmd(None, None, {}, None, None)
+        cmd.contents_of = lambda path: 'Path=name\nDeletionDate=2001-01-01T10:10:10'
+        path_to_trashinfo = 'info/info_path.trashinfo'
+        trash_dir = Mock([])
+        trash_dir.volume = '/volume'
+        trash_dir.all_info_files = Mock([], return_value=[path_to_trashinfo])
+        cmd.all_trash_directories = lambda x,y: [trash_dir]
+        trashed_files = []
+
+        cmd.curdir = lambda: '/volume'
+        trashed_files = cmd.all_trashed_files_in_dir()
+
+        trashed_file = trashed_files[0]
+        assert_equals('/volume/name' , trashed_file.path)
+        assert_equals(datetime.datetime(2001, 1, 1, 10, 10, 10),
+                      trashed_file.deletion_date)
+        assert_equals('info/info_path.trashinfo' , trashed_file.info_file)
+        assert_equals('files/info_path' , trashed_file.actual_path)
+
+from integration_tests.files import write_file, require_empty_dir
 from trashcli.fs import remove_file
 class TestRestoreCmdListing:
     def test_something(self):
