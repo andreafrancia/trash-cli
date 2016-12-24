@@ -119,12 +119,12 @@ def all_trash_directories(trash_directories, mount_points):
 
 class LazyTrashInfoParser:
     def __init__(self, contents, volume_path):
-        self.contents    = contents
+        self.contents    = contents()
         self.volume_path = volume_path
     def deletion_date(self):
-        return parse_deletion_date(self.contents())
+        return parse_deletion_date(self.contents)
     def original_location(self):
-        path = parse_path(self.contents())
+        path = parse_path(self.contents)
         return os.path.join(self.volume_path, path)
 
 class TrashedFile:
