@@ -41,7 +41,7 @@ class TestHomeFallback:
         return fstab.volume_of
 
 from trashcli.trash import TrashDirectories
-from trashcli.restore import all_trash_directories
+from trashcli.restore import AllTrashDirectories
 class TestTrashDirectories:
     def test_list_all_directories(self):
         self.volume_of = Mock()
@@ -52,8 +52,9 @@ class TestTrashDirectories:
                 volume_of    = self.volume_of,
                 getuid       = self.getuid,
                 environ      = self.environ)
+        all_trash_directories = AllTrashDirectories()
 
-        result = all_trash_directories(trash_dirs, self.mount_points)
+        result = all_trash_directories.all_trash_directories(trash_dirs, self.mount_points)
         paths = map(lambda td: td.path, result)
 
         assert_equals( ['~/.local/share/Trash',
