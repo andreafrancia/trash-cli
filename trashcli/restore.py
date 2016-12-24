@@ -24,12 +24,13 @@ class RestoreCmd(object):
         self.path_exists = os.path.exists
         self.contents_of = contents_of
         fstab = Fstab()
-        self.all_trash_directories = AllTrashDirectories(
+        all_trash_directories = AllTrashDirectories(
                 volume_of    = fstab.volume_of,
                 getuid       = os.getuid,
                 environ      = environ,
                 mount_points = fstab.mount_points()
                 )
+        self.all_trash_directories2 = all_trash_directories.all_trash_directories
     def run(self, args = sys.argv):
         if '--version' in args[1:]:
             command = os.path.basename(args[0])
@@ -77,8 +78,6 @@ class RestoreCmd(object):
         for trash_dir in self.all_trash_directories2():
             for trashedfile in self.trashed_files(trash_dir):
                 yield trashedfile
-    def all_trash_directories2(self):
-        return self.all_trash_directories.all_trash_directories()
     def trashed_files(self, trash_dir) :
         for info_file in trash_dir.all_info_files():
             try:
