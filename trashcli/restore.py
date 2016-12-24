@@ -75,8 +75,18 @@ class RestoreCmd(object):
         for trash_dir in self.all_trash_directories(self.trashcan, self.mount_points):
             for trashedfile in self.trashed_files(trash_dir):
                 yield trashedfile
-    def all_trash_directories(self, trashcan, mount_points):
-        return all_trash_directories(trashcan, mount_points)
+    def all_trash_directories(self, trash_directories, mount_points):
+        collected = []
+        def add_trash_dir(path, volume):
+            collected.append(TrashDirectory(path, volume))
+
+        trash_directories.home_trash_dir(add_trash_dir)
+        for volume in mount_points:
+            trash_directories.volume_trash_dir1(volume, add_trash_dir)
+            trash_directories.volume_trash_dir2(volume, add_trash_dir)
+
+        return collected
+
     def trashed_files(self, trash_dir) :
         for info_file in trash_dir.all_info_files():
             try:
@@ -105,18 +115,6 @@ class RestoreCmd(object):
         self.out.write(line + '\n')
     def printerr(self, msg):
         self.err.write('%s\n' % msg)
-
-def all_trash_directories(trash_directories, mount_points):
-    collected = []
-    def add_trash_dir(path, volume):
-        collected.append(TrashDirectory(path, volume))
-
-    trash_directories.home_trash_dir(add_trash_dir)
-    for volume in mount_points:
-        trash_directories.volume_trash_dir1(volume, add_trash_dir)
-        trash_directories.volume_trash_dir2(volume, add_trash_dir)
-
-    return collected
 
 from .trash import parse_path
 from .trash import parse_deletion_date
