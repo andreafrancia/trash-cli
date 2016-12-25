@@ -37,7 +37,10 @@ class RestoreCmd(object):
             self.println('%s %s' %(command, self.version))
             return
 
-        trashed_files = self.all_trashed_files_in_dir()
+        dir = self.curdir()
+        def is_trashed_from_curdir(trashedfile):
+            return trashedfile.original_location.startswith(dir + os.path.sep)
+        trashed_files = self.all_trashed_files_filter(is_trashed_from_curdir)
         self.handle_trashed_files(trashed_files)
 
     def handle_trashed_files(self,trashed_files):
@@ -66,13 +69,10 @@ class RestoreCmd(object):
                 self.exit(1)
     def restore(self, trashed_file):
         restore(trashed_file, self.path_exists, self.fs)
-    def all_trashed_files_in_dir(self):
+    def all_trashed_files_filter(self, matches):
         trashed_files = []
-        dir = self.curdir()
-        def is_trashed_from_curdir(trashedfile):
-            return trashedfile.original_location.startswith(dir + os.path.sep)
         for trashedfile in self.all_trashed_files():
-            if is_trashed_from_curdir(trashedfile):
+            if matches(trashedfile):
                 trashed_files.append(trashedfile)
         return trashed_files
     def all_trashed_files(self):
