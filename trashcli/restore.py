@@ -148,8 +148,11 @@ class TrashedFile:
      - original_file : the path where the trashed file has been placed after the
                        trash opeartion (instance of Path)
     """
-    def __init__(self, path, deletion_date, info_file, original_file):
-        self.original_location = path
+    def __init__(self, original_location,
+                       deletion_date,
+                       info_file,
+                       original_file):
+        self.original_location = original_location
         self.deletion_date = deletion_date
         self.info_file = info_file
         self.original_file = original_file
