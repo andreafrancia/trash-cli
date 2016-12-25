@@ -3,6 +3,36 @@ from nose.tools import assert_equals
 from StringIO import StringIO
 from mock import Mock, call
 
+class TestListingInRestoreCmd:
+    def test_with_no_args_and_files_in_trashcan(self):
+        class thing(object):
+            def __init__(self, deletion_date, original_location):
+                self.deletion_date = deletion_date
+                self.original_location = original_location
+            def __repr__(self):
+                return ('thing(\'%s\', ' % self.deletion_date +
+                       '\'%s\')' % self.original_location)
+        def some_files():
+            return [
+            thing('<date>', 'dir/location')
+            , thing('<date>', 'dir/location')
+            ]
+        trashed_files = []
+        def capture_trashed_files(arg):
+            trashed_files = arg
+            assert_equals(2,len(trashed_files))
+            assert_equals('dir/location',trashed_files[0].original_location)
+            assert_equals('dir/location',trashed_files[1].original_location)
+
+        self.cmd = RestoreCmd(None, None, None, None, None)
+        self.cmd.curdir = lambda: "dir"
+        self.cmd.all_trashed_files = some_files
+        self.cmd.input = lambda _ : ""
+        self.cmd.handle_trashed_files = capture_trashed_files
+
+        self.cmd.run(['trash-restore'])
+
+
 class TestTrashRestoreCmd:
     def setUp(self):
         self.stdout = StringIO()
@@ -75,35 +105,6 @@ class TestTrashRestoreCmd:
             , call.move('orig_file', 'parent/path')
             , call.remove_file('info_file')
             ], fs.mock_calls)
-
-    def test_with_no_args_and_files_in_trashcan(self):
-        class thing(object):
-            def __init__(self, deletion_date, original_location):
-                self.deletion_date = deletion_date
-                self.original_location = original_location
-            def __repr__(self):
-                return ('thing(\'%s\', ' % self.deletion_date +
-                       '\'%s\')' % self.original_location)
-        def some_files():
-            return [
-            thing('<date>', 'dir/location')
-            , thing('<date>', 'dir/location')
-            ]
-        trashed_files = []
-        def capture_trashed_files(arg):
-            trashed_files = arg
-            assert_equals(2,len(trashed_files))
-            assert_equals('dir/location',trashed_files[0].original_location)
-            assert_equals('dir/location',trashed_files[1].original_location)
-
-        self.cmd.curdir = lambda: "dir"
-        self.cmd.all_trashed_files = some_files
-        self.cmd.input = lambda _ : ""
-        self.cmd.handle_trashed_files = capture_trashed_files
-
-        self.cmd.run(['trash-restore'])
-
-
 
     def test_when_user_reply_with_empty_string(self):
         self.user_reply = ''
