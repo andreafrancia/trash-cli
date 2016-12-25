@@ -82,15 +82,15 @@ class TestTrashRestoreCmd:
         def some_files():
             t = thing()
             t.deletion_date = '<date>'
-            t.original_location = 'location'
+            t.original_location = 'dir/location'
             return [t]
-        self.cmd.curdir = lambda: "cwd"
-        self.cmd.all_trashed_files_in_dir = some_files
+        self.cmd.curdir = lambda: "dir"
+        self.cmd.all_trashed_files = some_files
         self.cmd.input = lambda _ : ""
 
         self.cmd.run(['trash-restore'])
 
-        assert_equals("   0 <date> location\n"
+        assert_equals("   0 <date> dir/location\n"
                 "Exiting\n",
                 self.stdout.getvalue())
 
