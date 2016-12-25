@@ -4,27 +4,30 @@ from StringIO import StringIO
 from mock import Mock, call
 
 class TestListingInRestoreCmd:
-    def test_with_no_args_and_files_in_trashcan(self):
-        def some_files():
-            return [
-            FakeTrashedFile('<date>', 'dir/location')
-            , FakeTrashedFile('<date>', 'dir/location')
-            ]
-        trashed_files = []
-
+    def setUp(self):
         self.cmd = RestoreCmd(None, None, None, None, None)
         self.cmd.curdir = lambda: "dir"
-        self.cmd.all_trashed_files = some_files
         self.cmd.handle_trashed_files = self.capture_trashed_files
+
+    def test_with_no_args_and_files_in_trashcan(self):
+        def some_files():
+            yield FakeTrashedFile('<date>', 'dir/location')
+            yield FakeTrashedFile('<date>', 'dir/location')
+        trashed_files = []
+
+        self.cmd.all_trashed_files = some_files
 
         self.cmd.run(['trash-restore'])
 
-        assert_equals(2,len(self.trashed_files))
-        assert_equals('dir/location',self.trashed_files[0].original_location)
-        assert_equals('dir/location',self.trashed_files[1].original_location)
+        assert_equals(2,len(self.original_locations))
+        assert_equals('dir/location',self.original_locations[0])
+        assert_equals('dir/location',self.original_locations[1])
 
     def capture_trashed_files(self,arg):
-        self.trashed_files = arg
+        self.original_locations = []
+        for trashed_file in arg:
+            self.original_locations.append(trashed_file.original_location)
+
 
 class FakeTrashedFile(object):
     def __init__(self, deletion_date, original_location):
