@@ -31,9 +31,9 @@ class RestoreCmd(object):
                 mount_points = fstab.mount_points()
                 )
         self.all_trash_directories2 = all_trash_directories.all_trash_directories
-    def run(self, args):
-        if '--version' in args[1:]:
-            command = os.path.basename(args[0])
+    def run(self, argv):
+        if '--version' in argv[1:]:
+            command = os.path.basename(argv[0])
             self.println('%s %s' %(command, self.version))
             return
 
