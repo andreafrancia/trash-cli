@@ -38,7 +38,9 @@ class RestoreCmd(object):
             return
 
         trashed_files = self.all_trashed_files_in_dir()
+        self.handle_trashed_files(trashed_files)
 
+    def handle_trashed_files(self,trashed_files):
         if not trashed_files:
             self.report_no_files_found()
         else :
