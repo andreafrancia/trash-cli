@@ -145,14 +145,13 @@ class TrashedFile:
      - deletion_date : the time when the file has been trashed (instance of
                        datetime)
      - info_file : the file that contains information (instance of Path)
-     - actual_path : the path where the trashed file has been placed after the
-                     trash opeartion (instance of Path)
+     - original_file : the path where the trashed file has been placed after the
+                       trash opeartion (instance of Path)
     """
     def __init__(self, path, deletion_date, info_file, actual_path):
         self.path = path
         self.deletion_date = deletion_date
         self.info_file = info_file
-        self.actual_path = actual_path
         self.original_file = actual_path
 
 def restore(trashed_file, path_exists, fs):

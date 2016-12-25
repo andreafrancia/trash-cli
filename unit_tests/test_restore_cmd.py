@@ -183,7 +183,7 @@ class TestRestoreCmdListingUnit:
         assert_equals(datetime.datetime(2001, 1, 1, 10, 10, 10),
                       trashed_file.deletion_date)
         assert_equals('info/info_path.trashinfo' , trashed_file.info_file)
-        assert_equals('files/info_path' , trashed_file.actual_path)
+        assert_equals('files/info_path' , trashed_file.original_file)
 
 from integration_tests.files import write_file, require_empty_dir
 from trashcli.fs import remove_file
@@ -207,7 +207,7 @@ class TestRestoreCmdListingIntegration:
         assert_equals(datetime.datetime(2001, 1, 1, 10, 10, 10),
                       trashed_file.deletion_date)
         assert_equals('info/info_path.trashinfo' , trashed_file.info_file)
-        assert_equals('files/info_path' , trashed_file.actual_path)
+        assert_equals('files/info_path' , trashed_file.original_file)
 
     def tearDown(self):
         remove_file('info/info_path.trashinfo')
