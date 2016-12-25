@@ -208,7 +208,7 @@ class TestRestoreCmdListingUnit:
         cmd.all_trash_directories2 = lambda: [trash_dir]
 
         cmd.curdir = lambda: '/volume'
-        trashed_files = cmd.all_trashed_files_in_dir()
+        trashed_files = list(cmd.all_trashed_files())
 
         trashed_file = trashed_files[0]
         assert_equals('/volume/name' , trashed_file.original_location)
