@@ -35,8 +35,7 @@ class TestListingInRestoreCmd:
         self.cmd.run(['trash-restore', 'specific/path'])
 
         assert_equals([
-            'dir/location'
-            , 'dir/location'
+            'specific/path'
             ] ,self.original_locations)
 
     def capture_trashed_files(self,arg):

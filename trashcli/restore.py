@@ -36,11 +36,17 @@ class RestoreCmd(object):
             command = os.path.basename(argv[0])
             self.println('%s %s' %(command, self.version))
             return
-
-        dir = self.curdir()
-        def is_trashed_from_curdir(trashedfile):
-            return trashedfile.original_location.startswith(dir + os.path.sep)
-        trashed_files = self.all_trashed_files_filter(is_trashed_from_curdir)
+        if len(argv) == 2:
+            specific_path = argv[1]
+            def is_trashed_from_curdir(trashedfile):
+                return trashedfile.original_location.startswith(specific_path)
+            filter = is_trashed_from_curdir
+        else:
+            dir = self.curdir()
+            def is_trashed_from_curdir(trashedfile):
+                return trashedfile.original_location.startswith(dir + os.path.sep)
+            filter = is_trashed_from_curdir
+        trashed_files = self.all_trashed_files_filter(filter)
         self.handle_trashed_files(trashed_files)
 
     def handle_trashed_files(self,trashed_files):
