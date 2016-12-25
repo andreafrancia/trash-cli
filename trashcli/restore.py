@@ -45,7 +45,7 @@ class RestoreCmd(object):
             self.report_no_files_found()
         else :
             for i, trashedfile in enumerate(trashed_files):
-                self.println("%4d %s %s" % (i, trashedfile.deletion_date, trashedfile.path))
+                self.println("%4d %s %s" % (i, trashedfile.deletion_date, trashedfile.original_location))
             self.restore_asking_the_user(trashed_files)
     def restore_asking_the_user(self, trashed_files):
         index=self.input("What file to restore [0..%d]: " % (len(trashed_files)-1))
@@ -70,7 +70,7 @@ class RestoreCmd(object):
         trashed_files = []
         dir = self.curdir()
         def is_trashed_from_curdir(trashedfile):
-            return trashedfile.path.startswith(dir + os.path.sep)
+            return trashedfile.original_location.startswith(dir + os.path.sep)
         for trashedfile in self.all_trashed_files():
             if is_trashed_from_curdir(trashedfile):
                 trashed_files.append(trashedfile)
@@ -149,18 +149,18 @@ class TrashedFile:
                        trash opeartion (instance of Path)
     """
     def __init__(self, path, deletion_date, info_file, original_file):
-        self.path = path
+        self.original_location = path
         self.deletion_date = deletion_date
         self.info_file = info_file
         self.original_file = original_file
 
 def restore(trashed_file, path_exists, fs):
-    if path_exists(trashed_file.path):
-        raise IOError('Refusing to overwrite existing file "%s".' % os.path.basename(trashed_file.path))
+    if path_exists(trashed_file.original_location):
+        raise IOError('Refusing to overwrite existing file "%s".' % os.path.basename(trashed_file.original_location))
     else:
-        parent = os.path.dirname(trashed_file.path)
+        parent = os.path.dirname(trashed_file.original_location)
         fs.mkdirs(parent)
 
-    fs.move(trashed_file.original_file, trashed_file.path)
+    fs.move(trashed_file.original_file, trashed_file.original_location)
     fs.remove_file(trashed_file.info_file)
 

@@ -82,7 +82,7 @@ class TestTrashRestoreCmd:
         def some_files():
             t = thing()
             t.deletion_date = None
-            t.path = None
+            t.original_location = None
             return [t]
         self.cmd.curdir = lambda: "cwd"
         self.cmd.all_trashed_files_in_dir = some_files
@@ -179,7 +179,7 @@ class TestRestoreCmdListingUnit:
         trashed_files = cmd.all_trashed_files_in_dir()
 
         trashed_file = trashed_files[0]
-        assert_equals('/volume/name' , trashed_file.path)
+        assert_equals('/volume/name' , trashed_file.original_location)
         assert_equals(datetime.datetime(2001, 1, 1, 10, 10, 10),
                       trashed_file.deletion_date)
         assert_equals('info/info_path.trashinfo' , trashed_file.info_file)
@@ -203,7 +203,7 @@ class TestRestoreCmdListingIntegration:
         trashed_files = cmd.all_trashed_files_in_dir()
 
         trashed_file = trashed_files[0]
-        assert_equals('/volume/name' , trashed_file.path)
+        assert_equals('/volume/name' , trashed_file.original_location)
         assert_equals(datetime.datetime(2001, 1, 1, 10, 10, 10),
                       trashed_file.deletion_date)
         assert_equals('info/info_path.trashinfo' , trashed_file.info_file)
