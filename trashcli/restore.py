@@ -142,7 +142,6 @@ class TrashedFile:
      - info_file : the file that contains information (instance of Path)
      - actual_path : the path where the trashed file has been placed after the
                      trash opeartion (instance of Path)
-     - trash_directory :
     """
     def __init__(self, path, deletion_date, info_file, actual_path):
         self.path = path
