@@ -115,7 +115,7 @@ class RestoreTrashRunner:
             exit    = [].append,
             input   = lambda msg: with_user_typing,
             curdir  = lambda: from_dir
-        ).run()
+        ).run([])
 
 class TrashCan:
     def __init__(self, path):
