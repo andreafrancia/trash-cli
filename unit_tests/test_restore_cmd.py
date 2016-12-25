@@ -13,14 +13,16 @@ class TestListingInRestoreCmd:
         def some_files():
             yield FakeTrashedFile('<date>', 'dir/location')
             yield FakeTrashedFile('<date>', 'dir/location')
+            yield FakeTrashedFile('<date>', 'anotherdir/location')
 
         self.cmd.all_trashed_files = some_files
 
         self.cmd.run(['trash-restore'])
 
-        assert_equals(2,len(self.original_locations))
-        assert_equals('dir/location',self.original_locations[0])
-        assert_equals('dir/location',self.original_locations[1])
+        assert_equals([
+            'dir/location'
+            , 'dir/location'
+            ] ,self.original_locations)
 
     def capture_trashed_files(self,arg):
         self.original_locations = []
