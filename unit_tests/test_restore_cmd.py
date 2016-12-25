@@ -24,6 +24,21 @@ class TestListingInRestoreCmd:
             , 'dir/location'
             ] ,self.original_locations)
 
+    def test_with_no_args_and_files_in_trashcan(self):
+        def some_files():
+            yield FakeTrashedFile('<date>', 'dir/location')
+            yield FakeTrashedFile('<date>', 'dir/location')
+            yield FakeTrashedFile('<date>', 'specific/path')
+
+        self.cmd.all_trashed_files = some_files
+
+        self.cmd.run(['trash-restore', 'specific/path'])
+
+        assert_equals([
+            'dir/location'
+            , 'dir/location'
+            ] ,self.original_locations)
+
     def capture_trashed_files(self,arg):
         self.original_locations = []
         for trashed_file in arg:
