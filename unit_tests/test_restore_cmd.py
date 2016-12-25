@@ -13,7 +13,6 @@ class TestListingInRestoreCmd:
         def some_files():
             yield FakeTrashedFile('<date>', 'dir/location')
             yield FakeTrashedFile('<date>', 'dir/location')
-        trashed_files = []
 
         self.cmd.all_trashed_files = some_files
 
