@@ -187,7 +187,7 @@ class TestRestoreCmdListingUnit:
 
 from integration_tests.files import write_file, require_empty_dir
 from trashcli.fs import remove_file
-class TestRestoreCmdListing:
+class TestRestoreCmdListingIntegration:
     def test_something(self):
         cmd = RestoreCmd(None, None, {}, None, None)
         require_empty_dir('info')
