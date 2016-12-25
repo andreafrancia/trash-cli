@@ -5,33 +5,34 @@ from mock import Mock, call
 
 class TestListingInRestoreCmd:
     def test_with_no_args_and_files_in_trashcan(self):
-        class thing(object):
-            def __init__(self, deletion_date, original_location):
-                self.deletion_date = deletion_date
-                self.original_location = original_location
-            def __repr__(self):
-                return ('thing(\'%s\', ' % self.deletion_date +
-                       '\'%s\')' % self.original_location)
         def some_files():
             return [
-            thing('<date>', 'dir/location')
-            , thing('<date>', 'dir/location')
+            FakeTrashedFile('<date>', 'dir/location')
+            , FakeTrashedFile('<date>', 'dir/location')
             ]
         trashed_files = []
-        def capture_trashed_files(arg):
-            trashed_files = arg
-            assert_equals(2,len(trashed_files))
-            assert_equals('dir/location',trashed_files[0].original_location)
-            assert_equals('dir/location',trashed_files[1].original_location)
 
         self.cmd = RestoreCmd(None, None, None, None, None)
         self.cmd.curdir = lambda: "dir"
         self.cmd.all_trashed_files = some_files
-        self.cmd.input = lambda _ : ""
-        self.cmd.handle_trashed_files = capture_trashed_files
+        self.cmd.handle_trashed_files = self.capture_trashed_files
 
         self.cmd.run(['trash-restore'])
 
+        assert_equals(2,len(self.trashed_files))
+        assert_equals('dir/location',self.trashed_files[0].original_location)
+        assert_equals('dir/location',self.trashed_files[1].original_location)
+
+    def capture_trashed_files(self,arg):
+        self.trashed_files = arg
+
+class FakeTrashedFile(object):
+    def __init__(self, deletion_date, original_location):
+        self.deletion_date = deletion_date
+        self.original_location = original_location
+    def __repr__(self):
+        return ('FakeTrashedFile(\'%s\', ' % self.deletion_date +
+               '\'%s\')' % self.original_location)
 
 class TestTrashRestoreCmd:
     def setUp(self):
