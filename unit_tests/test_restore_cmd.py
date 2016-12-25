@@ -1,6 +1,7 @@
 from trashcli.restore import RestoreCmd
 from nose.tools import assert_equals
 from StringIO import StringIO
+from mock import Mock, call
 
 class TestTrashRestoreCmd:
     def setUp(self):
@@ -30,7 +31,7 @@ class TestTrashRestoreCmd:
         assert_equals("No files trashed from current dir ('cwd')\n",
                 self.stdout.getvalue())
 
-    def test_until_the_restore(self):
+    def test_until_the_restore_intgration(self):
         from trashcli.fs import remove_file
         from trashcli.fs import contents_of
         self.user_reply = '0'
@@ -55,7 +56,6 @@ class TestTrashRestoreCmd:
         assert_equals('original', contents_of('parent/path'))
 
     def test_until_the_restore_unit(self):
-        from mock import Mock, call
         trashed_file = TrashedFile(
                 'parent/path',
                 None,
@@ -93,6 +93,7 @@ class TestTrashRestoreCmd:
         assert_equals("   0 None None\n"
                 "Exiting\n",
                 self.stdout.getvalue())
+
     def test_when_user_reply_with_empty_string(self):
         self.user_reply = ''
 
@@ -100,7 +101,7 @@ class TestTrashRestoreCmd:
 
         assert_equals('Exiting\n', self.stdout.getvalue())
 
-    def test_when_user_reply_with_empty_string(self):
+    def test_when_user_reply_with_not_number(self):
         self.user_reply = 'non numeric'
 
         self.cmd.restore_asking_the_user([])
@@ -109,7 +110,7 @@ class TestTrashRestoreCmd:
         assert_equals('', self.stdout.getvalue())
         assert_equals(1, self.exit_status)
 
-    def test_when_user_reply_with_out_of_range_number(self):
+    def test_when_user_reply_with_an_out_of_range_number(self):
         self.user_reply = '100'
 
         self.cmd.restore_asking_the_user([])
@@ -121,10 +122,10 @@ class TestTrashRestoreCmd:
 from trashcli.restore import TrashedFile
 from nose.tools import assert_raises, assert_true
 import os
-class TestTrashedFileRestore:
+class TestTrashedFileRestoreIntegration:
     def setUp(self):
         self.remove_file_if_exists('parent/path')
-        self.remove_dir_if_exists('parent')
+        remove_dir_if_exists('parent')
         self.cmd = RestoreCmd(None, None, None, None, None)
 
     def test_restore(self):
@@ -150,14 +151,11 @@ class TestTrashedFileRestore:
     def tearDown(self):
         self.remove_file_if_exists('path')
         self.remove_file_if_exists('parent/path')
-        self.remove_dir_if_exists('parent')
+        remove_dir_if_exists('parent')
 
     def remove_file_if_exists(self, path):
         if os.path.lexists(path):
             os.unlink(path)
-    def remove_dir_if_exists(self, dir):
-        if os.path.exists(dir):
-            os.rmdir(dir)
 
     def test_restore_create_needed_directories(self):
         require_empty_dir('sandbox')
