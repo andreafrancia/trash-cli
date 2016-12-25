@@ -84,6 +84,7 @@ class TestTrashRestoreCmd:
         def some_files():
             return [
             thing('<date>', 'dir/location')
+            , thing('<date>', 'dir/location')
             ]
         self.cmd.curdir = lambda: "dir"
         self.cmd.all_trashed_files = some_files
@@ -91,7 +92,9 @@ class TestTrashRestoreCmd:
 
         self.cmd.run(['trash-restore'])
 
-        assert_equals("   0 <date> dir/location\n"
+        assert_equals(
+                "   0 <date> dir/location\n"
+                "   1 <date> dir/location\n"
                 "Exiting\n",
                 self.stdout.getvalue())
 
