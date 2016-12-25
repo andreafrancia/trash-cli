@@ -124,7 +124,7 @@ from nose.tools import assert_raises, assert_true
 import os
 class TestTrashedFileRestoreIntegration:
     def setUp(self):
-        self.remove_file_if_exists('parent/path')
+        remove_file_if_exists('parent/path')
         remove_dir_if_exists('parent')
         self.cmd = RestoreCmd(None, None, None, None, None)
 
@@ -149,13 +149,9 @@ class TestTrashedFileRestoreIntegration:
                 self.cmd.restore(trashed_file))
 
     def tearDown(self):
-        self.remove_file_if_exists('path')
-        self.remove_file_if_exists('parent/path')
+        remove_file_if_exists('path')
+        remove_file_if_exists('parent/path')
         remove_dir_if_exists('parent')
-
-    def remove_file_if_exists(self, path):
-        if os.path.lexists(path):
-            os.unlink(path)
 
     def test_restore_create_needed_directories(self):
         require_empty_dir('sandbox')
@@ -220,4 +216,8 @@ class TestRestoreCmdListing:
 def remove_dir_if_exists(dir):
     if os.path.exists(dir):
         os.rmdir(dir)
+def remove_file_if_exists(path):
+    if os.path.lexists(path):
+        os.unlink(path)
+
 
