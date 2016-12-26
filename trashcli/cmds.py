@@ -18,6 +18,7 @@ def empty(argv=sys.argv):
     from datetime import datetime
     from trashcli.trash import FileSystemReader
     from trashcli.trash import FileRemover
+    from trashcli.trash import version
     return EmptyCmd(
         out          = sys.stdout,
         err          = sys.stderr,
@@ -26,7 +27,8 @@ def empty(argv=sys.argv):
         now          = datetime.now,
         file_reader  = FileSystemReader(),
         getuid       = os.getuid,
-        file_remover  = FileRemover(),
+        file_remover = FileRemover(),
+        version      = version,
     ).run(*argv)
 
 

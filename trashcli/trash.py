@@ -290,7 +290,7 @@ class EmptyCmd:
                  file_reader,
                  getuid,
                  file_remover,
-                 version       = version):
+                 version):
 
         self.out          = out
         self.err          = err

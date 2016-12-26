@@ -31,6 +31,7 @@ class WhenCalledWithoutArguments:
             file_reader = FileSystemReader(),
             getuid = None,
             file_remover = FileRemover(),
+            version = None,
         )
 
     def user_run_trash_empty(self):
@@ -132,6 +133,7 @@ class When_invoked_with_N_days_as_argument:
             file_reader = FileSystemReader(),
             getuid = None,
             file_remover = FileRemover(),
+            version = None,
         )
 
     def user_run_trash_empty(self, *args):
@@ -197,6 +199,7 @@ class TestEmptyCmdWithMultipleVolumes:
                 file_reader  = FileSystemReader(),
                 getuid       = lambda: 123,
                 file_remover = FileRemover(),
+                version      = None,
         )
 
     def test_it_removes_trashinfos_from_method_1_dir(self):
@@ -229,6 +232,7 @@ class TestTrashEmpty_on_help:
                        file_reader = FileSystemReader(),
                        getuid = None,
                        file_remover = None,
+                       version = None,
                        )
         cmd.run('trash-empty', '--help')
         assert_equals(out.getvalue(), dedent("""\
@@ -249,12 +253,12 @@ class TestTrashEmpty_on_version():
         cmd = EmptyCmd(err = err,
                        out = out,
                        environ = {},
-                       version = '1.2.3',
                        list_volumes = no_volumes,
                        now = None,
                        file_reader = FileSystemReader(),
                        getuid = None,
                        file_remover = None,
+                       version = '1.2.3',
                        )
         cmd.run('trash-empty', '--version')
         assert_equals(out.getvalue(), dedent("""\
@@ -273,6 +277,7 @@ class describe_trash_empty_command_line__on_invalid_options():
                        file_reader = FileSystemReader(),
                        getuid = None,
                        file_remover = None,
+                       version = None,
                        )
 
     def it_should_fail(self):
