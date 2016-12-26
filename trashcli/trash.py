@@ -287,7 +287,7 @@ class EmptyCmd:
                  environ,
                  list_volumes,
                  now,
-                 file_reader   = FileSystemReader(),
+                 file_reader,
                  getuid        = os.getuid,
                  file_remover  = FileRemover(),
                  version       = version):
