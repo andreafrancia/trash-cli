@@ -288,7 +288,7 @@ class EmptyCmd:
                  list_volumes,
                  now,
                  file_reader,
-                 getuid        = os.getuid,
+                 getuid,
                  file_remover  = FileRemover(),
                  version       = version):
 

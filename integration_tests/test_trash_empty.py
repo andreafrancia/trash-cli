@@ -28,6 +28,7 @@ class WhenCalledWithoutArguments:
             list_volumes = no_volumes,
             now = now,
             file_reader = FileSystemReader(),
+            getuid = None,
         )
 
     def user_run_trash_empty(self):
@@ -127,6 +128,7 @@ class When_invoked_with_N_days_as_argument:
             list_volumes = no_volumes,
             now = self.now,
             file_reader = FileSystemReader(),
+            getuid = None,
         )
 
     def user_run_trash_empty(self, *args):
@@ -187,10 +189,10 @@ class TestEmptyCmdWithMultipleVolumes:
                 out          = StringIO(),
                 err          = StringIO(),
                 environ      = {},
-                getuid       = lambda: 123,
                 list_volumes = lambda: ['topdir'],
                 now          = None,
                 file_reader  = FileSystemReader(),
+                getuid       = lambda: 123,
         )
 
     def test_it_removes_trashinfos_from_method_1_dir(self):
@@ -221,6 +223,7 @@ class TestTrashEmpty_on_help:
                        list_volumes = no_volumes,
                        now = None,
                        file_reader = FileSystemReader(),
+                       getuid = None,
                        )
         cmd.run('trash-empty', '--help')
         assert_equals(out.getvalue(), dedent("""\
@@ -245,6 +248,7 @@ class TestTrashEmpty_on_version():
                        list_volumes = no_volumes,
                        now = None,
                        file_reader = FileSystemReader(),
+                       getuid = None,
                        )
         cmd.run('trash-empty', '--version')
         assert_equals(out.getvalue(), dedent("""\
@@ -261,6 +265,7 @@ class describe_trash_empty_command_line__on_invalid_options():
                        list_volumes = no_volumes,
                        now = None,
                        file_reader = FileSystemReader(),
+                       getuid = None,
                        )
 
     def it_should_fail(self):

@@ -24,6 +24,7 @@ def empty(argv=sys.argv):
         list_volumes = mount_points,
         now          = datetime.now,
         file_reader  = FileSystemReader(),
+        getuid       = os.getuid,
     ).run(*argv)
 
 

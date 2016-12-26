@@ -21,7 +21,10 @@ class TestTrashPutIssueMessage:
         from trashcli.trash import FileSystemReader
 
         cmd = EmptyCmd(self.out, StringIO(), [], lambda:[],
-                       now = None, file_reader = FileSystemReader())
+                       now = None,
+                       file_reader = FileSystemReader(),
+                       getuid = None,
+                       )
         cmd.run('', '--help')
 
         self.assert_last_line_of_output_is(
