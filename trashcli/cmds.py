@@ -17,6 +17,7 @@ def empty(argv=sys.argv):
     from trashcli.list_mount_points import mount_points
     from datetime import datetime
     from trashcli.trash import FileSystemReader
+    from trashcli.trash import FileRemover
     return EmptyCmd(
         out          = sys.stdout,
         err          = sys.stderr,
@@ -25,6 +26,7 @@ def empty(argv=sys.argv):
         now          = datetime.now,
         file_reader  = FileSystemReader(),
         getuid       = os.getuid,
+        file_remover  = FileRemover(),
     ).run(*argv)
 
 
