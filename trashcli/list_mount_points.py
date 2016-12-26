@@ -56,7 +56,9 @@ def _mounted_filesystems_from_getmnt() :
 
     libc = cdll.LoadLibrary(libc_name)
     libc.getmntent.restype = POINTER(mntent_struct)
+    libc.getmntent.argtypes = [c_void_p]
     libc.fopen.restype = c_void_p
+    libc.fclose.argtypes = [c_void_p]
 
     f = libc.fopen("/proc/mounts", "r")
     if f==None:
