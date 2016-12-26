@@ -252,7 +252,9 @@ class describe_trash_empty_command_line__on_invalid_options():
                        err = self.err,
                        out = self.out,
                        environ = {},
-                       list_volumes = no_volumes)
+                       list_volumes = no_volumes,
+                       now = None,
+                       )
 
     def it_should_fail(self):
 
