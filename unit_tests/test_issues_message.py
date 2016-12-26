@@ -19,7 +19,7 @@ class TestTrashPutIssueMessage:
     def test_trash_empty_last_line(self):
         from trashcli.trash import EmptyCmd
 
-        cmd = EmptyCmd(self.out, StringIO(), [], lambda:[])
+        cmd = EmptyCmd(self.out, StringIO(), [], lambda:[], now = None)
         cmd.run('', '--help')
 
         self.assert_last_line_of_output_is(
