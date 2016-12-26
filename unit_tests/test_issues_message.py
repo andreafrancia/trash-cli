@@ -24,6 +24,7 @@ class TestTrashPutIssueMessage:
                        now = None,
                        file_reader = FileSystemReader(),
                        getuid = None,
+                       file_remover = None,
                        )
         cmd.run('', '--help')
 

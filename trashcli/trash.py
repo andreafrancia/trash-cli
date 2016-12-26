@@ -289,7 +289,7 @@ class EmptyCmd:
                  now,
                  file_reader,
                  getuid,
-                 file_remover  = FileRemover(),
+                 file_remover,
                  version       = version):
 
         self.out          = out
