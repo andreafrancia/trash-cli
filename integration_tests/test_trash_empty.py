@@ -237,7 +237,9 @@ class TestTrashEmpty_on_version():
                        out = out,
                        environ = {},
                        version = '1.2.3',
-                       list_volumes = no_volumes,)
+                       list_volumes = no_volumes,
+                       now = None,
+                       )
         cmd.run('trash-empty', '--version')
         assert_equals(out.getvalue(), dedent("""\
             trash-empty 1.2.3
