@@ -286,7 +286,7 @@ class EmptyCmd:
                  err,
                  environ,
                  list_volumes,
-                 now           = datetime.now,
+                 now,
                  file_reader   = FileSystemReader(),
                  getuid        = os.getuid,
                  file_remover  = FileRemover(),
