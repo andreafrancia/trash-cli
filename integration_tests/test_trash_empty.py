@@ -10,6 +10,7 @@ import os
 from files import write_file, require_empty_dir, make_dirs, set_sticky_bit
 from files import having_file
 from mock import MagicMock
+from trashcli.trash import FileSystemReader
 
 @istest
 class WhenCalledWithoutArguments:
@@ -26,6 +27,7 @@ class WhenCalledWithoutArguments:
             environ = self.environ,
             list_volumes = no_volumes,
             now = now,
+            file_reader = FileSystemReader(),
         )
 
     def user_run_trash_empty(self):
@@ -122,8 +124,9 @@ class When_invoked_with_N_days_as_argument:
             out = StringIO(),
             err = StringIO(),
             environ = self.environ,
-            now = self.now,
             list_volumes = no_volumes,
+            now = self.now,
+            file_reader = FileSystemReader(),
         )
 
     def user_run_trash_empty(self, *args):
@@ -187,6 +190,7 @@ class TestEmptyCmdWithMultipleVolumes:
                 getuid       = lambda: 123,
                 list_volumes = lambda: ['topdir'],
                 now          = None,
+                file_reader  = FileSystemReader(),
         )
 
     def test_it_removes_trashinfos_from_method_1_dir(self):
@@ -215,7 +219,8 @@ class TestTrashEmpty_on_help:
                        out = out,
                        environ = {},
                        list_volumes = no_volumes,
-                       now = None
+                       now = None,
+                       file_reader = FileSystemReader(),
                        )
         cmd.run('trash-empty', '--help')
         assert_equals(out.getvalue(), dedent("""\
@@ -239,6 +244,7 @@ class TestTrashEmpty_on_version():
                        version = '1.2.3',
                        list_volumes = no_volumes,
                        now = None,
+                       file_reader = FileSystemReader(),
                        )
         cmd.run('trash-empty', '--version')
         assert_equals(out.getvalue(), dedent("""\
@@ -254,6 +260,7 @@ class describe_trash_empty_command_line__on_invalid_options():
                        environ = {},
                        list_volumes = no_volumes,
                        now = None,
+                       file_reader = FileSystemReader(),
                        )
 
     def it_should_fail(self):

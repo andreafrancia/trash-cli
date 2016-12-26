@@ -18,8 +18,10 @@ class TestTrashPutIssueMessage:
 
     def test_trash_empty_last_line(self):
         from trashcli.trash import EmptyCmd
+        from trashcli.trash import FileSystemReader
 
-        cmd = EmptyCmd(self.out, StringIO(), [], lambda:[], now = None)
+        cmd = EmptyCmd(self.out, StringIO(), [], lambda:[],
+                       now = None, file_reader = FileSystemReader())
         cmd.run('', '--help')
 
         self.assert_last_line_of_output_is(
