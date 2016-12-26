@@ -24,8 +24,8 @@ class WhenCalledWithoutArguments:
             out = StringIO(),
             err = StringIO(),
             environ = self.environ,
-            now = now,
             list_volumes = no_volumes,
+            now = now,
         )
 
     def user_run_trash_empty(self):
