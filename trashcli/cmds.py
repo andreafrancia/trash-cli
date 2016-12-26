@@ -12,7 +12,7 @@ def restore():
         input   = raw_input
     ).run(sys.argv)
 
-def empty():
+def empty(argv=sys.argv):
     from trashcli.trash import EmptyCmd
     from trashcli.list_mount_points import mount_points
     return EmptyCmd(
@@ -20,7 +20,7 @@ def empty():
         err          = sys.stderr,
         environ      = os.environ,
         list_volumes = mount_points,
-    ).run(*sys.argv)
+    ).run(*argv)
 
 
 def list():
