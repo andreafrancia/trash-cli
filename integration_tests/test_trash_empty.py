@@ -214,7 +214,9 @@ class TestTrashEmpty_on_help:
         cmd = EmptyCmd(err = err,
                        out = out,
                        environ = {},
-                       list_volumes = no_volumes,)
+                       list_volumes = no_volumes,
+                       now = None
+                       )
         cmd.run('trash-empty', '--help')
         assert_equals(out.getvalue(), dedent("""\
             Usage: trash-empty [days]
