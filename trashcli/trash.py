@@ -281,7 +281,11 @@ class TrashDirs:
 
 from datetime import datetime
 class EmptyCmd:
-    def __init__(self, out, err, environ, list_volumes,
+    def __init__(self,
+                 out,
+                 err,
+                 environ,
+                 list_volumes,
                  now           = datetime.now,
                  file_reader   = FileSystemReader(),
                  getuid        = os.getuid,
