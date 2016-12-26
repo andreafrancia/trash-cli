@@ -185,7 +185,9 @@ class TestEmptyCmdWithMultipleVolumes:
                 err          = StringIO(),
                 environ      = {},
                 getuid       = lambda: 123,
-                list_volumes = lambda: ['topdir'],)
+                list_volumes = lambda: ['topdir'],
+                now          = None,
+        )
 
     def test_it_removes_trashinfos_from_method_1_dir(self):
         self.make_proper_top_trash_dir('topdir/.Trash')
