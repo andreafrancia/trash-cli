@@ -12,7 +12,10 @@ def restore():
         input   = raw_input
     ).run(sys.argv)
 
-def empty(argv=sys.argv):
+def empty(argv    = sys.argv,
+          stdout  = sys.stdout,
+          stderr  = sys.stderr,
+          environ = os.environ):
     from trashcli.trash import EmptyCmd
     from trashcli.list_mount_points import mount_points
     from datetime import datetime
@@ -20,9 +23,9 @@ def empty(argv=sys.argv):
     from trashcli.trash import FileRemover
     from trashcli.trash import version
     return EmptyCmd(
-        out          = sys.stdout,
-        err          = sys.stderr,
-        environ      = os.environ,
+        out          = stdout,
+        err          = stderr,
+        environ      = environ,
         list_volumes = mount_points,
         now          = datetime.now,
         file_reader  = FileSystemReader(),
