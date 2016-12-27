@@ -13,6 +13,17 @@ from mock import MagicMock
 from trashcli.trash import FileSystemReader
 from trashcli.trash import FileRemover
 
+from nose.tools import assert_regexp_matches
+
+class TestTrashEmptyCmd:
+    def test(self):
+        from trashcli.cmds import empty
+        from StringIO import StringIO
+        out = StringIO()
+        empty(['trash-empty', '-h'], stdout = out)
+        assert_regexp_matches(out.getvalue(), '^Usage. trash-empty.*')
+
+
 @istest
 class WhenCalledWithoutArguments:
 
