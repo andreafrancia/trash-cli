@@ -19,7 +19,7 @@ from trashcli.cmds import empty
 from StringIO import StringIO
 from trashcli.fs import mkdirs
 from .files import touch
-from nose.tools import assert_true
+from nose.tools import assert_true, assert_raises
 import shutil
 
 class TestTrashEmptyCmd:
@@ -28,17 +28,19 @@ class TestTrashEmptyCmd:
         empty(['trash-empty', '-h'], stdout = out)
         assert_regexp_matches(out.getvalue(), '^Usage. trash-empty.*')
 
-    def test_with_files(self):
+    def test_trash_empty_will_crash_on_unreadable_directory_issue_48(self):
         out = StringIO()
         mkdirs('data/Trash/files')
-        touch('data/Trash/files/orphan')
+        mkdirs('data/Trash/files/unreadable')
+        os.chmod('data/Trash/files/unreadable', 0o300)
 
-        assert_true(os.path.exists('data/Trash/files/orphan'))
+        assert_true(os.path.exists('data/Trash/files/unreadable'))
 
+        assert_raises(OSError, lambda:
         empty(['trash-empty'], stdout = out,
-                environ={'XDG_DATA_HOME':'data'})
-        assert_true(not os.path.exists('data/Trash/files/orphan'))
+                environ={'XDG_DATA_HOME':'data'}))
 
+        os.chmod('data/Trash/files/unreadable', 0o700)
         shutil.rmtree('data')
 
 @istest
