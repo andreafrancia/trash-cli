@@ -15,14 +15,31 @@ from trashcli.trash import FileRemover
 
 from nose.tools import assert_regexp_matches
 
+from trashcli.cmds import empty
+from StringIO import StringIO
+from trashcli.fs import mkdirs
+from .files import touch
+from nose.tools import assert_true
+import shutil
+
 class TestTrashEmptyCmd:
     def test(self):
-        from trashcli.cmds import empty
-        from StringIO import StringIO
         out = StringIO()
         empty(['trash-empty', '-h'], stdout = out)
         assert_regexp_matches(out.getvalue(), '^Usage. trash-empty.*')
 
+    def test_with_files(self):
+        out = StringIO()
+        mkdirs('data/Trash/files')
+        touch('data/Trash/files/orphan')
+
+        assert_true(os.path.exists('data/Trash/files/orphan'))
+
+        empty(['trash-empty'], stdout = out,
+                environ={'XDG_DATA_HOME':'data'})
+        assert_true(not os.path.exists('data/Trash/files/orphan'))
+
+        shutil.rmtree('data')
 
 @istest
 class WhenCalledWithoutArguments:
