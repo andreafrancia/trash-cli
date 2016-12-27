@@ -206,42 +206,6 @@ class Parser:
     def as_default(self, default_action):
         self.default_action = default_action
 
-class CleanableTrashcan:
-    def __init__(self, file_remover):
-        self._file_remover = file_remover
-    def delete_orphan(self, path_to_backup_copy):
-        self._file_remover.remove_file(path_to_backup_copy)
-    def delete_trashinfo_and_backup_copy(self, trashinfo_path):
-        backup_copy = self._path_of_backup_copy(trashinfo_path)
-        self._file_remover.remove_file_if_exists(backup_copy)
-        self._file_remover.remove_file(trashinfo_path)
-    def _path_of_backup_copy(self, path_to_trashinfo):
-        from os.path import dirname as parent_of, join, basename
-        trash_dir = parent_of(parent_of(path_to_trashinfo))
-        return join(trash_dir, 'files', basename(path_to_trashinfo)[:-len('.trashinfo')])
-
-class ExpiryDate:
-    def __init__(self, contents_of, now, trashcan):
-        self._contents_of  = contents_of
-        self._now          = now
-        self._maybe_delete = self._delete_unconditionally
-        self._trashcan = trashcan
-    def set_max_age_in_days(self, arg):
-        self.max_age_in_days = int(arg)
-        self._maybe_delete = self._delete_according_date
-    def delete_if_expired(self, trashinfo_path):
-        self._maybe_delete(trashinfo_path)
-    def _delete_according_date(self, trashinfo_path):
-        contents = self._contents_of(trashinfo_path)
-        ParseTrashInfo(
-            on_deletion_date=IfDate(
-                OlderThan(self.max_age_in_days, self._now),
-                lambda: self._delete_unconditionally(trashinfo_path)
-            ),
-        )(contents)
-    def _delete_unconditionally(self, trashinfo_path):
-        self._trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
-
 class TrashDirs:
     def __init__(self, environ, getuid, list_volumes, top_trashdir_rules):
         self.getuid             = getuid
@@ -294,20 +258,6 @@ class Harvester:
         self.trashdir.open(trash_dir_path, volume_path)
         self.trashdir.each_trashinfo(self.on_trashinfo_found)
         self.trashdir.each_orphan(self.on_orphan_found)
-
-class IfDate:
-    def __init__(self, date_criteria, then):
-        self.date_criteria = date_criteria
-        self.then          = then
-    def __call__(self, date2):
-        if self.date_criteria(date2):
-            self.then()
-class OlderThan:
-    def __init__(self, days_ago, now):
-        from datetime import timedelta
-        self.limit_date = now() - timedelta(days=days_ago)
-    def __call__(self, deletion_date):
-        return deletion_date < self.limit_date
 
 class PrintHelp:
     def __init__(self, description, println):
@@ -451,4 +401,18 @@ def parse_path(contents):
         if line.startswith('Path='):
             return urllib.unquote(line[len('Path='):])
     raise ParseError('Unable to parse Path')
-from .empty import EmptyCmd
+
+class CleanableTrashcan:
+    def __init__(self, file_remover):
+        self._file_remover = file_remover
+    def delete_orphan(self, path_to_backup_copy):
+        self._file_remover.remove_file(path_to_backup_copy)
+    def delete_trashinfo_and_backup_copy(self, trashinfo_path):
+        backup_copy = self._path_of_backup_copy(trashinfo_path)
+        self._file_remover.remove_file_if_exists(backup_copy)
+        self._file_remover.remove_file(trashinfo_path)
+    def _path_of_backup_copy(self, path_to_trashinfo):
+        from os.path import dirname as parent_of, join, basename
+        trash_dir = parent_of(parent_of(path_to_trashinfo))
+        return join(trash_dir, 'files', basename(path_to_trashinfo)[:-len('.trashinfo')])
+

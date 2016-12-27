@@ -17,7 +17,7 @@ class TestTrashPutIssueMessage:
                 'Report bugs to https://github.com/andreafrancia/trash-cli/issues')
 
     def test_trash_empty_last_line(self):
-        from trashcli.trash import EmptyCmd
+        from trashcli.empty import EmptyCmd
         from trashcli.trash import FileSystemReader
 
         cmd = EmptyCmd(self.out, StringIO(), [], lambda:[],

@@ -16,7 +16,7 @@ def empty(argv    = sys.argv,
           stdout  = sys.stdout,
           stderr  = sys.stderr,
           environ = os.environ):
-    from trashcli.trash import EmptyCmd
+    from trashcli.empty import EmptyCmd
     from trashcli.list_mount_points import mount_points
     from datetime import datetime
     from trashcli.trash import FileSystemReader

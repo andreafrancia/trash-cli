@@ -3,7 +3,7 @@
 from nose.tools import (assert_equals,
                         assert_items_equal,
                         istest)
-from trashcli.trash import EmptyCmd
+from trashcli.empty import EmptyCmd
 
 from StringIO import StringIO
 import os

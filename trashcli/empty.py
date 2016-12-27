@@ -1,13 +1,13 @@
 from .trash import TopTrashDirRules
 from .trash import TrashDirs
 from .trash import Harvester
-from .trash import CleanableTrashcan
-from .trash import ExpiryDate
 from .trash import EX_OK
 from .trash import Parser
 from .trash import PrintHelp
 from .trash import PrintVersion
 from .trash import EX_USAGE
+from .trash import ParseTrashInfo
+from .trash import CleanableTrashcan
 
 class EmptyCmd:
     def __init__(self,
@@ -67,3 +67,40 @@ class EmptyCmd:
         self.trashdirs.list_trashdirs()
     def println(self, line):
         self.out.write(line + '\n')
+
+class ExpiryDate:
+    def __init__(self, contents_of, now, trashcan):
+        self._contents_of  = contents_of
+        self._now          = now
+        self._maybe_delete = self._delete_unconditionally
+        self._trashcan = trashcan
+    def set_max_age_in_days(self, arg):
+        self.max_age_in_days = int(arg)
+        self._maybe_delete = self._delete_according_date
+    def delete_if_expired(self, trashinfo_path):
+        self._maybe_delete(trashinfo_path)
+    def _delete_according_date(self, trashinfo_path):
+        contents = self._contents_of(trashinfo_path)
+        ParseTrashInfo(
+            on_deletion_date=IfDate(
+                OlderThan(self.max_age_in_days, self._now),
+                lambda: self._delete_unconditionally(trashinfo_path)
+            ),
+        )(contents)
+    def _delete_unconditionally(self, trashinfo_path):
+        self._trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
+
+class IfDate:
+    def __init__(self, date_criteria, then):
+        self.date_criteria = date_criteria
+        self.then          = then
+    def __call__(self, date2):
+        if self.date_criteria(date2):
+            self.then()
+class OlderThan:
+    def __init__(self, days_ago, now):
+        from datetime import timedelta
+        self.limit_date = now() - timedelta(days=days_ago)
+    def __call__(self, deletion_date):
+        return deletion_date < self.limit_date
+
