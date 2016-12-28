@@ -30,17 +30,19 @@ class TestTrashEmptyCmd:
 
     def test_trash_empty_will_crash_on_unreadable_directory_issue_48(self):
         out = StringIO()
-        mkdirs('data/trash/files')
-        mkdirs('data/trash/files/unreadable')
-        os.chmod('data/trash/files/unreadable', 0o300)
+        err = StringIO()
+        mkdirs('data/Trash/files')
+        mkdirs('data/Trash/files/unreadable')
+        os.chmod('data/Trash/files/unreadable', 0o300)
 
-        assert_true(os.path.exists('data/trash/files/unreadable'))
+        assert_true(os.path.exists('data/Trash/files/unreadable'))
 
-        assert_raises(OSError, lambda:
-        empty(['trash-empty'], stdout = out,
-                environ={'XDG_DATA_HOME':'data'}))
+        empty(['trash-empty'], stdout = out, stderr = err,
+                environ={'XDG_DATA_HOME':'data'})
 
-        os.chmod('data/trash/files/unreadable', 0o700)
+        assert_equals("trash-empty: cannot remove data/Trash/files/unreadable\n",
+                      err.getvalue())
+        os.chmod('data/Trash/files/unreadable', 0o700)
         shutil.rmtree('data')
 
     def test_the_core_of_failures_for_issue_48(self):

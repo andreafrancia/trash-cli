@@ -33,6 +33,7 @@ class EmptyCmd:
         self.file_remover = file_remover
 
     def run(self, *argv):
+        self.program_name  = argv[0]
         self.exit_code     = EX_OK
 
         parse = Parser()
@@ -65,7 +66,28 @@ class EmptyCmd:
            "  -h, --help  show this help message and exit")
         printer.bug_reporting()
     def empty_all_trashdirs(self):
-        trashcan = CleanableTrashcan(self.file_remover)
+        class FileRemoveB:
+            def __init__(self, file_remover, on_error):
+                self.file_remover = file_remover
+                self.on_error = on_error
+            def remove_file(self, path):
+                try:
+                    return self.file_remover.remove_file(path)
+                except OSError as e:
+                    self.on_error(e, path)
+            def remove_file_if_exists(self, path):
+                try:
+                    return self.file_remover.remove_file_if_exists(path)
+                except OSError as e:
+                    self.on_error(e, path)
+
+        def on_error(exc, path):
+            error_message = "cannot remove {path}".format(path=path)
+            self.err.write("{program_name}: {msg}\n".format(
+                program_name=self.program_name,
+                msg=error_message))
+        trashcan = CleanableTrashcan(FileRemoveB(self.file_remover,
+                                                 on_error=on_error))
         def delete_if_expired(trashinfo_path):
             self._dustman.delete_if_ok(trashinfo_path, trashcan)
         harvester = Harvester(self.file_reader)
