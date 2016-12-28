@@ -104,7 +104,7 @@ class ListCmd:
 
         self.trashdirs.on_trashdir_skipped_because_parent_not_sticky = self.output.top_trashdir_skipped_because_parent_not_sticky
         self.trashdirs.on_trashdir_skipped_because_parent_is_symlink = self.output.top_trashdir_skipped_because_parent_is_symlink
-        self.trashdirs.on_trash_dir_found = self.harvester._analize_trash_directory
+        self.trashdirs.on_trash_dir_found = self.harvester.analize_trash_directory
 
         self.trashdirs.list_trashdirs()
     def _print_trashinfo(self, path):
@@ -253,7 +253,7 @@ class Harvester:
         self.on_orphan_found                               = do_nothing
         self.on_trashinfo_found                            = do_nothing
         self.on_volume                                     = do_nothing
-    def _analize_trash_directory(self, trash_dir_path, volume_path):
+    def analize_trash_directory(self, trash_dir_path, volume_path):
         self.on_volume(volume_path)
         self.trashdir.open(trash_dir_path, volume_path)
         self.trashdir.each_trashinfo(self.on_trashinfo_found)

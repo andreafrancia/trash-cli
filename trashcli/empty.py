@@ -28,7 +28,6 @@ class EmptyCmd:
         self.trashdirs = TrashDirs(environ, getuid,
                                    list_volumes = list_volumes,
                                    top_trashdir_rules = top_trashdir_rules)
-        self.harvester = Harvester(file_reader)
         self.version      = version
         self._cleaning    = CleanableTrashcan(file_remover)
         self._expiry_date = ExpiryDate(file_reader.contents_of, now,
@@ -61,9 +60,10 @@ class EmptyCmd:
            "  -h, --help  show this help message and exit")
         printer.bug_reporting()
     def _empty_all_trashdirs(self):
-        self.harvester.on_trashinfo_found = self._expiry_date.delete_if_expired
-        self.harvester.on_orphan_found = self._cleaning.delete_orphan
-        self.trashdirs.on_trash_dir_found = self.harvester._analize_trash_directory
+        harvester = Harvester(self.file_reader)
+        harvester.on_trashinfo_found = self._expiry_date.delete_if_expired
+        harvester.on_orphan_found = self._cleaning.delete_orphan
+        self.trashdirs.on_trash_dir_found = harvester.analize_trash_directory
         self.trashdirs.list_trashdirs()
     def println(self, line):
         self.out.write(line + '\n')
