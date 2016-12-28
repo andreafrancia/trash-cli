@@ -8,6 +8,7 @@ from .trash import PrintVersion
 from .trash import EX_USAGE
 from .trash import ParseTrashInfo
 from .trash import CleanableTrashcan
+import os
 
 class EmptyCmd:
     def __init__(self,
@@ -33,7 +34,7 @@ class EmptyCmd:
         self.file_remover = file_remover
 
     def run(self, *argv):
-        self.program_name  = argv[0]
+        self.program_name  = os.path.basename(argv[0])
         self.exit_code     = EX_OK
 
         parse = Parser()
