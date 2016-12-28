@@ -24,10 +24,9 @@ class EmptyCmd:
         self.out          = out
         self.err          = err
         self.file_reader  = file_reader
-        top_trashdir_rules = TopTrashDirRules(file_reader)
-        self.trashdirs = TrashDirs(environ, getuid,
-                                   list_volumes = list_volumes,
-                                   top_trashdir_rules = top_trashdir_rules)
+        self.environ = environ
+        self.getuid  = getuid
+        self.list_volumes = list_volumes
         self.version      = version
         self._now         = now
         self._dustman     = DeleteAlways()
@@ -72,8 +71,12 @@ class EmptyCmd:
         harvester = Harvester(self.file_reader)
         harvester.on_trashinfo_found = delete_if_expired
         harvester.on_orphan_found = trashcan.delete_orphan
-        self.trashdirs.on_trash_dir_found = harvester.analize_trash_directory
-        self.trashdirs.list_trashdirs()
+        trashdirs = TrashDirs(self.environ,
+                              self.getuid,
+                              self.list_volumes,
+                              TopTrashDirRules(self.file_reader))
+        trashdirs.on_trash_dir_found = harvester.analize_trash_directory
+        trashdirs.list_trashdirs()
     def println(self, line):
         self.out.write(line + '\n')
 

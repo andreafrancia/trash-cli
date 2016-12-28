@@ -17,7 +17,6 @@ EX_IOERR = getattr(os, 'EX_IOERR', 74)
 
 from .fs import list_files_in_dir
 import os
-from .fs import remove_file
 
 class TrashDirectory:
     def __init__(self, path, volume):
