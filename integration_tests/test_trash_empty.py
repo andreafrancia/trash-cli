@@ -11,7 +11,7 @@ from files import write_file, require_empty_dir, make_dirs, set_sticky_bit
 from files import having_file
 from mock import MagicMock
 from trashcli.trash import FileSystemReader
-from trashcli.trash import FileRemover
+from trashcli.fs import FileRemover
 
 from nose.tools import assert_regexp_matches
 
@@ -30,18 +30,34 @@ class TestTrashEmptyCmd:
 
     def test_trash_empty_will_crash_on_unreadable_directory_issue_48(self):
         out = StringIO()
-        mkdirs('data/Trash/files')
-        mkdirs('data/Trash/files/unreadable')
-        os.chmod('data/Trash/files/unreadable', 0o300)
+        mkdirs('data/trash/files')
+        mkdirs('data/trash/files/unreadable')
+        os.chmod('data/trash/files/unreadable', 0o300)
 
-        assert_true(os.path.exists('data/Trash/files/unreadable'))
+        assert_true(os.path.exists('data/trash/files/unreadable'))
 
         assert_raises(OSError, lambda:
         empty(['trash-empty'], stdout = out,
                 environ={'XDG_DATA_HOME':'data'}))
 
-        os.chmod('data/Trash/files/unreadable', 0o700)
+        os.chmod('data/trash/files/unreadable', 0o700)
         shutil.rmtree('data')
+
+    def test_the_core_of_failures_for_issue_48(self):
+        mkdirs('unreadable-dir')
+        os.chmod('unreadable-dir', 0o300)
+
+        assert_true(os.path.exists('unreadable-dir'))
+
+        try:
+            FileRemover().remove_file('unreadable-dir')
+            assert False
+        except OSError:
+            pass
+
+        os.chmod('unreadable-dir', 0o700)
+        shutil.rmtree('unreadable-dir')
+
 
 @istest
 class WhenCalledWithoutArguments:

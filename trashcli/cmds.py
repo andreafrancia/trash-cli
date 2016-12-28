@@ -20,7 +20,7 @@ def empty(argv    = sys.argv,
     from trashcli.list_mount_points import mount_points
     from datetime import datetime
     from trashcli.trash import FileSystemReader
-    from trashcli.trash import FileRemover
+    from trashcli.fs import FileRemover
     from trashcli.trash import version
     return EmptyCmd(
         out          = stdout,

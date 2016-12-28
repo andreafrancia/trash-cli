@@ -74,7 +74,7 @@ class TrashDirectories:
             path   = os.path.join(volume, ".Trash-%s" % self.getuid()),
             volume = volume)
 
-from .fs import FileSystemReader, contents_of, FileRemover
+from .fs import FileSystemReader, contents_of
 
 class ListCmd:
     def __init__(self, out, err, environ, list_volumes, getuid,
