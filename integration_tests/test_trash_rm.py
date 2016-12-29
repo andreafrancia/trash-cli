@@ -4,10 +4,23 @@ from nose.tools import assert_false, assert_raises
 
 from files import require_empty_dir, write_file
 from trashcli.rm import RmCmd, ListTrashinfos
-from trashinfo import a_trashinfo_with_path
-
+from trashinfo import a_trashinfo_with_path, a_trashinfo_without_path
+from trashcli.trash import ParseError
 
 class TestTrashRm:
+    def test_issue69(self):
+        trash_rm = RmCmd(environ = {'XDG_DATA_HOME':'sandbox/xdh'}
+                         , getuid = 123
+                         , list_volumes = lambda:[]
+                         , stderr = StringIO()
+                         , file_reader = FileSystemReader())
+
+        self.add_invalid_trashinfo_without_path(1)
+
+        assert_raises(ParseError,
+                lambda: trash_rm.run(['trash-rm', 'any-pattern (ignored)']))
+
+
     def test_integration(self):
         trash_rm = RmCmd(environ = {'XDG_DATA_HOME':'sandbox/xdh'}
                          , getuid = 123
@@ -27,6 +40,9 @@ class TestTrashRm:
     def add_trashinfo_for(self, index, path):
         write_file(self.trashinfo_from_index(index),
                    a_trashinfo_with_path(path))
+    def add_invalid_trashinfo_without_path(self, index):
+        write_file(self.trashinfo_from_index(index),
+                   a_trashinfo_without_path())
     def trashinfo_from_index(self, index):
         return 'sandbox/xdh/Trash/info/%s.trashinfo' % index
 
