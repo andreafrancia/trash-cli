@@ -1,7 +1,32 @@
-from nose.tools import istest, assert_items_equal
+from nose.tools import istest, assert_items_equal, assert_equals
 from mock import Mock, call
 
 from trashcli.rm import Filter
+from StringIO import StringIO
+
+class TestTrashRmCmdRun:
+    def test_without_arguments(self):
+        from trashcli.rm import RmCmd
+        cmd = RmCmd()
+        cmd.stderr = StringIO()
+        cmd.run([None])
+
+        assert_equals('Usage:\n    trash-rm PATTERN\n\nPlease specify PATTERN\n', cmd.stderr.getvalue())
+
+    def test_without_pattern_argument(self):
+        from trashcli.rm import RmCmd
+        cmd = RmCmd()
+        cmd.stderr = StringIO()
+        cmd.file_reader = Mock([])
+        cmd.file_reader.exists = Mock([], return_value = None)
+        cmd.file_reader.entries_if_dir_exists = Mock([], return_value = [])
+        cmd.environ = {}
+        cmd.getuid = lambda : '111'
+        cmd.list_volumes = lambda: ['/vol1']
+
+        cmd.run([None, None])
+
+        assert_equals('', cmd.stderr.getvalue())
 
 class TestTrashRmCmd:
     @istest
