@@ -1,6 +1,6 @@
 from StringIO import StringIO
 from mock import Mock, ANY
-from nose.tools import assert_false, assert_raises
+from nose.tools import assert_false, assert_raises, assert_equals
 
 from files import require_empty_dir, write_file
 from trashcli.rm import RmCmd, ListTrashinfos
@@ -9,33 +9,28 @@ from trashcli.trash import ParseError
 
 class TestTrashRm:
     def test_issue69(self):
-        trash_rm = RmCmd(environ = {'XDG_DATA_HOME':'sandbox/xdh'}
-                         , getuid = 123
-                         , list_volumes = lambda:[]
-                         , stderr = StringIO()
-                         , file_reader = FileSystemReader())
-
         self.add_invalid_trashinfo_without_path(1)
 
-        assert_raises(ParseError,
-                lambda: trash_rm.run(['trash-rm', 'any-pattern (ignored)']))
+        self.trash_rm.run(['trash-rm', 'any-pattern (ignored)'])
+
+        assert_equals('', self.stderr.getvalue())
 
 
     def test_integration(self):
-        trash_rm = RmCmd(environ = {'XDG_DATA_HOME':'sandbox/xdh'}
-                         , getuid = 123
-                         , list_volumes = lambda:[]
-                         , stderr = StringIO()
-                         , file_reader = FileSystemReader())
-
         self.add_trashinfo_for(1, 'to/be/deleted')
         self.add_trashinfo_for(2, 'to/be/kept')
 
-        trash_rm.run(['trash-rm', 'delete*'])
+        self.trash_rm.run(['trash-rm', 'delete*'])
 
         self.assert_trashinfo_has_been_deleted(1)
     def setUp(self):
         require_empty_dir('sandbox/xdh')
+        self.stderr = StringIO()
+        self.trash_rm = RmCmd(environ = {'XDG_DATA_HOME':'sandbox/xdh'}
+                         , getuid = 123
+                         , list_volumes = lambda:[]
+                         , stderr = self.stderr
+                         , file_reader = FileSystemReader())
 
     def add_trashinfo_for(self, index, path):
         write_file(self.trashinfo_from_index(index),

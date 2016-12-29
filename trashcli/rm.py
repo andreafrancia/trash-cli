@@ -1,7 +1,7 @@
 import fnmatch
 import os, sys
 
-from trashcli.trash import TrashDir, parse_path
+from trashcli.trash import TrashDir, parse_path, ParseError
 from trashcli.trash import TrashDirs
 from trashcli.trash import TopTrashDirRules
 from trashcli.trash import CleanableTrashcan
@@ -79,9 +79,14 @@ class ListTrashinfos:
         self.trashdir.each_trashinfo(self._report_original_location)
     def _report_original_location(self, trashinfo_path):
         trashinfo = self.file_reader.contents_of(trashinfo_path)
-        path = parse_path(trashinfo)
-        complete_path = os.path.join(self.volume, path)
-        self.out(complete_path, trashinfo_path)
+        try:
+            path = parse_path(trashinfo)
+        except ParseError:
+            pass
+        else:
+            complete_path = os.path.join(self.volume, path)
+            self.out(complete_path, trashinfo_path)
+
 
 if __name__ == '__main__':
     sys.exit(main())
