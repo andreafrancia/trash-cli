@@ -9,12 +9,11 @@ from trashinfo import a_trashinfo_with_path
 
 class TestTrashRm:
     def test_integration(self):
-        trash_rm = RmCmd()
-        trash_rm.environ = {'XDG_DATA_HOME':'sandbox/xdh'}
-        trash_rm.list_volumes = lambda:[]
-        trash_rm.getuid = 123
-        trash_rm.stderr = StringIO()
-        trash_rm.file_reader = FileSystemReader()
+        trash_rm = RmCmd(environ = {'XDG_DATA_HOME':'sandbox/xdh'}
+                         , getuid = 123
+                         , list_volumes = lambda:[]
+                         , stderr = StringIO()
+                         , file_reader = FileSystemReader())
 
         self.add_trashinfo_for(1, 'to/be/deleted')
         self.add_trashinfo_for(2, 'to/be/kept')

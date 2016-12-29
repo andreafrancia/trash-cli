@@ -7,7 +7,7 @@ from StringIO import StringIO
 class TestTrashRmCmdRun:
     def test_without_arguments(self):
         from trashcli.rm import RmCmd
-        cmd = RmCmd()
+        cmd = RmCmd(None, None, None, None, None)
         cmd.stderr = StringIO()
         cmd.run([None])
 
@@ -15,7 +15,7 @@ class TestTrashRmCmdRun:
 
     def test_without_pattern_argument(self):
         from trashcli.rm import RmCmd
-        cmd = RmCmd()
+        cmd = RmCmd(None, None, None, None, None)
         cmd.stderr = StringIO()
         cmd.file_reader = Mock([])
         cmd.file_reader.exists = Mock([], return_value = None)

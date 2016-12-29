@@ -9,6 +9,17 @@ from trashcli.fs import FileSystemReader
 from trashcli.fs import FileRemover
 
 class RmCmd:
+    def __init__(self,
+                 environ,
+                 getuid,
+                 list_volumes,
+                 stderr,
+                 file_reader):
+        self.environ      = environ
+        self.getuid       = getuid
+        self.list_volumes = list_volumes
+        self.stderr       = stderr
+        self.file_reader  = file_reader
     def run(self, argv):
         args = argv[1:]
         self.exit_code = 0
@@ -35,12 +46,11 @@ class RmCmd:
 
 def main():
     from trashcli.list_mount_points import mount_points
-    main              = RmCmd()
-    main.environ      = os.environ
-    main.getuid       = os.getuid
-    main.list_volumes = mount_points
-    main.stderr       = sys.stderr
-    main.file_reader  = FileSystemReader()
+    main = RmCmd(environ        = os.environ
+                 , getuid       = os.getuid
+                 , list_volumes = mount_points
+                 , stderr       = sys.stderr
+                 , file_reader  = FileSystemReader())
 
     main.run(sys.argv)
 
