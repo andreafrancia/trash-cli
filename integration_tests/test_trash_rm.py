@@ -13,7 +13,11 @@ class TestTrashRm:
 
         self.trash_rm.run(['trash-rm', 'any-pattern (ignored)'])
 
-        assert_equals('', self.stderr.getvalue())
+        assert_equals('trash-rm: '
+                      'sandbox/xdh/Trash/info/1.trashinfo: '
+                      'unable to parse \'Path\''
+                      '\n'
+                      , self.stderr.getvalue())
 
 
     def test_integration(self):
