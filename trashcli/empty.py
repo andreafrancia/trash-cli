@@ -87,7 +87,7 @@ class EmptyCmd:
 
         def on_error(exc, path):
             error_message = "cannot remove {path}".format(path=path)
-            self.err.write("{program_name}: {msg}\n".format(
+            self.println_err("{program_name}: {msg}".format(
                 program_name=self.program_name,
                 msg=error_message))
         trashcan = CleanableTrashcan(FileRemoveB(self.file_remover,
