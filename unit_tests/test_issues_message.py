@@ -33,7 +33,7 @@ class TestTrashPutIssueMessage:
                 'Report bugs to https://github.com/andreafrancia/trash-cli/issues')
 
     def test_trash_list_last_line(self):
-        from trashcli.trash import ListCmd
+        from trashcli.list import ListCmd
 
         cmd = ListCmd(self.out, None, None, None, None)
         cmd.run('', '--help')

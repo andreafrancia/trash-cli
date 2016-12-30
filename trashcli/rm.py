@@ -39,31 +39,34 @@ class RmCmd:
         trashcan = CleanableTrashcan(FileRemover())
         cmd = Filter(trashcan.delete_trashinfo_and_backup_copy)
         cmd.use_pattern(args[0])
-        listing = ListTrashinfos(cmd.delete_if_matches, self.file_reader)
-        listing.unable_to_parse_path = unable_to_parse_path
-        top_trashdir_rules = TopTrashDirRules(self.file_reader)
-        trashdirs   = TrashDirs(self.environ, self.getuid,
-                                list_volumes = self.list_volumes,
-                                top_trashdir_rules = top_trashdir_rules)
+
+        listing = ListTrashinfos(cmd.delete_if_matches,
+                                 self.file_reader,
+                                 unable_to_parse_path)
+
+        trashdirs = TrashDirs(self.environ,
+                              self.getuid,
+                              self.list_volumes,
+                              TopTrashDirRules(self.file_reader))
         trashdirs.on_trash_dir_found = listing.list_from_volume_trashdir
 
         trashdirs.list_trashdirs()
 
 def main():
     from trashcli.list_mount_points import mount_points
-    main = RmCmd(environ        = os.environ
-                 , getuid       = os.getuid
-                 , list_volumes = mount_points
-                 , stderr       = sys.stderr
-                 , file_reader  = FileSystemReader())
+    cmd = RmCmd(environ        = os.environ
+                , getuid       = os.getuid
+                , list_volumes = mount_points
+                , stderr       = sys.stderr
+                , file_reader  = FileSystemReader())
 
-    main.run(sys.argv)
+    cmd.run(sys.argv)
 
-    return main.exit_code
+    return cmd.exit_code
 
 class Filter:
-    def __init__(self, trashcan):
-        self.delete = trashcan
+    def __init__(self, delete):
+        self.delete = delete
     def use_pattern(self, pattern):
         self.pattern = pattern
     def delete_if_matches(self, original_location, info_file):
@@ -72,16 +75,15 @@ class Filter:
             self.delete(info_file)
 
 class ListTrashinfos:
-    def __init__(self, out, file_reader):
+    def __init__(self, out, file_reader, unable_to_parse_path):
         self.out = out
         self.file_reader = file_reader
-    def list_from_home_trashdir(self, trashdir_path):
-        self.list_from_volume_trashdir(trashdir_path, '/')
+        self.unable_to_parse_path = unable_to_parse_path
     def list_from_volume_trashdir(self, trashdir_path, volume):
         self.volume = volume
-        self.trashdir = TrashDir(self.file_reader)
-        self.trashdir.open(trashdir_path, volume)
-        self.trashdir.each_trashinfo(self._report_original_location)
+        trashdir = TrashDir(self.file_reader)
+        trashdir.open(trashdir_path, volume)
+        trashdir.each_trashinfo(self._report_original_location)
     def _report_original_location(self, trashinfo_path):
         trashinfo = self.file_reader.contents_of(trashinfo_path)
         try:

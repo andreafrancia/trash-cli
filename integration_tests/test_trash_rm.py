@@ -56,20 +56,22 @@ class TestListing:
     def setUp(self):
         require_empty_dir('sandbox')
         self.out = Mock()
-        self.listing = ListTrashinfos(self.out, FileSystemReader())
+        self.listing = ListTrashinfos(self.out,
+                                      FileSystemReader(),
+                                      None)
         self.index = 0
 
     def test_should_report_original_location(self):
         self.add_trashinfo('/foo')
 
-        self.listing.list_from_home_trashdir('sandbox/Trash')
+        self.listing.list_from_volume_trashdir('sandbox/Trash', '/')
 
         self.out.assert_called_with('/foo', ANY)
 
     def test_should_report_trashinfo_path(self):
         self.add_trashinfo(trashinfo_path='sandbox/Trash/info/a.trashinfo')
 
-        self.listing.list_from_home_trashdir('sandbox/Trash')
+        self.listing.list_from_volume_trashdir('sandbox/Trash', '/')
 
         self.out.assert_called_with(ANY, 'sandbox/Trash/info/a.trashinfo')
 

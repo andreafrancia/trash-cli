@@ -91,14 +91,17 @@ class EmptyCmd:
                                                  on_error=on_error))
         def delete_if_expired(trashinfo_path):
             self._dustman.delete_if_ok(trashinfo_path, trashcan)
+
         harvester = Harvester(self.file_reader)
         harvester.on_trashinfo_found = delete_if_expired
         harvester.on_orphan_found = trashcan.delete_orphan
+
         trashdirs = TrashDirs(self.environ,
                               self.getuid,
                               self.list_volumes,
                               TopTrashDirRules(self.file_reader))
         trashdirs.on_trash_dir_found = harvester.analize_trash_directory
+
         trashdirs.list_trashdirs()
     def println(self, line):
         self.out.write(line + '\n')

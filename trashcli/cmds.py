@@ -36,7 +36,7 @@ def empty(argv    = sys.argv,
 
 
 def list():
-    from trashcli.trash import ListCmd
+    from trashcli.list import ListCmd
     from trashcli.list_mount_points import mount_points
     ListCmd(
         out          = sys.stdout,
