@@ -25,15 +25,15 @@ class RmCmd:
         self.exit_code = 0
 
         if not args:
-            self.stderr.write('Usage:\n'
-                              '    trash-rm PATTERN\n'
-                              '\n'
-                              'Please specify PATTERN\n')
+            self.print_err('Usage:\n'
+                           '    trash-rm PATTERN\n'
+                           '\n'
+                           'Please specify PATTERN')
             self.exit_code = 8
             return
 
         def unable_to_parse_path(trashinfo):
-            self.stderr.write('trash-rm: {}: unable to parse \'Path\'\n'.format(
+            self.print_err('trash-rm: {}: unable to parse \'Path\''.format(
                     trashinfo))
 
         trashcan = CleanableTrashcan(FileRemover())
@@ -51,6 +51,10 @@ class RmCmd:
         trashdirs.on_trash_dir_found = listing.list_from_volume_trashdir
 
         trashdirs.list_trashdirs()
+
+    def print_err(self, msg):
+        self.stderr.write(msg + '\n')
+
 
 def main():
     from trashcli.list_mount_points import mount_points
