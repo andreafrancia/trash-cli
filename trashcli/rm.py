@@ -32,17 +32,13 @@ class RmCmd:
             self.exit_code = 8
             return
 
-        def unable_to_parse_path(trashinfo):
-            self.print_err('trash-rm: {}: unable to parse \'Path\''.format(
-                    trashinfo))
-
         trashcan = CleanableTrashcan(FileRemover())
         cmd = Filter(trashcan.delete_trashinfo_and_backup_copy)
         cmd.use_pattern(args[0])
 
         listing = ListTrashinfos(cmd.delete_if_matches,
                                  self.file_reader,
-                                 unable_to_parse_path)
+                                 self.unable_to_parse_path)
 
         trashdirs = TrashDirs(self.environ,
                               self.getuid,
@@ -51,6 +47,12 @@ class RmCmd:
         trashdirs.on_trash_dir_found = listing.list_from_volume_trashdir
 
         trashdirs.list_trashdirs()
+
+    def unable_to_parse_path(self, trashinfo):
+        self.report_error('{}: unable to parse \'Path\''.format(trashinfo))
+
+    def report_error(self, error_msg):
+        self.print_err('trash-rm: {}'.format(error_msg))
 
     def print_err(self, msg):
         self.stderr.write(msg + '\n')
