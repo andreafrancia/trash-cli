@@ -55,9 +55,12 @@ class EmptyCmd:
                                                  max_age_in_days)
 
     def report_invalid_option_usage(self, program_name, option):
-        self.err.write(
-            "{program_name}: invalid option -- '{option}'\n".format(**locals()))
+        self.println_err("{program_name}: invalid option -- '{option}'"
+                .format(**locals()))
         self.exit_code |= EX_USAGE
+
+    def println_err(self, msg):
+        self.err.write("{}\n".format(msg))
 
     def description(self, program_name, printer):
         printer.usage('Usage: %s [days]' % program_name)
