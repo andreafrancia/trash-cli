@@ -39,7 +39,7 @@ class Setup(object):
         assert_equals_with_unidiff(expected_output,
                                    self.user.actual_output())
 def sort_lines(lines):
-    return "\n".join(sorted(lines.splitlines()))
+    return "".join(sorted(lines.splitlines(True)))
 
 @istest
 class describe_trash_list(Setup):
