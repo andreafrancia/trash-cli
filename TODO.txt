@@ -1,13 +1,4 @@
-Currently working on: home-fallback
- - update the bug link in trash-put,
-    - remove path_for_trash_info injection
-    - make storing absolute paths the default
- - remove default from TrashDirectoryForPut __init__
- - inject logger in TrashDirectoryForPut
-
 Backlog:
- - add a test for trash-put and method 1 trashdir
- - add an automated test for checking man page installation
  - unificate "SEE ALSO" for all man pages
  - trash-list should handle .trashinfo from home trashdir that contains 
    relative path
