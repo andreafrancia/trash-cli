@@ -29,8 +29,7 @@ class TestTrashRmCmdRun:
         assert_equals('', cmd.stderr.getvalue())
 
 class TestTrashRmCmd:
-    @istest
-    def a_star_matches_all(self):
+    def test_a_star_matches_all(self):
 
         self.cmd.use_pattern('*')
         self.cmd.delete_if_matches('/foo', 'info/foo')
@@ -41,8 +40,7 @@ class TestTrashRmCmd:
             call('info/bar'),
             ], self.delete_trashinfo_and_backup_copy.mock_calls)
 
-    @istest
-    def basename_matches(self):
+    def test_basename_matches(self):
 
         self.cmd.use_pattern('foo')
         self.cmd.delete_if_matches('/foo', 'info/foo'),
@@ -52,8 +50,7 @@ class TestTrashRmCmd:
             call('info/foo'),
             ], self.delete_trashinfo_and_backup_copy.mock_calls)
 
-    @istest
-    def example_with_star_dot_o(self):
+    def test_example_with_star_dot_o(self):
 
         self.cmd.use_pattern('*.o')
         self.cmd.delete_if_matches('/foo.h', 'info/foo.h'),
@@ -65,6 +62,16 @@ class TestTrashRmCmd:
             call('info/foo.o'),
             call('info/bar.o'),
             ], self.delete_trashinfo_and_backup_copy.mock_calls)
+
+    def test_absolute_pattern(self):
+        self.cmd.use_pattern('/foo/bar.baz')
+        self.cmd.delete_if_matches('/foo/bar.baz', '1'),
+        self.cmd.delete_if_matches('/foo/bar', '2'),
+
+        assert_items_equal([
+            call('1'),
+            ], self.delete_trashinfo_and_backup_copy.mock_calls)
+
 
     def setUp(self):
         self.delete_trashinfo_and_backup_copy = Mock()

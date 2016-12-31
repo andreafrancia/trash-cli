@@ -76,9 +76,13 @@ class Filter:
     def use_pattern(self, pattern):
         self.pattern = pattern
     def delete_if_matches(self, original_location, info_file):
-        basename = os.path.basename(original_location)
-        if fnmatch.fnmatchcase(basename, self.pattern):
-            self.delete(info_file)
+        if self.pattern[0] == '/':
+            if self.pattern == original_location:
+                self.delete(info_file)
+        else:
+            basename = os.path.basename(original_location)
+            if fnmatch.fnmatchcase(basename, self.pattern):
+                self.delete(info_file)
 
 class ListTrashinfos:
     def __init__(self, out, file_reader, unable_to_parse_path):
