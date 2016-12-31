@@ -5,11 +5,12 @@ from assert_equals_with_unidiff import assert_equals_with_unidiff as assert_equa
 from textwrap import dedent
 
 from pprint import pprint
+import sys
 
 @istest
 class WhenNoArgs:
     def setUp(self):
-        process = Popen(['python', 'trashcli/rm.py'],
+        process = Popen([sys.executable, 'trashcli/rm.py'],
                     env={'PYTHONPATH':'.'},
                     stdin=None,
                     stdout=PIPE,
