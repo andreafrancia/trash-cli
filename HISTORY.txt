@@ -1,8 +1,30 @@
-after:
+0.17.1.1:
+ - Now trash-rm supports full path matching, using a pattern starting with slash '/' Fix #67
+ - Fix typo in trash-rm(1) man page
+ - Add a reference to trash-rm(1) to all man pges
+ - Fix inconsistent apostrophes
+ - Add support for --trash-dir option to trash-empty
+
+0.16.12.29:
+ - trash-rm no more crashes on .trashinfo files without Path (#69)
+
+0.16.12.28:
+ - Fix #48 trash-empty crashes on directories without read permission
+
+0.16.12.26:
+ - Fix #52: Almost all commands crashes with python 2.7.10
+
+0.16.12.25:
+ - Now trash-restore accept a /specific/path
+ - Now integration tests should pass also in a linux box. Fix #61
+ - Now all commands output will report the right up-to-date location for issue reporting (#39)
+ - Add input validation in trash-restore
+ - Renamed trash-restore instead of restore-trash
  - Fixed bug (trash-put creates $topdir/.Trash even it should not)
  - Fixed bug (trash-put uses $topdir/.Trash/$uid even if unsecure)
+ - Minor changes to man pages.
 
-0.12.9:
+0.12.9.14:
  - Switched to distutils.core (instead of setuptools)
  - Now `trash-put -v` will warning if it found a unsticky .Trash dir.
  - New trash-rm command
