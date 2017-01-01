@@ -99,8 +99,11 @@ class Parser:
             self._on_invalid_option(program_name, invalid_option)
         else:
             for option, value in options:
-                if option in self.actions:
+                if option in ('--help', '-h', '--version'):
                     self.actions[option](program_name)
+                    return
+                if option in self.actions:
+                    self.actions[option](value)
                     return
             for argument in arguments:
                 self.argument_action(argument)
@@ -117,6 +120,9 @@ class Parser:
 
     def add_option(self, long_option, action, short_aliases=''):
         self.long_options.append(long_option)
+        if long_option.endswith('='):
+            import re
+            long_option = re.sub('=$', '', long_option)
         self.actions['--' + long_option] = action
         for short_alias in short_aliases:
             self.add_short_option(short_alias, action)
