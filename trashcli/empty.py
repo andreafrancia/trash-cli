@@ -72,7 +72,7 @@ class EmptyCmd:
         printer.bug_reporting()
 
     def empty_trashdir(self, specific_dir):
-        pass
+        self.delete_all_things_under_trash_dir(specific_dir, None)
     def empty_all_trashdirs(self):
         trashdirs = TrashDirs(self.environ,
                               self.getuid,

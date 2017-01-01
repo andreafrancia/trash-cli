@@ -258,6 +258,14 @@ class TestEmptyCmdWithMultipleVolumes:
 
         assert not os.path.exists('topdir/.Trash-123/info/foo.trashinfo')
 
+    def test_it_removes_trashinfo_from_specified_trash_dir(self):
+        having_file('specified/info/foo.trashinfo')
+
+        self.empty.run('trash-empty', '--trashdir', 'specified')
+
+        assert not os.path.exists('specified/info/foo.trashinfo')
+
+
     def make_proper_top_trash_dir(self, path):
         make_dirs(path)
         set_sticky_bit(path)
