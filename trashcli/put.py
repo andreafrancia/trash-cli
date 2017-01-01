@@ -3,6 +3,7 @@ import sys
 
 from .fs import parent_of
 from .fstab import Fstab
+from .fstab import volume_of
 from .trash import EX_OK, EX_IOERR
 from .trash import TrashDirectories
 from .trash import backup_file_path_from
@@ -13,50 +14,47 @@ from datetime import datetime
 def main():
     return TrashPutCmd(
         sys.stdout,
-        sys.stderr
+        sys.stderr,
+        os.environ,
+        volume_of
     ).run(sys.argv)
 
 class TrashPutCmd:
     def __init__(self,
                  stdout,
                  stderr,
-                 environ = os.environ,
-                 volume_of = Fstab().volume_of):
+                 environ,
+                 volume_of):
         self.stdout    = stdout
         self.stderr    = stderr
         self.environ   = environ
         self.volume_of = volume_of
-        self.logger    = MyLogger(self.stderr)
-        self.reporter  = TrashPutReporter(self.logger)
 
     def run(self, argv):
-        program_name = os.path.basename(argv[0])
-        self.logger.use_program_name(program_name)
+        program_name  = os.path.basename(argv[0])
+
+        logger = MyLogger(self.stderr, program_name)
 
         parser = self.get_option_parser(program_name)
         try:
             (options, args) = parser.parse_args(argv[1:])
-            if options.verbose: self.logger.be_verbose()
+            if options.verbose: logger.be_verbose()
 
             if len(args) <= 0:
                 parser.error("Please specify the files to trash.")
         except SystemExit,e:
             return e.code
+        else:
+            reporter = TrashPutReporter(logger)
+            trashcan = GlobalTrashCan(reporter = reporter,
+                                      volume_of = self.volume_of,
+                                      environ = self.environ,
+                                      fs = RealFs(),
+                                      getuid = os.getuid,
+                                      now = datetime.now)
+            trashcan.trash_all(args)
 
-        self.trashcan = GlobalTrashCan(
-                reporter = self.reporter,
-                volume_of = self.volume_of,
-                environ = self.environ,
-                fs = RealFs(),
-                getuid = os.getuid,
-                now = datetime.now)
-        self.trash_all(args)
-
-        return self.reporter.exit_code()
-
-    def trash_all(self, args):
-        for arg in args :
-            self.trashcan.trash(arg)
+            return reporter.exit_code()
 
     def get_option_parser(self, program_name):
         from optparse import OptionParser
@@ -104,12 +102,10 @@ use one of these commands:
 Report bugs to https://github.com/andreafrancia/trash-cli/issues"""
 
 class MyLogger:
-    def __init__(self, stderr):
-        self.program_name = 'ERROR'
+    def __init__(self, stderr, program_name):
+        self.program_name = program_name
         self.stderr=stderr
         self.verbose = False
-    def use_program_name(self, program_name):
-        self.program_name = program_name
     def be_verbose(self):
         self.verbose = True
     def info(self,message):
@@ -224,6 +220,10 @@ class GlobalTrashCan:
         self.fs            = fs
         self.trash_directories = TrashDirectories(
                 self.volume_of, getuid, environ)
+
+    def trash_all(self, args):
+        for arg in args :
+            self.trash(arg)
 
     def trash(self, file) :
         """
