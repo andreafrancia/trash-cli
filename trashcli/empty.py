@@ -43,7 +43,7 @@ class EmptyCmd:
         parse.on_argument(self.set_max_age_in_days)
         parse.as_default(self.empty_all_trashdirs)
         parse.on_invalid_option(self.report_invalid_option_usage)
-        parse.add_option('trashdir=', self.empty_trashdir)
+        parse.add_option('trash-dir=', self.empty_trashdir)
 
         parse(argv)
 

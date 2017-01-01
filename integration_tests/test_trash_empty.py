@@ -261,7 +261,7 @@ class TestEmptyCmdWithMultipleVolumes:
     def test_it_removes_trashinfo_from_specified_trash_dir(self):
         having_file('specified/info/foo.trashinfo')
 
-        self.empty.run('trash-empty', '--trashdir', 'specified')
+        self.empty.run('trash-empty', '--trash-dir', 'specified')
 
         assert not os.path.exists('specified/info/foo.trashinfo')
 

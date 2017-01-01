@@ -18,7 +18,7 @@ class TestTrashEmptyCmd:
         assert_equals([], self.empty_trashdir.mock_calls)
 
     def test(self):
-        self.cmd.run('trash-empty', '--trashdir', 'specific')
+        self.cmd.run('trash-empty', '--trash-dir', 'specific')
 
         assert_equals([], self.empty_all_trashdirs.mock_calls)
         assert_equals([call('specific')], self.empty_trashdir.mock_calls)
