@@ -43,6 +43,7 @@ class EmptyCmd:
         parse.on_argument(self.set_max_age_in_days)
         parse.as_default(self.empty_all_trashdirs)
         parse.on_invalid_option(self.report_invalid_option_usage)
+        parse.add_option('trashdir=', self.empty_trashdir)
 
         parse(argv)
 
@@ -69,6 +70,9 @@ class EmptyCmd:
            "  --version   show program's version number and exit",
            "  -h, --help  show this help message and exit")
         printer.bug_reporting()
+
+    def empty_trashdir(self, specific_dir):
+        pass
     def empty_all_trashdirs(self):
         trashdirs = TrashDirs(self.environ,
                               self.getuid,
