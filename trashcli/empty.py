@@ -25,17 +25,17 @@ class EmptyCmd:
         self.out          = out
         self.err          = err
         self.file_reader  = file_reader
-        self.environ = environ
-        self.getuid  = getuid
+        self.environ      = environ
+        self.getuid       = getuid
         self.list_volumes = list_volumes
         self.version      = version
         self._now         = now
-        self._dustman     = DeleteAlways()
         self.file_remover = file_remover
+        self._dustman     = DeleteAnything()
 
     def run(self, *argv):
-        self.program_name  = os.path.basename(argv[0])
-        self.exit_code     = EX_OK
+        self.program_name = os.path.basename(argv[0])
+        self.exit_code    = EX_OK
 
         parse = Parser()
         parse.on_help(PrintHelp(self.description, self.println))
@@ -51,8 +51,8 @@ class EmptyCmd:
     def set_max_age_in_days(self, arg):
         max_age_in_days = int(arg)
         self._dustman = DeleteAccordingDate(self.file_reader.contents_of,
-                                                 self._now,
-                                                 max_age_in_days)
+                                            self._now,
+                                            max_age_in_days)
 
     def report_invalid_option_usage(self, program_name, option):
         self.println_err("{program_name}: invalid option -- '{option}'"
@@ -70,44 +70,53 @@ class EmptyCmd:
            "  -h, --help  show this help message and exit")
         printer.bug_reporting()
     def empty_all_trashdirs(self):
-        class FileRemoveB:
-            def __init__(self, file_remover, on_error):
-                self.file_remover = file_remover
-                self.on_error = on_error
-            def remove_file(self, path):
-                try:
-                    return self.file_remover.remove_file(path)
-                except OSError as e:
-                    self.on_error(e, path)
-            def remove_file_if_exists(self, path):
-                try:
-                    return self.file_remover.remove_file_if_exists(path)
-                except OSError as e:
-                    self.on_error(e, path)
-
-        def on_error(exc, path):
-            error_message = "cannot remove {path}".format(path=path)
-            self.println_err("{program_name}: {msg}".format(
-                program_name=self.program_name,
-                msg=error_message))
-        trashcan = CleanableTrashcan(FileRemoveB(self.file_remover,
-                                                 on_error=on_error))
-        def delete_if_expired(trashinfo_path):
-            self._dustman.delete_if_ok(trashinfo_path, trashcan)
-
-        harvester = Harvester(self.file_reader)
-        harvester.on_trashinfo_found = delete_if_expired
-        harvester.on_orphan_found = trashcan.delete_orphan
-
         trashdirs = TrashDirs(self.environ,
                               self.getuid,
                               self.list_volumes,
                               TopTrashDirRules(self.file_reader))
-        trashdirs.on_trash_dir_found = harvester.analize_trash_directory
+        trashdirs.on_trash_dir_found = self.delete_all_things_under_trash_dir
 
         trashdirs.list_trashdirs()
+
+    def delete_all_things_under_trash_dir(self, trash_dir_path, volume_path):
+        harvester = Harvester(self.file_reader)
+        harvester.on_trashinfo_found = self.delete_trashinfo_and_backup_copy
+        harvester.on_orphan_found = self.delete_orphan
+        harvester.analize_trash_directory(trash_dir_path, volume_path)
+
+    def delete_trashinfo_and_backup_copy(self, trashinfo_path):
+        trashcan = self.make_trashcan()
+        self._dustman.delete_if_ok(trashinfo_path, trashcan)
+    def delete_orphan(self, path_to_backup_copy):
+        trashcan = self.make_trashcan()
+        trashcan.delete_orphan(path_to_backup_copy)
+    def make_trashcan(self):
+        file_remover_with_error = FileRemoveWithErrorHandling(self.file_remover,
+                                                              self.print_cannot_remove_error)
+        trashcan = CleanableTrashcan(file_remover_with_error)
+        return trashcan
+    def print_cannot_remove_error(self, exc, path):
+        error_message = "cannot remove {path}".format(path=path)
+        self.println_err("{program_name}: {msg}".format(
+            program_name=self.program_name,
+            msg=error_message))
     def println(self, line):
         self.out.write(line + '\n')
+
+class FileRemoveWithErrorHandling:
+    def __init__(self, file_remover, on_error):
+        self.file_remover = file_remover
+        self.on_error = on_error
+    def remove_file(self, path):
+        try:
+            return self.file_remover.remove_file(path)
+        except OSError as e:
+            self.on_error(e, path)
+    def remove_file_if_exists(self, path):
+        try:
+            return self.file_remover.remove_file_if_exists(path)
+        except OSError as e:
+            self.on_error(e, path)
 
 class DeleteAccordingDate:
     def __init__(self, contents_of, now, max_age_in_days):
@@ -122,7 +131,8 @@ class DeleteAccordingDate:
                 lambda: trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
             ),
         )(contents)
-class DeleteAlways:
+
+class DeleteAnything:
     def delete_if_ok(self, trashinfo_path, trashcan):
         trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
 
@@ -133,6 +143,7 @@ class IfDate:
     def __call__(self, date2):
         if self.date_criteria(date2):
             self.then()
+
 class OlderThan:
     def __init__(self, days_ago, now):
         from datetime import timedelta
