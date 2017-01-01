@@ -60,9 +60,7 @@ class TestTrashEmptyCmd:
         os.chmod('unreadable-dir', 0o700)
         shutil.rmtree('unreadable-dir')
 
-
-@istest
-class WhenCalledWithoutArguments:
+class TestWhenCalledWithoutArguments:
 
     def setUp(self):
         require_empty_dir('XDG_DATA_HOME')
@@ -85,51 +83,47 @@ class WhenCalledWithoutArguments:
     def user_run_trash_empty(self):
         self.empty_cmd.run('trash-empty')
 
-    @istest
-    def it_should_remove_an_info_file(self):
+    def test_it_should_remove_an_info_file(self):
         self.having_a_trashinfo_in_trashcan('foo.trashinfo')
 
         self.user_run_trash_empty()
 
         self.assert_dir_empty(self.info_dir_path)
 
-    @istest
-    def it_should_remove_all_the_infofiles(self):
+    def test_it_should_remove_all_the_infofiles(self):
         self.having_three_trashinfo_in_trashcan()
 
         self.user_run_trash_empty()
 
         self.assert_dir_empty(self.info_dir_path)
 
-    @istest
-    def it_should_remove_the_backup_files(self):
+    def test_it_should_remove_the_backup_files(self):
         self.having_one_trashed_file()
 
         self.user_run_trash_empty()
 
         self.assert_dir_empty(self.files_dir_path)
 
-    @istest
-    def it_should_keep_unknown_files_found_in_infodir(self):
+    def test_it_should_keep_unknown_files_found_in_infodir(self):
         self.having_file_in_info_dir('not-a-trashinfo')
 
         self.user_run_trash_empty()
 
         self.assert_dir_contains(self.info_dir_path, 'not-a-trashinfo')
 
-    @istest
-    def but_it_should_remove_orphan_files_from_the_files_dir(self):
+    def test_but_it_should_remove_orphan_files_from_the_files_dir(self):
         self.having_orphan_file_in_files_dir()
 
         self.user_run_trash_empty()
 
         self.assert_dir_empty(self.files_dir_path)
 
-    @istest
-    def it_should_purge_also_directories(self):
+    def test_it_should_purge_also_directories(self):
         os.makedirs("XDG_DATA_HOME/Trash/files/a-dir")
 
         self.user_run_trash_empty()
+
+        self.assert_dir_empty(self.files_dir_path)
 
     def assert_dir_empty(self, path):
         assert len(os.listdir(path)) == 0
