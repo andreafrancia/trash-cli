@@ -29,6 +29,9 @@ class TrashPutCmd:
         self.stderr    = stderr
         self.environ   = environ
         self.volume_of = volume_of
+        self.fs        = RealFs()
+        self.getuid    = os.getuid
+        self.now       = datetime.now
 
     def run(self, argv):
         program_name  = os.path.basename(argv[0])
@@ -46,12 +49,12 @@ class TrashPutCmd:
             return e.code
         else:
             reporter = TrashPutReporter(logger)
-            trashcan = GlobalTrashCan(reporter = reporter,
+            trashcan = GlobalTrashCan(reporter  = reporter,
                                       volume_of = self.volume_of,
-                                      environ = self.environ,
-                                      fs = RealFs(),
-                                      getuid = os.getuid,
-                                      now = datetime.now)
+                                      environ   = self.environ,
+                                      fs        = self.fs,
+                                      getuid    = self.getuid,
+                                      now       = self.now)
             trashcan.trash_all(args)
 
             return reporter.exit_code()
@@ -127,7 +130,7 @@ class NullObject:
         return lambda *argl,**args:None
 
 class TrashPutReporter:
-    def __init__(self, logger = NullObject()):
+    def __init__(self, logger):
         self.logger = logger
         self.some_file_has_not_be_trashed = False
         self.no_argument_specified = False
@@ -213,13 +216,12 @@ class GlobalTrashCan:
         def __getattr__(self,name):
             return lambda *argl,**args:None
     def __init__(self, environ, volume_of, reporter, fs, getuid, now):
-        self.getuid        = getuid
-        self.reporter      = reporter
-        self.volume_of     = volume_of
-        self.now           = now
-        self.fs            = fs
-        self.trash_directories = TrashDirectories(
-                self.volume_of, getuid, environ)
+        self.getuid            = getuid
+        self.reporter          = reporter
+        self.volume_of         = volume_of
+        self.now               = now
+        self.fs                = fs
+        self.environ           = environ
 
     def trash_all(self, args):
         for arg in args :
@@ -245,8 +247,7 @@ class GlobalTrashCan:
             self.reporter.unable_to_trash_dot_entries(file)
             return
 
-        candidates = PossibleTrashDirectories(self.fs)
-        self._possible_trash_directories_for(file, candidates)
+        candidates = self._possible_trash_directories_for(file)
         file_has_been_trashed = False
         for trash_dir in candidates.trash_dirs:
             if self._is_trash_dir_secure(trash_dir):
@@ -298,15 +299,17 @@ class GlobalTrashCan:
     def _file_could_be_trashed_in(self,file_to_be_trashed,trash_dir_path):
         return self.volume_of(trash_dir_path) == self.volume_of_parent(file_to_be_trashed)
 
-    def _possible_trash_directories_for(self, file, candidates):
+    def _possible_trash_directories_for(self, file):
+        candidates = PossibleTrashDirectories(self.fs)
+        trash_directories = TrashDirectories(self.volume_of,
+                                             self.getuid,
+                                             self.environ)
+        trash_directories.home_trash_dir(candidates.add_home_trash)
         volume = self.volume_of_parent(file)
-
-        self.trash_directories.home_trash_dir(
-                candidates.add_home_trash)
-        self.trash_directories.volume_trash_dir1(
-                volume, candidates.add_top_trash_dir)
-        self.trash_directories.volume_trash_dir2(
-                volume, candidates.add_alt_top_trash_dir)
+        trash_directories.volume_trash_dir1(volume,
+                                            candidates.add_top_trash_dir)
+        trash_directories.volume_trash_dir2(volume,
+                                            candidates.add_alt_top_trash_dir)
         return candidates
 
     def volume_of_parent(self, file):
