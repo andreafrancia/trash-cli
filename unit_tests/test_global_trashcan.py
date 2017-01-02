@@ -20,6 +20,11 @@ class TestGlobalTrashCan:
                 fs = self.fs,
                 parent_path = os.path.dirname)
 
+    def test_log_volume(self):
+        self.trashcan.trash('a-dir/with-a-file')
+
+        self.reporter.volume_of_file.assert_called_with('/')
+
     @istest
     def should_report_when_trash_fail(self):
         self.fs.move.side_effect = IOError
