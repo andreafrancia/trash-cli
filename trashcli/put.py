@@ -1,7 +1,6 @@
 import os
 import sys
 
-from .fs import parent_of
 from .fstab import Fstab
 from .fstab import volume_of
 from .trash import EX_OK, EX_IOERR
@@ -16,7 +15,8 @@ def main():
         sys.stdout,
         sys.stderr,
         os.environ,
-        volume_of
+        volume_of,
+        os.path.dirname
     ).run(sys.argv)
 
 class TrashPutCmd:
@@ -24,14 +24,16 @@ class TrashPutCmd:
                  stdout,
                  stderr,
                  environ,
-                 volume_of):
-        self.stdout    = stdout
-        self.stderr    = stderr
-        self.environ   = environ
-        self.volume_of = volume_of
-        self.fs        = RealFs()
-        self.getuid    = os.getuid
-        self.now       = datetime.now
+                 volume_of,
+                 parent_path):
+        self.stdout      = stdout
+        self.stderr      = stderr
+        self.environ     = environ
+        self.volume_of   = volume_of
+        self.fs          = RealFs()
+        self.getuid      = os.getuid
+        self.now         = datetime.now
+        self.parent_path = parent_path
 
     def run(self, argv):
         program_name  = os.path.basename(argv[0])
@@ -49,12 +51,13 @@ class TrashPutCmd:
             return e.code
         else:
             reporter = TrashPutReporter(logger)
-            trashcan = GlobalTrashCan(reporter  = reporter,
-                                      volume_of = self.volume_of,
-                                      environ   = self.environ,
-                                      fs        = self.fs,
-                                      getuid    = self.getuid,
-                                      now       = self.now)
+            trashcan = GlobalTrashCan(reporter    = reporter,
+                                      volume_of   = self.volume_of,
+                                      environ     = self.environ,
+                                      fs          = self.fs,
+                                      getuid      = self.getuid,
+                                      now         = self.now,
+                                      parent_path = self.parent_path)
             trashcan.trash_all(args)
 
             return reporter.exit_code()
@@ -215,13 +218,15 @@ class GlobalTrashCan:
     class NullReporter:
         def __getattr__(self,name):
             return lambda *argl,**args:None
-    def __init__(self, environ, volume_of, reporter, fs, getuid, now):
+    def __init__(self, environ, volume_of, reporter, fs, getuid, now,
+                 parent_path):
         self.getuid            = getuid
         self.reporter          = reporter
         self.volume_of         = volume_of
         self.now               = now
         self.fs                = fs
         self.environ           = environ
+        self.parent_path       = parent_path
 
     def trash_all(self, args):
         for arg in args :
@@ -247,11 +252,13 @@ class GlobalTrashCan:
             self.reporter.unable_to_trash_dot_entries(file)
             return
 
-        candidates = self._possible_trash_directories_for(file)
+        volume_of_file_to_be_trashed = self.volume_of_parent(file)
+        candidates = self._possible_trash_directories_for(volume_of_file_to_be_trashed)
         file_has_been_trashed = False
         for trash_dir in candidates.trash_dirs:
             if self._is_trash_dir_secure(trash_dir):
-                if self._file_could_be_trashed_in(file, trash_dir.path):
+                if self._file_could_be_trashed_in(volume_of_file_to_be_trashed, 
+                                                  trash_dir.path):
                     try:
                         trashed_file = trash_dir.trash(file)
                         self.reporter.file_has_been_trashed_in_as(
@@ -268,6 +275,9 @@ class GlobalTrashCan:
 
         if not file_has_been_trashed:
             self.reporter.unable_to_trash_file(file)
+
+    def volume_of_parent(self, file):
+        return self.volume_of(self.parent_path(file))
 
     def _is_trash_dir_secure(self, trash_dir):
         class ValidationOutput:
@@ -296,24 +306,22 @@ class GlobalTrashCan:
         basename = os.path.basename(file)
         return (basename == ".") or (basename == "..")
 
-    def _file_could_be_trashed_in(self,file_to_be_trashed,trash_dir_path):
-        return self.volume_of(trash_dir_path) == self.volume_of_parent(file_to_be_trashed)
+    def _file_could_be_trashed_in(self,
+                                  volume_of_file_to_be_trashed,
+                                  trash_dir_path):
+        return self.volume_of(trash_dir_path) == volume_of_file_to_be_trashed
 
-    def _possible_trash_directories_for(self, file):
+    def _possible_trash_directories_for(self, volume):
         candidates = PossibleTrashDirectories(self.fs)
         trash_directories = TrashDirectories(self.volume_of,
                                              self.getuid,
                                              self.environ)
         trash_directories.home_trash_dir(candidates.add_home_trash)
-        volume = self.volume_of_parent(file)
         trash_directories.volume_trash_dir1(volume,
                                             candidates.add_top_trash_dir)
         trash_directories.volume_trash_dir2(volume,
                                             candidates.add_alt_top_trash_dir)
         return candidates
-
-    def volume_of_parent(self, file):
-        return self.volume_of(parent_of(file))
 
 class PossibleTrashDirectories:
     def __init__(self, fs):
@@ -335,6 +343,10 @@ class PossibleTrashDirectories:
     def _make_trash_dir(self, path, volume):
         return TrashDirectoryForPut(path, volume, datetime.now, self.fs)
 
+def parent_realpath(path):
+    parent = os.path.dirname(path)
+    return os.path.realpath(parent)
+
 class TrashDirectoryForPut:
     from datetime import datetime
     def __init__(self, path, volume, now, fs):
@@ -353,7 +365,7 @@ class TrashDirectoryForPut:
         self.remove_file  = fs.remove_file
         self.ensure_dir   = fs.ensure_dir
 
-        self.path_for_trash_info = OriginalLocation(os.path.realpath)
+        self.path_for_trash_info = OriginalLocation(parent_realpath)
 
     def store_absolute_paths(self):
         self.path_for_trash_info.make_absolutes_paths()
@@ -465,8 +477,8 @@ class TopTrashDirWriteRules:
         output.is_valid()
 
 class OriginalLocation:
-    def __init__(self, realpath):
-        self.realpath = realpath
+    def __init__(self, parent_realpath):
+        self.parent_realpath = parent_realpath
         self.make_absolutes_paths()
 
     def make_paths_relatives_to(self, topdir):
@@ -479,15 +491,11 @@ class OriginalLocation:
         self.normalized_path = os.path.normpath(path)
 
         basename = os.path.basename(self.normalized_path)
-        parent   = self._real_parent()
+        parent   = self.parent_realpath(self.normalized_path)
 
         parent = self.path_maker.calc_parent_path(parent)
 
         return os.path.join(parent, basename)
-
-    def _real_parent(self):
-        parent = os.path.dirname(self.normalized_path)
-        return self.realpath(parent)
 
 class TopDirRelativePaths:
     def __init__(self, topdir):

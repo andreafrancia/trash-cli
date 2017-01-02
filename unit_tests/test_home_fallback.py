@@ -3,6 +3,7 @@ from mock import Mock, call, ANY
 from trashcli.fstab import FakeFstab
 from trashcli.put import GlobalTrashCan
 from nose.tools import assert_equals
+import os
 
 class TestHomeFallback:
     def setUp(self):
@@ -15,7 +16,8 @@ class TestHomeFallback:
                 volume_of = self.fake_volume_of(mount_points),
                 now = None,
                 environ = dict(),
-                fs = self.fs)
+                fs = self.fs,
+                parent_path = os.path.dirname)
 
     def test_should_skip_top_trash_if_does_not_exists(self):
         self.fs.mock_add_spec(['isdir', 'islink', 'move', 'atomic_write',

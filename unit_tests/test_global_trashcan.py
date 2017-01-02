@@ -2,6 +2,7 @@ from mock import Mock
 from nose.tools import istest
 
 from trashcli.put import GlobalTrashCan
+import os
 
 class TestGlobalTrashCan:
     def setUp(self):
@@ -16,7 +17,8 @@ class TestGlobalTrashCan:
                 getuid = lambda:123,
                 now = None,
                 environ = dict(),
-                fs = self.fs)
+                fs = self.fs,
+                parent_path = os.path.dirname)
 
     @istest
     def should_report_when_trash_fail(self):

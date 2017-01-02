@@ -12,7 +12,7 @@ class TrashPutTest:
         self.stderr = StringIO()
         self.stdout = StringIO()
         args = ['trash-put'] + list(arg)
-        cmd = TrashPutCmd(self.stdout, self.stderr, None, None)
+        cmd = TrashPutCmd(self.stdout, self.stderr, None, None, None)
         self._collect_exit_code(lambda:cmd.run(args))
 
     def _collect_exit_code(self, main_function):

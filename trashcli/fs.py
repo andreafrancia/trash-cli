@@ -33,9 +33,6 @@ def has_sticky_bit(path): # TODO move to FileSystemReader
     import stat
     return (os.stat(path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
 
-def parent_of(path):
-    return os.path.dirname(path)
-
 def remove_file(path):
     if(os.path.exists(path)):
         try:

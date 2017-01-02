@@ -32,10 +32,11 @@ class TrashPutTest:
 
     def run_trashput(self, *argv):
         cmd = TrashPutCmd(
-            stdout    = self.out,
-            stderr    = self.err,
-            environ   = self.environ,
-            volume_of = self.fstab.volume_of
+            stdout      = self.out,
+            stderr      = self.err,
+            environ     = self.environ,
+            volume_of   = self.fstab.volume_of,
+            parent_path = os.path.dirname
         )
         self.exit_code = cmd.run(list(argv))
         self.stderr = self.err.getvalue()

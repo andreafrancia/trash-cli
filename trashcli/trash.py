@@ -342,7 +342,7 @@ class CleanableTrashcan:
         self._file_remover.remove_file_if_exists(backup_copy)
         self._file_remover.remove_file(trashinfo_path)
     def _path_of_backup_copy(self, path_to_trashinfo):
-        from os.path import dirname as parent_of, join, basename
-        trash_dir = parent_of(parent_of(path_to_trashinfo))
+        from os.path import dirname, join, basename
+        trash_dir = dirname(dirname(path_to_trashinfo))
         return join(trash_dir, 'files', basename(path_to_trashinfo)[:-len('.trashinfo')])
 
