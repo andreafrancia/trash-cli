@@ -164,6 +164,8 @@ class TrashPutReporter:
             return EX_OK
         else:
             return EX_IOERR
+    def volume_of_file(self,volume):
+        pass
 
 def describe(path):
     """
@@ -253,8 +255,7 @@ class GlobalTrashCan:
             return
 
         volume_of_file_to_be_trashed = self.volume_of_parent(file)
-        if hasattr(self.reporter, 'volume_of_file'):
-            self.reporter.volume_of_file(volume_of_file_to_be_trashed)
+        self.reporter.volume_of_file(volume_of_file_to_be_trashed)
         candidates = self._possible_trash_directories_for(volume_of_file_to_be_trashed)
         file_has_been_trashed = False
         for trash_dir in candidates.trash_dirs:
