@@ -34,7 +34,7 @@ def has_sticky_bit(path): # TODO move to FileSystemReader
     return (os.stat(path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
 
 def remove_file(path):
-    if(os.path.exists(path)):
+    if(os.path.lexists(path)):
         try:
             os.remove(path)
         except:

@@ -8,6 +8,29 @@ from nose.tools import assert_in
 from .files import having_file, require_empty_dir, having_empty_dir
 from .files import make_sticky_dir
 from trashcli.fstab import FakeFstab
+from trashcli.fs import remove_file
+from trashcli.put import parent_path
+
+class TestPath:
+    def setUp(self):
+        self.base = os.path.realpath(os.getcwd())
+
+    def test(self):
+        require_empty_dir('other_dir/dir')
+        remove_file('dir')
+        os.symlink('other_dir/dir', 'dir')
+        having_file('dir/foo')
+        assert_equals(os.path.join(self.base,'other_dir/dir'),
+                      parent_path('dir/foo'))
+        remove_file('dir')
+        remove_file('other_dir')
+    def test2(self):
+        require_empty_dir('test-disk/dir')
+        remove_file('link-to-non-existent')
+        os.symlink('test-disk/non-existent', 'link-to-non-existent')
+        assert_equals(self.base,
+                      parent_path('link-to-non-existent'))
+        remove_file('link-to-non-existent')
 
 class TrashPutTest:
 

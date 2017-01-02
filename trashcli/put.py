@@ -19,6 +19,9 @@ def main():
         os.path.dirname
     ).run(sys.argv)
 
+def parent_path(path):
+    return os.path.realpath(os.path.dirname(path))
+
 class TrashPutCmd:
     def __init__(self,
                  stdout,
