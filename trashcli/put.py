@@ -165,7 +165,7 @@ class TrashPutReporter:
         else:
             return EX_IOERR
     def volume_of_file(self,volume):
-        pass
+        self.logger.info("Volume of file: %s" % volume)
 
 def describe(path):
     """
