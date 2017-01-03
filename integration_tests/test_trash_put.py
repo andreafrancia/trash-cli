@@ -32,6 +32,29 @@ class TestPath:
                       parent_path('link-to-non-existent'))
         remove_file('link-to-non-existent')
 
+    def test3(self):
+        remove_file('foo')
+        remove_file('bar')
+        require_empty_dir('foo')
+        require_empty_dir('bar')
+        os.symlink('../bar/zap', 'foo/zap')
+        assert_equals(os.path.join(self.base,'foo'),
+                      parent_path('foo/zap'))
+        remove_file('foo')
+        remove_file('bar')
+
+    def test4(self):
+        remove_file('foo')
+        remove_file('bar')
+        require_empty_dir('foo')
+        require_empty_dir('bar')
+        os.symlink('../bar/zap', 'foo/zap')
+        having_file('bar/zap')
+        assert_equals(os.path.join(self.base,'foo'),
+                      parent_path('foo/zap'))
+        remove_file('foo')
+        remove_file('bar')
+
 class TrashPutTest:
 
     def setUp(self):
