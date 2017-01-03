@@ -162,6 +162,9 @@ class TrashPutReporter:
                                         trash_directory, error):
         self.logger.info("Failed to trash %s in %s, because :%s" % (
            file_to_be_trashed, shrinkuser(trash_directory), error))
+    def trash_dir_with_volume(self, trash_dir_path, volume_path):
+        self.logger.info("Trash-dir: %s from volume: %s" % (trash_dir_path,
+                                                            volume_path))
     def exit_code(self):
         if not self.some_file_has_not_be_trashed:
             return EX_OK
@@ -263,8 +266,11 @@ class GlobalTrashCan:
         file_has_been_trashed = False
         for trash_dir in candidates.trash_dirs:
             if self._is_trash_dir_secure(trash_dir):
-                if self._file_could_be_trashed_in(volume_of_file_to_be_trashed, 
-                                                  trash_dir.path):
+                volume_of_trash_dir = self.volume_of(trash_dir.path)
+                self.reporter.trash_dir_with_volume(trash_dir.path,
+                                                    volume_of_trash_dir)
+                if self._file_could_be_trashed_in(volume_of_file_to_be_trashed,
+                                                  volume_of_trash_dir):
                     try:
                         trashed_file = trash_dir.trash(file)
                         self.reporter.file_has_been_trashed_in_as(
@@ -314,8 +320,8 @@ class GlobalTrashCan:
 
     def _file_could_be_trashed_in(self,
                                   volume_of_file_to_be_trashed,
-                                  trash_dir_path):
-        return self.volume_of(trash_dir_path) == volume_of_file_to_be_trashed
+                                  volume_of_trash_dir):
+        return volume_of_trash_dir == volume_of_file_to_be_trashed
 
     def _possible_trash_directories_for(self, volume):
         candidates = PossibleTrashDirectories(self.fs)
