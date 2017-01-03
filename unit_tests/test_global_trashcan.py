@@ -18,7 +18,8 @@ class TestGlobalTrashCan:
                 now = None,
                 environ = dict(),
                 fs = self.fs,
-                parent_path = os.path.dirname)
+                parent_path = os.path.dirname,
+                realpath = lambda x:x)
 
     def test_log_volume(self):
         self.trashcan.trash('a-dir/with-a-file')

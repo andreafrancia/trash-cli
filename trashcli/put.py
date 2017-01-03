@@ -16,7 +16,8 @@ def main():
         sys.stderr,
         os.environ,
         volume_of,
-        os.path.dirname
+        os.path.dirname,
+        lambda x:x
     ).run(sys.argv)
 
 def parent_path(path):
@@ -28,7 +29,8 @@ class TrashPutCmd:
                  stderr,
                  environ,
                  volume_of,
-                 parent_path):
+                 parent_path,
+                 realpath):
         self.stdout      = stdout
         self.stderr      = stderr
         self.environ     = environ
@@ -37,6 +39,7 @@ class TrashPutCmd:
         self.getuid      = os.getuid
         self.now         = datetime.now
         self.parent_path = parent_path
+        self.realpath    = realpath
 
     def run(self, argv):
         program_name  = os.path.basename(argv[0])
@@ -60,7 +63,8 @@ class TrashPutCmd:
                                       fs          = self.fs,
                                       getuid      = self.getuid,
                                       now         = self.now,
-                                      parent_path = self.parent_path)
+                                      parent_path = self.parent_path,
+                                      realpath    = self.realpath)
             trashcan.trash_all(args)
 
             return reporter.exit_code()
@@ -227,7 +231,7 @@ class GlobalTrashCan:
         def __getattr__(self,name):
             return lambda *argl,**args:None
     def __init__(self, environ, volume_of, reporter, fs, getuid, now,
-                 parent_path):
+                 parent_path, realpath):
         self.getuid            = getuid
         self.reporter          = reporter
         self.volume_of         = volume_of
@@ -235,6 +239,7 @@ class GlobalTrashCan:
         self.fs                = fs
         self.environ           = environ
         self.parent_path       = parent_path
+        self.realpath          = realpath
 
     def trash_all(self, args):
         for arg in args :
@@ -266,7 +271,7 @@ class GlobalTrashCan:
         file_has_been_trashed = False
         for trash_dir in candidates.trash_dirs:
             if self._is_trash_dir_secure(trash_dir):
-                volume_of_trash_dir = self.volume_of(trash_dir.path)
+                volume_of_trash_dir = self.volume_of(self.realpath(trash_dir.path))
                 self.reporter.trash_dir_with_volume(trash_dir.path,
                                                     volume_of_trash_dir)
                 if self._file_could_be_trashed_in(volume_of_file_to_be_trashed,

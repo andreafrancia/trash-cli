@@ -82,7 +82,8 @@ class TrashPutTest:
             stderr      = self.err,
             environ     = self.environ,
             volume_of   = self.fstab.volume_of,
-            parent_path = os.path.dirname
+            parent_path = os.path.dirname,
+            realpath    = lambda x:x
         )
         self.exit_code = cmd.run(list(argv))
         self.stderr = self.err.getvalue()

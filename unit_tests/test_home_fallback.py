@@ -17,7 +17,8 @@ class TestHomeFallback:
                 now = None,
                 environ = dict(),
                 fs = self.fs,
-                parent_path = os.path.dirname)
+                parent_path = os.path.dirname,
+                realpath = lambda x:x)
 
     def test_should_skip_top_trash_if_does_not_exists(self):
         self.fs.mock_add_spec(['isdir', 'islink', 'move', 'atomic_write',
