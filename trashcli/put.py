@@ -17,7 +17,7 @@ def main():
         os.environ,
         volume_of,
         os.path.dirname,
-        lambda x:x
+        os.path.realpath
     ).run(sys.argv)
 
 def parent_path(path):
