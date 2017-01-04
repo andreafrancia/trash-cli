@@ -426,7 +426,7 @@ class TrashDirectoryForPut:
         return content
 
     def ensure_files_dir_exists(self):
-        self.ensure_dir(self.files_dir, 0700)
+        self.ensure_dir(self.files_dir, 0o700)
 
     def persist_trash_info(self, info_dir, basename, content) :
         """
@@ -434,7 +434,7 @@ class TrashDirectoryForPut:
         returns the created TrashInfoFile.
         """
 
-        self.ensure_dir(info_dir, 0700)
+        self.ensure_dir(info_dir, 0o700)
 
         # write trash info
         index = 0
