@@ -3,6 +3,7 @@ from nose.tools import istest
 from trashcli.restore import RestoreCmd
 
 from .files import require_empty_dir
+from trashcli.fs import remove_file
 from .output_collector import OutputCollector
 from trashinfo import a_trashinfo
 
@@ -92,8 +93,7 @@ class describe_restore_trash:
 
     def having_a_file_trashed_from_current_dir(self, filename):
         self.having_a_trashed_file(os.path.join(os.getcwd(), filename))
-        if os.path.exists(filename):
-            os.remove(filename)
+        remove_file(filename)
         assert not os.path.exists(filename)
 
     def file_should_have_been_restored(self, filename):
