@@ -104,7 +104,7 @@ class when_deleting_an_existing_file(TrashPutTest):
 
     @istest
     def a_trashinfo_file_should_have_been_created(self):
-        file('sandbox/XDG_DATA_HOME/Trash/info/foo.trashinfo').read()
+        open('sandbox/XDG_DATA_HOME/Trash/info/foo.trashinfo').read()
 
 @istest
 class when_deleting_an_existing_file_in_verbose_mode(TrashPutTest):

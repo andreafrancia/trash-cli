@@ -71,7 +71,7 @@ class describe_restore_trash:
     def it_should_refuse_overwriting_existing_file(self):
 
         self.having_a_file_trashed_from_current_dir('foo')
-        file('foo', 'a+').close()
+        open('foo', 'a+').close()
         os.chmod('foo', 000)
         self.when_running_restore_trash(from_dir=current_dir(),
                                         with_user_typing = '0')
