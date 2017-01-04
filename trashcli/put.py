@@ -53,7 +53,7 @@ class TrashPutCmd:
 
             if len(args) <= 0:
                 parser.error("Please specify the files to trash.")
-        except SystemExit,e:
+        except SystemExit as e:
             return e.code
         else:
             reporter = TrashPutReporter(logger)
@@ -284,7 +284,7 @@ class GlobalTrashCan:
                             trashed_file['where_file_was_stored'])
                         file_has_been_trashed = True
 
-                    except (IOError, OSError), error:
+                    except (IOError, OSError) as error:
                         self.reporter.unable_to_trash_file_in_because(
                                 file, trash_dir.path, str(error))
 
