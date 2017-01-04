@@ -16,7 +16,7 @@ def main():
         sys.stderr,
         os.environ,
         volume_of,
-        os.path.dirname,
+        parent_path,
         os.path.realpath
     ).run(sys.argv)
 
