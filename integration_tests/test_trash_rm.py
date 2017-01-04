@@ -2,9 +2,9 @@ from StringIO import StringIO
 from mock import Mock, ANY
 from nose.tools import assert_false, assert_raises, assert_equals
 
-from files import require_empty_dir, write_file
+from .files import require_empty_dir, write_file
 from trashcli.rm import RmCmd, ListTrashinfos
-from trashinfo import a_trashinfo_with_path, a_trashinfo_without_path
+from .trashinfo import a_trashinfo_with_path, a_trashinfo_without_path
 from trashcli.trash import ParseError
 
 class TestTrashRm:
