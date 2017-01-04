@@ -2,19 +2,19 @@
 
 import os
 from trashcli.list import ListCmd
-from files import (write_file, require_empty_dir, make_sticky_dir,
+from .files import (write_file, require_empty_dir, make_sticky_dir,
                    make_unsticky_dir, make_unreadable_file, make_empty_file,
                    make_parent_for)
 from nose.tools import istest
 from .output_collector import OutputCollector
-from trashinfo import (
+from .trashinfo import (
         a_trashinfo,
         a_trashinfo_without_date,
         a_trashinfo_without_path,
         a_trashinfo_with_invalid_date)
 from textwrap import dedent
 
-from assert_equals_with_unidiff import assert_equals_with_unidiff
+from .assert_equals_with_unidiff import assert_equals_with_unidiff
 class Setup(object):
     def setUp(self):
         require_empty_dir('XDG_DATA_HOME')

@@ -7,7 +7,7 @@ from .trash import TrashDirectory
 from .trash import TrashDirectories
 from .fs import contents_of
 from .trash import backup_file_path_from
-import fs
+from . import fs
 
 def getcwd_as_realpath(): return os.path.realpath(os.curdir)
 
