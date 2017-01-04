@@ -94,7 +94,7 @@ class Parser:
             options, arguments = getopt(argv[1:],
                                         self.short_options,
                                         self.long_options)
-        except GetoptError, e:
+        except GetoptError as e:
             invalid_option = e.opt
             self._on_invalid_option(program_name, invalid_option)
         else:
