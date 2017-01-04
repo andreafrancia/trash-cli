@@ -15,7 +15,7 @@ class FileSystemReader(FileSystemListing):
     def is_symlink(self, path):
         return os.path.islink(path)
     def contents_of(self, path):
-        return file(path).read()
+        return open(path).read()
 
 class FileRemover:
     def remove_file(self, path):

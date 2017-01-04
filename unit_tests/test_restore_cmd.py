@@ -84,8 +84,8 @@ class TestTrashRestoreCmd:
         from trashcli.fs import remove_file
         from trashcli.fs import contents_of
         self.user_reply = '0'
-        file('orig_file', 'w').write('original')
-        file('info_file', 'w').write('')
+        open('orig_file', 'w').write('original')
+        open('info_file', 'w').write('')
         remove_file('parent/path')
         remove_file('parent')
 
@@ -222,7 +222,7 @@ class TestRestoreCmdListingIntegration:
     def test_something(self):
         cmd = RestoreCmd(None, None, {}, None, None)
         require_empty_dir('info')
-        file('info/info_path.trashinfo', 'w').write(
+        open('info/info_path.trashinfo', 'w').write(
                 'Path=name\nDeletionDate=2001-01-01T10:10:10')
         path_to_trashinfo = 'info/info_path.trashinfo'
         trash_dir = Mock([])
