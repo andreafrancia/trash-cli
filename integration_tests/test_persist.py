@@ -55,5 +55,5 @@ class TestTrashDirectory_persit_trash_info:
     test_persist_trash_info_other_times.stress_test = True
 
 def read(path):
-    return file(path).read()
+    return open(path).read()
 

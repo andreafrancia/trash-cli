@@ -14,7 +14,7 @@ make_empty_file = having_file
 def write_file(filename, contents=''):
     parent = os.path.dirname(filename)
     if not os.path.isdir(parent): os.makedirs(parent)
-    file(filename, 'w').write(contents)
+    open(filename, 'w').write(contents)
     assert_equals(file(filename).read(), contents)
 
 def require_empty_dir(path):
@@ -73,5 +73,5 @@ def make_unreadable_file(path):
     os.chmod(path, 0)
     from nose.tools import assert_raises
     with assert_raises(IOError):
-        file(path).read()
+        open(path).read()
 
