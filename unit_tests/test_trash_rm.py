@@ -1,4 +1,5 @@
-from nose.tools import istest, assert_items_equal, assert_equals
+from nose.tools import istest, assert_equals
+from unit_tests.tools import assert_items_equal
 from mock import Mock, call
 
 from trashcli.rm import Filter

@@ -2,7 +2,7 @@ from trashcli.fstab import FakeFstab
 
 from nose.tools import assert_equals
 from nose.tools import istest
-from nose.tools import assert_items_equal
+from unit_tests.tools import assert_items_equal
 
 class TestFakeFstab:
     def setUp(self):
