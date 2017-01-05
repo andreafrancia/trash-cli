@@ -425,7 +425,7 @@ class TrashDirectoryForPut:
             return quote(original_location,'/')
         content = ("[Trash Info]\n" +
                    "Path=%s\n" % format_original_location(original_location) +
-                   "DeletionDate=%s\n" % format_date(deletion_date))
+                   "DeletionDate=%s\n" % format_date(deletion_date)).encode('utf-8')
         return content
 
     def ensure_files_dir_exists(self):
