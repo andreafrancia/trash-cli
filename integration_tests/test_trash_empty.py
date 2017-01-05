@@ -1,8 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from nose.tools import (assert_equals,
-                        assert_items_equal,
-                        istest)
+from nose.tools import assert_equals, istest
+from unit_tests.tools import assert_items_equal
 from trashcli.empty import EmptyCmd
 
 from unit_tests.myStringIO import StringIO
