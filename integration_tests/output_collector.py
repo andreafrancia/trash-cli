@@ -2,7 +2,7 @@ from .assert_equals_with_unidiff import assert_equals_with_unidiff
 
 class OutputCollector:
     def __init__(self):
-        from StringIO import StringIO
+        from unit_tests.myStringIO import StringIO
         self.stream = StringIO()
         self.getvalue = self.stream.getvalue
     def write(self,data):

@@ -5,7 +5,7 @@ from nose.tools import (assert_equals,
                         istest)
 from trashcli.empty import EmptyCmd
 
-from StringIO import StringIO
+from unit_tests.myStringIO import StringIO
 import os
 from .files import write_file, require_empty_dir, make_dirs, set_sticky_bit
 from .files import having_file
@@ -16,7 +16,6 @@ from trashcli.fs import FileRemover
 from nose.tools import assert_regexp_matches
 
 from trashcli.cmds import empty
-from StringIO import StringIO
 from trashcli.fs import mkdirs
 from .files import touch
 from nose.tools import assert_true, assert_raises

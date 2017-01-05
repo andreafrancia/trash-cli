@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
 import unittest
-from StringIO import StringIO
+from unit_tests.myStringIO import StringIO
 from trashcli.list_mount_points import _mount_points_from_df_output
 
 class MountPointFromDirTest(unittest.TestCase):

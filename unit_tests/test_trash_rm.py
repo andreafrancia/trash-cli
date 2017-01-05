@@ -2,7 +2,7 @@ from nose.tools import istest, assert_items_equal, assert_equals
 from mock import Mock, call
 
 from trashcli.rm import Filter
-from StringIO import StringIO
+from unit_tests.myStringIO import StringIO
 
 class TestTrashRmCmdRun:
     def test_without_arguments(self):

@@ -1,6 +1,6 @@
 from nose.tools import assert_equals
 
-from StringIO import StringIO
+from unit_tests.myStringIO import StringIO
 
 class TestTrashPutIssueMessage:
 

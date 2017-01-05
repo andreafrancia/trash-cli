@@ -1,4 +1,4 @@
-from StringIO import StringIO
+from unit_tests.myStringIO import StringIO
 from mock import Mock, ANY
 from nose.tools import assert_false, assert_raises, assert_equals
 
