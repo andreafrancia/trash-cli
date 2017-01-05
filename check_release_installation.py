@@ -1,3 +1,4 @@
+from __future__ import print_function
 TARGET_HOST = 'default'
 
 import nose
@@ -13,13 +14,13 @@ def main():
 
 def check_installation(installation_method):
     tc = LinuxBox(TARGET_HOST, installation_method)
-    print "== Cleaning any prior software installation"
+    print("== Cleaning any prior software installation")
     tc.clean_any_prior_installation()
-    print "== Copying software"
+    print("== Copying software")
     tc.copy_tarball()
-    print "== Installing software"
+    print("== Installing software")
     tc.install_software()
-    print "== Checking all program were installed"
+    print("== Checking all program were installed")
     tc.check_all_programs_are_installed()
 
 
