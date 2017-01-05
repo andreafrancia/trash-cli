@@ -15,7 +15,7 @@ def write_file(filename, contents=''):
     parent = os.path.dirname(filename)
     if not os.path.isdir(parent): os.makedirs(parent)
     open(filename, 'w').write(contents)
-    assert_equals(file(filename).read(), contents)
+    assert_equals(open(filename).read(), contents)
 
 def require_empty_dir(path):
     if os.path.exists(path): shutil.rmtree(path)
