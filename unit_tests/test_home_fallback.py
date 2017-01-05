@@ -54,7 +54,7 @@ class TestTrashDirectories:
                 mount_points = ['/', '/mnt'])
 
         result = all_trash_directories.all_trash_directories()
-        paths = map(lambda td: td.path, result)
+        paths = list(map(lambda td: td.path, result))
 
         assert_equals( ['~/.local/share/Trash',
                         '/.Trash/123',
