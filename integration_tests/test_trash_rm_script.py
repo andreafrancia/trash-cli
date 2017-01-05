@@ -17,6 +17,7 @@ class WhenNoArgs:
                     stderr=PIPE)
 
         (self.stdout, self.stderr) = process.communicate()
+        self.stderr = self.stderr.decode('utf-8')
         process.wait()
         self.returncode = process.returncode
 
