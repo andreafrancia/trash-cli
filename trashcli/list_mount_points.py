@@ -19,12 +19,12 @@ def _mount_points_from_df_output(df_output):
     def skip_header():
         df_output.readline()
     def chomp(string):
-        return string.rstrip('\n')
+        return string.rstrip(b'\n')
 
     skip_header()
     for line in df_output:
         line = chomp(line)
-        yield line.split(None, 5)[-1]
+        yield (line.split(None, 5)[-1]).decode('utf-8')
 
 def _mounted_filesystems_from_getmnt() :
     from ctypes import Structure, c_char_p, c_int, c_void_p, cdll, POINTER
