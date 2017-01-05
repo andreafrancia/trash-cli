@@ -291,6 +291,8 @@ def maybe_parse_deletion_date(contents):
 def unknown_date():
     return '????-??-?? ??:??:??'
 
+from urllib import unquote
+
 class ParseTrashInfo:
     def __init__(self,
                  on_deletion_date = do_nothing,
@@ -301,7 +303,6 @@ class ParseTrashInfo:
         self.found_path = on_path
     def __call__(self, contents):
         from datetime import datetime
-        import urllib
         for line in contents.split('\n'):
             if line.startswith('DeletionDate='):
                 try:
@@ -312,7 +313,7 @@ class ParseTrashInfo:
                     self.found_deletion_date(date)
 
             if line.startswith('Path='):
-                path=urllib.unquote(line[len('Path='):])
+                path=unquote(line[len('Path='):])
                 self.found_path(path)
 
 class Basket:
@@ -326,10 +327,9 @@ def parse_deletion_date(contents):
     return result.collected
 
 def parse_path(contents):
-    import urllib
     for line in contents.split('\n'):
         if line.startswith('Path='):
-            return urllib.unquote(line[len('Path='):])
+            return unquote(line[len('Path='):])
     raise ParseError('Unable to parse Path')
 
 class CleanableTrashcan:
