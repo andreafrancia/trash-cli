@@ -291,7 +291,10 @@ def maybe_parse_deletion_date(contents):
 def unknown_date():
     return '????-??-?? ??:??:??'
 
-from urllib import unquote
+try:
+    from urllib import unquote
+except ImportError:
+    from urllib.parse import unquote
 
 class ParseTrashInfo:
     def __init__(self,
