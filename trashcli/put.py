@@ -88,9 +88,9 @@ class TrashPutCmd:
                           help="ignored (for GNU rm compatibility)")
         parser.add_option("-v", "--verbose", action="store_true",
                           help="explain what is being done", dest="verbose")
+        original_print_help = parser.print_help
         def patched_print_help():
-            encoding = parser._get_encoding(self.stdout)
-            self.stdout.write(parser.format_help().encode(encoding, "replace"))
+            original_print_help(self.stdout)
         def patched_error(msg):
             parser.print_usage(self.stderr)
             parser.exit(2, "%s: error: %s\n" % (program_name, msg))
