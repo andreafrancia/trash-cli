@@ -35,9 +35,9 @@ class TestTrashing:
         self.trashdir.trash('foo')
 
         self.fs.atomic_write.assert_called_with(ANY,
-                '[Trash Info]\n'
-                'Path=foo\n'
-                'DeletionDate=2012-09-25T21:47:39\n')
+                b'[Trash Info]\n'
+                b'Path=foo\n'
+                b'DeletionDate=2012-09-25T21:47:39\n')
 
     @istest
     def should_rollback_trashinfo_creation_on_problems(self):
