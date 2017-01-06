@@ -1,6 +1,6 @@
 from trashcli.restore import RestoreCmd
 from nose.tools import assert_equals
-from StringIO import StringIO
+from .myStringIO import StringIO
 from mock import Mock, call
 
 class TestListingInRestoreCmd:
