@@ -50,7 +50,8 @@ import os,stat
 def make_file_executable(path):
     os.chmod(path, os.stat(path).st_mode | stat.S_IXUSR)
 def write_file(name, contents):
-    file(name, 'w').write(contents)
+    with open(name, 'w') as f:
+        f.write(contents)
 
 scripts = Scripts(write_file, make_file_executable)
 
