@@ -4,12 +4,16 @@ import sys,os
 
 def restore():
     from trashcli.restore import RestoreCmd
+    try:           # Python 2
+        input23 = raw_input
+    except:        # Python 3
+        input23 = input
     RestoreCmd(
         stdout  = sys.stdout,
         stderr  = sys.stderr,
         environ = os.environ,
         exit    = sys.exit,
-        input   = raw_input
+        input   = input23
     ).run(sys.argv)
 
 def empty(argv    = sys.argv,
