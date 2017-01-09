@@ -9,11 +9,14 @@ from trashcli.trash import version
 
 def main():
     check_connection()
-    check_installation(normal_installation)
-    check_installation(easy_install_installation)
+    check_both_installations(Connection)
 
-def check_installation(installation_method):
-    tc = LinuxBox(TARGET_HOST, installation_method)
+def check_both_installations(make_ssh):
+    check_installation(normal_installation, make_ssh)
+    check_installation(easy_install_installation, make_ssh)
+
+def check_installation(installation_method, make_ssh):
+    tc = LinuxBox(TARGET_HOST, installation_method, make_ssh)
     print("== Cleaning any prior software installation")
     tc.clean_any_prior_installation()
     print("== Copying software")
@@ -25,8 +28,8 @@ def check_installation(installation_method):
 
 
 class LinuxBox:
-    def __init__(self, address, installation_method):
-        self.ssh = Connection(address)
+    def __init__(self, address, installation_method, make_ssh):
+        self.ssh = make_ssh(address)
         self.executables = [
                 'trash-put', 'trash-list', 'trash-rm', 'trash-empty',
                 'trash-restore', 'trash']
@@ -49,10 +52,7 @@ class LinuxBox:
     def copy_tarball(self):
         self.ssh.put('dist/%s' % self.tarball)
     def install_software(self):
-        def run_checked(command):
-            result = self.ssh.run(command)
-            result.assert_succesful()
-        self.installation_method(self.tarball, run_checked)
+        self.installation_method(self.tarball, self.ssh.run_checked)
     def check_all_programs_are_installed(self):
         for command in self.executables:
             result = self.ssh.run('%(command)s --version' % locals())
@@ -94,6 +94,9 @@ class TestConnection:
 class Connection:
     def __init__(self, target_host):
         self.target_host = target_host
+    def run_checked(self, command):
+        result = self.run(command)
+        result.assert_succesful()
     def run(self, *user_command):
         ssh_invocation = ['ssh', '-Fssh-config', self.target_host, '-oVisualHostKey=false']
         command = ssh_invocation + list(user_command)
@@ -114,8 +117,6 @@ class Connection:
             self.stdout = stdout
             self.stderr = stderr
             self.exit_code = exit_code
-        def assert_no_err(self):
-            assert_equals('', self.stderr)
         def assert_succesful(self):
             assert self.exit_code == 0, "Failed:\n - stderr:%s" % self.stderr
 
