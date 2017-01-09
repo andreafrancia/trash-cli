@@ -36,29 +36,20 @@ class LinuxBox:
         self.tarball="trash-cli-%s.tar.gz" % version
         self.installation_method = installation_method
     def clean_any_prior_installation(self):
-        "clean any prior installation"
         for executable in self.executables:
             self._remove_executable(executable)
             self._assert_command_removed(executable)
     def _remove_executable(self, executable):
-        self.ssh.run('sudo rm -f $(which %s)' % executable).assert_succesful()
+        self.ssh.run_checked('sudo rm -f $(which %s)' % executable)
     def _assert_command_removed(self, executable):
-        result = self.ssh.run('which %s' % executable)
-        command_not_existent_exit_code_for_which = 1
-        assert_equals(result.exit_code, command_not_existent_exit_code_for_which,
-                      'Which returned: %s\n' % result.exit_code +
-                      'and reported: %s' % result.stdout
-                      )
+        result = self.ssh.run_checked('! which %s' % executable)
     def copy_tarball(self):
         self.ssh.put('dist/%s' % self.tarball)
     def install_software(self):
         self.installation_method(self.tarball, self.ssh.run_checked)
     def check_all_programs_are_installed(self):
         for command in self.executables:
-            result = self.ssh.run('%(command)s --version' % locals())
-            assert_not_equals(127, result.exit_code,
-                    "Exit code was: %s, " % result.exit_code +
-                    "Probably command not found, command: %s" % command)
+            result = self.ssh.run_checked('%(command)s --version' % locals())
 
 def normal_installation(tarball, check_run):
     directory = strip_end(tarball, '.tar.gz')
