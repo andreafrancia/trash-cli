@@ -12,11 +12,12 @@ def main():
     check_both_installations(Connection)
 
 def check_both_installations(make_ssh):
-    check_installation(normal_installation, make_ssh)
-    check_installation(easy_install_installation, make_ssh)
-
-def check_installation(installation_method, make_ssh):
     ssh = make_ssh(TARGET_HOST)
+    check_installation(normal_installation, ssh)
+    ssh = make_ssh(TARGET_HOST)
+    check_installation(easy_install_installation, ssh)
+
+def check_installation(installation_method, ssh):
     tc = LinuxBox(installation_method, ssh)
     print("== Cleaning any prior software installation")
     tc.clean_any_prior_installation()
