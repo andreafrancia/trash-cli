@@ -13,18 +13,13 @@ def main():
 
 def check_both_installations(make_ssh):
     ssh = make_ssh(TARGET_HOST)
-    check_installation(normal_installation, ssh)
+    l = CheckInstallation(normal_installation, ssh)
+    l.check_installation()
     ssh = make_ssh(TARGET_HOST)
-    check_installation(easy_install_installation, ssh)
+    l = CheckInstallation(easy_install_installation, ssh)
+    l.check_installation()
 
-def check_installation(installation_method, ssh):
-    tc = LinuxBox(installation_method, ssh)
-    tc.clean_any_prior_installation()
-    tc.copy_tarball()
-    tc.install_software()
-    tc.check_all_programs_are_installed()
-
-class LinuxBox:
+class CheckInstallation:
     def __init__(self, installation_method, ssh):
         self.ssh = ssh
         self.executables = [
@@ -32,6 +27,11 @@ class LinuxBox:
                 'trash-restore', 'trash']
         self.tarball="trash-cli-%s.tar.gz" % version
         self.installation_method = installation_method
+    def check_installation(self):
+        self.clean_any_prior_installation()
+        self.copy_tarball()
+        self.install_software()
+        self.check_all_programs_are_installed()
     def clean_any_prior_installation(self):
         for executable in self.executables:
             self._remove_executable(executable)
