@@ -19,15 +19,10 @@ def check_both_installations(make_ssh):
 
 def check_installation(installation_method, ssh):
     tc = LinuxBox(installation_method, ssh)
-    print("== Cleaning any prior software installation")
     tc.clean_any_prior_installation()
-    print("== Copying software")
     tc.copy_tarball()
-    print("== Installing software")
     tc.install_software()
-    print("== Checking all program were installed")
     tc.check_all_programs_are_installed()
-
 
 class LinuxBox:
     def __init__(self, installation_method, ssh):
