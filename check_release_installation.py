@@ -19,6 +19,11 @@ def check_both_installations(make_ssh):
     l = CheckInstallation(easy_install_installation, ssh)
     l.check_installation()
 
+def check_python3_normal_installation(make_ssh):
+    ssh = make_ssh(TARGET_HOST)
+    l = CheckInstallation(python3_normal_installation, ssh)
+    l.check_installation()
+
 class CheckInstallation:
     def __init__(self, installation_method, ssh):
         self.ssh = ssh
@@ -48,6 +53,11 @@ class CheckInstallation:
         for command in self.executables:
             result = self.ssh.run_checked('%(command)s --version' % locals())
 
+def python3_normal_installation(tarball, ssh):
+    directory = strip_end(tarball, '.tar.gz')
+    ssh.run_checked('tar xfvz %s' % tarball)
+    ssh.run_checked('cd %s && '
+                    'sudo python3 setup.py install' % directory)
 def normal_installation(tarball, ssh):
     directory = strip_end(tarball, '.tar.gz')
     ssh.run_checked('tar xfvz %s' % tarball)
