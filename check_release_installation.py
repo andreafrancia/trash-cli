@@ -47,19 +47,19 @@ class LinuxBox:
     def copy_tarball(self):
         self.ssh.put('dist/%s' % self.tarball)
     def install_software(self):
-        self.installation_method(self.tarball, self.ssh.run_checked)
+        self.installation_method(self.tarball, self.ssh)
     def check_all_programs_are_installed(self):
         for command in self.executables:
             result = self.ssh.run_checked('%(command)s --version' % locals())
 
-def normal_installation(tarball, check_run):
+def normal_installation(tarball, ssh):
     directory = strip_end(tarball, '.tar.gz')
-    check_run('tar xfvz %s' % tarball)
-    check_run('cd %s && '
-              'sudo python setup.py install' % directory)
+    ssh.run_checked('tar xfvz %s' % tarball)
+    ssh.run_checked('cd %s && '
+                    'sudo python setup.py install' % directory)
 
-def easy_install_installation(tarball, check_run):
-    check_run('sudo easy_install %s' % tarball)
+def easy_install_installation(tarball, ssh):
+    ssh.run_checked('sudo easy_install %s' % tarball)
 
 def strip_end(text, suffix):
     if not text.endswith(suffix):
