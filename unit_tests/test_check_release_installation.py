@@ -4,7 +4,18 @@ from mock import Mock, call
 
 class TestCheckBothInstallations:
     def test(self):
-        make_ssh = Mock()
+        calls = []
+        class FakeSSH:
+            def run_checked(self, command):
+                calls.append(call().run_checked(command))
+            def put(self, command):
+                calls.append(call().put(command))
+        class FakeMakeSSH:
+            def __call__(self, address):
+                calls.append(call(address))
+                return FakeSSH()
+
+        make_ssh = FakeMakeSSH()
 
         check_both_installations(make_ssh)
 
@@ -51,4 +62,4 @@ class TestCheckBothInstallations:
  call().run_checked('trash-rm --version'),
  call().run_checked('trash-empty --version'),
  call().run_checked('trash-restore --version'),
- call().run_checked('trash --version')], make_ssh.mock_calls)
+ call().run_checked('trash --version')], calls)
