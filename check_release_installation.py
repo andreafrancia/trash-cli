@@ -16,7 +16,8 @@ def check_both_installations(make_ssh):
     check_installation(easy_install_installation, make_ssh)
 
 def check_installation(installation_method, make_ssh):
-    tc = LinuxBox(TARGET_HOST, installation_method, make_ssh)
+    ssh = make_ssh(TARGET_HOST)
+    tc = LinuxBox(installation_method, ssh)
     print("== Cleaning any prior software installation")
     tc.clean_any_prior_installation()
     print("== Copying software")
@@ -28,8 +29,8 @@ def check_installation(installation_method, make_ssh):
 
 
 class LinuxBox:
-    def __init__(self, address, installation_method, make_ssh):
-        self.ssh = make_ssh(address)
+    def __init__(self, installation_method, ssh):
+        self.ssh = ssh
         self.executables = [
                 'trash-put', 'trash-list', 'trash-rm', 'trash-empty',
                 'trash-restore', 'trash']
