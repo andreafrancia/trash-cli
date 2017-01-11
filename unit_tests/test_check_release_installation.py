@@ -3,21 +3,22 @@ from nose.tools import assert_equals, assert_raises
 from mock import Mock, call
 
 class TestCheckBothInstallations:
-    def test(self):
-        calls = []
+    def setUp(self):
+        self.calls = []
+        outer = self
         class FakeSSH:
             def run_checked(self, command):
-                calls.append(call().run_checked(command))
+                outer.calls.append(call().run_checked(command))
             def put(self, command):
-                calls.append(call().put(command))
+                outer.calls.append(call().put(command))
         class FakeMakeSSH:
             def __call__(self, address):
-                calls.append(call(address))
+                outer.calls.append(call(address))
                 return FakeSSH()
+        self.make_ssh = FakeMakeSSH()
 
-        make_ssh = FakeMakeSSH()
-
-        check_both_installations(make_ssh)
+    def test(self):
+        check_both_installations(self.make_ssh)
 
         assert_equals([
  call('default'),
@@ -62,4 +63,4 @@ class TestCheckBothInstallations:
  call().run_checked('trash-rm --version'),
  call().run_checked('trash-empty --version'),
  call().run_checked('trash-restore --version'),
- call().run_checked('trash --version')], calls)
+ call().run_checked('trash --version')], self.calls)
