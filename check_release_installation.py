@@ -9,29 +9,28 @@ from trashcli.trash import version
 
 def main():
     check_connection()
-    check_both_installations(Connection)
+    ssh = Connection(TARGET_HOST)
+    check_both_installations(ssh)
+    check_python3_normal_installation(ssh)
 
-def check_both_installations(make_ssh):
-    ssh = make_ssh(TARGET_HOST)
-    l = CheckInstallation(normal_installation, ssh)
+def check_both_installations(ssh):
+    l = CheckInstallation(NormalInstallation('python'), ssh)
     l.check_installation()
-    ssh = make_ssh(TARGET_HOST)
-    l = CheckInstallation(easy_install_installation, ssh)
+    l = CheckInstallation(EasyInstallInstallation(), ssh)
     l.check_installation()
 
-def check_python3_normal_installation(make_ssh):
-    ssh = make_ssh(TARGET_HOST)
-    l = CheckInstallation(python3_normal_installation, ssh)
+def check_python3_normal_installation(ssh):
+    l = CheckInstallation(NormalInstallation('python3'), ssh)
     l.check_installation()
 
 class CheckInstallation:
-    def __init__(self, installation_method, ssh):
+    def __init__(self, installation, ssh):
         self.ssh = ssh
         self.executables = [
                 'trash-put', 'trash-list', 'trash-rm', 'trash-empty',
                 'trash-restore', 'trash']
         self.tarball="trash-cli-%s.tar.gz" % version
-        self.installation_method = installation_method
+        self.installation = installation
     def check_installation(self):
         self.clean_any_prior_installation()
         self.copy_tarball()
@@ -48,24 +47,22 @@ class CheckInstallation:
     def copy_tarball(self):
         self.ssh.put('dist/%s' % self.tarball)
     def install_software(self):
-        self.installation_method(self.tarball, self.ssh)
+        self.installation.install(self.tarball, self.ssh)
     def check_all_programs_are_installed(self):
         for command in self.executables:
             result = self.ssh.run_checked('%(command)s --version' % locals())
 
-def python3_normal_installation(tarball, ssh):
-    directory = strip_end(tarball, '.tar.gz')
-    ssh.run_checked('tar xfvz %s' % tarball)
-    ssh.run_checked('cd %s && '
-                    'sudo python3 setup.py install' % directory)
-def normal_installation(tarball, ssh):
-    directory = strip_end(tarball, '.tar.gz')
-    ssh.run_checked('tar xfvz %s' % tarball)
-    ssh.run_checked('cd %s && '
-                    'sudo python setup.py install' % directory)
-
-def easy_install_installation(tarball, ssh):
-    ssh.run_checked('sudo easy_install %s' % tarball)
+class NormalInstallation:
+    def __init__(self, python):
+        self.python = python
+    def install(self, tarball, ssh):
+        directory = strip_end(tarball, '.tar.gz')
+        ssh.run_checked('tar xfvz %s' % tarball)
+        ssh.run_checked('cd %s && '
+                        'sudo %s setup.py install' % (directory, self.python))
+class EasyInstallInstallation:
+    def install(self, tarball, ssh):
+        ssh.run_checked('sudo easy_install %s' % tarball)
 
 def strip_end(text, suffix):
     if not text.endswith(suffix):
