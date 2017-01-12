@@ -90,6 +90,7 @@ class Connection:
     def __init__(self, target_host):
         self.target_host = target_host
     def run_checked(self, command):
+        print(command)
         result = self.run(command)
         result.assert_succesful()
     def run(self, *user_command):
