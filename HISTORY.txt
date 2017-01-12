@@ -1,3 +1,11 @@
+0.17.1.12:
+ - Fix a bug in detecting right volume of home trash dir home Trash dir is a
+   symbolic link, and in detecting volume of file to be trashed when it is
+   specified as contained in a directory that is a symbolic link that crosses
+   volumes boundaries (#38)
+ - Make some code  python 3 compatible 
+ - Fixed README.
+ 
 0.17.1.1:
  - Now trash-rm supports full path matching, using a pattern starting with slash '/' Fix #67
  - Fix typo in trash-rm(1) man page
