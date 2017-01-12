@@ -14,17 +14,18 @@ def main():
     check_python3_normal_installation(ssh)
 
 def check_both_installations(ssh):
-    l = CheckInstallation(NormalInstallation('python'), ssh)
+    l = CheckInstallation(
+            NormalInstallation('python'), ssh, version)
     l.check_installation()
-    l = CheckInstallation(EasyInstallInstallation(), ssh)
+    l = CheckInstallation(
+            EasyInstallInstallation(), ssh, version)
     l.check_installation()
-
-def check_python3_normal_installation(ssh):
-    l = CheckInstallation(NormalInstallation('python3'), ssh)
+    l = CheckInstallation(
+            NormalInstallation('python3'), ssh, version)
     l.check_installation()
 
 class CheckInstallation:
-    def __init__(self, installation, ssh):
+    def __init__(self, installation, ssh, version):
         self.ssh = ssh
         self.executables = [
                 'trash-put', 'trash-list', 'trash-rm', 'trash-empty',
