@@ -15,6 +15,9 @@ def main():
 
 def check_both_installations(ssh):
     l = CheckInstallation(
+            EasyInstall3Installation(), ssh, version)
+    l.check_installation()
+    l = CheckInstallation(
             NormalInstallation('python'), ssh, version)
     l.check_installation()
     l = CheckInstallation(
@@ -64,6 +67,9 @@ class NormalInstallation:
 class EasyInstallInstallation:
     def install(self, tarball, ssh):
         ssh.run_checked('sudo easy_install %s' % tarball)
+class EasyInstall3Installation:
+    def install(self, tarball, ssh):
+        ssh.run_checked('sudo easy_install3 %s' % tarball)
 
 def strip_end(text, suffix):
     if not text.endswith(suffix):
