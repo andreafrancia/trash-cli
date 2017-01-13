@@ -121,7 +121,7 @@ The easy way
 
 Requirements:
 
- - Python 2.7 
+ - Python 2.7 o Python 3
  - setuptools (use `apt-get install python-setuptools` on Debian)
 
 Installation command::
