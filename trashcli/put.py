@@ -303,15 +303,15 @@ class GlobalTrashCan:
             def not_valid_should_be_a_dir(_):
                 self.reporter.invalid_top_trash_is_not_a_dir(
                         os.path.dirname(trash_dir.path))
-                self.valid = False
+                _.valid = False
             def not_valid_parent_should_not_be_a_symlink(_):
                 self.reporter.found_unsercure_trash_dir_symlink(
                         os.path.dirname(trash_dir.path))
-                self.valid = False
+                _.valid = False
             def not_valid_parent_should_be_sticky(_):
                 self.reporter.found_unsecure_trash_dir_unsticky(
                         os.path.dirname(trash_dir.path))
-                self.valid = False
+                _.valid = False
             def is_valid(self):
                 self.valid = True
         output = ValidationOutput()
