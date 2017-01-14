@@ -1,8 +1,47 @@
-from mock import Mock
-from nose.tools import istest
+from mock import Mock, call
+from nose.tools import istest, assert_equals, assert_not_equals
 
 from trashcli.put import GlobalTrashCan
 import os
+
+class TestTopDirRules:
+    def test(self):
+        parent_path = lambda _:None
+        volume_of = lambda _:'/volume'
+        realpath = lambda _: None
+        fs = Mock(['move',
+                   'atomic_write',
+                   'remove_file',
+                   'ensure_dir',
+                   'isdir',
+                   'islink',
+                   'has_sticky_bit'])
+        fs.islink.side_effect = lambda path: {
+                                                '/volume/.Trash':False
+                                             }[path]
+        fs.has_sticky_bit.side_effect = lambda path: {
+                                                '/volume/.Trash':False
+                                             }[path]
+        reporter = Mock(['volume_of_file',
+                         'found_unsecure_trash_dir_unsticky',
+                         'trash_dir_with_volume',
+                         'file_has_been_trashed_in_as'])
+        trashcan = GlobalTrashCan({},
+                                  volume_of,
+                                  reporter,
+                                  fs,
+                                  lambda :'uid',
+                                  None,
+                                  parent_path,
+                                  realpath)
+
+        trashcan.trash('')
+        assert_equals([
+            call('', '/volume/.Trash/uid', '/volume/.Trash/uid/files/.')
+            ], reporter.file_has_been_trashed_in_as.mock_calls)
+        assert_not_equals([
+            call('', '/volume/.Trash-uid', '/volume/.Trash-uid/files/.')
+            ], reporter.file_has_been_trashed_in_as.mock_calls)
 
 class TestGlobalTrashCan:
     def setUp(self):
