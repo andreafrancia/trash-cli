@@ -1,3 +1,7 @@
+0.17.1.14:
+ - Fix a bug that causes trash-put to use $topdir/.Trash/UID trashcan even when
+   it is not secure and $topdir/.Trash-UID should be used instead. 
+
 0.17.1.12:
  - Fix a bug in detecting right volume of home trash dir home Trash dir is a
    symbolic link, and in detecting volume of file to be trashed when it is
