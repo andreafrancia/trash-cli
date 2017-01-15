@@ -298,23 +298,24 @@ class GlobalTrashCan:
 
     def _is_trash_dir_secure(self, trash_dir):
         class ValidationOutput:
-            def __init__(self):
+            def __init__(self, reporter):
                 self.valid = True
-            def not_valid_should_be_a_dir(_):
+                self.reporter = reporter
+            def not_valid_should_be_a_dir(self):
                 self.reporter.invalid_top_trash_is_not_a_dir(
                         os.path.dirname(trash_dir.path))
-                _.valid = False
-            def not_valid_parent_should_not_be_a_symlink(_):
+                self.valid = False
+            def not_valid_parent_should_not_be_a_symlink(self):
                 self.reporter.found_unsercure_trash_dir_symlink(
                         os.path.dirname(trash_dir.path))
-                _.valid = False
-            def not_valid_parent_should_be_sticky(_):
+                self.valid = False
+            def not_valid_parent_should_be_sticky(self):
                 self.reporter.found_unsecure_trash_dir_unsticky(
                         os.path.dirname(trash_dir.path))
-                _.valid = False
+                self.valid = False
             def is_valid(self):
                 self.valid = True
-        output = ValidationOutput()
+        output = ValidationOutput(self.reporter)
         trash_dir.checker.fs = self.fs
         trash_dir.checker.valid_to_be_written(trash_dir.path, output)
         return output.valid
