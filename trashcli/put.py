@@ -397,37 +397,24 @@ class TrashDirectoryForPut:
         original_location = self.path_for_trash_info.for_file(path)
 
         basename = os.path.basename(original_location)
-        content = self.format_trashinfo(original_location, self.now())
-        trash_info_file = self.persist_trash_info( self.info_dir, basename,
-                content)
+        content = format_trashinfo(original_location, self.now())
+        trash_info_file = self.persist_trash_info(self.info_dir,
+                                                  basename,
+                                                  content)
 
         where_to_store_trashed_file = backup_file_path_from(trash_info_file)
 
         self.ensure_files_dir_exists()
 
-        try :
+        try:
             self.move(path, where_to_store_trashed_file)
-        except IOError as e :
+        except IOError as e:
             self.remove_file(trash_info_file)
             raise e
         result = dict()
         result['trash_directory'] = self.path
         result['where_file_was_stored'] = where_to_store_trashed_file
         return result
-
-    def format_trashinfo(self, original_location, deletion_date):
-        def format_date(deletion_date):
-            return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
-        def format_original_location(original_location):
-            try:
-                from urllib import quote
-            except ImportError:
-                from urllib.parse import quote
-            return quote(original_location,'/')
-        content = ("[Trash Info]\n" +
-                   "Path=%s\n" % format_original_location(original_location) +
-                   "DeletionDate=%s\n" % format_date(deletion_date)).encode('utf-8')
-        return content
 
     def ensure_files_dir_exists(self):
         self.ensure_dir(self.files_dir, 0o700)
@@ -466,6 +453,20 @@ class TrashDirectoryForPut:
             index += 1
 
         raise IOError()
+
+def format_trashinfo(original_location, deletion_date):
+    def format_date(deletion_date):
+        return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
+    def format_original_location(original_location):
+        try:
+            from urllib import quote
+        except ImportError:
+            from urllib.parse import quote
+        return quote(original_location,'/')
+    content = ("[Trash Info]\n" +
+               "Path=%s\n" % format_original_location(original_location) +
+               "DeletionDate=%s\n" % format_date(deletion_date)).encode('utf-8')
+    return content
 
 def shrinkuser(path, environ=os.environ):
     import posixpath
