@@ -227,9 +227,6 @@ class RealFs:
         self.has_sticky_bit = fs.has_sticky_bit
 
 class GlobalTrashCan:
-    class NullReporter:
-        def __getattr__(self,name):
-            return lambda *argl,**args:None
     def __init__(self, environ, volume_of, reporter, fs, getuid, now,
                  parent_path, realpath):
         self.getuid            = getuid
