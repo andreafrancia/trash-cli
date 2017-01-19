@@ -9,9 +9,9 @@ class TestTrashing:
         self.fs = Mock()
         self.trashdir = TrashDirectoryForPut('~/.Trash', '/', self.fs)
         self.trashdir.store_relative_paths('/')
-        path_for_trash_info = Mock()
-        path_for_trash_info.for_file.return_value = 'foo'
-        self.trashdir.path_for_trash_info = path_for_trash_info
+        path_maker = Mock()
+        path_maker.calc_parent_path.return_value = ''
+        self.trashdir.path_maker = path_maker
         self.logger = Mock(['debug'])
 
     @istest

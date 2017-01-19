@@ -364,18 +364,16 @@ class TrashDirectoryForPut:
         self.remove_file  = fs.remove_file
         self.ensure_dir   = fs.ensure_dir
 
-        self.path_for_trash_info = OriginalLocation(parent_realpath)
-
     def store_absolute_paths(self):
-        self.path_for_trash_info.make_absolutes_paths()
+        self.path_maker = AbsolutePaths()
 
     def store_relative_paths(self, volume):
-        self.path_for_trash_info.make_paths_relatives_to(volume)
+        self.path_maker = TopDirRelativePaths(volume)
 
     def trash2(self, path, now, logger):
         path = os.path.normpath(path)
 
-        original_location = self.path_for_trash_info.for_file(path)
+        original_location = self.path_for_trash_info_for_file(path)
 
         basename = os.path.basename(original_location)
         content = format_trashinfo(original_location, now())
@@ -397,6 +395,11 @@ class TrashDirectoryForPut:
         result['trash_directory'] = self.path
         result['where_file_was_stored'] = where_to_store_trashed_file
         return result
+
+    def path_for_trash_info_for_file(self, path):
+        self.path_for_trash_info = OriginalLocation(parent_realpath,
+                                                    self.path_maker)
+        return self.path_for_trash_info.for_file(path)
 
     def ensure_files_dir_exists(self):
         self.ensure_dir(self.files_dir, 0o700)
@@ -481,9 +484,9 @@ class TopTrashDirWriteRules:
         output.is_valid()
 
 class OriginalLocation:
-    def __init__(self, parent_realpath):
+    def __init__(self, parent_realpath, path_maker):
         self.parent_realpath = parent_realpath
-        self.make_absolutes_paths()
+        self.path_maker = path_maker
 
     def make_paths_relatives_to(self, topdir):
         self.path_maker = TopDirRelativePaths(topdir)
