@@ -6,6 +6,7 @@ from nose.tools import assert_equals, assert_true
 
 from integration_tests.files import require_empty_dir
 from trashcli.put import TrashDirectoryForPut, RealFs
+from mock import Mock
 
 join = os.path.join
 
@@ -19,10 +20,13 @@ class TestTrashDirectory_persit_trash_info:
                 self.trashdirectory_base_dir,
                 "/",
                 RealFs())
+        self.logger = Mock()
 
     def persist_trash_info(self, basename, content):
-        return self.instance.persist_trash_info(
-                self.instance.info_dir, basename,content)
+        return self.instance.persist_trash_info(self.instance.info_dir,
+                                                basename,
+                                                content,
+                                                self.logger)
 
     def test_persist_trash_info_first_time(self):
 
