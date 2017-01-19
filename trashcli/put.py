@@ -488,12 +488,6 @@ class OriginalLocation:
         self.parent_realpath = parent_realpath
         self.path_maker = path_maker
 
-    def make_paths_relatives_to(self, topdir):
-        self.path_maker = TopDirRelativePaths(topdir)
-
-    def make_absolutes_paths(self):
-        self.path_maker = AbsolutePaths()
-
     def for_file(self, path):
         self.normalized_path = os.path.normpath(path)
 
