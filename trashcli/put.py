@@ -344,25 +344,6 @@ class GlobalTrashCan:
                                             add_alt_top_trash_dir)
         return trash_dirs
 
-class PossibleTrashDirectories:
-    def __init__(self, fs, make_trash_dir):
-        self.trash_dirs = []
-        self.fs = fs
-        self.make_trash_dir = make_trash_dir
-    def add_home_trash(self, path, volume):
-        trash_dir = self.make_trash_dir(path, volume)
-        trash_dir.store_absolute_paths()
-        self.trash_dirs.append(trash_dir)
-    def add_top_trash_dir(self, path, volume):
-        trash_dir = self.make_trash_dir(path, volume)
-        trash_dir.store_relative_paths()
-        trash_dir.checker = TopTrashDirWriteRules(None)
-        self.trash_dirs.append(trash_dir)
-    def add_alt_top_trash_dir(self, path, volume):
-        trash_dir = self.make_trash_dir(path, volume)
-        trash_dir.store_relative_paths()
-        self.trash_dirs.append(trash_dir)
-
 def parent_realpath(path):
     parent = os.path.dirname(path)
     return os.path.realpath(parent)
