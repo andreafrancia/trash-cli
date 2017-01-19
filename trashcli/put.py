@@ -78,7 +78,16 @@ class TrashPutCmd:
                               description="Put files in trash",
                               version="%%prog %s" % version,
                               formatter=NoWrapFormatter(),
-                              epilog=epilog)
+                              epilog="""\
+To remove a file whose name starts with a '-', for example '-foo',
+use one of these commands:
+
+    trash -- -foo
+
+    trash ./-foo
+
+Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
+
         parser.add_option("-d", "--directory", action="store_true",
                           help="ignored (for GNU rm compatibility)")
         parser.add_option("-f", "--force", action="store_true",
@@ -104,16 +113,6 @@ class TrashPutCmd:
         parser.error = patched_error
         parser.exit = patched_exit
         return parser
-
-epilog="""\
-To remove a file whose name starts with a '-', for example '-foo',
-use one of these commands:
-
-    trash -- -foo
-
-    trash ./-foo
-
-Report bugs to https://github.com/andreafrancia/trash-cli/issues"""
 
 class MyLogger:
     def __init__(self, stderr, program_name):
