@@ -255,7 +255,7 @@ class GlobalTrashCan:
         self.reporter.volume_of_file(volume_of_file_to_be_trashed)
         candidates = self._possible_trash_directories_for(volume_of_file_to_be_trashed)
         file_has_been_trashed = False
-        for trash_dir in candidates.trash_dirs:
+        for trash_dir in candidates:
             if self._is_trash_dir_secure(trash_dir):
                 volume_of_trash_dir = self.volume_of(self.realpath(trash_dir.path))
                 self.reporter.trash_dir_with_volume(trash_dir.path,
@@ -320,16 +320,29 @@ class GlobalTrashCan:
     def _possible_trash_directories_for(self, volume):
         def make_trash_dir(path, volume):
             return TrashDirectoryForPut(path, volume, self.fs)
-        candidates = PossibleTrashDirectories(self.fs, make_trash_dir)
+        trash_dirs = []
+        def add_home_trash(path, volume):
+            trash_dir = make_trash_dir(path, volume)
+            trash_dir.store_absolute_paths()
+            trash_dirs.append(trash_dir)
+        def add_top_trash_dir(path, volume):
+            trash_dir = make_trash_dir(path, volume)
+            trash_dir.store_relative_paths()
+            trash_dir.checker = TopTrashDirWriteRules(None)
+            trash_dirs.append(trash_dir)
+        def add_alt_top_trash_dir(path, volume):
+            trash_dir = make_trash_dir(path, volume)
+            trash_dir.store_relative_paths()
+            trash_dirs.append(trash_dir)
         trash_directories = TrashDirectories(self.volume_of,
                                              self.getuid,
                                              self.environ)
-        trash_directories.home_trash_dir(candidates.add_home_trash)
+        trash_directories.home_trash_dir(add_home_trash)
         trash_directories.volume_trash_dir1(volume,
-                                            candidates.add_top_trash_dir)
+                                            add_top_trash_dir)
         trash_directories.volume_trash_dir2(volume,
-                                            candidates.add_alt_top_trash_dir)
-        return candidates
+                                            add_alt_top_trash_dir)
+        return trash_dirs
 
 class PossibleTrashDirectories:
     def __init__(self, fs, make_trash_dir):
