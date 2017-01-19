@@ -355,9 +355,6 @@ class TrashDirectoryForPut:
         self.volume    = volume
         self.info_dir  = os.path.join(self.path, 'info')
         self.files_dir = os.path.join(self.path, 'files')
-        class all_is_ok_checker:
-            def valid_to_be_written(self, a, b): pass
-            def check(self, a):pass
         self.checker      = all_is_ok_checker()
         self.move         = fs.move
         self.atomic_write = fs.atomic_write
@@ -459,6 +456,10 @@ def shrinkuser(path, environ=os.environ):
     except KeyError:
         pass
     return path
+
+class all_is_ok_checker:
+    def valid_to_be_written(self, a, b): pass
+    def check(self, a):pass
 
 class TopTrashDirWriteRules:
     def __init__(self, fs):
