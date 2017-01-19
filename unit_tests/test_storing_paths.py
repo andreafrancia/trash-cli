@@ -16,7 +16,7 @@ class TestHowOriginalLocationIsStored:
 
     def test_for_relative_paths(self):
         self.dir = TrashDirectoryForPut('/volume/.Trash', '/volume', Mock())
-        self.dir.store_relative_paths()
+        self.dir.store_relative_paths('/volume')
 
         self.assert_path_for_trashinfo_is('/file'         , '/file')
         self.assert_path_for_trashinfo_is('/file'         , '/dir/../file')

@@ -327,12 +327,12 @@ class GlobalTrashCan:
             trash_dirs.append(trash_dir)
         def add_top_trash_dir(path, volume):
             trash_dir = make_trash_dir(path, volume)
-            trash_dir.store_relative_paths()
+            trash_dir.store_relative_paths(volume)
             trash_dir.checker = TopTrashDirWriteRules(None)
             trash_dirs.append(trash_dir)
         def add_alt_top_trash_dir(path, volume):
             trash_dir = make_trash_dir(path, volume)
-            trash_dir.store_relative_paths()
+            trash_dir.store_relative_paths(volume)
             trash_dirs.append(trash_dir)
         trash_directories = TrashDirectories(self.volume_of,
                                              self.getuid,
@@ -369,8 +369,8 @@ class TrashDirectoryForPut:
     def store_absolute_paths(self):
         self.path_for_trash_info.make_absolutes_paths()
 
-    def store_relative_paths(self):
-        self.path_for_trash_info.make_paths_relatives_to(self.volume)
+    def store_relative_paths(self, volume):
+        self.path_for_trash_info.make_paths_relatives_to(volume)
 
     def trash2(self, path, now, logger):
         path = os.path.normpath(path)

@@ -8,7 +8,7 @@ class TestTrashing:
         self.now = Mock()
         self.fs = Mock()
         self.trashdir = TrashDirectoryForPut('~/.Trash', '/', self.fs)
-        self.trashdir.store_relative_paths()
+        self.trashdir.store_relative_paths('/')
         path_for_trash_info = Mock()
         path_for_trash_info.for_file.return_value = 'foo'
         self.trashdir.path_for_trash_info = path_for_trash_info
