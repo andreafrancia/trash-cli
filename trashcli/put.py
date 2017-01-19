@@ -397,9 +397,9 @@ class TrashDirectoryForPut:
         return result
 
     def path_for_trash_info_for_file(self, path):
-        self.path_for_trash_info = OriginalLocation(parent_realpath,
-                                                    self.path_maker)
-        return self.path_for_trash_info.for_file(path)
+        path_for_trash_info = OriginalLocation(parent_realpath,
+                                               self.path_maker)
+        return path_for_trash_info.for_file(path)
 
     def ensure_files_dir_exists(self):
         self.ensure_dir(self.files_dir, 0o700)
