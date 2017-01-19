@@ -274,7 +274,7 @@ class GlobalTrashCan:
                 if self._file_could_be_trashed_in(volume_of_file_to_be_trashed,
                                                   volume_of_trash_dir):
                     try:
-                        trashed_file = trash_dir.trash(file)
+                        trashed_file = trash_dir.trash(file, datetime.now)
                         self.reporter.file_has_been_trashed_in_as(
                             file,
                             trashed_file['trash_directory'],
@@ -327,7 +327,9 @@ class GlobalTrashCan:
         return volume_of_trash_dir == volume_of_file_to_be_trashed
 
     def _possible_trash_directories_for(self, volume):
-        candidates = PossibleTrashDirectories(self.fs)
+        def make_trash_dir(path, volume):
+            return TrashDirectoryForPut(path, volume, self.fs)
+        candidates = PossibleTrashDirectories(self.fs, make_trash_dir)
         trash_directories = TrashDirectories(self.volume_of,
                                              self.getuid,
                                              self.environ)
@@ -339,24 +341,23 @@ class GlobalTrashCan:
         return candidates
 
 class PossibleTrashDirectories:
-    def __init__(self, fs):
+    def __init__(self, fs, make_trash_dir):
         self.trash_dirs = []
         self.fs = fs
+        self.make_trash_dir = make_trash_dir
     def add_home_trash(self, path, volume):
-        trash_dir = self._make_trash_dir(path, volume)
+        trash_dir = self.make_trash_dir(path, volume)
         trash_dir.store_absolute_paths()
         self.trash_dirs.append(trash_dir)
     def add_top_trash_dir(self, path, volume):
-        trash_dir = self._make_trash_dir(path, volume)
+        trash_dir = self.make_trash_dir(path, volume)
         trash_dir.store_relative_paths()
         trash_dir.checker = TopTrashDirWriteRules(None)
         self.trash_dirs.append(trash_dir)
     def add_alt_top_trash_dir(self, path, volume):
-        trash_dir = self._make_trash_dir(path, volume)
+        trash_dir = self.make_trash_dir(path, volume)
         trash_dir.store_relative_paths()
         self.trash_dirs.append(trash_dir)
-    def _make_trash_dir(self, path, volume):
-        return TrashDirectoryForPut(path, volume, datetime.now, self.fs)
 
 def parent_realpath(path):
     parent = os.path.dirname(path)
@@ -364,7 +365,7 @@ def parent_realpath(path):
 
 class TrashDirectoryForPut:
     from datetime import datetime
-    def __init__(self, path, volume, now, fs):
+    def __init__(self, path, volume, fs):
         self.path      = os.path.normpath(path)
         self.volume    = volume
         self.logger    = logger
@@ -374,7 +375,6 @@ class TrashDirectoryForPut:
             def valid_to_be_written(self, a, b): pass
             def check(self, a):pass
         self.checker      = all_is_ok_checker()
-        self.now          = now
         self.move         = fs.move
         self.atomic_write = fs.atomic_write
         self.remove_file  = fs.remove_file
@@ -388,7 +388,8 @@ class TrashDirectoryForPut:
     def store_relative_paths(self):
         self.path_for_trash_info.make_paths_relatives_to(self.volume)
 
-    def trash(self, path):
+    def trash(self, path, now):
+        self.now          = now
         path = os.path.normpath(path)
 
         original_location = self.path_for_trash_info.for_file(path)

@@ -5,7 +5,7 @@ from mock import Mock
 class TestHowOriginalLocationIsStored:
     def test_for_absolute_paths(self):
         fs = Mock()
-        self.dir = TrashDirectoryForPut('/volume/.Trash', '/volume', None, fs)
+        self.dir = TrashDirectoryForPut('/volume/.Trash', '/volume', fs)
         self.dir.store_absolute_paths()
 
         self.assert_path_for_trashinfo_is('/file'            , '/file')
@@ -15,7 +15,7 @@ class TestHowOriginalLocationIsStored:
         self.assert_path_for_trashinfo_is('/volume/dir/file' , '/volume/dir/file')
 
     def test_for_relative_paths(self):
-        self.dir = TrashDirectoryForPut('/volume/.Trash', '/volume', None, Mock())
+        self.dir = TrashDirectoryForPut('/volume/.Trash', '/volume', Mock())
         self.dir.store_relative_paths()
 
         self.assert_path_for_trashinfo_is('/file'         , '/file')

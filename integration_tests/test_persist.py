@@ -18,7 +18,6 @@ class TestTrashDirectory_persit_trash_info:
         self.instance = TrashDirectoryForPut(
                 self.trashdirectory_base_dir,
                 "/",
-                None,
                 RealFs())
 
     def persist_trash_info(self, basename, content):

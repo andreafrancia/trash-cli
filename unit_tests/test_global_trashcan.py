@@ -109,7 +109,7 @@ class TestGlobalTrashCan:
         from nose import SkipTest
         raise SkipTest()
 
-        trash_dir = TrashDirectoryForPut('/path', '/volume', now, fs)
+        trash_dir = TrashDirectoryForPut('/path', '/volume', fs)
 
-        trash_dir.trash('garbage')
+        trash_dir.trash('garbage', now)
 
