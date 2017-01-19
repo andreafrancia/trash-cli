@@ -19,7 +19,8 @@ class TestHomeFallback:
                 environ = dict(),
                 fs = self.fs,
                 parent_path = os.path.dirname,
-                realpath = lambda x:x)
+                realpath = lambda x:x,
+                logger = Mock())
 
     def test_use_of_top_trash_dir_when_sticky(self):
         self.fs.mock_add_spec(['isdir', 'islink', 'has_sticky_bit',

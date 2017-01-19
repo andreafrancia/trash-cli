@@ -34,7 +34,8 @@ class TestTopDirRules:
                                   lambda :'uid',
                                   datetime.now,
                                   parent_path,
-                                  realpath)
+                                  realpath,
+                                  Mock())
 
         trashcan.trash('')
         assert_equals([
@@ -56,7 +57,8 @@ class TestGlobalTrashCan:
                 environ = dict(),
                 fs = self.fs,
                 parent_path = os.path.dirname,
-                realpath = lambda x:x)
+                realpath = lambda x:x,
+                logger = Mock())
 
     def test_log_volume(self):
         self.trashcan.trash('a-dir/with-a-file')

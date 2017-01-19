@@ -6,7 +6,7 @@ from .fstab import volume_of
 from .trash import EX_OK, EX_IOERR
 from .trash import TrashDirectories
 from .trash import backup_file_path_from
-from .trash import logger
+from .trash import logger as trash_logger
 from .trash import version
 from datetime import datetime
 
@@ -64,7 +64,8 @@ class TrashPutCmd:
                                       getuid      = self.getuid,
                                       now         = self.now,
                                       parent_path = self.parent_path,
-                                      realpath    = self.realpath)
+                                      realpath    = self.realpath,
+                                      logger      = trash_logger)
             trashcan.trash_all(args)
 
             return reporter.exit_code()
@@ -228,7 +229,7 @@ class RealFs:
 
 class GlobalTrashCan:
     def __init__(self, environ, volume_of, reporter, fs, getuid, now,
-                 parent_path, realpath):
+                 parent_path, realpath, logger):
         self.getuid            = getuid
         self.reporter          = reporter
         self.volume_of         = volume_of
