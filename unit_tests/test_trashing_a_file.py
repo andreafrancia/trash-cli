@@ -1,4 +1,5 @@
 from trashcli.put import TrashDirectoryForPut
+from trashcli.put import TopDirRelativePaths
 from mock import Mock
 from nose.tools import istest, assert_equals
 from mock import ANY
@@ -8,7 +9,7 @@ class TestTrashing:
         self.now = Mock()
         self.fs = Mock()
         self.trashdir = TrashDirectoryForPut('~/.Trash', '/', self.fs)
-        self.trashdir.store_relative_paths('/')
+        self.trashdir.path_maker = TopDirRelativePaths('/')
         path_maker = Mock()
         path_maker.calc_parent_path.return_value = ''
         self.trashdir.path_maker = path_maker
