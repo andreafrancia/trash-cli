@@ -275,7 +275,7 @@ class GlobalTrashCan:
                                                   volume_of_trash_dir):
                     try:
                         trashed_file = trash_dir.trash2(file,
-                                                        datetime.now,
+                                                        self.now,
                                                         logger)
                         self.reporter.file_has_been_trashed_in_as(
                             file,

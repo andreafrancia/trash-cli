@@ -1,5 +1,6 @@
 from mock import Mock, call
 from nose.tools import istest, assert_equals, assert_not_equals
+from datetime import datetime
 
 from trashcli.put import GlobalTrashCan
 import os
@@ -31,7 +32,7 @@ class TestTopDirRules:
                                   reporter,
                                   fs,
                                   lambda :'uid',
-                                  None,
+                                  datetime.now,
                                   parent_path,
                                   realpath)
 
@@ -51,7 +52,7 @@ class TestGlobalTrashCan:
                 volume_of = self.volume_of,
                 reporter = self.reporter,
                 getuid = lambda:123,
-                now = None,
+                now = datetime.now,
                 environ = dict(),
                 fs = self.fs,
                 parent_path = os.path.dirname,

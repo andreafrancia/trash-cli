@@ -3,6 +3,7 @@ from mock import Mock, call, ANY
 from trashcli.fstab import FakeFstab
 from trashcli.put import GlobalTrashCan
 from nose.tools import assert_equals
+from datetime import datetime
 import os
 
 class TestHomeFallback:
@@ -14,7 +15,7 @@ class TestHomeFallback:
                 reporter = self.reporter,
                 getuid = lambda: 123,
                 volume_of = self.fake_volume_of(mount_points),
-                now = None,
+                now = datetime.now,
                 environ = dict(),
                 fs = self.fs,
                 parent_path = os.path.dirname,
