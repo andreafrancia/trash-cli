@@ -215,18 +215,6 @@ def describe(path):
     else:
         return 'entry'
 
-class RealFs:
-    def __init__(self):
-        import os
-        from . import fs
-        self.move           = fs.move
-        self.atomic_write   = fs.atomic_write
-        self.remove_file    = fs.remove_file
-        self.ensure_dir     = fs.ensure_dir
-        self.isdir          = os.path.isdir
-        self.islink         = os.path.islink
-        self.has_sticky_bit = fs.has_sticky_bit
-
 class GlobalTrashCan:
     def __init__(self, environ, volume_of, reporter, fs, getuid, now,
                  parent_path, realpath, logger):
@@ -531,3 +519,16 @@ class TopDirRelativePaths:
 class AbsolutePaths:
     def calc_parent_path(self, parent):
         return parent
+
+class RealFs:
+    def __init__(self):
+        import os
+        from . import fs
+        self.move           = fs.move
+        self.atomic_write   = fs.atomic_write
+        self.remove_file    = fs.remove_file
+        self.ensure_dir     = fs.ensure_dir
+        self.isdir          = os.path.isdir
+        self.islink         = os.path.islink
+        self.has_sticky_bit = fs.has_sticky_bit
+
