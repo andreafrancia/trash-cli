@@ -389,13 +389,12 @@ class TrashDirectoryForPut:
         self.path_for_trash_info.make_paths_relatives_to(self.volume)
 
     def trash(self, path, now):
-        self.now          = now
         path = os.path.normpath(path)
 
         original_location = self.path_for_trash_info.for_file(path)
 
         basename = os.path.basename(original_location)
-        content = format_trashinfo(original_location, self.now())
+        content = format_trashinfo(original_location, now())
         trash_info_file = self.persist_trash_info(self.info_dir,
                                                   basename,
                                                   content)
