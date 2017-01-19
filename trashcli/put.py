@@ -274,7 +274,9 @@ class GlobalTrashCan:
                 if self._file_could_be_trashed_in(volume_of_file_to_be_trashed,
                                                   volume_of_trash_dir):
                     try:
-                        trashed_file = trash_dir.trash(file, datetime.now)
+                        trashed_file = trash_dir.trash2(file,
+                                                        datetime.now,
+                                                        logger)
                         self.reporter.file_has_been_trashed_in_as(
                             file,
                             trashed_file['trash_directory'],
@@ -368,7 +370,6 @@ class TrashDirectoryForPut:
     def __init__(self, path, volume, fs):
         self.path      = os.path.normpath(path)
         self.volume    = volume
-        self.logger    = logger
         self.info_dir  = os.path.join(self.path, 'info')
         self.files_dir = os.path.join(self.path, 'files')
         class all_is_ok_checker:
@@ -388,7 +389,7 @@ class TrashDirectoryForPut:
     def store_relative_paths(self):
         self.path_for_trash_info.make_paths_relatives_to(self.volume)
 
-    def trash(self, path, now):
+    def trash2(self, path, now, logger):
         path = os.path.normpath(path)
 
         original_location = self.path_for_trash_info.for_file(path)
@@ -398,7 +399,7 @@ class TrashDirectoryForPut:
         trash_info_file = self.persist_trash_info(self.info_dir,
                                                   basename,
                                                   content,
-                                                  self.logger)
+                                                  logger)
 
         where_to_store_trashed_file = backup_file_path_from(trash_info_file)
 
