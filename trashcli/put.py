@@ -324,6 +324,7 @@ class GlobalTrashCan:
         def add_home_trash(path, volume):
             trash_dir = make_trash_dir(path, volume)
             trash_dir.path_maker = AbsolutePaths()
+            trash_dir.checker = all_is_ok_checker()
             trash_dirs.append(trash_dir)
         def add_top_trash_dir(path, volume):
             trash_dir = make_trash_dir(path, volume)
@@ -333,6 +334,7 @@ class GlobalTrashCan:
         def add_alt_top_trash_dir(path, volume):
             trash_dir = make_trash_dir(path, volume)
             trash_dir.path_maker = TopDirRelativePaths(volume)
+            trash_dir.checker = all_is_ok_checker()
             trash_dirs.append(trash_dir)
         trash_directories = TrashDirectories(self.volume_of,
                                              self.getuid,
