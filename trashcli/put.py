@@ -237,6 +237,7 @@ class GlobalTrashCan:
         self.environ           = environ
         self.parent_path       = parent_path
         self.realpath          = realpath
+        self.logger            = logger
 
     def trash_all(self, args):
         for arg in args :
@@ -276,7 +277,7 @@ class GlobalTrashCan:
                     try:
                         trashed_file = trash_dir.trash2(file,
                                                         self.now,
-                                                        logger)
+                                                        self.logger)
                         self.reporter.file_has_been_trashed_in_as(
                             file,
                             trashed_file['trash_directory'],
