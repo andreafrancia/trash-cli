@@ -304,7 +304,6 @@ class GlobalTrashCan:
             def is_valid(self):
                 self.valid = True
         output = ValidationOutput(self.reporter)
-        trash_dir.checker.fs = self.fs
         trash_dir.checker.valid_to_be_written(trash_dir.path, output, self.fs)
         return output.valid
 
