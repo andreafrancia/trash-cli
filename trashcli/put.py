@@ -255,8 +255,8 @@ class GlobalTrashCan:
         self.reporter.volume_of_file(volume_of_file_to_be_trashed)
         candidates = self._possible_trash_directories_for(volume_of_file_to_be_trashed)
         file_has_been_trashed = False
-        for trash_dir in candidates:
-            if self._is_trash_dir_secure(trash_dir):
+        for trash_dir, checker in candidates:
+            if self._is_trash_dir_secure(trash_dir, checker):
                 volume_of_trash_dir = self.volume_of(self.realpath(trash_dir.path))
                 self.reporter.trash_dir_with_volume(trash_dir.path,
                                                     volume_of_trash_dir)
@@ -284,7 +284,7 @@ class GlobalTrashCan:
     def volume_of_parent(self, file):
         return self.volume_of(self.parent_path(file))
 
-    def _is_trash_dir_secure(self, trash_dir):
+    def _is_trash_dir_secure(self, trash_dir, checker):
         class ValidationOutput:
             def __init__(self, reporter):
                 self.valid = True
@@ -304,7 +304,7 @@ class GlobalTrashCan:
             def is_valid(self):
                 self.valid = True
         output = ValidationOutput(self.reporter)
-        trash_dir.checker(trash_dir.path, output, self.fs)
+        checker(trash_dir.path, output, self.fs)
         return output.valid
 
     def _should_skipped_by_specs(self, file):
@@ -323,18 +323,18 @@ class GlobalTrashCan:
         def add_home_trash(path, volume):
             trash_dir = make_trash_dir(path, volume)
             trash_dir.path_maker = AbsolutePaths()
-            trash_dir.checker = all_is_ok_checker
-            trash_dirs.append(trash_dir)
+            checker = all_is_ok_checker
+            trash_dirs.append((trash_dir, checker))
         def add_top_trash_dir(path, volume):
             trash_dir = make_trash_dir(path, volume)
             trash_dir.path_maker = TopDirRelativePaths(volume)
-            trash_dir.checker = TopTrashDirWriteRules
-            trash_dirs.append(trash_dir)
+            checker = TopTrashDirWriteRules
+            trash_dirs.append((trash_dir, checker))
         def add_alt_top_trash_dir(path, volume):
             trash_dir = make_trash_dir(path, volume)
             trash_dir.path_maker = TopDirRelativePaths(volume)
-            trash_dir.checker = all_is_ok_checker
-            trash_dirs.append(trash_dir)
+            checker = all_is_ok_checker
+            trash_dirs.append((trash_dir, checker))
         trash_directories = TrashDirectories(self.volume_of,
                                              self.getuid,
                                              self.environ)
