@@ -463,8 +463,6 @@ class all_is_ok_checker:
         pass
 
 class TopTrashDirWriteRules:
-    def valid_to_be_written(self, trash_dir_path, output, fs):
-        return self.__call__(trash_dir_path, output,fs)
     def __call__(self, trash_dir_path, output, fs):
         parent = os.path.dirname(trash_dir_path)
         if not fs.isdir(parent):
