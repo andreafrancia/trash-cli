@@ -323,17 +323,17 @@ class GlobalTrashCan:
         def add_home_trash(path, volume):
             trash_dir = make_trash_dir(path, volume)
             trash_dir.path_maker = AbsolutePaths()
-            trash_dir.checker = all_is_ok_checker()
+            trash_dir.checker = all_is_ok_checker
             trash_dirs.append(trash_dir)
         def add_top_trash_dir(path, volume):
             trash_dir = make_trash_dir(path, volume)
             trash_dir.path_maker = TopDirRelativePaths(volume)
-            trash_dir.checker = TopTrashDirWriteRules()
+            trash_dir.checker = TopTrashDirWriteRules
             trash_dirs.append(trash_dir)
         def add_alt_top_trash_dir(path, volume):
             trash_dir = make_trash_dir(path, volume)
             trash_dir.path_maker = TopDirRelativePaths(volume)
-            trash_dir.checker = all_is_ok_checker()
+            trash_dir.checker = all_is_ok_checker
             trash_dirs.append(trash_dir)
         trash_directories = TrashDirectories(self.volume_of,
                                              self.getuid,
@@ -356,7 +356,7 @@ class TrashDirectoryForPut:
         self.volume    = volume
         self.info_dir  = os.path.join(self.path, 'info')
         self.files_dir = os.path.join(self.path, 'files')
-        self.checker      = all_is_ok_checker()
+        self.checker      = all_is_ok_checker
         self.move         = fs.move
         self.atomic_write = fs.atomic_write
         self.remove_file  = fs.remove_file
@@ -458,23 +458,21 @@ def shrinkuser(path, environ=os.environ):
         pass
     return path
 
-class all_is_ok_checker:
-    def __call__(self, trash_dir_path, output, fs):
-        pass
+def all_is_ok_checker(trash_dir_path, output, fs):
+    pass
 
-class TopTrashDirWriteRules:
-    def __call__(self, trash_dir_path, output, fs):
-        parent = os.path.dirname(trash_dir_path)
-        if not fs.isdir(parent):
-            output.not_valid_should_be_a_dir()
-            return
-        if fs.islink(parent):
-            output.not_valid_parent_should_not_be_a_symlink()
-            return
-        if not fs.has_sticky_bit(parent):
-            output.not_valid_parent_should_be_sticky()
-            return
-        output.is_valid()
+def TopTrashDirWriteRules(trash_dir_path, output, fs):
+    parent = os.path.dirname(trash_dir_path)
+    if not fs.isdir(parent):
+        output.not_valid_should_be_a_dir()
+        return
+    if fs.islink(parent):
+        output.not_valid_parent_should_not_be_a_symlink()
+        return
+    if not fs.has_sticky_bit(parent):
+        output.not_valid_parent_should_be_sticky()
+        return
+    output.is_valid()
 
 class OriginalLocation:
     def __init__(self, parent_realpath, path_maker):
