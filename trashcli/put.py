@@ -263,9 +263,7 @@ class GlobalTrashCan:
                 if self._file_could_be_trashed_in(volume_of_file_to_be_trashed,
                                                   volume_of_trash_dir):
                     try:
-                        trashed_file = trash_dir.trash2(file,
-                                                        self.now,
-                                                        self.logger)
+                        trash_dir.trash2(file, self.now, self.logger)
                         self.reporter.file_has_been_trashed_in_as(
                             file,
                             trash_dir.path)
@@ -378,10 +376,6 @@ class TrashDirectoryForPut:
         except IOError as e:
             self.remove_file(trash_info_file)
             raise e
-        result = dict()
-        result['trash_directory'] = self.path
-        result['where_file_was_stored'] = where_to_store_trashed_file
-        return result
 
     def path_for_trash_info_for_file(self, path):
         path_for_trash_info = OriginalLocation(parent_realpath,
