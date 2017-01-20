@@ -10,7 +10,7 @@ class TestMethod1VolumeTrashDirectory:
         self.fs.isdir.return_value = True
         self.fs.islink.return_value = False
         self.fs.has_sticky_bit.return_value = True
-        self.checker = TopTrashDirWriteRules(self.fs)
+        self.checker = TopTrashDirWriteRules()
         self.out = Mock()
 
     def test_check_when_no_sticky_bit(self):
@@ -41,4 +41,6 @@ class TestMethod1VolumeTrashDirectory:
         self.out.is_valid()
 
     def valid_to_be_written(self):
-        self.checker.valid_to_be_written('sandbox/trash-dir/123', self.out)
+        self.checker.valid_to_be_written('sandbox/trash-dir/123',
+                                         self.out,
+                                         self.fs)

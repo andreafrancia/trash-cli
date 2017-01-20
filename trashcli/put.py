@@ -305,7 +305,7 @@ class GlobalTrashCan:
                 self.valid = True
         output = ValidationOutput(self.reporter)
         trash_dir.checker.fs = self.fs
-        trash_dir.checker.valid_to_be_written(trash_dir.path, output)
+        trash_dir.checker.valid_to_be_written(trash_dir.path, output, self.fs)
         return output.valid
 
     def _should_skipped_by_specs(self, file):
@@ -329,7 +329,7 @@ class GlobalTrashCan:
         def add_top_trash_dir(path, volume):
             trash_dir = make_trash_dir(path, volume)
             trash_dir.path_maker = TopDirRelativePaths(volume)
-            trash_dir.checker = TopTrashDirWriteRules(None)
+            trash_dir.checker = TopTrashDirWriteRules()
             trash_dirs.append(trash_dir)
         def add_alt_top_trash_dir(path, volume):
             trash_dir = make_trash_dir(path, volume)
@@ -460,22 +460,19 @@ def shrinkuser(path, environ=os.environ):
     return path
 
 class all_is_ok_checker:
-    def valid_to_be_written(self, trash_dir_path, output):
+    def valid_to_be_written(self, trash_dir_path, output, fs):
         pass
 
 class TopTrashDirWriteRules:
-    def __init__(self, fs):
-        self.fs = fs
-
-    def valid_to_be_written(self, trash_dir_path, output):
+    def valid_to_be_written(self, trash_dir_path, output, fs):
         parent = os.path.dirname(trash_dir_path)
-        if not self.fs.isdir(parent):
+        if not fs.isdir(parent):
             output.not_valid_should_be_a_dir()
             return
-        if self.fs.islink(parent):
+        if fs.islink(parent):
             output.not_valid_parent_should_not_be_a_symlink()
             return
-        if not self.fs.has_sticky_bit(parent):
+        if not fs.has_sticky_bit(parent):
             output.not_valid_parent_should_be_sticky()
             return
         output.is_valid()
