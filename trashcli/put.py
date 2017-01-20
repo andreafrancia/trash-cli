@@ -256,7 +256,7 @@ class GlobalTrashCan:
         candidates = self._possible_trash_directories_for(volume_of_file_to_be_trashed)
         file_has_been_trashed = False
         for trash_dir, checker in candidates:
-            if self._is_trash_dir_secure(trash_dir, checker):
+            if self._is_trash_dir_secure(trash_dir.path, checker):
                 volume_of_trash_dir = self.volume_of(self.realpath(trash_dir.path))
                 self.reporter.trash_dir_with_volume(trash_dir.path,
                                                     volume_of_trash_dir)
@@ -281,27 +281,27 @@ class GlobalTrashCan:
     def volume_of_parent(self, file):
         return self.volume_of(self.parent_path(file))
 
-    def _is_trash_dir_secure(self, trash_dir, checker):
+    def _is_trash_dir_secure(self, trash_dir_path, checker):
         class ValidationOutput:
             def __init__(self, reporter):
                 self.valid = True
                 self.reporter = reporter
             def not_valid_should_be_a_dir(self):
                 self.reporter.invalid_top_trash_is_not_a_dir(
-                        os.path.dirname(trash_dir.path))
+                        os.path.dirname(trash_dir_path))
                 self.valid = False
             def not_valid_parent_should_not_be_a_symlink(self):
                 self.reporter.found_unsercure_trash_dir_symlink(
-                        os.path.dirname(trash_dir.path))
+                        os.path.dirname(trash_dir_path))
                 self.valid = False
             def not_valid_parent_should_be_sticky(self):
                 self.reporter.found_unsecure_trash_dir_unsticky(
-                        os.path.dirname(trash_dir.path))
+                        os.path.dirname(trash_dir_path))
                 self.valid = False
             def is_valid(self):
                 self.valid = True
         output = ValidationOutput(self.reporter)
-        checker(trash_dir.path, output, self.fs)
+        checker(trash_dir_path, output, self.fs)
         return output.valid
 
     def _should_skipped_by_specs(self, file):
