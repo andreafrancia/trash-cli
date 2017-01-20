@@ -317,21 +317,19 @@ class GlobalTrashCan:
         return volume_of_trash_dir == volume_of_file_to_be_trashed
 
     def _possible_trash_directories_for(self, volume):
-        def make_trash_dir(path, volume):
-            return TrashDirectoryForPut(path, volume, self.fs)
         trash_dirs = []
         def add_home_trash(path, volume):
-            trash_dir = make_trash_dir(path, volume)
+            trash_dir = TrashDirectoryForPut(path, volume, self.fs)
             trash_dir.path_maker = AbsolutePaths()
             checker = all_is_ok_checker
             trash_dirs.append((trash_dir, checker))
         def add_top_trash_dir(path, volume):
-            trash_dir = make_trash_dir(path, volume)
+            trash_dir = TrashDirectoryForPut(path, volume, self.fs)
             trash_dir.path_maker = TopDirRelativePaths(volume)
             checker = TopTrashDirWriteRules
             trash_dirs.append((trash_dir, checker))
         def add_alt_top_trash_dir(path, volume):
-            trash_dir = make_trash_dir(path, volume)
+            trash_dir = TrashDirectoryForPut(path, volume, self.fs)
             trash_dir.path_maker = TopDirRelativePaths(volume)
             checker = all_is_ok_checker
             trash_dirs.append((trash_dir, checker))
