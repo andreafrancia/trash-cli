@@ -39,7 +39,7 @@ class TestTopDirRules:
 
         trashcan.trash('')
         assert_equals([
-            call('', '/volume/.Trash-uid', '/volume/.Trash-uid/files/.')
+            call('', '/volume/.Trash-uid')
             ], reporter.file_has_been_trashed_in_as.mock_calls)
 
 class TestGlobalTrashCan:

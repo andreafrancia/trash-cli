@@ -149,7 +149,7 @@ class TrashPutReporter:
     def unable_to_trash_file(self,f):
         self.logger.warning("cannot trash %s '%s'" % (describe(f), f))
         self.some_file_has_not_be_trashed = True
-    def file_has_been_trashed_in_as(self, trashee, trash_directory, destination):
+    def file_has_been_trashed_in_as(self, trashee, trash_directory):
         self.logger.info("'%s' trashed in %s" % (trashee,
                                                  shrinkuser(trash_directory)))
     def found_unsercure_trash_dir_symlink(self, trash_dir_path):
@@ -268,8 +268,7 @@ class GlobalTrashCan:
                                                         self.logger)
                         self.reporter.file_has_been_trashed_in_as(
                             file,
-                            trashed_file['trash_directory'],
-                            trashed_file['where_file_was_stored'])
+                            trash_dir.path)
                         file_has_been_trashed = True
 
                     except (IOError, OSError) as error:
