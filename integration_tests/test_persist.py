@@ -23,8 +23,7 @@ class TestTrashDirectory_persit_trash_info:
         self.logger = Mock()
 
     def persist_trash_info(self, basename, content):
-        return self.instance.persist_trash_info(self.instance.info_dir,
-                                                basename,
+        return self.instance.persist_trash_info(basename,
                                                 content,
                                                 self.logger)
 

@@ -366,8 +366,7 @@ class TrashDirectoryForPut:
 
         basename = os.path.basename(original_location)
         content = format_trashinfo(original_location, now())
-        trash_info_file = self.persist_trash_info(self.info_dir,
-                                                  basename,
+        trash_info_file = self.persist_trash_info(basename,
                                                   content,
                                                   logger)
 
@@ -393,13 +392,13 @@ class TrashDirectoryForPut:
     def ensure_files_dir_exists(self):
         self.ensure_dir(self.files_dir, 0o700)
 
-    def persist_trash_info(self, info_dir, basename, content, logger):
+    def persist_trash_info(self, basename, content, logger):
         """
         Create a .trashinfo file in the $trash/info directory.
         returns the created TrashInfoFile.
         """
 
-        self.ensure_dir(info_dir, 0o700)
+        self.ensure_dir(self.info_dir, 0o700)
 
         # write trash info
         index = 0
@@ -416,7 +415,7 @@ class TrashDirectoryForPut:
             trash_id = base_id + suffix
             trash_info_basename = trash_id+".trashinfo"
 
-            dest = os.path.join(info_dir, trash_info_basename)
+            dest = os.path.join(self.info_dir, trash_info_basename)
             try :
                 self.atomic_write(dest, content)
                 logger.debug(".trashinfo created as %s." % dest)
