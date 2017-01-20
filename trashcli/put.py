@@ -460,7 +460,8 @@ def shrinkuser(path, environ=os.environ):
     return path
 
 class all_is_ok_checker:
-    def valid_to_be_written(self, a, b): pass
+    def valid_to_be_written(self, trash_dir_path, output):
+        pass
 
 class TopTrashDirWriteRules:
     def __init__(self, fs):
