@@ -304,7 +304,7 @@ class GlobalTrashCan:
             def is_valid(self):
                 self.valid = True
         output = ValidationOutput(self.reporter)
-        trash_dir.checker.valid_to_be_written(trash_dir.path, output, self.fs)
+        trash_dir.checker(trash_dir.path, output, self.fs)
         return output.valid
 
     def _should_skipped_by_specs(self, file):
@@ -459,11 +459,13 @@ def shrinkuser(path, environ=os.environ):
     return path
 
 class all_is_ok_checker:
-    def valid_to_be_written(self, trash_dir_path, output, fs):
+    def __call__(self, trash_dir_path, output, fs):
         pass
 
 class TopTrashDirWriteRules:
     def valid_to_be_written(self, trash_dir_path, output, fs):
+        return self.__call__(trash_dir_path, output,fs)
+    def __call__(self, trash_dir_path, output, fs):
         parent = os.path.dirname(trash_dir_path)
         if not fs.isdir(parent):
             output.not_valid_should_be_a_dir()

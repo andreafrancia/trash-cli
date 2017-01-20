@@ -41,6 +41,4 @@ class TestMethod1VolumeTrashDirectory:
         self.out.is_valid()
 
     def valid_to_be_written(self):
-        self.checker.valid_to_be_written('sandbox/trash-dir/123',
-                                         self.out,
-                                         self.fs)
+        self.checker('sandbox/trash-dir/123', self.out, self.fs)
