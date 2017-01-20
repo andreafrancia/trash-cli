@@ -356,7 +356,6 @@ class TrashDirectoryForPut:
         self.volume    = volume
         self.info_dir  = os.path.join(self.path, 'info')
         self.files_dir = os.path.join(self.path, 'files')
-        self.checker      = all_is_ok_checker
         self.move         = fs.move
         self.atomic_write = fs.atomic_write
         self.remove_file  = fs.remove_file
