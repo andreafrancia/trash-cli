@@ -144,7 +144,9 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                                         candidates,
                                         volume_of_file_to_be_trashed):
         file_has_been_trashed = False
-        for trash_dir, checker in candidates:
+        for path, volume, path_maker, checker in candidates:
+            trash_dir = TrashDirectoryForPut(path, volume, self.fs)
+            trash_dir.path_maker = path_maker
             if self._is_trash_dir_secure(trash_dir.path, checker):
                 volume_of_trash_dir = self.volume_of(self.realpath(trash_dir.path))
                 self.reporter.trash_dir_with_volume(trash_dir.path,
@@ -207,21 +209,15 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
         def add_home_trash(path, volume):
             path_maker = AbsolutePaths()
             checker = all_is_ok_checker
-            trash_dir = TrashDirectoryForPut(path, volume, self.fs)
-            trash_dir.path_maker = path_maker
-            trash_dirs.append((trash_dir, checker))
+            trash_dirs.append((path, volume, path_maker, checker))
         def add_top_trash_dir(path, volume):
             path_maker = TopDirRelativePaths(volume)
             checker = TopTrashDirWriteRules
-            trash_dir = TrashDirectoryForPut(path, volume, self.fs)
-            trash_dir.path_maker = path_maker
-            trash_dirs.append((trash_dir, checker))
+            trash_dirs.append((path, volume, path_maker, checker))
         def add_alt_top_trash_dir(path, volume):
             path_maker = TopDirRelativePaths(volume)
             checker = all_is_ok_checker
-            trash_dir = TrashDirectoryForPut(path, volume, self.fs)
-            trash_dir.path_maker = path_maker
-            trash_dirs.append((trash_dir, checker))
+            trash_dirs.append((path, volume, path_maker, checker))
         trash_directories = TrashDirectories(self.volume_of,
                                              self.getuid,
                                              self.environ)
