@@ -114,19 +114,6 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
         parser.exit = patched_exit
         return parser
 
-class GlobalTrashCan:
-    def __init__(self, environ, volume_of, reporter, fs, getuid, now,
-                 parent_path, realpath, logger):
-        self.getuid            = getuid
-        self.reporter          = reporter
-        self.volume_of         = volume_of
-        self.now               = now
-        self.fs                = fs
-        self.environ           = environ
-        self.parent_path       = parent_path
-        self.realpath          = realpath
-        self.logger            = logger
-
     def trash_all(self, args):
         for arg in args :
             self.trash(arg)
@@ -239,6 +226,20 @@ class GlobalTrashCan:
         trash_directories.volume_trash_dir2(volume,
                                             add_alt_top_trash_dir)
         return trash_dirs
+
+
+class GlobalTrashCan(TrashPutCmd):
+    def __init__(self, environ, volume_of, reporter, fs, getuid, now,
+                 parent_path, realpath, logger):
+        self.getuid            = getuid
+        self.reporter          = reporter
+        self.volume_of         = volume_of
+        self.now               = now
+        self.fs                = fs
+        self.environ           = environ
+        self.parent_path       = parent_path
+        self.realpath          = realpath
+        self.logger            = logger
 
 def describe(path):
     """
