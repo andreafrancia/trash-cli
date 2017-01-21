@@ -2,7 +2,7 @@
 
 from trashcli.put import TrashPutCmd
 
-from nose.tools import istest, assert_in, assert_equals
+from nose.tools import assert_in, assert_equals
 from unit_tests.myStringIO import StringIO
 from integration_tests.assert_equals_with_unidiff import assert_equals_with_unidiff
 from textwrap import dedent
@@ -60,11 +60,9 @@ def assert_line_in_text(expected_line, text):
                 'line: %s\n' % expected_line +
                 'text:\n%s\n' % format(text.splitlines()))
 
-@istest
-class describe_TrashPutCmd(TrashPutTest):
+class TestTrashPutCmd(TrashPutTest):
 
-    @istest
-    def on_help_option_print_help(self):
+    def test_on_help_option_print_help(self):
         self.run('--help')
         self.stdout_should_be(dedent('''\
             Usage: trash-put [OPTION]... FILE...
@@ -90,23 +88,19 @@ class describe_TrashPutCmd(TrashPutTest):
             Report bugs to https://github.com/andreafrancia/trash-cli/issues
             '''))
 
-    @istest
-    def it_should_skip_dot_entry(self):
+    def test_it_should_skip_dot_entry(self):
         self.run('.')
         self.stderr_should_be("trash-put: cannot trash directory '.'\n")
 
-    @istest
-    def it_should_skip_dotdot_entry(self):
+    def test_it_should_skip_dotdot_entry(self):
         self.run('..')
         self.stderr_should_be("trash-put: cannot trash directory '..'\n")
 
-    @istest
-    def it_should_print_usage_on_no_argument(self):
+    def test_it_should_print_usage_on_no_argument(self):
         self.run()
         self.stderr_should_be(
             'Usage: trash-put [OPTION]... FILE...\n'
             '\n'
             'trash-put: error: Please specify the files to trash.\n')
         self.stdout_should_be('')
-
 
