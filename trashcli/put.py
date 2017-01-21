@@ -114,106 +114,6 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
         parser.exit = patched_exit
         return parser
 
-class MyLogger:
-    def __init__(self, stderr, program_name):
-        self.program_name = program_name
-        self.stderr=stderr
-        self.verbose = False
-    def be_verbose(self):
-        self.verbose = True
-    def info(self,message):
-        if self.verbose:
-            self.emit(message)
-    def warning(self,message):
-        self.emit(message)
-    def emit(self, message):
-        self.stderr.write("%s: %s\n" % (self.program_name,message))
-
-from optparse import IndentedHelpFormatter
-class NoWrapFormatter(IndentedHelpFormatter) :
-    def _format_text(self, text) :
-        "[Does not] format a text, return the text as it is."
-        return text
-
-class NullObject:
-    def __getattr__(self, name):
-        return lambda *argl,**args:None
-
-class TrashPutReporter:
-    def __init__(self, logger):
-        self.logger = logger
-        self.some_file_has_not_be_trashed = False
-        self.no_argument_specified = False
-    def unable_to_trash_dot_entries(self,file):
-        self.logger.warning("cannot trash %s '%s'" % (describe(file), file))
-    def unable_to_trash_file(self,f):
-        self.logger.warning("cannot trash %s '%s'" % (describe(f), f))
-        self.some_file_has_not_be_trashed = True
-    def file_has_been_trashed_in_as(self, trashee, trash_directory):
-        self.logger.info("'%s' trashed in %s" % (trashee,
-                                                 shrinkuser(trash_directory)))
-    def found_unsercure_trash_dir_symlink(self, trash_dir_path):
-        self.logger.info("found unsecure .Trash dir (should not be a symlink): %s"
-                % trash_dir_path)
-    def invalid_top_trash_is_not_a_dir(self, trash_dir_path):
-        self.logger.info("found unusable .Trash dir (should be a dir): %s"
-                % trash_dir_path)
-    def found_unsecure_trash_dir_unsticky(self, trash_dir_path):
-        self.logger.info("found unsecure .Trash dir (should be sticky): %s"
-                % trash_dir_path)
-    def unable_to_trash_file_in_because(self,
-                                        file_to_be_trashed,
-                                        trash_directory, error):
-        self.logger.info("Failed to trash %s in %s, because :%s" % (
-           file_to_be_trashed, shrinkuser(trash_directory), error))
-    def trash_dir_with_volume(self, trash_dir_path, volume_path):
-        self.logger.info("Trash-dir: %s from volume: %s" % (trash_dir_path,
-                                                            volume_path))
-    def exit_code(self):
-        if not self.some_file_has_not_be_trashed:
-            return EX_OK
-        else:
-            return EX_IOERR
-    def volume_of_file(self,volume):
-        self.logger.info("Volume of file: %s" % volume)
-
-def describe(path):
-    """
-    Return a textual description of the file pointed by this path.
-    Options:
-     - "symbolic link"
-     - "directory"
-     - "'.' directory"
-     - "'..' directory"
-     - "regular file"
-     - "regular empty file"
-     - "non existent"
-     - "entry"
-    """
-    if os.path.islink(path):
-        return 'symbolic link'
-    elif os.path.isdir(path):
-        if path == '.':
-            return 'directory'
-        elif path == '..':
-            return 'directory'
-        else:
-            if os.path.basename(path) == '.':
-                return "'.' directory"
-            elif os.path.basename(path) == '..':
-                return "'..' directory"
-            else:
-                return 'directory'
-    elif os.path.isfile(path):
-        if os.path.getsize(path) == 0:
-            return 'regular empty file'
-        else:
-            return 'regular file'
-    elif not os.path.exists(path):
-        return 'non existent'
-    else:
-        return 'entry'
-
 class GlobalTrashCan:
     def __init__(self, environ, volume_of, reporter, fs, getuid, now,
                  parent_path, realpath, logger):
@@ -339,6 +239,106 @@ class GlobalTrashCan:
         trash_directories.volume_trash_dir2(volume,
                                             add_alt_top_trash_dir)
         return trash_dirs
+
+def describe(path):
+    """
+    Return a textual description of the file pointed by this path.
+    Options:
+     - "symbolic link"
+     - "directory"
+     - "'.' directory"
+     - "'..' directory"
+     - "regular file"
+     - "regular empty file"
+     - "non existent"
+     - "entry"
+    """
+    if os.path.islink(path):
+        return 'symbolic link'
+    elif os.path.isdir(path):
+        if path == '.':
+            return 'directory'
+        elif path == '..':
+            return 'directory'
+        else:
+            if os.path.basename(path) == '.':
+                return "'.' directory"
+            elif os.path.basename(path) == '..':
+                return "'..' directory"
+            else:
+                return 'directory'
+    elif os.path.isfile(path):
+        if os.path.getsize(path) == 0:
+            return 'regular empty file'
+        else:
+            return 'regular file'
+    elif not os.path.exists(path):
+        return 'non existent'
+    else:
+        return 'entry'
+
+class MyLogger:
+    def __init__(self, stderr, program_name):
+        self.program_name = program_name
+        self.stderr=stderr
+        self.verbose = False
+    def be_verbose(self):
+        self.verbose = True
+    def info(self,message):
+        if self.verbose:
+            self.emit(message)
+    def warning(self,message):
+        self.emit(message)
+    def emit(self, message):
+        self.stderr.write("%s: %s\n" % (self.program_name,message))
+
+from optparse import IndentedHelpFormatter
+class NoWrapFormatter(IndentedHelpFormatter) :
+    def _format_text(self, text) :
+        "[Does not] format a text, return the text as it is."
+        return text
+
+class NullObject:
+    def __getattr__(self, name):
+        return lambda *argl,**args:None
+
+class TrashPutReporter:
+    def __init__(self, logger):
+        self.logger = logger
+        self.some_file_has_not_be_trashed = False
+        self.no_argument_specified = False
+    def unable_to_trash_dot_entries(self,file):
+        self.logger.warning("cannot trash %s '%s'" % (describe(file), file))
+    def unable_to_trash_file(self,f):
+        self.logger.warning("cannot trash %s '%s'" % (describe(f), f))
+        self.some_file_has_not_be_trashed = True
+    def file_has_been_trashed_in_as(self, trashee, trash_directory):
+        self.logger.info("'%s' trashed in %s" % (trashee,
+                                                 shrinkuser(trash_directory)))
+    def found_unsercure_trash_dir_symlink(self, trash_dir_path):
+        self.logger.info("found unsecure .Trash dir (should not be a symlink): %s"
+                % trash_dir_path)
+    def invalid_top_trash_is_not_a_dir(self, trash_dir_path):
+        self.logger.info("found unusable .Trash dir (should be a dir): %s"
+                % trash_dir_path)
+    def found_unsecure_trash_dir_unsticky(self, trash_dir_path):
+        self.logger.info("found unsecure .Trash dir (should be sticky): %s"
+                % trash_dir_path)
+    def unable_to_trash_file_in_because(self,
+                                        file_to_be_trashed,
+                                        trash_directory, error):
+        self.logger.info("Failed to trash %s in %s, because :%s" % (
+           file_to_be_trashed, shrinkuser(trash_directory), error))
+    def trash_dir_with_volume(self, trash_dir_path, volume_path):
+        self.logger.info("Trash-dir: %s from volume: %s" % (trash_dir_path,
+                                                            volume_path))
+    def exit_code(self):
+        if not self.some_file_has_not_be_trashed:
+            return EX_OK
+        else:
+            return EX_IOERR
+    def volume_of_file(self,volume):
+        self.logger.info("Volume of file: %s" % volume)
 
 def parent_realpath(path):
     parent = os.path.dirname(path)
