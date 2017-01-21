@@ -1,11 +1,35 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
 from trashcli.put import TrashPutCmd
+from trashcli.put import TopDirRelativePaths, AbsolutePaths
+from trashcli.put import TopTrashDirWriteRules, all_is_ok_checker
 
 from nose.tools import assert_in, assert_equals
 from unit_tests.myStringIO import StringIO
 from integration_tests.assert_equals_with_unidiff import assert_equals_with_unidiff
 from textwrap import dedent
+from mock import Mock, call
+
+class TestTrashPutTrashDirectory:
+    def test(self):
+        parent_path = lambda _ : None
+        volume_of = lambda _ : '/'
+        cmd = TrashPutCmd(None,
+                          None,
+                          {'XDG_DATA_HOME':'~/xdh'},
+                          volume_of,
+                          parent_path,
+                          None)
+        cmd.getuid = lambda : '123'
+        cmd.try_trash_file_using_candidates = Mock()
+
+        cmd.run(['trash-put', 'file'])
+
+        assert_equals([call('file', '/', [
+            ('~/xdh/Trash', '/', AbsolutePaths, all_is_ok_checker),
+            ('/.Trash/123', '/', TopDirRelativePaths, TopTrashDirWriteRules),
+            ('/.Trash-123', '/', TopDirRelativePaths, all_is_ok_checker),
+            ])], cmd.try_trash_file_using_candidates.mock_calls)
 
 class TrashPutTest:
     def run(self, *arg):

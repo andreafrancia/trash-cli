@@ -136,13 +136,13 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
         candidates = self._possible_trash_directories_for(volume_of_file_to_be_trashed)
 
         self.try_trash_file_using_candidates(file,
-                                             candidates,
-                                             volume_of_file_to_be_trashed)
+                                             volume_of_file_to_be_trashed,
+                                             candidates)
 
     def try_trash_file_using_candidates(self,
                                         file,
-                                        candidates,
-                                        volume_of_file_to_be_trashed):
+                                        volume_of_file_to_be_trashed,
+                                        candidates):
         file_has_been_trashed = False
         for path, volume, path_maker, checker in candidates:
             trash_dir = TrashDirectoryForPut(path, volume, self.fs)
