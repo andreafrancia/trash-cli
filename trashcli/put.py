@@ -205,19 +205,22 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
     def _possible_trash_directories_for(self, volume):
         trash_dirs = []
         def add_home_trash(path, volume):
-            trash_dir = TrashDirectoryForPut(path, volume, self.fs)
-            trash_dir.path_maker = AbsolutePaths()
+            path_maker = AbsolutePaths()
             checker = all_is_ok_checker
+            trash_dir = TrashDirectoryForPut(path, volume, self.fs)
+            trash_dir.path_maker = path_maker
             trash_dirs.append((trash_dir, checker))
         def add_top_trash_dir(path, volume):
-            trash_dir = TrashDirectoryForPut(path, volume, self.fs)
-            trash_dir.path_maker = TopDirRelativePaths(volume)
+            path_maker = TopDirRelativePaths(volume)
             checker = TopTrashDirWriteRules
+            trash_dir = TrashDirectoryForPut(path, volume, self.fs)
+            trash_dir.path_maker = path_maker
             trash_dirs.append((trash_dir, checker))
         def add_alt_top_trash_dir(path, volume):
-            trash_dir = TrashDirectoryForPut(path, volume, self.fs)
-            trash_dir.path_maker = TopDirRelativePaths(volume)
+            path_maker = TopDirRelativePaths(volume)
             checker = all_is_ok_checker
+            trash_dir = TrashDirectoryForPut(path, volume, self.fs)
+            trash_dir.path_maker = path_maker
             trash_dirs.append((trash_dir, checker))
         trash_directories = TrashDirectories(self.volume_of,
                                              self.getuid,
