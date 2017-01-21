@@ -57,16 +57,9 @@ class TrashPutCmd:
             return e.code
         else:
             reporter = TrashPutReporter(logger)
-            trashcan = GlobalTrashCan(reporter    = reporter,
-                                      volume_of   = self.volume_of,
-                                      environ     = self.environ,
-                                      fs          = self.fs,
-                                      getuid      = self.getuid,
-                                      now         = self.now,
-                                      parent_path = self.parent_path,
-                                      realpath    = self.realpath,
-                                      logger      = trash_logger)
-            trashcan.trash_all(args)
+            self.reporter = reporter
+            self.logger = trash_logger
+            self.trash_all(args)
 
             return reporter.exit_code()
 
