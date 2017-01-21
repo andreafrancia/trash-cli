@@ -146,7 +146,7 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
         file_has_been_trashed = False
         for path, volume, path_maker, checker in candidates:
             trash_dir = TrashDirectoryForPut(path, volume, self.fs)
-            trash_dir.path_maker = path_maker
+            trash_dir.path_maker = path_maker(volume)
             if self._is_trash_dir_secure(trash_dir.path, checker):
                 volume_of_trash_dir = self.volume_of(self.realpath(trash_dir.path))
                 self.reporter.trash_dir_with_volume(trash_dir.path,
@@ -207,15 +207,15 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
     def _possible_trash_directories_for(self, volume):
         trash_dirs = []
         def add_home_trash(path, volume):
-            path_maker = AbsolutePaths()
+            path_maker = AbsolutePaths
             checker = all_is_ok_checker
             trash_dirs.append((path, volume, path_maker, checker))
         def add_top_trash_dir(path, volume):
-            path_maker = TopDirRelativePaths(volume)
+            path_maker = TopDirRelativePaths
             checker = TopTrashDirWriteRules
             trash_dirs.append((path, volume, path_maker, checker))
         def add_alt_top_trash_dir(path, volume):
-            path_maker = TopDirRelativePaths(volume)
+            path_maker = TopDirRelativePaths
             checker = all_is_ok_checker
             trash_dirs.append((path, volume, path_maker, checker))
         trash_directories = TrashDirectories(self.volume_of,
@@ -489,6 +489,8 @@ class TopDirRelativePaths:
         return parent
 
 class AbsolutePaths:
+    def __init__(self, topdir):
+        self.topdir = topdir
     def calc_parent_path(self, parent):
         return parent
 
