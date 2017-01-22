@@ -11,25 +11,36 @@ from textwrap import dedent
 from mock import Mock, call
 
 class TestTrashPutTrashDirectory:
-    def test(self):
+    def setUp(self):
         parent_path = lambda _ : None
         volume_of = lambda _ : '/'
-        cmd = TrashPutCmd(None,
+        self.try_trash_file_using_candidates = Mock()
+        self.cmd = TrashPutCmd(None,
                           None,
                           {'XDG_DATA_HOME':'~/xdh'},
                           volume_of,
                           parent_path,
                           None)
-        cmd.getuid = lambda : '123'
-        cmd.try_trash_file_using_candidates = Mock()
+        self.cmd.getuid = lambda : '123'
+        self.cmd.try_trash_file_using_candidates = self.try_trash_file_using_candidates
 
-        cmd.run(['trash-put', 'file'])
+    def test_normally(self):
+
+        self.cmd.run(['trash-put', 'file'])
 
         assert_equals([call('file', '/', [
             ('~/xdh/Trash', '/', AbsolutePaths, all_is_ok_checker),
             ('/.Trash/123', '/', TopDirRelativePaths, TopTrashDirWriteRules),
             ('/.Trash-123', '/', TopDirRelativePaths, all_is_ok_checker),
-            ])], cmd.try_trash_file_using_candidates.mock_calls)
+            ])], self.try_trash_file_using_candidates.mock_calls)
+
+    def test_with_a_specified_trashdir(self):
+        self.cmd.run(['trash-put', '--trashdir=/Trash2', 'file'])
+
+        assert_equals([call('file', '/', [
+            ('/Trash2', '/', TopDirRelativePaths, all_is_ok_checker),
+            ])], self.try_trash_file_using_candidates.mock_calls)
+
 
 class TrashPutTest:
     def run(self, *arg):

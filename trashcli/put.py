@@ -56,6 +56,9 @@ class TrashPutCmd:
         except SystemExit as e:
             return e.code
         else:
+            if options.trashdir:
+                self.trashdir = options.trashdir
+
             reporter = TrashPutReporter(logger)
             self.reporter = reporter
             self.logger = trash_logger
@@ -64,7 +67,7 @@ class TrashPutCmd:
             return reporter.exit_code()
 
     def get_option_parser(self, program_name):
-        from optparse import OptionParser
+        from optparse import OptionParser, SUPPRESS_HELP
 
         parser = OptionParser(prog=program_name,
                               usage="%prog [OPTION]... FILE...",
@@ -85,6 +88,8 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                           help="ignored (for GNU rm compatibility)")
         parser.add_option("-f", "--force", action="store_true",
                           help="ignored (for GNU rm compatibility)")
+        parser.add_option("--trashdir", type='string', action="store", dest='trashdir',
+                          help=SUPPRESS_HELP)
         parser.add_option("-i", "--interactive", action="store_true",
                           help="ignored (for GNU rm compatibility)")
         parser.add_option("-r", "-R", "--recursive", action="store_true",
@@ -133,7 +138,8 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
 
         volume_of_file_to_be_trashed = self.volume_of_parent(file)
         self.reporter.volume_of_file(volume_of_file_to_be_trashed)
-        candidates = self._possible_trash_directories_for(volume_of_file_to_be_trashed)
+        candidates = self._possible_trash_directories_for(
+                        volume_of_file_to_be_trashed)
 
         self.try_trash_file_using_candidates(file,
                                              volume_of_file_to_be_trashed,
@@ -218,14 +224,22 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
             path_maker = TopDirRelativePaths
             checker = all_is_ok_checker
             trash_dirs.append((path, volume, path_maker, checker))
-        trash_directories = TrashDirectories(self.volume_of,
-                                             self.getuid,
-                                             self.environ)
-        trash_directories.home_trash_dir(add_home_trash)
-        trash_directories.volume_trash_dir1(volume,
-                                            add_top_trash_dir)
-        trash_directories.volume_trash_dir2(volume,
-                                            add_alt_top_trash_dir)
+
+        if hasattr(self, 'trashdir') and self.trashdir:
+            path = self.trashdir
+            volume = self.volume_of(path)
+            path_maker = TopDirRelativePaths
+            checker = all_is_ok_checker
+            trash_dirs.append((path, volume, path_maker, checker))
+        else:
+            trash_directories = TrashDirectories(self.volume_of,
+                                                 self.getuid,
+                                                 self.environ)
+            trash_directories.home_trash_dir(add_home_trash)
+            trash_directories.volume_trash_dir1(volume,
+                                                add_top_trash_dir)
+            trash_directories.volume_trash_dir2(volume,
+                                                add_alt_top_trash_dir)
         return trash_dirs
 
 
