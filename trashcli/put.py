@@ -99,7 +99,7 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
         parser.add_option("--trash-dir",
                           type='string',
                           action="store", dest='trashdir',
-                          help=SUPPRESS_HELP)
+                          help='use TRASHDIR as trash folder')
         parser.add_option("-v",
                           "--verbose",
                           action="store_true",

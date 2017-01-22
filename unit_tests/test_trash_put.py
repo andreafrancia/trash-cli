@@ -111,6 +111,7 @@ class TestTrashPutCmd(TrashPutTest):
               -f, --force           ignored (for GNU rm compatibility)
               -i, --interactive     ignored (for GNU rm compatibility)
               -r, -R, --recursive   ignored (for GNU rm compatibility)
+              --trash-dir=TRASHDIR  use TRASHDIR as trash folder
               -v, --verbose         explain what is being done
 
             To remove a file whose name starts with a '-', for example '-foo',
