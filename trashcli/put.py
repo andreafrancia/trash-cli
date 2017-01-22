@@ -96,7 +96,7 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
         parser.add_option("-r", "-R", "--recursive",
                           action="store_true",
                           help="ignored (for GNU rm compatibility)")
-        parser.add_option("--trashdir",
+        parser.add_option("--trash-dir",
                           type='string',
                           action="store", dest='trashdir',
                           help=SUPPRESS_HELP)

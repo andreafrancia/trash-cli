@@ -35,7 +35,7 @@ class TestTrashPutTrashDirectory:
             ])], self.try_trash_file_using_candidates.mock_calls)
 
     def test_with_a_specified_trashdir(self):
-        self.cmd.run(['trash-put', '--trashdir=/Trash2', 'file'])
+        self.cmd.run(['trash-put', '--trash-dir=/Trash2', 'file'])
 
         assert_equals([call('file', '/', [
             ('/Trash2', '/', TopDirRelativePaths, all_is_ok_checker),
@@ -105,13 +105,13 @@ class TestTrashPutCmd(TrashPutTest):
             Put files in trash
 
             Options:
-              --version            show program's version number and exit
-              -h, --help           show this help message and exit
-              -d, --directory      ignored (for GNU rm compatibility)
-              -f, --force          ignored (for GNU rm compatibility)
-              -i, --interactive    ignored (for GNU rm compatibility)
-              -r, -R, --recursive  ignored (for GNU rm compatibility)
-              -v, --verbose        explain what is being done
+              --version             show program's version number and exit
+              -h, --help            show this help message and exit
+              -d, --directory       ignored (for GNU rm compatibility)
+              -f, --force           ignored (for GNU rm compatibility)
+              -i, --interactive     ignored (for GNU rm compatibility)
+              -r, -R, --recursive   ignored (for GNU rm compatibility)
+              -v, --verbose         explain what is being done
 
             To remove a file whose name starts with a '-', for example '-foo',
             use one of these commands:
