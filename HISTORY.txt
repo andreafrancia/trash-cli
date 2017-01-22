@@ -1,3 +1,6 @@
+master:
+ - Add experimental support for a --trashdir option to trash-put
+
 0.17.1.14:
  - Fix a bug that causes trash-put to use $topdir/.Trash/UID trashcan even when
    it is not secure and $topdir/.Trash-UID should be used instead. 
