@@ -1,5 +1,6 @@
 master:
- - Add experimental support for a --trashdir option to trash-put
+ - trash-put learned a --trash-dir option that can be used to specify the trash
+   directory to be used as destination 
 
 0.17.1.14:
  - Fix a bug that causes trash-put to use $topdir/.Trash/UID trashcan even when
