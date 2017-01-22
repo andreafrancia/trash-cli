@@ -84,18 +84,27 @@ use one of these commands:
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
 
-        parser.add_option("-d", "--directory", action="store_true",
+        parser.add_option("-d", "--directory",
+                          action="store_true",
                           help="ignored (for GNU rm compatibility)")
-        parser.add_option("-f", "--force", action="store_true",
+        parser.add_option("-f", "--force",
+                          action="store_true",
                           help="ignored (for GNU rm compatibility)")
-        parser.add_option("--trashdir", type='string', action="store", dest='trashdir',
+        parser.add_option("-i", "--interactive",
+                          action="store_true",
+                          help="ignored (for GNU rm compatibility)")
+        parser.add_option("-r", "-R", "--recursive",
+                          action="store_true",
+                          help="ignored (for GNU rm compatibility)")
+        parser.add_option("--trashdir",
+                          type='string',
+                          action="store", dest='trashdir',
                           help=SUPPRESS_HELP)
-        parser.add_option("-i", "--interactive", action="store_true",
-                          help="ignored (for GNU rm compatibility)")
-        parser.add_option("-r", "-R", "--recursive", action="store_true",
-                          help="ignored (for GNU rm compatibility)")
-        parser.add_option("-v", "--verbose", action="store_true",
-                          help="explain what is being done", dest="verbose")
+        parser.add_option("-v",
+                          "--verbose",
+                          action="store_true",
+                          dest="verbose",
+                          help="explain what is being done")
         original_print_help = parser.print_help
         def patched_print_help():
             original_print_help(self.stdout)
