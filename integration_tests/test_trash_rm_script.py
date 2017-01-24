@@ -7,9 +7,18 @@ from textwrap import dedent
 from pprint import pprint
 import sys
 
-class TestRestoreScript:
-    def setUp(self):
-        process = Popen([sys.executable, 'trash-rm'],
+class TestScriptsSmoke:
+    def test_trash_rm_works(self):
+        self.run_script('trash-rm')
+        assert_in("Usage:", self.stderr.splitlines())
+
+    def test_trash_put_works(self):
+        self.run_script('trash-put')
+        assert_in("Usage: trash-put [OPTION]... FILE...",
+                self.stderr.splitlines())
+
+    def run_script(self, script):
+        process = Popen([sys.executable, script],
                     env={'PYTHONPATH':'.'},
                     stdin=None,
                     stdout=PIPE,
@@ -20,6 +29,4 @@ class TestRestoreScript:
         process.wait()
         self.returncode = process.returncode
 
-    def test_should_print_usage_on_standard_error(self):
-        assert_in("Usage:", self.stderr.splitlines())
 
