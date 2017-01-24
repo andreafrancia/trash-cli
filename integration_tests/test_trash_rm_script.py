@@ -9,7 +9,7 @@ import sys
 
 class TestRestoreScript:
     def setUp(self):
-        process = Popen([sys.executable, 'trashcli/rm.py'],
+        process = Popen([sys.executable, 'trash-rm'],
                     env={'PYTHONPATH':'.'},
                     stdin=None,
                     stdout=PIPE,

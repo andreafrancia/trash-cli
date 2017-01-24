@@ -103,7 +103,3 @@ class ListTrashinfos:
         else:
             complete_path = os.path.join(self.volume, path)
             self.out(complete_path, trashinfo_path)
-
-
-if __name__ == '__main__':
-    sys.exit(main())
