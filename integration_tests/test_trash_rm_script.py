@@ -7,8 +7,7 @@ from textwrap import dedent
 from pprint import pprint
 import sys
 
-@istest
-class WhenNoArgs:
+class TestRestoreScript:
     def setUp(self):
         process = Popen([sys.executable, 'trashcli/rm.py'],
                     env={'PYTHONPATH':'.'},
