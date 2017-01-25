@@ -65,12 +65,11 @@ class TrashPutCmd:
             if options.trashdir:
                 self.trashdir = options.trashdir
 
-            reporter = TrashPutReporter(logger)
-            self.reporter = reporter
+            self.reporter = TrashPutReporter(logger)
             self.logger = trash_logger
             self.trash_all(args)
 
-            return reporter.exit_code()
+            return self.reporter.exit_code()
 
     def get_option_parser(self, program_name):
         from optparse import OptionParser, SUPPRESS_HELP
