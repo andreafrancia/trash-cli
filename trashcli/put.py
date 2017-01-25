@@ -55,13 +55,13 @@ class TrashPutCmd:
         parser = self.get_option_parser(program_name)
         try:
             (options, args) = parser.parse_args(argv[1:])
-            if options.verbose: logger.be_verbose()
 
             if len(args) <= 0:
                 parser.error("Please specify the files to trash.")
         except SystemExit as e:
             return e.code
         else:
+            if options.verbose: logger.be_verbose()
             if options.trashdir:
                 self.trashdir = options.trashdir
 
