@@ -22,6 +22,7 @@ class TestTrashPutTrashDirectory:
                                parent_path,
                                None,
                                None,
+                               None,
                                None)
         self.cmd.getuid = lambda : '123'
         self.cmd.try_trash_file_using_candidates = self.try_trash_file_using_candidates
@@ -51,6 +52,7 @@ class TrashPutTest:
         args = ['trash-put'] + list(arg)
         cmd = TrashPutCmd(self.stdout,
                           self.stderr,
+                          None,
                           None,
                           None,
                           None,

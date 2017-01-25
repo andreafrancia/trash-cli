@@ -17,6 +17,7 @@ class TestTrashPutIssueMessage:
                           None,
                           None,
                           None,
+                          None,
                           None)
         cmd.run(['', '--help'])
 

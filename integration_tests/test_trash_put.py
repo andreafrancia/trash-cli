@@ -2,6 +2,7 @@
 from trashcli.put import TrashPutCmd
 
 import os
+from datetime import datetime
 from nose.tools import istest, assert_equals, assert_not_equals
 from nose.tools import assert_in
 
@@ -85,7 +86,8 @@ class TrashPutTest:
             parent_path = os.path.dirname,
             realpath    = lambda x:x,
             fs          = RealFs(),
-            getuid      = lambda: None
+            getuid      = lambda: None,
+            now         = datetime.now
         )
         self.exit_code = cmd.run(list(argv))
         self.stderr = self.err.getvalue()

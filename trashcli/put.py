@@ -19,7 +19,8 @@ def main():
         parent_path,
         os.path.realpath,
         RealFs(),
-        os.getuid
+        os.getuid,
+        datetime.now
     ).run(sys.argv)
 
 def parent_path(path):
@@ -34,14 +35,15 @@ class TrashPutCmd:
                  parent_path,
                  realpath,
                  fs,
-                 getuid):
+                 getuid,
+                 now):
         self.stdout      = stdout
         self.stderr      = stderr
         self.environ     = environ
         self.volume_of   = volume_of
         self.fs          = fs
         self.getuid      = getuid
-        self.now         = datetime.now
+        self.now         = now
         self.parent_path = parent_path
         self.realpath    = realpath
 
