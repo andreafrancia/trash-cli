@@ -84,7 +84,8 @@ class TrashPutTest:
             volume_of   = self.fstab.volume_of,
             parent_path = os.path.dirname,
             realpath    = lambda x:x,
-            fs          = RealFs()
+            fs          = RealFs(),
+            getuid      = lambda: None
         )
         self.exit_code = cmd.run(list(argv))
         self.stderr = self.err.getvalue()

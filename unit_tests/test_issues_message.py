@@ -10,7 +10,14 @@ class TestTrashPutIssueMessage:
     def test_trash_put_last_line(self):
         from trashcli.put import TrashPutCmd
 
-        cmd = TrashPutCmd(self.out, StringIO(), None, None, None, None, None)
+        cmd = TrashPutCmd(self.out,
+                          StringIO(),
+                          None,
+                          None,
+                          None,
+                          None,
+                          None,
+                          None)
         cmd.run(['', '--help'])
 
         self.assert_last_line_of_output_is(
