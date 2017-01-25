@@ -17,8 +17,13 @@ class TestScriptsSmoke:
         assert_in("Usage: trash-put [OPTION]... FILE...",
                 self.stderr.splitlines())
 
-    def run_script(self, script):
-        process = Popen([sys.executable, script],
+    def test_trash_put_touch_filesystem(self):
+        self.run_script('trash-put', 'non-existent')
+        assert_equals("trash-put: cannot trash non existent 'non-existent'\n",
+                self.stderr)
+
+    def run_script(self, script, *args):
+        process = Popen([sys.executable, script] + list(args),
                     env={'PYTHONPATH':'.'},
                     stdin=None,
                     stdout=PIPE,
