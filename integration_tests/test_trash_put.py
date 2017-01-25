@@ -9,7 +9,7 @@ from .files import having_file, require_empty_dir, having_empty_dir
 from .files import make_sticky_dir
 from trashcli.fstab import FakeFstab
 from trashcli.fs import remove_file
-from trashcli.put import parent_path
+from trashcli.put import parent_path, RealFs
 
 class TestPath:
     def setUp(self):
@@ -83,7 +83,8 @@ class TrashPutTest:
             environ     = self.environ,
             volume_of   = self.fstab.volume_of,
             parent_path = os.path.dirname,
-            realpath    = lambda x:x
+            realpath    = lambda x:x,
+            fs          = RealFs()
         )
         self.exit_code = cmd.run(list(argv))
         self.stderr = self.err.getvalue()
