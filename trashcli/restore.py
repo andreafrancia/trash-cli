@@ -36,6 +36,21 @@ class RestoreCmd(object):
             command = os.path.basename(argv[0])
             self.println('%s %s' %(command, self.version))
             return
+        if '--original-location' in argv[1:]:
+            if len(argv) < 3:
+                self.printerr("No file for --original-location")
+                self.exit(1)
+            try:
+                for trashedfile in self.all_trashed_files():
+                    if trashedfile.original_location == argv[2]:
+                        self.restore(trashedfile)
+                        return
+                self.printerr("File not found in trash")
+                self.exit(1)
+            except IOError as e:
+                self.printerr(e)
+                self.exit(1)
+            return
         if len(argv) == 2:
             specific_path = argv[1]
             def is_trashed_from_curdir(trashedfile):
@@ -172,4 +187,3 @@ def restore(trashed_file, path_exists, fs):
 
     fs.move(trashed_file.original_file, trashed_file.original_location)
     fs.remove_file(trashed_file.info_file)
-
