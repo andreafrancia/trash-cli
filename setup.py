@@ -17,7 +17,7 @@ def main():
         author = 'Andrea Francia' , author_email = 'andrea@andreafrancia.it' ,
         url = 'https://github.com/andreafrancia/trash-cli',
         description = 'Command line interface to FreeDesktop.org Trash.',
-        long_description = file("README.rst").read(),
+        long_description = read_file("README.rst"),
         license = 'GPL v2',
         packages = ['trashcli'],
         scripts = scripts.created_scripts,
@@ -50,7 +50,11 @@ import os,stat
 def make_file_executable(path):
     os.chmod(path, os.stat(path).st_mode | stat.S_IXUSR)
 def write_file(name, contents):
-    file(name, 'w').write(contents)
+    with open(name, 'w') as f:
+        f.write(contents)
+def read_file(name):
+    with open(name) as f:
+        return f.read()
 
 scripts = Scripts(write_file, make_file_executable)
 

@@ -9,4 +9,3 @@ def test_how_path_joining_works():
     assert_equals('/absolute', join('relative', '/absolute'))
     assert_equals('relative/relative', join('relative', 'relative'))
     assert_equals('/absolute', join('', '/absolute'))
-    assert_equals('/absolute', join(None, '/absolute'))

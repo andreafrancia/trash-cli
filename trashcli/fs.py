@@ -15,7 +15,7 @@ class FileSystemReader(FileSystemListing):
     def is_symlink(self, path):
         return os.path.islink(path)
     def contents_of(self, path):
-        return file(path).read()
+        return open(path).read()
 
 class FileRemover:
     def remove_file(self, path):
@@ -33,11 +33,8 @@ def has_sticky_bit(path): # TODO move to FileSystemReader
     import stat
     return (os.stat(path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
 
-def parent_of(path):
-    return os.path.dirname(path)
-
 def remove_file(path):
-    if(os.path.exists(path)):
+    if(os.path.lexists(path)):
         try:
             os.remove(path)
         except:
@@ -58,7 +55,7 @@ def mkdirs(path):
 
 def atomic_write(filename, content):
     file_handle = os.open(filename, os.O_RDWR | os.O_CREAT | os.O_EXCL,
-            0600)
+            0o600)
     os.write(file_handle, content)
     os.close(file_handle)
 

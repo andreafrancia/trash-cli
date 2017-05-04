@@ -1,7 +1,46 @@
-from mock import Mock
-from nose.tools import istest
+from mock import Mock, call
+from nose.tools import istest, assert_equals, assert_not_equals
+from datetime import datetime
 
 from trashcli.put import GlobalTrashCan
+import os
+
+class TestTopDirRules:
+    def test(self):
+        parent_path = lambda _:None
+        volume_of = lambda _:'/volume'
+        realpath = lambda _: None
+        fs = Mock(['move',
+                   'atomic_write',
+                   'remove_file',
+                   'ensure_dir',
+                   'isdir',
+                   'islink',
+                   'has_sticky_bit'])
+        fs.islink.side_effect = lambda path: {
+                                                '/volume/.Trash':False
+                                             }[path]
+        fs.has_sticky_bit.side_effect = lambda path: {
+                                                '/volume/.Trash':False
+                                             }[path]
+        reporter = Mock(['volume_of_file',
+                         'found_unsecure_trash_dir_unsticky',
+                         'trash_dir_with_volume',
+                         'file_has_been_trashed_in_as'])
+        trashcan = GlobalTrashCan({},
+                                  volume_of,
+                                  reporter,
+                                  fs,
+                                  lambda :'uid',
+                                  datetime.now,
+                                  parent_path,
+                                  realpath,
+                                  Mock())
+
+        trashcan.trash('')
+        assert_equals([
+            call('', '/volume/.Trash-uid')
+            ], reporter.file_has_been_trashed_in_as.mock_calls)
 
 class TestGlobalTrashCan:
     def setUp(self):
@@ -14,9 +53,17 @@ class TestGlobalTrashCan:
                 volume_of = self.volume_of,
                 reporter = self.reporter,
                 getuid = lambda:123,
-                now = None,
+                now = datetime.now,
                 environ = dict(),
-                fs = self.fs)
+                fs = self.fs,
+                parent_path = os.path.dirname,
+                realpath = lambda x:x,
+                logger = Mock())
+
+    def test_log_volume(self):
+        self.trashcan.trash('a-dir/with-a-file')
+
+        self.reporter.volume_of_file.assert_called_with('/')
 
     @istest
     def should_report_when_trash_fail(self):
@@ -65,7 +112,7 @@ class TestGlobalTrashCan:
         from nose import SkipTest
         raise SkipTest()
 
-        trash_dir = TrashDirectoryForPut('/path', '/volume', now, fs)
+        trash_dir = TrashDirectoryForPut('/path', '/volume', fs)
 
-        trash_dir.trash('garbage')
+        trash_dir.trash('garbage', now)
 

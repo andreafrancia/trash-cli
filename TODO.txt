@@ -1,16 +1,5 @@
-Currently working on: home-fallback
- - update the bug link in trash-put,
-    - remove path_for_trash_info injection
-    - make storing absolute paths the default
- - remove default from TrashDirectoryForPut __init__
- - inject logger in TrashDirectoryForPut
-
 Backlog:
- - add a test for trash-put and method 1 trashdir
- - add an automated test for checking man page installation
- - unificate "SEE ALSO" for all man pages
- - trash-list should handle .trashinfo from home trashdir that contains 
-   relative path
+ - trash-list should handle .trashinfo from home trashdir that contains relative path
  - trash-list should print also the orphan files
  - support alias rmdir=trash-put
  - don't use world writable trash
@@ -26,17 +15,3 @@ Backlog:
  - trash-empty --from=/.Trash
  - trash-empty should empty even the mac trash directory
  - TRASH_DATE=2012-09-12 trash-put <file>
-
-Test to be ported to nosetests:
- - trash-put:
-    - trash in home trashcan
-    - print version
-    - trash in volume trashcan 1
-    - trash in volume trashcan 2
- - it should trash to $topdir/.Trash-UID when $topdir/.Trash is not suitable
-    - when $topdir/.Trash does not exists 
-    - when $topdir/.Trash is a symlink
-    - when $topdir/.Trash is not sticky
- - should refuse to create the $topdir/.Trash/$uid directory if the 
-   $topdir/.Trash is not sticky
-

@@ -2,12 +2,59 @@
 from trashcli.put import TrashPutCmd
 
 import os
+from datetime import datetime
 from nose.tools import istest, assert_equals, assert_not_equals
 from nose.tools import assert_in
 
 from .files import having_file, require_empty_dir, having_empty_dir
 from .files import make_sticky_dir
 from trashcli.fstab import FakeFstab
+from trashcli.fs import remove_file
+from trashcli.put import parent_path, RealFs
+
+class TestPath:
+    def setUp(self):
+        self.base = os.path.realpath(os.getcwd())
+
+    def test(self):
+        require_empty_dir('other_dir/dir')
+        remove_file('dir')
+        os.symlink('other_dir/dir', 'dir')
+        having_file('dir/foo')
+        assert_equals(os.path.join(self.base,'other_dir/dir'),
+                      parent_path('dir/foo'))
+        remove_file('dir')
+        remove_file('other_dir')
+    def test2(self):
+        require_empty_dir('test-disk/dir')
+        remove_file('link-to-non-existent')
+        os.symlink('test-disk/non-existent', 'link-to-non-existent')
+        assert_equals(self.base,
+                      parent_path('link-to-non-existent'))
+        remove_file('link-to-non-existent')
+
+    def test3(self):
+        remove_file('foo')
+        remove_file('bar')
+        require_empty_dir('foo')
+        require_empty_dir('bar')
+        os.symlink('../bar/zap', 'foo/zap')
+        assert_equals(os.path.join(self.base,'foo'),
+                      parent_path('foo/zap'))
+        remove_file('foo')
+        remove_file('bar')
+
+    def test4(self):
+        remove_file('foo')
+        remove_file('bar')
+        require_empty_dir('foo')
+        require_empty_dir('bar')
+        os.symlink('../bar/zap', 'foo/zap')
+        having_file('bar/zap')
+        assert_equals(os.path.join(self.base,'foo'),
+                      parent_path('foo/zap'))
+        remove_file('foo')
+        remove_file('bar')
 
 class TrashPutTest:
 
@@ -32,10 +79,15 @@ class TrashPutTest:
 
     def run_trashput(self, *argv):
         cmd = TrashPutCmd(
-            stdout  = self.out,
-            stderr  = self.err,
-            environ = self.environ,
-            fstab   = self.fstab
+            stdout      = self.out,
+            stderr      = self.err,
+            environ     = self.environ,
+            volume_of   = self.fstab.volume_of,
+            parent_path = os.path.dirname,
+            realpath    = lambda x:x,
+            fs          = RealFs(),
+            getuid      = lambda: None,
+            now         = datetime.now
         )
         self.exit_code = cmd.run(list(argv))
         self.stderr = self.err.getvalue()
@@ -56,7 +108,7 @@ class when_deleting_an_existing_file(TrashPutTest):
 
     @istest
     def a_trashinfo_file_should_have_been_created(self):
-        file('sandbox/XDG_DATA_HOME/Trash/info/foo.trashinfo').read()
+        open('sandbox/XDG_DATA_HOME/Trash/info/foo.trashinfo').read()
 
 @istest
 class when_deleting_an_existing_file_in_verbose_mode(TrashPutTest):
@@ -66,7 +118,7 @@ class when_deleting_an_existing_file_in_verbose_mode(TrashPutTest):
 
     @istest
     def should_tell_where_a_file_is_trashed(self):
-        assert_in("trash-put: `sandbox/foo' trashed in sandbox/XDG_DATA_HOME/Trash",
+        assert_in("trash-put: 'sandbox/foo' trashed in sandbox/XDG_DATA_HOME/Trash",
                   self.stderr.splitlines())
 
     @istest
@@ -96,7 +148,7 @@ class when_fed_with_dot_arguments(TrashPutTest):
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
         self.stderr_should_be(
-                "trash-put: cannot trash directory `.'\n")
+                "trash-put: cannot trash directory '.'\n")
 
         # the remaining arguments should be processed
         assert not exists('other_argument')
@@ -108,7 +160,7 @@ class when_fed_with_dot_arguments(TrashPutTest):
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
         self.stderr_should_be(
-            "trash-put: cannot trash directory `..'\n")
+            "trash-put: cannot trash directory '..'\n")
 
         # the remaining arguments should be processed
         assert not exists('other_argument')
@@ -120,7 +172,7 @@ class when_fed_with_dot_arguments(TrashPutTest):
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
         self.stderr_should_be(
-            "trash-put: cannot trash `.' directory `sandbox/.'\n")
+            "trash-put: cannot trash '.' directory 'sandbox/.'\n")
 
         # the remaining arguments should be processed
         assert not exists('other_argument')
@@ -133,7 +185,7 @@ class when_fed_with_dot_arguments(TrashPutTest):
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
         self.stderr_should_be(
-            "trash-put: cannot trash `..' directory `sandbox/..'\n")
+            "trash-put: cannot trash '..' directory 'sandbox/..'\n")
 
         # the remaining arguments should be processed
         assert not exists('other_argument')

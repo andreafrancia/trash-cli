@@ -1,0 +1,5 @@
+--exclude=build
+--exclude=env
+--python-kinds=-i
+-R
+

@@ -1,5 +1,6 @@
 from mock import Mock, call
-from nose.tools import assert_equals, assert_items_equal
+from nose.tools import assert_equals
+from unit_tests.tools import assert_items_equal
 
 class TestListing:
     def setUp(self):

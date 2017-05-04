@@ -1,10 +1,11 @@
 import os
 from nose.tools import istest
-from trashcli.trash import RestoreCmd
+from trashcli.restore import RestoreCmd
 
 from .files import require_empty_dir
+from trashcli.fs import remove_file
 from .output_collector import OutputCollector
-from trashinfo import a_trashinfo
+from .trashinfo import a_trashinfo
 
 @istest
 class describe_restore_trash:
@@ -71,7 +72,7 @@ class describe_restore_trash:
     def it_should_refuse_overwriting_existing_file(self):
 
         self.having_a_file_trashed_from_current_dir('foo')
-        file('foo', 'a+').close()
+        open('foo', 'a+').close()
         os.chmod('foo', 000)
         self.when_running_restore_trash(from_dir=current_dir(),
                                         with_user_typing = '0')
@@ -81,7 +82,7 @@ class describe_restore_trash:
         require_empty_dir('XDG_DATA_HOME')
 
         trashcan = TrashCan('XDG_DATA_HOME/Trash')
-        self.having_a_trashed_file = trashcan.make_trashed_file
+        self.having_a_trashed_file = trashcan.write_trashed_file
 
         out = OutputCollector()
         err = OutputCollector()
@@ -92,8 +93,7 @@ class describe_restore_trash:
 
     def having_a_file_trashed_from_current_dir(self, filename):
         self.having_a_trashed_file(os.path.join(os.getcwd(), filename))
-        if os.path.exists(filename):
-            os.remove(filename)
+        remove_file(filename)
         assert not os.path.exists(filename)
 
     def file_should_have_been_restored(self, filename):
@@ -115,12 +115,12 @@ class RestoreTrashRunner:
             exit    = [].append,
             input   = lambda msg: with_user_typing,
             curdir  = lambda: from_dir
-        ).run()
+        ).run([])
 
 class TrashCan:
     def __init__(self, path):
         self.path = path
-    def make_trashed_file(self, path):
+    def write_trashed_file(self, path):
         from .files import write_file
         write_file('%s/info/foo.trashinfo' % self.path, a_trashinfo(path))
         write_file('%s/files/foo' % self.path)

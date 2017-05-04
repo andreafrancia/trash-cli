@@ -9,8 +9,6 @@
 /trash-restore
 /trash-empty
 /trash-list
-/trash-put
-/trash-rm
 /trash
 
 # other things
@@ -33,3 +31,6 @@
 /fake-vol
 /xdh/
 /MANIFEST
+/tags
+/.vagrant/
+/ssh-config

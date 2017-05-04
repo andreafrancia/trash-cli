@@ -5,7 +5,8 @@ import os
 from nose.tools import assert_equals, assert_true
 
 from integration_tests.files import require_empty_dir
-from trashcli.put import TrashDirectoryForPut
+from trashcli.put import TrashDirectoryForPut, RealFs
+from mock import Mock
 
 join = os.path.join
 
@@ -17,15 +18,18 @@ class TestTrashDirectory_persit_trash_info:
 
         self.instance = TrashDirectoryForPut(
                 self.trashdirectory_base_dir,
-                "/")
+                "/",
+                RealFs())
+        self.logger = Mock()
 
     def persist_trash_info(self, basename, content):
-        return self.instance.persist_trash_info(
-                self.instance.info_dir, basename,content)
+        return self.instance.persist_trash_info(basename,
+                                                content,
+                                                self.logger)
 
     def test_persist_trash_info_first_time(self):
 
-        trash_info_file = self.persist_trash_info('dummy-path', 'content')
+        trash_info_file = self.persist_trash_info('dummy-path', b'content')
         assert_equals(join(self.trashdirectory_base_dir,'info', 'dummy-path.trashinfo'), trash_info_file)
 
         assert_equals('content', read(trash_info_file))
@@ -34,7 +38,7 @@ class TestTrashDirectory_persit_trash_info:
         self.test_persist_trash_info_first_time()
 
         for i in range(1,100) :
-            content='trashinfo content'
+            content=b'trashinfo content'
             trash_info_file = self.persist_trash_info('dummy-path', content)
 
             assert_equals("dummy-path_%s.trashinfo" % i,
@@ -45,7 +49,7 @@ class TestTrashDirectory_persit_trash_info:
         self.test_persist_trash_info_first_100_times()
 
         for i in range(101,200) :
-            trash_info_file = self.persist_trash_info('dummy-path','content')
+            trash_info_file = self.persist_trash_info('dummy-path',b'content')
             trash_info_id = os.path.basename(trash_info_file)
             assert_true(trash_info_id.startswith("dummy-path_"))
             assert_equals('content', read(trash_info_file))
@@ -53,5 +57,5 @@ class TestTrashDirectory_persit_trash_info:
     test_persist_trash_info_other_times.stress_test = True
 
 def read(path):
-    return file(path).read()
+    return open(path).read()
 

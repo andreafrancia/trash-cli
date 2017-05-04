@@ -1,25 +1,59 @@
 from trashcli.trash import Parser
-from mock import MagicMock
-from nose.tools import istest
+from mock import MagicMock, call
+from nose.tools import istest, assert_equals
 
-@istest
-class describe_Parser():
-    @istest
-    def it_calls_the_actions_passing_the_program_name(self):
-        on_raw = MagicMock()
-        parser = Parser()
-        parser.add_option('raw', on_raw)
+class TestParser():
+    def setUp(self):
+        self.invalid_option_callback = MagicMock()
+        self.on_raw = MagicMock()
+        self.on_help = MagicMock()
+        self.on_option = MagicMock()
 
-        parser(['trash-list', '--raw'])
+        self.parser = Parser()
+        self.parser.on_invalid_option(self.invalid_option_callback)
+        self.parser.add_option('raw', self.on_raw)
+        self.parser.add_option('opt=', self.on_option)
+        self.parser.on_help(self.on_help)
 
-        on_raw.assert_called_with('trash-list')
+    def test_argument_option_called_without_argument(self):
 
-    @istest
-    def how_getopt_works_with_an_invalid_option(self):
-        invalid_option_callback = MagicMock()
-        parser = Parser()
-        parser.on_invalid_option(invalid_option_callback)
+        self.parser(['trash-list', '--opt'])
 
-        parser(['command-name', '-x'])
+        assert_equals([], self.on_option.mock_calls)
+        self.invalid_option_callback.assert_called_with('trash-list', 'opt')
 
-        invalid_option_callback.assert_called_with('command-name', 'x')
+    def test_argument_option_called_with_argument(self):
+
+        self.parser(['trash-list', '--opt=', 'arg'])
+
+        assert_equals([call('')], self.on_option.mock_calls)
+
+    def test_argument_option_called_with_argument(self):
+
+        self.parser(['trash-list', '--opt=arg'])
+
+        assert_equals([call('arg')], self.on_option.mock_calls)
+
+    def test_argument_option_called_with_argument(self):
+
+        self.parser(['trash-list', '--opt', 'arg'])
+
+        assert_equals([call('arg')], self.on_option.mock_calls)
+
+    def test_it_calls_help(self):
+
+        self.parser(['trash-list', '--help'])
+
+        self.on_help.assert_called_with('trash-list')
+
+    def test_it_calls_the_actions_passing_the_program_name(self):
+
+        self.parser(['trash-list', '--raw'])
+
+        self.on_raw.assert_called_with('')
+
+    def test_how_getopt_works_with_an_invalid_option(self):
+
+        self.parser(['command-name', '-x'])
+
+        self.invalid_option_callback.assert_called_with('command-name', 'x')

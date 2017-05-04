@@ -1,32 +1,47 @@
-from StringIO import StringIO
+from unit_tests.myStringIO import StringIO
 from mock import Mock, ANY
-from nose.tools import assert_false, assert_raises
+from nose.tools import assert_false, assert_raises, assert_equals
 
-from files import require_empty_dir, write_file
-from trashcli.rm import Main, ListTrashinfos
-from trashinfo import a_trashinfo_with_path
-
+from .files import require_empty_dir, write_file
+from trashcli.rm import RmCmd, ListTrashinfos
+from .trashinfo import a_trashinfo_with_path, a_trashinfo_without_path
+from trashcli.trash import ParseError
 
 class TestTrashRm:
-    def test_integration(self):
-        trash_rm = Main()
-        trash_rm.environ = {'XDG_DATA_HOME':'sandbox/xdh'}
-        trash_rm.list_volumes = lambda:[]
-        trash_rm.getuid = 123
-        trash_rm.stderr = StringIO()
+    def test_issue69(self):
+        self.add_invalid_trashinfo_without_path(1)
 
+        self.trash_rm.run(['trash-rm', 'any-pattern (ignored)'])
+
+        assert_equals('trash-rm: '
+                      'sandbox/xdh/Trash/info/1.trashinfo: '
+                      'unable to parse \'Path\''
+                      '\n'
+                      , self.stderr.getvalue())
+
+
+    def test_integration(self):
         self.add_trashinfo_for(1, 'to/be/deleted')
         self.add_trashinfo_for(2, 'to/be/kept')
 
-        trash_rm.run(['trash-rm', 'delete*'])
+        self.trash_rm.run(['trash-rm', 'delete*'])
 
         self.assert_trashinfo_has_been_deleted(1)
     def setUp(self):
         require_empty_dir('sandbox/xdh')
+        self.stderr = StringIO()
+        self.trash_rm = RmCmd(environ = {'XDG_DATA_HOME':'sandbox/xdh'}
+                         , getuid = 123
+                         , list_volumes = lambda:[]
+                         , stderr = self.stderr
+                         , file_reader = FileSystemReader())
 
     def add_trashinfo_for(self, index, path):
         write_file(self.trashinfo_from_index(index),
                    a_trashinfo_with_path(path))
+    def add_invalid_trashinfo_without_path(self, index):
+        write_file(self.trashinfo_from_index(index),
+                   a_trashinfo_without_path())
     def trashinfo_from_index(self, index):
         return 'sandbox/xdh/Trash/info/%s.trashinfo' % index
 
@@ -36,24 +51,27 @@ class TestTrashRm:
         assert_false(os.path.exists(filename),
                 'File "%s" still exists' % filename)
 
+from trashcli.fs import FileSystemReader
 class TestListing:
     def setUp(self):
         require_empty_dir('sandbox')
         self.out = Mock()
-        self.listing = ListTrashinfos(self.out)
+        self.listing = ListTrashinfos(self.out,
+                                      FileSystemReader(),
+                                      None)
         self.index = 0
 
     def test_should_report_original_location(self):
         self.add_trashinfo('/foo')
 
-        self.listing.list_from_home_trashdir('sandbox/Trash')
+        self.listing.list_from_volume_trashdir('sandbox/Trash', '/')
 
         self.out.assert_called_with('/foo', ANY)
 
     def test_should_report_trashinfo_path(self):
         self.add_trashinfo(trashinfo_path='sandbox/Trash/info/a.trashinfo')
 
-        self.listing.list_from_home_trashdir('sandbox/Trash')
+        self.listing.list_from_volume_trashdir('sandbox/Trash', '/')
 
         self.out.assert_called_with(ANY, 'sandbox/Trash/info/a.trashinfo')
 

@@ -2,7 +2,7 @@
 
 def mount_points():
     try:
-	return list(mount_points_from_getmnt())
+        return list(mount_points_from_getmnt())
     except AttributeError:
         return mount_points_from_df()
 
@@ -17,14 +17,14 @@ def mount_points_from_df():
 
 def _mount_points_from_df_output(df_output):
     def skip_header():
-	df_output.readline()
+        df_output.readline()
     def chomp(string):
-	return string.rstrip('\n')
+        return string.rstrip(b'\n')
 
     skip_header()
     for line in df_output:
-	line = chomp(line)
-	yield line.split(None, 5)[-1]
+        line = chomp(line)
+        yield (line.split(None, 5)[-1]).decode('utf-8')
 
 def _mounted_filesystems_from_getmnt() :
     from ctypes import Structure, c_char_p, c_int, c_void_p, cdll, POINTER
@@ -56,7 +56,9 @@ def _mounted_filesystems_from_getmnt() :
 
     libc = cdll.LoadLibrary(libc_name)
     libc.getmntent.restype = POINTER(mntent_struct)
+    libc.getmntent.argtypes = [c_void_p]
     libc.fopen.restype = c_void_p
+    libc.fclose.argtypes = [c_void_p]
 
     f = libc.fopen("/proc/mounts", "r")
     if f==None:
