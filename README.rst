@@ -83,7 +83,7 @@ FAQ
 How to create a top level .Trash dir?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Steps ::
+Steps::
 
     sudo mkdir --parent /.Trash
     sudo chmod a+rw /.Trash
@@ -95,7 +95,7 @@ Can I alias `rm` to `trash-put`?
 You can but you shouldn't. In the early days I thought it was a good idea to do
 that but now I changed my mind. 
 
-Although rhe interface of `trash-put` seems to be compatible with `rm`, it has
+Although the interface of `trash-put` seems to be compatible with `rm`, it has
 different semantics which will cause you problems. For example, while `rm`
 requires `-R` for deleting directories `trash-put` does not.
 
