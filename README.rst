@@ -83,7 +83,7 @@ FAQ
 How to create a top level .Trash dir?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Steps::
+Steps ::
 
     sudo mkdir --parent /.Trash
     sudo chmod a+rw /.Trash
