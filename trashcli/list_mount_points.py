@@ -2,7 +2,7 @@
 
 def mount_points():
     try:
-        return list(mount_points_from_getmnt())
+        return list(s.decode('utf-8') for s in mount_points_from_getmnt())
     except AttributeError:
         return mount_points_from_df()
 
@@ -60,9 +60,9 @@ def _mounted_filesystems_from_getmnt() :
     libc.fopen.restype = c_void_p
     libc.fclose.argtypes = [c_void_p]
 
-    f = libc.fopen("/proc/mounts", "r")
+    f = libc.fopen(b"/proc/mounts", b"r")
     if f==None:
-        f = libc.fopen("/etc/mtab", "r")
+        f = libc.fopen(b"/etc/mtab", b"r")
         if f == None:
             raise IOError("Unable to open /proc/mounts nor /etc/mtab")
 
