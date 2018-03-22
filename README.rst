@@ -47,6 +47,17 @@ Restore a trashed file::
     $ ls foo
     foo
 
+Restore multiple trashed files seperated by ',', also support range::
+
+    $ trash-restore
+    0 2007-08-30 12:36:00 /home/andrea/foo
+    1 2007-08-30 12:39:41 /home/andrea/bar
+    2 2007-08-30 12:39:41 /home/andrea/bar2
+    3 2007-08-30 12:39:41 /home/andrea/foo2
+    What file to restore [0..4]: 0-2, 3
+    $ ls foo bar bar2 foo2
+    foo
+
 Remove all files from the trashcan::
 
     $ trash-empty

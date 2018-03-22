@@ -57,22 +57,31 @@ class RestoreCmd(object):
                 self.println("%4d %s %s" % (i, trashedfile.deletion_date, trashedfile.original_location))
             self.restore_asking_the_user(trashed_files)
     def restore_asking_the_user(self, trashed_files):
-        index=self.input("What file to restore [0..%d]: " % (len(trashed_files)-1))
-        if index == "" :
+        index_elements = self.input("What file to restore [0..%d]: " % (len(trashed_files)-1))
+        if index_elements == "" :
             self.println("Exiting")
         else :
-            try:
-                index = int(index)
-                if (index < 0 or index >= len(trashed_files)):
-                    raise IndexError("Out of range")
-                trashed_file = trashed_files[index]
-                self.restore(trashed_file)
-            except (ValueError, IndexError) as e:
-                self.printerr("Invalid entry")
-                self.exit(1)
-            except IOError as e:
-                self.printerr(e)
-                self.exit(1)
+            index_elements = index_elements.split(',')
+            for index_element in index_elements:
+                indices = index_element.split('-')
+                try:
+                    indices = list(map(lambda index: int(index), indices))
+                    for index in indices:
+                        if (index < 0 or index >= len(trashed_files)):
+                            raise IndexError("Out of range")
+                    if len(indices) == 1:
+                        self.restore(trashed_files[indices[0]])
+                    elif len(indices) == 2:
+                        for trash in trashed_files[indices[0]:indices[1]+1]:
+                            self.restore(trash)
+                    else:
+                        raise ValueError('Invalid range, restoration abandoned')
+                except (ValueError, IndexError) as e:
+                    self.printerr('Invalid entry: {}'.format(e))
+                    self.exit(1)
+                except IOError as e:
+                    self.printerr(e)
+                    self.exit(1)
     def restore(self, trashed_file):
         restore(trashed_file, self.path_exists, self.fs)
     def all_trashed_files_filter(self, matches):
