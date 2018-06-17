@@ -22,7 +22,9 @@ trash-put \- Command line trash utility.
 
 .SH "SYNOPSIS"
 .B trash-put
-.RI [ arguments ]
+.RI [ OPTION ] 
+\&...
+.RI [ ARGUMENTS ]
 \&...
 
 .SH "DESCRIPTION"
@@ -35,6 +37,25 @@ each trashed file.
 .SH "ARGUMENTS"
 .TP
 Names of files or directories to move in the trashcan.
+
+.SH "OPTIONS"
+.IP "-f"
+.br
+Silently ignore any files or directories that do not exist.
+Do not print error messages, and do not return a nonzero status
+to the caller, because of any such nonexistent arguments.
+
+.IP "-h, --help"
+Show help message and exit.
+
+.IP "--trash-dir=TRASHDIR"
+Use TRASHDIR as trash folder.
+
+.IP "-v, --verbose"
+Explain what is being done.
+
+.IP "--version"
+Show program's version number and exit.
 
 .SH "EXAMPLES"
 .nf
