@@ -119,7 +119,7 @@ class TestTrashPutCmd(TrashPutTest):
               --version             show program's version number and exit
               -h, --help            show this help message and exit
               -d, --directory       ignored (for GNU rm compatibility)
-              -f, --force           ignored (for GNU rm compatibility)
+              -f, --force           silently ignore nonexistent files
               -i, --interactive     ignored (for GNU rm compatibility)
               -r, -R, --recursive   ignored (for GNU rm compatibility)
               --trash-dir=TRASHDIR  use TRASHDIR as trash folder
@@ -149,5 +149,10 @@ class TestTrashPutCmd(TrashPutTest):
             'Usage: trash-put [OPTION]... FILE...\n'
             '\n'
             'trash-put: error: Please specify the files to trash.\n')
+        self.stdout_should_be('')
+
+    def test_it_should_skip_missing_files(self):
+        self.run('-f', 'this_file_does_not_exist', 'nor_does_this_file')
+        self.stderr_should_be('')
         self.stdout_should_be('')
 
