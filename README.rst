@@ -5,7 +5,8 @@ trash-cli - Command Line Interface to FreeDesktop.org Trash.
 
 trash-cli trashes files recording the original path, deletion date, and 
 permissions. It uses the same trashcan used by KDE, GNOME, and XFCE, but you 
-can invoke it from the command line (and scripts).
+can invoke it from the command line (and scripts). On macOS, you can find
+`trash-cli`'s trash located at `~/.local/share/Trash`.
 
 It provides these commands::
 
@@ -15,7 +16,7 @@ It provides these commands::
     trash-restore       restore a trashed file.
     trash-rm            remove individual files from the trashcan.
 
-Usage
+Usage 
 -----
 
 Trash a file::
