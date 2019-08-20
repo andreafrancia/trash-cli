@@ -4,7 +4,7 @@ import os, sys
 from trashcli.trash import TrashDir, parse_path, ParseError
 from trashcli.trash import TrashDirs
 from trashcli.trash import TopTrashDirRules
-from trashcli.trash import CleanableTrashcan
+from trashcli.empty import CleanableTrashcan
 from trashcli.fs import FileSystemReader
 from trashcli.fs import FileRemover
 
