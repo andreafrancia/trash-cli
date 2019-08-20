@@ -14,9 +14,8 @@ from trashcli.fs import FileRemover
 
 from nose.tools import assert_regexp_matches
 
-from trashcli.cmds import empty
+from trashcli.empty import main as empty
 from trashcli.fs import mkdirs
-from .files import touch
 from nose.tools import assert_true, assert_raises
 import shutil
 

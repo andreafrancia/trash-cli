@@ -9,6 +9,19 @@ from .fs import contents_of
 from .trash import backup_file_path_from
 from . import fs
 
+def main():
+    try:           # Python 2
+        input23 = raw_input
+    except:        # Python 3
+        input23 = input
+    RestoreCmd(
+        stdout  = sys.stdout,
+        stderr  = sys.stderr,
+        environ = os.environ,
+        exit    = sys.exit,
+        input   = input23
+    ).run(sys.argv)
+
 def getcwd_as_realpath(): return os.path.realpath(os.curdir)
 
 class RestoreCmd(object):
