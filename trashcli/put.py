@@ -363,7 +363,7 @@ class TrashPutReporter:
     def unable_to_trash_file_in_because(self,
                                         file_to_be_trashed,
                                         trash_directory, error):
-        self.logger.info("Failed to trash %s in %s, because :%s" % (
+        self.logger.info("Failed to trash %s in %s, because: %s" % (
            file_to_be_trashed, shrinkuser(trash_directory), error))
     def trash_dir_with_volume(self, trash_dir_path, volume_path):
         self.logger.info("Trash-dir: %s from volume: %s" % (trash_dir_path,
