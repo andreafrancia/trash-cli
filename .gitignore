@@ -5,12 +5,6 @@
 .DS_Store
 .local/
 
-# generated executables
-/trash-restore
-/trash-empty
-/trash-list
-/trash
-
 # other things
 /build/
 /command-test/sandbox/
