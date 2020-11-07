@@ -121,12 +121,12 @@ The easy way
 
 Requirements:
 
- - Python 2.7 or Python 3
- - setuptools (use `apt-get install python-setuptools` on Debian)
+ - Python 3 (Python 2.7 may work)
+ - pip (use `apt-get install python-pip` on Debian)
 
 Installation command::
  
-    easy_install trash-cli
+    pip install trash-cli
 
 From sources
 ~~~~~~~~~~~~
@@ -135,13 +135,21 @@ System-wide installation::
 
     git clone https://github.com/andreafrancia/trash-cli.git
     cd trash-cli
-    sudo python setup.py install
+    sudo pip install .
 
 User-only installation::
 
     git clone https://github.com/andreafrancia/trash-cli.git
     cd trash-cli
-    python setup.py install --user
+    pip install .
+
+After the user installation you may want add this line to your .bashrc::
+
+    export PATH=~/.local/bin:"$PATH"
+
+For uninstalling use::
+
+    pip uninstall trash-cli
 
 Bugs and feedback
 -----------------
