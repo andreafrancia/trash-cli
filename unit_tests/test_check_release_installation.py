@@ -1,8 +1,8 @@
 from check_release_installation import (CheckInstallation,
-                                        NormalInstallation,
-                                        EasyInstallInstallation)
-from nose.tools import assert_equals, assert_raises
-from mock import Mock, call
+                                        Pip3Installation,
+                                        PipInstallation)
+from nose.tools import assert_equals
+from mock import call
 
 class TestCheckBothInstallations:
     def setUp(self):
@@ -17,7 +17,7 @@ class TestCheckBothInstallations:
 
     def test_python3(self):
         version = '0.17.1.12'
-        ci = CheckInstallation(NormalInstallation('python3'), self.ssh, version)
+        ci = CheckInstallation(Pip3Installation(), self.ssh, version)
         ci.check_installation()
 
         assert_equals([
@@ -34,8 +34,7 @@ class TestCheckBothInstallations:
  call().run_checked('sudo rm -f $(which trash)'),
  call().run_checked('! which trash'),
  call().put('dist/trash-cli-0.17.1.12.tar.gz'),
- call().run_checked('tar xfvz trash-cli-0.17.1.12.tar.gz'),
- call().run_checked('cd trash-cli-0.17.1.12 && sudo python3 setup.py install'),
+ call().run_checked('sudo pip3 install trash-cli-0.17.1.12.tar.gz'),
  call().run_checked('trash-put --version'),
  call().run_checked('trash-list --version'),
  call().run_checked('trash-rm --version'),
@@ -43,11 +42,12 @@ class TestCheckBothInstallations:
  call().run_checked('trash-restore --version'),
  call().run_checked('trash --version')], self.calls)
 
-    def test_easy_install_installation(self):
+    def test_pip2_installation(self):
         version = '0.17.1.12'
-        i = CheckInstallation(EasyInstallInstallation(), self.ssh, version)
+        i = CheckInstallation(PipInstallation(), self.ssh, version)
         i.check_installation()
 
+        self.maxDiff = None
         assert_equals([
 call().run_checked('sudo rm -f $(which trash-put)'),
 call().run_checked('! which trash-put'),
@@ -62,7 +62,7 @@ call().run_checked('! which trash-restore'),
 call().run_checked('sudo rm -f $(which trash)'),
 call().run_checked('! which trash'),
 call().put('dist/trash-cli-0.17.1.12.tar.gz'),
-call().run_checked('sudo easy_install trash-cli-0.17.1.12.tar.gz'),
+call().run_checked('sudo pip install trash-cli-0.17.1.12.tar.gz'),
 call().run_checked('trash-put --version'),
 call().run_checked('trash-list --version'),
 call().run_checked('trash-rm --version'),

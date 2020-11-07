@@ -2,7 +2,7 @@ from __future__ import print_function
 TARGET_HOST = 'default'
 
 import nose
-from nose.tools import assert_equals, assert_not_equals
+from nose.tools import assert_equal
 import subprocess
 
 from trashcli.trash import version
@@ -11,20 +11,13 @@ def main():
     check_connection()
     ssh = Connection(TARGET_HOST)
     check_both_installations(ssh)
-    check_python3_normal_installation(ssh)
 
 def check_both_installations(ssh):
     l = CheckInstallation(
-            EasyInstall3Installation(), ssh, version)
+            Pip3Installation(), ssh, version)
     l.check_installation()
     l = CheckInstallation(
-            NormalInstallation('python'), ssh, version)
-    l.check_installation()
-    l = CheckInstallation(
-            EasyInstallInstallation(), ssh, version)
-    l.check_installation()
-    l = CheckInstallation(
-            NormalInstallation('python3'), ssh, version)
+            PipInstallation(), ssh, version)
     l.check_installation()
 
 class CheckInstallation:
@@ -56,20 +49,12 @@ class CheckInstallation:
         for command in self.executables:
             result = self.ssh.run_checked('%(command)s --version' % locals())
 
-class NormalInstallation:
-    def __init__(self, python):
-        self.python = python
+class PipInstallation:
     def install(self, tarball, ssh):
-        directory = strip_end(tarball, '.tar.gz')
-        ssh.run_checked('tar xfvz %s' % tarball)
-        ssh.run_checked('cd %s && '
-                        'sudo %s setup.py install' % (directory, self.python))
-class EasyInstallInstallation:
+        ssh.run_checked('sudo pip install %s' % tarball)
+class Pip3Installation:
     def install(self, tarball, ssh):
-        ssh.run_checked('sudo easy_install %s' % tarball)
-class EasyInstall3Installation:
-    def install(self, tarball, ssh):
-        ssh.run_checked('sudo easy_install3 %s' % tarball)
+        ssh.run_checked('sudo pip3 install %s' % tarball)
 
 def strip_end(text, suffix):
     if not text.endswith(suffix):
@@ -85,13 +70,13 @@ class TestConnection:
         self.ssh = Connection(TARGET_HOST)
     def test_should_report_stdout(self):
         result = self.ssh.run('echo', 'foo')
-        assert_equals('foo\n', result.stdout)
+        assert_equal(b'foo\n', result.stdout)
     def test_should_report_stderr(self):
         result = self.ssh.run('echo bar 1>&2')
-        assert_equals('bar\n', result.stderr)
+        assert_equal(b'bar\n', result.stderr)
     def test_should_report_exit_code(self):
         result = self.ssh.run("exit 134")
-        assert_equals(134, result.exit_code)
+        assert_equal(134, result.exit_code)
 
 class Connection:
     def __init__(self, target_host):
@@ -108,7 +93,7 @@ class Connection:
     def put(self, source_file):
         scp_command = ['scp', '-Fssh-config', source_file, self.target_host + ':']
         exit_code, stderr, stdout = self._run_command(scp_command)
-        assert 0 == exit_code
+        assert 0 == exit_code, stderr
     def _run_command(self, command):
         process = subprocess.Popen(command, stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE)
