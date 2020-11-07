@@ -1,4 +1,7 @@
 # Copyright (C) 2009-2011 Andrea Francia Trivolzio(PV) Italy
+def main():
+    for mp in mount_points_from_getmnt():
+        print(mp)
 
 def mount_points():
     try:
@@ -74,3 +77,6 @@ def _mounted_filesystems_from_getmnt() :
         yield Filesystem(entry.contents.mnt_dir,
                          entry.contents.mnt_type,
                          entry.contents.mnt_fsname)
+
+if __name__ == "__main__":
+    main()
