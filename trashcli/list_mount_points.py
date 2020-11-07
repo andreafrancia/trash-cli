@@ -63,20 +63,23 @@ def _mounted_filesystems_from_getmnt() :
     libc.fopen.restype = c_void_p
     libc.fclose.argtypes = [c_void_p]
 
-    f = libc.fopen("/proc/mounts", "r")
+    f = libc.fopen(b"/proc/mounts", b"r")
     if f==None:
-        f = libc.fopen("/etc/mtab", "r")
+        f = libc.fopen(b"/etc/mtab", b"r")
         if f == None:
             raise IOError("Unable to open /proc/mounts nor /etc/mtab")
+
+    fse = sys.getfilesystemencoding()
 
     while True:
         entry = libc.getmntent(f)
         if bool(entry) == False:
             libc.fclose(f)
             break
-        yield Filesystem(entry.contents.mnt_dir,
-                         entry.contents.mnt_type,
-                         entry.contents.mnt_fsname)
+        yield Filesystem(
+            entry.contents.mnt_dir.decode(fse, 'surrogateescape'),
+            entry.contents.mnt_type.decode('ascii'),
+            entry.contents.mnt_fsname.decode(fse, 'surrogateescape'))
 
 if __name__ == "__main__":
     main()
