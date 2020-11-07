@@ -45,21 +45,22 @@ class RestoreCmd(object):
                 )
         self.all_trash_directories2 = all_trash_directories.all_trash_directories
     def run(self, argv):
-        if '--version' in argv[1:]:
-            command = os.path.basename(argv[0])
-            self.println('%s %s' %(command, self.version))
-            return
-        if len(argv) == 2:
-            specific_path = argv[1]
-            def is_trashed_from_curdir(trashedfile):
-                return trashedfile.original_location.startswith(specific_path)
-            filter = is_trashed_from_curdir
-        else:
-            dir = self.curdir()
-            def is_trashed_from_curdir(trashedfile):
-                return trashedfile.original_location.startswith(dir + os.path.sep)
-            filter = is_trashed_from_curdir
-        trashed_files = self.all_trashed_files_filter(filter)
+        import argparse
+        parser = argparse.ArgumentParser(description='Restores from trash chosen file',
+                                         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        parser.add_argument('path', default=self.curdir() + os.path.sep, nargs='?',
+                            help='Restore files from given path instead of current directory')
+        parser.add_argument('--sort', choices=['date', 'path', 'none'], default='path',
+                            help='Sort list of restore candidates by given field')
+        parser.add_argument('--version', action='version', version='%(prog)s ' + self.version)
+        args = parser.parse_args()
+        def is_trashed_from_curdir(trashedfile):
+            return trashedfile.original_location.startswith(args.path)
+        trashed_files = self.all_trashed_files_filter(is_trashed_from_curdir)
+        if args.sort == 'path':
+            trashed_files = sorted(trashed_files, key=lambda x: x.original_location + str(x.deletion_date))
+        elif args.sort == 'date':
+            trashed_files = sorted(trashed_files, key=lambda x: x.deletion_date)
         self.handle_trashed_files(trashed_files)
 
     def handle_trashed_files(self,trashed_files):
