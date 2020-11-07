@@ -80,11 +80,14 @@ class RestoreCmd(object):
             self.println("Exiting")
         else :
             try:
-                index = int(index)
-                if (index < 0 or index >= len(trashed_files)):
-                    raise IndexError("Out of range")
-                trashed_file = trashed_files[index]
-                self.restore(trashed_file)
+                indexes = index.split(',')
+                indexes.sort(reverse=True)  # restore largest index first
+                for index in indexes:
+                    index = int(index)
+                    if (index < 0 or index >= len(trashed_files)):
+                        raise IndexError("Out of range")
+                    trashed_file = trashed_files[index]
+                    self.restore(trashed_file)
             except (ValueError, IndexError) as e:
                 self.printerr("Invalid entry")
                 self.exit(1)
