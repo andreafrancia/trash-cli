@@ -52,8 +52,12 @@ class RestoreCmd(object):
                             help='Restore files from given path instead of current directory')
         parser.add_argument('--sort', choices=['date', 'path', 'none'], default='path',
                             help='Sort list of restore candidates by given field')
-        parser.add_argument('--version', action='version', version='%(prog)s ' + self.version)
-        args = parser.parse_args()
+        parser.add_argument('--version', action='store_true', default=False)
+        args = parser.parse_args(argv[1:])
+        if args.version:
+            command = os.path.basename(argv[0])
+            self.println('%s %s' % (command, self.version))
+            return
         def is_trashed_from_curdir(trashedfile):
             return trashedfile.original_location.startswith(args.path)
         trashed_files = self.all_trashed_files_filter(is_trashed_from_curdir)
