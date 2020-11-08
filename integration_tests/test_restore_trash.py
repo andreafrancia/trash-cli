@@ -13,45 +13,50 @@ class describe_restore_trash:
     def it_should_do_nothing_when_no_file_have_been_found_in_current_dir(self):
 
         self.when_running_restore_trash()
+
         self.output_should_match('No files trashed from current dir.+')
 
     @istest
     def it_should_error_when_user_input_is_not_a_number(self):
-
         self.having_a_trashed_file('/foo/bar')
+
         self.when_running_restore_trash( from_dir='/foo',
                                          with_user_typing = '-@notanumber')
+
         self.error_should_be('Invalid entry\n')
 
     @istest
     def it_should_error_when_user_input_is_too_small(self):
-
         self.having_a_trashed_file('/foo/bar')
+
         self.when_running_restore_trash( from_dir='/foo',
                                          with_user_typing = '-1')
+
         self.error_should_be('Invalid entry\n')
 
     @istest
     def it_should_error_when_user_input_is_too_large(self):
-
         self.having_a_trashed_file('/foo/bar')
+
         self.when_running_restore_trash( from_dir='/foo',
                                          with_user_typing = '1')
+
         self.error_should_be('Invalid entry\n')
 
     @istest
     def it_should_show_the_file_deleted_from_the_current_dir(self):
-
         self.having_a_trashed_file('/foo/bar')
+
         self.when_running_restore_trash(from_dir='/foo')
+
         self.output_should_match(
             '   0 2000-01-01 00:00:01 /foo/bar\n.*\n')
         self.error_should_be('')
 
     @istest
     def it_should_restore_the_file_selected_by_the_user(self):
-
         self.having_a_file_trashed_from_current_dir('foo')
+
         self.when_running_restore_trash(
                 from_dir=os.getcwd(), 
                 with_user_typing = '0')
@@ -60,22 +65,23 @@ class describe_restore_trash:
     
     @istest
     def it_should_exit_gracefully_when_user_selects_nothing(self):
-
         self.having_a_trashed_file('/foo/bar')
-        self.when_running_restore_trash( from_dir='/foo', 
+
+        self.when_running_restore_trash( from_dir='/foo',
                                          with_user_typing = '')
-        self.output_should_match(
-            '.*\nExiting\n')
+
+        self.output_should_match('.*\nExiting\n')
         self.error_should_be('')
 
     @istest
     def it_should_refuse_overwriting_existing_file(self):
-
         self.having_a_file_trashed_from_current_dir('foo')
         open('foo', 'a+').close()
         os.chmod('foo', 000)
+
         self.when_running_restore_trash(from_dir=current_dir(),
                                         with_user_typing = '0')
+
         self.error_should_be('Refusing to overwrite existing file "foo".\n')
 
     def setUp(self):
