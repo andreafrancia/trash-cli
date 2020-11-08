@@ -11,11 +11,19 @@ def having_file(path):
     assert os.path.isfile(path)
 make_empty_file = having_file
 
+
 def write_file(filename, contents=''):
-    parent = os.path.dirname(filename)
+    parent = os.path.dirname(os.path.realpath(filename))
     if not os.path.isdir(parent): os.makedirs(parent)
-    open(filename, 'w').write(contents)
-    assert_equals(open(filename).read(), contents)
+    with open(filename, 'w') as f:
+        f.write(contents)
+    assert_equals(read_file(filename), contents)
+
+
+def read_file(path):
+    with open(path) as f:
+        return f.read()
+
 
 def require_empty_dir(path):
     if os.path.exists(path): shutil.rmtree(path)
