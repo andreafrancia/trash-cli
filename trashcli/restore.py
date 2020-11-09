@@ -22,7 +22,9 @@ def main():
         input   = input23
     ).run(sys.argv)
 
-def getcwd_as_realpath(): return os.path.realpath(os.curdir)
+
+def getcwd_as_realpath():
+    return os.path.realpath(os.curdir)
 
 
 def parse_args(sys_argv, curdir):
