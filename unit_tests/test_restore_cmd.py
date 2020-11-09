@@ -1,7 +1,26 @@
+import unittest
+
 from trashcli.restore import RestoreCmd
 from nose.tools import assert_equals
 from .myStringIO import StringIO
 from mock import Mock, call
+from trashcli import restore
+
+
+class Test_parse_args(unittest.TestCase):
+    def test_default_path(self):
+        args = restore.parse_args([''], "curdir")
+        self.assertEqual('curdir', args.path)
+
+    def test_path_specified(self):
+        args = restore.parse_args(['', '/a/path'], None)
+        self.assertEqual('/a/path', args.path)
+        self.assertEqual(False, args.version)
+        self.assertEqual('path', args.sort)
+
+    def test_show_version(self):
+        args = restore.parse_args(['', '--version'], None)
+        self.assertEqual(True, args.version)
 
 class TestListingInRestoreCmd:
     def setUp(self):
