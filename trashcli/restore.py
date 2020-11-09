@@ -24,6 +24,23 @@ def main():
 
 def getcwd_as_realpath(): return os.path.realpath(os.curdir)
 
+
+def parse_args(sys_argv, curdir):
+    import argparse
+    parser = argparse.ArgumentParser(
+        description='Restores from trash chosen file',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('path',
+                        default=curdir, nargs='?',
+                        help='Restore files from given path instead of current '
+                             'directory')
+    parser.add_argument('--sort',
+                        choices=['date', 'path', 'none'],
+                        default='path',
+                        help='Sort list of restore candidates by given field')
+    parser.add_argument('--version', action='store_true', default=False)
+    return parser.parse_args(sys_argv[1:])
+
 class RestoreCmd(object):
     def __init__(self, stdout, stderr, environ, exit, input,
                  curdir = getcwd_as_realpath, version = version):
@@ -45,15 +62,7 @@ class RestoreCmd(object):
                 )
         self.all_trash_directories2 = all_trash_directories.all_trash_directories
     def run(self, argv):
-        import argparse
-        parser = argparse.ArgumentParser(description='Restores from trash chosen file',
-                                         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-        parser.add_argument('path', default=self.curdir() + os.path.sep, nargs='?',
-                            help='Restore files from given path instead of current directory')
-        parser.add_argument('--sort', choices=['date', 'path', 'none'], default='path',
-                            help='Sort list of restore candidates by given field')
-        parser.add_argument('--version', action='store_true', default=False)
-        args = parser.parse_args(argv[1:])
+        args = parse_args(argv, self.curdir() + os.path.sep)
         if args.version:
             command = os.path.basename(argv[0])
             self.println('%s %s' % (command, self.version))
