@@ -1,6 +1,19 @@
 # Copyright (C) 2009-2011 Andrea Francia Trivolzio(PV) Italy
+import argparse
+import sys
+
 def main():
-    for mp in mount_points_from_getmnt():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--mode', type=str, default="default",
+                        help="default|getmnt|df")
+    parsed = parser.parse_args(sys.argv[1:])
+    mount_points_function = {
+        'default': mount_points,
+        'getmnt': mount_points_from_getmnt,
+        'df': mount_points_from_df,
+    }[parsed.mode]
+
+    for mp in mount_points_function():
         print(mp)
 
 def mount_points():
