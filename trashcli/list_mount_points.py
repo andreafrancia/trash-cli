@@ -1,16 +1,17 @@
-# Copyright (C) 2009-2011 Andrea Francia Trivolzio(PV) Italy
+# Copyright (C) 2009-2020 Andrea Francia Trivolzio(PV) Italy
 import argparse
 import sys
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--mode', type=str, default="default",
-                        help="default|getmnt|df")
+                        help="default|getmnt|df|psutil")
     parsed = parser.parse_args(sys.argv[1:])
     mount_points_function = {
         'default': mount_points,
         'getmnt': mount_points_from_getmnt,
         'df': mount_points_from_df,
+        'psutil': mount_points_from_psutil,
     }[parsed.mode]
 
     for mp in mount_points_function():
@@ -21,6 +22,12 @@ def mount_points():
         return list(mount_points_from_getmnt())
     except AttributeError:
         return mount_points_from_df()
+
+def mount_points_from_psutil():
+    import psutil
+    for p in psutil.disk_partitions():
+        yield p.mountpoint
+
 
 def mount_points_from_getmnt():
     for elem in _mounted_filesystems_from_getmnt():
