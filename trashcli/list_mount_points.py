@@ -1,105 +1,14 @@
 # Copyright (C) 2009-2020 Andrea Francia Trivolzio(PV) Italy
-import argparse
-import sys
-
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--mode', type=str, default="default",
-                        help="default|getmnt|df|psutil")
-    parsed = parser.parse_args(sys.argv[1:])
-    mount_points_function = {
-        'default': mount_points,
-        'getmnt': mount_points_from_getmnt,
-        'df': mount_points_from_df,
-        'psutil': mount_points_from_psutil,
-    }[parsed.mode]
-
-    for mp in mount_points_function():
+    for mp in mount_points():
         print(mp)
 
-def mount_points():
-    try:
-        return list(mount_points_from_getmnt())
-    except AttributeError:
-        return mount_points_from_df()
 
-def mount_points_from_psutil():
+def mount_points():
     import psutil
     for p in psutil.disk_partitions():
         yield p.mountpoint
 
-
-def mount_points_from_getmnt():
-    for elem in _mounted_filesystems_from_getmnt():
-        yield elem.mount_dir
-
-def mount_points_from_df():
-    import subprocess
-    df_output = subprocess.Popen(["df", "-P"], stdout=subprocess.PIPE).stdout
-    return list(_mount_points_from_df_output(df_output))
-
-def _mount_points_from_df_output(df_output):
-    def skip_header():
-        df_output.readline()
-    def chomp(string):
-        return string.rstrip(b'\n')
-
-    skip_header()
-    for line in df_output:
-        line = chomp(line)
-        yield (line.split(None, 5)[-1]).decode('utf-8')
-
-def _mounted_filesystems_from_getmnt() :
-    from ctypes import Structure, c_char_p, c_int, c_void_p, cdll, POINTER
-    from ctypes.util import find_library
-    import sys
-    class Filesystem:
-        def __init__(self, mount_dir, type, name) :
-            self.mount_dir = mount_dir
-            self.type = type
-            self.name = name
-    class mntent_struct(Structure):
-        _fields_ = [("mnt_fsname", c_char_p),  # Device or server for
-                                               # filesystem.
-                    ("mnt_dir", c_char_p),     # Directory mounted on.
-                    ("mnt_type", c_char_p),    # Type of filesystem: ufs,
-                                               # nfs, etc.
-                    ("mnt_opts", c_char_p),    # Comma-separated options
-                                               # for fs.
-                    ("mnt_freq", c_int),       # Dump frequency (in days).
-                    ("mnt_passno", c_int)]     # Pass number for `fsck'.
-
-    if sys.platform == "cygwin":
-        libc_name = "cygwin1.dll"
-    else:
-        libc_name = find_library("c")
-
-    if libc_name == None :
-        libc_name="/lib/libc.so.6" # fix for my Gentoo 4.0
-
-    libc = cdll.LoadLibrary(libc_name)
-    libc.getmntent.restype = POINTER(mntent_struct)
-    libc.getmntent.argtypes = [c_void_p]
-    libc.fopen.restype = c_void_p
-    libc.fclose.argtypes = [c_void_p]
-
-    f = libc.fopen(b"/proc/mounts", b"r")
-    if f==None:
-        f = libc.fopen(b"/etc/mtab", b"r")
-        if f == None:
-            raise IOError("Unable to open /proc/mounts nor /etc/mtab")
-
-    fse = sys.getfilesystemencoding()
-
-    while True:
-        entry = libc.getmntent(f)
-        if bool(entry) == False:
-            libc.fclose(f)
-            break
-        yield Filesystem(
-            entry.contents.mnt_dir.decode(fse, 'surrogateescape'),
-            entry.contents.mnt_type.decode('ascii'),
-            entry.contents.mnt_fsname.decode(fse, 'surrogateescape'))
 
 if __name__ == "__main__":
     main()

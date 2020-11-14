@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2012 Andrea Francia Trivolzio(PV) Italy
+# Copyright (C) 2007-2020 Andrea Francia Trivolzio(PV) Italy
 
 from distutils.core import setup
 import sys
@@ -26,6 +26,9 @@ def main():
                                           'man/man1/trash-restore.1',
                                           'man/man1/trash-put.1',
                                           'man/man1/trash-rm.1'])],
+        install_requires=[
+            'psutil',
+        ],
     )
 
 from textwrap import dedent

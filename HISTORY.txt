@@ -1,4 +1,7 @@
-master:
+0.20.11.14:
+ - switched to psutil for listing volumes
+
+0.20.11.7:
  - trash-put learned a --trash-dir option that can be used to specify the trash
    directory to be used as destination 
 
