@@ -13,11 +13,16 @@ class TestEndToEndRestore(unittest.TestCase):
         self.tmpdir = os.path.realpath(tempfile.mkdtemp())
 
     def test(self):
-        result = subprocess.run(["python", "%s/trash-restore" % base_dir],
-                                stdout=PIPE, stderr=PIPE, cwd=self.tmpdir)
+        result = self.run_command("trash-restore")
+
         self.assertEqual("""\
 No files trashed from current dir ('%s')
 """ % self.tmpdir, result.stdout.decode('utf-8'))
+
+    def run_command(self, command):
+        command_full_path = os.path.join(base_dir, command)
+        return subprocess.run(["python", command_full_path],
+                              stdout=PIPE, stderr=PIPE, cwd=self.tmpdir)
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir)
