@@ -25,10 +25,6 @@ class Setup(object):
 
         self.home_trashcan = FakeTrashDir('XDG_DATA_HOME/Trash')
         self.add_trashinfo = self.home_trashcan.add_trashinfo
-    def user_should_read_output_any_order(self, expected_output):
-        actual_output = self.user.actual_output()
-        assert_equals_with_unidiff(sort_lines(expected_output),
-                                   sort_lines(actual_output))
     def user_should_read_output(self, expected_output):
         assert_equals_with_unidiff(expected_output,
                                    self.user.actual_output())
@@ -43,7 +39,7 @@ class describe_trash_list(Setup):
 
         self.user.run_trash_list('--help')
 
-        self.user_should_read_output(dedent("""\
+        assert_equals_with_unidiff(dedent("""\
             Usage: trash-list [OPTIONS...]
 
             List trashed files
@@ -53,14 +49,14 @@ class describe_trash_list(Setup):
               -h, --help  show this help message and exit
 
             Report bugs to https://github.com/andreafrancia/trash-cli/issues
-        """))
+        """), self.user.output())
 
     @istest
     def should_output_nothing_when_trashcan_is_empty(self):
 
         self.user.run_trash_list()
 
-        self.user_should_read_output('')
+        assert_equals_with_unidiff('', self.user.output())
 
     @istest
     def should_output_deletion_date_and_path(self):
@@ -68,7 +64,8 @@ class describe_trash_list(Setup):
 
         self.user.run_trash_list()
 
-        self.user_should_read_output( "2001-02-03 23:55:59 /aboslute/path\n")
+        assert_equals_with_unidiff("2001-02-03 23:55:59 /aboslute/path\n",
+                                   self.user.output())
 
     @istest
     def should_output_info_for_multiple_files(self):
@@ -77,11 +74,12 @@ class describe_trash_list(Setup):
         self.add_trashinfo("/file3", "2000-01-01T00:00:03")
 
         self.user.run_trash_list()
+        output = self.user.actual_output()
 
-        self.user_should_read_output_any_order(
-                                      "2000-01-01 00:00:01 /file1\n"
-                                      "2000-01-01 00:00:02 /file2\n"
-                                      "2000-01-01 00:00:03 /file3\n")
+        assert_equals_with_unidiff("2000-01-01 00:00:01 /file1\n"
+                                   "2000-01-01 00:00:02 /file2\n"
+                                   "2000-01-01 00:00:03 /file3\n",
+                                   sort_lines(output))
 
     @istest
     def should_output_unknown_dates_with_question_marks(self):
@@ -90,7 +88,8 @@ class describe_trash_list(Setup):
 
         self.user.run_trash_list()
 
-        self.user_should_read_output("????-??-?? ??:??:?? /path\n")
+        assert_equals_with_unidiff("????-??-?? ??:??:?? /path\n",
+                                   self.user.output())
 
     @istest
     def should_output_invalid_dates_using_question_marks(self):
@@ -98,7 +97,8 @@ class describe_trash_list(Setup):
 
         self.user.run_trash_list()
 
-        self.user_should_read_output("????-??-?? ??:??:?? /path\n")
+        assert_equals_with_unidiff("????-??-?? ??:??:?? /path\n",
+                                   self.user.output())
 
     @istest
     def should_warn_about_empty_trashinfos(self):
@@ -106,9 +106,10 @@ class describe_trash_list(Setup):
 
         self.user.run_trash_list()
 
-        self.user.should_read_error(
-                "Parse Error: XDG_DATA_HOME/Trash/info/empty.trashinfo: "
-                "Unable to parse Path.\n")
+        assert_equals_with_unidiff(
+            "Parse Error: XDG_DATA_HOME/Trash/info/empty.trashinfo: "
+            "Unable to parse Path.\n",
+            self.user.error())
 
     @istest
     def should_warn_about_unreadable_trashinfo(self):
@@ -116,19 +117,21 @@ class describe_trash_list(Setup):
 
         self.user.run_trash_list()
 
-        self.user.should_read_error(
-                "[Errno 13] Permission denied: "
-                "'XDG_DATA_HOME/Trash/info/unreadable.trashinfo'\n")
+        assert_equals_with_unidiff(
+            "[Errno 13] Permission denied: "
+            "'XDG_DATA_HOME/Trash/info/unreadable.trashinfo'\n",
+            self.user.error())
+
     @istest
     def should_warn_about_unexistent_path_entry(self):
         self.home_trashcan.having_file(a_trashinfo_without_path())
 
         self.user.run_trash_list()
 
-        self.user.should_read_error(
+        assert_equals_with_unidiff(
                 "Parse Error: XDG_DATA_HOME/Trash/info/1.trashinfo: "
-                "Unable to parse Path.\n")
-        self.user_should_read_output('')
+                "Unable to parse Path.\n", self.user.error())
+        assert_equals_with_unidiff('', self.user.output())
 
 @istest
 class with_a_top_trash_dir(Setup):
@@ -145,7 +148,8 @@ class with_a_top_trash_dir(Setup):
 
         self.user.run_trash_list()
 
-        self.user_should_read_output("2000-01-01 00:00:00 topdir/file1\n")
+        assert_equals_with_unidiff("2000-01-01 00:00:00 topdir/file1\n",
+                                   self.user.output())
 
     @istest
     def and_should_warn_if_parent_is_not_sticky(self):
@@ -267,7 +271,7 @@ class TrashListUser:
     def add_volume(self, mount_point):
         self.volumes.append(mount_point)
     def error(self):
-        raise ValueError()
+        return self.stderr.getvalue()
     def should_read_error(self, expected_value):
         self.stderr.assert_equal_to(expected_value)
     def output(self):
