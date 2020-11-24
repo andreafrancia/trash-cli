@@ -25,12 +25,6 @@ class Setup(object):
 
         self.home_trashcan = FakeTrashDir('XDG_DATA_HOME/Trash')
         self.add_trashinfo = self.home_trashcan.add_trashinfo
-    def when_dir_is_sticky(self, path):
-        make_sticky_dir(path)
-    def when_dir_exists_unsticky(self, path):
-        make_unsticky_dir(path)
-    def user_run_trash_list(self, *args):
-        self.user.run_trash_list(*args)
     def user_should_read_output_any_order(self, expected_output):
         actual_output = self.user.actual_output()
         assert_equals_with_unidiff(sort_lines(expected_output),
@@ -47,7 +41,7 @@ class describe_trash_list(Setup):
     @istest
     def should_output_the_help_message(self):
 
-        self.user_run_trash_list('--help')
+        self.user.run_trash_list('--help')
 
         self.user_should_read_output(dedent("""\
             Usage: trash-list [OPTIONS...]
@@ -64,7 +58,7 @@ class describe_trash_list(Setup):
     @istest
     def should_output_nothing_when_trashcan_is_empty(self):
 
-        self.user_run_trash_list()
+        self.user.run_trash_list()
 
         self.user_should_read_output('')
 
@@ -72,7 +66,7 @@ class describe_trash_list(Setup):
     def should_output_deletion_date_and_path(self):
         self.add_trashinfo('/aboslute/path', '2001-02-03T23:55:59')
 
-        self.user_run_trash_list()
+        self.user.run_trash_list()
 
         self.user_should_read_output( "2001-02-03 23:55:59 /aboslute/path\n")
 
@@ -82,7 +76,7 @@ class describe_trash_list(Setup):
         self.add_trashinfo("/file2", "2000-01-01T00:00:02")
         self.add_trashinfo("/file3", "2000-01-01T00:00:03")
 
-        self.user_run_trash_list()
+        self.user.run_trash_list()
 
         self.user_should_read_output_any_order(
                                       "2000-01-01 00:00:01 /file1\n"
@@ -94,7 +88,7 @@ class describe_trash_list(Setup):
 
         self.home_trashcan.having_file(a_trashinfo_without_date())
 
-        self.user_run_trash_list()
+        self.user.run_trash_list()
 
         self.user_should_read_output("????-??-?? ??:??:?? /path\n")
 
@@ -102,7 +96,7 @@ class describe_trash_list(Setup):
     def should_output_invalid_dates_using_question_marks(self):
         self.home_trashcan.having_file(a_trashinfo_with_invalid_date())
 
-        self.user_run_trash_list()
+        self.user.run_trash_list()
 
         self.user_should_read_output("????-??-?? ??:??:?? /path\n")
 
@@ -110,7 +104,7 @@ class describe_trash_list(Setup):
     def should_warn_about_empty_trashinfos(self):
         self.home_trashcan.touch('empty.trashinfo')
 
-        self.user_run_trash_list()
+        self.user.run_trash_list()
 
         self.user.should_read_error(
                 "Parse Error: XDG_DATA_HOME/Trash/info/empty.trashinfo: "
@@ -120,7 +114,7 @@ class describe_trash_list(Setup):
     def should_warn_about_unreadable_trashinfo(self):
         self.home_trashcan.having_unreadable('unreadable.trashinfo')
 
-        self.user_run_trash_list()
+        self.user.run_trash_list()
 
         self.user.should_read_error(
                 "[Errno 13] Permission denied: "
@@ -129,7 +123,7 @@ class describe_trash_list(Setup):
     def should_warn_about_unexistent_path_entry(self):
         self.home_trashcan.having_file(a_trashinfo_without_path())
 
-        self.user_run_trash_list()
+        self.user.run_trash_list()
 
         self.user.should_read_error(
                 "Parse Error: XDG_DATA_HOME/Trash/info/1.trashinfo: "
@@ -146,37 +140,37 @@ class with_a_top_trash_dir(Setup):
 
     @istest
     def should_list_its_contents_if_parent_is_sticky(self):
-        self.when_dir_is_sticky('topdir/.Trash')
+        make_sticky_dir('topdir/.Trash')
         self.and_contains_a_valid_trashinfo()
 
-        self.user_run_trash_list()
+        self.user.run_trash_list()
 
         self.user_should_read_output("2000-01-01 00:00:00 topdir/file1\n")
 
     @istest
     def and_should_warn_if_parent_is_not_sticky(self):
-        self.when_dir_exists_unsticky('topdir/.Trash')
+        make_unsticky_dir('topdir/.Trash')
         self.and_dir_exists('topdir/.Trash/123')
 
-        self.user_run_trash_list()
+        self.user.run_trash_list()
 
         self.user.should_read_error("TrashDir skipped because parent not sticky: topdir/.Trash/123\n")
 
     @istest
     def but_it_should_not_warn_when_the_parent_is_unsticky_but_there_is_no_trashdir(self):
-        self.when_dir_exists_unsticky('topdir/.Trash')
+        make_unsticky_dir('topdir/.Trash')
         self.but_does_not_exists_any('topdir/.Trash/123')
 
-        self.user_run_trash_list()
+        self.user.run_trash_list()
 
         self.user.should_read_error("")
 
     @istest
     def should_ignore_trash_from_a_unsticky_topdir(self):
-        self.when_dir_exists_unsticky('topdir/.Trash')
+        make_unsticky_dir('topdir/.Trash')
         self.and_contains_a_valid_trashinfo()
 
-        self.user_run_trash_list()
+        self.user.run_trash_list()
 
         self.user_should_read_output("")
 
@@ -185,7 +179,7 @@ class with_a_top_trash_dir(Setup):
         self.when_is_a_symlink_to_a_dir('topdir/.Trash')
         self.and_contains_a_valid_trashinfo()
 
-        self.user_run_trash_list()
+        self.user.run_trash_list()
 
         self.user_should_read_output('')
 
@@ -194,7 +188,7 @@ class with_a_top_trash_dir(Setup):
         self.when_is_a_symlink_to_a_dir('topdir/.Trash')
         self.and_contains_a_valid_trashinfo()
 
-        self.user_run_trash_list()
+        self.user.run_trash_list()
 
         self.user.should_read_error('TrashDir skipped because parent not sticky: topdir/.Trash/123\n')
     def but_does_not_exists_any(self, path):
@@ -219,7 +213,7 @@ class describe_when_a_file_is_in_alternate_top_trashdir(Setup):
         self.top_trashdir2 = FakeTrashDir('topdir/.Trash-123')
         self.top_trashdir2.add_trashinfo('file', '2000-01-01T00:00:00')
 
-        self.user_run_trash_list()
+        self.user.run_trash_list()
 
         self.user_should_read_output("2000-01-01 00:00:00 topdir/file\n")
 
