@@ -21,13 +21,7 @@ class Setup(object):
     def setUp(self):
         self.xdg_data_home = tempfile.mkdtemp()
         require_empty_dir('topdir')
-
-        self.user = TrashListUser(
-                environ = {'XDG_DATA_HOME': self.xdg_data_home})
-
-        trash_dir = os.path.join(self.xdg_data_home, "Trash")
-        self.home_trashcan = FakeTrashDir(trash_dir)
-        self.add_trashinfo = self.home_trashcan.add_trashinfo
+        self.user = TrashListUser(self.xdg_data_home)
     def user_should_read_output(self, expected_output):
         assert_equals_with_unidiff(expected_output,
                                    self.user.actual_output())
@@ -63,7 +57,8 @@ class describe_trash_list(Setup):
 
     @istest
     def should_output_deletion_date_and_path(self):
-        self.add_trashinfo('/aboslute/path', '2001-02-03T23:55:59')
+        self.user.home_trashdir.add_trashinfo('/aboslute/path',
+                                              '2001-02-03T23:55:59')
 
         self.user.run_trash_list()
 
@@ -72,9 +67,9 @@ class describe_trash_list(Setup):
 
     @istest
     def should_output_info_for_multiple_files(self):
-        self.add_trashinfo("/file1", "2000-01-01T00:00:01")
-        self.add_trashinfo("/file2", "2000-01-01T00:00:02")
-        self.add_trashinfo("/file3", "2000-01-01T00:00:03")
+        self.user.home_trashdir.add_trashinfo("/file1", "2000-01-01T00:00:01")
+        self.user.home_trashdir.add_trashinfo("/file2", "2000-01-01T00:00:02")
+        self.user.home_trashdir.add_trashinfo("/file3", "2000-01-01T00:00:03")
 
         self.user.run_trash_list()
         output = self.user.actual_output()
@@ -86,8 +81,7 @@ class describe_trash_list(Setup):
 
     @istest
     def should_output_unknown_dates_with_question_marks(self):
-
-        self.home_trashcan.having_file(a_trashinfo_without_date())
+        self.user.home_trashdir.having_file(a_trashinfo_without_date())
 
         self.user.run_trash_list()
 
@@ -96,7 +90,7 @@ class describe_trash_list(Setup):
 
     @istest
     def should_output_invalid_dates_using_question_marks(self):
-        self.home_trashcan.having_file(a_trashinfo_with_invalid_date())
+        self.user.home_trashdir.having_file(a_trashinfo_with_invalid_date())
 
         self.user.run_trash_list()
 
@@ -105,7 +99,7 @@ class describe_trash_list(Setup):
 
     @istest
     def should_warn_about_empty_trashinfos(self):
-        self.home_trashcan.touch('empty.trashinfo')
+        self.user.home_trashdir.touch('empty.trashinfo')
 
         self.user.run_trash_list()
 
@@ -116,7 +110,7 @@ class describe_trash_list(Setup):
 
     @istest
     def should_warn_about_unreadable_trashinfo(self):
-        self.home_trashcan.having_unreadable('unreadable.trashinfo')
+        self.user.home_trashdir.having_unreadable('unreadable.trashinfo')
 
         self.user.run_trash_list()
 
@@ -129,7 +123,7 @@ class describe_trash_list(Setup):
 
     @istest
     def should_warn_about_unexistent_path_entry(self):
-        self.home_trashcan.having_file(a_trashinfo_without_path())
+        self.user.home_trashdir.having_file(a_trashinfo_without_path())
 
         self.user.run_trash_list()
 
@@ -252,12 +246,15 @@ class FakeTrashDir:
         self.having_file(a_trashinfo(escaped_path_entry, formatted_deletion_date))
 
 class TrashListUser:
-    def __init__(self, environ={}):
+    def __init__(self, xdg_data_home):
         self.stdout      = OutputCollector()
         self.stderr      = OutputCollector()
-        self.environ     = environ
+        self.environ     = {'XDG_DATA_HOME': xdg_data_home}
         self.fake_getuid = self.error
         self.volumes     = []
+        trash_dir = os.path.join(xdg_data_home, "Trash")
+        self.home_trashdir = FakeTrashDir(trash_dir)
+
     def run_trash_list(self, *args):
         self.run('trash-list', *args)
     def run(self,*argv):
