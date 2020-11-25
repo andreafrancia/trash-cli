@@ -1,6 +1,8 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
 import os
+import tempfile
+
 from trashcli.list import ListCmd
 from .files import (write_file, require_empty_dir, make_sticky_dir,
                    make_unsticky_dir, make_unreadable_file, make_empty_file,
@@ -17,13 +19,14 @@ from textwrap import dedent
 from .assert_equals_with_unidiff import assert_equals_with_unidiff
 class Setup(object):
     def setUp(self):
-        require_empty_dir('XDG_DATA_HOME')
+        self.xdg_data_home = tempfile.mkdtemp()
         require_empty_dir('topdir')
 
         self.user = TrashListUser(
-                environ = {'XDG_DATA_HOME': 'XDG_DATA_HOME'})
+                environ = {'XDG_DATA_HOME': self.xdg_data_home})
 
-        self.home_trashcan = FakeTrashDir('XDG_DATA_HOME/Trash')
+        trash_dir = os.path.join(self.xdg_data_home, "Trash")
+        self.home_trashcan = FakeTrashDir(trash_dir)
         self.add_trashinfo = self.home_trashcan.add_trashinfo
     def user_should_read_output(self, expected_output):
         assert_equals_with_unidiff(expected_output,
@@ -107,8 +110,8 @@ class describe_trash_list(Setup):
         self.user.run_trash_list()
 
         assert_equals_with_unidiff(
-            "Parse Error: XDG_DATA_HOME/Trash/info/empty.trashinfo: "
-            "Unable to parse Path.\n",
+            "Parse Error: %(XDG_DATA_HOME)s/Trash/info/empty.trashinfo: "
+            "Unable to parse Path.\n" % {"XDG_DATA_HOME":self.xdg_data_home},
             self.user.error())
 
     @istest
@@ -119,7 +122,9 @@ class describe_trash_list(Setup):
 
         assert_equals_with_unidiff(
             "[Errno 13] Permission denied: "
-            "'XDG_DATA_HOME/Trash/info/unreadable.trashinfo'\n",
+            "'%(XDG_DATA_HOME)s/Trash/info/unreadable.trashinfo'\n" % {
+                'XDG_DATA_HOME': self.xdg_data_home
+            },
             self.user.error())
 
     @istest
@@ -129,8 +134,9 @@ class describe_trash_list(Setup):
         self.user.run_trash_list()
 
         assert_equals_with_unidiff(
-                "Parse Error: XDG_DATA_HOME/Trash/info/1.trashinfo: "
-                "Unable to parse Path.\n", self.user.error())
+            "Parse Error: %(XDG_DATA_HOME)s/Trash/info/1.trashinfo: "
+            "Unable to parse Path.\n" % {'XDG_DATA_HOME': self.xdg_data_home},
+            self.user.error())
         assert_equals_with_unidiff('', self.user.output())
 
 @istest
