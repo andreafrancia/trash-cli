@@ -22,9 +22,7 @@ class Setup(object):
         self.xdg_data_home = tempfile.mkdtemp()
         require_empty_dir('topdir')
         self.user = TrashListUser(self.xdg_data_home)
-    def user_should_read_output(self, expected_output):
-        assert_equals_with_unidiff(expected_output,
-                                   self.user.actual_output())
+
 def sort_lines(lines):
     return "".join(sorted(lines.splitlines(True)))
 
@@ -176,7 +174,7 @@ class with_a_top_trash_dir(Setup):
 
         self.user.run_trash_list()
 
-        self.user_should_read_output("")
+        assert_equals_with_unidiff('', self.user.actual_output())
 
     @istest
     def it_should_ignore_Trash_is_a_symlink(self):
@@ -185,7 +183,7 @@ class with_a_top_trash_dir(Setup):
 
         self.user.run_trash_list()
 
-        self.user_should_read_output('')
+        assert_equals_with_unidiff('', self.user.actual_output())
 
     @istest
     def and_should_warn_about_it(self):
@@ -219,7 +217,8 @@ class describe_when_a_file_is_in_alternate_top_trashdir(Setup):
 
         self.user.run_trash_list()
 
-        self.user_should_read_output("2000-01-01 00:00:00 topdir/file\n")
+        assert_equals_with_unidiff("2000-01-01 00:00:00 topdir/file\n",
+                                   self.user.actual_output())
 
 class FakeTrashDir:
     def __init__(self, path):
