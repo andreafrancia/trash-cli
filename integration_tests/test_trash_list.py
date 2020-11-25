@@ -1,6 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
 import os
+import shutil
 import tempfile
 
 from trashcli.list import ListCmd
@@ -22,6 +23,8 @@ class Setup(object):
         self.xdg_data_home = tempfile.mkdtemp()
         require_empty_dir('topdir')
         self.user = TrashListUser(self.xdg_data_home)
+    def tearDown(self):
+        shutil.rmtree(self.xdg_data_home)
 
 def sort_lines(lines):
     return "".join(sorted(lines.splitlines(True)))
