@@ -11,9 +11,9 @@ def assert_equals_with_unidiff(expected, actual):
                                  lineterm='\n', n=10)
 
         return ''.join(diff)
-    from nose.tools import assert_equals
-    assert_equals(expected, actual,
-                  "\n"
-                  "Expected:%s\n" % repr(expected) +
-                  "  Actual:%s\n" % repr(actual) +
-                  unidiff(expected, actual))
+    from nose.tools import assert_equal
+    assert_equal(expected, actual,
+                 "\n"
+                 "Expected:%s\n" % repr(expected) +
+                 "  Actual:%s\n" % repr(actual) +
+                 unidiff(expected, actual))

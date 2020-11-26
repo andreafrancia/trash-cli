@@ -1,7 +1,7 @@
 from check_release_installation import (CheckInstallation,
                                         Pip3Installation,
                                         PipInstallation)
-from nose.tools import assert_equals
+from nose.tools import assert_equal
 from mock import call
 
 class TestCheckBothInstallations:
@@ -20,7 +20,7 @@ class TestCheckBothInstallations:
         ci = CheckInstallation(Pip3Installation(), self.ssh, version)
         ci.check_installation()
 
-        assert_equals([
+        assert_equal([
  call().run_checked('sudo rm -f $(which trash-put)'),
  call().run_checked('! which trash-put'),
  call().run_checked('sudo rm -f $(which trash-list)'),
@@ -48,7 +48,7 @@ class TestCheckBothInstallations:
         i.check_installation()
 
         self.maxDiff = None
-        assert_equals([
+        assert_equal([
 call().run_checked('sudo rm -f $(which trash-put)'),
 call().run_checked('! which trash-put'),
 call().run_checked('sudo rm -f $(which trash-list)'),

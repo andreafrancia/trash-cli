@@ -1,7 +1,7 @@
 from trashcli.put import TrashDirectoryForPut
 from trashcli.put import TopDirRelativePaths
 from mock import Mock
-from nose.tools import istest, assert_equals
+from nose.tools import istest, assert_equal
 from mock import ANY
 
 class TestTrashing:

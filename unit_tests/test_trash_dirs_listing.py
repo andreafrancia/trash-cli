@@ -72,7 +72,7 @@ class TestTrashDirs_listing:
 
 def not_important_for_now(): None
 
-from nose.tools import assert_equals
+from nose.tools import assert_equal
 from mock import MagicMock
 from trashcli.trash import TopTrashDirRules
 @istest
@@ -104,7 +104,7 @@ class Describe_AvailableTrashDirs_when_parent_is_unsticky:
 
         self.dirs.list_trashdirs()
 
-        assert_equals([], self.dirs.on_trashdir_skipped_because_parent_not_sticky.mock_calls)
+        assert_equal([], self.dirs.on_trashdir_skipped_because_parent_not_sticky.mock_calls)
 
 @istest
 class Describe_AvailableTrashDirs_when_parent_is_symlink:

@@ -1,6 +1,6 @@
 from trashcli.put import TrashDirectoryForPut
 from trashcli.put import AbsolutePaths, TopDirRelativePaths
-from nose.tools import assert_equals
+from nose.tools import assert_equal
 from mock import Mock
 
 class TestHowOriginalLocationIsStored:
@@ -27,4 +27,4 @@ class TestHowOriginalLocationIsStored:
 
     def assert_path_for_trashinfo_is(self, expected_value, file_to_be_trashed):
         result = self.dir.path_for_trash_info_for_file(file_to_be_trashed)
-        assert_equals(expected_value, result)
+        assert_equal(expected_value, result)

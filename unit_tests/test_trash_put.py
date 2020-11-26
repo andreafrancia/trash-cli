@@ -4,7 +4,7 @@ from trashcli.put import TrashPutCmd
 from trashcli.put import TopDirRelativePaths, AbsolutePaths
 from trashcli.put import TopTrashDirWriteRules, all_is_ok_checker
 
-from nose.tools import assert_in, assert_equals
+from nose.tools import assert_in, assert_equal
 from unit_tests.myStringIO import StringIO
 from integration_tests.assert_equals_with_unidiff import assert_equals_with_unidiff
 from textwrap import dedent
@@ -31,7 +31,7 @@ class TestTrashPutTrashDirectory:
 
         self.cmd.run(['trash-put', 'file'])
 
-        assert_equals([call('file', '/', [
+        assert_equal([call('file', '/', [
             ('~/xdh/Trash', '/', AbsolutePaths, all_is_ok_checker),
             ('/.Trash/123', '/', TopDirRelativePaths, TopTrashDirWriteRules),
             ('/.Trash-123', '/', TopDirRelativePaths, all_is_ok_checker),
@@ -40,7 +40,7 @@ class TestTrashPutTrashDirectory:
     def test_with_a_specified_trashdir(self):
         self.cmd.run(['trash-put', '--trash-dir=/Trash2', 'file'])
 
-        assert_equals([call('file', '/', [
+        assert_equal([call('file', '/', [
             ('/Trash2', '/', TopDirRelativePaths, all_is_ok_checker),
             ])], self.try_trash_file_using_candidates.mock_calls)
 
@@ -87,7 +87,7 @@ class TestWhenNoArgs(TrashPutTest):
         assert_line_in_text('Usage: trash-put [OPTION]... FILE...',
                             self.stderr.getvalue())
     def test_exit_code_should_be_not_zero(self):
-        assert_equals(2, self.exit_code)
+        assert_equal(2, self.exit_code)
 
 class TestTrashPutWithWrongOption(TrashPutTest):
     def test_something(self):
@@ -98,7 +98,7 @@ class TestTrashPutWithWrongOption(TrashPutTest):
             trash-put: error: no such option: --wrong-option
             '''))
         self.stdout_should_be('')
-        assert_equals(2, self.exit_code)
+        assert_equal(2, self.exit_code)
 
 def assert_line_in_text(expected_line, text):
     assert_in(expected_line, text.splitlines(),

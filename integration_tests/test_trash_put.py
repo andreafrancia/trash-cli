@@ -3,7 +3,7 @@ from trashcli.put import TrashPutCmd
 
 import os
 from datetime import datetime
-from nose.tools import istest, assert_equals, assert_not_equals
+from nose.tools import istest, assert_equal, assert_not_equal
 from nose.tools import assert_in
 
 from .files import having_file, require_empty_dir, having_empty_dir
@@ -21,16 +21,16 @@ class TestPath:
         remove_file('dir')
         os.symlink('other_dir/dir', 'dir')
         having_file('dir/foo')
-        assert_equals(os.path.join(self.base,'other_dir/dir'),
-                      parent_path('dir/foo'))
+        assert_equal(os.path.join(self.base, 'other_dir/dir'),
+                     parent_path('dir/foo'))
         remove_file('dir')
         remove_file('other_dir')
     def test2(self):
         require_empty_dir('test-disk/dir')
         remove_file('link-to-non-existent')
         os.symlink('test-disk/non-existent', 'link-to-non-existent')
-        assert_equals(self.base,
-                      parent_path('link-to-non-existent'))
+        assert_equal(self.base,
+                     parent_path('link-to-non-existent'))
         remove_file('link-to-non-existent')
 
     def test3(self):
@@ -39,8 +39,7 @@ class TestPath:
         require_empty_dir('foo')
         require_empty_dir('bar')
         os.symlink('../bar/zap', 'foo/zap')
-        assert_equals(os.path.join(self.base,'foo'),
-                      parent_path('foo/zap'))
+        assert_equal(os.path.join(self.base, 'foo'), parent_path('foo/zap'))
         remove_file('foo')
         remove_file('bar')
 
@@ -51,8 +50,7 @@ class TestPath:
         require_empty_dir('bar')
         os.symlink('../bar/zap', 'foo/zap')
         having_file('bar/zap')
-        assert_equals(os.path.join(self.base,'foo'),
-                      parent_path('foo/zap'))
+        assert_equal(os.path.join(self.base,'foo'), parent_path('foo/zap'))
         remove_file('foo')
         remove_file('bar')
 
@@ -123,7 +121,7 @@ class when_deleting_an_existing_file_in_verbose_mode(TrashPutTest):
 
     @istest
     def should_be_succesfull(self):
-        assert_equals(0, self.exit_code)
+        assert_equal(0, self.exit_code)
 
 @istest
 class when_deleting_a_non_existing_file(TrashPutTest):
@@ -132,7 +130,7 @@ class when_deleting_a_non_existing_file(TrashPutTest):
 
     @istest
     def should_be_succesfull(self):
-        assert_not_equals(0, self.exit_code)
+        assert_not_equal(0, self.exit_code)
 
 @istest
 class when_fed_with_dot_arguments(TrashPutTest):

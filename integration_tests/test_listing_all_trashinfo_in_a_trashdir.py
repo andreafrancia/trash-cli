@@ -3,7 +3,7 @@ from trashcli.trash import TrashDirectory
 from .files import require_empty_dir
 from .files import write_file
 from unit_tests.tools import assert_items_equal
-from nose.tools import assert_equals
+from nose.tools import assert_equal
 from mock import Mock
 
 class TestWhenListingTrashinfo:
@@ -19,7 +19,7 @@ class TestWhenListingTrashinfo:
 
         result = self.list_trashinfos()
 
-        assert_equals(['sandbox/info/foo.trashinfo'], result)
+        assert_equal(['sandbox/info/foo.trashinfo'], result)
 
     def test_should_list_multiple_trashinfo(self):
         write_file('sandbox/info/foo.trashinfo')
@@ -37,7 +37,7 @@ class TestWhenListingTrashinfo:
 
         result = self.list_trashinfos()
 
-        assert_equals([], result)
+        assert_equal([], result)
 
     def test_non_trashinfo_should_reported_as_a_warn(self):
         write_file('sandbox/info/not-a-trashinfo')

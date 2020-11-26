@@ -1,7 +1,7 @@
 import unittest
 
 from trashcli.restore import RestoreCmd
-from nose.tools import assert_equals
+from nose.tools import assert_equal
 from .myStringIO import StringIO
 from mock import Mock, call
 from trashcli import restore
@@ -38,7 +38,7 @@ class TestListingInRestoreCmd:
 
         self.cmd.run(['trash-restore'])
 
-        assert_equals([
+        assert_equal([
             'dir/location'
             , 'dir/location'
             ] ,self.original_locations)
@@ -53,7 +53,7 @@ class TestListingInRestoreCmd:
 
         self.cmd.run(['trash-restore', 'specific/path'])
 
-        assert_equals([
+        assert_equal([
             'specific/path'
             ] ,self.original_locations)
 
@@ -89,14 +89,14 @@ class TestTrashRestoreCmd:
         self.cmd.version = '1.2.3'
         self.cmd.run(['trash-restore', '--version'])
 
-        assert_equals('trash-restore 1.2.3\n', self.stdout.getvalue())
+        assert_equal('trash-restore 1.2.3\n', self.stdout.getvalue())
 
     def test_with_no_args_and_no_files_in_trashcan(self):
         self.cmd.curdir = lambda: "cwd"
 
         self.cmd.run(['trash-restore'])
 
-        assert_equals("No files trashed from current dir ('cwd')\n",
+        assert_equal("No files trashed from current dir ('cwd')\n",
                 self.stdout.getvalue())
 
     def test_until_the_restore_intgration(self):
@@ -116,12 +116,12 @@ class TestTrashRestoreCmd:
 
         self.cmd.restore_asking_the_user([trashed_file])
 
-        assert_equals('', self.stdout.getvalue())
-        assert_equals('', self.stderr.getvalue())
+        assert_equal('', self.stdout.getvalue())
+        assert_equal('', self.stderr.getvalue())
         assert_true(not os.path.exists('info_file'))
         assert_true(not os.path.exists('orig_file'))
         assert_true(os.path.exists('parent/path'))
-        assert_equals('original', contents_of('parent/path'))
+        assert_equal('original', contents_of('parent/path'))
 
     def test_until_the_restore_unit(self):
         trashed_file = TrashedFile(
@@ -136,9 +136,9 @@ class TestTrashRestoreCmd:
         self.user_reply = '0'
         self.cmd.restore_asking_the_user([trashed_file])
 
-        assert_equals('', self.stdout.getvalue())
-        assert_equals('', self.stderr.getvalue())
-        assert_equals([
+        assert_equal('', self.stdout.getvalue())
+        assert_equal('', self.stderr.getvalue())
+        assert_equal([
             call.mkdirs('parent')
             , call.move('orig_file', 'parent/path')
             , call.remove_file('info_file')
@@ -149,25 +149,25 @@ class TestTrashRestoreCmd:
 
         self.cmd.restore_asking_the_user([])
 
-        assert_equals('Exiting\n', self.stdout.getvalue())
+        assert_equal('Exiting\n', self.stdout.getvalue())
 
     def test_when_user_reply_with_not_number(self):
         self.user_reply = 'non numeric'
 
         self.cmd.restore_asking_the_user([])
 
-        assert_equals('Invalid entry\n', self.stderr.getvalue())
-        assert_equals('', self.stdout.getvalue())
-        assert_equals(1, self.exit_status)
+        assert_equal('Invalid entry\n', self.stderr.getvalue())
+        assert_equal('', self.stdout.getvalue())
+        assert_equal(1, self.exit_status)
 
     def test_when_user_reply_with_an_out_of_range_number(self):
         self.user_reply = '100'
 
         self.cmd.restore_asking_the_user([])
 
-        assert_equals('Invalid entry\n', self.stderr.getvalue())
-        assert_equals('', self.stdout.getvalue())
-        assert_equals(1, self.exit_status)
+        assert_equal('Invalid entry\n', self.stderr.getvalue())
+        assert_equal('', self.stdout.getvalue())
+        assert_equal(1, self.exit_status)
 
 from trashcli.restore import TrashedFile
 from nose.tools import assert_raises, assert_true
@@ -229,11 +229,11 @@ class TestRestoreCmdListingUnit:
         trashed_files = list(cmd.all_trashed_files())
 
         trashed_file = trashed_files[0]
-        assert_equals('/volume/name' , trashed_file.original_location)
-        assert_equals(datetime.datetime(2001, 1, 1, 10, 10, 10),
-                      trashed_file.deletion_date)
-        assert_equals('info/info_path.trashinfo' , trashed_file.info_file)
-        assert_equals('files/info_path' , trashed_file.original_file)
+        assert_equal('/volume/name' , trashed_file.original_location)
+        assert_equal(datetime.datetime(2001, 1, 1, 10, 10, 10),
+                     trashed_file.deletion_date)
+        assert_equal('info/info_path.trashinfo' , trashed_file.info_file)
+        assert_equal('files/info_path' , trashed_file.original_file)
 
 from integration_tests.files import write_file, require_empty_dir
 from trashcli.fs import remove_file
@@ -253,11 +253,11 @@ class TestRestoreCmdListingIntegration:
         trashed_files = list(cmd.all_trashed_files())
 
         trashed_file = trashed_files[0]
-        assert_equals('/volume/name' , trashed_file.original_location)
-        assert_equals(datetime.datetime(2001, 1, 1, 10, 10, 10),
-                      trashed_file.deletion_date)
-        assert_equals('info/info_path.trashinfo' , trashed_file.info_file)
-        assert_equals('files/info_path' , trashed_file.original_file)
+        assert_equal('/volume/name' , trashed_file.original_location)
+        assert_equal(datetime.datetime(2001, 1, 1, 10, 10, 10),
+                     trashed_file.deletion_date)
+        assert_equal('info/info_path.trashinfo' , trashed_file.info_file)
+        assert_equal('files/info_path' , trashed_file.original_file)
 
     def tearDown(self):
         remove_file('info/info_path.trashinfo')

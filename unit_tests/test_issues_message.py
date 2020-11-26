@@ -1,4 +1,4 @@
-from nose.tools import assert_equals
+from nose.tools import assert_equal
 
 from unit_tests.myStringIO import StringIO
 
@@ -55,6 +55,6 @@ class TestTrashPutIssueMessage:
             last_line = output.splitlines()[-1]
         else:
             last_line = ''
-        assert_equals(expected, last_line,
-                ('Last line of output should be:\n\n%s\n\n' % expected +
-                'but the output is\n\n%s' % output))
+        assert_equal(expected, last_line,
+                     ('Last line of output should be:\n\n%s\n\n' % expected +
+                      'but the output is\n\n%s' % output))

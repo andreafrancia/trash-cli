@@ -1,10 +1,5 @@
-from nose.tools import istest, assert_equals, assert_in
-import subprocess
-from subprocess import STDOUT, PIPE, check_output, call, Popen
-from .assert_equals_with_unidiff import assert_equals_with_unidiff as assert_equals
-from textwrap import dedent
-
-from pprint import pprint
+from nose.tools import istest, assert_equal, assert_in
+from subprocess import PIPE, Popen
 import sys
 
 class TestScriptsSmoke:
@@ -19,8 +14,8 @@ class TestScriptsSmoke:
 
     def test_trash_put_touch_filesystem(self):
         self.run_script('trash-put', 'non-existent')
-        assert_equals("trash-put: cannot trash non existent 'non-existent'\n",
-                self.stderr)
+        assert_equal("trash-put: cannot trash non existent 'non-existent'\n",
+                     self.stderr)
 
     def run_script(self, script, *args):
         process = Popen([sys.executable, script] + list(args),

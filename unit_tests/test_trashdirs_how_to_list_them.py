@@ -1,6 +1,6 @@
 from trashcli.trash import TrashDirs
 from mock import Mock, call
-from nose.tools import assert_equals
+from nose.tools import assert_equal
 
 class TestListTrashinfo:
     def test_howto_list_trashdirs(self):
@@ -15,8 +15,7 @@ class TestListTrashinfo:
         trashdirs.on_trash_dir_found = out
         trashdirs.list_trashdirs()
 
-        assert_equals([call('/home/user/.local/share/Trash', '/'),
-                       call('/vol/.Trash-123', '/vol'),
-                       call('/vol2/.Trash-123', '/vol2')],
-                      out.mock_calls)
-
+        assert_equal([call('/home/user/.local/share/Trash', '/'),
+                      call('/vol/.Trash-123', '/vol'),
+                      call('/vol2/.Trash-123', '/vol2')],
+                     out.mock_calls)

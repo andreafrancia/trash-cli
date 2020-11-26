@@ -1,6 +1,6 @@
 from unit_tests.myStringIO import StringIO
 from mock import Mock, ANY
-from nose.tools import assert_false, assert_raises, assert_equals
+from nose.tools import assert_false, assert_equal
 
 from .files import require_empty_dir, write_file
 from trashcli.rm import RmCmd, ListTrashinfos
@@ -13,11 +13,11 @@ class TestTrashRm:
 
         self.trash_rm.run(['trash-rm', 'any-pattern (ignored)'])
 
-        assert_equals('trash-rm: '
-                      'sandbox/xdh/Trash/info/1.trashinfo: '
-                      'unable to parse \'Path\''
-                      '\n'
-                      , self.stderr.getvalue())
+        assert_equal('trash-rm: '
+                     'sandbox/xdh/Trash/info/1.trashinfo: '
+                     'unable to parse \'Path\''
+                     '\n'
+                     , self.stderr.getvalue())
 
 
     def test_integration(self):

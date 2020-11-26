@@ -1,6 +1,6 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from nose.tools import assert_equals, istest
+from nose.tools import assert_equal, istest
 from unit_tests.tools import assert_items_equal
 from trashcli.empty import EmptyCmd
 
@@ -37,8 +37,8 @@ class TestTrashEmptyCmd:
         empty(['trash-empty'], stdout = out, stderr = err,
                 environ={'XDG_DATA_HOME':'data'})
 
-        assert_equals("trash-empty: cannot remove data/Trash/files/unreadable\n",
-                      err.getvalue())
+        assert_equal("trash-empty: cannot remove data/Trash/files/unreadable\n",
+                     err.getvalue())
         os.chmod('data/Trash/files/unreadable', 0o700)
         shutil.rmtree('data')
 
@@ -282,7 +282,7 @@ class TestTrashEmpty_on_help:
                        version = None,
                        )
         cmd.run('trash-empty', '--help')
-        assert_equals(out.getvalue(), dedent("""\
+        assert_equal(out.getvalue(), dedent("""\
             Usage: trash-empty [days]
 
             Purge trashed files.
@@ -308,7 +308,7 @@ class TestTrashEmpty_on_version():
                        version = '1.2.3',
                        )
         cmd.run('trash-empty', '--version')
-        assert_equals(out.getvalue(), dedent("""\
+        assert_equal(out.getvalue(), dedent("""\
             trash-empty 1.2.3
             """))
 
@@ -332,13 +332,13 @@ class describe_trash_empty_command_line__on_invalid_options():
         self.exit_code = self.cmd.run('trash-empty', '-2')
 
         exit_code_for_command_line_usage = 64
-        assert_equals(exit_code_for_command_line_usage, self.exit_code)
+        assert_equal(exit_code_for_command_line_usage, self.exit_code)
 
     def it_should_complain_to_the_standard_error(self):
 
         self.exit_code = self.cmd.run('trash-empty', '-2')
 
-        assert_equals(self.err.getvalue(), dedent("""\
+        assert_equal(self.err.getvalue(), dedent("""\
                 trash-empty: invalid option -- '2'
                 """))
 
@@ -346,7 +346,7 @@ class describe_trash_empty_command_line__on_invalid_options():
 
         self.cmd.run('trash-empty', '-3')
 
-        assert_equals(self.err.getvalue(), dedent("""\
+        assert_equal(self.err.getvalue(), dedent("""\
                 trash-empty: invalid option -- '3'
                 """))
 

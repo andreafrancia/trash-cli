@@ -2,7 +2,7 @@
 
 import os
 
-from nose.tools import assert_equals, assert_true
+from nose.tools import assert_equal, assert_true
 
 from integration_tests.files import require_empty_dir
 from trashcli.put import TrashDirectoryForPut, RealFs
@@ -30,9 +30,9 @@ class TestTrashDirectory_persit_trash_info:
     def test_persist_trash_info_first_time(self):
 
         trash_info_file = self.persist_trash_info('dummy-path', b'content')
-        assert_equals(join(self.trashdirectory_base_dir,'info', 'dummy-path.trashinfo'), trash_info_file)
+        assert_equal(join(self.trashdirectory_base_dir,'info', 'dummy-path.trashinfo'), trash_info_file)
 
-        assert_equals('content', read(trash_info_file))
+        assert_equal('content', read(trash_info_file))
 
     def test_persist_trash_info_first_100_times(self):
         self.test_persist_trash_info_first_time()
@@ -41,9 +41,9 @@ class TestTrashDirectory_persit_trash_info:
             content=b'trashinfo content'
             trash_info_file = self.persist_trash_info('dummy-path', content)
 
-            assert_equals("dummy-path_%s.trashinfo" % i,
+            assert_equal("dummy-path_%s.trashinfo" % i,
                     os.path.basename(trash_info_file))
-            assert_equals('trashinfo content', read(trash_info_file))
+            assert_equal('trashinfo content', read(trash_info_file))
 
     def test_persist_trash_info_other_times(self):
         self.test_persist_trash_info_first_100_times()
@@ -52,7 +52,7 @@ class TestTrashDirectory_persit_trash_info:
             trash_info_file = self.persist_trash_info('dummy-path',b'content')
             trash_info_id = os.path.basename(trash_info_file)
             assert_true(trash_info_id.startswith("dummy-path_"))
-            assert_equals('content', read(trash_info_file))
+            assert_equal('content', read(trash_info_file))
     test_persist_trash_info_first_100_times.stress_test = True
     test_persist_trash_info_other_times.stress_test = True
 

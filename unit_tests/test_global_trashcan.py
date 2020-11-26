@@ -1,5 +1,5 @@
 from mock import Mock, call
-from nose.tools import istest, assert_equals, assert_not_equals
+from nose.tools import istest, assert_equal
 from datetime import datetime
 
 from trashcli.put import GlobalTrashCan
@@ -38,7 +38,7 @@ class TestTopDirRules:
                                   Mock())
 
         trashcan.trash('')
-        assert_equals([
+        assert_equal([
             call('', '/volume/.Trash-uid')
             ], reporter.file_has_been_trashed_in_as.mock_calls)
 

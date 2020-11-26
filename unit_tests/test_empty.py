@@ -1,6 +1,6 @@
 from trashcli.empty import EmptyCmd
 from mock import Mock, call
-from nose.tools import assert_equals
+from nose.tools import assert_equal
 
 class TestTrashEmptyCmd:
     def setUp(self):
@@ -14,12 +14,12 @@ class TestTrashEmptyCmd:
     def test_default_behaviour_is_emtpy_all_trashdirs(self):
         self.cmd.run('trash-empty')
 
-        assert_equals([call()], self.empty_all_trashdirs.mock_calls)
-        assert_equals([], self.empty_trashdir.mock_calls)
+        assert_equal([call()], self.empty_all_trashdirs.mock_calls)
+        assert_equal([], self.empty_trashdir.mock_calls)
 
     def test(self):
         self.cmd.run('trash-empty', '--trash-dir', 'specific')
 
-        assert_equals([], self.empty_all_trashdirs.mock_calls)
-        assert_equals([call('specific')], self.empty_trashdir.mock_calls)
+        assert_equal([], self.empty_all_trashdirs.mock_calls)
+        assert_equal([call('specific')], self.empty_trashdir.mock_calls)
 

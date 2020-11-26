@@ -1,4 +1,4 @@
-from nose.tools import istest, assert_equals
+from nose.tools import istest, assert_equal
 from unit_tests.tools import assert_items_equal
 from mock import Mock, call
 
@@ -12,7 +12,8 @@ class TestTrashRmCmdRun:
         cmd.stderr = StringIO()
         cmd.run([None])
 
-        assert_equals('Usage:\n    trash-rm PATTERN\n\nPlease specify PATTERN\n', cmd.stderr.getvalue())
+        assert_equal('Usage:\n    trash-rm PATTERN\n\nPlease specify PATTERN\n',
+                     cmd.stderr.getvalue())
 
     def test_without_pattern_argument(self):
         from trashcli.rm import RmCmd
@@ -27,7 +28,7 @@ class TestTrashRmCmdRun:
 
         cmd.run([None, None])
 
-        assert_equals('', cmd.stderr.getvalue())
+        assert_equal('', cmd.stderr.getvalue())
 
 class TestTrashRmCmd:
     def test_a_star_matches_all(self):
