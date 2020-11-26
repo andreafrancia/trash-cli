@@ -73,7 +73,7 @@ class describe_trash_list(Setup):
         self.user.home_trashdir.add_trashinfo("/file3", "2000-01-01T00:00:03")
 
         self.user.run_trash_list()
-        output = self.user.actual_output()
+        output = self.user.output()
 
         assert_equals_with_unidiff("2000-01-01 00:00:01 /file1\n"
                                    "2000-01-01 00:00:02 /file2\n"
@@ -159,7 +159,10 @@ class with_a_top_trash_dir(Setup):
 
         self.user.run_trash_list()
 
-        self.user.should_read_error("TrashDir skipped because parent not sticky: topdir/.Trash/123\n")
+        assert_equals_with_unidiff(
+            "TrashDir skipped because parent not sticky: topdir/.Trash/123\n",
+            self.user.error()
+        )
 
     @istest
     def but_it_should_not_warn_when_the_parent_is_unsticky_but_there_is_no_trashdir(self):
@@ -168,7 +171,7 @@ class with_a_top_trash_dir(Setup):
 
         self.user.run_trash_list()
 
-        self.user.should_read_error("")
+        assert_equals_with_unidiff("", self.user.error())
 
     @istest
     def should_ignore_trash_from_a_unsticky_topdir(self):
@@ -177,7 +180,7 @@ class with_a_top_trash_dir(Setup):
 
         self.user.run_trash_list()
 
-        assert_equals_with_unidiff('', self.user.actual_output())
+        assert_equals_with_unidiff('', self.user.output())
 
     @istest
     def it_should_ignore_Trash_is_a_symlink(self):
@@ -186,7 +189,7 @@ class with_a_top_trash_dir(Setup):
 
         self.user.run_trash_list()
 
-        assert_equals_with_unidiff('', self.user.actual_output())
+        assert_equals_with_unidiff('', self.user.output())
 
     @istest
     def and_should_warn_about_it(self):
@@ -195,7 +198,11 @@ class with_a_top_trash_dir(Setup):
 
         self.user.run_trash_list()
 
-        self.user.should_read_error('TrashDir skipped because parent not sticky: topdir/.Trash/123\n')
+        assert_equals_with_unidiff(
+            'TrashDir skipped because parent not sticky: topdir/.Trash/123\n',
+            self.user.error()
+        )
+
     def but_does_not_exists_any(self, path):
         assert not os.path.exists(path)
     def and_dir_exists(self, path):
@@ -221,7 +228,7 @@ class describe_when_a_file_is_in_alternate_top_trashdir(Setup):
         self.user.run_trash_list()
 
         assert_equals_with_unidiff("2000-01-01 00:00:00 topdir/file\n",
-                                   self.user.actual_output())
+                                   self.user.output())
 
 class FakeTrashDir:
     def __init__(self, path):
@@ -277,10 +284,6 @@ class TrashListUser:
         self.volumes.append(mount_point)
     def error(self):
         return self.stderr.getvalue()
-    def should_read_error(self, expected_value):
-        self.stderr.assert_equal_to(expected_value)
     def output(self):
-        return self.stdout.getvalue()
-    def actual_output(self):
         return self.stdout.getvalue()
 
