@@ -2,6 +2,7 @@
 from trashcli.put import TrashPutCmd
 
 import os
+from os.path import exists as file_exists
 from datetime import datetime
 from nose.tools import istest, assert_equal, assert_not_equal
 from nose.tools import assert_in
@@ -98,7 +99,7 @@ class when_deleting_an_existing_file(TrashPutTest):
 
     @istest
     def it_should_remove_the_file(self):
-        file_should_have_been_deleted('sandbox/foo')
+        assert not file_exists('sandbox/foo')
 
     @istest
     def it_should_remove_it_silently(self):
@@ -149,7 +150,7 @@ class when_fed_with_dot_arguments(TrashPutTest):
                 "trash-put: cannot trash directory '.'\n")
 
         # the remaining arguments should be processed
-        assert not exists('other_argument')
+        assert not file_exists('other_argument')
 
     def test_dot_dot_argument_is_skipped(self):
 
@@ -161,7 +162,7 @@ class when_fed_with_dot_arguments(TrashPutTest):
             "trash-put: cannot trash directory '..'\n")
 
         # the remaining arguments should be processed
-        assert not exists('other_argument')
+        assert not file_exists('other_argument')
 
     def test_dot_argument_is_skipped_even_in_subdirs(self):
 
@@ -173,8 +174,8 @@ class when_fed_with_dot_arguments(TrashPutTest):
             "trash-put: cannot trash '.' directory 'sandbox/.'\n")
 
         # the remaining arguments should be processed
-        assert not exists('other_argument')
-        assert exists('sandbox')
+        assert not file_exists('other_argument')
+        assert file_exists('sandbox')
 
     def test_dot_dot_argument_is_skipped_even_in_subdirs(self):
 
@@ -186,8 +187,8 @@ class when_fed_with_dot_arguments(TrashPutTest):
             "trash-put: cannot trash '..' directory 'sandbox/..'\n")
 
         # the remaining arguments should be processed
-        assert not exists('other_argument')
-        assert exists('sandbox')
+        assert not file_exists('other_argument')
+        assert file_exists('sandbox')
 
 from textwrap import dedent
 @istest
@@ -241,14 +242,3 @@ def assert_line_in_text(line, text):
             ---
             %s---''')
             %(repr(line), text))
-
-def should_fail(func):
-    from nose.tools import assert_raises
-    with assert_raises(AssertionError):
-        func()
-
-def file_should_have_been_deleted(path):
-    import os
-    assert not os.path.exists('sandbox/foo')
-
-exists = os.path.exists
