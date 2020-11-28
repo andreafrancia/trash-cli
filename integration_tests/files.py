@@ -4,11 +4,10 @@ from nose.tools import assert_equal
 from trashcli.fs  import has_sticky_bit
 import os, shutil
 
+
 def make_empty_file(path):
-    dirname=os.path.dirname(path)
-    if dirname != '': make_dirs(dirname)
-    open(path,'w').close()
-    assert os.path.isfile(path)
+    write_file(path, '')
+
 
 def write_file(filename, contents=''):
     parent = os.path.dirname(os.path.realpath(filename))
