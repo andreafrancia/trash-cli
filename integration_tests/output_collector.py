@@ -1,4 +1,4 @@
-from .assert_equals_with_unidiff import assert_equals_with_unidiff
+from .asserts import assert_equals_with_unidiff
 
 class OutputCollector:
     def __init__(self):

@@ -6,7 +6,7 @@ from trashcli.put import TopTrashDirWriteRules, all_is_ok_checker
 
 from nose.tools import assert_in, assert_equal
 from unit_tests.myStringIO import StringIO
-from integration_tests.assert_equals_with_unidiff import assert_equals_with_unidiff
+from integration_tests.asserts import assert_equals_with_unidiff
 from textwrap import dedent
 from mock import Mock, call
 

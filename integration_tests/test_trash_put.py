@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2011 Andrea Francia Trivolzio(PV) Italy
+# Copyright (C) 2009-2020 Andrea Francia Trivolzio(PV) Italy
 from trashcli.put import TrashPutCmd
 
 import os
@@ -12,6 +12,7 @@ from .files import make_sticky_dir
 from trashcli.fstab import FakeFstab
 from trashcli.fs import remove_file
 from trashcli.put import parent_path, RealFs
+from .asserts import assert_line_in_text
 
 class TestPath:
     def setUp(self):
@@ -190,7 +191,6 @@ class when_fed_with_dot_arguments(TrashPutTest):
         assert not file_exists('other_argument')
         assert file_exists('sandbox')
 
-from textwrap import dedent
 @istest
 class TestUnsecureTrashDirMessages(TrashPutTest):
     def setUp(self):
@@ -230,15 +230,3 @@ class TestUnsecureTrashDirMessages(TrashPutTest):
                 'trash-put: found unsecure .Trash dir (should not be a symlink): '
                 'fake-vol/.Trash', self.stderr)
 
-def assert_line_in_text(line, text):
-    assert_in(line, text.splitlines(), dedent('''\
-            Line not found in text
-            Line:
-
-            %s
-
-            Text:
-
-            ---
-            %s---''')
-            %(repr(line), text))

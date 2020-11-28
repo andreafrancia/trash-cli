@@ -17,7 +17,7 @@ from .trashinfo import (
         a_trashinfo_with_invalid_date)
 from textwrap import dedent
 
-from .assert_equals_with_unidiff import assert_equals_with_unidiff
+from .asserts import assert_equals_with_unidiff
 class Setup(object):
     def setUp(self):
         self.xdg_data_home = tempfile.mkdtemp()
