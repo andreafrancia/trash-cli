@@ -4,7 +4,7 @@ from trashcli.trash import FileSystemReader
 from trashcli.fs import mkdirs
 from trashcli.fs import has_sticky_bit
 
-from .files import require_empty_dir, having_file, set_sticky_bit
+from .files import require_empty_dir, make_empty_file, set_sticky_bit
 import os
 
 class TestWithInSandbox:
@@ -16,14 +16,14 @@ class TestWithInSandbox:
 
     def test_has_sticky_bit_returns_true(self):
 
-        having_file( "sandbox/sticky")
+        make_empty_file("sandbox/sticky")
         run('chmod +t sandbox/sticky')
 
         assert has_sticky_bit('sandbox/sticky')
 
     def test_has_sticky_bit_returns_false(self):
 
-        having_file( "sandbox/non-sticky")
+        make_empty_file("sandbox/non-sticky")
         run('chmod -t sandbox/non-sticky')
 
         assert not has_sticky_bit("sandbox/non-sticky")
@@ -42,7 +42,7 @@ class Test_is_sticky_dir:
         assert is_sticky_dir('sandbox/dir')
 
     def test_non_dir_but_sticky(self):
-        having_file('sandbox/dir');
+        make_empty_file('sandbox/dir');
         set_sticky_bit('sandbox/dir')
         assert not is_sticky_dir('sandbox/dir')
 

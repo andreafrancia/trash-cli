@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
 from trashcli.put import describe
-from .files import require_empty_dir, having_file
+from .files import require_empty_dir, make_empty_file
 from nose.tools import assert_equal
 import os
 
@@ -32,7 +32,7 @@ class TestDescritions:
 
     def test_name_for_empty_file(self):
 
-        having_file('sandbox/empty')
+        make_empty_file('sandbox/empty')
         assert_equal("regular empty file", describe("sandbox/empty"))
 
     def test_name_for_symbolic_links(self):

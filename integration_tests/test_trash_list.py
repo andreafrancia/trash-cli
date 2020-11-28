@@ -6,8 +6,8 @@ import tempfile
 
 from trashcli.list import ListCmd
 from .files import (write_file, require_empty_dir, make_sticky_dir,
-                   make_unsticky_dir, make_unreadable_file, make_empty_file,
-                   make_parent_for)
+                    make_unsticky_dir, make_unreadable_file, make_empty_file,
+                    make_parent_for)
 from nose.tools import istest
 from .output_collector import OutputCollector
 from .trashinfo import (

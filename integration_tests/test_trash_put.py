@@ -7,7 +7,7 @@ from datetime import datetime
 from nose.tools import istest, assert_equal, assert_not_equal
 from nose.tools import assert_in
 
-from .files import having_file, require_empty_dir, having_empty_dir
+from .files import make_empty_file, require_empty_dir, having_empty_dir
 from .files import make_sticky_dir
 from trashcli.fstab import FakeFstab
 from trashcli.fs import remove_file
@@ -22,7 +22,7 @@ class TestPath:
         require_empty_dir('other_dir/dir')
         remove_file('dir')
         os.symlink('other_dir/dir', 'dir')
-        having_file('dir/foo')
+        make_empty_file('dir/foo')
         assert_equal(os.path.join(self.base, 'other_dir/dir'),
                      parent_path('dir/foo'))
         remove_file('dir')
@@ -51,7 +51,7 @@ class TestPath:
         require_empty_dir('foo')
         require_empty_dir('bar')
         os.symlink('../bar/zap', 'foo/zap')
-        having_file('bar/zap')
+        make_empty_file('bar/zap')
         assert_equal(os.path.join(self.base,'foo'), parent_path('foo/zap'))
         remove_file('foo')
         remove_file('bar')
@@ -95,7 +95,7 @@ class TrashPutTest:
 @istest
 class when_deleting_an_existing_file(TrashPutTest):
     def setUp2(self):
-        having_file('sandbox/foo')
+        make_empty_file('sandbox/foo')
         self.run_trashput('trash-put', 'sandbox/foo')
 
     @istest
@@ -113,7 +113,7 @@ class when_deleting_an_existing_file(TrashPutTest):
 @istest
 class when_deleting_an_existing_file_in_verbose_mode(TrashPutTest):
     def setUp2(self):
-        having_file('sandbox/foo')
+        make_empty_file('sandbox/foo')
         self.run_trashput('trash-put', '-v', 'sandbox/foo')
 
     @istest
@@ -139,7 +139,7 @@ class when_fed_with_dot_arguments(TrashPutTest):
 
     def setUp2(self):
         having_empty_dir('sandbox/')
-        having_file('other_argument')
+        make_empty_file('other_argument')
 
     def test_dot_argument_is_skipped(self):
 
@@ -197,7 +197,7 @@ class TestUnsecureTrashDirMessages(TrashPutTest):
         TrashPutTest.setUp(self)
         having_empty_dir('fake-vol')
         self.fstab.add_mount('fake-vol')
-        having_file('fake-vol/foo')
+        make_empty_file('fake-vol/foo')
 
     @istest
     def when_is_unsticky(self):
@@ -211,7 +211,7 @@ class TestUnsecureTrashDirMessages(TrashPutTest):
 
     @istest
     def when_it_is_not_a_dir(self):
-        having_file('fake-vol/.Trash')
+        make_empty_file('fake-vol/.Trash')
 
         self.run_trashput('trash-put', '-v', 'fake-vol/foo')
 
