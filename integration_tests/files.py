@@ -28,8 +28,6 @@ def require_empty_dir(path):
     assert os.path.isdir(path)
     assert_equal([], list(os.listdir(path)))
 
-def having_empty_dir(path):
-    require_empty_dir(path)
 
 def make_dirs(path):
     if not os.path.isdir(path):

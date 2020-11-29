@@ -7,7 +7,7 @@ from datetime import datetime
 from nose.tools import istest, assert_equal, assert_not_equal
 from nose.tools import assert_in
 
-from .files import make_empty_file, require_empty_dir, having_empty_dir
+from .files import make_empty_file, require_empty_dir
 from .files import make_sticky_dir
 from trashcli.fstab import FakeFstab
 from trashcli.fs import remove_file
@@ -138,7 +138,7 @@ class when_deleting_a_non_existing_file(TrashPutTest):
 class when_fed_with_dot_arguments(TrashPutTest):
 
     def setUp2(self):
-        having_empty_dir('sandbox/')
+        require_empty_dir('sandbox/')
         make_empty_file('other_argument')
 
     def test_dot_argument_is_skipped(self):
@@ -195,13 +195,13 @@ class when_fed_with_dot_arguments(TrashPutTest):
 class TestUnsecureTrashDirMessages(TrashPutTest):
     def setUp(self):
         TrashPutTest.setUp(self)
-        having_empty_dir('fake-vol')
+        require_empty_dir('fake-vol')
         self.fstab.add_mount('fake-vol')
         make_empty_file('fake-vol/foo')
 
     @istest
     def when_is_unsticky(self):
-        having_empty_dir('fake-vol/.Trash')
+        require_empty_dir('fake-vol/.Trash')
 
         self.run_trashput('trash-put', '-v', 'fake-vol/foo')
 
