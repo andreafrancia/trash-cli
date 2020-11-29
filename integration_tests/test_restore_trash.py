@@ -3,7 +3,7 @@ import unittest
 from trashcli.restore import RestoreCmd
 from .files import require_empty_dir
 from trashcli.fs import remove_file
-from .trashinfo import a_trashinfo
+from .fake_trash_dir import a_trashinfo
 from .files import write_file
 from unit_tests.myStringIO import StringIO
 

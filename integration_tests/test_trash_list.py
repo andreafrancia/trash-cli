@@ -5,16 +5,13 @@ import shutil
 import tempfile
 
 from trashcli.list import ListCmd
-from .files import (write_file, require_empty_dir, make_sticky_dir,
-                    make_unsticky_dir, make_unreadable_file, make_empty_file,
-                    make_parent_for)
+from .files import (require_empty_dir, make_sticky_dir, make_unsticky_dir)
 from nose.tools import istest
 from .output_collector import OutputCollector
-from .trashinfo import (
-        a_trashinfo,
-        a_trashinfo_without_date,
-        a_trashinfo_without_path,
-        a_trashinfo_with_invalid_date)
+from .fake_trash_dir import (
+    a_trashinfo_without_date,
+    a_trashinfo_without_path,
+    a_trashinfo_with_invalid_date, FakeTrashDir)
 from textwrap import dedent
 
 from .asserts import assert_equals_with_unidiff
@@ -111,7 +108,7 @@ class describe_trash_list(Setup):
 
     @istest
     def should_warn_about_unreadable_trashinfo(self):
-        self.user.home_trashdir.having_unreadable('unreadable.trashinfo')
+        self.user.home_trashdir.add_unreadable_trashinfo('unreadable')
 
         self.user.run_trash_list()
 
@@ -229,30 +226,6 @@ class describe_when_a_file_is_in_alternate_top_trashdir(Setup):
 
         assert_equals_with_unidiff("2000-01-01 00:00:00 topdir/file\n",
                                    self.user.output())
-
-class FakeTrashDir:
-    def __init__(self, path):
-        self.path = path + '/info'
-        self.number = 1
-    def having_unreadable(self, path_relative_to_info_dir):
-        path = self.join(path_relative_to_info_dir)
-        make_unreadable_file(path)
-    def join(self, path_relative_to_info_dir):
-        import os
-        return os.path.join(self.path, path_relative_to_info_dir)
-    def add_trashinfo(self, contents, base_name = None):
-        if not base_name:
-            base_name = str(self.number)
-            self.number += 1
-        path = '%(info_dir)s/%(name)s.trashinfo' % {'info_dir': self.path,
-                                                    'name': base_name}
-        make_parent_for(path)
-        write_file(path, contents)
-
-        self.path_of_last_file_added = path
-
-    def add_trashinfo2(self, escaped_path_entry, formatted_deletion_date):
-        self.add_trashinfo(a_trashinfo(escaped_path_entry, formatted_deletion_date))
 
 class TrashListUser:
     def __init__(self, xdg_data_home):

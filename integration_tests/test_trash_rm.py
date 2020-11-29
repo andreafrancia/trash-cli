@@ -4,8 +4,7 @@ from nose.tools import assert_false, assert_equal
 
 from .files import require_empty_dir, write_file
 from trashcli.rm import RmCmd, ListTrashinfos
-from .trashinfo import a_trashinfo_with_path, a_trashinfo_without_path
-from trashcli.trash import ParseError
+from .fake_trash_dir import a_trashinfo_with_path, a_trashinfo_without_path
 
 class TestTrashRm:
     def test_issue69(self):
