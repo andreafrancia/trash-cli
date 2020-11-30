@@ -10,6 +10,7 @@ class TestEndToEndRestore(unittest.TestCase):
     def setUp(self):
         self.tmpdir = os.path.realpath(tempfile.mkdtemp())
         self.curdir = os.path.join(self.tmpdir, "cwd")
+        os.makedirs(self.curdir)
 
     def test(self):
         result = self.run_command("trash-restore")
