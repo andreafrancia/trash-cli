@@ -9,13 +9,14 @@ import os
 class TestEndToEndRestore(unittest.TestCase):
     def setUp(self):
         self.tmpdir = os.path.realpath(tempfile.mkdtemp())
+        self.curdir = os.path.join(self.tmpdir, "cwd")
 
     def test(self):
         result = self.run_command("trash-restore")
 
         self.assertEqual("""\
 No files trashed from current dir ('%s')
-""" % self.tmpdir, result.stdout.decode('utf-8'))
+""" % self.curdir, result.stdout.decode('utf-8'))
 
     def run_command(self, command):
         class Result:
@@ -24,7 +25,7 @@ No files trashed from current dir ('%s')
                 self.stderr = stderr
         command_full_path = os.path.join(base_dir, command)
         process = subprocess.Popen(["python", command_full_path], stdout=PIPE,
-                                   stderr=PIPE, cwd=self.tmpdir)
+                                   stderr=PIPE, cwd=self.curdir)
         stdout, stderr = process.communicate()
 
         return Result(stdout, stderr)
