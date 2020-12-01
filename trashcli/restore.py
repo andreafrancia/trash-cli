@@ -1,6 +1,7 @@
 import os
 import sys
 
+from .list_mount_points import os_mount_points
 from .trash import version
 from .fstab import make_fstab
 from .trash import TrashDirectory
@@ -60,7 +61,7 @@ class RestoreCmd(object):
                 volume_of    = fstab.volume_of,
                 getuid       = os.getuid,
                 environ      = environ,
-                mount_points = fstab.mount_points()
+                mount_points = os_mount_points()
                 )
         self.all_trash_directories2 = all_trash_directories.all_trash_directories
     def run(self, argv):

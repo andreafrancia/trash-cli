@@ -17,9 +17,6 @@ class Fstab(object):
         volume_of = VolumeOf(ismount=self.ismount)
         return volume_of(path)
 
-    def mount_points(self):
-        return self.ismount.mount_points()
-
 
 class FakeFstab:
     def __init__(self):
