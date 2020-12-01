@@ -14,7 +14,7 @@ def main(argv    = sys.argv,
          stdout  = sys.stdout,
          stderr  = sys.stderr,
          environ = os.environ):
-    from trashcli.list_mount_points import mount_points
+    from trashcli.list_mount_points import os_mount_points
     from datetime import datetime
     from trashcli.trash import FileSystemReader
     from trashcli.fs import FileRemover
@@ -23,7 +23,7 @@ def main(argv    = sys.argv,
         out          = stdout,
         err          = stderr,
         environ      = environ,
-        list_volumes = mount_points,
+        list_volumes = os_mount_points,
         now          = datetime.now,
         file_reader  = FileSystemReader(),
         getuid       = os.getuid,

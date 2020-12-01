@@ -37,7 +37,7 @@ class FakeFstab:
     def add_mount(self, path):
         self.ismount.add_mount(path)
 
-from trashcli.list_mount_points import mount_points as os_mount_points
+from trashcli.list_mount_points import os_mount_points
 class OsIsMount:
     def __call__(self, path):
         return os.path.ismount(path)

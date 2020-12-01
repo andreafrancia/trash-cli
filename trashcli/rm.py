@@ -59,10 +59,10 @@ class RmCmd:
 
 
 def main():
-    from trashcli.list_mount_points import mount_points
+    from trashcli.list_mount_points import os_mount_points
     cmd = RmCmd(environ        = os.environ
                 , getuid       = os.getuid
-                , list_volumes = mount_points
+                , list_volumes = os_mount_points
                 , stderr       = sys.stderr
                 , file_reader  = FileSystemReader())
 

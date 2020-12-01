@@ -14,13 +14,13 @@ from .trash import unknown_date
 def main():
     import sys
     import os
-    from trashcli.list_mount_points import mount_points
+    from trashcli.list_mount_points import os_mount_points
     ListCmd(
         out          = sys.stdout,
         err          = sys.stderr,
         environ      = os.environ,
         getuid       = os.getuid,
-        list_volumes = mount_points,
+        list_volumes = os_mount_points,
     ).run(*sys.argv)
 
 class ListCmd:
