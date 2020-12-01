@@ -39,8 +39,6 @@ class FakeIsMount:
         if path in self.fakes:
             return True
         return False
-    def mount_points(self):
-        return self.fakes.copy()
 
 class VolumeOf:
     def __init__(self, ismount, abspath):

@@ -1,39 +1,24 @@
 from trashcli.fstab import FakeFstab
 
 from nose.tools import assert_equal
-from nose.tools import istest
-from unit_tests.tools import assert_items_equal
 
 class TestFakeFstab:
     def setUp(self):
         self.fstab = FakeFstab()
 
-    @istest
-    def on_default(self):
-        self.assert_mount_points_are('/')
+    def test_default(self):
+        assert_equal(["/"], self.filter_only_mount_points("/"))
 
-    @istest
-    def it_should_accept_fake_mount_points(self):
+    def test_it_should_accept_fake_mount_points(self):
         self.fstab.add_mount('/fake')
+        assert_equal(['/', '/fake'], self.filter_only_mount_points('/', '/fake'))
 
-        self.assert_mount_points_are('/', '/fake')
-
-    @istest
-    def root_is_not_duplicated(self):
-        self.fstab.add_mount('/')
-
-        self.assert_mount_points_are('/')
-
-    @istest
     def test_something(self):
         fstab = FakeFstab()
         fstab.add_mount('/fake')
         assert_equal('/fake', fstab.volume_of('/fake/foo'))
 
-    def assert_mount_points_are(self, *expected_mounts):
-        expected_mounts = list(expected_mounts)
-        actual_mounts = list(self.fstab.mount_points())
-        assert_items_equal(expected_mounts, list(self.fstab.mount_points()),
-                'Expected: %s\n'
-                'Found: %s\n' % (expected_mounts, actual_mounts))
+    def filter_only_mount_points(self, *supposed_mount_points):
+        return [mp for mp in supposed_mount_points
+                if mp == self.fstab.volume_of(mp)]
 
