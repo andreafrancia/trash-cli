@@ -8,8 +8,7 @@ class TestVolumeOf:
 
     def setUp(self):
         self.ismount = FakeIsMount()
-        self.volume_of = VolumeOf(ismount = self.ismount)
-        self.volume_of.abspath = os.path.normpath
+        self.volume_of = VolumeOf(self.ismount, os.path.normpath)
 
     @istest
     def return_the_containing_volume(self):

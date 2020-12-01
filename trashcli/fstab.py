@@ -2,33 +2,19 @@ import os
 
 
 def volume_of(path) :
-    return make_fstab().volume_of(path)
-
-
-def make_fstab():
-    return Fstab(OsIsMount())
-
-
-class Fstab(object):
-    def __init__(self, ismount):
-        self.ismount = ismount
-
-    def volume_of(self, path):
-        volume_of = VolumeOf(ismount=self.ismount)
-        return volume_of(path)
-
+    func = VolumeOf(os.path.ismount, os.path.abspath)
+    return func(path)
 
 class FakeFstab:
     def __init__(self):
         self.ismount = FakeIsMount()
-        self.volume_of = VolumeOf(ismount = self.ismount)
-        self.volume_of.abspath = os.path.normpath
+        self.volume_of = VolumeOf(self.ismount, os.path.normpath)
 
     def mount_points(self):
         return self.ismount.mount_points()
 
     def volume_of(self, path):
-        volume_of = VolumeOf(ismount=self.ismount)
+        volume_of = VolumeOf(self.ismount, os.path.abspath)
         return volume_of(path)
 
     def add_mount(self, path):
@@ -57,15 +43,14 @@ class FakeIsMount:
         return self.fakes.copy()
 
 class VolumeOf:
-    def __init__(self, ismount):
-        self._ismount = ismount
-        import os
-        self.abspath = os.path.abspath
+    def __init__(self, ismount, abspath):
+        self.ismount = ismount
+        self.abspath = abspath
 
     def __call__(self, path):
         path = self.abspath(path)
         while path != os.path.dirname(path):
-            if self._ismount(path):
+            if self.ismount(path):
                 break
             path = os.path.dirname(path)
         return path
