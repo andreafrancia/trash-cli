@@ -5,14 +5,16 @@ from trashcli.restore import AllTrashDirectories
 
 
 class TestTrashDirectories(unittest.TestCase):
-    def test_list_all_directories(self):
-        all_trash_directories = AllTrashDirectories(
+    def setUp(self):
+        self.all_trash_directories = AllTrashDirectories(
                 volume_of    = Mock(),
                 getuid       = lambda:123,
                 environ      = {'HOME': '~'},
                 mount_points = ['/', '/mnt'])
 
-        result = all_trash_directories.all_trash_directories()
+    def test_list_all_directories(self):
+
+        result = self.all_trash_directories.all_trash_directories()
         paths = list(map(lambda td: td.path, result))
 
         assert_equal(['~/.local/share/Trash',
