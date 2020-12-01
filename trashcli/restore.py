@@ -2,7 +2,7 @@ import os
 import sys
 
 from .trash import version
-from .fstab import Fstab
+from .fstab import make_fstab
 from .trash import TrashDirectory
 from .trash import TrashDirectories
 from .fs import contents_of
@@ -55,7 +55,7 @@ class RestoreCmd(object):
         self.fs = fs
         self.path_exists = os.path.exists
         self.contents_of = contents_of
-        fstab = Fstab()
+        fstab = make_fstab()
         all_trash_directories = AllTrashDirectories(
                 volume_of    = fstab.volume_of,
                 getuid       = os.getuid,

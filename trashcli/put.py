@@ -1,7 +1,6 @@
 import os
 import sys
 
-from .fstab import Fstab
 from .fstab import volume_of
 from .trash import EX_OK, EX_IOERR
 from .trash import TrashDirectories

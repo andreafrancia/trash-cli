@@ -1,20 +1,25 @@
 import os
 
-def volume_of(path) :
-    return Fstab().volume_of(path)
 
-class AbstractFstab(object):
+def volume_of(path) :
+    return make_fstab().volume_of(path)
+
+
+def make_fstab():
+    return Fstab(OsIsMount())
+
+
+class Fstab(object):
     def __init__(self, ismount):
         self.ismount = ismount
+
     def volume_of(self, path):
         volume_of = VolumeOf(ismount=self.ismount)
         return volume_of(path)
+
     def mount_points(self):
         return self.ismount.mount_points()
 
-class Fstab(AbstractFstab):
-    def __init__(self):
-        AbstractFstab.__init__(self, OsIsMount())
 
 class FakeFstab:
     def __init__(self):
