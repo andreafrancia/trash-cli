@@ -157,14 +157,13 @@ class AllTrashDirectories:
         self.environ      = environ
         self.mount_points = mount_points
     def all_trash_directories(self):
-        trash_directories = TrashDirectories(volume_of = self.volume_of,
-                                             getuid    = self.getuid,
-                                             environ   = self.environ)
+        trash_directories = TrashDirectories(self.volume_of,
+                                             self.getuid)
         collected = []
         def add_trash_dir(path, volume):
             collected.append(TrashDirectory(path, volume))
 
-        trash_directories.home_trash_dir(add_trash_dir)
+        trash_directories.home_trash_dir(add_trash_dir, self.environ)
         for volume in self.mount_points:
             trash_directories.volume_trash_dir1(volume, add_trash_dir)
             trash_directories.volume_trash_dir2(volume, add_trash_dir)
