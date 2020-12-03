@@ -252,7 +252,8 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
         else:
             trash_directories = TrashDirectories(self.volume_of,
                                                  self.getuid)
-            trash_directories.home_trash_dir(add_home_trash, self.environ)
+            for path, dir_volume in trash_directories.home_trash_dir(self.environ):
+                add_home_trash(path, dir_volume)
             trash_directories.volume_trash_dir1(volume,
                                                 add_top_trash_dir)
             trash_directories.volume_trash_dir2(volume,

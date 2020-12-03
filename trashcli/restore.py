@@ -163,7 +163,8 @@ class AllTrashDirectories:
         def add_trash_dir(path, volume):
             collected.append(TrashDirectory(path, volume))
 
-        trash_directories.home_trash_dir(add_trash_dir, self.environ)
+        for path1, volume1 in trash_directories.home_trash_dir(self.environ):
+            add_trash_dir(path1, volume1)
         for volume in self.mount_points:
             trash_directories.volume_trash_dir1(volume, add_trash_dir)
             trash_directories.volume_trash_dir2(volume, add_trash_dir)
