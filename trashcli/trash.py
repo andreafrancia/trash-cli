@@ -48,23 +48,21 @@ def backup_file_path_from(trashinfo_file_path):
     files_dir = os.path.join(trash_dir, 'files')
     return os.path.join(files_dir, backupfile_basename)
 
-class HomeTrashCan:
-    def __init__(self, environ):
-        self.environ = environ
-    def path_to(self, out):
-        if 'XDG_DATA_HOME' in self.environ:
-            out('%(XDG_DATA_HOME)s/Trash' % self.environ)
-        elif 'HOME' in self.environ:
-            out('%(HOME)s/.local/share/Trash' % self.environ)
+def home_trash_dir_path(environ):
+    if 'XDG_DATA_HOME' in environ:
+        return ['%(XDG_DATA_HOME)s/Trash' % environ]
+    elif 'HOME' in environ:
+        return ['%(HOME)s/.local/share/Trash' % environ]
+    return []
 
 class TrashDirectories:
     def __init__(self, volume_of, getuid):
         self.volume_of = volume_of
         self.getuid = getuid
     def home_trash_dir(self, out, environ) :
-        self.home_trashcan = HomeTrashCan(environ)
-        self.home_trashcan.path_to(lambda path:
-                out(path, self.volume_of(path)))
+        paths = home_trash_dir_path(environ)
+        for path in paths:
+            out(path, self.volume_of(path))
     def volume_trash_dir1(self, volume, out):
         out(
             path   = os.path.join(volume, '.Trash/%s' % self.getuid()),
@@ -141,7 +139,7 @@ class TrashDirs:
         self.getuid             = getuid
         self.mount_points       = list_volumes
         self.top_trashdir_rules = top_trashdir_rules
-        self.home_trashcan      = HomeTrashCan(environ)
+        self.environ            = environ
         # events
         self.on_trash_dir_found                            = lambda trashdir, volume: None
         self.on_trashdir_skipped_because_parent_not_sticky = lambda trashdir: None
@@ -152,7 +150,9 @@ class TrashDirs:
     def emit_home_trashcan(self):
         def return_result_with_volume(trashcan_path):
             self.on_trash_dir_found(trashcan_path, '/')
-        self.home_trashcan.path_to(return_result_with_volume)
+        paths = home_trash_dir_path(self.environ)
+        for path in paths:
+            return_result_with_volume(path)
     def _for_each_volume_trashcan(self):
         for volume in self.mount_points():
             self.emit_trashcans_for(volume)
