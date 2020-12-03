@@ -148,11 +148,9 @@ class TrashDirs:
         self.emit_home_trashcan()
         self._for_each_volume_trashcan()
     def emit_home_trashcan(self):
-        def return_result_with_volume(trashcan_path):
-            self.on_trash_dir_found(trashcan_path, '/')
-        paths = home_trash_dir_path(self.environ)
-        for path in paths:
-            return_result_with_volume(path)
+        home_trash_dir_paths = home_trash_dir_path(self.environ)
+        for path in home_trash_dir_paths:
+            self.on_trash_dir_found(path, '/')
     def _for_each_volume_trashcan(self):
         for volume in self.mount_points():
             self.emit_trashcans_for(volume)
