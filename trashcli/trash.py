@@ -65,14 +65,13 @@ class TrashDirectories:
         for path in paths:
             yield (path, self.volume_of(path))
 
-    def volume_trash_dir1(self, volume, out):
-        out(
-            path   = os.path.join(volume, '.Trash/%s' % self.getuid()),
-            volume = volume)
-    def volume_trash_dir2(self, volume, out):
-        out(
-            path   = os.path.join(volume, ".Trash-%s" % self.getuid()),
-            volume = volume)
+    def volume_trash_dir1(self, volume):
+        path = os.path.join(volume, '.Trash/%s' % self.getuid())
+        yield path, volume
+
+    def volume_trash_dir2(self, volume):
+        path = os.path.join(volume, ".Trash-%s" % self.getuid())
+        yield path, volume
 
 from .fs import FileSystemReader, contents_of
 

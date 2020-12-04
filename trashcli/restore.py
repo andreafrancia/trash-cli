@@ -166,8 +166,10 @@ class AllTrashDirectories:
         for path1, volume1 in trash_directories.home_trash_dir(self.environ):
             add_trash_dir(path1, volume1)
         for volume in self.mount_points:
-            trash_directories.volume_trash_dir1(volume, add_trash_dir)
-            trash_directories.volume_trash_dir2(volume, add_trash_dir)
+            for path1, volume1 in trash_directories.volume_trash_dir1(volume):
+                add_trash_dir(path1, volume1)
+            for path1, volume1 in trash_directories.volume_trash_dir2(volume):
+                add_trash_dir(path1, volume1)
 
         return collected
 
