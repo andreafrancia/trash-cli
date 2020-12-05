@@ -56,13 +56,13 @@ class RestoreCmd(object):
         self.fs = fs
         self.path_exists = os.path.exists
         self.contents_of = contents_of
-        all_trash_directories = AllTrashDirectories(
+        self.trash_directories = AllTrashDirectories(
                 volume_of    = volume_of,
                 getuid       = os.getuid,
                 environ      = environ,
                 mount_points = os_mount_points()
                 )
-        self.all_trash_directories2 = all_trash_directories.all_trash_directories
+        self.all_trash_directories2 = self.trash_directories.all_trash_directories
     def run(self, argv):
         args = parse_args(argv, self.curdir() + os.path.sep)
         if args.version:
@@ -114,7 +114,7 @@ class RestoreCmd(object):
                 trashed_files.append(trashedfile)
         return trashed_files
     def all_trashed_files(self):
-        for trash_dir in self.all_trash_directories2():
+        for trash_dir in self.trash_directories.all_trash_directories():
             for info_file in trash_dir.all_info_files():
                 try:
                     trash_info = TrashInfoParser(self.contents_of(info_file),
