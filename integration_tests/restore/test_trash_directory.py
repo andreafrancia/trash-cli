@@ -20,7 +20,7 @@ class TestTrashDirectory:
 
         result = self.list_trashinfos()
 
-        assert_equal(['sandbox/info/foo.trashinfo'], result)
+        assert_equal([('trashinfo', 'sandbox/info/foo.trashinfo')], result)
 
     def test_should_list_multiple_trashinfo(self):
         write_file('sandbox/info/foo.trashinfo')
@@ -29,23 +29,18 @@ class TestTrashDirectory:
 
         result = self.list_trashinfos()
 
-        assert_items_equal(['sandbox/info/foo.trashinfo',
-                            'sandbox/info/baz.trashinfo',
-                            'sandbox/info/bar.trashinfo'], result)
-
-    def test_should_ignore_non_trashinfo(self):
-        write_file('sandbox/info/not-a-trashinfo')
-
-        result = self.list_trashinfos()
-
-        assert_equal([], result)
+        assert_items_equal([('trashinfo', 'sandbox/info/foo.trashinfo'),
+                            ('trashinfo', 'sandbox/info/baz.trashinfo'),
+                            ('trashinfo', 'sandbox/info/bar.trashinfo')],
+                           result)
 
     def test_non_trashinfo_should_reported_as_a_warn(self):
         write_file('sandbox/info/not-a-trashinfo')
 
-        self.list_trashinfos()
+        result = self.list_trashinfos()
 
-        self.logger.warning.assert_called_with('Non .trashinfo file in info dir')
+        assert_items_equal([('non_trashinfo', 'sandbox/info/not-a-trashinfo')],
+                           result)
 
     def list_trashinfos(self):
         return list(self.trash_dir.all_info_files())

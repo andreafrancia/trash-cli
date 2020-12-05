@@ -7,7 +7,8 @@ from .fstab import volume_of
 from .trash import TrashDirectories
 from .fs import contents_of, list_files_in_dir
 from .trash import backup_file_path_from
-from . import fs
+from . import fs, trash
+
 
 def main():
     try:           # Python 2
@@ -108,23 +109,30 @@ class RestoreCmd(object):
                 trashed_files.append(trashedfile)
         return trashed_files
     def all_trashed_files(self):
+        logger = trash.logger
         for trash_dir in self.trash_directories.all_trash_directories():
-            for info_file in trash_dir.all_info_files():
-                try:
-                    trash_info = TrashInfoParser(self.contents_of(info_file),
-                                                 trash_dir.volume)
-                    original_location = trash_info.original_location()
-                    deletion_date     = trash_info.deletion_date()
-                    backup_file_path  = backup_file_path_from(info_file)
-                    trashedfile = TrashedFile(original_location,
-                                              deletion_date,
-                                              info_file,
-                                              backup_file_path)
-                    yield trashedfile
-                except ValueError:
-                    trash_dir.logger.warning("Non parsable trashinfo file: %s" % info_file)
-                except IOError as e:
-                    trash_dir.logger.warning(str(e))
+            for type, info_file in trash_dir.all_info_files():
+                if type == 'non_trashinfo':
+                    logger.warning("Non .trashinfo file in info dir")
+                elif type == 'trashinfo':
+                    try:
+                        trash_info = TrashInfoParser(self.contents_of(info_file),
+                                                     trash_dir.volume)
+                        original_location = trash_info.original_location()
+                        deletion_date     = trash_info.deletion_date()
+                        backup_file_path  = backup_file_path_from(info_file)
+                        trashedfile = TrashedFile(original_location,
+                                                  deletion_date,
+                                                  info_file,
+                                                  backup_file_path)
+                        yield trashedfile
+                    except ValueError:
+                        logger.warning("Non parsable trashinfo file: %s" % info_file)
+                    except IOError as e:
+                        logger.warning(str(e))
+                else:
+                    logger.error("Unexpected file type: %s: %s",
+                                 type, info_file)
     def report_no_files_found(self):
         self.println("No files trashed from current dir ('%s')" % self.curdir())
     def println(self, line):
@@ -216,20 +224,16 @@ class TrashDirectory:
     def __init__(self, path, volume):
         self.path      = os.path.normpath(path)
         self.volume    = volume
-        self.logger    = logger
         self.info_dir  = os.path.join(self.path, 'info')
         self.files_dir = os.path.join(self.path, 'files')
-        def warn_non_trashinfo():
-            self.logger.warning("Non .trashinfo file in info dir")
-        self.on_non_trashinfo_found = warn_non_trashinfo
 
     def all_info_files(self) :
         'Returns a generator of "Path"s'
         try :
             for info_file in list_files_in_dir(self.info_dir):
                 if not os.path.basename(info_file).endswith('.trashinfo') :
-                    self.on_non_trashinfo_found()
+                    yield ('non_trashinfo', info_file)
                 else :
-                    yield info_file
+                    yield ('trashinfo', info_file)
         except OSError: # when directory does not exist
             pass

@@ -227,7 +227,8 @@ class TestRestoreCmdListingUnit:
         path_to_trashinfo = 'info/info_path.trashinfo'
         trash_dir = Mock([])
         trash_dir.volume = '/volume'
-        trash_dir.all_info_files = Mock([], return_value=[path_to_trashinfo])
+        trash_dir.all_info_files = Mock([], return_value=[
+            ('trashinfo', path_to_trashinfo)])
 
         cmd.curdir = lambda: '/volume'
         trashed_files = list(cmd.all_trashed_files())
@@ -252,7 +253,8 @@ class TestRestoreCmdListingIntegration:
         path_to_trashinfo = 'info/info_path.trashinfo'
         trash_dir = Mock([])
         trash_dir.volume = '/volume'
-        trash_dir.all_info_files = Mock([], return_value=[path_to_trashinfo])
+        trash_dir.all_info_files = Mock([], return_value=[
+            ('trashinfo', path_to_trashinfo)])
 
         cmd.curdir = lambda: '/volume'
         trashed_files = list(cmd.all_trashed_files())
