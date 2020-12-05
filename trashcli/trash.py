@@ -40,7 +40,7 @@ class TrashDirectories:
     def home_trash_dir(self, environ):
         paths = home_trash_dir_path(environ)
         for path in paths:
-            yield (path, self.volume_of(path))
+            yield path, self.volume_of(path)
 
     def volume_trash_dir1(self, volume):
         path = os.path.join(volume, '.Trash/%s' % self.getuid())
