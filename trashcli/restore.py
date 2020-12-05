@@ -62,7 +62,6 @@ class RestoreCmd(object):
                 environ      = environ,
                 mount_points = os_mount_points()
                 )
-        self.all_trash_directories2 = self.trash_directories.all_trash_directories
     def run(self, argv):
         args = parse_args(argv, self.curdir() + os.path.sep)
         if args.version:
