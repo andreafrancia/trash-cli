@@ -21,7 +21,8 @@ def main():
         stderr  = sys.stderr,
         trash_directories = trash_directories,
         exit    = sys.exit,
-        input   = input23
+        input   = input23,
+        trash_directory = TrashDirectory()
     ).run(sys.argv)
 
 
@@ -47,7 +48,8 @@ def parse_args(sys_argv, curdir):
 
 class RestoreCmd(object):
     def __init__(self, stdout, stderr, trash_directories, exit, input,
-                 curdir = getcwd_as_realpath, version = version):
+                 curdir = getcwd_as_realpath, version = version,
+                 trash_directory = None):
         self.out      = stdout
         self.err      = stderr
         self.exit     = exit
@@ -58,6 +60,7 @@ class RestoreCmd(object):
         self.path_exists = os.path.exists
         self.contents_of = contents_of
         self.trash_directories = trash_directories
+        self.trash_directory = trash_directory
     def run(self, argv):
         args = parse_args(argv, self.curdir() + os.path.sep)
         if args.version:
@@ -110,14 +113,14 @@ class RestoreCmd(object):
         return trashed_files
     def all_trashed_files(self):
         logger = trash.logger
-        for trash_dir in self.trash_directories.all_trash_directories():
-            for type, info_file in trash_dir.all_info_files():
+        for path, volume in self.trash_directories.all_trash_directories():
+            for type, info_file in self.trash_directory.all_info_files(path):
                 if type == 'non_trashinfo':
                     logger.warning("Non .trashinfo file in info dir")
                 elif type == 'trashinfo':
                     try:
                         trash_info = TrashInfoParser(self.contents_of(info_file),
-                                                     trash_dir.volume)
+                                                     volume)
                         original_location = trash_info.original_location()
                         deletion_date     = trash_info.deletion_date()
                         backup_file_path  = backup_file_path_from(info_file)
@@ -168,22 +171,17 @@ class AllTrashDirectories:
         self.getuid       = getuid
         self.environ      = environ
         self.mount_points = mount_points
+
     def all_trash_directories(self):
         trash_directories = TrashDirectories(self.volume_of,
                                              self.getuid)
-        collected = []
-        def add_trash_dir(path, volume):
-            collected.append(TrashDirectory(path, volume))
-
         for path1, volume1 in trash_directories.home_trash_dir(self.environ):
-            add_trash_dir(path1, volume1)
+            yield path1, volume1
         for volume in self.mount_points:
             for path1, volume1 in trash_directories.volume_trash_dir1(volume):
-                add_trash_dir(path1, volume1)
+                yield path1, volume1
             for path1, volume1 in trash_directories.volume_trash_dir2(volume):
-                add_trash_dir(path1, volume1)
-
-        return collected
+                yield path1, volume1
 
 class TrashedFile:
     """
@@ -221,16 +219,12 @@ def restore(trashed_file, path_exists, fs):
 
 
 class TrashDirectory:
-    def __init__(self, path, volume):
-        self.path      = os.path.normpath(path)
-        self.volume    = volume
-        self.info_dir  = os.path.join(self.path, 'info')
-        self.files_dir = os.path.join(self.path, 'files')
 
-    def all_info_files(self) :
-        'Returns a generator of "Path"s'
+    def all_info_files(self, path) :
+        norm_path = os.path.normpath(path)
+        info_dir = os.path.join(norm_path, 'info')
         try :
-            for info_file in list_files_in_dir(self.info_dir):
+            for info_file in list_files_in_dir(info_dir):
                 if not os.path.basename(info_file).endswith('.trashinfo') :
                     yield ('non_trashinfo', info_file)
                 else :

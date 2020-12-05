@@ -3,7 +3,7 @@ import unittest
 
 from trashcli.fstab import volume_of
 from trashcli.list_mount_points import os_mount_points
-from trashcli.restore import RestoreCmd, AllTrashDirectories
+from trashcli.restore import RestoreCmd, AllTrashDirectories, TrashDirectory
 from .files import require_empty_dir
 from trashcli.fs import remove_file
 from .fake_trash_dir import a_trashinfo
@@ -102,7 +102,8 @@ class RestoreTrashUser:
             trash_directories = trash_directories,
             exit    = [].append,
             input   = lambda msg: with_user_typing,
-            curdir  = lambda: self.current_dir
+            curdir  = lambda: self.current_dir,
+            trash_directory=TrashDirectory()
         ).run([])
 
     def having_a_file_trashed_from_current_dir(self, filename):

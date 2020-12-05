@@ -10,7 +10,7 @@ from mock import Mock
 class TestTrashDirectory:
     def setUp(self):
         require_empty_dir('sandbox')
-        self.trash_dir = TrashDirectory('sandbox', '/')
+        self.trash_dir = TrashDirectory()
         self.logger = Mock()
         self.trash_dir.logger = self.logger
 
@@ -43,6 +43,6 @@ class TestTrashDirectory:
                            result)
 
     def list_trashinfos(self):
-        return list(self.trash_dir.all_info_files())
+        return list(self.trash_dir.all_info_files('sandbox'))
 
 
