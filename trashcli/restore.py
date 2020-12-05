@@ -2,11 +2,10 @@ import os
 import sys
 
 from .list_mount_points import os_mount_points
-from .trash import version
+from .trash import version, logger
 from .fstab import volume_of
-from .trash import TrashDirectory
 from .trash import TrashDirectories
-from .fs import contents_of
+from .fs import contents_of, list_files_in_dir
 from .trash import backup_file_path_from
 from . import fs
 
@@ -212,3 +211,25 @@ def restore(trashed_file, path_exists, fs):
     fs.move(trashed_file.original_file, trashed_file.original_location)
     fs.remove_file(trashed_file.info_file)
 
+
+class TrashDirectory:
+    def __init__(self, path, volume):
+        self.path      = os.path.normpath(path)
+        self.volume    = volume
+        self.logger    = logger
+        self.info_dir  = os.path.join(self.path, 'info')
+        self.files_dir = os.path.join(self.path, 'files')
+        def warn_non_trashinfo():
+            self.logger.warning("Non .trashinfo file in info dir")
+        self.on_non_trashinfo_found = warn_non_trashinfo
+
+    def all_info_files(self) :
+        'Returns a generator of "Path"s'
+        try :
+            for info_file in list_files_in_dir(self.info_dir):
+                if not os.path.basename(info_file).endswith('.trashinfo') :
+                    self.on_non_trashinfo_found()
+                else :
+                    yield info_file
+        except OSError: # when directory does not exist
+            pass

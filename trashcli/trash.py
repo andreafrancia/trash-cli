@@ -15,30 +15,7 @@ EX_OK    = getattr(os, 'EX_OK'   ,  0)
 EX_USAGE = getattr(os, 'EX_USAGE', 64)
 EX_IOERR = getattr(os, 'EX_IOERR', 74)
 
-from .fs import list_files_in_dir
 import os
-
-class TrashDirectory:
-    def __init__(self, path, volume):
-        self.path      = os.path.normpath(path)
-        self.volume    = volume
-        self.logger    = logger
-        self.info_dir  = os.path.join(self.path, 'info')
-        self.files_dir = os.path.join(self.path, 'files')
-        def warn_non_trashinfo():
-            self.logger.warning("Non .trashinfo file in info dir")
-        self.on_non_trashinfo_found = warn_non_trashinfo
-
-    def all_info_files(self) :
-        'Returns a generator of "Path"s'
-        try :
-            for info_file in list_files_in_dir(self.info_dir):
-                if not os.path.basename(info_file).endswith('.trashinfo') :
-                    self.on_non_trashinfo_found()
-                else :
-                    yield info_file
-        except OSError: # when directory does not exist
-            pass
 
 def backup_file_path_from(trashinfo_file_path):
     trashinfo_basename = os.path.basename(trashinfo_file_path)
@@ -172,7 +149,6 @@ class TrashDirs:
         alt_top_trashdir = os.path.join(volume, '.Trash-%s' % self.getuid())
         self.on_trash_dir_found(alt_top_trashdir, volume)
 
-from datetime import datetime
 
 class Harvester:
     def __init__(self, file_reader):

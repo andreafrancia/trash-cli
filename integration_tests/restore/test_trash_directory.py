@@ -1,12 +1,13 @@
-from trashcli.trash import TrashDirectory
+from trashcli.restore import TrashDirectory
 
-from .files import require_empty_dir
-from .files import write_file
+from integration_tests.files import require_empty_dir
+from integration_tests.files import write_file
 from unit_tests.tools import assert_items_equal
 from nose.tools import assert_equal
 from mock import Mock
 
-class TestWhenListingTrashinfo:
+
+class TestTrashDirectory:
     def setUp(self):
         require_empty_dir('sandbox')
         self.trash_dir = TrashDirectory('sandbox', '/')
