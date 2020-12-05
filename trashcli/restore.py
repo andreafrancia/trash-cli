@@ -15,10 +15,11 @@ def main():
         input23 = raw_input
     except:        # Python 3
         input23 = input
+    trash_directories = make_trash_directories()
     RestoreCmd(
         stdout  = sys.stdout,
         stderr  = sys.stderr,
-        environ = os.environ,
+        trash_directories = trash_directories,
         exit    = sys.exit,
         input   = input23
     ).run(sys.argv)
@@ -45,7 +46,7 @@ def parse_args(sys_argv, curdir):
     return parser.parse_args(sys_argv[1:])
 
 class RestoreCmd(object):
-    def __init__(self, stdout, stderr, environ, exit, input,
+    def __init__(self, stdout, stderr, trash_directories, exit, input,
                  curdir = getcwd_as_realpath, version = version):
         self.out      = stdout
         self.err      = stderr
@@ -56,12 +57,7 @@ class RestoreCmd(object):
         self.fs = fs
         self.path_exists = os.path.exists
         self.contents_of = contents_of
-        self.trash_directories = AllTrashDirectories(
-                volume_of    = volume_of,
-                getuid       = os.getuid,
-                environ      = environ,
-                mount_points = os_mount_points()
-                )
+        self.trash_directories = trash_directories
     def run(self, argv):
         args = parse_args(argv, self.curdir() + os.path.sep)
         if args.version:
@@ -148,6 +144,16 @@ class TrashInfoParser:
     def original_location(self):
         path = parse_path(self.contents)
         return os.path.join(self.volume_path, path)
+
+
+def make_trash_directories():
+    return AllTrashDirectories(
+        volume_of=volume_of,
+        getuid=os.getuid,
+        environ=os.environ,
+        mount_points=os_mount_points()
+    )
+
 
 class AllTrashDirectories:
     def __init__(self, volume_of, getuid, environ, mount_points):

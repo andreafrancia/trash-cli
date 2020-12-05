@@ -1,9 +1,9 @@
 import unittest
 
-from trashcli.restore import RestoreCmd
+from trashcli.restore import RestoreCmd, make_trash_directories
 from nose.tools import assert_equal
 from .myStringIO import StringIO
-from mock import Mock, call
+from mock import call
 from trashcli import restore
 
 
@@ -24,7 +24,8 @@ class Test_parse_args(unittest.TestCase):
 
 class TestListingInRestoreCmd:
     def setUp(self):
-        self.cmd = RestoreCmd(None, None, None, None, None)
+        trash_directories = make_trash_directories()
+        self.cmd = RestoreCmd(None, None, trash_directories, None, None)
         self.cmd.curdir = lambda: "dir"
         self.cmd.handle_trashed_files = self.capture_trashed_files
 
@@ -75,9 +76,10 @@ class TestTrashRestoreCmd:
     def setUp(self):
         self.stdout = StringIO()
         self.stderr = StringIO()
+        trash_directories = make_trash_directories()
         self.cmd = RestoreCmd(stdout=self.stdout,
                               stderr=self.stderr,
-                              environ={},
+                              trash_directories=trash_directories,
                               exit = self.capture_exit_status,
                               input =lambda x: self.user_reply,
                               version = None)
@@ -176,7 +178,8 @@ class TestTrashedFileRestoreIntegration:
     def setUp(self):
         remove_file_if_exists('parent/path')
         remove_dir_if_exists('parent')
-        self.cmd = RestoreCmd(None, None, None, None, None)
+        trash_directories = make_trash_directories()
+        self.cmd = RestoreCmd(None, None, trash_directories, None, None)
 
     def test_restore(self):
         trashed_file = TrashedFile('parent/path',
@@ -217,15 +220,14 @@ import datetime
 from mock import Mock
 class TestRestoreCmdListingUnit:
     def test_something(self):
-        cmd = RestoreCmd(None, None, {}, None, None)
+        self.trash_directories = Mock(spec=['all_trash_directories'])
+        self.trash_directories.all_trash_directories = lambda: [trash_dir]
+        cmd = RestoreCmd(None, None, self.trash_directories, None, None)
         cmd.contents_of = lambda path: 'Path=name\nDeletionDate=2001-01-01T10:10:10'
         path_to_trashinfo = 'info/info_path.trashinfo'
         trash_dir = Mock([])
         trash_dir.volume = '/volume'
         trash_dir.all_info_files = Mock([], return_value=[path_to_trashinfo])
-        self.trash_directories = Mock(spec=['all_trash_directories'])
-        self.trash_directories.all_trash_directories = lambda: [trash_dir]
-        cmd.trash_directories = self.trash_directories
 
         cmd.curdir = lambda: '/volume'
         trashed_files = list(cmd.all_trashed_files())
@@ -241,7 +243,9 @@ from integration_tests.files import write_file, require_empty_dir
 from trashcli.fs import remove_file
 class TestRestoreCmdListingIntegration:
     def test_something(self):
-        cmd = RestoreCmd(None, None, {}, None, None)
+        self.trash_directories = Mock(spec=['all_trash_directories'])
+        self.trash_directories.all_trash_directories = lambda: [trash_dir]
+        cmd = RestoreCmd(None, None, self.trash_directories, None, None)
         require_empty_dir('info')
         open('info/info_path.trashinfo', 'w').write(
                 'Path=name\nDeletionDate=2001-01-01T10:10:10')
@@ -249,9 +253,6 @@ class TestRestoreCmdListingIntegration:
         trash_dir = Mock([])
         trash_dir.volume = '/volume'
         trash_dir.all_info_files = Mock([], return_value=[path_to_trashinfo])
-        self.trash_directories = Mock(spec=['all_trash_directories'])
-        self.trash_directories.all_trash_directories = lambda: [trash_dir]
-        cmd.trash_directories = self.trash_directories
 
         cmd.curdir = lambda: '/volume'
         trashed_files = list(cmd.all_trashed_files())
