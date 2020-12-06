@@ -46,6 +46,40 @@ def parse_args(sys_argv, curdir):
     parser.add_argument('--version', action='store_true', default=False)
     return parser.parse_args(sys_argv[1:])
 
+
+class TrashedFiles:
+    def __init__(self, trash_directories, trash_directory, contents_of):
+        self.trash_directories = trash_directories
+        self.trash_directory = trash_directory
+        self.contents_of = contents_of
+
+    def all_trashed_files(self):
+        logger = trash.logger
+        for path, volume in self.trash_directories.all_trash_directories():
+            for type, info_file in self.trash_directory.all_info_files(path):
+                if type == 'non_trashinfo':
+                    logger.warning("Non .trashinfo file in info dir")
+                elif type == 'trashinfo':
+                    try:
+                        trash_info = TrashInfoParser(self.contents_of(info_file),
+                                                     volume)
+                        original_location = trash_info.original_location()
+                        deletion_date     = trash_info.deletion_date()
+                        backup_file_path  = backup_file_path_from(info_file)
+                        trashedfile = TrashedFile(original_location,
+                                                  deletion_date,
+                                                  info_file,
+                                                  backup_file_path)
+                        yield trashedfile
+                    except ValueError:
+                        logger.warning("Non parsable trashinfo file: %s" % info_file)
+                    except IOError as e:
+                        logger.warning(str(e))
+                else:
+                    logger.error("Unexpected file type: %s: %s",
+                                 type, info_file)
+
+
 class RestoreCmd(object):
     def __init__(self, stdout, stderr, trash_directories, exit, input,
                  curdir = getcwd_as_realpath, version = version,
@@ -61,6 +95,8 @@ class RestoreCmd(object):
         self.contents_of = contents_of
         self.trash_directories = trash_directories
         self.trash_directory = trash_directory
+        self.trashed_files = TrashedFiles(trash_directories, trash_directory,
+                                          contents_of)
     def run(self, argv):
         args = parse_args(argv, self.curdir() + os.path.sep)
         if args.version:
@@ -107,35 +143,11 @@ class RestoreCmd(object):
         restore(trashed_file, self.path_exists, self.fs)
     def all_trashed_files_filter(self, matches):
         trashed_files = []
-        for trashedfile in self.all_trashed_files():
+        for trashedfile in self.trashed_files.all_trashed_files():
             if matches(trashedfile):
                 trashed_files.append(trashedfile)
         return trashed_files
-    def all_trashed_files(self):
-        logger = trash.logger
-        for path, volume in self.trash_directories.all_trash_directories():
-            for type, info_file in self.trash_directory.all_info_files(path):
-                if type == 'non_trashinfo':
-                    logger.warning("Non .trashinfo file in info dir")
-                elif type == 'trashinfo':
-                    try:
-                        trash_info = TrashInfoParser(self.contents_of(info_file),
-                                                     volume)
-                        original_location = trash_info.original_location()
-                        deletion_date     = trash_info.deletion_date()
-                        backup_file_path  = backup_file_path_from(info_file)
-                        trashedfile = TrashedFile(original_location,
-                                                  deletion_date,
-                                                  info_file,
-                                                  backup_file_path)
-                        yield trashedfile
-                    except ValueError:
-                        logger.warning("Non parsable trashinfo file: %s" % info_file)
-                    except IOError as e:
-                        logger.warning(str(e))
-                else:
-                    logger.error("Unexpected file type: %s: %s",
-                                 type, info_file)
+
     def report_no_files_found(self):
         self.println("No files trashed from current dir ('%s')" % self.curdir())
     def println(self, line):

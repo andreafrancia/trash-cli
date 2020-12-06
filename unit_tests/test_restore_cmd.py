@@ -28,11 +28,11 @@ class TestListingInRestoreCmd:
         self.cmd = RestoreCmd(None, None, trash_directories, None, None,
                               trash_directory=None, curdir=lambda: "dir")
         self.cmd.handle_trashed_files = self.capture_trashed_files
-        self.all_trashed_files = Mock()
-        self.cmd.all_trashed_files = self.all_trashed_files
+        self.trashed_files = Mock(spec=['all_trashed_files'])
+        self.cmd.trashed_files = self.trashed_files
 
     def test_with_no_args_and_files_in_trashcan(self):
-        self.all_trashed_files.return_value = [
+        self.trashed_files.all_trashed_files.return_value = [
             FakeTrashedFile('<date>', 'dir/location'),
             FakeTrashedFile('<date>', 'dir/location'),
             FakeTrashedFile('<date>', 'anotherdir/location')
@@ -46,7 +46,7 @@ class TestListingInRestoreCmd:
             ] ,self.original_locations)
 
     def test_with_no_args_and_files_in_trashcan_2(self):
-        self.all_trashed_files.return_value = [
+        self.trashed_files.all_trashed_files.return_value = [
             FakeTrashedFile('<date>', 'dir/location'),
             FakeTrashedFile('<date>', 'dir/location'),
             FakeTrashedFile('<date>', 'specific/path'),
@@ -235,7 +235,7 @@ class TestRestoreCmdListingUnit:
             [('trashinfo', path_to_trashinfo)]
 
         cmd.curdir = lambda: '/volume'
-        trashed_files = list(cmd.all_trashed_files())
+        trashed_files = list(cmd.trashed_files.all_trashed_files())
 
         trashed_file = trashed_files[0]
         assert_equal('/volume/name' , trashed_file.original_location)
@@ -265,7 +265,7 @@ class TestRestoreCmdListingIntegration:
         self.trash_directory.all_info_files = Mock([], return_value=[
             ('trashinfo', path_to_trashinfo)])
 
-        trashed_files = list(cmd.all_trashed_files())
+        trashed_files = list(cmd.trashed_files.all_trashed_files())
 
         trashed_file = trashed_files[0]
         assert_equal('/volume/name' , trashed_file.original_location)
