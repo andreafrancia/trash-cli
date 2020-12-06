@@ -253,8 +253,10 @@ class TestRestoreCmdListingIntegration:
         self.trash_directories.all_trash_directories = \
             lambda: [("path", "/volume")]
         self.trash_directory = Mock(spec=['all_info_files'])
+        curdir = lambda: '/volume'
         cmd = RestoreCmd(None, None, self.trash_directories, None, None,
-                         trash_directory=self.trash_directory)
+                         trash_directory=self.trash_directory,
+                         curdir=curdir)
         require_empty_dir('info')
         open('info/info_path.trashinfo', 'w').write(
                 'Path=name\nDeletionDate=2001-01-01T10:10:10')
@@ -264,7 +266,6 @@ class TestRestoreCmdListingIntegration:
         self.trash_directory.all_info_files = Mock([], return_value=[
             ('trashinfo', path_to_trashinfo)])
 
-        cmd.curdir = lambda: '/volume'
         trashed_files = list(cmd.all_trashed_files())
 
         trashed_file = trashed_files[0]
