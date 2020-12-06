@@ -29,14 +29,15 @@ class TestListingInRestoreCmd:
                               trash_directory=None)
         self.cmd.curdir = lambda: "dir"
         self.cmd.handle_trashed_files = self.capture_trashed_files
+        self.all_trashed_files = Mock()
+        self.cmd.all_trashed_files = self.all_trashed_files
 
     def test_with_no_args_and_files_in_trashcan(self):
-        def some_files():
-            yield FakeTrashedFile('<date>', 'dir/location')
-            yield FakeTrashedFile('<date>', 'dir/location')
-            yield FakeTrashedFile('<date>', 'anotherdir/location')
-
-        self.cmd.all_trashed_files = some_files
+        self.all_trashed_files.return_value = [
+            FakeTrashedFile('<date>', 'dir/location'),
+            FakeTrashedFile('<date>', 'dir/location'),
+            FakeTrashedFile('<date>', 'anotherdir/location')
+        ]
 
         self.cmd.run(['trash-restore'])
 
@@ -46,12 +47,11 @@ class TestListingInRestoreCmd:
             ] ,self.original_locations)
 
     def test_with_no_args_and_files_in_trashcan_2(self):
-        def some_files():
-            yield FakeTrashedFile('<date>', 'dir/location')
-            yield FakeTrashedFile('<date>', 'dir/location')
-            yield FakeTrashedFile('<date>', 'specific/path')
-
-        self.cmd.all_trashed_files = some_files
+        self.all_trashed_files.return_value = [
+            FakeTrashedFile('<date>', 'dir/location'),
+            FakeTrashedFile('<date>', 'dir/location'),
+            FakeTrashedFile('<date>', 'specific/path'),
+        ]
 
         self.cmd.run(['trash-restore', 'specific/path'])
 
