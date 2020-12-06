@@ -26,8 +26,7 @@ class TestListingInRestoreCmd:
     def setUp(self):
         trash_directories = make_trash_directories()
         self.cmd = RestoreCmd(None, None, trash_directories, None, None,
-                              trash_directory=None)
-        self.cmd.curdir = lambda: "dir"
+                              trash_directory=None, curdir=lambda: "dir")
         self.cmd.handle_trashed_files = self.capture_trashed_files
         self.all_trashed_files = Mock()
         self.cmd.all_trashed_files = self.all_trashed_files
