@@ -101,11 +101,9 @@ class RestoreTrashUser:
         RestoreCmd(
             stdout  = self.out,
             stderr  = self.err,
-            trash_directories = trash_directories,
             exit    = [].append,
             input   = lambda msg: with_user_typing,
             curdir  = lambda: self.current_dir,
-            trash_directory=TrashDirectory(),
             trashed_files=trashed_files
         ).run([])
 
