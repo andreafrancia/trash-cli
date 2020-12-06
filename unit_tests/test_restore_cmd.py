@@ -227,9 +227,10 @@ class TestRestoreCmdListingUnit:
         self.trash_directories.all_trash_directories = \
             lambda: [("path", "/volume")]
         self.trash_directory = Mock(spec=['all_info_files'])
+        contents_of = lambda path: 'Path=name\nDeletionDate=2001-01-01T10:10:10'
         cmd = RestoreCmd(None, None, self.trash_directories, None, None,
-                         trash_directory=self.trash_directory)
-        cmd.contents_of = lambda path: 'Path=name\nDeletionDate=2001-01-01T10:10:10'
+                         trash_directory=self.trash_directory,
+                         contents_of=contents_of)
         path_to_trashinfo = 'info/info_path.trashinfo'
         self.trash_directory.all_info_files.return_value = \
             [('trashinfo', path_to_trashinfo)]

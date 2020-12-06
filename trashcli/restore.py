@@ -49,7 +49,7 @@ def parse_args(sys_argv, curdir):
 class RestoreCmd(object):
     def __init__(self, stdout, stderr, trash_directories, exit, input,
                  curdir = getcwd_as_realpath, version = version,
-                 trash_directory = None):
+                 trash_directory=None, contents_of=contents_of):
         self.out      = stdout
         self.err      = stderr
         self.exit     = exit
