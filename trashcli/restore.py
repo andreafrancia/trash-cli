@@ -84,7 +84,6 @@ class TrashedFiles:
 class RestoreCmd(object):
     def __init__(self, stdout, stderr, exit, input,
                  curdir = getcwd_as_realpath, version = version,
-                 contents_of=contents_of,
                  trashed_files=None):
         self.out      = stdout
         self.err      = stderr
@@ -94,7 +93,6 @@ class RestoreCmd(object):
         self.version = version
         self.fs = fs
         self.path_exists = os.path.exists
-        self.contents_of = contents_of
         self.trashed_files = trashed_files
     def run(self, argv):
         args = parse_args(argv, self.curdir() + os.path.sep)
