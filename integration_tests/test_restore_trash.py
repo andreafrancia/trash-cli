@@ -3,9 +3,9 @@ import unittest
 
 from trashcli.fstab import volume_of
 from trashcli.list_mount_points import os_mount_points
-from trashcli.restore import RestoreCmd, AllTrashDirectories, TrashDirectory
+from trashcli.restore import RestoreCmd, AllTrashDirectories, TrashDirectory, TrashedFiles
 from .files import require_empty_dir
-from trashcli.fs import remove_file
+from trashcli.fs import remove_file, contents_of
 from .fake_trash_dir import a_trashinfo
 from .files import write_file
 from unit_tests.myStringIO import StringIO
@@ -96,6 +96,8 @@ class RestoreTrashUser:
             environ={'XDG_DATA_HOME': self.XDG_DATA_HOME},
             mount_points=os_mount_points()
         )
+        trashed_files = TrashedFiles(trash_directories, TrashDirectory(),
+                                     contents_of)
         RestoreCmd(
             stdout  = self.out,
             stderr  = self.err,
@@ -103,7 +105,8 @@ class RestoreTrashUser:
             exit    = [].append,
             input   = lambda msg: with_user_typing,
             curdir  = lambda: self.current_dir,
-            trash_directory=TrashDirectory()
+            trash_directory=TrashDirectory(),
+            trashed_files=trashed_files
         ).run([])
 
     def having_a_file_trashed_from_current_dir(self, filename):

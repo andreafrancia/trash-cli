@@ -16,13 +16,16 @@ def main():
     except:        # Python 3
         input23 = input
     trash_directories = make_trash_directories()
+    trashed_files = TrashedFiles(trash_directories, TrashDirectory(),
+                                 contents_of)
     RestoreCmd(
         stdout  = sys.stdout,
         stderr  = sys.stderr,
         trash_directories = trash_directories,
         exit    = sys.exit,
         input   = input23,
-        trash_directory = TrashDirectory()
+        trash_directory = TrashDirectory(),
+        trashed_files=trashed_files
     ).run(sys.argv)
 
 
@@ -83,7 +86,8 @@ class TrashedFiles:
 class RestoreCmd(object):
     def __init__(self, stdout, stderr, trash_directories, exit, input,
                  curdir = getcwd_as_realpath, version = version,
-                 trash_directory=None, contents_of=contents_of):
+                 trash_directory=None, contents_of=contents_of,
+                 trashed_files=None):
         self.out      = stdout
         self.err      = stderr
         self.exit     = exit
@@ -95,8 +99,7 @@ class RestoreCmd(object):
         self.contents_of = contents_of
         self.trash_directories = trash_directories
         self.trash_directory = trash_directory
-        self.trashed_files = TrashedFiles(trash_directories, trash_directory,
-                                          contents_of)
+        self.trashed_files = trashed_files
     def run(self, argv):
         args = parse_args(argv, self.curdir() + os.path.sep)
         if args.version:
