@@ -16,7 +16,7 @@ def main(argv    = sys.argv,
          environ = os.environ):
     from trashcli.list_mount_points import os_mount_points
     from datetime import datetime
-    from trashcli.trash import FileSystemReader
+    from trashcli.fs import FileSystemReader
     from trashcli.fs import FileRemover
     from trashcli.trash import version
     return EmptyCmd(

@@ -50,8 +50,6 @@ class TrashDirectories:
         path = os.path.join(volume, ".Trash-%s" % self.getuid())
         yield path, volume
 
-from .fs import FileSystemReader, contents_of
-
 def do_nothing(*argv, **argvk): pass
 class Parser:
     def __init__(self):

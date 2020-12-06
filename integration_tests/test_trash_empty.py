@@ -9,7 +9,7 @@ import os
 from .files import write_file, require_empty_dir, make_dirs, set_sticky_bit
 from .files import make_empty_file
 from mock import MagicMock
-from trashcli.trash import FileSystemReader
+from trashcli.fs import FileSystemReader
 from trashcli.fs import FileRemover
 
 from nose.tools import assert_regexp_matches

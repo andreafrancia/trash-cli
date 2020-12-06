@@ -13,8 +13,9 @@ from .fake_trash_dir import (
     a_trashinfo_without_path,
     a_trashinfo_with_invalid_date, FakeTrashDir)
 from textwrap import dedent
-
+from trashcli.fs import FileSystemReader
 from .asserts import assert_equals_with_unidiff
+
 class Setup(object):
     def setUp(self):
         self.xdg_data_home = tempfile.mkdtemp()
@@ -240,7 +241,6 @@ class TrashListUser:
     def run_trash_list(self, *args):
         self.run('trash-list', *args)
     def run(self,*argv):
-        from trashcli.trash import FileSystemReader
         file_reader = FileSystemReader()
         file_reader.list_volumes = lambda: self.volumes
         ListCmd(

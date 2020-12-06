@@ -26,7 +26,7 @@ class TestTrashPutIssueMessage:
 
     def test_trash_empty_last_line(self):
         from trashcli.empty import EmptyCmd
-        from trashcli.trash import FileSystemReader
+        from trashcli.fs import FileSystemReader
 
         cmd = EmptyCmd(self.out, StringIO(), [], lambda:[],
                        now = None,
