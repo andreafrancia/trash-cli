@@ -2,9 +2,8 @@ import os
 import sys
 
 from .list_mount_points import os_mount_points
-from .trash import version, logger
+from .trash import version, home_trash_dir, volume_trash_dir1, volume_trash_dir2
 from .fstab import volume_of
-from .trash import TrashDirectories
 from .fs import contents_of, list_files_in_dir
 from .trash import backup_file_path_from
 from . import fs, trash
@@ -182,14 +181,12 @@ class AllTrashDirectories:
         self.mount_points = mount_points
 
     def all_trash_directories(self):
-        trash_directories = TrashDirectories(self.volume_of,
-                                             self.getuid)
-        for path1, volume1 in trash_directories.home_trash_dir(self.environ):
+        for path1, volume1 in home_trash_dir(self.environ, self.volume_of):
             yield path1, volume1
         for volume in self.mount_points:
-            for path1, volume1 in trash_directories.volume_trash_dir1(volume):
+            for path1, volume1 in volume_trash_dir1(volume, self.getuid):
                 yield path1, volume1
-            for path1, volume1 in trash_directories.volume_trash_dir2(volume):
+            for path1, volume1 in volume_trash_dir2(volume, self.getuid):
                 yield path1, volume1
 
 class TrashedFile:

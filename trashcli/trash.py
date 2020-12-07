@@ -32,23 +32,22 @@ def home_trash_dir_path(environ):
         return ['%(HOME)s/.local/share/Trash' % environ]
     return []
 
-class TrashDirectories:
-    def __init__(self, volume_of, getuid):
-        self.volume_of = volume_of
-        self.getuid = getuid
 
-    def home_trash_dir(self, environ):
-        paths = home_trash_dir_path(environ)
-        for path in paths:
-            yield path, self.volume_of(path)
+def home_trash_dir(environ, volume_of):
+    paths = home_trash_dir_path(environ)
+    for path in paths:
+        yield path, volume_of(path)
 
-    def volume_trash_dir1(self, volume):
-        path = os.path.join(volume, '.Trash/%s' % self.getuid())
-        yield path, volume
 
-    def volume_trash_dir2(self, volume):
-        path = os.path.join(volume, ".Trash-%s" % self.getuid())
-        yield path, volume
+def volume_trash_dir1(volume, getuid):
+    path = os.path.join(volume, '.Trash/%s' % getuid())
+    yield path, volume
+
+
+def volume_trash_dir2(volume, getuid):
+    path = os.path.join(volume, ".Trash-%s" % getuid())
+    yield path, volume
+
 
 def do_nothing(*argv, **argvk): pass
 class Parser:
