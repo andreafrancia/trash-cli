@@ -100,9 +100,7 @@ class RestoreCmd(object):
             command = os.path.basename(argv[0])
             self.println('%s %s' % (command, self.version))
             return
-        def is_trashed_from_curdir(trashedfile):
-            return trashedfile.original_location.startswith(args.path)
-        trashed_files = self.all_trashed_files_filter(is_trashed_from_curdir)
+        trashed_files = self.all_files_trashed_from_path(args.path)
         if args.sort == 'path':
             trashed_files = sorted(trashed_files, key=lambda x: x.original_location + str(x.deletion_date))
         elif args.sort == 'date':
@@ -138,10 +136,12 @@ class RestoreCmd(object):
                 self.exit(1)
     def restore(self, trashed_file):
         restore(trashed_file, self.path_exists, self.fs)
-    def all_trashed_files_filter(self, matches):
+    def all_files_trashed_from_path(self, path):
+        def is_trashed_from_curdir(trashedfile):
+            return trashedfile.original_location.startswith(path)
         trashed_files = []
         for trashedfile in self.trashed_files.all_trashed_files():
-            if matches(trashedfile):
+            if is_trashed_from_curdir(trashedfile):
                 trashed_files.append(trashedfile)
         return trashed_files
 
