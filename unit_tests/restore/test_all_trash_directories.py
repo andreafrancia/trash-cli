@@ -1,19 +1,19 @@
 import unittest
 from nose.tools import assert_equal
-from trashcli.restore import AllTrashDirectories
+from trashcli.restore import TrashDirectories
 
 
 class TestTrashDirectories(unittest.TestCase):
     def setUp(self):
-        self.all_trash_directories = AllTrashDirectories(
+        self.trash_directories = TrashDirectories(
                 volume_of    = lambda x: "volume_of(%s)" % x,
                 getuid       = lambda:123,
                 environ      = {'HOME': '~'},
-                mount_points = ['/', '/mnt'])
+                volumes= ['/', '/mnt'])
 
     def test_list_all_directories(self):
 
-        result = list(self.all_trash_directories.all_trash_directories(
+        result = list(self.trash_directories.all_trash_directories(
 
         ))
 

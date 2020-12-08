@@ -169,25 +169,25 @@ class TrashInfoParser:
 
 
 def make_trash_directories():
-    return AllTrashDirectories(
+    return TrashDirectories(
         volume_of=volume_of,
         getuid=os.getuid,
         environ=os.environ,
-        mount_points=os_mount_points()
+        volumes=os_mount_points()
     )
 
 
-class AllTrashDirectories:
-    def __init__(self, volume_of, getuid, environ, mount_points):
+class TrashDirectories:
+    def __init__(self, volume_of, getuid, environ, volumes):
         self.volume_of    = volume_of
         self.getuid       = getuid
         self.environ      = environ
-        self.mount_points = mount_points
+        self.volumes = volumes
 
     def all_trash_directories(self):
         for path1, volume1 in home_trash_dir(self.environ, self.volume_of):
             yield path1, volume1
-        for volume in self.mount_points:
+        for volume in self.volumes:
             for path1, volume1 in volume_trash_dir1(volume, self.getuid):
                 yield path1, volume1
             for path1, volume1 in volume_trash_dir2(volume, self.getuid):
