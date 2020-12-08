@@ -1,5 +1,6 @@
 import unittest
 
+from trashcli.list_mount_points import os_mount_points
 from trashcli.restore import RestoreCmd, make_trash_directories, \
     TrashDirectory, TrashedFiles
 from nose.tools import assert_equal
@@ -35,7 +36,8 @@ class TestListingInRestoreCmd:
                               exit=None,
                               input=None,
                               curdir=lambda: "dir",
-                              trashed_files=trashed_files)
+                              trashed_files=trashed_files,
+                              mount_points=os_mount_points)
         self.cmd.handle_trashed_files = self.capture_trashed_files
         self.trashed_files = Mock(spec=['all_trashed_files'])
         self.cmd.trashed_files = self.trashed_files
@@ -93,7 +95,8 @@ class TestTrashRestoreCmd:
                               exit = self.capture_exit_status,
                               input =lambda x: self.user_reply,
                               version=None,
-                              trashed_files=trashed_files)
+                              trashed_files=trashed_files,
+                              mount_points=os_mount_points)
 
     def capture_exit_status(self, exit_status):
         self.exit_status = exit_status
@@ -196,7 +199,8 @@ class TestTrashedFileRestoreIntegration:
                               None,
                               exit=None,
                               input=None,
-                              trashed_files=trashed_files)
+                              trashed_files=trashed_files,
+                              mount_points=os_mount_points)
 
     def test_restore(self):
         trashed_file = TrashedFile('parent/path',
@@ -245,7 +249,7 @@ class TestTrashedFiles:
 
     def test_something(self):
         self.trash_directories.all_trash_directories = \
-            lambda: [("path", "/volume")]
+            lambda x: [("path", "/volume")]
         self.contents_of.return_value='Path=name\nDeletionDate=2001-01-01T10:10:10'
         self.trash_directory.all_info_files.return_value = \
             [('trashinfo', 'info/info_path.trashinfo')]
@@ -271,7 +275,7 @@ class TestTrashedFilesIntegration:
     def test_something(self):
         require_empty_dir('info')
         self.trash_directories.all_trash_directories = \
-            lambda: [("path", "/volume")]
+            lambda x: [("path", "/volume")]
         open('info/info_path.trashinfo', 'w').write(
                 'Path=name\nDeletionDate=2001-01-01T10:10:10')
         self.trash_directory.all_info_files = Mock([], return_value=[

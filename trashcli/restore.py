@@ -22,7 +22,8 @@ def main():
         stderr  = sys.stderr,
         exit    = sys.exit,
         input   = input23,
-        trashed_files=trashed_files
+        trashed_files=trashed_files,
+        mount_points=os_mount_points
     ).run(sys.argv)
 
 
@@ -57,9 +58,10 @@ class TrashedFiles:
         self.trash_directory = trash_directory
         self.contents_of = contents_of
 
-    def all_trashed_files(self, additional_volumes):
+    def all_trashed_files(self, volumes):
         logger = trash.logger
-        for path, volume in self.trash_directories.all_trash_directories():
+        for path, volume in self.trash_directories.all_trash_directories(
+                volumes):
             for type, info_file in self.trash_directory.all_info_files(path):
                 if type == 'non_trashinfo':
                     logger.warning("Non .trashinfo file in info dir")
@@ -87,7 +89,7 @@ class TrashedFiles:
 class RestoreCmd(object):
     def __init__(self, stdout, stderr, exit, input,
                  curdir = getcwd_as_realpath, version = version,
-                 trashed_files=None):
+                 trashed_files=None, mount_points=None):
         self.out      = stdout
         self.err      = stderr
         self.exit     = exit
@@ -97,6 +99,7 @@ class RestoreCmd(object):
         self.fs = fs
         self.path_exists = os.path.exists
         self.trashed_files = trashed_files
+        self.mount_points = mount_points
     def run(self, argv):
         args = parse_args(argv, self.curdir() + os.path.sep)
         if args.version:
@@ -144,7 +147,7 @@ class RestoreCmd(object):
         def is_trashed_from_curdir(trashed_file):
             return trashed_file.original_location.startswith(path)
         for trashed_file in self.trashed_files.all_trashed_files(
-                additional_volumes):
+                self.mount_points()):
             if is_trashed_from_curdir(trashed_file):
                 yield trashed_file
 
@@ -172,22 +175,20 @@ def make_trash_directories():
     return TrashDirectories(
         volume_of=volume_of,
         getuid=os.getuid,
-        environ=os.environ,
-        volumes=os_mount_points()
+        environ=os.environ
     )
 
 
 class TrashDirectories:
-    def __init__(self, volume_of, getuid, environ, volumes):
+    def __init__(self, volume_of, getuid, environ):
         self.volume_of    = volume_of
         self.getuid       = getuid
         self.environ      = environ
-        self.volumes = volumes
 
-    def all_trash_directories(self):
+    def all_trash_directories(self, volumes):
         for path1, volume1 in home_trash_dir(self.environ, self.volume_of):
             yield path1, volume1
-        for volume in self.volumes:
+        for volume in volumes:
             for path1, volume1 in volume_trash_dir1(volume, self.getuid):
                 yield path1, volume1
             for path1, volume1 in volume_trash_dir2(volume, self.getuid):

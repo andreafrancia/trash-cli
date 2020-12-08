@@ -93,8 +93,7 @@ class RestoreTrashUser:
         trash_directories = TrashDirectories(
             volume_of=volume_of,
             getuid=os.getuid,
-            environ={'XDG_DATA_HOME': self.XDG_DATA_HOME},
-            volumes=os_mount_points()
+            environ={'XDG_DATA_HOME': self.XDG_DATA_HOME}
         )
         trashed_files = TrashedFiles(trash_directories, TrashDirectory(),
                                      contents_of)
@@ -104,7 +103,8 @@ class RestoreTrashUser:
             exit    = [].append,
             input   = lambda msg: with_user_typing,
             curdir  = lambda: self.current_dir,
-            trashed_files=trashed_files
+            trashed_files=trashed_files,
+            mount_points=os_mount_points
         ).run([])
 
     def having_a_file_trashed_from_current_dir(self, filename):
