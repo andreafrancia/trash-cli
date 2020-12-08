@@ -13,7 +13,9 @@ class TestTrashDirectories(unittest.TestCase):
 
     def test_list_all_directories(self):
 
-        result = list(self.all_trash_directories.all_trash_directories())
+        result = list(self.all_trash_directories.all_trash_directories(
+
+        ))
 
         assert_equal([
             ('~/.local/share/Trash', 'volume_of(~/.local/share/Trash)'),

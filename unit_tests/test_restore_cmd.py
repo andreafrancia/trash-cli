@@ -250,7 +250,7 @@ class TestTrashedFiles:
         self.trash_directory.all_info_files.return_value = \
             [('trashinfo', 'info/info_path.trashinfo')]
 
-        trashed_files = list(self.trashed_files.all_trashed_files())
+        trashed_files = list(self.trashed_files.all_trashed_files([]))
 
         trashed_file = trashed_files[0]
         assert_equal('/volume/name' , trashed_file.original_location)
@@ -277,7 +277,7 @@ class TestTrashedFilesIntegration:
         self.trash_directory.all_info_files = Mock([], return_value=[
             ('trashinfo', 'info/info_path.trashinfo')])
 
-        trashed_files = list(self.trashed_files.all_trashed_files())
+        trashed_files = list(self.trashed_files.all_trashed_files([]))
 
         trashed_file = trashed_files[0]
         assert_equal('/volume/name' , trashed_file.original_location)

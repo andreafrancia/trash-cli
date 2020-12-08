@@ -43,6 +43,10 @@ def parse_args(sys_argv, curdir):
                         choices=['date', 'path', 'none'],
                         default='path',
                         help='Sort list of restore candidates by given field')
+    parser.add_argument('--add-volume',
+                        action='append',
+                        dest='volumes',
+                        help=argparse.SUPPRESS)
     parser.add_argument('--version', action='store_true', default=False)
     return parser.parse_args(sys_argv[1:])
 
@@ -53,7 +57,7 @@ class TrashedFiles:
         self.trash_directory = trash_directory
         self.contents_of = contents_of
 
-    def all_trashed_files(self):
+    def all_trashed_files(self, additional_volumes):
         logger = trash.logger
         for path, volume in self.trash_directories.all_trash_directories():
             for type, info_file in self.trash_directory.all_info_files(path):
@@ -99,7 +103,8 @@ class RestoreCmd(object):
             command = os.path.basename(argv[0])
             self.println('%s %s' % (command, self.version))
             return
-        trashed_files = list(self.all_files_trashed_from_path(args.path))
+        trashed_files = list(self.all_files_trashed_from_path(args.path,
+                                                              args.volumes))
         if args.sort == 'path':
             trashed_files = sorted(trashed_files, key=lambda x: x.original_location + str(x.deletion_date))
         elif args.sort == 'date':
@@ -135,10 +140,11 @@ class RestoreCmd(object):
                 self.exit(1)
     def restore(self, trashed_file):
         restore(trashed_file, self.path_exists, self.fs)
-    def all_files_trashed_from_path(self, path):
+    def all_files_trashed_from_path(self, path, additional_volumes):
         def is_trashed_from_curdir(trashed_file):
             return trashed_file.original_location.startswith(path)
-        for trashed_file in self.trashed_files.all_trashed_files():
+        for trashed_file in self.trashed_files.all_trashed_files(
+                additional_volumes):
             if is_trashed_from_curdir(trashed_file):
                 yield trashed_file
 
