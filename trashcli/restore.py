@@ -102,12 +102,13 @@ class RestoreCmd(object):
         self.mount_points = mount_points
     def run(self, argv):
         args = parse_args(argv, self.curdir() + os.path.sep)
+        additional_volumes = parse_additional_volumes(args.volumes)
         if args.version:
             command = os.path.basename(argv[0])
             self.println('%s %s' % (command, self.version))
             return
-        trashed_files = list(self.all_files_trashed_from_path(args.path,
-                                                              args.volumes))
+        trashed_files = list(self.all_files_trashed_from_path(
+            args.path, additional_volumes))
         if args.sort == 'path':
             trashed_files = sorted(trashed_files, key=lambda x: x.original_location + str(x.deletion_date))
         elif args.sort == 'date':
@@ -147,7 +148,7 @@ class RestoreCmd(object):
         def is_trashed_from_curdir(trashed_file):
             return trashed_file.original_location.startswith(path)
         for trashed_file in self.trashed_files.all_trashed_files(
-                self.mount_points()):
+                list(self.mount_points()) + additional_volumes):
             if is_trashed_from_curdir(trashed_file):
                 yield trashed_file
 
@@ -157,6 +158,11 @@ class RestoreCmd(object):
         self.out.write(line + '\n')
     def printerr(self, msg):
         self.err.write('%s\n' % msg)
+
+def parse_additional_volumes(volume_from_args):
+    if not volume_from_args:
+        return []
+    return volume_from_args
 
 from .trash import parse_path
 from .trash import parse_deletion_date
