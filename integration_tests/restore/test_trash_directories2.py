@@ -31,5 +31,5 @@ class TestTrashDirectories2(unittest.TestCase):
             'volumes', 'user-trash_dir')
 
         self.assertEqual([], self.trash_directories.mock_calls)
-        self.assertEqual(('user-trash_dir', 'volume_of(user-trash_dir)'),
+        self.assertEqual([('user-trash_dir', 'volume_of(user-trash_dir)')],
                          result)
