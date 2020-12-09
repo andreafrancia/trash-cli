@@ -178,16 +178,19 @@ class TrashInfoParser:
 
 
 class TrashDirectories2:
-    def __init__(self, trash_directories):
+    def __init__(self, volume_of, trash_directories):
+        self.volume_of = volume_of
         self.trash_directories = trash_directories
 
     def trash_directories_or_user(self, volumes, trash_dir_from_cli):
+        if trash_dir_from_cli:
+            return [(trash_dir_from_cli, self.volume_of(trash_dir_from_cli))]
         return self.trash_directories.all_trash_directories(volumes)
 
 
 def make_trash_directories():
     trash_directories = TrashDirectories(volume_of, os.getuid, os.environ)
-    return TrashDirectories2(trash_directories)
+    return TrashDirectories2(volume_of, trash_directories)
 
 
 class TrashDirectories:
