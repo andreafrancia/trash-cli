@@ -1,9 +1,16 @@
+master:
+ - trash-restore learnt --trash-dir option
+
 0.20.11.14:
  - switched to psutil for listing volumes
 
 0.20.11.7:
  - trash-put learned a --trash-dir option that can be used to specify the trash
    directory to be used as destination 
+ - trash-put -f now ignores files and dir that does not exist (Don Cross)
+ - trash-restore learnt --sort=(date|path|none) option (Self-Perfection)
+ - trash-restore: support restoring multiple files (arendu)
+ - README: now recommend using `pip` for installing trash-cli
 
 0.17.1.14:
  - Fix a bug that causes trash-put to use $topdir/.Trash/UID trashcan even when
