@@ -44,9 +44,9 @@ def parse_args(sys_argv, curdir):
                         choices=['date', 'path', 'none'],
                         default='path',
                         help='Sort list of restore candidates by given field')
-    parser.add_argument('--add-volume',
-                        action='append',
-                        dest='volumes',
+    parser.add_argument('--trash-dir',
+                        action='store',
+                        dest='trash_dir',
                         help=argparse.SUPPRESS)
     parser.add_argument('--version', action='store_true', default=False)
     return parser.parse_args(sys_argv[1:])
@@ -58,7 +58,7 @@ class TrashedFiles:
         self.trash_directory = trash_directory
         self.contents_of = contents_of
 
-    def all_trashed_files(self, volumes):
+    def all_trashed_files(self, volumes, trash_dir_from_cli):
         logger = trash.logger
         for path, volume in self.trash_directories.all_trash_directories(
                 volumes):
@@ -102,13 +102,13 @@ class RestoreCmd(object):
         self.mount_points = mount_points
     def run(self, argv):
         args = parse_args(argv, self.curdir() + os.path.sep)
-        additional_volumes = parse_additional_volumes(args.volumes)
+        trash_dir_from_cli = args.trash_dir
         if args.version:
             command = os.path.basename(argv[0])
             self.println('%s %s' % (command, self.version))
             return
         trashed_files = list(self.all_files_trashed_from_path(
-            args.path, additional_volumes))
+            args.path, trash_dir_from_cli))
         if args.sort == 'path':
             trashed_files = sorted(trashed_files, key=lambda x: x.original_location + str(x.deletion_date))
         elif args.sort == 'date':
@@ -144,11 +144,11 @@ class RestoreCmd(object):
                 self.exit(1)
     def restore(self, trashed_file):
         restore(trashed_file, self.path_exists, self.fs)
-    def all_files_trashed_from_path(self, path, additional_volumes):
+    def all_files_trashed_from_path(self, path, trash_dir_from_cli):
         def is_trashed_from_curdir(trashed_file):
             return trashed_file.original_location.startswith(path)
         for trashed_file in self.trashed_files.all_trashed_files(
-                list(self.mount_points()) + additional_volumes):
+                self.mount_points(), trash_dir_from_cli):
             if is_trashed_from_curdir(trashed_file):
                 yield trashed_file
 
