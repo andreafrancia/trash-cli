@@ -3,7 +3,8 @@ import unittest
 
 from trashcli.fstab import volume_of
 from trashcli.list_mount_points import os_mount_points
-from trashcli.restore import RestoreCmd, TrashDirectories, TrashDirectory, TrashedFiles
+from trashcli.restore import RestoreCmd, TrashDirectories, TrashDirectory, \
+    TrashedFiles, TrashDirectories2
 from .files import require_empty_dir
 from trashcli.fs import remove_file, contents_of
 from .fake_trash_dir import a_trashinfo
@@ -90,12 +91,10 @@ class RestoreTrashUser:
         self.current_dir = dir
 
     def run_restore(self, with_user_typing=''):
-        trash_directories = TrashDirectories(
-            volume_of=volume_of,
-            getuid=os.getuid,
-            environ={'XDG_DATA_HOME': self.XDG_DATA_HOME}
-        )
-        trashed_files = TrashedFiles(trash_directories, TrashDirectory(),
+        environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME}
+        trash_directories = TrashDirectories(volume_of, os.getuid, environ)
+        trash_directories2 = TrashDirectories2(trash_directories)
+        trashed_files = TrashedFiles(trash_directories2, TrashDirectory(),
                                      contents_of)
         RestoreCmd(
             stdout  = self.out,

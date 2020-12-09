@@ -240,7 +240,7 @@ class TestTrashedFileRestoreIntegration:
 
 class TestTrashedFiles:
     def setUp(self):
-        self.trash_directories = Mock(spec=['all_trash_directories'])
+        self.trash_directories = Mock(spec=['trash_directories_or_user'])
         self.trash_directory = Mock(spec=['all_info_files'])
         self.contents_of = Mock()
         self.trashed_files = TrashedFiles(self.trash_directories,
@@ -248,8 +248,8 @@ class TestTrashedFiles:
                                           self.contents_of)
 
     def test_something(self):
-        self.trash_directories.all_trash_directories = \
-            lambda x: [("path", "/volume")]
+        self.trash_directories.trash_directories_or_user.return_value = \
+            [("path", "/volume")]
         self.contents_of.return_value='Path=name\nDeletionDate=2001-01-01T10:10:10'
         self.trash_directory.all_info_files.return_value = \
             [('trashinfo', 'info/info_path.trashinfo')]
@@ -262,11 +262,13 @@ class TestTrashedFiles:
                      trashed_file.deletion_date)
         assert_equal('info/info_path.trashinfo' , trashed_file.info_file)
         assert_equal('files/info_path' , trashed_file.original_file)
+        assert_equal([call.trash_directories_or_user([], None)],
+                     self.trash_directories.mock_calls)
 
 
 class TestTrashedFilesIntegration:
     def setUp(self):
-        self.trash_directories = Mock(spec=['all_trash_directories'])
+        self.trash_directories = Mock(spec=['trash_directories_or_user'])
         self.trash_directory = Mock(spec=['all_info_files'])
         self.trashed_files = TrashedFiles(self.trash_directories,
                                           self.trash_directory,
@@ -274,8 +276,8 @@ class TestTrashedFilesIntegration:
 
     def test_something(self):
         require_empty_dir('info')
-        self.trash_directories.all_trash_directories = \
-            lambda x: [("path", "/volume")]
+        self.trash_directories.trash_directories_or_user.return_value = \
+            [("path", "/volume")]
         open('info/info_path.trashinfo', 'w').write(
                 'Path=name\nDeletionDate=2001-01-01T10:10:10')
         self.trash_directory.all_info_files = Mock([], return_value=[

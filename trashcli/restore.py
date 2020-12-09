@@ -60,8 +60,8 @@ class TrashedFiles:
 
     def all_trashed_files(self, volumes, trash_dir_from_cli):
         logger = trash.logger
-        for path, volume in self.trash_directories.all_trash_directories(
-                volumes):
+        for path, volume in self.trash_directories.trash_directories_or_user(
+                volumes, trash_dir_from_cli):
             for type, info_file in self.trash_directory.all_info_files(path):
                 if type == 'non_trashinfo':
                     logger.warning("Non .trashinfo file in info dir")
@@ -177,12 +177,17 @@ class TrashInfoParser:
         return os.path.join(self.volume_path, path)
 
 
+class TrashDirectories2:
+    def __init__(self, trash_directories):
+        self.trash_directories = trash_directories
+
+    def trash_directories_or_user(self, volumes, trash_dir_from_cli):
+        return self.trash_directories.all_trash_directories(volumes)
+
+
 def make_trash_directories():
-    return TrashDirectories(
-        volume_of=volume_of,
-        getuid=os.getuid,
-        environ=os.environ
-    )
+    trash_directories = TrashDirectories(volume_of, os.getuid, os.environ)
+    return TrashDirectories2(trash_directories)
 
 
 class TrashDirectories:
