@@ -1,7 +1,7 @@
 master:
  - trash-restore learnt --trash-dir option
 
-0.20.11.14:
+0.20.11.23:
  - switched to psutil for listing volumes
 
 0.20.11.7:
