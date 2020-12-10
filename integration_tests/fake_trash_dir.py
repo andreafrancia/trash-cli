@@ -4,7 +4,7 @@ from integration_tests.files import (make_parent_for, write_file,
 
 class FakeTrashDir:
     def __init__(self, path):
-        self.path = path + '/info'
+        self.info_path = path + '/info'
         self.number = 1
 
     def add_unreadable_trashinfo(self, basename):
@@ -12,14 +12,14 @@ class FakeTrashDir:
         make_unreadable_file(path)
 
     def a_trashinfo(self, base_name):
-        return'%(info_dir)s/%(name)s.trashinfo' % {'info_dir': self.path,
+        return'%(info_dir)s/%(name)s.trashinfo' % {'info_dir': self.info_path,
                                                     'name': base_name}
 
     def add_trashinfo(self, contents, base_name = None):
         if not base_name:
             base_name = str(self.number)
             self.number += 1
-        path = '%(info_dir)s/%(name)s.trashinfo' % {'info_dir': self.path,
+        path = '%(info_dir)s/%(name)s.trashinfo' % {'info_dir': self.info_path,
                                                     'name': base_name}
         make_parent_for(path)
         write_file(path, contents)
