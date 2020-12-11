@@ -42,7 +42,7 @@ def parse_args(sys_argv, curdir):
                              'directory')
     parser.add_argument('--sort',
                         choices=['date', 'path', 'none'],
-                        default='path',
+                        default='date',
                         help='Sort list of restore candidates by given field')
     parser.add_argument('--trash-dir',
                         action='store',
