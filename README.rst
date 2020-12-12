@@ -157,6 +157,13 @@ For uninstalling use::
 
     pip uninstall trash-cli
 
+From package manager
+~~~~~~~~~~~~
+
+Debian/Ubuntu (apt)::
+
+    sudo apt install trash-cli
+
 Bugs and feedback
 -----------------
 
