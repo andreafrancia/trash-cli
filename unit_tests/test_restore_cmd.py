@@ -22,7 +22,7 @@ class Test_parse_args(unittest.TestCase):
         args = restore.parse_args(['', '/a/path'], None)
         self.assertEqual('/a/path', args.path)
         self.assertEqual(False, args.version)
-        self.assertEqual('path', args.sort)
+        self.assertEqual('date', args.sort)
 
     def test_show_version(self):
         args = restore.parse_args(['', '--version'], None)
