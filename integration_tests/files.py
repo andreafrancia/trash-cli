@@ -14,7 +14,6 @@ def write_file(filename, contents=''):
     if not os.path.isdir(parent): os.makedirs(parent)
     with open(filename, 'w') as f:
         f.write(contents)
-    assert_equal(read_file(filename), contents)
 
 
 def read_file(path):
