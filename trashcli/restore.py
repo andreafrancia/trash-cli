@@ -86,6 +86,32 @@ class TrashedFiles:
                                  type, info_file)
 
 
+class RestoreAskingTheUser(object):
+    def __init__(self, input, println, restore, die):
+        self.input = input
+        self.println = println
+        self.restore = restore
+        self.die = die
+
+    def restore_asking_the_user(self, trashed_files):
+        index = self.input("What file to restore [0..%d]: " % (len(trashed_files) - 1))
+        if index == "":
+            self.println("Exiting")
+        else:
+            try:
+                indexes = index.split(',')
+                indexes.sort(reverse=True)  # restore largest index first
+                for index in indexes:
+                    index = int(index)
+                    if (index < 0 or index >= len(trashed_files)):
+                        raise IndexError("Out of range")
+                    trashed_file = trashed_files[index]
+                    self.restore(trashed_file)
+            except (ValueError, IndexError) as e:
+                self.die("Invalid entry")
+            except IOError as e:
+                self.die(e)
+
 class RestoreCmd(object):
     def __init__(self, stdout, stderr, exit, input,
                  curdir = getcwd_as_realpath, version = version,
@@ -123,25 +149,15 @@ class RestoreCmd(object):
                 self.println("%4d %s %s" % (i, trashedfile.deletion_date, trashedfile.original_location))
             self.restore_asking_the_user(trashed_files)
     def restore_asking_the_user(self, trashed_files):
-        index=self.input("What file to restore [0..%d]: " % (len(trashed_files)-1))
-        if index == "" :
-            self.println("Exiting")
-        else :
-            try:
-                indexes = index.split(',')
-                indexes.sort(reverse=True)  # restore largest index first
-                for index in indexes:
-                    index = int(index)
-                    if (index < 0 or index >= len(trashed_files)):
-                        raise IndexError("Out of range")
-                    trashed_file = trashed_files[index]
-                    self.restore(trashed_file)
-            except (ValueError, IndexError) as e:
-                self.printerr("Invalid entry")
-                self.exit(1)
-            except IOError as e:
-                self.printerr(e)
-                self.exit(1)
+        restore_asking_the_user = RestoreAskingTheUser(self.input,
+                                                       self.println,
+                                                       self.restore,
+                                                       self.die)
+        restore_asking_the_user.restore_asking_the_user(trashed_files)
+
+    def die(self, error):
+        self.printerr(error)
+        self.exit(1)
     def restore(self, trashed_file):
         restore(trashed_file, self.path_exists, self.fs)
     def all_files_trashed_from_path(self, path, trash_dir_from_cli):
