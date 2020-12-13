@@ -10,8 +10,7 @@ def make_empty_file(path):
 
 
 def write_file(filename, contents=''):
-    parent = os.path.dirname(os.path.realpath(filename))
-    if not os.path.isdir(parent): os.makedirs(parent)
+    make_parent_for(filename)
     with open(filename, 'w') as f:
         f.write(contents)
 
@@ -34,7 +33,7 @@ def make_dirs(path):
     assert os.path.isdir(path)
 
 def make_parent_for(path):
-    parent = os.path.dirname(path)
+    parent = os.path.dirname(os.path.realpath(path))
     make_dirs(parent)
 
 def make_sticky_dir(path):
