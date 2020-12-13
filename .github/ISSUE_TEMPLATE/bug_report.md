@@ -6,33 +6,25 @@ labels: ''
 assignees: ''
 
 ---
-
 **Describe the bug**
 A clear and concise description of what the bug is.
 
+**trash-cli version**
+Output of: trash-put --version
+
+**Operating system:**
+ - OS: [e.g. Debian, Ubuntu, Fedora, macOs, Cygwin]
+
 **To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+Copy and paste the commands (and their output) to execute in order to reproduce 
+the behavior:
+
+$ touch foo
+$ trash-put foo
+$ ls foo
+gls: cannot access 'foo': No such file or directory
+$ trash-list
+2020-12-13 18:36:21 /Users/andrea/trash-cli/foo
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
-
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
-
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
-
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
-
-**Additional context**
-Add any other context about the problem here.
