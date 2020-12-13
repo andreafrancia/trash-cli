@@ -112,6 +112,15 @@ class RestoreAskingTheUser(object):
             except IOError as e:
                 self.die(e)
 
+
+class Restorer(object):
+    def __init__(self, path_exists, fs):
+        self.path_exists = path_exists
+        self.fs = fs
+
+    def restore_trashed_file(self, trashed_file):
+        restore(trashed_file, self.path_exists, self.fs)
+
 class RestoreCmd(object):
     def __init__(self, stdout, stderr, exit, input,
                  curdir = getcwd_as_realpath, version = version,
@@ -158,8 +167,11 @@ class RestoreCmd(object):
     def die(self, error):
         self.printerr(error)
         self.exit(1)
+
     def restore(self, trashed_file):
-        restore(trashed_file, self.path_exists, self.fs)
+        restorer = Restorer(self.path_exists, self.fs)
+        restorer.restore_trashed_file(trashed_file)
+
     def all_files_trashed_from_path(self, path, trash_dir_from_cli):
         def is_trashed_from_curdir(trashed_file):
             return trashed_file.original_location.startswith(path)
