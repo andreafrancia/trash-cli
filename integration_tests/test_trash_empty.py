@@ -6,7 +6,7 @@ from trashcli.empty import EmptyCmd
 
 from unit_tests.myStringIO import StringIO
 import os
-from .files import write_file, require_empty_dir, make_dirs, set_sticky_bit
+from .files import make_file, require_empty_dir, make_dirs, set_sticky_bit
 from .files import make_empty_file
 from mock import MagicMock
 from trashcli.fs import FileSystemReader
@@ -214,7 +214,7 @@ class When_invoked_with_N_days_as_argument:
 
     def having_a_trashed_file(self, name, date):
         contents = "DeletionDate=%sT00:00:00\n" % date
-        write_file(self.trashinfo(name), contents)
+        make_file(self.trashinfo(name), contents)
 
     def trashinfo(self, name):
         return '%(dirname)s/Trash/info/%(name)s.trashinfo' % {

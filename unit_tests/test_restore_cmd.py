@@ -9,7 +9,7 @@ from mock import call
 from trashcli import restore
 import datetime
 from mock import Mock
-from integration_tests.files import write_file, require_empty_dir
+from integration_tests.files import make_file, require_empty_dir
 from trashcli.fs import remove_file, contents_of
 
 
@@ -230,7 +230,7 @@ class TestTrashedFileRestoreIntegration:
     def test_restore_create_needed_directories(self):
         require_empty_dir('sandbox')
 
-        write_file('sandbox/TrashDir/files/bar')
+        make_file('sandbox/TrashDir/files/bar')
         instance = TrashedFile('sandbox/foo/bar',
                                'deletion_date', 'info_file',
                                'sandbox/TrashDir/files/bar')

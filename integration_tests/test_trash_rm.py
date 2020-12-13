@@ -2,7 +2,7 @@ from unit_tests.myStringIO import StringIO
 from mock import Mock, ANY
 from nose.tools import assert_false, assert_equal
 
-from .files import require_empty_dir, write_file
+from .files import require_empty_dir, make_file
 from trashcli.rm import RmCmd, ListTrashinfos
 from .fake_trash_dir import a_trashinfo_with_path, a_trashinfo_without_path
 
@@ -36,11 +36,11 @@ class TestTrashRm:
                          , file_reader = FileSystemReader())
 
     def add_trashinfo_for(self, index, path):
-        write_file(self.trashinfo_from_index(index),
-                   a_trashinfo_with_path(path))
+        make_file(self.trashinfo_from_index(index),
+                  a_trashinfo_with_path(path))
     def add_invalid_trashinfo_without_path(self, index):
-        write_file(self.trashinfo_from_index(index),
-                   a_trashinfo_without_path())
+        make_file(self.trashinfo_from_index(index),
+                  a_trashinfo_without_path())
     def trashinfo_from_index(self, index):
         return 'sandbox/xdh/Trash/info/%s.trashinfo' % index
 
@@ -94,7 +94,7 @@ class TestListing:
                             trashinfo_path=None,
                             trashdir='sandbox/Trash'):
         trashinfo_path = trashinfo_path or self._trashinfo_path(trashdir)
-        write_file(trashinfo_path, a_trashinfo_with_path(path))
+        make_file(trashinfo_path, a_trashinfo_with_path(path))
     def _trashinfo_path(self, trashdir):
         path = '%s/info/%s.trashinfo' % (trashdir, self.index)
         self.index +=1

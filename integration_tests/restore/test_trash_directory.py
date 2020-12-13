@@ -1,7 +1,7 @@
 from trashcli.restore import TrashDirectory
 
 from integration_tests.files import require_empty_dir
-from integration_tests.files import write_file
+from integration_tests.files import make_file
 from unit_tests.tools import assert_items_equal
 from nose.tools import assert_equal
 from mock import Mock
@@ -16,16 +16,16 @@ class TestTrashDirectory:
 
 
     def test_should_list_a_trashinfo(self):
-        write_file('sandbox/info/foo.trashinfo')
+        make_file('sandbox/info/foo.trashinfo')
 
         result = self.list_trashinfos()
 
         assert_equal([('trashinfo', 'sandbox/info/foo.trashinfo')], result)
 
     def test_should_list_multiple_trashinfo(self):
-        write_file('sandbox/info/foo.trashinfo')
-        write_file('sandbox/info/bar.trashinfo')
-        write_file('sandbox/info/baz.trashinfo')
+        make_file('sandbox/info/foo.trashinfo')
+        make_file('sandbox/info/bar.trashinfo')
+        make_file('sandbox/info/baz.trashinfo')
 
         result = self.list_trashinfos()
 
@@ -35,7 +35,7 @@ class TestTrashDirectory:
                            result)
 
     def test_non_trashinfo_should_reported_as_a_warn(self):
-        write_file('sandbox/info/not-a-trashinfo')
+        make_file('sandbox/info/not-a-trashinfo')
 
         result = self.list_trashinfos()
 

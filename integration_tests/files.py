@@ -6,10 +6,10 @@ import os, shutil
 
 
 def make_empty_file(path):
-    write_file(path, '')
+    make_file(path, '')
 
 
-def write_file(filename, contents=''):
+def make_file(filename, contents=''):
     make_parent_for(filename)
     with open(filename, 'w') as f:
         f.write(contents)
@@ -69,7 +69,7 @@ def ensure_non_sticky_dir(path):
     assert not has_sticky_bit(path)
 
 def make_unreadable_file(path):
-    write_file(path, '')
+    make_file(path, '')
     import os
     os.chmod(path, 0)
     from nose.tools import assert_raises

@@ -1,4 +1,4 @@
-from integration_tests.files import (make_parent_for, write_file,
+from integration_tests.files import (make_parent_for, make_file,
                                      make_unreadable_file)
 
 
@@ -22,7 +22,7 @@ class FakeTrashDir:
         path = '%(info_dir)s/%(name)s.trashinfo' % {'info_dir': self.info_path,
                                                     'name': base_name}
         make_parent_for(path)
-        write_file(path, contents)
+        make_file(path, contents)
 
         self.path_of_last_file_added = path
 
