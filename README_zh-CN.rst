@@ -3,6 +3,8 @@ trash-cli——FreeDesktop.org 回收站的命令行界面
 
 |Donate|_
 
+`English`_
+
 trash-cli
 用于移动文件到回收站，同时会记录文件的原地址、删除日期和权限。trash-cli
 和 KDE、GNOME、XFCE 使用同一个回收站，你可以在命令行或脚本运行
@@ -241,4 +243,4 @@ trash-cli 提供以下命令：
 
 .. |Donate| image:: https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif
 .. _Donate: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=93L6PYT4WBN5A
-
+.. _English: https://github.com/andreafrancia/trash-cli/blob/master/README.rst

@@ -3,6 +3,8 @@ trash-cli - Command Line Interface to FreeDesktop.org Trash.
 
 |Donate|_
 
+`简体中文`_
+
 trash-cli trashes files recording the original path, deletion date, and 
 permissions. It uses the same trashcan used by KDE, GNOME, and XFCE, but you 
 can invoke it from the command line (and scripts).
@@ -202,4 +204,5 @@ Profiling unit tests::
 
 .. |Donate| image:: https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif
 .. _Donate: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=93L6PYT4WBN5A
+.. _简体中文: https://github.com/andreafrancia/trash-cli/blob/master/README_zh-CN.rst
 
