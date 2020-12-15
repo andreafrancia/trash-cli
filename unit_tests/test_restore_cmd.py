@@ -9,7 +9,7 @@ from mock import call
 from trashcli import restore
 import datetime
 from mock import Mock
-from integration_tests.files import make_file, require_empty_dir
+from integration_tests.files import make_file, require_empty_dir, make_empty_file
 from trashcli.fs import remove_file, contents_of
 from trashcli.fs import remove_file
 from trashcli.fs import contents_of
