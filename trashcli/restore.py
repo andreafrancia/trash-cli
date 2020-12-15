@@ -94,7 +94,10 @@ class RestoreAskingTheUser(object):
         self.die = die
 
     def restore_asking_the_user(self, trashed_files):
-        index = self.input("What file to restore [0..%d]: " % (len(trashed_files) - 1))
+        try:
+            index = self.input("What file to restore [0..%d]: " % (len(trashed_files) - 1))
+        except KeyboardInterrupt:
+            return self.die("")
         if index == "":
             self.println("Exiting")
         else:

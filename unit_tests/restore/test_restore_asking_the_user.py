@@ -28,3 +28,15 @@ class TestRestoreAskingTheUser(unittest.TestCase):
         self.assertEqual([call('trashed_file1')] ,
                          self.restore.mock_calls)
         self.assertEqual([], self.die.mock_calls)
+
+    def test2(self):
+        self.input.side_effect = KeyboardInterrupt
+
+        self.restorer.restore_asking_the_user(['trashed_file1',
+                                               'trashed_file2'])
+
+        self.assertEqual([call('What file to restore [0..1]: ')],
+                         self.input.mock_calls)
+        self.assertEqual([], self.println.mock_calls)
+        self.assertEqual([], self.restore.mock_calls)
+        self.assertEqual([call('')], self.die.mock_calls)
