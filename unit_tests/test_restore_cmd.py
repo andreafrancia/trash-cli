@@ -11,6 +11,8 @@ import datetime
 from mock import Mock
 from integration_tests.files import make_file, require_empty_dir
 from trashcli.fs import remove_file, contents_of
+from trashcli.fs import remove_file
+from trashcli.fs import contents_of
 
 
 class Test_parse_args(unittest.TestCase):
@@ -116,8 +118,6 @@ class TestTrashRestoreCmd:
                 self.stdout.getvalue())
 
     def test_until_the_restore_intgration(self):
-        from trashcli.fs import remove_file
-        from trashcli.fs import contents_of
         self.user_reply = '0'
         open('orig_file', 'w').write('original')
         open('info_file', 'w').write('')
