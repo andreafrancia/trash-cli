@@ -117,28 +117,6 @@ class TestTrashRestoreCmd:
         assert_equal("No files trashed from current dir ('cwd')\n",
                 self.stdout.getvalue())
 
-    def test_until_the_restore_intgration(self):
-        self.user_reply = '0'
-        open('orig_file', 'w').write('original')
-        open('info_file', 'w').write('')
-        remove_file('parent/path')
-        remove_file('parent')
-
-        trashed_file = TrashedFile(
-                'parent/path',
-                None,
-                'info_file',
-                'orig_file')
-
-        self.cmd.restore_asking_the_user([trashed_file])
-
-        assert_equal('', self.stdout.getvalue())
-        assert_equal('', self.stderr.getvalue())
-        assert_true(not os.path.exists('info_file'))
-        assert_true(not os.path.exists('orig_file'))
-        assert_true(os.path.exists('parent/path'))
-        assert_equal('original', contents_of('parent/path'))
-
     def test_until_the_restore_unit(self):
         trashed_file = TrashedFile(
                 'parent/path',
