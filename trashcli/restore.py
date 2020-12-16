@@ -9,6 +9,16 @@ from .trash import backup_file_path_from
 from . import fs, trash
 
 
+class FileSystem:
+    def mkdirs(self, path):
+        return fs.mkdirs(path)
+
+    def move(self, path, dest):
+        return fs.move(path, dest)
+
+    def remove_file(self, path):
+        return fs.remove_file(path)
+
 def main():
     try:           # Python 2
         input23 = raw_input
@@ -23,7 +33,8 @@ def main():
         exit    = sys.exit,
         input   = input23,
         trashed_files=trashed_files,
-        mount_points=os_mount_points
+        mount_points=os_mount_points,
+        fs=FileSystem()
     ).run(sys.argv)
 
 
@@ -127,7 +138,7 @@ class Restorer(object):
 class RestoreCmd(object):
     def __init__(self, stdout, stderr, exit, input,
                  curdir = getcwd_as_realpath, version = version,
-                 trashed_files=None, mount_points=None):
+                 trashed_files=None, mount_points=None, fs=None):
         self.out      = stdout
         self.err      = stderr
         self.exit     = exit

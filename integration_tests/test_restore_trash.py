@@ -10,7 +10,7 @@ from trashcli.fs import remove_file, contents_of
 from .fake_trash_dir import a_trashinfo
 from .files import make_file
 from unit_tests.myStringIO import StringIO
-
+from trashcli import restore
 
 class TestRestoreTrash(unittest.TestCase):
     def test_it_does_nothing_when_no_file_have_been_found_in_current_dir(self):
@@ -103,7 +103,8 @@ class RestoreTrashUser:
             input   = lambda msg: with_user_typing,
             curdir  = lambda: self.current_dir,
             trashed_files=trashed_files,
-            mount_points=os_mount_points
+            mount_points=os_mount_points,
+            fs = restore.FileSystem()
         ).run([])
 
     def having_a_file_trashed_from_current_dir(self, filename):

@@ -39,7 +39,8 @@ class TestListingInRestoreCmd:
                               input=None,
                               curdir=lambda: "dir",
                               trashed_files=trashed_files,
-                              mount_points=os_mount_points)
+                              mount_points=os_mount_points,
+                              fs=restore.FileSystem())
         self.cmd.handle_trashed_files = self.capture_trashed_files
         self.trashed_files = Mock(spec=['all_trashed_files'])
         self.cmd.trashed_files = self.trashed_files
@@ -98,7 +99,8 @@ class TestTrashRestoreCmd:
                               input =lambda x: self.user_reply,
                               version=None,
                               trashed_files=trashed_files,
-                              mount_points=os_mount_points)
+                              mount_points=os_mount_points,
+                              fs=restore.FileSystem())
 
     def capture_exit_status(self, exit_status):
         self.exit_status = exit_status
@@ -178,7 +180,8 @@ class TestTrashedFileRestoreIntegration:
                               exit=None,
                               input=None,
                               trashed_files=trashed_files,
-                              mount_points=os_mount_points)
+                              mount_points=os_mount_points,
+                              fs=restore.FileSystem())
 
     def test_restore(self):
         trashed_file = TrashedFile('parent/path',
