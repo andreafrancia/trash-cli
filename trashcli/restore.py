@@ -109,14 +109,14 @@ class RestoreAskingTheUser(object):
 
     def restore_asking_the_user(self, trashed_files):
         try:
-            index = self.input("What file to restore [0..%d]: " % (len(trashed_files) - 1))
+            user_input = self.input("What file to restore [0..%d]: " % (len(trashed_files) - 1))
         except KeyboardInterrupt:
             return self.die("")
-        if index == "":
+        if user_input == "":
             self.println("Exiting")
         else:
             try:
-                indexes = index.split(',')
+                indexes = user_input.split(',')
                 indexes.sort(reverse=True)  # restore largest index first
                 for index in indexes:
                     index = int(index)
