@@ -121,23 +121,22 @@ class TestTrashRestoreCmd:
                 self.stdout.getvalue())
 
     def test_until_the_restore_unit(self):
+        self.fs.path_exists.return_value = False
         trashed_file = TrashedFile(
                 'parent/path',
                 None,
                 'info_file',
                 'orig_file')
-        self.cmd.path_exists = lambda _: False
 
         self.user_reply = '0'
         self.cmd.restore_asking_the_user([trashed_file])
 
         assert_equal('', self.stdout.getvalue())
         assert_equal('', self.stderr.getvalue())
-        assert_equal([
-            call.mkdirs('parent')
-            , call.move('orig_file', 'parent/path')
-            , call.remove_file('info_file')
-            ], self.fs.mock_calls)
+        assert_equal([call.path_exists('parent/path'),
+                      call.mkdirs('parent'),
+                      call.move('orig_file', 'parent/path'),
+                      call.remove_file('info_file')], self.fs.mock_calls)
 
     def test_when_user_reply_with_empty_string(self):
         self.user_reply = ''

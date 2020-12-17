@@ -10,6 +10,9 @@ from . import fs, trash
 
 
 class FileSystem:
+    def path_exists(self, path):
+        return os.path.exists(path)
+
     def mkdirs(self, path):
         return fs.mkdirs(path)
 
@@ -128,12 +131,11 @@ class RestoreAskingTheUser(object):
 
 
 class Restorer(object):
-    def __init__(self, path_exists, fs):
-        self.path_exists = path_exists
+    def __init__(self, fs):
         self.fs = fs
 
     def restore_trashed_file(self, trashed_file):
-        restore(trashed_file, self.path_exists, self.fs)
+        restore(trashed_file, self.fs)
 
 class RestoreCmd(object):
     def __init__(self, stdout, stderr, exit, input,
@@ -146,7 +148,6 @@ class RestoreCmd(object):
         self.curdir   = curdir
         self.version = version
         self.fs = fs
-        self.path_exists = os.path.exists
         self.trashed_files = trashed_files
         self.mount_points = mount_points
     def run(self, argv):
@@ -183,7 +184,7 @@ class RestoreCmd(object):
         self.exit(1)
 
     def restore(self, trashed_file):
-        restorer = Restorer(self.path_exists, self.fs)
+        restorer = Restorer(self.fs)
         restorer.restore_trashed_file(trashed_file)
 
     def all_files_trashed_from_path(self, path, trash_dir_from_cli):
@@ -274,8 +275,9 @@ class TrashedFile:
         self.info_file = info_file
         self.original_file = original_file
 
-def restore(trashed_file, path_exists, fs):
-    if path_exists(trashed_file.original_location):
+
+def restore(trashed_file, fs):
+    if fs.path_exists(trashed_file.original_location):
         raise IOError('Refusing to overwrite existing file "%s".' % os.path.basename(trashed_file.original_location))
     else:
         parent = os.path.dirname(trashed_file.original_location)
