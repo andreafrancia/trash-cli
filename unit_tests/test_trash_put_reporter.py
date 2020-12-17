@@ -1,10 +1,11 @@
+import unittest
+
 from nose.tools import assert_equal
-from nose.tools import istest
 from trashcli.put import TrashPutReporter
 
-class TestTrashPutReporter:
-    @istest
-    def it_should_record_failures(self):
+
+class TestTrashPutReporter(unittest.TestCase):
+    def test_it_should_record_failures(self):
 
         reporter = TrashPutReporter(self)
         assert_equal(False, reporter.some_file_has_not_be_trashed)

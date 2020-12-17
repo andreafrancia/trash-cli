@@ -1,9 +1,10 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
+import unittest
 
 from nose.tools import assert_equal
 from trashcli.trash import TrashDir
 
-class TestTrashDir_finding_orphans:
+class TestTrashDir_finding_orphans(unittest.TestCase):
     def test(self):
         self.fs.create_fake_file('/info/foo.trashinfo')
 
@@ -44,7 +45,7 @@ class FakeFileSystem:
     def create_fake_dir(self, dir_path, *dir_entries):
         self.dirs[dir_path] = dir_entries
 
-class TestFakeFileSystem:
+class TestFakeFileSystem(unittest.TestCase):
     def setUp(self):
         self.fs = FakeFileSystem()
     def test_you_can_read_from_files(self):

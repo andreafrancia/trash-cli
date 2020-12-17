@@ -1,7 +1,9 @@
+import unittest
+
 from mock import Mock, call
 from unit_tests.tools import assert_items_equal
 
-class TestListing:
+class TestListing(unittest.TestCase):
     def setUp(self):
         self.trashdir = Mock()
         self.trashinfo_reader = Mock()
@@ -15,7 +17,8 @@ class TestListing:
                 trashdir='/path/to/trash_dir',
                 list_to=self.trashinfo_reader)
 
-class TestTrashDirReader:
+
+class TestTrashDirReader(unittest.TestCase):
     def test_should_list_all_trashinfo_found(self):
         def files(path): yield 'file1'; yield 'file2'
         os_listdir = Mock(side_effect=files)
@@ -28,7 +31,7 @@ class TestTrashDirReader:
                             call(trashinfo='/path/file2')], out.mock_calls)
 
 
-class TrashDirReader:
+class TrashDirReader(unittest.TestCase):
     def __init__(self, os_listdir):
         self.os_listdir = os_listdir
     def list_trashinfos(self, trashdir, list_to):

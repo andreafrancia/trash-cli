@@ -4,8 +4,9 @@ from trashcli.put import describe
 from .files import require_empty_dir, make_empty_file
 from nose.tools import assert_equal
 import os
+import unittest
 
-class TestDescritions:
+class TestDescritions(unittest.TestCase):
     def setUp(self):
         require_empty_dir('sandbox')
 

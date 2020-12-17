@@ -9,8 +9,7 @@ from mock import call
 from trashcli import restore
 import datetime
 from mock import Mock
-from integration_tests.files import make_file, require_empty_dir, make_empty_file
-from trashcli.fs import remove_file, contents_of
+from integration_tests.files import make_file, require_empty_dir
 from trashcli.fs import remove_file
 from trashcli.fs import contents_of
 
@@ -30,7 +29,7 @@ class Test_parse_args(unittest.TestCase):
         args = restore.parse_args(['', '--version'], None)
         self.assertEqual(True, args.version)
 
-class TestListingInRestoreCmd:
+class TestListingInRestoreCmd(unittest.TestCase):
     def setUp(self):
         trash_directories = make_trash_directories()
         trashed_files = TrashedFiles(trash_directories, None, contents_of)
@@ -86,7 +85,8 @@ class FakeTrashedFile(object):
         return ('FakeTrashedFile(\'%s\', ' % self.deletion_date +
                '\'%s\')' % self.original_location)
 
-class TestTrashRestoreCmd:
+
+class TestTrashRestoreCmd(unittest.TestCase):
     def setUp(self):
         self.stdout = StringIO()
         self.stderr = StringIO()
@@ -166,7 +166,7 @@ class TestTrashRestoreCmd:
 from trashcli.restore import TrashedFile
 from nose.tools import assert_raises, assert_true
 import os
-class TestTrashedFileRestoreIntegration:
+class TestTrashedFileRestoreIntegration(unittest.TestCase):
     def setUp(self):
         remove_file_if_exists('parent/path')
         remove_dir_if_exists('parent')
@@ -217,7 +217,7 @@ class TestTrashedFileRestoreIntegration:
         assert os.path.exists("sandbox/foo/bar")
 
 
-class TestTrashedFiles:
+class TestTrashedFiles(unittest.TestCase):
     def setUp(self):
         self.trash_directories = Mock(spec=['trash_directories_or_user'])
         self.trash_directory = Mock(spec=['all_info_files'])
@@ -245,7 +245,7 @@ class TestTrashedFiles:
                      self.trash_directories.mock_calls)
 
 
-class TestTrashedFilesIntegration:
+class TestTrashedFilesIntegration(unittest.TestCase):
     def setUp(self):
         self.trash_directories = Mock(spec=['trash_directories_or_user'])
         self.trash_directory = Mock(spec=['all_info_files'])

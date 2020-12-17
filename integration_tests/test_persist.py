@@ -1,6 +1,7 @@
 # Copyright (C) 2008-2012 Andrea Francia Trivolzio(PV) Italy
 
 import os
+import unittest
 
 from nose.tools import assert_equal, assert_true
 
@@ -10,7 +11,7 @@ from mock import Mock
 
 join = os.path.join
 
-class TestTrashDirectory_persit_trash_info:
+class TestTrashDirectory_persit_trash_info(unittest.TestCase):
     def setUp(self):
         self.trashdirectory_base_dir = os.path.realpath(
                 "./sandbox/testTrashDirectory")

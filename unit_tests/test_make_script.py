@@ -1,10 +1,11 @@
+import unittest
 from textwrap import dedent
 from nose.tools import assert_equal
 import mock
 from mock import Mock
 from setup import Scripts
 
-class TestMakeScript:
+class TestMakeScript(unittest.TestCase):
     def setUp(self):
         self.make_file_executable = Mock()
         self.write_file = Mock()
@@ -39,7 +40,7 @@ class TestMakeScript:
                      "Actual  :\n---\n%s---\n"
                      % (expected, contents))
 
-class TestListOfCreatedScripts:
+class TestListOfCreatedScripts(unittest.TestCase):
     def setUp(self):
         self.bindir = Scripts(
                 make_file_executable = Mock(),

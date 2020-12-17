@@ -1,7 +1,9 @@
+import unittest
+
 from nose.tools import assert_equal
 from trashcli.put import shrinkuser
 
-class TestTrashDirectoryName:
+class TestTrashDirectoryName(unittest.TestCase):
     def setUp(self):
         self.environ = {}
 

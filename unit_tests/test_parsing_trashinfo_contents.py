@@ -1,17 +1,15 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
+import unittest
 
 from nose.tools import assert_equal, assert_raises
-from nose.tools import istest
-
 from datetime import datetime
 from mock import MagicMock
 
 from trashcli.trash import ParseTrashInfo
 
-@istest
-class describe_ParseTrashInfo2:
-    @istest
-    def it_should_parse_date(self):
+
+class Test_describe_ParseTrashInfo2(unittest.TestCase):
+    def test_it_should_parse_date(self):
         out = MagicMock()
         parse = ParseTrashInfo(on_deletion_date = out)
 
@@ -21,8 +19,7 @@ class describe_ParseTrashInfo2:
         
         out.assert_called_with(datetime(1970,1,1,0,0,0))
 
-    @istest
-    def it_should_parse_path(self):
+    def test_it_should_parse_path(self):
         out = MagicMock()
         self.parse = ParseTrashInfo(on_path = out)
 
@@ -44,21 +41,21 @@ def test_how_to_parse_date_from_trashinfo():
 from trashcli.trash import maybe_parse_deletion_date
 
 UNKNOWN_DATE='????-??-?? ??:??:??'
-@istest
-class describe_maybe_parse_deletion_date:
-    @istest
-    def on_trashinfo_without_date_parse_to_unknown_date(self):
+
+
+class Test_describe_maybe_parse_deletion_date(unittest.TestCase):
+    def test_on_trashinfo_without_date_parse_to_unknown_date(self):
         assert_equal(UNKNOWN_DATE,
                       maybe_parse_deletion_date(a_trashinfo_without_deletion_date()))
-    @istest
-    def on_trashinfo_with_date_parse_to_date(self):
+
+    def test_on_trashinfo_with_date_parse_to_date(self):
         from datetime import datetime
         example_date_as_string='2001-01-01T00:00:00'
         same_date_as_datetime=datetime(2001,1,1)
         assert_equal(same_date_as_datetime,
                       maybe_parse_deletion_date(make_trashinfo(example_date_as_string)))
-    @istest
-    def on_trashinfo_with_invalid_date_parse_to_unknown_date(self):
+
+    def test_on_trashinfo_with_invalid_date_parse_to_unknown_date(self):
         invalid_date='A long time ago'
         assert_equal(UNKNOWN_DATE,
                       maybe_parse_deletion_date(make_trashinfo(invalid_date)))
@@ -71,13 +68,13 @@ def test_how_to_parse_original_path():
 from trashcli.restore import TrashInfoParser
 from trashcli.trash import ParseError
 
-class TestParsing:
+class TestParsing(unittest.TestCase):
     def test_1(self):
         parser = TrashInfoParser("[Trash Info]\n"
                                  "Path=/foo.txt\n", volume_path = '/')
         assert_equal('/foo.txt', parser.original_location())
 
-class TestTrashInfoParser_with_empty_trashinfo:
+class TestTrashInfoParser_with_empty_trashinfo(unittest.TestCase):
     def setUp(self):
         self.parser = TrashInfoParser(contents=an_empty_trashinfo(),
                                       volume_path='/')
@@ -96,6 +93,3 @@ def make_trashinfo(date):
             "DeletionDate=%s" % date)
 def an_empty_trashinfo():
     return ''
-
-
-

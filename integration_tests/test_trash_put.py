@@ -4,7 +4,7 @@ from trashcli.put import TrashPutCmd
 import os
 from os.path import exists as file_exists
 from datetime import datetime
-from nose.tools import istest, assert_equal, assert_not_equal
+from nose.tools import assert_equal, assert_not_equal
 from nose.tools import assert_in
 
 from .files import make_empty_file, require_empty_dir
@@ -13,8 +13,10 @@ from trashcli.fstab import FakeFstab
 from trashcli.fs import remove_file
 from trashcli.put import parent_path, RealFs
 from .asserts import assert_line_in_text
+import unittest
 
-class TestPath:
+
+class TestPath(unittest.TestCase):
     def setUp(self):
         self.base = os.path.realpath(os.getcwd())
 
@@ -56,7 +58,7 @@ class TestPath:
         remove_file('foo')
         remove_file('bar')
 
-class TrashPutTest:
+class TrashPutTest(unittest.TestCase):
 
     def setUp(self):
         self.prepare_fixture()
@@ -92,50 +94,43 @@ class TrashPutTest:
         self.exit_code = cmd.run(list(argv))
         self.stderr = self.err.getvalue()
 
-@istest
-class when_deleting_an_existing_file(TrashPutTest):
+
+class Test_when_deleting_an_existing_file(TrashPutTest):
     def setUp2(self):
         make_empty_file('sandbox/foo')
         self.run_trashput('trash-put', 'sandbox/foo')
 
-    @istest
-    def it_should_remove_the_file(self):
+    def test_it_should_remove_the_file(self):
         assert not file_exists('sandbox/foo')
 
-    @istest
-    def it_should_remove_it_silently(self):
+    def test_it_should_remove_it_silently(self):
         self.output_should_be('')
 
-    @istest
-    def a_trashinfo_file_should_have_been_created(self):
+    def test_a_trashinfo_file_should_have_been_created(self):
         open('sandbox/XDG_DATA_HOME/Trash/info/foo.trashinfo').read()
 
-@istest
-class when_deleting_an_existing_file_in_verbose_mode(TrashPutTest):
+class Test_when_deleting_an_existing_file_in_verbose_mode(TrashPutTest):
     def setUp2(self):
         make_empty_file('sandbox/foo')
         self.run_trashput('trash-put', '-v', 'sandbox/foo')
 
-    @istest
-    def should_tell_where_a_file_is_trashed(self):
+    def test_should_tell_where_a_file_is_trashed(self):
         assert_in("trash-put: 'sandbox/foo' trashed in sandbox/XDG_DATA_HOME/Trash",
                   self.stderr.splitlines())
 
-    @istest
-    def should_be_succesfull(self):
+    def test_should_be_succesfull(self):
         assert_equal(0, self.exit_code)
 
-@istest
-class when_deleting_a_non_existing_file(TrashPutTest):
+
+class Test_when_deleting_a_non_existing_file(TrashPutTest):
     def setUp2(self):
         self.run_trashput('trash-put', '-v', 'non-existent')
 
-    @istest
-    def should_be_succesfull(self):
+    def test_should_be_succesfull(self):
         assert_not_equal(0, self.exit_code)
 
-@istest
-class when_fed_with_dot_arguments(TrashPutTest):
+
+class Test_when_fed_with_dot_arguments(TrashPutTest):
 
     def setUp2(self):
         require_empty_dir('sandbox/')
@@ -191,7 +186,7 @@ class when_fed_with_dot_arguments(TrashPutTest):
         assert not file_exists('other_argument')
         assert file_exists('sandbox')
 
-@istest
+
 class TestUnsecureTrashDirMessages(TrashPutTest):
     def setUp(self):
         TrashPutTest.setUp(self)
@@ -199,8 +194,7 @@ class TestUnsecureTrashDirMessages(TrashPutTest):
         self.fstab.add_mount('fake-vol')
         make_empty_file('fake-vol/foo')
 
-    @istest
-    def when_is_unsticky(self):
+    def test_when_is_unsticky(self):
         require_empty_dir('fake-vol/.Trash')
 
         self.run_trashput('trash-put', '-v', 'fake-vol/foo')
@@ -209,8 +203,7 @@ class TestUnsecureTrashDirMessages(TrashPutTest):
                 'trash-put: found unsecure .Trash dir (should be sticky): '
                 'fake-vol/.Trash', self.stderr)
 
-    @istest
-    def when_it_is_not_a_dir(self):
+    def test_when_it_is_not_a_dir(self):
         make_empty_file('fake-vol/.Trash')
 
         self.run_trashput('trash-put', '-v', 'fake-vol/foo')
@@ -219,8 +212,7 @@ class TestUnsecureTrashDirMessages(TrashPutTest):
                 'trash-put: found unusable .Trash dir (should be a dir): '
                 'fake-vol/.Trash', self.stderr)
 
-    @istest
-    def when_is_a_symlink(self):
+    def test_when_is_a_symlink(self):
         make_sticky_dir('fake-vol/link-destination')
         os.symlink('link-destination', 'fake-vol/.Trash')
 

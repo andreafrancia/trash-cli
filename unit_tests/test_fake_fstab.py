@@ -1,8 +1,11 @@
+import unittest
+
 from trashcli.fstab import FakeFstab
 
 from nose.tools import assert_equal
 
-class TestFakeFstab:
+
+class TestFakeFstab(unittest.TestCase):
     def setUp(self):
         self.fstab = FakeFstab()
 
@@ -21,4 +24,3 @@ class TestFakeFstab:
     def filter_only_mount_points(self, *supposed_mount_points):
         return [mp for mp in supposed_mount_points
                 if mp == self.fstab.volume_of(mp)]
-

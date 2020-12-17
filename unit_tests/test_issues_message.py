@@ -1,8 +1,11 @@
+import unittest
+
 from nose.tools import assert_equal
 
 from unit_tests.myStringIO import StringIO
 
-class TestTrashPutIssueMessage:
+
+class TestTrashPutIssueMessage(unittest.TestCase):
 
     def setUp(self):
         self.out = StringIO()

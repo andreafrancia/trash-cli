@@ -1,3 +1,5 @@
+import unittest
+
 from trashcli.restore import TrashDirectory
 
 from integration_tests.files import require_empty_dir
@@ -7,7 +9,7 @@ from nose.tools import assert_equal
 from mock import Mock
 
 
-class TestTrashDirectory:
+class TestTrashDirectory(unittest.TestCase):
     def setUp(self):
         require_empty_dir('sandbox')
         self.trash_dir = TrashDirectory()

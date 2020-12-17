@@ -1,11 +1,14 @@
-from nose.tools import istest, assert_equal
+import unittest
+
+from nose.tools import assert_equal
 from unit_tests.tools import assert_items_equal
 from mock import Mock, call
 
 from trashcli.rm import Filter
 from unit_tests.myStringIO import StringIO
 
-class TestTrashRmCmdRun:
+
+class TestTrashRmCmdRun(unittest.TestCase):
     def test_without_arguments(self):
         from trashcli.rm import RmCmd
         cmd = RmCmd(None, None, None, None, None)
@@ -30,7 +33,7 @@ class TestTrashRmCmdRun:
 
         assert_equal('', cmd.stderr.getvalue())
 
-class TestTrashRmCmd:
+class TestTrashRmCmd(unittest.TestCase):
     def test_a_star_matches_all(self):
 
         self.cmd.use_pattern('*')

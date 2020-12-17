@@ -1,6 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
+import unittest
 
-from nose.tools import assert_equal, istest
+from nose.tools import assert_equal
 from unit_tests.tools import assert_items_equal
 from trashcli.empty import EmptyCmd
 
@@ -57,7 +58,8 @@ class TestTrashEmptyCmd:
         os.chmod('unreadable-dir', 0o700)
         shutil.rmtree('unreadable-dir')
 
-class TestWhenCalledWithoutArguments:
+
+class TestWhenCalledWithoutArguments(unittest.TestCase):
 
     def setUp(self):
         require_empty_dir('XDG_DATA_HOME')
@@ -156,8 +158,7 @@ class TestWhenCalledWithoutArguments:
         make_empty_file(complete_path)
         assert os.path.exists(complete_path)
 
-@istest
-class When_invoked_with_N_days_as_argument:
+class TestWhen_invoked_with_N_days_as_argument(unittest.TestCase):
     def setUp(self):
         require_empty_dir('XDG_DATA_HOME')
         self.xdg_data_home   = 'XDG_DATA_HOME'
@@ -185,8 +186,7 @@ class When_invoked_with_N_days_as_argument:
             from datetime import datetime
             return datetime.strptime(yyyy_mm_dd, '%Y-%m-%d')
 
-    @istest
-    def it_should_keep_files_newer_than_N_days(self):
+    def test_it_should_keep_files_newer_than_N_days(self):
         self.having_a_trashed_file('foo', '2000-01-01')
         self.set_clock_at('2000-01-01')
 
@@ -194,8 +194,7 @@ class When_invoked_with_N_days_as_argument:
 
         self.file_should_have_been_kept_in_trashcan('foo')
 
-    @istest
-    def it_should_remove_files_older_than_N_days(self):
+    def test_it_should_remove_files_older_than_N_days(self):
         self.having_a_trashed_file('foo', '1999-01-01')
         self.set_clock_at('2000-01-01')
 
@@ -203,8 +202,7 @@ class When_invoked_with_N_days_as_argument:
 
         self.file_should_have_been_removed_from_trashcan('foo')
 
-    @istest
-    def it_should_kept_files_with_invalid_deletion_date(self):
+    def test_it_should_kept_files_with_invalid_deletion_date(self):
         self.having_a_trashed_file('foo', 'Invalid Date')
         self.set_clock_at('2000-01-01')
 
@@ -226,7 +224,8 @@ class When_invoked_with_N_days_as_argument:
     def file_should_have_been_removed_from_trashcan(self, trashinfo_name):
         assert not os.path.exists(self.trashinfo(trashinfo_name))
 
-class TestEmptyCmdWithMultipleVolumes:
+
+class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
     def setUp(self):
         require_empty_dir('topdir')
         self.empty=EmptyCmd(

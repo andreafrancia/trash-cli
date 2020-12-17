@@ -1,3 +1,5 @@
+import unittest
+
 from unit_tests.myStringIO import StringIO
 from mock import Mock, ANY
 from nose.tools import assert_false, assert_equal
@@ -5,8 +7,10 @@ from nose.tools import assert_false, assert_equal
 from .files import require_empty_dir, make_file
 from trashcli.rm import RmCmd, ListTrashinfos
 from .fake_trash_dir import a_trashinfo_with_path, a_trashinfo_without_path
+from trashcli.fs import FileSystemReader
 
-class TestTrashRm:
+
+class TestTrashRm(unittest.TestCase):
     def test_issue69(self):
         self.add_invalid_trashinfo_without_path(1)
 
@@ -50,8 +54,8 @@ class TestTrashRm:
         assert_false(os.path.exists(filename),
                 'File "%s" still exists' % filename)
 
-from trashcli.fs import FileSystemReader
-class TestListing:
+
+class TestListing(unittest.TestCase):
     def setUp(self):
         require_empty_dir('sandbox')
         self.out = Mock()
@@ -99,6 +103,3 @@ class TestListing:
         path = '%s/info/%s.trashinfo' % (trashdir, self.index)
         self.index +=1
         return path
-
-
-

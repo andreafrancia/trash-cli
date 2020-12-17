@@ -1,9 +1,11 @@
+import unittest
+
 from mock import Mock
 
 from integration_tests.files import require_empty_dir
 from trashcli.put import TopTrashDirWriteRules
 
-class TestMethod1VolumeTrashDirectory:
+class TestMethod1VolumeTrashDirectory(unittest.TestCase):
     def setUp(self):
         require_empty_dir('sandbox')
         self.fs = Mock()

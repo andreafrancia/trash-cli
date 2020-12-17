@@ -1,36 +1,37 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
+import unittest
 
 from trashcli.trash import TrashDirs
-from nose.tools import istest, assert_in, assert_not_in
+from nose.tools import assert_in, assert_not_in
 from mock import Mock
+from nose.tools import assert_equal
+from mock import MagicMock
+from trashcli.trash import TopTrashDirRules
 
-@istest
-class TestTrashDirs_listing:
-    @istest
-    def the_method_2_is_always_in(self):
+
+class TestTrashDirs_listing(unittest.TestCase):
+
+    def test_the_method_2_is_always_in(self):
         self.uid = 123
         self.volumes = ['/usb']
 
         assert_in('/usb/.Trash-123', self.trashdirs())
 
-    @istest
-    def the_method_1_is_in_if_it_is_a_sticky_dir(self):
+    def test_the_method_1_is_in_if_it_is_a_sticky_dir(self):
         self.uid = 123
         self.volumes = ['/usb']
         self.having_sticky_Trash_dir()
 
         assert_in('/usb/.Trash/123', self.trashdirs())
 
-    @istest
-    def the_method_1_is_not_considered_if_not_sticky_dir(self):
+    def test_the_method_1_is_not_considered_if_not_sticky_dir(self):
         self.uid = 123
         self.volumes = ['/usb']
         self.having_non_sticky_Trash_dir()
 
         assert_not_in('/usb/.Trash/123', self.trashdirs())
 
-    @istest
-    def should_return_home_trashcan_when_XDG_DATA_HOME_is_defined(self):
+    def test_should_return_home_trashcan_when_XDG_DATA_HOME_is_defined(self):
         self.environ['XDG_DATA_HOME'] = '~/.local/share'
 
         assert_in('~/.local/share/Trash', self.trashdirs())
@@ -72,11 +73,8 @@ class TestTrashDirs_listing:
 
 def not_important_for_now(): None
 
-from nose.tools import assert_equal
-from mock import MagicMock
-from trashcli.trash import TopTrashDirRules
-@istest
-class Describe_AvailableTrashDirs_when_parent_is_unsticky:
+
+class TestDescribe_AvailableTrashDirs_when_parent_is_unsticky(unittest.TestCase):
     def setUp(self):
         self.fs = MagicMock()
         self.dirs = TrashDirs(environ = {},
@@ -106,8 +104,8 @@ class Describe_AvailableTrashDirs_when_parent_is_unsticky:
 
         assert_equal([], self.dirs.on_trashdir_skipped_because_parent_not_sticky.mock_calls)
 
-@istest
-class Describe_AvailableTrashDirs_when_parent_is_symlink:
+
+class TestDescribe_AvailableTrashDirs_when_parent_is_symlink(unittest.TestCase):
     def setUp(self):
         self.fs = MagicMock()
         self.dirs = TrashDirs(environ = {},

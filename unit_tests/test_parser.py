@@ -1,8 +1,11 @@
+import unittest
+
 from trashcli.trash import Parser
 from mock import MagicMock, call
-from nose.tools import istest, assert_equal
+from nose.tools import assert_equal
 
-class TestParser():
+
+class TestParser(unittest.TestCase):
     def setUp(self):
         self.invalid_option_callback = MagicMock()
         self.on_raw = MagicMock()

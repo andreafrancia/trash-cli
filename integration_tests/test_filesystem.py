@@ -1,4 +1,5 @@
 # Copyright (C) 2008-2011 Andrea Francia Trivolzio(PV) Italy
+import unittest
 
 from trashcli.fs import FileSystemReader
 from trashcli.fs import mkdirs
@@ -32,7 +33,7 @@ class TestWithInSandbox:
         require_empty_dir('sandbox')
 
 is_sticky_dir=FileSystemReader().is_sticky_dir
-class Test_is_sticky_dir:
+class Test_is_sticky_dir(unittest.TestCase):
 
     def test_dir_non_sticky(self):
         mkdirs('sandbox/dir'); assert not is_sticky_dir('sandbox/dir')

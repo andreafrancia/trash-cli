@@ -6,7 +6,6 @@ import tempfile
 
 from trashcli.list import ListCmd
 from .files import (require_empty_dir, make_sticky_dir, make_unsticky_dir)
-from nose.tools import istest
 from .output_collector import OutputCollector
 from .fake_trash_dir import (
     a_trashinfo_without_date,
@@ -15,8 +14,10 @@ from .fake_trash_dir import (
 from textwrap import dedent
 from trashcli.fs import FileSystemReader
 from .asserts import assert_equals_with_unidiff
+import unittest
 
-class Setup(object):
+
+class Setup(unittest.TestCase):
     def setUp(self):
         self.xdg_data_home = tempfile.mkdtemp()
         require_empty_dir('topdir')
@@ -27,11 +28,9 @@ class Setup(object):
 def sort_lines(lines):
     return "".join(sorted(lines.splitlines(True)))
 
-@istest
-class describe_trash_list(Setup):
+class Test_describe_trash_list(Setup):
 
-    @istest
-    def should_output_the_help_message(self):
+    def test_should_output_the_help_message(self):
 
         self.user.run_trash_list('--help')
 
@@ -47,15 +46,13 @@ class describe_trash_list(Setup):
             Report bugs to https://github.com/andreafrancia/trash-cli/issues
         """), self.user.output())
 
-    @istest
-    def should_output_nothing_when_trashcan_is_empty(self):
+    def test_should_output_nothing_when_trashcan_is_empty(self):
 
         self.user.run_trash_list()
 
         assert_equals_with_unidiff('', self.user.output())
 
-    @istest
-    def should_output_deletion_date_and_path(self):
+    def test_should_output_deletion_date_and_path(self):
         self.user.home_trashdir.add_trashinfo2('/aboslute/path',
                                               '2001-02-03T23:55:59')
 
@@ -64,8 +61,7 @@ class describe_trash_list(Setup):
         assert_equals_with_unidiff("2001-02-03 23:55:59 /aboslute/path\n",
                                    self.user.output())
 
-    @istest
-    def should_output_info_for_multiple_files(self):
+    def test_should_output_info_for_multiple_files(self):
         self.user.home_trashdir.add_trashinfo2("/file1", "2000-01-01T00:00:01")
         self.user.home_trashdir.add_trashinfo2("/file2", "2000-01-01T00:00:02")
         self.user.home_trashdir.add_trashinfo2("/file3", "2000-01-01T00:00:03")
@@ -78,8 +74,7 @@ class describe_trash_list(Setup):
                                    "2000-01-01 00:00:03 /file3\n",
                                    sort_lines(output))
 
-    @istest
-    def should_output_unknown_dates_with_question_marks(self):
+    def test_should_output_unknown_dates_with_question_marks(self):
         self.user.home_trashdir.add_trashinfo(a_trashinfo_without_date())
 
         self.user.run_trash_list()
@@ -87,8 +82,7 @@ class describe_trash_list(Setup):
         assert_equals_with_unidiff("????-??-?? ??:??:?? /path\n",
                                    self.user.output())
 
-    @istest
-    def should_output_invalid_dates_using_question_marks(self):
+    def test_should_output_invalid_dates_using_question_marks(self):
         self.user.home_trashdir.add_trashinfo(a_trashinfo_with_invalid_date())
 
         self.user.run_trash_list()
@@ -96,8 +90,7 @@ class describe_trash_list(Setup):
         assert_equals_with_unidiff("????-??-?? ??:??:?? /path\n",
                                    self.user.output())
 
-    @istest
-    def should_warn_about_empty_trashinfos(self):
+    def test_should_warn_about_empty_trashinfos(self):
         self.user.home_trashdir.add_trashinfo('', 'empty')
 
         self.user.run_trash_list()
@@ -107,8 +100,7 @@ class describe_trash_list(Setup):
             "Unable to parse Path.\n" % {"XDG_DATA_HOME":self.xdg_data_home},
             self.user.error())
 
-    @istest
-    def should_warn_about_unreadable_trashinfo(self):
+    def test_should_warn_about_unreadable_trashinfo(self):
         self.user.home_trashdir.add_unreadable_trashinfo('unreadable')
 
         self.user.run_trash_list()
@@ -120,8 +112,7 @@ class describe_trash_list(Setup):
             },
             self.user.error())
 
-    @istest
-    def should_warn_about_unexistent_path_entry(self):
+    def test_should_warn_about_unexistent_path_entry(self):
         self.user.home_trashdir.add_trashinfo(a_trashinfo_without_path())
 
         self.user.run_trash_list()
@@ -132,16 +123,14 @@ class describe_trash_list(Setup):
             self.user.error())
         assert_equals_with_unidiff('', self.user.output())
 
-@istest
-class with_a_top_trash_dir(Setup):
+class Test_with_a_top_trash_dir(Setup):
     def setUp(self):
         super(type(self),self).setUp()
         self.top_trashdir1 = FakeTrashDir('topdir/.Trash/123')
         self.user.set_fake_uid(123)
         self.user.add_volume('topdir')
 
-    @istest
-    def should_list_its_contents_if_parent_is_sticky(self):
+    def test_should_list_its_contents_if_parent_is_sticky(self):
         make_sticky_dir('topdir/.Trash')
         self.and_contains_a_valid_trashinfo()
 
@@ -150,8 +139,7 @@ class with_a_top_trash_dir(Setup):
         assert_equals_with_unidiff("2000-01-01 00:00:00 topdir/file1\n",
                                    self.user.output())
 
-    @istest
-    def and_should_warn_if_parent_is_not_sticky(self):
+    def test_and_should_warn_if_parent_is_not_sticky(self):
         make_unsticky_dir('topdir/.Trash')
         self.and_dir_exists('topdir/.Trash/123')
 
@@ -162,8 +150,7 @@ class with_a_top_trash_dir(Setup):
             self.user.error()
         )
 
-    @istest
-    def but_it_should_not_warn_when_the_parent_is_unsticky_but_there_is_no_trashdir(self):
+    def test_but_it_should_not_warn_when_the_parent_is_unsticky_but_there_is_no_trashdir(self):
         make_unsticky_dir('topdir/.Trash')
         self.but_does_not_exists_any('topdir/.Trash/123')
 
@@ -171,8 +158,7 @@ class with_a_top_trash_dir(Setup):
 
         assert_equals_with_unidiff("", self.user.error())
 
-    @istest
-    def should_ignore_trash_from_a_unsticky_topdir(self):
+    def test_should_ignore_trash_from_a_unsticky_topdir(self):
         make_unsticky_dir('topdir/.Trash')
         self.and_contains_a_valid_trashinfo()
 
@@ -180,8 +166,7 @@ class with_a_top_trash_dir(Setup):
 
         assert_equals_with_unidiff('', self.user.output())
 
-    @istest
-    def it_should_ignore_Trash_is_a_symlink(self):
+    def test_it_should_ignore_Trash_is_a_symlink(self):
         self.when_is_a_symlink_to_a_dir('topdir/.Trash')
         self.and_contains_a_valid_trashinfo()
 
@@ -189,8 +174,7 @@ class with_a_top_trash_dir(Setup):
 
         assert_equals_with_unidiff('', self.user.output())
 
-    @istest
-    def and_should_warn_about_it(self):
+    def test_and_should_warn_about_it(self):
         self.when_is_a_symlink_to_a_dir('topdir/.Trash')
         self.and_contains_a_valid_trashinfo()
 
@@ -214,10 +198,10 @@ class with_a_top_trash_dir(Setup):
         rel_dest = os.path.basename(dest)
         os.symlink(rel_dest, path)
 
-@istest
-class describe_when_a_file_is_in_alternate_top_trashdir(Setup):
-    @istest
-    def should_list_contents_of_alternate_trashdir(self):
+
+class Test_describe_when_a_file_is_in_alternate_top_trashdir(Setup):
+
+    def test_should_list_contents_of_alternate_trashdir(self):
         self.user.set_fake_uid(123)
         self.user.add_volume('topdir')
         self.top_trashdir2 = FakeTrashDir('topdir/.Trash-123')

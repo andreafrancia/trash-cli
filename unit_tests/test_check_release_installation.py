@@ -1,10 +1,13 @@
+import unittest
+
 from check_release_installation import (CheckInstallation,
                                         Pip3Installation,
                                         PipInstallation)
 from nose.tools import assert_equal
 from mock import call
 
-class TestCheckBothInstallations:
+
+class TestCheckBothInstallations(unittest.TestCase):
     def setUp(self):
         self.calls = []
         outer = self
@@ -69,4 +72,3 @@ call().run_checked('trash-rm --version'),
 call().run_checked('trash-empty --version'),
 call().run_checked('trash-restore --version'),
 call().run_checked('trash --version')], self.calls)
-

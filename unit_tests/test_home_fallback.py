@@ -1,3 +1,5 @@
+import unittest
+
 from mock import Mock, call, ANY
 
 from trashcli.fstab import FakeFstab
@@ -6,7 +8,8 @@ from nose.tools import assert_equal
 from datetime import datetime
 import os
 
-class TestHomeFallback:
+
+class TestHomeFallback(unittest.TestCase):
     def setUp(self):
         self.reporter = Mock()
         mount_points = ['/', 'sandbox/other_partition']

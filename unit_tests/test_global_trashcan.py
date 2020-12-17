@@ -1,5 +1,7 @@
+import unittest
+
 from mock import Mock, call
-from nose.tools import istest, assert_equal
+from nose.tools import assert_equal
 from datetime import datetime
 
 from trashcli.put import GlobalTrashCan
@@ -42,7 +44,8 @@ class TestTopDirRules:
             call('', '/volume/.Trash-uid')
             ], reporter.file_has_been_trashed_in_as.mock_calls)
 
-class TestGlobalTrashCan:
+
+class TestGlobalTrashCan(unittest.TestCase):
     def setUp(self):
         self.reporter = Mock()
         self.fs = Mock()
@@ -65,23 +68,20 @@ class TestGlobalTrashCan:
 
         self.reporter.volume_of_file.assert_called_with('/')
 
-    @istest
-    def should_report_when_trash_fail(self):
+    def test_should_report_when_trash_fail(self):
         self.fs.move.side_effect = IOError
 
         self.trashcan.trash('non-existent')
 
         self.reporter.unable_to_trash_file.assert_called_with('non-existent')
 
-    @istest
-    def should_not_delete_a_dot_entru(self):
+    def test_should_not_delete_a_dot_entru(self):
 
         self.trashcan.trash('.')
 
         self.reporter.unable_to_trash_dot_entries.assert_called_with('.')
 
-    @istest
-    def bug(self):
+    def test_bug(self):
         self.fs.mock_add_spec([
             'move',
             'atomic_write',

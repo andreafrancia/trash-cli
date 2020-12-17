@@ -1,8 +1,10 @@
-from nose.tools import istest, assert_equal, assert_in
+import unittest
+
+from nose.tools import assert_equal, assert_in
 from subprocess import PIPE, Popen
 import sys
 
-class TestScriptsSmoke:
+class TestScriptsSmoke(unittest.TestCase):
     def test_trash_rm_works(self):
         self.run_script('trash-rm')
         assert_in("Usage:", self.stderr.splitlines())
