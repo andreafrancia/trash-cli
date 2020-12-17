@@ -93,6 +93,7 @@ class TestTrashRestoreCmd:
         trash_directories = make_trash_directories()
         trashed_files = TrashedFiles(trash_directories, TrashDirectory(),
                                      contents_of)
+        self.fs = Mock(spec=restore.FileSystem)
         self.cmd = RestoreCmd(stdout=self.stdout,
                               stderr=self.stderr,
                               exit = self.capture_exit_status,
@@ -100,7 +101,7 @@ class TestTrashRestoreCmd:
                               version=None,
                               trashed_files=trashed_files,
                               mount_points=os_mount_points,
-                              fs=restore.FileSystem())
+                              fs=self.fs)
 
     def capture_exit_status(self, exit_status):
         self.exit_status = exit_status
@@ -125,8 +126,6 @@ class TestTrashRestoreCmd:
                 None,
                 'info_file',
                 'orig_file')
-        fs = Mock()
-        self.cmd.fs = fs
         self.cmd.path_exists = lambda _: False
 
         self.user_reply = '0'
@@ -138,7 +137,7 @@ class TestTrashRestoreCmd:
             call.mkdirs('parent')
             , call.move('orig_file', 'parent/path')
             , call.remove_file('info_file')
-            ], fs.mock_calls)
+            ], self.fs.mock_calls)
 
     def test_when_user_reply_with_empty_string(self):
         self.user_reply = ''
