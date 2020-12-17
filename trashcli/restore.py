@@ -116,18 +116,26 @@ class RestoreAskingTheUser(object):
             self.println("Exiting")
         else:
             try:
-                indexes = user_input.split(',')
-                indexes.sort(reverse=True)  # restore largest index first
+                indexes = parse_indexes(user_input, len(trashed_files))
                 for index in indexes:
-                    index = int(index)
-                    if (index < 0 or index >= len(trashed_files)):
-                        raise IndexError("Out of range")
                     trashed_file = trashed_files[index]
                     self.restore(trashed_file)
             except (ValueError, IndexError) as e:
                 self.die("Invalid entry")
             except IOError as e:
                 self.die(e)
+
+
+def parse_indexes(user_input, len_trashed_files):
+    indexes = user_input.split(',')
+    indexes.sort(reverse=True)  # restore largest index first
+    result = []
+    for index in indexes:
+        index = int(index)
+        if (index < 0 or index >= len_trashed_files):
+            raise IndexError("Out of range")
+        result.append(index)
+    return result
 
 
 class Restorer(object):
