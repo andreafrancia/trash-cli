@@ -1,4 +1,5 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
+import unittest
 
 from trashcli.put import TrashPutCmd
 from trashcli.put import TopDirRelativePaths, AbsolutePaths
@@ -10,7 +11,7 @@ from integration_tests.asserts import assert_equals_with_unidiff
 from textwrap import dedent
 from mock import Mock, call
 
-class TestTrashPutTrashDirectory:
+class TestTrashPutTrashDirectory(unittest.TestCase):
     def setUp(self):
         parent_path = lambda _ : None
         volume_of = lambda _ : '/'
@@ -45,8 +46,8 @@ class TestTrashPutTrashDirectory:
             ])], self.try_trash_file_using_candidates.mock_calls)
 
 
-class TrashPutTest:
-    def run(self, *arg):
+class TrashPutTest(unittest.TestCase):
+    def run_trash_put(self, *arg):
         self.stderr = StringIO()
         self.stdout = StringIO()
         args = ['trash-put'] + list(arg)
@@ -81,7 +82,7 @@ class TrashPutTest:
 
 class TestWhenNoArgs(TrashPutTest):
     def setUp(self):
-        self.run()
+        self.run_trash_put()
 
     def test_should_report_usage(self):
         assert_line_in_text('Usage: trash-put [OPTION]... FILE...',
@@ -91,7 +92,7 @@ class TestWhenNoArgs(TrashPutTest):
 
 class TestTrashPutWithWrongOption(TrashPutTest):
     def test_something(self):
-        self.run('--wrong-option')
+        self.run_trash_put('--wrong-option')
         self.stderr_should_be(dedent('''\
             Usage: trash-put [OPTION]... FILE...
 
@@ -109,7 +110,7 @@ def assert_line_in_text(expected_line, text):
 class TestTrashPutCmd(TrashPutTest):
 
     def test_on_help_option_print_help(self):
-        self.run('--help')
+        self.run_trash_put('--help')
         self.stdout_should_be(dedent('''\
             Usage: trash-put [OPTION]... FILE...
 
@@ -136,15 +137,15 @@ class TestTrashPutCmd(TrashPutTest):
             '''))
 
     def test_it_should_skip_dot_entry(self):
-        self.run('.')
+        self.run_trash_put('.')
         self.stderr_should_be("trash-put: cannot trash directory '.'\n")
 
     def test_it_should_skip_dotdot_entry(self):
-        self.run('..')
+        self.run_trash_put('..')
         self.stderr_should_be("trash-put: cannot trash directory '..'\n")
 
     def test_it_should_print_usage_on_no_argument(self):
-        self.run()
+        self.run_trash_put()
         self.stderr_should_be(
             'Usage: trash-put [OPTION]... FILE...\n'
             '\n'
@@ -152,7 +153,7 @@ class TestTrashPutCmd(TrashPutTest):
         self.stdout_should_be('')
 
     def test_it_should_skip_missing_files(self):
-        self.run('-f', 'this_file_does_not_exist', 'nor_does_this_file')
+        self.run_trash_put('-f', 'this_file_does_not_exist', 'nor_does_this_file')
         self.stderr_should_be('')
         self.stdout_should_be('')
 
