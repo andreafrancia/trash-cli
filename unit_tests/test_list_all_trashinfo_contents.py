@@ -31,7 +31,7 @@ class TestTrashDirReader(unittest.TestCase):
                             call(trashinfo='/path/file2')], out.mock_calls)
 
 
-class TrashDirReader(unittest.TestCase):
+class TrashDirReader:
     def __init__(self, os_listdir):
         self.os_listdir = os_listdir
     def list_trashinfos(self, trashdir, list_to):
