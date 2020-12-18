@@ -20,7 +20,7 @@ from trashcli.fs import mkdirs
 from nose.tools import assert_true, assert_raises
 import shutil
 
-class TestTrashEmptyCmd:
+class TestTrashEmptyCmd(unittest.TestCase):
     def test(self):
         out = StringIO()
         empty(['trash-empty', '-h'], stdout = out)
@@ -267,7 +267,7 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
         set_sticky_bit(path)
 
 from textwrap import dedent
-class TestTrashEmpty_on_help:
+class TestTrashEmpty_on_help(unittest.TestCase):
     def test_help_output(self):
         err, out = StringIO(), StringIO()
         cmd = EmptyCmd(err = err,
@@ -293,7 +293,7 @@ class TestTrashEmpty_on_help:
             Report bugs to https://github.com/andreafrancia/trash-cli/issues
             """))
 
-class TestTrashEmpty_on_version():
+class TestTrashEmpty_on_version(unittest.TestCase):
     def test_it_print_version(self):
         err, out = StringIO(), StringIO()
         cmd = EmptyCmd(err = err,
