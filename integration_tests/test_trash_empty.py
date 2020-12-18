@@ -311,7 +311,8 @@ class TestTrashEmpty_on_version():
             trash-empty 1.2.3
             """))
 
-class describe_trash_empty_command_line__on_invalid_options():
+
+class Test_describe_trash_empty_command_line__on_invalid_options(unittest.TestCase):
     def setUp(self):
         self.err, self.out = StringIO(), StringIO()
         self.cmd = EmptyCmd(
@@ -326,14 +327,14 @@ class describe_trash_empty_command_line__on_invalid_options():
                        version = None,
                        )
 
-    def it_should_fail(self):
+    def test_it_should_fail(self):
 
         self.exit_code = self.cmd.run('trash-empty', '-2')
 
         exit_code_for_command_line_usage = 64
         assert_equal(exit_code_for_command_line_usage, self.exit_code)
 
-    def it_should_complain_to_the_standard_error(self):
+    def test_it_should_complain_to_the_standard_error(self):
 
         self.exit_code = self.cmd.run('trash-empty', '-2')
 
