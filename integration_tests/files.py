@@ -1,6 +1,6 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from nose.tools import assert_equal
+from unit_tests.tools import assert_equal, assert_raises
 from trashcli.fs  import has_sticky_bit
 import os, shutil
 
@@ -72,7 +72,6 @@ def make_unreadable_file(path):
     make_file(path, '')
     import os
     os.chmod(path, 0)
-    from nose.tools import assert_raises
     with assert_raises(IOError):
         open(path).read()
 

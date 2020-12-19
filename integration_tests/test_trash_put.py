@@ -4,8 +4,7 @@ from trashcli.put import TrashPutCmd
 import os
 from os.path import exists as file_exists
 from datetime import datetime
-from nose.tools import assert_equal, assert_not_equal
-from nose.tools import assert_in
+from unit_tests.tools import assert_equal, assert_not_equal, assert_in
 
 from .files import make_empty_file, require_empty_dir
 from .files import make_sticky_dir

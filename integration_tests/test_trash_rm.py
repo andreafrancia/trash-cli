@@ -2,7 +2,7 @@ import unittest
 
 from unit_tests.myStringIO import StringIO
 from mock import Mock, ANY
-from nose.tools import assert_false, assert_equal
+from unit_tests.tools import assert_false, assert_equal
 
 from .files import require_empty_dir, make_file
 from trashcli.rm import RmCmd, ListTrashinfos

@@ -2,7 +2,7 @@
 
 from trashcli.put import describe
 from .files import require_empty_dir, make_empty_file
-from nose.tools import assert_equal
+from unit_tests.tools import assert_equal
 import os
 import unittest
 

@@ -2,9 +2,9 @@
 import unittest
 
 from trashcli.trash import TrashDirs
-from nose.tools import assert_in, assert_not_in
+from unit_tests.tools import assert_in, assert_not_in
 from mock import Mock
-from nose.tools import assert_equal
+from unit_tests.tools import assert_equal
 from mock import MagicMock
 from trashcli.trash import TopTrashDirRules
 

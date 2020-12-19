@@ -1,7 +1,7 @@
 import unittest
 
 from mock import Mock, call
-from nose.tools import assert_equal
+from unit_tests.tools import assert_equal
 from datetime import datetime
 
 from trashcli.put import GlobalTrashCan
@@ -109,8 +109,8 @@ class TestGlobalTrashCan(unittest.TestCase):
             'move', 'atomic_write', 'remove_file', 'ensure_dir',
             ], True)
 
-        from nose import SkipTest
-        raise SkipTest()
+        from unittest import SkipTest
+        raise SkipTest("")
 
         trash_dir = TrashDirectoryForPut('/path', '/volume', fs)
 

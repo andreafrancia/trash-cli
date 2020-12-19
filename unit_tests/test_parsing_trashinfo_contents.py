@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 import unittest
 
-from nose.tools import assert_equal, assert_raises
+from unit_tests.tools import assert_equal, assert_raises
 from datetime import datetime
 from mock import MagicMock
 

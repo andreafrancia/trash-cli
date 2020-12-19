@@ -3,7 +3,7 @@ import unittest
 from check_release_installation import (CheckInstallation,
                                         Pip3Installation,
                                         PipInstallation)
-from nose.tools import assert_equal
+from unit_tests.tools import assert_equal
 from mock import call
 
 

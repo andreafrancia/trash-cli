@@ -8,7 +8,7 @@ Update the version number:
 
 Run all tests:
 
-    nosetests
+    pytest
 
 Test the installation from tarball:
   

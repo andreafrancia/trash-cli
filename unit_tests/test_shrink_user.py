@@ -1,6 +1,6 @@
 import unittest
 
-from nose.tools import assert_equal
+from unit_tests.tools import assert_equal
 from trashcli.put import shrinkuser
 
 class TestTrashDirectoryName(unittest.TestCase):

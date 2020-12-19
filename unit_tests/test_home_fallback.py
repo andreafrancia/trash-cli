@@ -4,7 +4,7 @@ from mock import Mock, call, ANY
 
 from trashcli.fstab import FakeFstab
 from trashcli.put import GlobalTrashCan
-from nose.tools import assert_equal
+from unit_tests.tools import assert_equal
 from datetime import datetime
 import os
 

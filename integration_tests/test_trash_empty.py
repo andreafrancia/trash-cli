@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 import unittest
 
-from nose.tools import assert_equal
+from unit_tests.tools import assert_equal
 from unit_tests.tools import assert_items_equal
 from trashcli.empty import EmptyCmd
 
@@ -13,11 +13,10 @@ from mock import MagicMock
 from trashcli.fs import FileSystemReader
 from trashcli.fs import FileRemover
 
-from nose.tools import assert_regexp_matches
+from unit_tests.tools import assert_regexp_matches, assert_true
 
 from trashcli.empty import main as empty
 from trashcli.fs import mkdirs
-from nose.tools import assert_true, assert_raises
 import shutil
 
 class TestTrashEmptyCmd(unittest.TestCase):

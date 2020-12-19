@@ -3,7 +3,7 @@
 import os
 import unittest
 
-from nose.tools import assert_equal, assert_true
+from unit_tests.tools import assert_equal, assert_true
 
 from integration_tests.files import require_empty_dir
 from trashcli.put import TrashDirectoryForPut, RealFs

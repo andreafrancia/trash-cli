@@ -221,25 +221,15 @@ trash-cli 提供以下命令：
 
 ::
 
-   nosetests unit_tests           # 只运行单元测试
-   nosetests integration_tests    # 运行所有集成测试
-   nosetests -A 'not stress_test' # 运行压力测试以外的测试
-   nosetests                      # 运行所有测试
+   pytest unit_tests           # 只运行单元测试
+   pytest integration_tests    # 运行所有集成测试
+   pytest                      # 运行所有测试
 
 发布前检测安装进程：
 
 ::
 
    python check_release_installation.py
-
-单元测试性能分析：
-
-::
-
-   pip install gprof2dot
-   nosetests --with-profile --profile-stats-file stats.pf --profile-restrict=unit_tests unit_tests
-   gprof2dot -w  -f pstats stats.pf | dot -Tsvg >| stats.svg
-   open stats.svg
 
 .. |Donate| image:: https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif
 .. _Donate: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=93L6PYT4WBN5A

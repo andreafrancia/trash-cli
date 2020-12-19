@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 import unittest
 
-from nose.tools import assert_equal
+from unit_tests.tools import assert_equal
 from trashcli.trash import TrashDir
 
 class TestTrashDir_finding_orphans(unittest.TestCase):

@@ -186,21 +186,14 @@ Environment setup::
 
 Running tests::
 
-    nosetests unit_tests           # run only unit tests
-    nosetests integration_tests    # run all integration tests
-    nosetests -A 'not stress_test' # run all tests but stress tests
-    nosetests                      # run all tests
+    pytest unit_tests           # run only unit tests
+    pytest integration_tests    # run all integration tests
+    pytest                      # run all tests
 
 Check the installation process before release::
 
     python check_release_installation.py
 
-Profiling unit tests::
-
-    pip install gprof2dot
-    nosetests --with-profile --profile-stats-file stats.pf --profile-restrict=unit_tests unit_tests
-    gprof2dot -w  -f pstats stats.pf | dot -Tsvg >| stats.svg
-    open stats.svg
 
 .. |Donate| image:: https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif
 .. _Donate: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=93L6PYT4WBN5A

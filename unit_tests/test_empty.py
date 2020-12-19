@@ -2,7 +2,7 @@ import unittest
 
 from trashcli.empty import EmptyCmd
 from mock import Mock, call
-from nose.tools import assert_equal
+from unit_tests.tools import assert_equal
 
 
 class TestTrashEmptyCmd(unittest.TestCase):

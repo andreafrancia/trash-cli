@@ -1,6 +1,6 @@
 from trashcli.put import TrashDirectoryForPut
 from trashcli.put import AbsolutePaths, TopDirRelativePaths
-from nose.tools import assert_equal
+from unit_tests.tools import assert_equal
 from mock import Mock
 
 class TestHowOriginalLocationIsStored:

@@ -3,7 +3,7 @@ import unittest
 from trashcli.list_mount_points import os_mount_points
 from trashcli.restore import RestoreCmd, make_trash_directories, \
     TrashDirectory, TrashedFiles
-from nose.tools import assert_equal
+from unit_tests.tools import assert_equal, assert_raises, assert_true
 from .myStringIO import StringIO
 from mock import call
 from trashcli import restore
@@ -12,6 +12,8 @@ from mock import Mock
 from integration_tests.files import make_file, require_empty_dir
 from trashcli.fs import remove_file
 from trashcli.fs import contents_of
+from trashcli.restore import TrashedFile
+import os
 
 
 class Test_parse_args(unittest.TestCase):
@@ -163,9 +165,6 @@ class TestTrashRestoreCmd(unittest.TestCase):
         assert_equal('', self.stdout.getvalue())
         assert_equal(1, self.exit_status)
 
-from trashcli.restore import TrashedFile
-from nose.tools import assert_raises, assert_true
-import os
 class TestTrashedFileRestoreIntegration(unittest.TestCase):
     def setUp(self):
         remove_file_if_exists('parent/path')

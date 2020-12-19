@@ -2,7 +2,7 @@ import unittest
 
 from trashcli.trash import Parser
 from mock import MagicMock, call
-from nose.tools import assert_equal
+from unit_tests.tools import assert_equal
 
 
 class TestParser(unittest.TestCase):

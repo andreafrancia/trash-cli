@@ -1,6 +1,6 @@
 from trashcli.trash import TrashDirs
 from mock import Mock, call
-from nose.tools import assert_equal
+from unit_tests.tools import assert_equal
 
 class TestListTrashinfo:
     def test_howto_list_trashdirs(self):

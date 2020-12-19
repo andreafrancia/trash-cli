@@ -30,4 +30,4 @@ jobs:
         pip install -r requirements.txt
     - name: Test with nose
       run: |
-        nosetests
+        pytest

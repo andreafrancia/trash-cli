@@ -2,7 +2,7 @@ import unittest
 
 from trashcli.fstab import VolumeOf
 from trashcli.fstab import FakeIsMount
-from nose.tools import assert_equal
+from unit_tests.tools import assert_equal
 import os
 
 

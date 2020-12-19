@@ -1,7 +1,7 @@
 # Copyright (C) 2009-2020 Andrea Francia Trivolzio(PV) Italy
 
 from textwrap import dedent
-from nose.tools import assert_in
+from unit_tests.tools import assert_in, assert_equal
 
 
 def assert_line_in_text(line, text):
@@ -30,7 +30,6 @@ def assert_equals_with_unidiff(expected, actual):
 
         return ''.join(diff)
 
-    from nose.tools import assert_equal
     assert_equal(expected, actual,
                  "\n"
                  "Expected:%s\n" % repr(expected) +

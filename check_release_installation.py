@@ -1,8 +1,10 @@
 from __future__ import print_function
+
+import unittest
+
 TARGET_HOST = 'default'
 
-import nose
-from nose.tools import assert_equal
+from unit_tests.tools import assert_equal
 import subprocess
 
 from trashcli.trash import version
@@ -62,11 +64,12 @@ def strip_end(text, suffix):
     return text[:-len(suffix)]
 
 def check_connection():
-    suite = nose.loader.TestLoader().loadTestsFromTestClass(TestConnection)
-    nose.run(suite=suite)
+    suite = unittest.loader.TestLoader().loadTestsFromTestCase(TestConnection)
+    unittest.TextTestRunner().run(suite)
 
-class TestConnection:
-    def __init__(self):
+
+class TestConnection(unittest.TestCase):
+    def setUp(self):
         self.ssh = Connection(TARGET_HOST)
     def test_should_report_stdout(self):
         result = self.ssh.run('echo', 'foo')

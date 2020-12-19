@@ -1,6 +1,6 @@
 import unittest
 
-from nose.tools import assert_equal, assert_in
+from unit_tests.tools import assert_equal, assert_in
 from subprocess import PIPE, Popen
 import sys
 

@@ -2,8 +2,8 @@ import unittest
 
 from trashcli.fstab import FakeIsMount
 
-from nose.tools import assert_false
-from nose.tools import assert_true
+from unit_tests.tools import assert_false
+from unit_tests.tools import assert_true
 
 
 class TestOnDefault(unittest.TestCase):

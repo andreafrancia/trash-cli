@@ -1,7 +1,7 @@
 import unittest
 
 from mock import Mock
-from nose.tools import assert_equal
+from unit_tests.tools import assert_equal
 from trashcli.restore import TrashDirectories
 
 
