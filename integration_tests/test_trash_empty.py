@@ -13,7 +13,7 @@ from mock import MagicMock
 from trashcli.fs import FileSystemReader
 from trashcli.fs import FileRemover
 
-from unit_tests.tools import assert_regexp_matches, assert_true
+from unit_tests.tools import assert_regex, assert_true
 
 from trashcli.empty import main as empty
 from trashcli.fs import mkdirs
@@ -23,7 +23,7 @@ class TestTrashEmptyCmd(unittest.TestCase):
     def test(self):
         out = StringIO()
         empty(['trash-empty', '-h'], stdout = out)
-        assert_regexp_matches(out.getvalue(), '^Usage. trash-empty.*')
+        assert_regex(out.getvalue(), '^Usage. trash-empty.*')
 
     def test_trash_empty_will_crash_on_unreadable_directory_issue_48(self):
         out = StringIO()
