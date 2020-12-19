@@ -13,7 +13,7 @@ class Test_make_unreadable_file(unittest.TestCase):
     def test(self):
         path = os.path.join(self.tmp, "unreadable")
         make_unreadable_file(path)
-        with self.assertRaises(PermissionError):
+        with self.assertRaises(OSError):
             read_file(path)
 
     def tearDown(self):
