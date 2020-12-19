@@ -1,7 +1,6 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 import unittest
 
-from unit_tests.tools import assert_equal
 from trashcli.empty import EmptyCmd
 
 from unit_tests.myStringIO import StringIO
@@ -12,7 +11,6 @@ from mock import MagicMock
 from trashcli.fs import FileSystemReader
 from trashcli.fs import FileRemover
 import six
-from unit_tests.tools import assert_true
 
 from trashcli.empty import main as empty
 from trashcli.fs import mkdirs
@@ -31,12 +29,12 @@ class TestTrashEmptyCmd(unittest.TestCase):
         mkdirs('data/Trash/files/unreadable')
         os.chmod('data/Trash/files/unreadable', 0o300)
 
-        assert_true(os.path.exists('data/Trash/files/unreadable'))
+        assert os.path.exists('data/Trash/files/unreadable')
 
         empty(['trash-empty'], stdout = out, stderr = err,
                 environ={'XDG_DATA_HOME':'data'})
 
-        assert_equal("trash-empty: cannot remove data/Trash/files/unreadable\n",
+        assert ("trash-empty: cannot remove data/Trash/files/unreadable\n" ==
                      err.getvalue())
         os.chmod('data/Trash/files/unreadable', 0o700)
         shutil.rmtree('data')
@@ -45,7 +43,7 @@ class TestTrashEmptyCmd(unittest.TestCase):
         mkdirs('unreadable-dir')
         os.chmod('unreadable-dir', 0o300)
 
-        assert_true(os.path.exists('unreadable-dir'))
+        assert os.path.exists('unreadable-dir')
 
         try:
             FileRemover().remove_file('unreadable-dir')
@@ -280,7 +278,7 @@ class TestTrashEmpty_on_help(unittest.TestCase):
                        version = None,
                        )
         cmd.run('trash-empty', '--help')
-        assert_equal(out.getvalue(), dedent("""\
+        assert out.getvalue() == dedent("""\
             Usage: trash-empty [days]
 
             Purge trashed files.
@@ -290,7 +288,7 @@ class TestTrashEmpty_on_help(unittest.TestCase):
               -h, --help  show this help message and exit
 
             Report bugs to https://github.com/andreafrancia/trash-cli/issues
-            """))
+            """)
 
 class TestTrashEmpty_on_version(unittest.TestCase):
     def test_it_print_version(self):
@@ -306,9 +304,9 @@ class TestTrashEmpty_on_version(unittest.TestCase):
                        version = '1.2.3',
                        )
         cmd.run('trash-empty', '--version')
-        assert_equal(out.getvalue(), dedent("""\
+        assert out.getvalue() == dedent("""\
             trash-empty 1.2.3
-            """))
+            """)
 
 
 class Test_describe_trash_empty_command_line__on_invalid_options(unittest.TestCase):
@@ -331,23 +329,23 @@ class Test_describe_trash_empty_command_line__on_invalid_options(unittest.TestCa
         self.exit_code = self.cmd.run('trash-empty', '-2')
 
         exit_code_for_command_line_usage = 64
-        assert_equal(exit_code_for_command_line_usage, self.exit_code)
+        assert exit_code_for_command_line_usage == self.exit_code
 
     def test_it_should_complain_to_the_standard_error(self):
 
         self.exit_code = self.cmd.run('trash-empty', '-2')
 
-        assert_equal(self.err.getvalue(), dedent("""\
+        assert self.err.getvalue() == dedent("""\
                 trash-empty: invalid option -- '2'
-                """))
+                """)
 
     def test_with_a_different_option(self):
 
         self.cmd.run('trash-empty', '-3')
 
-        assert_equal(self.err.getvalue(), dedent("""\
+        assert self.err.getvalue() == dedent("""\
                 trash-empty: invalid option -- '3'
-                """))
+                """)
 
 def no_volumes():
     return []

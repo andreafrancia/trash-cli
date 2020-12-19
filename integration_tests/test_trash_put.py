@@ -4,7 +4,6 @@ from trashcli.put import TrashPutCmd
 import os
 from os.path import exists as file_exists
 from datetime import datetime
-from unit_tests.tools import assert_equal, assert_not_equal, assert_in
 
 from .files import make_empty_file, require_empty_dir
 from .files import make_sticky_dir
@@ -24,7 +23,7 @@ class TestPath(unittest.TestCase):
         remove_file('dir')
         os.symlink('other_dir/dir', 'dir')
         make_empty_file('dir/foo')
-        assert_equal(os.path.join(self.base, 'other_dir/dir'),
+        assert (os.path.join(self.base, 'other_dir/dir') ==
                      parent_path('dir/foo'))
         remove_file('dir')
         remove_file('other_dir')
@@ -32,7 +31,7 @@ class TestPath(unittest.TestCase):
         require_empty_dir('test-disk/dir')
         remove_file('link-to-non-existent')
         os.symlink('test-disk/non-existent', 'link-to-non-existent')
-        assert_equal(self.base,
+        assert (self.base ==
                      parent_path('link-to-non-existent'))
         remove_file('link-to-non-existent')
 
@@ -42,7 +41,7 @@ class TestPath(unittest.TestCase):
         require_empty_dir('foo')
         require_empty_dir('bar')
         os.symlink('../bar/zap', 'foo/zap')
-        assert_equal(os.path.join(self.base, 'foo'), parent_path('foo/zap'))
+        assert os.path.join(self.base, 'foo') == parent_path('foo/zap')
         remove_file('foo')
         remove_file('bar')
 
@@ -53,7 +52,7 @@ class TestPath(unittest.TestCase):
         require_empty_dir('bar')
         os.symlink('../bar/zap', 'foo/zap')
         make_empty_file('bar/zap')
-        assert_equal(os.path.join(self.base,'foo'), parent_path('foo/zap'))
+        assert os.path.join(self.base,'foo') == parent_path('foo/zap')
         remove_file('foo')
         remove_file('bar')
 
@@ -114,11 +113,11 @@ class Test_when_deleting_an_existing_file_in_verbose_mode(TrashPutTest):
         self.run_trashput('trash-put', '-v', 'sandbox/foo')
 
     def test_should_tell_where_a_file_is_trashed(self):
-        assert_in("trash-put: 'sandbox/foo' trashed in sandbox/XDG_DATA_HOME/Trash",
+        assert ("trash-put: 'sandbox/foo' trashed in sandbox/XDG_DATA_HOME/Trash" in
                   self.stderr.splitlines())
 
     def test_should_be_succesfull(self):
-        assert_equal(0, self.exit_code)
+        assert 0 == self.exit_code
 
 
 class Test_when_deleting_a_non_existing_file(TrashPutTest):
@@ -126,7 +125,7 @@ class Test_when_deleting_a_non_existing_file(TrashPutTest):
         self.run_trashput('trash-put', '-v', 'non-existent')
 
     def test_should_be_succesfull(self):
-        assert_not_equal(0, self.exit_code)
+        assert 0 != self.exit_code
 
 
 class Test_when_fed_with_dot_arguments(TrashPutTest):

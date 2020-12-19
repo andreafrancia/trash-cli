@@ -1,7 +1,6 @@
 import unittest
 
 from mock import Mock, call
-from unit_tests.tools import assert_equal
 from datetime import datetime
 
 from trashcli.put import GlobalTrashCan
@@ -40,9 +39,9 @@ class TestTopDirRules:
                                   Mock())
 
         trashcan.trash('')
-        assert_equal([
+        assert [
             call('', '/volume/.Trash-uid')
-            ], reporter.file_has_been_trashed_in_as.mock_calls)
+            ] == reporter.file_has_been_trashed_in_as.mock_calls
 
 
 class TestGlobalTrashCan(unittest.TestCase):

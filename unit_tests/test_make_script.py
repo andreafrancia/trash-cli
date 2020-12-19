@@ -1,6 +1,5 @@
 import unittest
 from textwrap import dedent
-from unit_tests.tools import assert_equal
 import mock
 from mock import Mock
 from setup import Scripts
@@ -35,10 +34,9 @@ class TestMakeScript(unittest.TestCase):
             from trashcli.cmds import put as main
             sys.exit(main())
             """)
-        assert_equal(expected, contents,
-                     "Expected:\n---\n%s---\n"
-                     "Actual  :\n---\n%s---\n"
-                     % (expected, contents))
+        assert expected == contents, ("Expected:\n---\n%s---\n"
+                                      "Actual  :\n---\n%s---\n"
+                                      % (expected, contents))
 
 class TestListOfCreatedScripts(unittest.TestCase):
     def setUp(self):
@@ -47,8 +45,8 @@ class TestListOfCreatedScripts(unittest.TestCase):
                 write_file           = Mock())
 
     def test_is_empty_on_start_up(self):
-        assert_equal(self.bindir.created_scripts, [])
+        assert self.bindir.created_scripts == []
 
     def test_collect_added_script(self):
         self.bindir.add_script('foo-command', 'foo-module', 'main')
-        assert_equal(self.bindir.created_scripts, ['foo-command'])
+        assert self.bindir.created_scripts == ['foo-command']

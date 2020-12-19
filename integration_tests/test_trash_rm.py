@@ -2,7 +2,6 @@ import unittest
 
 from unit_tests.myStringIO import StringIO
 from mock import Mock, ANY
-from unit_tests.tools import assert_false, assert_equal
 
 from .files import require_empty_dir, make_file
 from trashcli.rm import RmCmd, ListTrashinfos
@@ -16,11 +15,10 @@ class TestTrashRm(unittest.TestCase):
 
         self.trash_rm.run(['trash-rm', 'any-pattern (ignored)'])
 
-        assert_equal('trash-rm: '
+        assert ('trash-rm: '
                      'sandbox/xdh/Trash/info/1.trashinfo: '
                      'unable to parse \'Path\''
-                     '\n'
-                     , self.stderr.getvalue())
+                     '\n' == self.stderr.getvalue())
 
 
     def test_integration(self):
@@ -51,8 +49,7 @@ class TestTrashRm(unittest.TestCase):
     def assert_trashinfo_has_been_deleted(self, index):
         import os
         filename = self.trashinfo_from_index(index)
-        assert_false(os.path.exists(filename),
-                'File "%s" still exists' % filename)
+        assert not os.path.exists(filename), 'File "%s" still exists' % filename
 
 
 class TestListing(unittest.TestCase):

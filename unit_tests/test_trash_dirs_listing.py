@@ -2,9 +2,7 @@
 import unittest
 
 from trashcli.trash import TrashDirs
-from unit_tests.tools import assert_in, assert_not_in
 from mock import Mock
-from unit_tests.tools import assert_equal
 from mock import MagicMock
 from trashcli.trash import TopTrashDirRules
 
@@ -15,26 +13,26 @@ class TestTrashDirs_listing(unittest.TestCase):
         self.uid = 123
         self.volumes = ['/usb']
 
-        assert_in('/usb/.Trash-123', self.trashdirs())
+        assert '/usb/.Trash-123' in self.trashdirs()
 
     def test_the_method_1_is_in_if_it_is_a_sticky_dir(self):
         self.uid = 123
         self.volumes = ['/usb']
         self.having_sticky_Trash_dir()
 
-        assert_in('/usb/.Trash/123', self.trashdirs())
+        assert '/usb/.Trash/123' in self.trashdirs()
 
     def test_the_method_1_is_not_considered_if_not_sticky_dir(self):
         self.uid = 123
         self.volumes = ['/usb']
         self.having_non_sticky_Trash_dir()
 
-        assert_not_in('/usb/.Trash/123', self.trashdirs())
+        assert '/usb/.Trash/123' not in self.trashdirs()
 
     def test_should_return_home_trashcan_when_XDG_DATA_HOME_is_defined(self):
         self.environ['XDG_DATA_HOME'] = '~/.local/share'
 
-        assert_in('~/.local/share/Trash', self.trashdirs())
+        assert '~/.local/share/Trash' in self.trashdirs()
 
     def trashdirs(self):
         result = []
@@ -102,7 +100,7 @@ class TestDescribe_AvailableTrashDirs_when_parent_is_unsticky(unittest.TestCase)
 
         self.dirs.list_trashdirs()
 
-        assert_equal([], self.dirs.on_trashdir_skipped_because_parent_not_sticky.mock_calls)
+        assert [] == self.dirs.on_trashdir_skipped_because_parent_not_sticky.mock_calls
 
 
 class TestDescribe_AvailableTrashDirs_when_parent_is_symlink(unittest.TestCase):

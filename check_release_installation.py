@@ -4,7 +4,6 @@ import unittest
 
 TARGET_HOST = 'default'
 
-from unit_tests.tools import assert_equal
 import subprocess
 
 from trashcli.trash import version

@@ -1,6 +1,5 @@
 import unittest
 
-from unit_tests.tools import assert_equal
 from trashcli.put import shrinkuser
 
 class TestTrashDirectoryName(unittest.TestCase):
@@ -34,5 +33,5 @@ class TestTrashDirectoryName(unittest.TestCase):
 
     def assert_name_is(self, expected_name):
         shrinked = shrinkuser(self.trash_dir, self.environ)
-        assert_equal(expected_name, shrinked)
+        assert expected_name == shrinked
 

@@ -1,22 +1,21 @@
 import unittest
 
-from unit_tests.tools import assert_equal, assert_in
 from subprocess import PIPE, Popen
 import sys
 
 class TestScriptsSmoke(unittest.TestCase):
     def test_trash_rm_works(self):
         self.run_script('trash-rm')
-        assert_in("Usage:", self.stderr.splitlines())
+        assert "Usage:" in self.stderr.splitlines()
 
     def test_trash_put_works(self):
         self.run_script('trash-put')
-        assert_in("Usage: trash-put [OPTION]... FILE...",
+        assert ("Usage: trash-put [OPTION]... FILE..." in
                 self.stderr.splitlines())
 
     def test_trash_put_touch_filesystem(self):
         self.run_script('trash-put', 'non-existent')
-        assert_equal("trash-put: cannot trash non existent 'non-existent'\n",
+        assert ("trash-put: cannot trash non existent 'non-existent'\n" ==
                      self.stderr)
 
     def run_script(self, script, *args):

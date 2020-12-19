@@ -1,7 +1,5 @@
 import unittest
 
-from unit_tests.tools import assert_equal
-
 from unit_tests.myStringIO import StringIO
 
 
@@ -58,6 +56,5 @@ class TestTrashPutIssueMessage(unittest.TestCase):
             last_line = output.splitlines()[-1]
         else:
             last_line = ''
-        assert_equal(expected, last_line,
-                     ('Last line of output should be:\n\n%s\n\n' % expected +
-                      'but the output is\n\n%s' % output))
+        assert expected == last_line, ('Last line of output should be:\n\n%s\n\n' % expected +
+                      'but the output is\n\n%s' % output)

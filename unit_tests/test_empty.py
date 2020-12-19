@@ -2,7 +2,6 @@ import unittest
 
 from trashcli.empty import EmptyCmd
 from mock import Mock, call
-from unit_tests.tools import assert_equal
 
 
 class TestTrashEmptyCmd(unittest.TestCase):
@@ -17,11 +16,11 @@ class TestTrashEmptyCmd(unittest.TestCase):
     def test_default_behaviour_is_emtpy_all_trashdirs(self):
         self.cmd.run('trash-empty')
 
-        assert_equal([call()], self.empty_all_trashdirs.mock_calls)
-        assert_equal([], self.empty_trashdir.mock_calls)
+        assert [call()] == self.empty_all_trashdirs.mock_calls
+        assert [] == self.empty_trashdir.mock_calls
 
     def test(self):
         self.cmd.run('trash-empty', '--trash-dir', 'specific')
 
-        assert_equal([], self.empty_all_trashdirs.mock_calls)
-        assert_equal([call('specific')], self.empty_trashdir.mock_calls)
+        assert [] == self.empty_all_trashdirs.mock_calls
+        assert [call('specific')] == self.empty_trashdir.mock_calls

@@ -3,7 +3,6 @@ import unittest
 from check_release_installation import (CheckInstallation,
                                         Pip3Installation,
                                         PipInstallation)
-from unit_tests.tools import assert_equal
 from mock import call
 
 
@@ -23,7 +22,7 @@ class TestCheckBothInstallations(unittest.TestCase):
         ci = CheckInstallation(Pip3Installation(), self.ssh, version)
         ci.check_installation()
 
-        assert_equal([
+        assert [
  call().run_checked('sudo rm -f $(which trash-put)'),
  call().run_checked('! which trash-put'),
  call().run_checked('sudo rm -f $(which trash-list)'),
@@ -43,7 +42,7 @@ class TestCheckBothInstallations(unittest.TestCase):
  call().run_checked('trash-rm --version'),
  call().run_checked('trash-empty --version'),
  call().run_checked('trash-restore --version'),
- call().run_checked('trash --version')], self.calls)
+ call().run_checked('trash --version')] == self.calls
 
     def test_pip2_installation(self):
         version = '0.17.1.12'
@@ -51,7 +50,7 @@ class TestCheckBothInstallations(unittest.TestCase):
         i.check_installation()
 
         self.maxDiff = None
-        assert_equal([
+        assert [
 call().run_checked('sudo rm -f $(which trash-put)'),
 call().run_checked('! which trash-put'),
 call().run_checked('sudo rm -f $(which trash-list)'),
@@ -71,4 +70,4 @@ call().run_checked('trash-list --version'),
 call().run_checked('trash-rm --version'),
 call().run_checked('trash-empty --version'),
 call().run_checked('trash-restore --version'),
-call().run_checked('trash --version')], self.calls)
+call().run_checked('trash --version')] == self.calls

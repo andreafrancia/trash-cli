@@ -2,7 +2,6 @@ import unittest
 
 import six
 
-from unit_tests.tools import assert_equal
 from mock import Mock, call
 
 from trashcli.rm import Filter
@@ -16,7 +15,7 @@ class TestTrashRmCmdRun(unittest.TestCase):
         cmd.stderr = StringIO()
         cmd.run([None])
 
-        assert_equal('Usage:\n    trash-rm PATTERN\n\nPlease specify PATTERN\n',
+        assert ('Usage:\n    trash-rm PATTERN\n\nPlease specify PATTERN\n' ==
                      cmd.stderr.getvalue())
 
     def test_without_pattern_argument(self):
@@ -32,7 +31,7 @@ class TestTrashRmCmdRun(unittest.TestCase):
 
         cmd.run([None, None])
 
-        assert_equal('', cmd.stderr.getvalue())
+        assert '' == cmd.stderr.getvalue()
 
 class TestTrashRmCmd(unittest.TestCase):
     def test_a_star_matches_all(self):

@@ -5,7 +5,6 @@ from trashcli.put import TrashPutCmd
 from trashcli.put import TopDirRelativePaths, AbsolutePaths
 from trashcli.put import TopTrashDirWriteRules, all_is_ok_checker
 
-from unit_tests.tools import assert_in, assert_equal
 from unit_tests.myStringIO import StringIO
 from integration_tests.asserts import assert_equals_with_unidiff
 from textwrap import dedent
@@ -32,18 +31,18 @@ class TestTrashPutTrashDirectory(unittest.TestCase):
 
         self.cmd.run(['trash-put', 'file'])
 
-        assert_equal([call('file', '/', [
+        assert [call('file', '/', [
             ('~/xdh/Trash', '/', AbsolutePaths, all_is_ok_checker),
             ('/.Trash/123', '/', TopDirRelativePaths, TopTrashDirWriteRules),
             ('/.Trash-123', '/', TopDirRelativePaths, all_is_ok_checker),
-            ])], self.try_trash_file_using_candidates.mock_calls)
+            ])] == self.try_trash_file_using_candidates.mock_calls
 
     def test_with_a_specified_trashdir(self):
         self.cmd.run(['trash-put', '--trash-dir=/Trash2', 'file'])
 
-        assert_equal([call('file', '/', [
+        assert [call('file', '/', [
             ('/Trash2', '/', TopDirRelativePaths, all_is_ok_checker),
-            ])], self.try_trash_file_using_candidates.mock_calls)
+            ])] == self.try_trash_file_using_candidates.mock_calls
 
 
 class TrashPutTest(unittest.TestCase):
@@ -88,7 +87,7 @@ class TestWhenNoArgs(TrashPutTest):
         assert_line_in_text('Usage: trash-put [OPTION]... FILE...',
                             self.stderr.getvalue())
     def test_exit_code_should_be_not_zero(self):
-        assert_equal(2, self.exit_code)
+        assert 2 == self.exit_code
 
 class TestTrashPutWithWrongOption(TrashPutTest):
     def test_something(self):
@@ -99,10 +98,10 @@ class TestTrashPutWithWrongOption(TrashPutTest):
             trash-put: error: no such option: --wrong-option
             '''))
         self.stdout_should_be('')
-        assert_equal(2, self.exit_code)
+        assert 2 == self.exit_code
 
 def assert_line_in_text(expected_line, text):
-    assert_in(expected_line, text.splitlines(),
+    assert expected_line in text.splitlines(), (
                 'Line not found in text\n'
                 'line: %s\n' % expected_line +
                 'text:\n%s\n' % format(text.splitlines()))

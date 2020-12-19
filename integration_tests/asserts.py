@@ -1,11 +1,10 @@
 # Copyright (C) 2009-2020 Andrea Francia Trivolzio(PV) Italy
 
 from textwrap import dedent
-from unit_tests.tools import assert_in, assert_equal
 
 
 def assert_line_in_text(line, text):
-    assert_in(line, text.splitlines(), dedent('''\
+    assert line in text.splitlines(), dedent('''\
             Line not found in text
             Line:
 
@@ -14,8 +13,7 @@ def assert_line_in_text(line, text):
             Text:
 
             ---
-            %s---''')
-              % (repr(line), text))
+            %s---''') % (repr(line), text)
 
 
 def assert_equals_with_unidiff(expected, actual):
@@ -30,8 +28,7 @@ def assert_equals_with_unidiff(expected, actual):
 
         return ''.join(diff)
 
-    assert_equal(expected, actual,
-                 "\n"
-                 "Expected:%s\n" % repr(expected) +
-                 "  Actual:%s\n" % repr(actual) +
-                 unidiff(expected, actual))
+    assert expected == actual, ("\n"
+                                "Expected:%s\n" % repr(expected) +
+                                "  Actual:%s\n" % repr(actual) +
+                                unidiff(expected, actual))

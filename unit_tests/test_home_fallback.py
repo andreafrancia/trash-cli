@@ -4,7 +4,6 @@ from mock import Mock, call, ANY
 
 from trashcli.fstab import FakeFstab
 from trashcli.put import GlobalTrashCan
-from unit_tests.tools import assert_equal
 from datetime import datetime
 import os
 
@@ -35,7 +34,7 @@ class TestHomeFallback(unittest.TestCase):
 
         self.trashcan.trash('sandbox/foo')
 
-        assert_equal([
+        assert [
             call.isdir('.Trash'),
             call.islink('.Trash'),
             call.has_sticky_bit('.Trash'),
@@ -43,7 +42,7 @@ class TestHomeFallback(unittest.TestCase):
             call.atomic_write('.Trash/123/info/foo.trashinfo', ANY),
             call.ensure_dir('.Trash/123/files', 448),
             call.move('sandbox/foo', '.Trash/123/files/foo')
-        ], self.fs.mock_calls)
+        ] == self.fs.mock_calls
 
     def test_bug_will_use_top_trashdir_even_with_not_sticky(self):
         self.fs.mock_add_spec(['isdir', 'islink', 'has_sticky_bit',
@@ -55,7 +54,7 @@ class TestHomeFallback(unittest.TestCase):
 
         self.trashcan.trash('sandbox/foo')
 
-        assert_equal([
+        assert [
             call.isdir('.Trash'),
             call.islink('.Trash'),
             call.has_sticky_bit('.Trash'),
@@ -63,7 +62,7 @@ class TestHomeFallback(unittest.TestCase):
             call.atomic_write('.Trash-123/info/foo.trashinfo', ANY),
             call.ensure_dir('.Trash-123/files', 448),
             call.move('sandbox/foo', '.Trash-123/files/foo')
-        ], self.fs.mock_calls, self.fs.mock_calls)
+        ] == self.fs.mock_calls, self.fs.mock_calls
 
     def fake_volume_of(self, volumes):
         fstab = FakeFstab()

@@ -6,7 +6,6 @@ from trashcli.restore import TrashDirectory
 
 from integration_tests.files import require_empty_dir
 from integration_tests.files import make_file
-from unit_tests.tools import assert_equal
 from mock import Mock
 
 
@@ -23,7 +22,7 @@ class TestTrashDirectory(unittest.TestCase):
 
         result = self.list_trashinfos()
 
-        assert_equal([('trashinfo', 'sandbox/info/foo.trashinfo')], result)
+        assert [('trashinfo', 'sandbox/info/foo.trashinfo')] == result
 
     def test_should_list_multiple_trashinfo(self):
         make_file('sandbox/info/foo.trashinfo')

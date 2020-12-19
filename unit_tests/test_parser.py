@@ -2,8 +2,6 @@ import unittest
 
 from trashcli.trash import Parser
 from mock import MagicMock, call
-from unit_tests.tools import assert_equal
-
 
 class TestParser(unittest.TestCase):
     def setUp(self):
@@ -22,26 +20,26 @@ class TestParser(unittest.TestCase):
 
         self.parser(['trash-list', '--opt'])
 
-        assert_equal([], self.on_option.mock_calls)
+        assert [] == self.on_option.mock_calls
         self.invalid_option_callback.assert_called_with('trash-list', 'opt')
 
     def test_argument_option_called_with_argument(self):
 
         self.parser(['trash-list', '--opt=', 'arg'])
 
-        assert_equal([call('')], self.on_option.mock_calls)
+        assert [call('')] == self.on_option.mock_calls
 
     def test_argument_option_called_with_argument(self):
 
         self.parser(['trash-list', '--opt=arg'])
 
-        assert_equal([call('arg')], self.on_option.mock_calls)
+        assert [call('arg')] == self.on_option.mock_calls
 
     def test_argument_option_called_with_argument(self):
 
         self.parser(['trash-list', '--opt', 'arg'])
 
-        assert_equal([call('arg')], self.on_option.mock_calls)
+        assert [call('arg')] == self.on_option.mock_calls
 
     def test_it_calls_help(self):
 

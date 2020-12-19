@@ -3,7 +3,6 @@ import unittest
 from trashcli.list_mount_points import os_mount_points
 from trashcli.restore import RestoreCmd, make_trash_directories, \
     TrashDirectory, TrashedFiles
-from unit_tests.tools import assert_equal, assert_raises, assert_true
 from .myStringIO import StringIO
 from mock import call
 from trashcli import restore
@@ -55,10 +54,10 @@ class TestListingInRestoreCmd(unittest.TestCase):
 
         self.cmd.run(['trash-restore'])
 
-        assert_equal([
+        assert [
             'dir/location'
             , 'dir/location'
-            ] ,self.original_locations)
+            ] ==self.original_locations
 
     def test_with_no_args_and_files_in_trashcan_2(self):
         self.trashed_files.all_trashed_files.return_value = [
@@ -69,9 +68,9 @@ class TestListingInRestoreCmd(unittest.TestCase):
 
         self.cmd.run(['trash-restore', 'specific/path'])
 
-        assert_equal([
+        assert [
             'specific/path'
-            ] ,self.original_locations)
+            ] ==self.original_locations
 
     def capture_trashed_files(self,arg):
         self.original_locations = []
@@ -112,14 +111,14 @@ class TestTrashRestoreCmd(unittest.TestCase):
         self.cmd.version = '1.2.3'
         self.cmd.run(['trash-restore', '--version'])
 
-        assert_equal('trash-restore 1.2.3\n', self.stdout.getvalue())
+        assert 'trash-restore 1.2.3\n' == self.stdout.getvalue()
 
     def test_with_no_args_and_no_files_in_trashcan(self):
         self.cmd.curdir = lambda: "cwd"
 
         self.cmd.run(['trash-restore'])
 
-        assert_equal("No files trashed from current dir ('cwd')\n",
+        assert ("No files trashed from current dir ('cwd')\n" ==
                 self.stdout.getvalue())
 
     def test_until_the_restore_unit(self):
@@ -133,37 +132,37 @@ class TestTrashRestoreCmd(unittest.TestCase):
         self.user_reply = '0'
         self.cmd.restore_asking_the_user([trashed_file])
 
-        assert_equal('', self.stdout.getvalue())
-        assert_equal('', self.stderr.getvalue())
-        assert_equal([call.path_exists('parent/path'),
+        assert '' == self.stdout.getvalue()
+        assert '' == self.stderr.getvalue()
+        assert [call.path_exists('parent/path'),
                       call.mkdirs('parent'),
                       call.move('orig_file', 'parent/path'),
-                      call.remove_file('info_file')], self.fs.mock_calls)
+                      call.remove_file('info_file')] == self.fs.mock_calls
 
     def test_when_user_reply_with_empty_string(self):
         self.user_reply = ''
 
         self.cmd.restore_asking_the_user([])
 
-        assert_equal('Exiting\n', self.stdout.getvalue())
+        assert 'Exiting\n' == self.stdout.getvalue()
 
     def test_when_user_reply_with_not_number(self):
         self.user_reply = 'non numeric'
 
         self.cmd.restore_asking_the_user([])
 
-        assert_equal('Invalid entry\n', self.stderr.getvalue())
-        assert_equal('', self.stdout.getvalue())
-        assert_equal(1, self.exit_status)
+        assert 'Invalid entry\n' == self.stderr.getvalue()
+        assert '' == self.stdout.getvalue()
+        assert 1 == self.exit_status
 
     def test_when_user_reply_with_an_out_of_range_number(self):
         self.user_reply = '100'
 
         self.cmd.restore_asking_the_user([])
 
-        assert_equal('Invalid entry\n', self.stderr.getvalue())
-        assert_equal('', self.stdout.getvalue())
-        assert_equal(1, self.exit_status)
+        assert 'Invalid entry\n' == self.stderr.getvalue()
+        assert '' == self.stdout.getvalue()
+        assert 1 == self.exit_status
 
 class TestTrashedFileRestoreIntegration(unittest.TestCase):
     def setUp(self):
@@ -190,15 +189,14 @@ class TestTrashedFileRestoreIntegration(unittest.TestCase):
 
         self.cmd.restore(trashed_file)
 
-        assert_true(os.path.exists('parent/path'))
-        assert_true(not os.path.exists('info_file'))
+        assert os.path.exists('parent/path')
+        assert not os.path.exists('info_file')
 
     def test_restore_over_existing_file(self):
         trashed_file = TrashedFile('path',None,None,None)
         open('path','w').close()
 
-        assert_raises(IOError, lambda:
-                self.cmd.restore(trashed_file))
+        self.assertRaises(IOError, lambda:self.cmd.restore(trashed_file))
 
     def tearDown(self):
         remove_file_if_exists('path')
@@ -235,12 +233,12 @@ class TestTrashedFiles(unittest.TestCase):
         trashed_files = list(self.trashed_files.all_trashed_files([], None))
 
         trashed_file = trashed_files[0]
-        assert_equal('/volume/name' , trashed_file.original_location)
-        assert_equal(datetime.datetime(2001, 1, 1, 10, 10, 10),
+        assert '/volume/name' == trashed_file.original_location
+        assert (datetime.datetime(2001, 1, 1, 10, 10, 10) ==
                      trashed_file.deletion_date)
-        assert_equal('info/info_path.trashinfo' , trashed_file.info_file)
-        assert_equal('files/info_path' , trashed_file.original_file)
-        assert_equal([call.trash_directories_or_user([], None)],
+        assert 'info/info_path.trashinfo' == trashed_file.info_file
+        assert 'files/info_path' == trashed_file.original_file
+        assert ([call.trash_directories_or_user([], None)] ==
                      self.trash_directories.mock_calls)
 
 
@@ -264,11 +262,11 @@ class TestTrashedFilesIntegration(unittest.TestCase):
         trashed_files = list(self.trashed_files.all_trashed_files([], None))
 
         trashed_file = trashed_files[0]
-        assert_equal('/volume/name' , trashed_file.original_location)
-        assert_equal(datetime.datetime(2001, 1, 1, 10, 10, 10),
+        assert '/volume/name' == trashed_file.original_location
+        assert (datetime.datetime(2001, 1, 1, 10, 10, 10) ==
                      trashed_file.deletion_date)
-        assert_equal('info/info_path.trashinfo' , trashed_file.info_file)
-        assert_equal('files/info_path' , trashed_file.original_file)
+        assert 'info/info_path.trashinfo' == trashed_file.info_file
+        assert 'files/info_path' == trashed_file.original_file
 
     def tearDown(self):
         remove_file('info/info_path.trashinfo')

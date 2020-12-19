@@ -1,7 +1,6 @@
 import unittest
 
 from mock import Mock
-from unit_tests.tools import assert_equal
 from trashcli.restore import TrashDirectories
 
 
@@ -17,10 +16,10 @@ class TestTrashDirectories(unittest.TestCase):
             ['/', '/mnt']
         ))
 
-        assert_equal([
+        assert ([
             ('~/.local/share/Trash', 'volume_of(~/.local/share/Trash)'),
             ('/.Trash/123', '/'),
             ('/.Trash-123', '/'),
             ('/mnt/.Trash/123', '/mnt'),
-            ('/mnt/.Trash-123', '/mnt')],
+            ('/mnt/.Trash-123', '/mnt')] ==
             result)
