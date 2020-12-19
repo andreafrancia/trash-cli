@@ -1,7 +1,7 @@
 import unittest
 
+import six
 from mock import Mock, call
-from unit_tests.tools import assert_items_equal
 
 class TestListing(unittest.TestCase):
     def setUp(self):
@@ -27,8 +27,9 @@ class TestTrashDirReader(unittest.TestCase):
 
         trashdir.list_trashinfos(trashdir='/path', list_to=out)
 
-        assert_items_equal([call(trashinfo='/path/file1'),
-                            call(trashinfo='/path/file2')], out.mock_calls)
+        six.assertCountEqual(self,
+                             [call(trashinfo='/path/file1'),
+                              call(trashinfo='/path/file2')], out.mock_calls)
 
 
 class TrashDirReader:

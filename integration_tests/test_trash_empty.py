@@ -2,7 +2,6 @@
 import unittest
 
 from unit_tests.tools import assert_equal
-from unit_tests.tools import assert_items_equal
 from trashcli.empty import EmptyCmd
 
 from unit_tests.myStringIO import StringIO
@@ -12,8 +11,8 @@ from .files import make_empty_file
 from mock import MagicMock
 from trashcli.fs import FileSystemReader
 from trashcli.fs import FileRemover
-
-from unit_tests.tools import assert_regex, assert_true
+import six
+from unit_tests.tools import assert_true
 
 from trashcli.empty import main as empty
 from trashcli.fs import mkdirs
@@ -23,7 +22,7 @@ class TestTrashEmptyCmd(unittest.TestCase):
     def test(self):
         out = StringIO()
         empty(['trash-empty', '-h'], stdout = out)
-        assert_regex(out.getvalue(), '^Usage. trash-empty.*')
+        six.assertRegex(self, out.getvalue(), '^Usage. trash-empty.*')
 
     def test_trash_empty_will_crash_on_unreadable_directory_issue_48(self):
         out = StringIO()
@@ -136,9 +135,10 @@ class TestWhenCalledWithoutArguments(unittest.TestCase):
         self.having_a_trashinfo_in_trashcan('foo.trashinfo')
         self.having_a_trashinfo_in_trashcan('bar.trashinfo')
         self.having_a_trashinfo_in_trashcan('baz.trashinfo')
-        assert_items_equal(['foo.trashinfo',
-                            'bar.trashinfo',
-                            'baz.trashinfo'], os.listdir(self.info_dir_path))
+        six.assertCountEqual(self,
+                             ['foo.trashinfo',
+                              'bar.trashinfo',
+                              'baz.trashinfo'], os.listdir(self.info_dir_path))
 
     def having_one_trashed_file(self):
         self.having_a_trashinfo_in_trashcan('foo.trashinfo')

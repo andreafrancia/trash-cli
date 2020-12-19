@@ -52,4 +52,3 @@ for at in [ at for at in dir(_t)
 del Dummy
 del _t
 del pep8
-assert_items_equal = assert_count_equal
