@@ -196,6 +196,13 @@ trash-cli 提供以下命令：
 
    pip uninstall trash-cli
 
+用包管理器安装
+~~~~~~~~~~~~~~
+
+Debian/Ubuntu (apt)::
+
+    sudo apt install trash-cli
+
 反馈与 Bug 报告
 ---------------
 
