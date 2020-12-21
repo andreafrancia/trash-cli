@@ -117,13 +117,15 @@ class RestoreAskingTheUser(object):
         else:
             try:
                 indexes = parse_indexes(user_input, len(trashed_files))
-                for index in indexes:
-                    trashed_file = trashed_files[index]
-                    self.restore(trashed_file)
             except (ValueError, IndexError) as e:
                 self.die("Invalid entry")
-            except IOError as e:
-                self.die(e)
+            else:
+                try:
+                    for index in indexes:
+                        trashed_file = trashed_files[index]
+                        self.restore(trashed_file)
+                except IOError as e:
+                    self.die(e)
 
 
 def parse_indexes(user_input, len_trashed_files):
