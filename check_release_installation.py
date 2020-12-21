@@ -72,13 +72,13 @@ class TestConnection(unittest.TestCase):
         self.ssh = Connection(TARGET_HOST)
     def test_should_report_stdout(self):
         result = self.ssh.run('echo', 'foo')
-        assert_equal(b'foo\n', result.stdout)
+        assert b'foo\n' == result.stdout, "returned stdout: {}".format(result.stdout)
     def test_should_report_stderr(self):
         result = self.ssh.run('echo bar 1>&2')
-        assert_equal(b'bar\n', result.stderr)
+        assert b'bar\n' == result.stderr, "returned stderr: {}".format(result.stderr)
     def test_should_report_exit_code(self):
         result = self.ssh.run("exit 134")
-        assert_equal(134, result.exit_code)
+        assert 134 == result.exit_code, "returned exit code: {}".format(result.exit_code)
 
 class Connection:
     def __init__(self, target_host):

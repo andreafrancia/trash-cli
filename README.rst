@@ -184,6 +184,12 @@ Environment setup::
     source env/bin/activate
     pip install -r requirements-dev.txt
 
+Alternatively, setup the dev environment through Anaconda::
+
+    conda create -n trash-cli-dev python=3.8
+    conda activate trash-cli-dev
+    conda install --file requirements-dev.txt
+
 Running tests::
 
     pytest unit_tests           # run only unit tests
