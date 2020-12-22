@@ -151,18 +151,11 @@ class TestTrashRestoreCmd(unittest.TestCase):
 
         self.cmd.restore_asking_the_user([])
 
-        assert 'Invalid entry\n' == self.stderr.getvalue()
+        assert 'Invalid entry: not an index: non numeric\n' == \
+               self.stderr.getvalue()
         assert '' == self.stdout.getvalue()
         assert 1 == self.exit_status
 
-    def test_when_user_reply_with_an_out_of_range_number(self):
-        self.user_reply = '100'
-
-        self.cmd.restore_asking_the_user([])
-
-        assert 'Invalid entry\n' == self.stderr.getvalue()
-        assert '' == self.stdout.getvalue()
-        assert 1 == self.exit_status
 
 class TestTrashedFileRestoreIntegration(unittest.TestCase):
     def setUp(self):
