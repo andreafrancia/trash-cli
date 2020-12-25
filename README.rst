@@ -193,7 +193,7 @@ Environment setup::
 
     virtualenv env --no-site-packages
     source env/bin/activate
-    pip install -r requirements-dev.txt
+    pip install -r requirements-dev.txt -r requirements.txt
 
 Running tests::
 
