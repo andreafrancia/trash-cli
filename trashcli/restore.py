@@ -88,10 +88,10 @@ class FileSystem:
 
 
 def main():
-    try:           # Python 2
-        input23 = raw_input
-    except:        # Python 3
-        input23 = input
+    try:
+        input23 = raw_input # Python 2
+    except NameError:
+        input23 = input # Python 3
     trash_directories = make_trash_directories()
     trashed_files = TrashedFiles(trash_directories, TrashDirectory(),
                                  contents_of)
