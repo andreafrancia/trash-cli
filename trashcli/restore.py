@@ -9,9 +9,69 @@ from .trash import backup_file_path_from
 from . import fs, trash
 
 try:
-    xrange
+    my_range = xrange
 except NameError:
-    xrange = range
+    my_range = range
+
+
+class Sequences:
+    def __init__(self, sequences):
+        self.sequences = sequences
+
+    def __repr__(self):
+        return "Sequences(%s)" % repr(self.sequences)
+
+    def all_indexes(self):
+        for sequence in self.sequences:
+            for index in sequence:
+                yield index
+
+    def __eq__(self, other):
+        if type(other) != type(self):
+            return False
+        if self.sequences != other.sequences:
+            return False
+        return True
+
+
+class Single:
+    def __init__(self, index):
+        self.index = index
+
+    def __eq__(self, other):
+        if type(other) != type(self):
+            return False
+        if self.index != other.index:
+            return False
+        return True
+
+    def __iter__(self):
+        return iter([self.index])
+
+    def __repr__(self):
+        return "Single(%s)" % self.index
+
+
+class Range:
+    def __init__(self, start, stop):
+        self.start = start
+        self.stop = stop
+
+    def __eq__(self, other):
+        if type(other) != type(self):
+            return False
+        if self.start != other.start:
+            return False
+        if self.stop != other.stop:
+            return False
+        return True
+
+    def __iter__(self):
+        return iter(my_range(self.start, self.stop + 1))
+
+    def __repr__(self):
+        return "Range(%s, %s)" % (self.start, self.stop)
+
 
 class FileSystem:
     def path_exists(self, path):
@@ -25,6 +85,7 @@ class FileSystem:
 
     def remove_file(self, path):
         return fs.remove_file(path)
+
 
 def main():
     try:           # Python 2
@@ -120,12 +181,12 @@ class RestoreAskingTheUser(object):
             self.println("Exiting")
         else:
             try:
-                indexes = parse_indexes(user_input, len(trashed_files))
+                sequences = parse_indexes(user_input, len(trashed_files))
             except InvalidEntry as e:
                 self.die("Invalid entry: %s" % e)
             else:
                 try:
-                    for index in indexes:
+                    for index in sequences.all_indexes():
                         trashed_file = trashed_files[index]
                         self.restore(trashed_file)
                 except IOError as e:
@@ -138,20 +199,32 @@ class InvalidEntry(Exception):
 
 def parse_indexes(user_input, len_trashed_files):
     indexes = user_input.split(',')
-    indexes.sort(reverse=True)  # restore largest index first
-    result = []
+    sequences = []
     for index in indexes:
-        try:
-            index = int(index)
-        except ValueError:
-            raise InvalidEntry("not an index: %s" % index)
-        acceptable_values = xrange(0, len_trashed_files)
+        if "-" in index:
+            first, last = index.split("-", 2)
+            if first == "" or last == "":
+                raise InvalidEntry("open interval: %s" % index)
+            split = list(map(parse_int_index, (first, last)))
+            sequences.append(Range(split[0], split[1]))
+        else:
+            index = parse_int_index(index)
+            sequences.append(Single(index))
+    result = Sequences(sequences)
+    acceptable_values = my_range(0, len_trashed_files)
+    for index in result.all_indexes():
         if not index in acceptable_values:
             raise InvalidEntry(
                 "out of range %s..%s: %s" %
                 (acceptable_values[0], acceptable_values[-1], index))
-        result.append(index)
     return result
+
+
+def parse_int_index(text):
+    try:
+        return int(text)
+    except ValueError:
+        raise InvalidEntry("not an index: %s" % text)
 
 
 class Restorer(object):

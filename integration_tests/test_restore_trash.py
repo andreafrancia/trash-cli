@@ -25,18 +25,18 @@ class TestRestoreTrash(unittest.TestCase):
         self.user.having_a_trashed_file('/foo/bar')
         self.user.chdir('/foo')
 
-        self.user.run_restore(with_user_typing='-@notanumber')
+        self.user.run_restore(with_user_typing='+@notanumber')
 
-        self.assertEqual('Invalid entry: not an index: -@notanumber\n',
+        self.assertEqual('Invalid entry: not an index: +@notanumber\n',
                          self.user.stderr())
 
     def test_it_gives_error_when_user_input_is_too_small(self):
         self.user.having_a_trashed_file('/foo/bar')
         self.user.chdir('/foo')
 
-        self.user.run_restore(with_user_typing='-1')
+        self.user.run_restore(with_user_typing='1')
 
-        self.assertEqual('Invalid entry: out of range 0..0: -1\n',
+        self.assertEqual('Invalid entry: out of range 0..0: 1\n',
                          self.user.stderr())
 
     def test_it_gives_error_when_user_input_is_too_large(self):
