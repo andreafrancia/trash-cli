@@ -56,9 +56,9 @@ Restore multiple trashed files seperated by ',', also support range::
     1 2007-08-30 12:39:41 /home/andrea/bar
     2 2007-08-30 12:39:41 /home/andrea/bar2
     3 2007-08-30 12:39:41 /home/andrea/foo2
-    What file to restore [0..4]: 0-2, 3
+    What file to restore [0..3]: 0-2, 3
     $ ls foo bar bar2 foo2
-    foo
+    foo bar bar2 foo2
 
 Remove all files from the trashcan::
 
