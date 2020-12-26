@@ -1,4 +1,4 @@
-master:
+0.20.12.26:
  - trash-restore learnt --trash-dir option
  - add simplified Chinese README
  - trash-resrtore now uses 'date' as the default sort argument

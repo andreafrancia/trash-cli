@@ -17,7 +17,6 @@ Test the installation from tarball:
 
 Register and upload:
 
-    python setup.py register
     python setup.py sdist upload
 
 Now you can tag the repo status:
