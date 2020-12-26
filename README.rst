@@ -171,7 +171,7 @@ For uninstalling use::
     pip uninstall trash-cli
 
 From package manager
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 Debian/Ubuntu (apt)::
 
