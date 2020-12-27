@@ -110,6 +110,11 @@ def getcwd_as_realpath():
     return os.path.realpath(os.curdir)
 
 
+class Command:
+    PrintVersion = "Command.PrintVersion"
+    RunRestore = "Command.RunRestore"
+
+
 def parse_args(sys_argv, curdir):
     import argparse
     parser = argparse.ArgumentParser(
@@ -128,7 +133,14 @@ def parse_args(sys_argv, curdir):
                         dest='trash_dir',
                         help=argparse.SUPPRESS)
     parser.add_argument('--version', action='store_true', default=False)
-    return parser.parse_args(sys_argv[1:])
+    parsed = parser.parse_args(sys_argv[1:])
+
+    if parsed.version:
+        return Command.PrintVersion, None
+    else:
+        return Command.RunRestore, {'path': parsed.path,
+                                    'sort': parsed.sort,
+                                    'trash_dir': parsed.trash_dir}
 
 
 class TrashedFiles:
@@ -247,20 +259,22 @@ class RestoreCmd(object):
         self.fs = fs
         self.trashed_files = trashed_files
         self.mount_points = mount_points
+
     def run(self, argv):
-        args = parse_args(argv, self.curdir() + os.path.sep)
-        trash_dir_from_cli = args.trash_dir
-        if args.version:
+        cmd, args = parse_args(argv, self.curdir() + os.path.sep)
+        if cmd == Command.PrintVersion:
             command = os.path.basename(argv[0])
             self.println('%s %s' % (command, self.version))
             return
-        trashed_files = list(self.all_files_trashed_from_path(
-            args.path, trash_dir_from_cli))
-        if args.sort == 'path':
-            trashed_files = sorted(trashed_files, key=lambda x: x.original_location + str(x.deletion_date))
-        elif args.sort == 'date':
-            trashed_files = sorted(trashed_files, key=lambda x: x.deletion_date)
-        self.handle_trashed_files(trashed_files)
+        elif cmd == Command.RunRestore:
+            trash_dir_from_cli = args['trash_dir']
+            trashed_files = list(self.all_files_trashed_from_path(
+                args['path'], trash_dir_from_cli))
+            if args['sort'] == 'path':
+                trashed_files = sorted(trashed_files, key=lambda x: x.original_location + str(x.deletion_date))
+            elif args['sort'] == 'date':
+                trashed_files = sorted(trashed_files, key=lambda x: x.deletion_date)
+            self.handle_trashed_files(trashed_files)
 
     def handle_trashed_files(self,trashed_files):
         if not trashed_files:

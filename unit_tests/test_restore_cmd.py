@@ -1,8 +1,9 @@
 import unittest
+from argparse import Namespace
 
 from trashcli.list_mount_points import os_mount_points
 from trashcli.restore import RestoreCmd, make_trash_directories, \
-    TrashDirectory, TrashedFiles
+    TrashDirectory, TrashedFiles, Command
 from .myStringIO import StringIO
 from mock import call
 from trashcli import restore
@@ -17,18 +18,39 @@ import os
 
 class Test_parse_args(unittest.TestCase):
     def test_default_path(self):
-        args = restore.parse_args([''], "curdir")
-        self.assertEqual('curdir', args.path)
 
-    def test_path_specified(self):
-        args = restore.parse_args(['', '/a/path'], None)
-        self.assertEqual('/a/path', args.path)
-        self.assertEqual(False, args.version)
-        self.assertEqual('date', args.sort)
+        args = restore.parse_args([''], "curdir")
+
+        self.assertEqual((Command.RunRestore,
+                          {'path': 'curdir',
+                           'sort': 'date',
+                           'trash_dir': None}),
+                         args)
+
+    def test_path_specified_relative_path(self):
+
+        args = restore.parse_args(['', 'path'], "curdir")
+
+        self.assertEqual((Command.RunRestore,
+                          {'path': 'path',
+                           'sort': 'date',
+                           'trash_dir': None}),
+                         args)
+
+    def test_path_specified_fullpath(self):
+
+        args = restore.parse_args(['', '/a/path'], "ignored")
+
+        self.assertEqual((Command.RunRestore,
+                          {'path': '/a/path',
+                           'sort': 'date',
+                           'trash_dir': None}),
+                         args)
 
     def test_show_version(self):
-        args = restore.parse_args(['', '--version'], None)
-        self.assertEqual(True, args.version)
+        args = restore.parse_args(['', '--version'], "ignored")
+
+        self.assertEqual((Command.PrintVersion, None), args)
 
 class TestListingInRestoreCmd(unittest.TestCase):
     def setUp(self):
