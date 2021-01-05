@@ -1,33 +1,33 @@
 0.20.12.26:
  - trash-restore learnt --trash-dir option
  - add simplified Chinese README
- - trash-resrtore now uses 'date' as the default sort argument
+ - trash-restore now uses 'date' as the default sort argument
  - Add to README the installation with apt
- - trash-restore now support range select
+ - trash-restore now supports range select
 
 0.20.11.23:
  - switched to psutil for listing volumes
 
 0.20.11.7:
  - trash-put learned a --trash-dir option that can be used to specify the trash
-   directory to be used as destination 
- - trash-put -f now ignores files and dir that does not exist (Don Cross)
+   directory to be used as destination
+ - trash-put -f now ignores files and dirs that do not exist (Don Cross)
  - trash-restore learnt --sort=(date|path|none) option (Self-Perfection)
  - trash-restore: support restoring multiple files (arendu)
  - README: now recommend using `pip` for installing trash-cli
 
 0.17.1.14:
  - Fix a bug that causes trash-put to use $topdir/.Trash/UID trashcan even when
-   it is not secure and $topdir/.Trash-UID should be used instead. 
+   it is not secure and $topdir/.Trash-UID should be used instead.
 
 0.17.1.12:
- - Fix a bug in detecting right volume of home trash dir home Trash dir is a
+ - Fix a bug in detecting right volume of home trash dir, if home Trash dir is a
    symbolic link, and in detecting volume of file to be trashed when it is
    specified as contained in a directory that is a symbolic link that crosses
    volumes boundaries (#38)
- - Make some code  python 3 compatible 
+ - Make some code python 3 compatible
  - Fixed README.
- 
+
 0.17.1.1:
  - Now trash-rm supports full path matching, using a pattern starting with slash '/' Fix #67
  - Fix typo in trash-rm(1) man page
@@ -42,26 +42,26 @@
  - Fix #48 trash-empty crashes on directories without read permission
 
 0.16.12.26:
- - Fix #52: Almost all commands crashes with python 2.7.10
+ - Fix #52 Almost all commands crash with python 2.7.10
 
 0.16.12.25:
- - Now trash-restore accept a /specific/path
+ - Now trash-restore accepts a /specific/path
  - Now integration tests should pass also in a linux box. Fix #61
- - Now all commands output will report the right up-to-date location for issue reporting (#39)
+ - Now all command outputs will report the right up-to-date location for issue reporting (#39)
  - Add input validation in trash-restore
- - Renamed trash-restore instead of restore-trash
- - Fixed bug (trash-put creates $topdir/.Trash even it should not)
+ - Renamed restore-trash to trash-restore
+ - Fixed bug (trash-put creates $topdir/.Trash even if it should not)
  - Fixed bug (trash-put uses $topdir/.Trash/$uid even if unsecure)
  - Minor changes to man pages.
 
 0.12.9.14:
  - Switched to distutils.core (instead of setuptools)
- - Now `trash-put -v` will warning if it found a unsticky .Trash dir.
+ - Now `trash-put -v` will warn if it found an unsticky .Trash dir.
  - New trash-rm command
- - (Internal) Swtiched from realpath to abspath
+ - (Internal) Switched from realpath to abspath
 
 0.12.7:
- - fixed trash-empty crashed with GetoptError in short_has_arg(): option -2 
+ - fixed: trash-empty crashed with GetoptError in short_has_arg(): option -2 
    not recognized (see 
    https://bugs.launchpad.net/ubuntu/+source/trash-cli/+bug/1015877 )
  - fixed inclusion of README.rst when creating distribution package
