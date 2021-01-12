@@ -6,7 +6,7 @@ def main():
 
 def os_mount_points():
     import psutil
-    for p in psutil.disk_partitions():
+    for p in psutil.disk_partitions(all = True):
         yield p.mountpoint
 
 
