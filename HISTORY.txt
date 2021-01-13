@@ -1,6 +1,5 @@
 master:
- - trash-restore support relative directories specified in command line
-   fix #165
+ - trash-restore now supports relative paths in argument (fixes #165)
  - trash-list shows all partitions including not physical @KSR-Yasuda
    (https://github.com/andreafrancia/trash-cli/pull/178)
 

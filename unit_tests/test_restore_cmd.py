@@ -100,7 +100,7 @@ class TestListingInRestoreCmd(unittest.TestCase):
 
         self.cmd.run(['trash-restore', '/prefix'])
 
-        assert self.original_locations == ['/prefix', '/prefix-with-other']
+        assert self.original_locations == ['/prefix']
 
     def capture_trashed_files(self,arg):
         self.original_locations = []
