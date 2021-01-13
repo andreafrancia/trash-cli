@@ -32,7 +32,7 @@ class Test_parse_args(unittest.TestCase):
         args = restore.parse_args(['', 'path'], "curdir")
 
         self.assertEqual((Command.RunRestore,
-                          {'path': 'path',
+                          {'path': 'curdir/path',
                            'sort': 'date',
                            'trash_dir': None}),
                          args)
@@ -83,16 +83,24 @@ class TestListingInRestoreCmd(unittest.TestCase):
 
     def test_with_no_args_and_files_in_trashcan_2(self):
         self.trashed_files.all_trashed_files.return_value = [
-            FakeTrashedFile('<date>', 'dir/location'),
-            FakeTrashedFile('<date>', 'dir/location'),
-            FakeTrashedFile('<date>', 'specific/path'),
+            FakeTrashedFile('<date>', '/dir/location'),
+            FakeTrashedFile('<date>', '/dir/location'),
+            FakeTrashedFile('<date>', '/specific/path'),
         ]
 
-        self.cmd.run(['trash-restore', 'specific/path'])
+        self.cmd.run(['trash-restore', '/specific/path'])
 
-        assert [
-            'specific/path'
-            ] ==self.original_locations
+        assert self.original_locations == ['/specific/path']
+
+    def test_with_with_path_prefix_bug(self):
+        self.trashed_files.all_trashed_files.return_value = [
+            FakeTrashedFile('<date>', '/prefix'),
+            FakeTrashedFile('<date>', '/prefix-with-other'),
+        ]
+
+        self.cmd.run(['trash-restore', '/prefix'])
+
+        assert self.original_locations == ['/prefix', '/prefix-with-other']
 
     def capture_trashed_files(self,arg):
         self.original_locations = []

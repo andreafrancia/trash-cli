@@ -121,7 +121,7 @@ def parse_args(sys_argv, curdir):
         description='Restores from trash chosen file',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('path',
-                        default=curdir, nargs='?',
+                        default="", nargs='?',
                         help='Restore files from given path instead of current '
                              'directory')
     parser.add_argument('--sort',
@@ -138,7 +138,8 @@ def parse_args(sys_argv, curdir):
     if parsed.version:
         return Command.PrintVersion, None
     else:
-        return Command.RunRestore, {'path': parsed.path,
+        path = os.path.normpath(os.path.join(curdir, parsed.path))
+        return Command.RunRestore, {'path': path,
                                     'sort': parsed.sort,
                                     'trash_dir': parsed.trash_dir}
 

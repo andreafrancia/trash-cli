@@ -11,6 +11,7 @@ import os
 from os.path import join as pj
 from os.path import exists as file_exists
 
+
 class TestEndToEndRestore(unittest.TestCase):
     def setUp(self):
         self.tmpdir = os.path.realpath(tempfile.mkdtemp())
@@ -40,12 +41,10 @@ What file to restore [0..0]: """,
                          result.stderr)
 
     def test_restore_happy_path(self):
-        self.fake_trash_dir.add_trashed_file("file1",
-                                             pj(self.curdir, "path/to/file1"),
-                                             "contents")
-        self.fake_trash_dir.add_trashed_file("file2",
-                                             pj(self.curdir, "path/to/file2"),
-                                             "contents")
+        self.fake_trash_dir.add_trashed_file(
+            "file1", pj(self.curdir, "path", "to", "file1"), "contents")
+        self.fake_trash_dir.add_trashed_file(
+            "file2", pj(self.curdir, "path", "to", "file2"), "contents")
         self.assertEqual(True, file_exists(pj(self.trash_dir, "info", "file2.trashinfo")))
         self.assertEqual(True, file_exists(pj(self.trash_dir, "files", "file2")))
 
@@ -60,6 +59,25 @@ What file to restore [0..1]: """ % { 'curdir': self.curdir},
         self.assertEqual("contents", read_file(pj(self.curdir, "path/to/file2")))
         self.assertEqual(False, file_exists(pj(self.trash_dir, "info", "file2.trashinfo")))
         self.assertEqual(False, file_exists(pj(self.trash_dir, "files", "file2")))
+
+    def test_restore_with_relative_path(self):
+        self.fake_trash_dir.add_trashed_file(
+            "file1", pj(self.curdir, "path", "to", "file1"), "contents")
+        self.assertEqual(True, file_exists(pj(self.trash_dir, "info", "file1.trashinfo")))
+        self.assertEqual(True, file_exists(pj(self.trash_dir, "files", "file1")))
+
+        result = self.run_command("trash-restore",
+                                  ["%(curdir)s" % {'curdir': "."},
+                                   '--sort=path'], input='0')
+
+        self.assertEqual("""\
+   0 2000-01-01 00:00:01 %(curdir)s/path/to/file1
+What file to restore [0..0]: """ % {'curdir': self.curdir},
+                         result.stdout)
+        self.assertEqual("", result.stderr)
+        self.assertEqual("contents", read_file(pj(self.curdir, "path/to/file1")))
+        self.assertEqual(False, file_exists(pj(self.trash_dir, "info", "file1.trashinfo")))
+        self.assertEqual(False, file_exists(pj(self.trash_dir, "files", "file1")))
 
     def run_command(self, command, args=None, input=''):
         class Result:
