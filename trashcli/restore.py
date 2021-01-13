@@ -247,6 +247,11 @@ class Restorer(object):
     def restore_trashed_file(self, trashed_file):
         restore(trashed_file, self.fs)
 
+
+def is_trashed_from_path(trashed_file_original_location, path):
+    return trashed_file_original_location.startswith(path)
+
+
 class RestoreCmd(object):
     def __init__(self, stdout, stderr, exit, input,
                  curdir = getcwd_as_realpath, version = version,
@@ -300,11 +305,9 @@ class RestoreCmd(object):
         restorer.restore_trashed_file(trashed_file)
 
     def all_files_trashed_from_path(self, path, trash_dir_from_cli):
-        def is_trashed_from_curdir(trashed_file):
-            return trashed_file.original_location.startswith(path)
         for trashed_file in self.trashed_files.all_trashed_files(
                 self.mount_points(), trash_dir_from_cli):
-            if is_trashed_from_curdir(trashed_file):
+            if is_trashed_from_path(trashed_file.original_location, path):
                 yield trashed_file
 
     def report_no_files_found(self):
