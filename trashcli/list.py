@@ -1,3 +1,6 @@
+import sys
+import os
+
 from .fs import FileSystemReader
 from .trash import version
 from .trash import TopTrashDirRules
@@ -12,8 +15,6 @@ from .trash import parse_path
 from .trash import unknown_date
 
 def main():
-    import sys
-    import os
     from trashcli.list_mount_points import os_mount_points
     ListCmd(
         out          = sys.stdout,
@@ -21,7 +22,38 @@ def main():
         environ      = os.environ,
         getuid       = os.getuid,
         list_volumes = os_mount_points,
-    ).run(*sys.argv)
+    ).run(sys.argv)
+
+def parse_args(sys_argv, curdir):
+    import argparse
+    parser = argparse.ArgumentParser(
+        description='List trashed files',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--sort',
+                        choices=['date', 'path', 'none'],
+                        default='date',
+                        help='Sort list of list candidates by given field')
+    parser.add_argument('--trash-dir',
+                        action='store',
+                        dest='trash_dir',
+                        help=argparse.SUPPRESS)
+    parser.add_argument('--version', action='store_true', default=False)
+    parsed = parser.parse_args(sys_argv[1:])
+
+    if parsed.version:
+        return Command.PrintVersion, None
+    else:
+        return Command.RunList, {'sort': parsed.sort,
+                                 'trash_dir': parsed.trash_dir}
+
+class Command:
+    PrintVersion = "Command.PrintVersion"
+    RunList = "Command.RunList"
+
+class TrashInfo:
+    def __init__(self, deletion_date, original_location):
+        self.deletion_date     = deletion_date
+        self.original_location = original_location
 
 class ListCmd:
     def __init__(self, out,
@@ -41,16 +73,27 @@ class ListCmd:
         self.contents_of  = file_reader.contents_of
         self.version      = version
 
-    def run(self, *argv):
-        parse=Parser()
-        parse.on_help(PrintHelp(self.description, self.output.println))
-        parse.on_version(PrintVersion(self.output.println, self.version))
-        parse.as_default(self.list_trash)
-        parse(argv)
+    def run(self, argv):
+        cmd, args = parse_args(argv, os.path.realpath(os.curdir) + os.path.sep)
+        if cmd == Command.PrintVersion:
+            command = os.path.basename(argv[0])
+            self.output.println('%s %s' % (command, self.version))
+            return
+        elif cmd == Command.RunList:
+            trash_dir_from_cli = args['trash_dir']
+            trashed_files = self.list_trash()
+            if args['sort'] == 'path':
+                trashed_files = sorted(trashed_files, key=lambda x: x.original_location + str(x.deletion_date))
+            elif args['sort'] == 'date':
+                trashed_files = sorted(trashed_files, key=lambda x: x.deletion_date)
+            for f in trashed_files:
+                self.output.print_entry(f.deletion_date, f.original_location)
+
     def list_trash(self):
+        self.deleted_files = []
         harvester = Harvester(self.file_reader)
         harvester.on_volume = self.output.set_volume_path
-        harvester.on_trashinfo_found = self._print_trashinfo
+        harvester.on_trashinfo_found = self._append_trashinfo
 
         trashdirs = TrashDirs(self.environ,
                               self.getuid,
@@ -61,7 +104,8 @@ class ListCmd:
         trashdirs.on_trash_dir_found = harvester.analize_trash_directory
 
         trashdirs.list_trashdirs()
-    def _print_trashinfo(self, path):
+        return self.deleted_files
+    def _append_trashinfo(self, path):
         try:
             contents = self.contents_of(path)
         except IOError as e :
@@ -73,14 +117,7 @@ class ListCmd:
             except ParseError:
                 self.output.print_parse_path_error(path)
             else:
-                self.output.print_entry(deletion_date, path)
-    def description(self, program_name, printer):
-        printer.usage('Usage: %s [OPTIONS...]' % program_name)
-        printer.summary('List trashed files')
-        printer.options(
-           "  --version   show program's version number and exit",
-           "  -h, --help  show this help message and exit")
-        printer.bug_reporting()
+                self.deleted_files.append(TrashInfo(deletion_date, path))
 
 class ListCmdOutput:
     def __init__(self, out, err):
