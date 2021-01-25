@@ -22,13 +22,14 @@ def main():
         environ      = os.environ,
         getuid       = os.getuid,
         list_volumes = os_mount_points,
-    ).run(sys.argv)
+    ).run(*sys.argv)
 
 def parse_args(sys_argv, curdir):
     import argparse
     parser = argparse.ArgumentParser(
         description='List trashed files',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog="Report bugs to https://github.com/andreafrancia/trash-cli/issues")
     parser.add_argument('--sort',
                         choices=['date', 'path', 'none'],
                         default='date',
@@ -73,7 +74,7 @@ class ListCmd:
         self.contents_of  = file_reader.contents_of
         self.version      = version
 
-    def run(self, argv):
+    def run(self, *argv):
         cmd, args = parse_args(argv, os.path.realpath(os.curdir) + os.path.sep)
         if cmd == Command.PrintVersion:
             command = os.path.basename(argv[0])
