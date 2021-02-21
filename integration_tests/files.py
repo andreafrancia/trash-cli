@@ -2,7 +2,7 @@
 
 from trashcli.fs  import has_sticky_bit
 import os, shutil
-
+import tempfile
 
 def make_empty_file(path):
     make_file(path, '')
@@ -72,3 +72,17 @@ def make_unreadable_file(path):
     import os
     os.chmod(path, 0)
 
+
+class TempDir:
+    def __init__(self, path):
+        self.path = path
+
+    def join(self, path):
+        return os.path.join(self.path, path)
+
+    def clean_up(self):
+        shutil.rmtree(self.path)
+
+    @classmethod
+    def make_dir(cls):
+        return cls(tempfile.mkdtemp())

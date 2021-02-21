@@ -1,20 +1,17 @@
-import os
-import shutil
-import tempfile
 import unittest
 
-from integration_tests.files import make_unreadable_file, read_file
+from integration_tests.files import make_unreadable_file, read_file, TempDir
 
 
 class Test_make_unreadable_file(unittest.TestCase):
     def setUp(self):
-        self.tmp = tempfile.mkdtemp()
+        self.tmp_dir = TempDir.make_dir()
 
     def test(self):
-        path = os.path.join(self.tmp, "unreadable")
-        make_unreadable_file(path)
+        path = self.tmp_dir.join("unreadable")
+        make_unreadable_file(self.tmp_dir.join("unreadable"))
         with self.assertRaises(IOError):
             read_file(path)
 
     def tearDown(self):
-        shutil.rmtree(self.tmp)
+        self.tmp_dir.clean_up()
