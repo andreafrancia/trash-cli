@@ -85,4 +85,4 @@ class TempDir:
 
     @classmethod
     def make_dir(cls):
-        return cls(tempfile.mkdtemp())
+        return cls(os.path.realpath(tempfile.mkdtemp()))

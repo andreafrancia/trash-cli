@@ -1,11 +1,9 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
 import os
-import shutil
-import tempfile
-
 from trashcli.list import ListCmd
-from .files import (require_empty_dir, make_sticky_dir, make_unsticky_dir)
+from .files import (require_empty_dir, make_sticky_dir, make_unsticky_dir,
+                    TempDir)
 from .output_collector import OutputCollector
 from .fake_trash_dir import (
     a_trashinfo_without_date,
@@ -19,11 +17,13 @@ import unittest
 
 class Setup(unittest.TestCase):
     def setUp(self):
-        self.xdg_data_home = tempfile.mkdtemp()
+        self.xdg_data_home = TempDir.make_dir()
         require_empty_dir('topdir')
-        self.user = TrashListUser(self.xdg_data_home)
+        self.user = TrashListUser(self.xdg_data_home.path)
+
     def tearDown(self):
-        shutil.rmtree(self.xdg_data_home)
+        self.xdg_data_home.clean_up()
+
 
 def sort_lines(lines):
     return "".join(sorted(lines.splitlines(True)))
@@ -97,7 +97,7 @@ class Test_describe_trash_list(Setup):
 
         assert_equals_with_unidiff(
             "Parse Error: %(XDG_DATA_HOME)s/Trash/info/empty.trashinfo: "
-            "Unable to parse Path.\n" % {"XDG_DATA_HOME":self.xdg_data_home},
+            "Unable to parse Path.\n" % {"XDG_DATA_HOME":self.xdg_data_home.path},
             self.user.error())
 
     def test_should_warn_about_unreadable_trashinfo(self):
@@ -108,7 +108,7 @@ class Test_describe_trash_list(Setup):
         assert_equals_with_unidiff(
             "[Errno 13] Permission denied: "
             "'%(XDG_DATA_HOME)s/Trash/info/unreadable.trashinfo'\n" % {
-                'XDG_DATA_HOME': self.xdg_data_home
+                'XDG_DATA_HOME': self.xdg_data_home.path
             },
             self.user.error())
 
@@ -119,7 +119,8 @@ class Test_describe_trash_list(Setup):
 
         assert_equals_with_unidiff(
             "Parse Error: %(XDG_DATA_HOME)s/Trash/info/1.trashinfo: "
-            "Unable to parse Path.\n" % {'XDG_DATA_HOME': self.xdg_data_home},
+            "Unable to parse Path.\n" % {
+                'XDG_DATA_HOME': self.xdg_data_home.path},
             self.user.error())
         assert_equals_with_unidiff('', self.user.output())
 

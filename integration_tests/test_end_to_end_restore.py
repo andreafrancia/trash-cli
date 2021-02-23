@@ -1,12 +1,10 @@
-import shutil
 import unittest
 import subprocess
 from subprocess import PIPE
 
 from integration_tests.fake_trash_dir import FakeTrashDir, a_trashinfo
-from integration_tests.files import read_file
+from integration_tests.files import read_file, TempDir
 from trashcli import base_dir
-import tempfile
 import os
 from os.path import join as pj
 from os.path import exists as file_exists
@@ -14,9 +12,9 @@ from os.path import exists as file_exists
 
 class TestEndToEndRestore(unittest.TestCase):
     def setUp(self):
-        self.tmpdir = os.path.realpath(tempfile.mkdtemp())
-        self.curdir = os.path.join(self.tmpdir, "cwd")
-        self.trash_dir = os.path.join(self.tmpdir, "trash-dir")
+        self.tmp_dir = TempDir.make_dir()
+        self.curdir = self.tmp_dir.join("cwd")
+        self.trash_dir = self.tmp_dir.join("trash-dir")
         os.makedirs(self.curdir)
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
 
@@ -97,4 +95,4 @@ What file to restore [0..0]: """ % {'curdir': self.curdir},
         return Result(stdout.decode('utf-8'), stderr.decode('utf-8'))
 
     def tearDown(self):
-        shutil.rmtree(self.tmpdir)
+        self.tmp_dir.clean_up()
