@@ -188,35 +188,37 @@ class Test_when_fed_with_dot_arguments(TrashPutTest):
 class TestUnsecureTrashDirMessages(TrashPutTest):
     def setUp(self):
         TrashPutTest.setUp(self)
-        require_empty_dir('fake-vol')
-        self.fstab.add_mount('fake-vol')
-        make_empty_file('fake-vol/foo')
+        self.temp_dir = MyPath.make_temp_dir()
+        self.fake_vol = self.temp_dir / 'fake-vol'
+        require_empty_dir(self.fake_vol)
+        self.fstab.add_mount(self.fake_vol)
+        make_empty_file(self.fake_vol / 'foo')
 
     def test_when_is_unsticky(self):
-        require_empty_dir('fake-vol/.Trash')
+        require_empty_dir(self.fake_vol / '.Trash')
 
-        self.run_trashput('trash-put', '-v', 'fake-vol/foo')
+        self.run_trashput('trash-put', '-v', self.fake_vol / 'foo')
 
         assert_line_in_text(
-                'trash-put: found unsecure .Trash dir (should be sticky): '
-                'fake-vol/.Trash', self.stderr)
+                'trash-put: found unsecure .Trash dir (should be sticky): ' +
+                self.fake_vol / '.Trash', self.stderr)
 
     def test_when_it_is_not_a_dir(self):
-        make_empty_file('fake-vol/.Trash')
+        make_empty_file(self.fake_vol / '.Trash')
 
-        self.run_trashput('trash-put', '-v', 'fake-vol/foo')
+        self.run_trashput('trash-put', '-v', self.fake_vol / 'foo')
 
         assert_line_in_text(
-                'trash-put: found unusable .Trash dir (should be a dir): '
-                'fake-vol/.Trash', self.stderr)
+                'trash-put: found unusable .Trash dir (should be a dir): ' +
+                self.fake_vol / '.Trash', self.stderr)
 
     def test_when_is_a_symlink(self):
-        make_sticky_dir('fake-vol/link-destination')
-        os.symlink('link-destination', 'fake-vol/.Trash')
+        make_sticky_dir( self.fake_vol / 'link-destination')
+        os.symlink('link-destination',  self.fake_vol / '.Trash')
 
-        self.run_trashput('trash-put', '-v', 'fake-vol/foo')
+        self.run_trashput('trash-put', '-v', self.fake_vol / 'foo')
 
         assert_line_in_text(
-                'trash-put: found unsecure .Trash dir (should not be a symlink): '
-                'fake-vol/.Trash', self.stderr)
+                'trash-put: found unsecure .Trash dir (should not be a symlink): ' +
+                self.fake_vol / '.Trash', self.stderr)
 

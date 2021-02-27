@@ -82,7 +82,7 @@ class MyPath(str):
         return self.path_join(other_path)
 
     def path_join(self, other_path):
-        return os.path.join(self, other_path)
+        return MyPath(os.path.join(self, other_path))
 
     def clean_up(self):
         shutil.rmtree(self)
