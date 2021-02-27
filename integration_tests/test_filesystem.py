@@ -5,15 +5,13 @@ import unittest
 
 from trashcli.fs import mkdirs, has_sticky_bit, is_sticky_dir
 
-from .files import (require_empty_dir, make_empty_file, set_sticky_bit, MyPath,
-                    unset_sticky_bit)
+from .files import (make_empty_file, set_sticky_bit, MyPath, unset_sticky_bit)
 
 
 class TestWithInSandbox(unittest.TestCase):
 
     def setUp(self):
         self.temp_dir = MyPath.make_temp_dir()
-        require_empty_dir(self.temp_dir / 'sandbox')
 
     def test_mkdirs_with_default_mode(self):
 
