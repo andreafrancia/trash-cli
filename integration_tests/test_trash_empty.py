@@ -5,7 +5,7 @@ from trashcli.empty import EmptyCmd
 
 from unit_tests.myStringIO import StringIO
 import os
-from .files import make_file, require_empty_dir, make_dirs, set_sticky_bit
+from .files import make_file, require_empty_dir, make_dirs, set_sticky_bit, MyPath
 from .files import make_empty_file
 from mock import MagicMock
 from trashcli.fs import FileSystemReader
@@ -224,12 +224,14 @@ class TestWhen_invoked_with_N_days_as_argument(unittest.TestCase):
 
 class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
     def setUp(self):
-        require_empty_dir('topdir')
+        self.temp_dir = MyPath.make_temp_dir()
+        self.top_dir = self.temp_dir / 'topdir'
+        require_empty_dir(self.top_dir)
         self.empty=EmptyCmd(
                 out          = StringIO(),
                 err          = StringIO(),
                 environ      = {},
-                list_volumes = lambda: ['topdir'],
+                list_volumes = lambda: [self.top_dir],
                 now          = None,
                 file_reader  = FileSystemReader(),
                 getuid       = lambda: 123,
@@ -238,25 +240,29 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
         )
 
     def test_it_removes_trashinfos_from_method_1_dir(self):
-        self.make_proper_top_trash_dir('topdir/.Trash')
-        make_empty_file('topdir/.Trash/123/info/foo.trashinfo')
+        self.make_proper_top_trash_dir(self.top_dir / '.Trash')
+        make_empty_file(self.top_dir / '.Trash/123/info/foo.trashinfo')
 
         self.empty.run('trash-empty')
 
-        assert not os.path.exists('topdir/.Trash/123/info/foo.trashinfo')
+        assert not os.path.exists(
+            self.top_dir / '.Trash/123/info/foo.trashinfo')
     def test_it_removes_trashinfos_from_method_2_dir(self):
-        make_empty_file('topdir/.Trash-123/info/foo.trashinfo')
+        make_empty_file(self.top_dir / '.Trash-123/info/foo.trashinfo')
 
         self.empty.run('trash-empty')
 
-        assert not os.path.exists('topdir/.Trash-123/info/foo.trashinfo')
+        assert not os.path.exists(
+            self.top_dir / '.Trash-123/info/foo.trashinfo')
 
     def test_it_removes_trashinfo_from_specified_trash_dir(self):
-        make_empty_file('specified/info/foo.trashinfo')
+        make_empty_file(self.temp_dir / 'specified/info/foo.trashinfo')
 
-        self.empty.run('trash-empty', '--trash-dir', 'specified')
+        self.empty.run('trash-empty', '--trash-dir',
+                       self.temp_dir / 'specified')
 
-        assert not os.path.exists('specified/info/foo.trashinfo')
+        assert not os.path.exists(
+            self.temp_dir / 'specified/info/foo.trashinfo')
 
 
     def make_proper_top_trash_dir(self, path):

@@ -17,8 +17,10 @@ import unittest
 
 class Setup(unittest.TestCase):
     def setUp(self):
+        self.temp_dir = MyPath.make_temp_dir()
         self.xdg_data_home = MyPath.make_temp_dir()
-        require_empty_dir('topdir')
+        self.top_dir = self.temp_dir / "topdir"
+        require_empty_dir(self.top_dir)
         self.user = TrashListUser(self.xdg_data_home)
 
     def tearDown(self):
@@ -127,40 +129,41 @@ class Test_describe_trash_list(Setup):
 class Test_with_a_top_trash_dir(Setup):
     def setUp(self):
         super(type(self),self).setUp()
-        self.top_trashdir1 = FakeTrashDir('topdir/.Trash/123')
+        self.top_trashdir1 = FakeTrashDir(self.top_dir / '.Trash/123')
         self.user.set_fake_uid(123)
-        self.user.add_volume('topdir')
+        self.user.add_volume(self.top_dir)
 
     def test_should_list_its_contents_if_parent_is_sticky(self):
-        make_sticky_dir('topdir/.Trash')
+        make_sticky_dir(self.top_dir / '.Trash')
         self.and_contains_a_valid_trashinfo()
 
         self.user.run_trash_list()
 
-        assert_equals_with_unidiff("2000-01-01 00:00:00 topdir/file1\n",
+        assert_equals_with_unidiff("2000-01-01 00:00:00 %s/file1\n" % self.top_dir,
                                    self.user.output())
 
     def test_and_should_warn_if_parent_is_not_sticky(self):
-        make_unsticky_dir('topdir/.Trash')
-        self.and_dir_exists('topdir/.Trash/123')
+        make_unsticky_dir(self.top_dir / '.Trash')
+        self.and_dir_exists(self.top_dir / '.Trash/123')
 
         self.user.run_trash_list()
 
         assert_equals_with_unidiff(
-            "TrashDir skipped because parent not sticky: topdir/.Trash/123\n",
+            "TrashDir skipped because parent not sticky: %s/.Trash/123\n" %
+            self.top_dir,
             self.user.error()
         )
 
     def test_but_it_should_not_warn_when_the_parent_is_unsticky_but_there_is_no_trashdir(self):
-        make_unsticky_dir('topdir/.Trash')
-        self.but_does_not_exists_any('topdir/.Trash/123')
+        make_unsticky_dir(self.top_dir / '.Trash')
+        self.but_does_not_exists_any(self.top_dir / '.Trash/123')
 
         self.user.run_trash_list()
 
         assert_equals_with_unidiff("", self.user.error())
 
     def test_should_ignore_trash_from_a_unsticky_topdir(self):
-        make_unsticky_dir('topdir/.Trash')
+        make_unsticky_dir(self.top_dir / '.Trash')
         self.and_contains_a_valid_trashinfo()
 
         self.user.run_trash_list()
@@ -168,7 +171,7 @@ class Test_with_a_top_trash_dir(Setup):
         assert_equals_with_unidiff('', self.user.output())
 
     def test_it_should_ignore_Trash_is_a_symlink(self):
-        self.when_is_a_symlink_to_a_dir('topdir/.Trash')
+        self.when_is_a_symlink_to_a_dir(self.top_dir / '.Trash')
         self.and_contains_a_valid_trashinfo()
 
         self.user.run_trash_list()
@@ -176,13 +179,14 @@ class Test_with_a_top_trash_dir(Setup):
         assert_equals_with_unidiff('', self.user.output())
 
     def test_and_should_warn_about_it(self):
-        self.when_is_a_symlink_to_a_dir('topdir/.Trash')
+        self.when_is_a_symlink_to_a_dir(self.top_dir / '.Trash')
         self.and_contains_a_valid_trashinfo()
 
         self.user.run_trash_list()
 
         assert_equals_with_unidiff(
-            'TrashDir skipped because parent not sticky: topdir/.Trash/123\n',
+            'TrashDir skipped because parent not sticky: %s/.Trash/123\n' %
+            self.top_dir,
             self.user.error()
         )
 
@@ -204,13 +208,14 @@ class Test_describe_when_a_file_is_in_alternate_top_trashdir(Setup):
 
     def test_should_list_contents_of_alternate_trashdir(self):
         self.user.set_fake_uid(123)
-        self.user.add_volume('topdir')
-        self.top_trashdir2 = FakeTrashDir('topdir/.Trash-123')
+        self.user.add_volume(self.top_dir)
+        self.top_trashdir2 = FakeTrashDir(self.top_dir / '.Trash-123')
         self.top_trashdir2.add_trashinfo2('file', '2000-01-01T00:00:00')
 
         self.user.run_trash_list()
 
-        assert_equals_with_unidiff("2000-01-01 00:00:00 topdir/file\n",
+        assert_equals_with_unidiff("2000-01-01 00:00:00 %s/file\n" %
+                                   self.top_dir,
                                    self.user.output())
 
 class TrashListUser:
