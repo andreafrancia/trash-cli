@@ -269,6 +269,9 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
         make_dirs(path)
         set_sticky_bit(path)
 
+    def tearDown(self):
+        self.temp_dir.clean_up()
+
 from textwrap import dedent
 class TestTrashEmpty_on_help(unittest.TestCase):
     def test_help_output(self):

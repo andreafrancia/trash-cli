@@ -25,6 +25,7 @@ class Setup(unittest.TestCase):
 
     def tearDown(self):
         self.xdg_data_home.clean_up()
+        self.temp_dir.clean_up()
 
 
 def sort_lines(lines):

@@ -222,3 +222,5 @@ class TestUnsecureTrashDirMessages(TrashPutTest):
                 'trash-put: found unsecure .Trash dir (should not be a symlink): ' +
                 self.fake_vol / '.Trash', self.stderr)
 
+    def tearDown(self):
+        self.temp_dir.clean_up()
