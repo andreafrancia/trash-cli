@@ -7,13 +7,9 @@
 
 # other things
 /build/
-/command-test/sandbox/
-/command-test/test-volume.img
 /cover/
 /dist/
-/foo
 /env/
-/nose-*.egg/
 /sandbox/
 /scripts/
 /test-disk.img
