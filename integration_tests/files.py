@@ -73,16 +73,20 @@ def make_unreadable_file(path):
     os.chmod(path, 0)
 
 
-class TempDir:
-    def __init__(self, path):
-        self.path = path
+class MyPath(str):
 
-    def join(self, path):
-        return os.path.join(self.path, path)
+    def __truediv__(self, other_path):
+        return self.path_join(other_path)
+
+    def __div__(self, other_path):
+        return self.path_join(other_path)
+
+    def path_join(self, other_path):
+        return os.path.join(self, other_path)
 
     def clean_up(self):
-        shutil.rmtree(self.path)
+        shutil.rmtree(self)
 
     @classmethod
-    def make_dir(cls):
+    def make_temp_dir(cls):
         return cls(os.path.realpath(tempfile.mkdtemp()))

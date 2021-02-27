@@ -3,7 +3,7 @@ import subprocess
 from subprocess import PIPE
 
 from integration_tests.fake_trash_dir import FakeTrashDir, a_trashinfo
-from integration_tests.files import read_file, TempDir
+from integration_tests.files import read_file, MyPath
 from trashcli import base_dir
 import os
 from os.path import join as pj
@@ -12,9 +12,9 @@ from os.path import exists as file_exists
 
 class TestEndToEndRestore(unittest.TestCase):
     def setUp(self):
-        self.tmp_dir = TempDir.make_dir()
-        self.curdir = self.tmp_dir.join("cwd")
-        self.trash_dir = self.tmp_dir.join("trash-dir")
+        self.tmp_dir = MyPath.make_temp_dir()
+        self.curdir = self.tmp_dir / "cwd"
+        self.trash_dir = self.tmp_dir / "trash-dir"
         os.makedirs(self.curdir)
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
 

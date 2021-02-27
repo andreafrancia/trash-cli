@@ -1,15 +1,15 @@
 import unittest
 
-from integration_tests.files import make_unreadable_file, read_file, TempDir
+from integration_tests.files import make_unreadable_file, read_file, MyPath
 
 
 class Test_make_unreadable_file(unittest.TestCase):
     def setUp(self):
-        self.tmp_dir = TempDir.make_dir()
+        self.tmp_dir = MyPath.make_temp_dir()
 
     def test(self):
-        path = self.tmp_dir.join("unreadable")
-        make_unreadable_file(self.tmp_dir.join("unreadable"))
+        path = self.tmp_dir / "unreadable"
+        make_unreadable_file(self.tmp_dir / "unreadable")
         with self.assertRaises(IOError):
             read_file(path)
 

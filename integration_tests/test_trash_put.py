@@ -5,7 +5,7 @@ import os
 from os.path import exists as file_exists
 from datetime import datetime
 
-from .files import make_empty_file, require_empty_dir
+from .files import make_empty_file, require_empty_dir, MyPath
 from .files import make_sticky_dir
 from trashcli.fstab import FakeFstab
 from trashcli.fs import remove_file
