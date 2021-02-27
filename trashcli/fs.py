@@ -17,6 +17,10 @@ class FileSystemReader(FileSystemListing):
     def contents_of(self, path):
         return open(path).read()
 
+
+is_sticky_dir=FileSystemReader().is_sticky_dir
+
+
 class FileRemover:
     def remove_file(self, path):
         try:

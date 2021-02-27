@@ -1,56 +1,64 @@
-# Copyright (C) 2008-2011 Andrea Francia Trivolzio(PV) Italy
+# Copyright (C) 2008-2021 Andrea Francia Bereguardo(PV) Italy
+
+import os
 import unittest
 
-from trashcli.fs import FileSystemReader
-from trashcli.fs import mkdirs
-from trashcli.fs import has_sticky_bit
+from trashcli.fs import mkdirs, has_sticky_bit, is_sticky_dir
 
-from .files import require_empty_dir, make_empty_file, set_sticky_bit
-import os
+from .files import (require_empty_dir, make_empty_file, set_sticky_bit, MyPath,
+                    unset_sticky_bit)
 
-class TestWithInSandbox:
+
+class TestWithInSandbox(unittest.TestCase):
+
+    def setUp(self):
+        self.temp_dir = MyPath.make_temp_dir()
+        require_empty_dir(self.temp_dir / 'sandbox')
+
     def test_mkdirs_with_default_mode(self):
 
-        mkdirs("sandbox/test-dir/sub-dir")
+        mkdirs(self.temp_dir / "test-dir/sub-dir")
 
-        assert os.path.isdir("sandbox/test-dir/sub-dir")
+        assert os.path.isdir(self.temp_dir / "test-dir/sub-dir")
 
     def test_has_sticky_bit_returns_true(self):
 
-        make_empty_file("sandbox/sticky")
-        run('chmod +t sandbox/sticky')
+        make_empty_file(self.temp_dir / "sticky")
+        set_sticky_bit(self.temp_dir / "sticky")
 
-        assert has_sticky_bit('sandbox/sticky')
+        assert has_sticky_bit(self.temp_dir / 'sticky')
 
     def test_has_sticky_bit_returns_false(self):
 
-        make_empty_file("sandbox/non-sticky")
-        run('chmod -t sandbox/non-sticky')
+        make_empty_file(self.temp_dir / "non-sticky")
+        set_sticky_bit(self.temp_dir / "non-sticky")
+        unset_sticky_bit(self.temp_dir / "non-sticky")
 
-        assert not has_sticky_bit("sandbox/non-sticky")
+        assert not has_sticky_bit(self.temp_dir / "non-sticky")
 
-    def setUp(self):
-        require_empty_dir('sandbox')
+    def tearDown(self):
+        self.temp_dir.clean_up()
 
-is_sticky_dir=FileSystemReader().is_sticky_dir
+
 class Test_is_sticky_dir(unittest.TestCase):
 
+    def setUp(self):
+        self.temp_dir = MyPath.make_temp_dir()
+
     def test_dir_non_sticky(self):
-        mkdirs('sandbox/dir'); assert not is_sticky_dir('sandbox/dir')
+        mkdirs(self.temp_dir / 'dir')
+
+        assert not is_sticky_dir(self.temp_dir / 'dir')
 
     def test_dir_sticky(self):
-        mkdirs('sandbox/dir'); set_sticky_bit('sandbox/dir')
-        assert is_sticky_dir('sandbox/dir')
+        mkdirs(self.temp_dir / 'dir')
+        set_sticky_bit(self.temp_dir / 'dir')
+
+        assert is_sticky_dir(self.temp_dir / 'dir')
 
     def test_non_dir_but_sticky(self):
-        make_empty_file('sandbox/dir');
-        set_sticky_bit('sandbox/dir')
-        assert not is_sticky_dir('sandbox/dir')
+        make_empty_file(self.temp_dir / 'dir')
+        set_sticky_bit(self.temp_dir / 'dir')
 
-    def setUp(self):
-        require_empty_dir('sandbox')
-
-def run(command):
-    import subprocess
-    assert subprocess.call(command.split()) == 0
+        assert not is_sticky_dir(self.temp_dir / 'dir')
 
