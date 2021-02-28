@@ -57,16 +57,9 @@ class TestPath(unittest.TestCase):
         remove_file('foo')
         remove_file('bar')
 
-class TrashPutTest(unittest.TestCase):
+class TrashPutFixture:
 
-    def setUp(self):
-        self.prepare_fixture()
-        self.setUp2()
-
-    def setUp2(self):
-        pass
-
-    def prepare_fixture(self):
+    def __init__(self):
         require_empty_dir('sandbox')
         self.fstab   = FakeFstab()
 
@@ -90,9 +83,9 @@ class TrashPutTest(unittest.TestCase):
         self.stderr = self.err.getvalue()
 
 
-class Test_when_deleting_an_existing_file(TrashPutTest):
-    def setUp2(self):
-        self.fixture = self
+class Test_when_deleting_an_existing_file(unittest.TestCase):
+    def setUp(self):
+        self.fixture = TrashPutFixture()
         make_empty_file('sandbox/foo')
         self.fixture.run_trashput('trash-put', 'sandbox/foo')
 
@@ -100,38 +93,38 @@ class Test_when_deleting_an_existing_file(TrashPutTest):
         assert not file_exists('sandbox/foo')
 
     def test_it_should_remove_it_silently(self):
-        self.assertEqual("", self.stdout)
+        self.assertEqual("", self.fixture.stdout)
 
     def test_a_trashinfo_file_should_have_been_created(self):
         open('sandbox/XDG_DATA_HOME/Trash/info/foo.trashinfo').read()
 
-class Test_when_deleting_an_existing_file_in_verbose_mode(TrashPutTest):
-    def setUp2(self):
+class Test_when_deleting_an_existing_file_in_verbose_mode(unittest.TestCase):
+    def setUp(self):
+        self.fixture = TrashPutFixture()
         make_empty_file('sandbox/foo')
-        self.fixture = self
         self.fixture.run_trashput('trash-put', '-v', 'sandbox/foo')
 
     def test_should_tell_where_a_file_is_trashed(self):
         assert ("trash-put: 'sandbox/foo' trashed in sandbox/XDG_DATA_HOME/Trash" in
-                  self.stderr.splitlines())
+                  self.fixture.stderr.splitlines())
 
     def test_should_be_succesfull(self):
-        assert 0 == self.exit_code
+        assert 0 == self.fixture.exit_code
 
 
-class Test_when_deleting_a_non_existing_file(TrashPutTest):
-    def setUp2(self):
-        self.fixture = self
+class Test_when_deleting_a_non_existing_file(unittest.TestCase):
+    def setUp(self):
+        self.fixture = TrashPutFixture()
         self.fixture.run_trashput('trash-put', '-v', 'non-existent')
 
     def test_should_be_succesfull(self):
-        assert 0 != self.exit_code
+        assert 0 != self.fixture.exit_code
 
 
-class Test_when_fed_with_dot_arguments(TrashPutTest):
+class Test_when_fed_with_dot_arguments(unittest.TestCase):
 
-    def setUp2(self):
-        self.fixture = self
+    def setUp(self):
+        self.fixture = TrashPutFixture()
         require_empty_dir('sandbox/')
         make_empty_file('other_argument')
 
@@ -141,7 +134,8 @@ class Test_when_fed_with_dot_arguments(TrashPutTest):
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be written on stderr
-        self.assertEqual("trash-put: cannot trash directory '.'\n", self.stderr)
+        self.assertEqual("trash-put: cannot trash directory '.'\n",
+                         self.fixture.stderr)
 
         # the remaining arguments should be processed
         assert not file_exists('other_argument')
@@ -152,7 +146,8 @@ class Test_when_fed_with_dot_arguments(TrashPutTest):
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
-        self.assertEqual("trash-put: cannot trash directory '..'\n", self.stderr)
+        self.assertEqual("trash-put: cannot trash directory '..'\n",
+                         self.fixture.stderr)
 
         # the remaining arguments should be processed
         assert not file_exists('other_argument')
@@ -164,7 +159,7 @@ class Test_when_fed_with_dot_arguments(TrashPutTest):
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
         self.assertEqual("trash-put: cannot trash '.' directory 'sandbox/.'\n",
-                         self.stderr)
+                         self.fixture.stderr)
 
         # the remaining arguments should be processed
         assert not file_exists('other_argument')
@@ -177,17 +172,16 @@ class Test_when_fed_with_dot_arguments(TrashPutTest):
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
         self.assertEqual("trash-put: cannot trash '..' directory 'sandbox/..'\n",
-                         self.stderr)
+                         self.fixture.stderr)
 
         # the remaining arguments should be processed
         assert not file_exists('other_argument')
         assert file_exists('sandbox')
 
 
-class TestUnsecureTrashDirMessages(TrashPutTest):
+class TestUnsecureTrashDirMessages(unittest.TestCase):
     def setUp(self):
-        self.fixture = self
-        TrashPutTest.setUp(self)
+        self.fixture = TrashPutFixture()
         self.temp_dir = MyPath.make_temp_dir()
         self.fake_vol = self.temp_dir / 'fake-vol'
         require_empty_dir(self.fake_vol)
@@ -201,7 +195,7 @@ class TestUnsecureTrashDirMessages(TrashPutTest):
 
         assert_line_in_text(
                 'trash-put: found unsecure .Trash dir (should be sticky): ' +
-                self.fake_vol / '.Trash', self.stderr)
+                self.fake_vol / '.Trash', self.fixture.stderr)
 
     def test_when_it_is_not_a_dir(self):
         make_empty_file(self.fake_vol / '.Trash')
@@ -210,7 +204,7 @@ class TestUnsecureTrashDirMessages(TrashPutTest):
 
         assert_line_in_text(
                 'trash-put: found unusable .Trash dir (should be a dir): ' +
-                self.fake_vol / '.Trash', self.stderr)
+                self.fake_vol / '.Trash', self.fixture.stderr)
 
     def test_when_is_a_symlink(self):
         make_sticky_dir( self.fake_vol / 'link-destination')
@@ -220,7 +214,7 @@ class TestUnsecureTrashDirMessages(TrashPutTest):
 
         assert_line_in_text(
                 'trash-put: found unsecure .Trash dir (should not be a symlink): ' +
-                self.fake_vol / '.Trash', self.stderr)
+                self.fake_vol / '.Trash', self.fixture.stderr)
 
     def tearDown(self):
         self.temp_dir.clean_up()
