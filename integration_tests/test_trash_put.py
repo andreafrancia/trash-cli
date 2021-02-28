@@ -6,7 +6,7 @@ from os.path import exists as file_exists
 from datetime import datetime
 
 from unit_tests import myStringIO
-from .files import make_empty_file, require_empty_dir, MyPath
+from .files import make_empty_file, require_empty_dir, MyPath, read_file
 from .files import make_sticky_dir
 from trashcli.fstab import FakeFstab
 from trashcli.fs import remove_file
@@ -60,11 +60,11 @@ class TestPath(unittest.TestCase):
 class TrashPutFixture:
 
     def __init__(self):
-        require_empty_dir('sandbox')
         self.fstab   = FakeFstab()
+        self.temp_dir = MyPath.make_temp_dir()
 
     def run_trashput(self, *argv):
-        self.environ = {'XDG_DATA_HOME': 'sandbox/XDG_DATA_HOME' }
+        self.environ = {'XDG_DATA_HOME': self.temp_dir / 'XDG_DATA_HOME' }
         self.out = myStringIO.StringIO()
         self.err = myStringIO.StringIO()
         cmd = TrashPutCmd(
@@ -86,27 +86,30 @@ class TrashPutFixture:
 class Test_when_deleting_an_existing_file(unittest.TestCase):
     def setUp(self):
         self.fixture = TrashPutFixture()
-        make_empty_file('sandbox/foo')
-        self.fixture.run_trashput('trash-put', 'sandbox/foo')
+        make_empty_file(self.fixture.temp_dir / 'foo')
+        self.fixture.run_trashput('trash-put', self.fixture.temp_dir / 'foo')
 
     def test_it_should_remove_the_file(self):
-        assert not file_exists('sandbox/foo')
+        assert not file_exists(self.fixture.temp_dir / 'foo')
 
     def test_it_should_remove_it_silently(self):
         self.assertEqual("", self.fixture.stdout)
 
     def test_a_trashinfo_file_should_have_been_created(self):
-        open('sandbox/XDG_DATA_HOME/Trash/info/foo.trashinfo').read()
+        read_file(self.fixture.temp_dir / 'XDG_DATA_HOME/Trash/info/foo.trashinfo')
 
 class Test_when_deleting_an_existing_file_in_verbose_mode(unittest.TestCase):
     def setUp(self):
         self.fixture = TrashPutFixture()
-        make_empty_file('sandbox/foo')
-        self.fixture.run_trashput('trash-put', '-v', 'sandbox/foo')
+        self.foo_file = self.fixture.temp_dir / "foo"
+        make_empty_file(self.foo_file)
+        self.fixture.run_trashput('trash-put', '-v', self.foo_file)
 
     def test_should_tell_where_a_file_is_trashed(self):
-        assert ("trash-put: 'sandbox/foo' trashed in sandbox/XDG_DATA_HOME/Trash" in
-                  self.fixture.stderr.splitlines())
+        output = self.fixture.stderr.splitlines()
+        assert (("trash-put: '%s' trashed in %s/XDG_DATA_HOME/Trash" %
+                 (self.foo_file, self.fixture.temp_dir)) in
+                  output)
 
     def test_should_be_succesfull(self):
         assert 0 == self.fixture.exit_code
@@ -125,58 +128,52 @@ class Test_when_fed_with_dot_arguments(unittest.TestCase):
 
     def setUp(self):
         self.fixture = TrashPutFixture()
-        require_empty_dir('sandbox/')
-        make_empty_file('other_argument')
 
     def test_dot_argument_is_skipped(self):
 
-        self.fixture.run_trashput("trash-put", ".", "other_argument")
+        self.fixture.run_trashput("trash-put", ".")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be written on stderr
         self.assertEqual("trash-put: cannot trash directory '.'\n",
                          self.fixture.stderr)
 
-        # the remaining arguments should be processed
-        assert not file_exists('other_argument')
-
     def test_dot_dot_argument_is_skipped(self):
 
-        self.fixture.run_trashput("trash-put", "..", "other_argument")
+        self.fixture.run_trashput("trash-put", "..")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
         self.assertEqual("trash-put: cannot trash directory '..'\n",
                          self.fixture.stderr)
 
-        # the remaining arguments should be processed
-        assert not file_exists('other_argument')
-
     def test_dot_argument_is_skipped_even_in_subdirs(self):
+        sandbox = MyPath.make_temp_dir()
 
-        self.fixture.run_trashput("trash-put", "sandbox/.", "other_argument")
+        self.fixture.run_trashput("trash-put", "%s/." % sandbox)
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
-        self.assertEqual("trash-put: cannot trash '.' directory 'sandbox/.'\n",
+        self.assertEqual("trash-put: cannot trash '.' directory '%s/.'\n" %
+                         sandbox,
                          self.fixture.stderr)
 
-        # the remaining arguments should be processed
-        assert not file_exists('other_argument')
-        assert file_exists('sandbox')
+        assert file_exists(sandbox)
+        sandbox.clean_up()
 
     def test_dot_dot_argument_is_skipped_even_in_subdirs(self):
+        sandbox = MyPath.make_temp_dir()
 
-        self.fixture.run_trashput("trash-put", "sandbox/..", "other_argument")
+        self.fixture.run_trashput("trash-put", "%s/.." % sandbox)
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
-        self.assertEqual("trash-put: cannot trash '..' directory 'sandbox/..'\n",
+        self.assertEqual("trash-put: cannot trash '..' directory '%s/..'\n" %
+                         sandbox,
                          self.fixture.stderr)
 
-        # the remaining arguments should be processed
-        assert not file_exists('other_argument')
-        assert file_exists('sandbox')
+        assert file_exists(sandbox)
+        sandbox.clean_up()
 
 
 class TestUnsecureTrashDirMessages(unittest.TestCase):
