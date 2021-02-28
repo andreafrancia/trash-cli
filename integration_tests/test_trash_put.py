@@ -139,7 +139,7 @@ class Test_when_fed_with_dot_arguments(TrashPutTest):
         self.run_trashput("trash-put", ".", "other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
-        # shall be writtend on stderr
+        # shall be written on stderr
         self.stderr_should_be(
                 "trash-put: cannot trash directory '.'\n")
 
