@@ -94,7 +94,7 @@ class Test_when_deleting_an_existing_file(TrashPutTest):
     def setUp2(self):
         self.fixture = self
         make_empty_file('sandbox/foo')
-        self.run_trashput('trash-put', 'sandbox/foo')
+        self.fixture.run_trashput('trash-put', 'sandbox/foo')
 
     def test_it_should_remove_the_file(self):
         assert not file_exists('sandbox/foo')
@@ -108,7 +108,8 @@ class Test_when_deleting_an_existing_file(TrashPutTest):
 class Test_when_deleting_an_existing_file_in_verbose_mode(TrashPutTest):
     def setUp2(self):
         make_empty_file('sandbox/foo')
-        self.run_trashput('trash-put', '-v', 'sandbox/foo')
+        self.fixture = self
+        self.fixture.run_trashput('trash-put', '-v', 'sandbox/foo')
 
     def test_should_tell_where_a_file_is_trashed(self):
         assert ("trash-put: 'sandbox/foo' trashed in sandbox/XDG_DATA_HOME/Trash" in
@@ -120,7 +121,8 @@ class Test_when_deleting_an_existing_file_in_verbose_mode(TrashPutTest):
 
 class Test_when_deleting_a_non_existing_file(TrashPutTest):
     def setUp2(self):
-        self.run_trashput('trash-put', '-v', 'non-existent')
+        self.fixture = self
+        self.fixture.run_trashput('trash-put', '-v', 'non-existent')
 
     def test_should_be_succesfull(self):
         assert 0 != self.exit_code
@@ -129,12 +131,13 @@ class Test_when_deleting_a_non_existing_file(TrashPutTest):
 class Test_when_fed_with_dot_arguments(TrashPutTest):
 
     def setUp2(self):
+        self.fixture = self
         require_empty_dir('sandbox/')
         make_empty_file('other_argument')
 
     def test_dot_argument_is_skipped(self):
 
-        self.run_trashput("trash-put", ".", "other_argument")
+        self.fixture.run_trashput("trash-put", ".", "other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be written on stderr
@@ -145,7 +148,7 @@ class Test_when_fed_with_dot_arguments(TrashPutTest):
 
     def test_dot_dot_argument_is_skipped(self):
 
-        self.run_trashput("trash-put", "..", "other_argument")
+        self.fixture.run_trashput("trash-put", "..", "other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
@@ -156,7 +159,7 @@ class Test_when_fed_with_dot_arguments(TrashPutTest):
 
     def test_dot_argument_is_skipped_even_in_subdirs(self):
 
-        self.run_trashput("trash-put", "sandbox/.", "other_argument")
+        self.fixture.run_trashput("trash-put", "sandbox/.", "other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
@@ -169,7 +172,7 @@ class Test_when_fed_with_dot_arguments(TrashPutTest):
 
     def test_dot_dot_argument_is_skipped_even_in_subdirs(self):
 
-        self.run_trashput("trash-put", "sandbox/..", "other_argument")
+        self.fixture.run_trashput("trash-put", "sandbox/..", "other_argument")
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
@@ -183,17 +186,18 @@ class Test_when_fed_with_dot_arguments(TrashPutTest):
 
 class TestUnsecureTrashDirMessages(TrashPutTest):
     def setUp(self):
+        self.fixture = self
         TrashPutTest.setUp(self)
         self.temp_dir = MyPath.make_temp_dir()
         self.fake_vol = self.temp_dir / 'fake-vol'
         require_empty_dir(self.fake_vol)
-        self.fstab.add_mount(self.fake_vol)
+        self.fixture.fstab.add_mount(self.fake_vol)
         make_empty_file(self.fake_vol / 'foo')
 
     def test_when_is_unsticky(self):
         require_empty_dir(self.fake_vol / '.Trash')
 
-        self.run_trashput('trash-put', '-v', self.fake_vol / 'foo')
+        self.fixture.run_trashput('trash-put', '-v', self.fake_vol / 'foo')
 
         assert_line_in_text(
                 'trash-put: found unsecure .Trash dir (should be sticky): ' +
@@ -202,7 +206,7 @@ class TestUnsecureTrashDirMessages(TrashPutTest):
     def test_when_it_is_not_a_dir(self):
         make_empty_file(self.fake_vol / '.Trash')
 
-        self.run_trashput('trash-put', '-v', self.fake_vol / 'foo')
+        self.fixture.run_trashput('trash-put', '-v', self.fake_vol / 'foo')
 
         assert_line_in_text(
                 'trash-put: found unusable .Trash dir (should be a dir): ' +
@@ -212,7 +216,7 @@ class TestUnsecureTrashDirMessages(TrashPutTest):
         make_sticky_dir( self.fake_vol / 'link-destination')
         os.symlink('link-destination',  self.fake_vol / '.Trash')
 
-        self.run_trashput('trash-put', '-v', self.fake_vol / 'foo')
+        self.fixture.run_trashput('trash-put', '-v', self.fake_vol / 'foo')
 
         assert_line_in_text(
                 'trash-put: found unsecure .Trash dir (should not be a symlink): ' +
