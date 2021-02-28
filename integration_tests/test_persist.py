@@ -3,7 +3,7 @@
 import os
 import unittest
 
-from integration_tests.files import require_empty_dir, read_file
+from integration_tests.files import require_empty_dir, read_file, MyPath
 from trashcli.put import TrashDirectoryForPut, RealFs
 from mock import Mock
 
@@ -12,7 +12,7 @@ join = os.path.join
 
 class TestTrashDirectory_persit_trash_info(unittest.TestCase):
     def setUp(self):
-        self.trash_dir = os.path.realpath("./sandbox/testTrashDirectory")
+        self.trash_dir = MyPath.make_temp_dir()
         require_empty_dir(self.trash_dir)
 
         self.instance = TrashDirectoryForPut(
@@ -29,7 +29,7 @@ class TestTrashDirectory_persit_trash_info(unittest.TestCase):
     def test_persist_trash_info_first_time(self):
 
         trash_info_file = self.persist_trash_info('dummy-path', b'content')
-        assert join(self.trashdirectory_base_dir,'info', 'dummy-path.trashinfo') == trash_info_file
+        assert join(self.trash_dir, 'info', 'dummy-path.trashinfo') == trash_info_file
 
         assert 'content' == read_file(trash_info_file)
 
