@@ -5,6 +5,7 @@ import os
 from os.path import exists as file_exists
 from datetime import datetime
 
+from unit_tests import myStringIO
 from .files import make_empty_file, require_empty_dir, MyPath
 from .files import make_sticky_dir
 from trashcli.fstab import FakeFstab
@@ -67,17 +68,12 @@ class TrashPutTest(unittest.TestCase):
 
     def prepare_fixture(self):
         require_empty_dir('sandbox')
-        self.environ = {'XDG_DATA_HOME': 'sandbox/XDG_DATA_HOME' }
-
-        from .output_collector import OutputCollector
-        self.out     = OutputCollector()
-        self.err     = OutputCollector()
         self.fstab   = FakeFstab()
 
-        self.stderr_should_be = self.err.should_be
-        self.output_should_be = self.out.should_be
-
     def run_trashput(self, *argv):
+        self.environ = {'XDG_DATA_HOME': 'sandbox/XDG_DATA_HOME' }
+        self.out = myStringIO.StringIO()
+        self.err = myStringIO.StringIO()
         cmd = TrashPutCmd(
             stdout      = self.out,
             stderr      = self.err,
@@ -90,11 +86,13 @@ class TrashPutTest(unittest.TestCase):
             now         = datetime.now
         )
         self.exit_code = cmd.run(list(argv))
+        self.stdout = self.out.getvalue()
         self.stderr = self.err.getvalue()
 
 
 class Test_when_deleting_an_existing_file(TrashPutTest):
     def setUp2(self):
+        self.fixture = self
         make_empty_file('sandbox/foo')
         self.run_trashput('trash-put', 'sandbox/foo')
 
@@ -102,7 +100,7 @@ class Test_when_deleting_an_existing_file(TrashPutTest):
         assert not file_exists('sandbox/foo')
 
     def test_it_should_remove_it_silently(self):
-        self.output_should_be('')
+        self.assertEqual("", self.stdout)
 
     def test_a_trashinfo_file_should_have_been_created(self):
         open('sandbox/XDG_DATA_HOME/Trash/info/foo.trashinfo').read()
@@ -140,8 +138,7 @@ class Test_when_fed_with_dot_arguments(TrashPutTest):
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be written on stderr
-        self.stderr_should_be(
-                "trash-put: cannot trash directory '.'\n")
+        self.assertEqual("trash-put: cannot trash directory '.'\n", self.stderr)
 
         # the remaining arguments should be processed
         assert not file_exists('other_argument')
@@ -152,8 +149,7 @@ class Test_when_fed_with_dot_arguments(TrashPutTest):
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
-        self.stderr_should_be(
-            "trash-put: cannot trash directory '..'\n")
+        self.assertEqual("trash-put: cannot trash directory '..'\n", self.stderr)
 
         # the remaining arguments should be processed
         assert not file_exists('other_argument')
@@ -164,8 +160,8 @@ class Test_when_fed_with_dot_arguments(TrashPutTest):
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
-        self.stderr_should_be(
-            "trash-put: cannot trash '.' directory 'sandbox/.'\n")
+        self.assertEqual("trash-put: cannot trash '.' directory 'sandbox/.'\n",
+                         self.stderr)
 
         # the remaining arguments should be processed
         assert not file_exists('other_argument')
@@ -177,8 +173,8 @@ class Test_when_fed_with_dot_arguments(TrashPutTest):
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be writtend on stderr
-        self.stderr_should_be(
-            "trash-put: cannot trash '..' directory 'sandbox/..'\n")
+        self.assertEqual("trash-put: cannot trash '..' directory 'sandbox/..'\n",
+                         self.stderr)
 
         # the remaining arguments should be processed
         assert not file_exists('other_argument')
