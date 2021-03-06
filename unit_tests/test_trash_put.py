@@ -3,7 +3,7 @@ import unittest
 
 from trashcli.put import TrashPutCmd
 from trashcli.put import TopDirRelativePaths, AbsolutePaths
-from trashcli.put import TopTrashDirWriteRules, all_is_ok_checker
+from trashcli.put import top_trash_dir_rules, all_is_ok_rules
 
 from unit_tests.myStringIO import StringIO
 from integration_tests.asserts import assert_equals_with_unidiff
@@ -32,16 +32,16 @@ class TestTrashPutTrashDirectory(unittest.TestCase):
         self.cmd.run(['trash-put', 'file'])
 
         assert [call('file', '/', [
-            ('~/xdh/Trash', '/', AbsolutePaths, all_is_ok_checker),
-            ('/.Trash/123', '/', TopDirRelativePaths, TopTrashDirWriteRules),
-            ('/.Trash-123', '/', TopDirRelativePaths, all_is_ok_checker),
+            ('~/xdh/Trash', '/', AbsolutePaths, all_is_ok_rules),
+            ('/.Trash/123', '/', TopDirRelativePaths, top_trash_dir_rules),
+            ('/.Trash-123', '/', TopDirRelativePaths, all_is_ok_rules),
             ])] == self.try_trash_file_using_candidates.mock_calls
 
     def test_with_a_specified_trashdir(self):
         self.cmd.run(['trash-put', '--trash-dir=/Trash2', 'file'])
 
         assert [call('file', '/', [
-            ('/Trash2', '/', TopDirRelativePaths, all_is_ok_checker),
+            ('/Trash2', '/', TopDirRelativePaths, all_is_ok_rules),
             ])] == self.try_trash_file_using_candidates.mock_calls
 
 
