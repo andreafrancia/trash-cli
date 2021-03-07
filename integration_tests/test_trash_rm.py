@@ -3,53 +3,54 @@ import unittest
 from unit_tests.myStringIO import StringIO
 from mock import Mock, ANY
 
-from .files import require_empty_dir, make_file
+from .files import require_empty_dir, make_file, MyPath
 from trashcli.rm import RmCmd, ListTrashinfos
 from .fake_trash_dir import a_trashinfo_with_path, a_trashinfo_without_path
 from trashcli.fs import FileSystemReader
 
 
 class TestTrashRm(unittest.TestCase):
-    def test_issue69(self):
-        self.add_invalid_trashinfo_without_path(1)
-
-        self.trash_rm.run(['trash-rm', 'any-pattern (ignored)'])
-
-        assert ('trash-rm: '
-                     'sandbox/xdh/Trash/info/1.trashinfo: '
-                     'unable to parse \'Path\''
-                     '\n' == self.stderr.getvalue())
-
-
-    def test_integration(self):
-        self.add_trashinfo_for(1, 'to/be/deleted')
-        self.add_trashinfo_for(2, 'to/be/kept')
-
-        self.trash_rm.run(['trash-rm', 'delete*'])
-
-        self.assert_trashinfo_has_been_deleted(1)
     def setUp(self):
         require_empty_dir('sandbox/xdh')
+        self.xdg_data_home = MyPath.make_temp_dir()
         self.stderr = StringIO()
-        self.trash_rm = RmCmd(environ = {'XDG_DATA_HOME':'sandbox/xdh'}
+        self.trash_rm = RmCmd(environ = {'XDG_DATA_HOME': self.xdg_data_home}
                          , getuid = 123
                          , list_volumes = lambda:[]
                          , stderr = self.stderr
                          , file_reader = FileSystemReader())
 
-    def add_trashinfo_for(self, index, path):
-        make_file(self.trashinfo_from_index(index),
-                  a_trashinfo_with_path(path))
-    def add_invalid_trashinfo_without_path(self, index):
-        make_file(self.trashinfo_from_index(index),
-                  a_trashinfo_without_path())
-    def trashinfo_from_index(self, index):
-        return 'sandbox/xdh/Trash/info/%s.trashinfo' % index
+    def test_issue69(self):
+        self.add_trashinfo("foo.trashinfo", a_trashinfo_without_path())
 
-    def assert_trashinfo_has_been_deleted(self, index):
+        self.trash_rm.run(['trash-rm', 'ignored'])
+
+        assert (self.stderr.getvalue() ==
+                "trash-rm: %s/Trash/info/foo.trashinfo: unable to parse 'Path'"
+                '\n' % self.xdg_data_home)
+
+
+    def test_integration(self):
+        self.add_trashinfo("1.trashinfo", a_trashinfo_with_path('to/be/deleted'))
+        self.add_trashinfo("2.trashinfo", a_trashinfo_with_path('to/be/kept'))
+
+        self.trash_rm.run(['trash-rm', 'delete*'])
+
+        self.assert_trashinfo_has_been_deleted("1.trashinfo")
+
+    def add_trashinfo(self, trashinfo_name, contents):
+        make_file(self.trashinfo_path(trashinfo_name), contents)
+
+    def trashinfo_path(self, trashinfo_name):
+        return self.xdg_data_home / 'Trash/info' / trashinfo_name
+
+    def assert_trashinfo_has_been_deleted(self, trashinfo_name):
         import os
-        filename = self.trashinfo_from_index(index)
-        assert not os.path.exists(filename), 'File "%s" still exists' % filename
+        path = self.trashinfo_path(trashinfo_name)
+        assert not os.path.exists(path), 'File "%s" still exists' % path
+
+    def tearDown(self):
+        self.xdg_data_home.clean_up()
 
 
 class TestListing(unittest.TestCase):
