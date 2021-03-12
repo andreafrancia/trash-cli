@@ -48,9 +48,9 @@ class TestTrashDirs_listing(unittest.TestCase):
         class FakeTopTrashDirRules:
             def valid_to_be_read(_, path):
                 if self.Trash_dir_is_sticky:
-                    return TopTrashDirValidationResult.valid
+                    return TopTrashDirValidationResult.Valid
                 else:
-                    return TopTrashDirValidationResult.not_valid_parent_should_be_sticky
+                    return TopTrashDirValidationResult.NotValidBecauseIsNotSticky
         trash_dirs = TrashDirs(
             environ=self.environ,
             getuid=lambda:self.uid,
