@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 import unittest
 
-from trashcli.trash import TrashDirs
+from trashcli.trash import TrashDirs, TopTrashDirValidationResult
 from mock import Mock
 from mock import MagicMock
 from trashcli.trash import TopTrashDirRules
@@ -46,11 +46,11 @@ class TestTrashDirs_listing(unittest.TestCase):
             def is_symlink(_, path):
                 return False
         class FakeTopTrashDirRules:
-            def valid_to_be_read(_, path, out):
+            def valid_to_be_read(_, path):
                 if self.Trash_dir_is_sticky:
-                    out.is_valid()
+                    return TopTrashDirValidationResult.valid
                 else:
-                    out.not_valid_parent_should_be_sticky()
+                    return TopTrashDirValidationResult.not_valid_parent_should_be_sticky
         trash_dirs = TrashDirs(
             environ=self.environ,
             getuid=lambda:self.uid,

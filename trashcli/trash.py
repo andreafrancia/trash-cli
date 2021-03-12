@@ -134,14 +134,13 @@ class TrashDirs:
         self.emit_trashcan_2_for(volume)
     def emit_trashcan_1_for(self,volume):
         top_trashdir_path = os.path.join(volume, '.Trash/%s' % self.getuid())
-        class IsValidOutput:
-            def not_valid_parent_should_not_be_a_symlink(_):
-                self.on_trashdir_skipped_because_parent_is_symlink(top_trashdir_path)
-            def not_valid_parent_should_be_sticky(_):
-                self.on_trashdir_skipped_because_parent_not_sticky(top_trashdir_path)
-            def is_valid(_):
-                self.on_trash_dir_found(top_trashdir_path, volume)
-        self.top_trashdir_rules.valid_to_be_read(top_trashdir_path, IsValidOutput())
+        result = self.top_trashdir_rules.valid_to_be_read(top_trashdir_path)
+        if result == TopTrashDirValidationResult.valid:
+            self.on_trash_dir_found(top_trashdir_path, volume)
+        elif result == TopTrashDirValidationResult.not_valid_parent_should_be_sticky:
+            self.on_trashdir_skipped_because_parent_not_sticky(top_trashdir_path)
+        elif result == TopTrashDirValidationResult.not_valid_parent_should_not_be_a_symlink:
+            self.on_trashdir_skipped_because_parent_is_symlink(top_trashdir_path)
     def emit_trashcan_2_for(self, volume):
         alt_top_trashdir = os.path.join(volume, '.Trash-%s' % self.getuid())
         self.on_trash_dir_found(alt_top_trashdir, volume)
@@ -192,22 +191,30 @@ class PrintVersion:
     def __call__(self, program_name):
         self.println("%s %s" % (program_name, self.version))
 
+class TopTrashDirValidationResult:
+    class does_not_exist:
+        pass
+    class not_valid_parent_should_be_sticky:
+        pass
+    class not_valid_parent_should_not_be_a_symlink:
+        pass
+    class valid:
+        pass
+
 class TopTrashDirRules:
     def __init__(self, fs):
         self.fs = fs
 
-    def valid_to_be_read(self, path, output):
+    def valid_to_be_read(self, path):
         parent_trashdir = os.path.dirname(path)
         if not self.fs.exists(path):
-            return
+            return TopTrashDirValidationResult.does_not_exist
         if not self.fs.is_sticky_dir(parent_trashdir):
-            output.not_valid_parent_should_be_sticky()
-            return
+            return TopTrashDirValidationResult.not_valid_parent_should_be_sticky
         if self.fs.is_symlink(parent_trashdir):
-            output.not_valid_parent_should_not_be_a_symlink()
-            return
+            return TopTrashDirValidationResult.not_valid_parent_should_not_be_a_symlink
         else:
-            output.is_valid()
+            return TopTrashDirValidationResult.valid
 
 class Dir:
     def __init__(self, path, entries_if_dir_exists):
