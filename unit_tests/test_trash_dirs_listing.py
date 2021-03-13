@@ -36,17 +36,8 @@ class TestTrashDirs_listing(unittest.TestCase):
 
     def trashdirs(self):
         result = []
-        def append(trash_dir, volume):
-            result.append(trash_dir)
-        class FileReader:
-            def is_sticky_dir(_, path):
-                return self.Trash_dir_is_sticky
-            def exists(_, path):
-                return True
-            def is_symlink(_, path):
-                return False
         class FakeTopTrashDirRules:
-            def valid_to_be_read(_, path):
+            def valid_to_be_read(_, _path):
                 if self.Trash_dir_is_sticky:
                     return TopTrashDirValidationResult.Valid
                 else:
@@ -57,8 +48,10 @@ class TestTrashDirs_listing(unittest.TestCase):
             top_trashdir_rules = FakeTopTrashDirRules(),
             list_volumes = lambda: self.volumes,
         )
-        trash_dirs.on_trash_dir_found = append
-        trash_dirs.list_trashdirs()
+        for event, args in trash_dirs.scan_trashdirs():
+            if event == TrashDirs.on_trash_dir_found:
+                path, _volume = args
+                result.append(path)
         return result
 
     def setUp(self):
