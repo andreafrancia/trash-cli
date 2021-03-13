@@ -119,31 +119,22 @@ class TrashDirs:
         self.on_trash_dir_found                            = lambda trashdir, volume: None
         self.on_trashdir_skipped_because_parent_not_sticky = lambda trashdir: None
         self.on_trashdir_skipped_because_parent_is_symlink = lambda trashdir: None
+
     def list_trashdirs(self):
-        self.emit_home_trashcan()
-        self._for_each_volume_trashcan()
-    def emit_home_trashcan(self):
         home_trash_dir_paths = home_trash_dir_path(self.environ)
         for path in home_trash_dir_paths:
             self.on_trash_dir_found(path, '/')
-    def _for_each_volume_trashcan(self):
         for volume in self.mount_points():
-            self.emit_trashcans_for(volume)
-    def emit_trashcans_for(self, volume):
-        self.emit_trashcan_1_for(volume)
-        self.emit_trashcan_2_for(volume)
-    def emit_trashcan_1_for(self,volume):
-        top_trashdir_path = os.path.join(volume, '.Trash/%s' % self.getuid())
-        result = self.top_trashdir_rules.valid_to_be_read(top_trashdir_path)
-        if result == TopTrashDirValidationResult.Valid:
-            self.on_trash_dir_found(top_trashdir_path, volume)
-        elif result == TopTrashDirValidationResult.NotValidBecauseIsNotSticky:
-            self.on_trashdir_skipped_because_parent_not_sticky(top_trashdir_path)
-        elif result == TopTrashDirValidationResult.NotValidBecauseParentIsSymlink:
-            self.on_trashdir_skipped_because_parent_is_symlink(top_trashdir_path)
-    def emit_trashcan_2_for(self, volume):
-        alt_top_trashdir = os.path.join(volume, '.Trash-%s' % self.getuid())
-        self.on_trash_dir_found(alt_top_trashdir, volume)
+            top_trashdir_path = os.path.join(volume, '.Trash/%s' % self.getuid())
+            result = self.top_trashdir_rules.valid_to_be_read(top_trashdir_path)
+            if result == TopTrashDirValidationResult.Valid:
+                self.on_trash_dir_found(top_trashdir_path, volume)
+            elif result == TopTrashDirValidationResult.NotValidBecauseIsNotSticky:
+                self.on_trashdir_skipped_because_parent_not_sticky(top_trashdir_path)
+            elif result == TopTrashDirValidationResult.NotValidBecauseParentIsSymlink:
+                self.on_trashdir_skipped_because_parent_is_symlink(top_trashdir_path)
+            alt_top_trashdir = os.path.join(volume, '.Trash-%s' % self.getuid())
+            self.on_trash_dir_found(alt_top_trashdir, volume)
 
 
 class Harvester:
