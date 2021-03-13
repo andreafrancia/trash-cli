@@ -44,9 +44,11 @@ class RmCmd:
                               self.getuid,
                               self.list_volumes,
                               TopTrashDirRules(self.file_reader))
-        trashdirs.on_trash_dir_found = listing.list_from_volume_trashdir
 
-        trashdirs.list_trashdirs()
+        for event, args in trashdirs.scan_trashdirs():
+            if event == TrashDirs.on_trash_dir_found:
+                path, volume = args
+                listing.list_from_volume_trashdir(path, volume)
 
     def unable_to_parse_path(self, trashinfo):
         self.report_error('{}: unable to parse \'Path\''.format(trashinfo))
