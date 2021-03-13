@@ -99,9 +99,11 @@ class EmptyCmd:
                               self.getuid,
                               self.list_volumes,
                               TopTrashDirRules(self.file_reader))
-        trashdirs.on_trash_dir_found = self.delete_all_things_under_trash_dir
 
-        trashdirs.list_trashdirs()
+        for event, args in trashdirs.scan_trashdirs():
+            if event == TrashDirs.on_trash_dir_found:
+                path, volume = args
+                self.delete_all_things_under_trash_dir(path, volume)
 
     def delete_all_things_under_trash_dir(self, trash_dir_path, volume_path):
         harvester = Harvester(self.file_reader)

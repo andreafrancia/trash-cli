@@ -110,6 +110,10 @@ class Parser:
         self.default_action = default_action
 
 class TrashDirs:
+    class on_trash_dir_found: pass
+    class on_trashdir_skipped_because_parent_not_sticky: pass
+    class on_trashdir_skipped_because_parent_is_symlink: pass
+
     def __init__(self, environ, getuid, list_volumes, top_trashdir_rules):
         self.getuid             = getuid
         self.mount_points       = list_volumes
@@ -121,20 +125,32 @@ class TrashDirs:
         self.on_trashdir_skipped_because_parent_is_symlink = lambda trashdir: None
 
     def list_trashdirs(self):
+        for result, args in self.scan_trashdirs():
+            if result == TrashDirs.on_trash_dir_found:
+                path, volume = args
+                self.on_trash_dir_found(path, volume)
+            elif result == TrashDirs.on_trashdir_skipped_because_parent_not_sticky:
+                top_trashdir_path, = args
+                self.on_trashdir_skipped_because_parent_not_sticky(top_trashdir_path)
+            elif result == TrashDirs.on_trashdir_skipped_because_parent_is_symlink:
+                top_trashdir_path, = args
+                self.on_trashdir_skipped_because_parent_is_symlink(top_trashdir_path)
+
+    def scan_trashdirs(self):
         home_trash_dir_paths = home_trash_dir_path(self.environ)
         for path in home_trash_dir_paths:
-            self.on_trash_dir_found(path, '/')
+            yield TrashDirs.on_trash_dir_found, (path, '/')
         for volume in self.mount_points():
             top_trashdir_path = os.path.join(volume, '.Trash/%s' % self.getuid())
             result = self.top_trashdir_rules.valid_to_be_read(top_trashdir_path)
             if result == TopTrashDirValidationResult.Valid:
-                self.on_trash_dir_found(top_trashdir_path, volume)
+                yield TrashDirs.on_trash_dir_found, (top_trashdir_path, volume)
             elif result == TopTrashDirValidationResult.NotValidBecauseIsNotSticky:
-                self.on_trashdir_skipped_because_parent_not_sticky(top_trashdir_path)
+                yield TrashDirs.on_trashdir_skipped_because_parent_not_sticky, (top_trashdir_path,)
             elif result == TopTrashDirValidationResult.NotValidBecauseParentIsSymlink:
-                self.on_trashdir_skipped_because_parent_is_symlink(top_trashdir_path)
+                yield TrashDirs.on_trashdir_skipped_because_parent_is_symlink, (top_trashdir_path,)
             alt_top_trashdir = os.path.join(volume, '.Trash-%s' % self.getuid())
-            self.on_trash_dir_found(alt_top_trashdir, volume)
+            yield TrashDirs.on_trash_dir_found, (alt_top_trashdir, volume)
 
 
 class Harvester:
