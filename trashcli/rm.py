@@ -45,8 +45,8 @@ class RmCmd:
                               self.list_volumes,
                               TopTrashDirRules(self.file_reader))
 
-        for event, args in trashdirs.scan_trashdirs():
-            if event == TrashDirs.on_trash_dir_found:
+        for event, args in trashdirs.scan_trash_dirs():
+            if event == TrashDirs.Found:
                 path, volume = args
                 listing.list_from_volume_trashdir(path, volume)
 
