@@ -56,11 +56,17 @@ class ListCmd:
                               self.getuid,
                               self.list_volumes,
                               TopTrashDirRules(self.file_reader))
-        trashdirs.on_trashdir_skipped_because_parent_not_sticky = self.output.top_trashdir_skipped_because_parent_not_sticky
-        trashdirs.on_trashdir_skipped_because_parent_is_symlink = self.output.top_trashdir_skipped_because_parent_is_symlink
-        trashdirs.on_trash_dir_found = harvester.analize_trash_directory
+        for event, args in trashdirs.scan_trashdirs():
+            if event == TrashDirs.on_trash_dir_found:
+                path, volume = args
+                harvester.analize_trash_directory(path, volume)
+            elif event == TrashDirs.on_trashdir_skipped_because_parent_not_sticky:
+                path, = args
+                self.output.top_trashdir_skipped_because_parent_not_sticky(path)
+            elif event == TrashDirs.on_trashdir_skipped_because_parent_is_symlink:
+                path, = args
+                self.output.top_trashdir_skipped_because_parent_is_symlink(path)
 
-        trashdirs.list_trashdirs()
     def _print_trashinfo(self, path):
         try:
             contents = self.contents_of(path)
