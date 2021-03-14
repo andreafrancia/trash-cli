@@ -9,7 +9,7 @@ from mock import call
 from trashcli import restore
 import datetime
 from mock import Mock
-from integration_tests.files import make_file, require_empty_dir
+from integration_tests.files import require_empty_dir, make_empty_file
 from trashcli.fs import remove_file
 from trashcli.fs import contents_of
 from trashcli.restore import TrashedFile
@@ -208,8 +208,8 @@ class TestTrashedFileRestoreIntegration(unittest.TestCase):
                                    None,
                                    self.temp_dir / 'info_file',
                                    self.temp_dir / 'orig')
-        open(self.temp_dir / 'orig','w').close()
-        open(self.temp_dir / 'info_file','w').close()
+        make_empty_file(self.temp_dir / 'orig')
+        make_empty_file(self.temp_dir / 'info_file')
 
         self.cmd.restore(trashed_file)
 
@@ -219,7 +219,7 @@ class TestTrashedFileRestoreIntegration(unittest.TestCase):
 
     def test_restore_over_existing_file(self):
         trashed_file = TrashedFile(self.temp_dir / 'path',None,None,None)
-        open(self.temp_dir / 'path','w').close()
+        make_empty_file(self.temp_dir / 'path')
 
         self.assertRaises(IOError, lambda:self.cmd.restore(trashed_file))
 
