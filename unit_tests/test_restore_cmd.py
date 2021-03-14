@@ -15,6 +15,8 @@ from trashcli.fs import contents_of
 from trashcli.restore import TrashedFile
 import os
 
+from .support import MyPath
+
 
 class Test_parse_args(unittest.TestCase):
     def test_default_path(self):
@@ -189,8 +191,7 @@ class TestTrashRestoreCmd(unittest.TestCase):
 
 class TestTrashedFileRestoreIntegration(unittest.TestCase):
     def setUp(self):
-        remove_file_if_exists('parent/path')
-        remove_dir_if_exists('parent')
+        self.temp_dir = MyPath.make_temp_dir()
         trash_directories = make_trash_directories()
         trashed_files = TrashedFiles(trash_directories, TrashDirectory(),
                                      contents_of)
@@ -203,38 +204,27 @@ class TestTrashedFileRestoreIntegration(unittest.TestCase):
                               fs=restore.FileSystem())
 
     def test_restore(self):
-        trashed_file = TrashedFile('parent/path',
+        trashed_file = TrashedFile(self.temp_dir / 'parent/path',
                                    None,
-                                   'info_file',
-                                   'orig')
-        open('orig','w').close()
-        open('info_file','w').close()
+                                   self.temp_dir / 'info_file',
+                                   self.temp_dir / 'orig')
+        open(self.temp_dir / 'orig','w').close()
+        open(self.temp_dir / 'info_file','w').close()
 
         self.cmd.restore(trashed_file)
 
-        assert os.path.exists('parent/path')
-        assert not os.path.exists('info_file')
+        assert os.path.exists(self.temp_dir / 'parent/path')
+        assert not os.path.exists(self.temp_dir / 'info_file')
+        assert not os.path.exists(self.temp_dir / 'orig')
 
     def test_restore_over_existing_file(self):
-        trashed_file = TrashedFile('path',None,None,None)
-        open('path','w').close()
+        trashed_file = TrashedFile(self.temp_dir / 'path',None,None,None)
+        open(self.temp_dir / 'path','w').close()
 
         self.assertRaises(IOError, lambda:self.cmd.restore(trashed_file))
 
     def tearDown(self):
-        remove_file_if_exists('path')
-        remove_file_if_exists('parent/path')
-        remove_dir_if_exists('parent')
-
-    def test_restore_create_needed_directories(self):
-        require_empty_dir('sandbox')
-
-        make_file('sandbox/TrashDir/files/bar')
-        instance = TrashedFile('sandbox/foo/bar',
-                               'deletion_date', 'info_file',
-                               'sandbox/TrashDir/files/bar')
-        self.cmd.restore(instance)
-        assert os.path.exists("sandbox/foo/bar")
+        self.temp_dir.clean_up()
 
 
 class TestTrashedFiles(unittest.TestCase):
