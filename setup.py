@@ -3,7 +3,7 @@
 from distutils.core import setup
 import sys
 
-from trashcli.fs import read_file
+from trashcli.fs import read_file, write_file
 
 
 def main():
@@ -55,9 +55,7 @@ class Scripts:
 import os,stat
 def make_file_executable(path):
     os.chmod(path, os.stat(path).st_mode | stat.S_IXUSR)
-def write_file(name, contents):
-    with open(name, 'w') as f:
-        f.write(contents)
+
 
 scripts = Scripts(write_file, make_file_executable)
 

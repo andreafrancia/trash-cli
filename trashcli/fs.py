@@ -74,3 +74,8 @@ def ensure_dir(path, mode):
 def read_file(path):
     with open(path) as f:
         return f.read()
+
+
+def write_file(name, contents):
+    with open(name, 'w') as f:
+        f.write(contents)
