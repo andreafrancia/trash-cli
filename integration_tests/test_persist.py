@@ -3,7 +3,8 @@
 import os
 import unittest
 
-from integration_tests.files import require_empty_dir, read_file, MyPath
+from integration_tests.files import require_empty_dir, read_file
+from unit_tests.support import MyPath
 from trashcli.put import TrashDirectoryForPut, RealFs
 from mock import Mock
 

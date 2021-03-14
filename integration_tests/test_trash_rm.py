@@ -3,7 +3,8 @@ import unittest
 from unit_tests.myStringIO import StringIO
 from mock import Mock, ANY
 
-from .files import require_empty_dir, make_file, MyPath
+from .files import require_empty_dir, make_file
+from unit_tests.support import MyPath
 from trashcli.rm import RmCmd, ListTrashinfos
 from .fake_trash_dir import a_trashinfo_with_path, a_trashinfo_without_path
 from trashcli.fs import FileSystemReader

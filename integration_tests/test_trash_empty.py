@@ -5,7 +5,8 @@ from trashcli.empty import EmptyCmd
 
 from unit_tests.myStringIO import StringIO
 import os
-from .files import make_file, require_empty_dir, make_dirs, set_sticky_bit, MyPath
+from .files import make_file, require_empty_dir, make_dirs, set_sticky_bit
+from unit_tests.support import MyPath
 from .files import make_empty_file
 from mock import MagicMock
 from trashcli.fs import FileSystemReader

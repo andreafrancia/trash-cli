@@ -5,7 +5,8 @@ import unittest
 
 from trashcli.fs import mkdirs, has_sticky_bit, is_sticky_dir
 
-from .files import (make_empty_file, set_sticky_bit, MyPath, unset_sticky_bit)
+from .files import (make_empty_file, set_sticky_bit, unset_sticky_bit)
+from unit_tests.support import MyPath
 
 
 class TestWithInSandbox(unittest.TestCase):

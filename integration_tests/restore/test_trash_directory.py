@@ -4,7 +4,8 @@ import six
 
 from trashcli.restore import TrashDirectory
 
-from integration_tests.files import require_empty_dir, MyPath
+from integration_tests.files import require_empty_dir
+from unit_tests.support import MyPath
 from integration_tests.files import make_file
 from mock import Mock
 

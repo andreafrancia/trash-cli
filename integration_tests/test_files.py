@@ -1,6 +1,7 @@
 import unittest
 
-from integration_tests.files import make_unreadable_file, read_file, MyPath
+from integration_tests.files import make_unreadable_file, read_file
+from unit_tests.support import MyPath
 
 
 class Test_make_unreadable_file(unittest.TestCase):

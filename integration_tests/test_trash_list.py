@@ -2,8 +2,8 @@
 
 import os
 from trashcli.list import ListCmd
-from .files import (require_empty_dir, make_sticky_dir, make_unsticky_dir,
-                    MyPath)
+from .files import (require_empty_dir, make_sticky_dir, make_unsticky_dir)
+from unit_tests.support import MyPath
 from .output_collector import OutputCollector
 from .fake_trash_dir import (
     a_trashinfo_without_date,

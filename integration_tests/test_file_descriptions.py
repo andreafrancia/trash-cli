@@ -1,7 +1,8 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 
 from trashcli.put import describe
-from .files import require_empty_dir, make_empty_file, MyPath, make_file
+from .files import require_empty_dir, make_empty_file, make_file
+from unit_tests.support import MyPath
 import os
 import unittest
 

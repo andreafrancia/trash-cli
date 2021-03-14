@@ -6,7 +6,8 @@ from os.path import exists as file_exists
 from datetime import datetime
 
 from unit_tests import myStringIO
-from .files import make_empty_file, require_empty_dir, MyPath, read_file
+from .files import make_empty_file, require_empty_dir, read_file
+from unit_tests.support import MyPath
 from .files import make_sticky_dir
 from trashcli.fstab import FakeFstab
 from trashcli.fs import remove_file
