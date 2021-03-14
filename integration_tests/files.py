@@ -58,9 +58,6 @@ def unset_sticky_bit(path):
     import stat
     os.chmod(path, os.stat(path).st_mode & ~ stat.S_ISVTX)
 
-def touch(path):
-    open(path,'a+').close()
-
 def ensure_non_sticky_dir(path):
     import os
     assert os.path.isdir(path)
