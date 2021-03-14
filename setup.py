@@ -3,6 +3,9 @@
 from distutils.core import setup
 import sys
 
+from trashcli.fs import read_file
+
+
 def main():
     sys.path.append('.')
     from trashcli import trash
@@ -55,9 +58,6 @@ def make_file_executable(path):
 def write_file(name, contents):
     with open(name, 'w') as f:
         f.write(contents)
-def read_file(name):
-    with open(name) as f:
-        return f.read()
 
 scripts = Scripts(write_file, make_file_executable)
 
