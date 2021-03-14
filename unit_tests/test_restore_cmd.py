@@ -9,7 +9,7 @@ from mock import call
 from trashcli import restore
 import datetime
 from mock import Mock
-from integration_tests.files import require_empty_dir, make_empty_file
+from integration_tests.files import require_empty_dir, make_empty_file, make_file
 from trashcli.fs import remove_file
 from trashcli.fs import contents_of
 from trashcli.restore import TrashedFile
@@ -267,8 +267,8 @@ class TestTrashedFilesIntegration(unittest.TestCase):
         require_empty_dir('info')
         self.trash_directories.trash_directories_or_user.return_value = \
             [("path", "/volume")]
-        open('info/info_path.trashinfo', 'w').write(
-                'Path=name\nDeletionDate=2001-01-01T10:10:10')
+        make_file('info/info_path.trashinfo',
+                  'Path=name\nDeletionDate=2001-01-01T10:10:10')
         self.trash_directory.all_info_files = Mock([], return_value=[
             ('trashinfo', 'info/info_path.trashinfo')])
 
