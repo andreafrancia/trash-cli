@@ -1,6 +1,7 @@
 import unittest
 
-from integration_tests.files import make_unreadable_file, read_file
+from integration_tests.files import make_unreadable_file
+from trashcli.fs import read_file
 from unit_tests.support import MyPath
 
 

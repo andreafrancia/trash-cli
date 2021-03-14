@@ -6,11 +6,11 @@ from os.path import exists as file_exists
 from datetime import datetime
 
 from unit_tests import myStringIO
-from .files import make_empty_file, require_empty_dir, read_file
+from .files import make_empty_file, require_empty_dir
 from unit_tests.support import MyPath
 from .files import make_sticky_dir
 from trashcli.fstab import FakeFstab
-from trashcli.fs import remove_file
+from trashcli.fs import remove_file, read_file
 from trashcli.put import parent_path, RealFs
 from .asserts import assert_line_in_text
 import unittest

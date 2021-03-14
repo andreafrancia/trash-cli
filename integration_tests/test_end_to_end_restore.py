@@ -3,7 +3,7 @@ import subprocess
 from subprocess import PIPE
 
 from integration_tests.fake_trash_dir import FakeTrashDir, a_trashinfo
-from integration_tests.files import read_file
+from trashcli.fs import read_file
 from unit_tests.support import MyPath
 from trashcli import base_dir
 import os

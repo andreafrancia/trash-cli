@@ -69,3 +69,8 @@ def ensure_dir(path, mode):
         os.chmod(path, mode)
         return
     os.makedirs(path, mode)
+
+
+def read_file(path):
+    with open(path) as f:
+        return f.read()

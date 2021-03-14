@@ -14,11 +14,6 @@ def make_file(filename, contents=''):
         f.write(contents)
 
 
-def read_file(path):
-    with open(path) as f:
-        return f.read()
-
-
 def require_empty_dir(path):
     if os.path.exists(path): shutil.rmtree(path)
     make_dirs(path)
