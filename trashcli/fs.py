@@ -15,8 +15,7 @@ class FileSystemReader(FileSystemListing):
     def is_symlink(self, path):
         return os.path.islink(path)
     def contents_of(self, path):
-        with open(path) as f:
-            return f.read()
+        return read_file(path)
 
 
 is_sticky_dir=FileSystemReader().is_sticky_dir
