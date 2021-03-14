@@ -1,6 +1,6 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from trashcli.fs  import has_sticky_bit
+from trashcli.fs import has_sticky_bit, write_file
 import os, shutil
 
 
@@ -10,8 +10,7 @@ def make_empty_file(path):
 
 def make_file(filename, contents=''):
     make_parent_for(filename)
-    with open(filename, 'w') as f:
-        f.write(contents)
+    write_file(filename, contents)
 
 
 def require_empty_dir(path):
