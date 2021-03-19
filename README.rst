@@ -49,7 +49,7 @@ Restore a trashed file::
     $ ls foo
     foo
 
-Restore multiple trashed files seperated by ',', also support range::
+Restore multiple trashed files separated by ',', also support range::
 
     $ trash-restore
     0 2007-08-30 12:36:00 /home/andrea/foo
