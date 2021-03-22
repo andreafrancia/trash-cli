@@ -34,18 +34,13 @@ def parse_args(sys_argv, curdir):
                         choices=['date', 'path', 'none'],
                         default='date',
                         help='Sort list of list candidates by given field')
-    parser.add_argument('--trash-dir',
-                        action='store',
-                        dest='trash_dir',
-                        help=argparse.SUPPRESS)
     parser.add_argument('--version', action='store_true', default=False)
     parsed = parser.parse_args(sys_argv[1:])
 
     if parsed.version:
         return Command.PrintVersion, None
     else:
-        return Command.RunList, {'sort': parsed.sort,
-                                 'trash_dir': parsed.trash_dir}
+        return Command.RunList, {'sort': parsed.sort}
 
 class Command:
     PrintVersion = "Command.PrintVersion"
@@ -81,7 +76,6 @@ class ListCmd:
             self.output.println('%s %s' % (command, self.version))
             return
         elif cmd == Command.RunList:
-            trash_dir_from_cli = args['trash_dir']
             trashed_files = self.list_trash()
             if args['sort'] == 'path':
                 trashed_files = sorted(trashed_files, key=lambda x: x.original_location + str(x.deletion_date))
