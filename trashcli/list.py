@@ -101,7 +101,7 @@ def maker_parser(experimental):
     parser.add_argument('--version', action='store_true', default=False)
     parser.add_argument('--help', action='store_true', default=False)
     if experimental:
-        parser.add_argument('--trash-dir')
+        parser.add_argument('--trash-dir', action='append', default=[])
     return parser
 
 

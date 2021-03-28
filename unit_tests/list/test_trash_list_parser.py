@@ -23,10 +23,10 @@ class TestTrashListParser(unittest.TestCase):
 
         parsed = self.parser.parse_args([])
 
-        assert None == parsed.trash_dir
+        assert [] == parsed.trash_dir
 
     def test_trash_dir_specified(self):
 
         parsed = self.parser.parse_args(['--trash-dir=foo'])
 
-        assert 'foo' == parsed.trash_dir
+        assert ['foo'] == parsed.trash_dir
