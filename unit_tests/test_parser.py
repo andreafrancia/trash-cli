@@ -1,14 +1,15 @@
 import unittest
 
 from trashcli.trash import Parser
-from mock import MagicMock, call
+from mock import call, Mock
+
 
 class TestParser(unittest.TestCase):
     def setUp(self):
-        self.invalid_option_callback = MagicMock()
-        self.on_raw = MagicMock()
-        self.on_help = MagicMock()
-        self.on_option = MagicMock()
+        self.invalid_option_callback = Mock()
+        self.on_raw = Mock()
+        self.on_help = Mock()
+        self.on_option = Mock()
 
         self.parser = Parser()
         self.parser.on_invalid_option(self.invalid_option_callback)
