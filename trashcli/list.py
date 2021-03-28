@@ -1,6 +1,7 @@
 import argparse
 
 from .fs import FileSystemReader
+from .fstab import volume_of
 from .trash import version
 from .trash import TopTrashDirRules
 from .trash import TrashDirsScanner
@@ -100,7 +101,11 @@ class ListCmd:
 
 def decide_trash_dirs(user_specified_dirs,
                       system_dirs):
-    return system_dirs
+    if not user_specified_dirs:
+        for dir in  system_dirs:
+            yield dir
+    for dir in user_specified_dirs:
+        yield (TrashDirsScanner.Found, (dir, volume_of(dir)))
 
 def maker_parser(experimental):
     parser = argparse.ArgumentParser(add_help=False)

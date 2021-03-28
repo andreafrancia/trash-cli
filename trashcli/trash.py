@@ -119,9 +119,9 @@ class MyEnum:
 
 
 class TrashDirsScanner:
-    Found = MyEnum('TrashDirs.Found')
-    SkippedBecauseParentNotSticky = MyEnum('TrashDirs.SkippedBecauseParentNotSticky')
-    SkippedBecauseParentIsSymlink = MyEnum('TrashDirs.SkippedBecauseParentIsSymlink')
+    Found = MyEnum('TrashDirsScanner.Found')
+    SkippedBecauseParentNotSticky = MyEnum('TrashDirsScanner.SkippedBecauseParentNotSticky')
+    SkippedBecauseParentIsSymlink = MyEnum('TrashDirsScanner.SkippedBecauseParentIsSymlink')
 
     def __init__(self, environ, getuid, list_volumes, top_trash_dir_rules):
         self.getuid = getuid
