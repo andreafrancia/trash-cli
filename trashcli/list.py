@@ -91,7 +91,7 @@ class ListCmd:
         printer.bug_reporting()
 
 
-def parser():
+def maker_parser():
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument('--version', action='store_true', default=False)
     parser.add_argument('--help', action='store_true', default=False)
