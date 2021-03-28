@@ -1,6 +1,9 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
 import os
+
+from trashcli import trash
+
 from trashcli.list import ListCmd
 from .files import (require_empty_dir, make_sticky_dir, make_unsticky_dir)
 from unit_tests.support import MyPath
@@ -48,6 +51,13 @@ class Test_describe_trash_list(Setup):
 
             Report bugs to https://github.com/andreafrancia/trash-cli/issues
         """), self.user.output())
+
+    def test_should_output_the_version(self):
+
+        self.user.run_trash_list('--version')
+
+        assert_equals_with_unidiff('trash-list %s\n' % trash.version,
+                                   self.user.output())
 
     def test_should_output_nothing_when_trashcan_is_empty(self):
 
