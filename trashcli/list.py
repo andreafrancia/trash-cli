@@ -1,3 +1,5 @@
+import argparse
+
 from .fs import FileSystemReader
 from .trash import version
 from .trash import TopTrashDirRules
@@ -87,6 +89,14 @@ class ListCmd:
            "  --version   show program's version number and exit",
            "  -h, --help  show this help message and exit")
         printer.bug_reporting()
+
+
+def parser():
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument('--version', action='store_true', default=False)
+    parser.add_argument('--help', action='store_true', default=False)
+    return parser
+
 
 class ListCmdOutput:
     def __init__(self, out, err):
