@@ -5,7 +5,7 @@ import trashcli.list
 
 class TestTrashListParser(unittest.TestCase):
     def setUp(self):
-        self.parser = trashcli.list.maker_parser()
+        self.parser = trashcli.list.maker_parser(True)
 
     def test_version(self):
 
@@ -18,3 +18,15 @@ class TestTrashListParser(unittest.TestCase):
         parsed = self.parser.parse_args(['--help'])
 
         assert True == parsed.help
+
+    def test_trash_dir_not_specified(self):
+
+        parsed = self.parser.parse_args([])
+
+        assert None == parsed.trash_dir
+
+    def test_trash_dir_specified(self):
+
+        parsed = self.parser.parse_args(['--trash-dir=foo'])
+
+        assert 'foo' == parsed.trash_dir

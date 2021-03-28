@@ -43,7 +43,7 @@ class ListCmd:
         self.version      = version
 
     def run(self, *argv):
-        parser = maker_parser()
+        parser = maker_parser(False)
         parsed = parser.parse_args(argv[1:])
         if parsed.help:
             help_printer = PrintHelp(self.description, self.output.println)
@@ -96,10 +96,12 @@ class ListCmd:
         printer.bug_reporting()
 
 
-def maker_parser():
+def maker_parser(experimental):
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument('--version', action='store_true', default=False)
     parser.add_argument('--help', action='store_true', default=False)
+    if experimental:
+        parser.add_argument('--trash-dir')
     return parser
 
 
