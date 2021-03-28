@@ -3,7 +3,7 @@ import argparse
 from .fs import FileSystemReader
 from .trash import version
 from .trash import TopTrashDirRules
-from .trash import TrashDirs
+from .trash import TrashDirsScanner
 from .trash import Harvester
 from .trash import PrintHelp
 from .trash import PrintVersion
@@ -59,18 +59,18 @@ class ListCmd:
         harvester.on_volume = self.output.set_volume_path
         harvester.on_trashinfo_found = self._print_trashinfo
 
-        trashdirs = TrashDirs(self.environ,
-                              self.getuid,
-                              self.list_volumes,
-                              TopTrashDirRules(self.file_reader))
-        for event, args in trashdirs.scan_trash_dirs():
-            if event == TrashDirs.Found:
+        trashdirs_scanner = TrashDirsScanner(self.environ,
+                                             self.getuid,
+                                             self.list_volumes,
+                                             TopTrashDirRules(self.file_reader))
+        for event, args in trashdirs_scanner.scan_trash_dirs():
+            if event == TrashDirsScanner.Found:
                 path, volume = args
                 harvester.analize_trash_directory(path, volume)
-            elif event == TrashDirs.SkippedBecauseParentNotSticky:
+            elif event == TrashDirsScanner.SkippedBecauseParentNotSticky:
                 path, = args
                 self.output.top_trashdir_skipped_because_parent_not_sticky(path)
-            elif event == TrashDirs.SkippedBecauseParentIsSymlink:
+            elif event == TrashDirsScanner.SkippedBecauseParentIsSymlink:
                 path, = args
                 self.output.top_trashdir_skipped_because_parent_is_symlink(path)
 

@@ -118,7 +118,7 @@ class MyEnum:
         return self.name
 
 
-class TrashDirs:
+class TrashDirsScanner:
     Found = MyEnum('TrashDirs.Found')
     SkippedBecauseParentNotSticky = MyEnum('TrashDirs.SkippedBecauseParentNotSticky')
     SkippedBecauseParentIsSymlink = MyEnum('TrashDirs.SkippedBecauseParentIsSymlink')
@@ -132,18 +132,18 @@ class TrashDirs:
     def scan_trash_dirs(self):
         home_trash_dir_paths = home_trash_dir_path(self.environ)
         for path in home_trash_dir_paths:
-            yield TrashDirs.Found, (path, '/')
+            yield TrashDirsScanner.Found, (path, '/')
         for volume in self.mount_points():
             top_trash_dir_path = os.path.join(volume, '.Trash', str(self.getuid()))
             result = self.top_trash_dir_rules.valid_to_be_read(top_trash_dir_path)
             if result == TopTrashDirValidationResult.Valid:
-                yield TrashDirs.Found, (top_trash_dir_path, volume)
+                yield TrashDirsScanner.Found, (top_trash_dir_path, volume)
             elif result == TopTrashDirValidationResult.NotValidBecauseIsNotSticky:
-                yield TrashDirs.SkippedBecauseParentNotSticky, (top_trash_dir_path,)
+                yield TrashDirsScanner.SkippedBecauseParentNotSticky, (top_trash_dir_path,)
             elif result == TopTrashDirValidationResult.NotValidBecauseParentIsSymlink:
-                yield TrashDirs.SkippedBecauseParentIsSymlink, (top_trash_dir_path,)
+                yield TrashDirsScanner.SkippedBecauseParentIsSymlink, (top_trash_dir_path,)
             alt_top_trash_dir = os.path.join(volume, '.Trash-%s' % self.getuid())
-            yield TrashDirs.Found, (alt_top_trash_dir, volume)
+            yield TrashDirsScanner.Found, (alt_top_trash_dir, volume)
 
 
 class Harvester:

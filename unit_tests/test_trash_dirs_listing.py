@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 import unittest
 
-from trashcli.trash import TrashDirs, TopTrashDirValidationResult
+from trashcli.trash import TrashDirsScanner, TopTrashDirValidationResult
 from mock import Mock
 from mock import MagicMock
 from trashcli.trash import TopTrashDirRules
@@ -42,14 +42,14 @@ class TestTrashDirs_listing(unittest.TestCase):
                     return TopTrashDirValidationResult.Valid
                 else:
                     return TopTrashDirValidationResult.NotValidBecauseIsNotSticky
-        trash_dirs = TrashDirs(
+        scanner = TrashDirsScanner(
             environ=self.environ,
             getuid=lambda:self.uid,
             top_trash_dir_rules= FakeTopTrashDirRules(),
             list_volumes = lambda: self.volumes,
         )
-        for event, args in trash_dirs.scan_trash_dirs():
-            if event == TrashDirs.Found:
+        for event, args in scanner.scan_trash_dirs():
+            if event == TrashDirsScanner.Found:
                 path, _volume = args
                 result.append(path)
         return result
@@ -70,11 +70,12 @@ def not_important_for_now():
 class TestDescribe_AvailableTrashDirs_when_parent_is_unsticky(unittest.TestCase):
     def setUp(self):
         self.fs = Mock()
-        self.dirs = TrashDirs(environ = {},
-                              getuid = lambda:123,
-                              top_trash_dir_rules= TopTrashDirRules(self.fs),
-                              list_volumes = lambda: ['/topdir'],
-                              )
+        self.scanner = TrashDirsScanner(
+            environ={},
+            getuid=lambda: 123,
+            top_trash_dir_rules=TopTrashDirRules(self.fs),
+            list_volumes=lambda: ['/topdir'],
+        )
         self.fs.is_sticky_dir.side_effect = (
                 lambda path: {'/topdir/.Trash':False}[path])
 
@@ -82,43 +83,45 @@ class TestDescribe_AvailableTrashDirs_when_parent_is_unsticky(unittest.TestCase)
         self.fs.exists.side_effect = (
                 lambda path: {'/topdir/.Trash/123':True}[path])
 
-        result = list(self.dirs.scan_trash_dirs())
+        result = list(self.scanner.scan_trash_dirs())
 
         self.assertEqual(
-            [(TrashDirs.SkippedBecauseParentNotSticky,
+            [(TrashDirsScanner.SkippedBecauseParentNotSticky,
               ('/topdir/.Trash/123',)),
-             (TrashDirs.Found, ('/topdir/.Trash-123', '/topdir'))], result)
+             (TrashDirsScanner.Found, ('/topdir/.Trash-123', '/topdir'))],
+            result)
 
     def test_it_shouldnot_care_about_non_existent(self):
         self.fs.exists.side_effect = (
                 lambda path: {'/topdir/.Trash/123':False}[path])
 
-        result = list(self.dirs.scan_trash_dirs())
+        result = list(self.scanner.scan_trash_dirs())
 
         self.assertEqual(
-            [(TrashDirs.Found, ('/topdir/.Trash-123', '/topdir'))],
+            [(TrashDirsScanner.Found, ('/topdir/.Trash-123', '/topdir'))],
             result)
 
 
 class TestDescribe_AvailableTrashDirs_when_parent_is_symlink(unittest.TestCase):
     def setUp(self):
         self.fs = Mock()
-        self.dirs = TrashDirs(environ = {},
-                              getuid = lambda:123,
-                              top_trash_dir_rules= TopTrashDirRules(self.fs),
-                              list_volumes = lambda: ['/topdir'])
+        self.scanner = TrashDirsScanner(
+            environ={},
+            getuid=lambda: 123,
+            top_trash_dir_rules=TopTrashDirRules(self.fs),
+            list_volumes=lambda: ['/topdir'])
         self.fs.exists.side_effect = (lambda path: {'/topdir/.Trash/123':True}[path])
 
     def test_it_should_skip_symlink(self):
         self.fs.is_sticky_dir.return_value = True
         self.fs.is_symlink.return_value    = True
 
-        result = list(self.dirs.scan_trash_dirs())
+        result = list(self.scanner.scan_trash_dirs())
 
         self.assertEqual([
-            (TrashDirs.SkippedBecauseParentIsSymlink,
+            (TrashDirsScanner.SkippedBecauseParentIsSymlink,
              ('/topdir/.Trash/123',)),
-            (TrashDirs.Found, ('/topdir/.Trash-123', '/topdir'))
+            (TrashDirsScanner.Found, ('/topdir/.Trash-123', '/topdir'))
         ], result)
 
 

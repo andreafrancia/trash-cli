@@ -1,5 +1,5 @@
 from .trash import TopTrashDirRules
-from .trash import TrashDirs
+from .trash import TrashDirsScanner
 from .trash import Harvester
 from .trash import EX_OK
 from .trash import Parser
@@ -95,13 +95,13 @@ class EmptyCmd:
     def empty_trashdir(self, specific_dir):
         self.delete_all_things_under_trash_dir(specific_dir, None)
     def empty_all_trashdirs(self):
-        trashdirs = TrashDirs(self.environ,
-                              self.getuid,
-                              self.list_volumes,
-                              TopTrashDirRules(self.file_reader))
+        scanner = TrashDirsScanner(self.environ,
+                                   self.getuid,
+                                   self.list_volumes,
+                                   TopTrashDirRules(self.file_reader))
 
-        for event, args in trashdirs.scan_trash_dirs():
-            if event == TrashDirs.Found:
+        for event, args in scanner.scan_trash_dirs():
+            if event == TrashDirsScanner.Found:
                 path, volume = args
                 self.delete_all_things_under_trash_dir(path, volume)
 
