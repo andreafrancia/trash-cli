@@ -43,7 +43,7 @@ class ListCmd:
         self.version      = version
 
     def run(self, *argv):
-        parser = maker_parser(False)
+        parser = maker_parser(True)
         parsed = parser.parse_args(argv[1:])
         if parsed.help:
             help_printer = PrintHelp(self.description, self.output.println)
@@ -52,9 +52,9 @@ class ListCmd:
             version_printer = PrintVersion(self.output.println, self.version)
             version_printer(argv[0])
         else:
-            self.list_trash()
+            self.list_trash(parsed.trash_dirs)
 
-    def list_trash(self):
+    def list_trash(self, user_specified_trash_dirs):
         harvester = Harvester(self.file_reader)
         harvester.on_volume = self.output.set_volume_path
         harvester.on_trashinfo_found = self._print_trashinfo
@@ -63,7 +63,9 @@ class ListCmd:
                                              self.getuid,
                                              self.list_volumes,
                                              TopTrashDirRules(self.file_reader))
-        for event, args in trashdirs_scanner.scan_trash_dirs():
+        trash_dirs = decide_trash_dirs(user_specified_trash_dirs,
+                                       trashdirs_scanner.scan_trash_dirs())
+        for event, args in trash_dirs:
             if event == TrashDirsScanner.Found:
                 path, volume = args
                 harvester.analize_trash_directory(path, volume)
@@ -96,12 +98,17 @@ class ListCmd:
         printer.bug_reporting()
 
 
+def decide_trash_dirs(user_specified_dirs,
+                      system_dirs):
+    return system_dirs
+
 def maker_parser(experimental):
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument('--version', action='store_true', default=False)
     parser.add_argument('--help', action='store_true', default=False)
     if experimental:
-        parser.add_argument('--trash-dir', action='append', default=[])
+        parser.add_argument('--trash-dir', action='append', default=[],
+                            dest='trash_dirs')
     return parser
 
 
