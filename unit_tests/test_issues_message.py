@@ -41,15 +41,6 @@ class TestTrashPutIssueMessage(unittest.TestCase):
         self.assert_last_line_of_output_is(
                 'Report bugs to https://github.com/andreafrancia/trash-cli/issues')
 
-    def test_trash_list_last_line(self):
-        from trashcli.list import ListCmd
-
-        cmd = ListCmd(self.out, None, None, None, None)
-        cmd.run('', '--help')
-
-        self.assert_last_line_of_output_is(
-                'Report bugs to https://github.com/andreafrancia/trash-cli/issues')
-
     def assert_last_line_of_output_is(self, expected):
         output = self.out.getvalue()
         if len(output.splitlines()) > 0:
