@@ -5,7 +5,6 @@ from .trash import version
 from .trash import TopTrashDirRules
 from .trash import TrashDirs
 from .trash import Harvester
-from .trash import Parser
 from .trash import PrintHelp
 from .trash import PrintVersion
 from .trash import parse_deletion_date
@@ -44,11 +43,17 @@ class ListCmd:
         self.version      = version
 
     def run(self, *argv):
-        parse=Parser()
-        parse.on_help(PrintHelp(self.description, self.output.println))
-        parse.on_version(PrintVersion(self.output.println, self.version))
-        parse.as_default(self.list_trash)
-        parse(argv)
+        parser = maker_parser()
+        parsed = parser.parse_args(argv[1:])
+        if parsed.help:
+            help_printer = PrintHelp(self.description, self.output.println)
+            help_printer(argv[0])
+        elif parsed.version:
+            version_printer = PrintVersion(self.output.println, self.version)
+            version_printer(argv[0])
+        else:
+            self.list_trash()
+
     def list_trash(self):
         harvester = Harvester(self.file_reader)
         harvester.on_volume = self.output.set_volume_path
