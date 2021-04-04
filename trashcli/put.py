@@ -171,11 +171,14 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                                         candidates):
         file_has_been_trashed = False
         for path, volume, path_maker, checker in candidates:
+            suffix = Suffix(random.randint)
+            info_dir_path = os.path.join(path, 'info')
+            info_dir = InfoDir(info_dir_path, self.fs, self.logger, suffix)
             trash_dir = TrashDirectoryForPut(path,
                                              volume,
                                              self.fs,
                                              path_maker(volume),
-                                             self.logger)
+                                             info_dir)
             if self._is_trash_dir_secure(trash_dir.path, checker):
                 volume_of_trash_dir = self.volume_of(self.realpath(trash_dir.path))
                 self.reporter.trash_dir_with_volume(trash_dir.path,
@@ -385,16 +388,13 @@ def parent_realpath(path):
 
 
 class TrashDirectoryForPut:
-    def __init__(self, path, volume, fs, path_maker, logger):
+    def __init__(self, path, volume, fs, path_maker, info_dir):
         self.path = os.path.normpath(path)
         self.volume = volume
         self.files_dir = os.path.join(self.path, 'files')
         self.fs = fs
         self.path_maker = path_maker
-        self.logger = logger
-        suffix = Suffix(random.randint)
-        info_dir = os.path.join(self.path, 'info')
-        self.info_dir = InfoDir(info_dir, self.fs, logger, suffix)
+        self.info_dir = info_dir
 
     def trash2(self, path, now):
         path = os.path.normpath(path)

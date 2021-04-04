@@ -7,9 +7,8 @@ class TestHowOriginalLocationIsStored:
     def test_for_absolute_paths(self):
         fs = Mock()
         path_maker = AbsolutePaths(None)
-        logger = Mock()
         self.dir = TrashDirectoryForPut('/volume/.Trash', '/volume', fs,
-                                        path_maker, logger)
+                                        path_maker, None)
 
         self.assert_path_for_trashinfo_is('/file'            , '/file')
         self.assert_path_for_trashinfo_is('/file'            , '/dir/../file')
@@ -19,9 +18,8 @@ class TestHowOriginalLocationIsStored:
 
     def test_for_relative_paths(self):
         path_maker = TopDirRelativePaths('/volume')
-        logger = Mock()
         self.dir = TrashDirectoryForPut('/volume/.Trash', '/volume', Mock(),
-                                        path_maker, logger)
+                                        path_maker, None)
 
         self.assert_path_for_trashinfo_is('/file'         , '/file')
         self.assert_path_for_trashinfo_is('/file'         , '/dir/../file')
