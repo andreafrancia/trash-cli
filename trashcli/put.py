@@ -1,5 +1,7 @@
 import os
 import sys
+import random
+from datetime import datetime
 
 from .fstab import volume_of
 from .trash import EX_OK, EX_IOERR, home_trash_dir, volume_trash_dir1, \
@@ -7,7 +9,7 @@ from .trash import EX_OK, EX_IOERR, home_trash_dir, volume_trash_dir1, \
 from .trash import backup_file_path_from
 from .trash import logger as trash_logger
 from .trash import version
-from datetime import datetime
+
 
 def main():
     return TrashPutCmd(
@@ -417,42 +419,60 @@ class TrashDirectoryForPut:
         self.fs.ensure_dir(self.files_dir, 0o700)
 
     def persist_trash_info(self, basename, content, logger):
-        return persist_trash_info(self.info_dir, self.fs, basename, content,
-                                  logger)
+        suffix = Suffix(random.randint)
+        persist_trash_info = PersistTrashInfo(self.info_dir,
+                                              self.fs,
+                                              logger,
+                                              suffix)
+        return persist_trash_info.persist_trash_info(basename,
+                                                     content)
 
 
-def persist_trash_info(info_dir, fs, basename, content, logger):
-    """
-    Create a .trashinfo file in the $trash/info directory.
-    returns the created TrashInfoFile.
-    """
+class PersistTrashInfo:
+    def __init__(self, info_dir, fs, logger, suffix):
+        self.info_dir = info_dir
+        self.fs = fs
+        self.logger = logger
+        self.suffix = suffix
 
-    fs.ensure_dir(info_dir, 0o700)
+    def persist_trash_info(self, basename, content):
+        """
+        Create a .trashinfo file in the $trash/info directory.
+        returns the created TrashInfoFile.
+        """
 
-    index = 0
-    while True :
-        if index == 0 :
-            suffix = ""
+        self.fs.ensure_dir(self.info_dir, 0o700)
+
+        index = 0
+        while True:
+            suffix = self.suffix.suffix_for_index(index)
+
+            base_id = basename
+            trash_id = base_id + suffix
+            trash_info_basename = trash_id+".trashinfo"
+
+            dest = os.path.join(self.info_dir, trash_info_basename)
+            try:
+                self.fs.atomic_write(dest, content)
+                self.logger.debug(".trashinfo created as %s." % dest)
+                return dest
+            except OSError:
+                self.logger.debug("Attempt for creating %s failed." % dest)
+
+            index += 1
+
+
+class Suffix:
+    def __init__(self, randint):
+        self.randint = randint
+
+    def suffix_for_index(self, index):
+        if index == 0:
+            return ""
         elif index < 100:
-            suffix = "_%d" % index
-        else :
-            import random
-            suffix = "_%d" % random.randint(0, 65535)
-
-        base_id = basename
-        trash_id = base_id + suffix
-        trash_info_basename = trash_id+".trashinfo"
-
-        dest = os.path.join(info_dir, trash_info_basename)
-        try:
-            fs.atomic_write(dest, content)
-            logger.debug(".trashinfo created as %s." % dest)
-            return dest
-        except OSError:
-            logger.debug("Attempt for creating %s failed." % dest)
-
-        index += 1
-
+            return "_%s" % index
+        else:
+            return "_%s" % self.randint(0, 65535)
 
 def format_trashinfo(original_location, deletion_date):
     def format_date(deletion_date):

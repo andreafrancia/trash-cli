@@ -5,7 +5,7 @@ import unittest
 
 from trashcli.fs import read_file
 from unit_tests.support import MyPath
-from trashcli.put import RealFs, persist_trash_info
+from trashcli.put import RealFs, PersistTrashInfo
 from mock import Mock
 
 join = os.path.join
@@ -16,36 +16,28 @@ class Test_persist_trash_info(unittest.TestCase):
         self.info_dir = MyPath.make_temp_dir()
         self.fs = RealFs()
         self.logger = Mock()
-
-    def persist_trash_info(self, basename, content):
-        return persist_trash_info(self.info_dir, self.fs, basename, content,
-                                  self.logger)
+        self.suffix = Mock()
+        self.suffix.suffix_for_index.side_effect = lambda i: '.suffix-%s' % i
+        self.persist_trash_info = PersistTrashInfo(self.info_dir,
+                                                   self.fs,
+                                                   self.logger,
+                                                   self.suffix)
 
     def test_persist_trash_info_first_time(self):
-        trash_info_file = self.persist_trash_info('dummy-path', b'content')
+        trash_info_file = self.persist_trash_info.persist_trash_info(
+            'dummy-path', b'content')
 
-        assert self.info_dir / 'dummy-path.trashinfo' == trash_info_file
+        assert self.info_dir / 'dummy-path.suffix-0.trashinfo' == trash_info_file
         assert 'content' == read_file(trash_info_file)
 
     def test_persist_trash_info_first_100_times(self):
         self.test_persist_trash_info_first_time()
 
-        for i in range(1,100) :
-            trash_info_file = self.persist_trash_info('dummy-path', b'content')
+        trash_info_file = self.persist_trash_info.persist_trash_info(
+            'dummy-path', b'content')
 
-            assert ("dummy-path_%s.trashinfo" % i ==
-                    os.path.basename(trash_info_file))
-            assert 'content' == read_file(trash_info_file)
+        assert self.info_dir / 'dummy-path.suffix-1.trashinfo' == trash_info_file
+        assert 'content' == read_file(trash_info_file)
 
-    def test_persist_trash_info_other_times(self):
-        self.test_persist_trash_info_first_100_times()
-
-        for i in range(101,200) :
-            trash_info_file = self.persist_trash_info('dummy-path',b'content')
-            trash_info_id = os.path.basename(trash_info_file)
-            assert trash_info_id.startswith("dummy-path_")
-            assert 'content' == read_file(trash_info_file)
-    test_persist_trash_info_first_100_times.stress_test = True
-    test_persist_trash_info_other_times.stress_test = True
-
-
+    def tearDown(self):
+        self.info_dir.clean_up()
