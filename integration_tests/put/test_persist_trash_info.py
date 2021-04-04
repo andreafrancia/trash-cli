@@ -8,8 +8,6 @@ from unit_tests.support import MyPath
 from trashcli.put import RealFs, PersistTrashInfo
 from mock import Mock
 
-join = os.path.join
-
 
 class Test_persist_trash_info(unittest.TestCase):
     def setUp(self):
