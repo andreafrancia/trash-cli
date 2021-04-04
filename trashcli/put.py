@@ -171,8 +171,11 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                                         candidates):
         file_has_been_trashed = False
         for path, volume, path_maker, checker in candidates:
-            trash_dir = TrashDirectoryForPut(path, volume, self.fs,
-                                             path_maker(volume))
+            trash_dir = TrashDirectoryForPut(path,
+                                             volume,
+                                             self.fs,
+                                             path_maker(volume),
+                                             self.logger)
             if self._is_trash_dir_secure(trash_dir.path, checker):
                 volume_of_trash_dir = self.volume_of(self.realpath(trash_dir.path))
                 self.reporter.trash_dir_with_volume(trash_dir.path,
@@ -180,7 +183,7 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                 if self._file_could_be_trashed_in(volume_of_file_to_be_trashed,
                                                   volume_of_trash_dir):
                     try:
-                        trash_dir.trash2(file, self.now, self.logger)
+                        trash_dir.trash2(file, self.now)
                         self.reporter.file_has_been_trashed_in_as(
                             file,
                             trash_dir.path)
@@ -380,16 +383,18 @@ def parent_realpath(path):
     parent = os.path.dirname(path)
     return os.path.realpath(parent)
 
+
 class TrashDirectoryForPut:
-    def __init__(self, path, volume, fs, path_maker):
+    def __init__(self, path, volume, fs, path_maker, logger):
         self.path = os.path.normpath(path)
         self.volume = volume
         self.info_dir = os.path.join(self.path, 'info')
         self.files_dir = os.path.join(self.path, 'files')
         self.fs = fs
         self.path_maker = path_maker
+        self.logger = logger
 
-    def trash2(self, path, now, logger):
+    def trash2(self, path, now):
         path = os.path.normpath(path)
 
         original_location = self.path_for_trash_info_for_file(path)
@@ -397,8 +402,7 @@ class TrashDirectoryForPut:
         basename = os.path.basename(original_location)
         content = format_trashinfo(original_location, now())
         trash_info_file = self.persist_trash_info(basename,
-                                                  content,
-                                                  logger)
+                                                  content)
 
         where_to_store_trashed_file = backup_file_path_from(trash_info_file)
 
@@ -418,14 +422,13 @@ class TrashDirectoryForPut:
     def ensure_files_dir_exists(self):
         self.fs.ensure_dir(self.files_dir, 0o700)
 
-    def persist_trash_info(self, basename, content, logger):
+    def persist_trash_info(self, basename, content):
         suffix = Suffix(random.randint)
         persist_trash_info = PersistTrashInfo(self.info_dir,
                                               self.fs,
-                                              logger,
+                                              self.logger,
                                               suffix)
-        return persist_trash_info.persist_trash_info(basename,
-                                                     content)
+        return persist_trash_info.persist_trash_info(basename, content)
 
 
 class PersistTrashInfo:
