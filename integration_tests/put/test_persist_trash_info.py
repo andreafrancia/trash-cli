@@ -1,6 +1,5 @@
-# Copyright (C) 2008-2012 Andrea Francia Trivolzio(PV) Italy
+# Copyright (C) 2008-2021 Andrea Francia Trivolzio(PV) Italy
 
-import os
 import unittest
 
 from trashcli.fs import read_file
