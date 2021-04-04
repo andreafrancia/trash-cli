@@ -111,7 +111,10 @@ def decide_trash_dirs(user_specified_dirs,
         yield (TrashDirsScanner.Found, (dir, volume_of(dir)))
 
 def maker_parser(prog):
-    parser = argparse.ArgumentParser(prog=prog, add_help=False)
+    parser = argparse.ArgumentParser(prog=prog,
+                                     description='List trashed files',
+                                     add_help=False,
+                                     epilog='Report bugs to https://github.com/andreafrancia/trash-cli/issues')
     parser.add_argument('--version', action='store_true', default=False)
     parser.add_argument('--help', action='store_true', default=False)
     parser.add_argument('--trash-dir', action='append', default=[],

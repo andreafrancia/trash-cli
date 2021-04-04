@@ -1,5 +1,4 @@
 import unittest
-from pprint import pprint
 
 import trashcli.list
 from trashcli.trash import PrintHelp
@@ -38,10 +37,14 @@ class TestTrashListParser(unittest.TestCase):
         assert out.getvalue() == """\
 usage: trash-list [--version] [--help] [--trash-dir TRASH_DIRS]
 
+List trashed files
+
 optional arguments:
   --version
   --help
   --trash-dir TRASH_DIRS
+
+Report bugs to https://github.com/andreafrancia/trash-cli/issues
 """
 
 
@@ -50,7 +53,6 @@ class TestPrintHelp(unittest.TestCase):
         out = StringIO()
         help_printer = PrintHelp(trashcli.list.description, out)
         help_printer.my_print_help('trash-list')
-        pprint(out.getvalue())
         assert out.getvalue() == ('Usage: trash-list [OPTIONS...]\n'
                                   '\n'
                                   'List trashed files\n'
