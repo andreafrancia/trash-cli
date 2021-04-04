@@ -5,7 +5,7 @@ import trashcli.list
 
 class TestTrashListParser(unittest.TestCase):
     def setUp(self):
-        self.parser = trashcli.list.maker_parser(True)
+        self.parser = trashcli.list.maker_parser()
 
     def test_version(self):
 
