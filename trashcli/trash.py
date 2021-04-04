@@ -160,36 +160,48 @@ class Harvester:
         trashdir.each_trashinfo(self.on_trashinfo_found)
         trashdir.each_orphan(self.on_orphan_found)
 
-class PrintHelp:
-    def __init__(self, description, println):
-        class Printer:
-            def __init__(self, println):
-                self.println = println
-            def usage(self, usage):
-                self.println(usage)
-                self.println('')
-            def summary(self, summary):
-                self.println(summary)
-                self.println('')
-            def options(self, *line_describing_option):
-                self.println('Options:')
-                for line in line_describing_option:
-                    self.println(line)
-                self.println('')
-            def bug_reporting(self):
-                self.println("Report bugs to https://github.com/andreafrancia/trash-cli/issues")
-        self.description  = description
-        self.printer      = Printer(println)
 
-    def __call__(self, program_name):
+class HelpPrinter:
+    def __init__(self, out):
+        self.out = out
+
+    def usage(self, usage):
+        self.println(usage)
+        self.println('')
+
+    def summary(self, summary):
+        self.println(summary)
+        self.println('')
+
+    def options(self, *line_describing_option):
+        self.println('Options:')
+        for line in line_describing_option:
+            self.println(line)
+        self.println('')
+
+    def bug_reporting(self):
+        self.println("Report bugs to https://github.com/andreafrancia/trash-cli/issues")
+
+    def println(self, line):
+        println(self.out, line)
+
+def println(out, line):
+    out.write(line + '\n')
+
+class PrintHelp:
+    def __init__(self, description, out):
+        self.description  = description
+        self.printer      = HelpPrinter(out)
+
+    def my_print_help(self, program_name):
         self.description(program_name, self.printer)
 
 class PrintVersion:
-    def __init__(self, println, version):
-        self.println      = println
-        self.version      = version
-    def __call__(self, program_name):
-        self.println("%s %s" % (program_name, self.version))
+    def __init__(self, out, version):
+        self.out = out
+        self.version = version
+    def print_version(self, program_name):
+        println(self.out, "%s %s" % (program_name, self.version))
 
 class TopTrashDirValidationResult:
     class DoesNotExist:

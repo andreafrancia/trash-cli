@@ -34,6 +34,7 @@ class ListCmd:
                        file_reader = FileSystemReader(),
                        version     = version):
 
+        self.out          = out
         self.output       = ListCmdOutput(out, err)
         self.err          = self.output.err
         self.environ      = environ
@@ -47,11 +48,11 @@ class ListCmd:
         parser = maker_parser(argv[0])
         parsed = parser.parse_args(argv[1:])
         if parsed.help:
-            help_printer = PrintHelp(self.description, self.output.println)
-            help_printer(argv[0])
+            help_printer = PrintHelp(description, self.out)
+            help_printer.my_print_help(argv[0])
         elif parsed.version:
-            version_printer = PrintVersion(self.output.println, self.version)
-            version_printer(argv[0])
+            version_printer = PrintVersion(self.out, self.version)
+            version_printer.print_version(argv[0])
         else:
             self.list_trash(parsed.trash_dirs)
 
@@ -90,13 +91,15 @@ class ListCmd:
                 self.output.print_parse_path_error(path)
             else:
                 self.output.print_entry(deletion_date, path)
-    def description(self, program_name, printer):
-        printer.usage('Usage: %s [OPTIONS...]' % program_name)
-        printer.summary('List trashed files')
-        printer.options(
-           "  --version   show program's version number and exit",
-           "  -h, --help  show this help message and exit")
-        printer.bug_reporting()
+
+
+def description(program_name, printer):
+    printer.usage('Usage: %s [OPTIONS...]' % program_name)
+    printer.summary('List trashed files')
+    printer.options(
+       "  --version   show program's version number and exit",
+       "  -h, --help  show this help message and exit")
+    printer.bug_reporting()
 
 
 def decide_trash_dirs(user_specified_dirs,

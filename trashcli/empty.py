@@ -59,8 +59,8 @@ class EmptyCmd:
         self.exit_code    = EX_OK
 
         parse = Parser()
-        parse.on_help(PrintHelp(self.description, self.println))
-        parse.on_version(PrintVersion(self.println, self.version))
+        parse.on_help(PrintHelp(self.description, self.out).my_print_help)
+        parse.on_version(PrintVersion(self.out, self.version).print_version)
         parse.on_argument(self.set_max_age_in_days)
         parse.as_default(self.empty_all_trashdirs)
         parse.on_invalid_option(self.report_invalid_option_usage)
