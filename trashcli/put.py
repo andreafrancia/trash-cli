@@ -425,8 +425,8 @@ class TrashDirectoryForPut:
 
 
 class InfoDir:
-    def __init__(self, info_dir, fs, logger, suffix):
-        self.info_dir = info_dir
+    def __init__(self, path, fs, logger, suffix):
+        self.path = path
         self.fs = fs
         self.logger = logger
         self.suffix = suffix
@@ -437,7 +437,7 @@ class InfoDir:
         returns the created TrashInfoFile.
         """
 
-        self.fs.ensure_dir(self.info_dir, 0o700)
+        self.fs.ensure_dir(self.path, 0o700)
 
         index = 0
         while True:
@@ -447,7 +447,7 @@ class InfoDir:
             trash_id = base_id + suffix
             trash_info_basename = trash_id+".trashinfo"
 
-            dest = os.path.join(self.info_dir, trash_info_basename)
+            dest = os.path.join(self.path, trash_info_basename)
             try:
                 self.fs.atomic_write(dest, content)
                 self.logger.debug(".trashinfo created as %s." % dest)
