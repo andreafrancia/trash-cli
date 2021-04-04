@@ -36,22 +36,6 @@ def sort_lines(lines):
 
 class Test_describe_trash_list(Setup):
 
-    def test_should_output_the_help_message(self):
-
-        self.user.run_trash_list('--help')
-
-        assert_equals_with_unidiff(dedent("""\
-            Usage: trash-list [OPTIONS...]
-
-            List trashed files
-
-            Options:
-              --version   show program's version number and exit
-              -h, --help  show this help message and exit
-
-            Report bugs to https://github.com/andreafrancia/trash-cli/issues
-        """), self.user.output())
-
     def test_should_output_the_version(self):
 
         self.user.run_trash_list('--version')

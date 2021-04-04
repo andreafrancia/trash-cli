@@ -14,11 +14,6 @@ class TestTrashListParser(unittest.TestCase):
 
         assert True == parsed.version
 
-    def test_help(self):
-        parsed = self.parser.parse_args(['--help'])
-
-        assert True == parsed.help
-
     def test_trash_dir_not_specified(self):
         parsed = self.parser.parse_args([])
 
@@ -28,24 +23,6 @@ class TestTrashListParser(unittest.TestCase):
         parsed = self.parser.parse_args(['--trash-dir=foo'])
 
         assert ['foo'] == parsed.trash_dirs
-
-    def test_print_help(self):
-        out = StringIO()
-
-        self.parser.print_help(out)
-
-        assert out.getvalue() == """\
-usage: trash-list [--version] [--help] [--trash-dir TRASH_DIRS]
-
-List trashed files
-
-optional arguments:
-  --version
-  --help
-  --trash-dir TRASH_DIRS
-
-Report bugs to https://github.com/andreafrancia/trash-cli/issues
-"""
 
 
 class TestPrintHelp(unittest.TestCase):

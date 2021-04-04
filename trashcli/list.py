@@ -46,12 +46,9 @@ class ListCmd:
         self.version      = version
 
     def run(self, *argv):
-        parser = maker_parser(argv[0])
+        parser = maker_parser(os.path.basename(argv[0]))
         parsed = parser.parse_args(argv[1:])
-        if parsed.help:
-            help_printer = PrintHelp(description, self.out)
-            help_printer.my_print_help(os.path.basename(argv[0]))
-        elif parsed.version:
+        if parsed.version:
             version_printer = PrintVersion(self.out, self.version)
             version_printer.print_version(argv[0])
         else:
@@ -114,12 +111,12 @@ def decide_trash_dirs(user_specified_dirs,
 def maker_parser(prog):
     parser = argparse.ArgumentParser(prog=prog,
                                      description='List trashed files',
-                                     add_help=False,
                                      epilog='Report bugs to https://github.com/andreafrancia/trash-cli/issues')
-    parser.add_argument('--version', action='store_true', default=False)
-    parser.add_argument('--help', action='store_true', default=False)
+    parser.add_argument('--version', action='store_true', default=False,
+                        help="show program's version number and exit")
     parser.add_argument('--trash-dir', action='append', default=[],
-                        dest='trash_dirs')
+                        dest='trash_dirs',
+                        help='specify the trash directory to use')
     return parser
 
 
