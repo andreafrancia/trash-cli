@@ -9,7 +9,7 @@ from trashcli import base_dir
 import os
 from os.path import join as pj
 from os.path import exists as file_exists
-
+from . import run_command
 
 class TestEndToEndRestore(unittest.TestCase):
     def setUp(self):
@@ -79,21 +79,12 @@ What file to restore [0..0]: """ % {'curdir': self.curdir},
         self.assertEqual(False, file_exists(pj(self.trash_dir, "files", "file1")))
 
     def run_command(self, command, args=None, input=''):
-        class Result:
-            def __init__(self, stdout, stderr):
-                self.stdout = stdout
-                self.stderr = stderr
-        if args == None:
+        if args is None:
             args = []
-        command_full_path = os.path.join(base_dir, command)
-        process = subprocess.Popen(["python", command_full_path,
-                                    "--trash-dir", self.trash_dir] + args,
-                                   stdin=PIPE,
-                                   stdout=PIPE,
-                                   stderr=PIPE, cwd=self.curdir)
-        stdout, stderr = process.communicate(input=input.encode('utf-8'))
-
-        return Result(stdout.decode('utf-8'), stderr.decode('utf-8'))
+        return run_command.run_command(self.curdir,
+                                command,
+                                ["--trash-dir", self.trash_dir] + args,
+                                input)
 
     def tearDown(self):
         self.tmp_dir.clean_up()
