@@ -1,15 +1,13 @@
 import unittest
-import subprocess
-from subprocess import PIPE
 
 from integration_tests.fake_trash_dir import FakeTrashDir, a_trashinfo
 from trashcli.fs import read_file
 from unit_tests.support import MyPath
-from trashcli import base_dir
 import os
 from os.path import join as pj
 from os.path import exists as file_exists
-from . import run_command
+from integration_tests import run_command
+
 
 class TestEndToEndRestore(unittest.TestCase):
     def setUp(self):
