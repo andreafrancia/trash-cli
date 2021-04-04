@@ -169,8 +169,8 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                                         candidates):
         file_has_been_trashed = False
         for path, volume, path_maker, checker in candidates:
-            trash_dir = TrashDirectoryForPut(path, volume, self.fs)
-            trash_dir.path_maker = path_maker(volume)
+            trash_dir = TrashDirectoryForPut(path, volume, self.fs,
+                                             path_maker(volume))
             if self._is_trash_dir_secure(trash_dir.path, checker):
                 volume_of_trash_dir = self.volume_of(self.realpath(trash_dir.path))
                 self.reporter.trash_dir_with_volume(trash_dir.path,
@@ -379,16 +379,13 @@ def parent_realpath(path):
     return os.path.realpath(parent)
 
 class TrashDirectoryForPut:
-    from datetime import datetime
-    def __init__(self, path, volume, fs):
-        self.path      = os.path.normpath(path)
-        self.volume    = volume
-        self.info_dir  = os.path.join(self.path, 'info')
+    def __init__(self, path, volume, fs, path_maker):
+        self.path = os.path.normpath(path)
+        self.volume = volume
+        self.info_dir = os.path.join(self.path, 'info')
         self.files_dir = os.path.join(self.path, 'files')
-        self.move         = fs.move
-        self.atomic_write = fs.atomic_write
-        self.remove_file  = fs.remove_file
-        self.ensure_dir   = fs.ensure_dir
+        self.fs = fs
+        self.path_maker = path_maker
 
     def trash2(self, path, now, logger):
         path = os.path.normpath(path)
@@ -406,9 +403,9 @@ class TrashDirectoryForPut:
         self.ensure_files_dir_exists()
 
         try:
-            self.move(path, where_to_store_trashed_file)
+            self.fs.move(path, where_to_store_trashed_file)
         except IOError as e:
-            self.remove_file(trash_info_file)
+            self.fs.remove_file(trash_info_file)
             raise e
 
     def path_for_trash_info_for_file(self, path):
@@ -417,42 +414,45 @@ class TrashDirectoryForPut:
         return path_for_trash_info.for_file(path)
 
     def ensure_files_dir_exists(self):
-        self.ensure_dir(self.files_dir, 0o700)
+        self.fs.ensure_dir(self.files_dir, 0o700)
 
     def persist_trash_info(self, basename, content, logger):
-        """
-        Create a .trashinfo file in the $trash/info directory.
-        returns the created TrashInfoFile.
-        """
+        return persist_trash_info(self.info_dir, self.fs, basename, content,
+                                  logger)
 
-        self.ensure_dir(self.info_dir, 0o700)
 
-        # write trash info
-        index = 0
-        while True :
-            if index == 0 :
-                suffix = ""
-            elif index < 100:
-                suffix = "_%d" % index
-            else :
-                import random
-                suffix = "_%d" % random.randint(0, 65535)
+def persist_trash_info(info_dir, fs, basename, content, logger):
+    """
+    Create a .trashinfo file in the $trash/info directory.
+    returns the created TrashInfoFile.
+    """
 
-            base_id = basename
-            trash_id = base_id + suffix
-            trash_info_basename = trash_id+".trashinfo"
+    fs.ensure_dir(info_dir, 0o700)
 
-            dest = os.path.join(self.info_dir, trash_info_basename)
-            try :
-                self.atomic_write(dest, content)
-                logger.debug(".trashinfo created as %s." % dest)
-                return dest
-            except OSError:
-                logger.debug("Attempt for creating %s failed." % dest)
+    index = 0
+    while True :
+        if index == 0 :
+            suffix = ""
+        elif index < 100:
+            suffix = "_%d" % index
+        else :
+            import random
+            suffix = "_%d" % random.randint(0, 65535)
 
-            index += 1
+        base_id = basename
+        trash_id = base_id + suffix
+        trash_info_basename = trash_id+".trashinfo"
 
-        raise IOError()
+        dest = os.path.join(info_dir, trash_info_basename)
+        try:
+            fs.atomic_write(dest, content)
+            logger.debug(".trashinfo created as %s." % dest)
+            return dest
+        except OSError:
+            logger.debug("Attempt for creating %s failed." % dest)
+
+        index += 1
+
 
 def format_trashinfo(original_location, deletion_date):
     def format_date(deletion_date):

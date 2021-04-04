@@ -9,8 +9,9 @@ class TestTrashing(unittest.TestCase):
     def setUp(self):
         self.now = Mock()
         self.fs = Mock()
-        self.trashdir = TrashDirectoryForPut('~/.Trash', '/', self.fs)
-        self.trashdir.path_maker = TopDirRelativePaths('/')
+        path_maker = TopDirRelativePaths('/')
+        self.trashdir = TrashDirectoryForPut('~/.Trash', '/', self.fs,
+                                             path_maker)
         path_maker = Mock()
         path_maker.calc_parent_path.return_value = ''
         self.trashdir.path_maker = path_maker
