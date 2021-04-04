@@ -4,37 +4,37 @@ import unittest
 
 from trashcli.fs import read_file
 from unit_tests.support import MyPath
-from trashcli.put import RealFs, PersistTrashInfo
+from trashcli.put import RealFs, InfoDir
 from mock import Mock
 
 
 class Test_persist_trash_info(unittest.TestCase):
     def setUp(self):
-        self.info_dir = MyPath.make_temp_dir()
+        self.path = MyPath.make_temp_dir()
         self.fs = RealFs()
         self.logger = Mock()
         self.suffix = Mock()
         self.suffix.suffix_for_index.side_effect = lambda i: '.suffix-%s' % i
-        self.persist_trash_info = PersistTrashInfo(self.info_dir,
-                                                   self.fs,
-                                                   self.logger,
-                                                   self.suffix)
+        self.info_dir = InfoDir(self.path,
+                                self.fs,
+                                self.logger,
+                                self.suffix)
 
     def test_persist_trash_info_first_time(self):
-        trash_info_file = self.persist_trash_info.persist_trash_info(
+        trash_info_file = self.info_dir.persist_trash_info(
             'dummy-path', b'content')
 
-        assert self.info_dir / 'dummy-path.suffix-0.trashinfo' == trash_info_file
+        assert self.path / 'dummy-path.suffix-0.trashinfo' == trash_info_file
         assert 'content' == read_file(trash_info_file)
 
     def test_persist_trash_info_first_100_times(self):
         self.test_persist_trash_info_first_time()
 
-        trash_info_file = self.persist_trash_info.persist_trash_info(
+        trash_info_file = self.info_dir.persist_trash_info(
             'dummy-path', b'content')
 
-        assert self.info_dir / 'dummy-path.suffix-1.trashinfo' == trash_info_file
+        assert self.path / 'dummy-path.suffix-1.trashinfo' == trash_info_file
         assert 'content' == read_file(trash_info_file)
 
     def tearDown(self):
-        self.info_dir.clean_up()
+        self.path.clean_up()
