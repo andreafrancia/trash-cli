@@ -1,4 +1,5 @@
 master:
+ - trash-list learnt the `--trash-dir` option
  - trash-restore now supports relative paths in argument (fixes #165)
  - trash-list shows all partitions including not physical @KSR-Yasuda
    (https://github.com/andreafrancia/trash-cli/pull/178)
