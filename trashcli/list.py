@@ -44,7 +44,7 @@ class ListCmd:
         self.version      = version
 
     def run(self, *argv):
-        parser = maker_parser()
+        parser = maker_parser(argv[0])
         parsed = parser.parse_args(argv[1:])
         if parsed.help:
             help_printer = PrintHelp(self.description, self.output.println)
@@ -107,8 +107,8 @@ def decide_trash_dirs(user_specified_dirs,
     for dir in user_specified_dirs:
         yield (TrashDirsScanner.Found, (dir, volume_of(dir)))
 
-def maker_parser():
-    parser = argparse.ArgumentParser(add_help=False)
+def maker_parser(prog):
+    parser = argparse.ArgumentParser(prog=prog, add_help=False)
     parser.add_argument('--version', action='store_true', default=False)
     parser.add_argument('--help', action='store_true', default=False)
     parser.add_argument('--trash-dir', action='append', default=[],
