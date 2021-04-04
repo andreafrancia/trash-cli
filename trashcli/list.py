@@ -1,4 +1,5 @@
 import argparse
+import os
 
 from .fs import FileSystemReader
 from .fstab import volume_of
@@ -49,7 +50,7 @@ class ListCmd:
         parsed = parser.parse_args(argv[1:])
         if parsed.help:
             help_printer = PrintHelp(description, self.out)
-            help_printer.my_print_help(argv[0])
+            help_printer.my_print_help(os.path.basename(argv[0]))
         elif parsed.version:
             version_printer = PrintVersion(self.out, self.version)
             version_printer.print_version(argv[0])
