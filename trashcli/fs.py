@@ -57,11 +57,16 @@ def mkdirs(path):
         return
     os.makedirs(path)
 
-def atomic_write(filename, content):
-    file_handle = os.open(filename, os.O_RDWR | os.O_CREAT | os.O_EXCL,
-            0o600)
+
+def atomic_write(path, content):
+    file_handle = open_for_write_in_exclusive_and_create_mode(path)
     os.write(file_handle, content)
     os.close(file_handle)
+
+
+def open_for_write_in_exclusive_and_create_mode(path):
+    return os.open(path, os.O_RDWR | os.O_CREAT | os.O_EXCL, 0o600)
+
 
 def ensure_dir(path, mode):
     if os.path.isdir(path):
