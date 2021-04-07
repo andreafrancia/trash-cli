@@ -65,7 +65,7 @@ def atomic_write(path, content):
 
 
 def open_for_write_in_exclusive_and_create_mode(path):
-    return os.open(path, os.O_RDWR | os.O_CREAT | os.O_EXCL, 0o600)
+    return os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
 
 
 def ensure_dir(path, mode):
