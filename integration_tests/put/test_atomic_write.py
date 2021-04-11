@@ -16,8 +16,7 @@ class Test_atomic_write(unittest.TestCase):
         try:
             open_for_write_in_exclusive_and_create_mode(path)
             self.fail()
-        except FileExistsError as e:
-            assert type(e) == FileExistsError
+        except OSError as e:
             assert e.errno == errno.EEXIST
         os.close(file_handle)
 
