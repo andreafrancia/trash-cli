@@ -442,20 +442,20 @@ class InfoDir:
         index = 0
         while True:
             suffix = self.suffix.suffix_for_index(index)
-
-            base_id = basename
-            trash_id = base_id + suffix
-            trash_info_basename = trash_id+".trashinfo"
-
-            dest = os.path.join(self.path, trash_info_basename)
+            trashinfo_basename = create_trashinfo_basename(basename, suffix)
+            trashinfo_path = os.path.join(self.path, trashinfo_basename)
             try:
-                self.fs.atomic_write(dest, content)
-                self.logger.debug(".trashinfo created as %s." % dest)
-                return dest
+                self.fs.atomic_write(trashinfo_path, content)
+                self.logger.debug(".trashinfo created as %s." % trashinfo_path)
+                return trashinfo_path
             except OSError:
-                self.logger.debug("Attempt for creating %s failed." % dest)
+                self.logger.debug("Attempt for creating %s failed." % trashinfo_path)
 
             index += 1
+
+
+def create_trashinfo_basename(basename, suffix):
+    return basename + suffix + ".trashinfo"
 
 
 class Suffix:
