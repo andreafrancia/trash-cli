@@ -1,3 +1,4 @@
+import errno
 import os
 import sys
 import random
@@ -440,22 +441,32 @@ class InfoDir:
         self.fs.ensure_dir(self.path, 0o700)
 
         index = 0
+        name_too_long = False
         while True:
             suffix = self.suffix.suffix_for_index(index)
-            trashinfo_basename = create_trashinfo_basename(basename, suffix)
+            trashinfo_basename = create_trashinfo_basename(basename,
+                                                           suffix,
+                                                           name_too_long)
             trashinfo_path = os.path.join(self.path, trashinfo_basename)
             try:
                 self.fs.atomic_write(trashinfo_path, content)
                 self.logger.debug(".trashinfo created as %s." % trashinfo_path)
                 return trashinfo_path
-            except OSError:
+            except OSError as e:
+                if e.errno == errno.ENAMETOOLONG:
+                    name_too_long = True
                 self.logger.debug("Attempt for creating %s failed." % trashinfo_path)
 
             index += 1
 
 
-def create_trashinfo_basename(basename, suffix):
-    return basename + suffix + ".trashinfo"
+def create_trashinfo_basename(basename, suffix, name_too_long):
+    after_basename = suffix + ".trashinfo"
+    if name_too_long:
+        truncated_basename = basename[0:len(basename) - len(after_basename)]
+    else:
+        truncated_basename = basename
+    return truncated_basename + after_basename
 
 
 class Suffix:
