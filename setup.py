@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2020 Andrea Francia Trivolzio(PV) Italy
+# Copyright (C) 2007-2021 Andrea Francia Trivolzio(PV) Italy
 
 from distutils.core import setup
 import sys
