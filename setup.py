@@ -1,13 +1,11 @@
 # Copyright (C) 2007-2021 Andrea Francia Trivolzio(PV) Italy
 
 from distutils.core import setup
-import sys
 
 from trashcli.fs import read_file, write_file
 
 
 def main():
-    sys.path.append('.')
     from trashcli import trash
     scripts.add_script('trash'        , 'trashcli.put' , 'main')
     scripts.add_script('trash-put'    , 'trashcli.put' , 'main')
