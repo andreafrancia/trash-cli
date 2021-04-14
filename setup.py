@@ -3,7 +3,7 @@
 import os
 import stat
 from textwrap import dedent
-from distutils.core import setup
+from setuptools import setup
 
 from trashcli.fs import read_file, write_file
 from trashcli import trash
