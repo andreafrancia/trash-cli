@@ -2,7 +2,8 @@ import unittest
 from textwrap import dedent
 import mock
 from mock import Mock
-from setup import Scripts
+from trashcli.scripts import Scripts
+
 
 class TestMakeScript(unittest.TestCase):
     def setUp(self):
@@ -37,6 +38,7 @@ class TestMakeScript(unittest.TestCase):
         assert expected == contents, ("Expected:\n---\n%s---\n"
                                       "Actual  :\n---\n%s---\n"
                                       % (expected, contents))
+
 
 class TestListOfCreatedScripts(unittest.TestCase):
     def setUp(self):

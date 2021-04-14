@@ -1,4 +1,7 @@
-import os, shutil
+import os
+import shutil
+import stat
+
 
 class FileSystemListing:
     def entries_if_dir_exists(self, path):
@@ -83,3 +86,8 @@ def read_file(path):
 def write_file(name, contents):
     with open(name, 'w') as f:
         f.write(contents)
+
+
+def make_file_executable(path):
+    os.chmod(path, os.stat(path).st_mode | stat.S_IXUSR)
+

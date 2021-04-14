@@ -1,15 +1,14 @@
 # Copyright (C) 2007-2021 Andrea Francia Trivolzio(PV) Italy
 
-import os
-import stat
-from textwrap import dedent
 from setuptools import setup
 
-from trashcli.fs import read_file, write_file
+from trashcli.fs import read_file, write_file, make_file_executable
 from trashcli import trash
+from trashcli.scripts import Scripts
 
 
 def main():
+    scripts = Scripts(write_file, make_file_executable)
     scripts.add_script('trash', 'trashcli.put', 'main')
     scripts.add_script('trash-put', 'trashcli.put', 'main')
     scripts.add_script('trash-list', 'trashcli.list', 'main')
@@ -37,31 +36,6 @@ def main():
         ],
     )
 
-
-class Scripts:
-    def __init__(self, write_file, make_file_executable):
-        self.write_file = write_file
-        self.make_file_executable = make_file_executable
-        self.created_scripts = []
-
-    def add_script(self, name, module, main_function):
-        script_contents = dedent("""\
-            #!/usr/bin/env python
-            from __future__ import absolute_import
-            import sys
-            from %(module)s import %(main_function)s as main
-            sys.exit(main())
-            """) % locals()
-        self.write_file(name, script_contents)
-        self.make_file_executable(name)
-        self.created_scripts.append(name)
-
-
-def make_file_executable(path):
-    os.chmod(path, os.stat(path).st_mode | stat.S_IXUSR)
-
-
-scripts = Scripts(write_file, make_file_executable)
 
 if __name__ == '__main__':
     main()
