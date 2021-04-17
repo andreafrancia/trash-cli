@@ -1,9 +1,6 @@
 *.pyc
-*.swp
-*.tmp
 .coverage
 .DS_Store
-.local/
 
 # other things
 /build/
@@ -16,6 +13,5 @@
 /test-disk/
 /trash_cli.egg-info/
 /MANIFEST
-/tags
 /.vagrant/
 /ssh-config
