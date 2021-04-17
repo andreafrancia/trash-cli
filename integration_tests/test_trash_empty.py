@@ -1,10 +1,12 @@
-# Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
+# Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 import unittest
 
 from trashcli.empty import EmptyCmd
 
 from unit_tests.myStringIO import StringIO
 import os
+
+from .empty import no_volumes
 from .files import make_file, require_empty_dir, make_dirs, set_sticky_bit, \
     make_unreadable_dir, make_empty_file, make_readable
 from unit_tests.support import MyPath
@@ -44,106 +46,6 @@ class TestTrashEmptyCmd(unittest.TestCase):
         make_readable(self.unreadable_dir)
         self.tmp_dir.clean_up()
 
-
-class TestWhenCalledWithoutArguments(unittest.TestCase):
-
-    def setUp(self):
-        require_empty_dir('XDG_DATA_HOME')
-        self.info_dir_path   = 'XDG_DATA_HOME/Trash/info'
-        self.files_dir_path  = 'XDG_DATA_HOME/Trash/files'
-        self.environ = {'XDG_DATA_HOME':'XDG_DATA_HOME'}
-        now = MagicMock(side_effect=RuntimeError)
-        self.empty_cmd = EmptyCmd(
-            out = StringIO(),
-            err = StringIO(),
-            environ = self.environ,
-            list_volumes = no_volumes,
-            now = now,
-            file_reader = FileSystemReader(),
-            getuid = None,
-            file_remover = FileRemover(),
-            version = None,
-        )
-
-    def user_run_trash_empty(self):
-        self.empty_cmd.run('trash-empty')
-
-    def test_it_should_remove_an_info_file(self):
-        self.having_a_trashinfo_in_trashcan('foo.trashinfo')
-
-        self.user_run_trash_empty()
-
-        self.assert_dir_empty(self.info_dir_path)
-
-    def test_it_should_remove_all_the_infofiles(self):
-        self.having_three_trashinfo_in_trashcan()
-
-        self.user_run_trash_empty()
-
-        self.assert_dir_empty(self.info_dir_path)
-
-    def test_it_should_remove_the_backup_files(self):
-        self.having_one_trashed_file()
-
-        self.user_run_trash_empty()
-
-        self.assert_dir_empty(self.files_dir_path)
-
-    def test_it_should_keep_unknown_files_found_in_infodir(self):
-        self.having_file_in_info_dir('not-a-trashinfo')
-
-        self.user_run_trash_empty()
-
-        self.assert_dir_contains(self.info_dir_path, 'not-a-trashinfo')
-
-    def test_but_it_should_remove_orphan_files_from_the_files_dir(self):
-        self.having_orphan_file_in_files_dir()
-
-        self.user_run_trash_empty()
-
-        self.assert_dir_empty(self.files_dir_path)
-
-    def test_it_should_purge_also_directories(self):
-        os.makedirs("XDG_DATA_HOME/Trash/files/a-dir")
-
-        self.user_run_trash_empty()
-
-        self.assert_dir_empty(self.files_dir_path)
-
-    def assert_dir_empty(self, path):
-        assert len(os.listdir(path)) == 0
-
-    def assert_dir_contains(self, path, filename):
-        assert os.path.exists(os.path.join(path, filename))
-
-    def having_a_trashinfo_in_trashcan(self, basename_of_trashinfo):
-        make_empty_file(os.path.join(self.info_dir_path, basename_of_trashinfo))
-
-    def having_three_trashinfo_in_trashcan(self):
-        self.having_a_trashinfo_in_trashcan('foo.trashinfo')
-        self.having_a_trashinfo_in_trashcan('bar.trashinfo')
-        self.having_a_trashinfo_in_trashcan('baz.trashinfo')
-        six.assertCountEqual(self,
-                             ['foo.trashinfo',
-                              'bar.trashinfo',
-                              'baz.trashinfo'], os.listdir(self.info_dir_path))
-
-    def having_one_trashed_file(self):
-        self.having_a_trashinfo_in_trashcan('foo.trashinfo')
-        make_empty_file(self.files_dir_path + '/foo')
-        self.files_dir_should_not_be_empty()
-
-    def files_dir_should_not_be_empty(self):
-        assert len(os.listdir(self.files_dir_path)) != 0
-
-    def having_file_in_info_dir(self, filename):
-        make_empty_file(os.path.join(self.info_dir_path, filename))
-
-    def having_orphan_file_in_files_dir(self):
-        complete_path = os.path.join(self.files_dir_path,
-                                     'a-file-without-any-associated-trashinfo')
-        make_empty_file(complete_path)
-        assert os.path.exists(complete_path)
 
 class TestWhen_invoked_with_N_days_as_argument(unittest.TestCase):
     def setUp(self):
@@ -345,7 +247,3 @@ class Test_describe_trash_empty_command_line__on_invalid_options(unittest.TestCa
         assert self.err.getvalue() == dedent("""\
                 trash-empty: invalid option -- '3'
                 """)
-
-def no_volumes():
-    return []
-

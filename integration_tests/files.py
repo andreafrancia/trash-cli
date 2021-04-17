@@ -71,3 +71,11 @@ def make_unreadable_dir(path):
 
 def make_readable(path):
     os.chmod(path, 0o700)
+
+
+def assert_dir_empty(path):
+    assert len(os.listdir(path)) == 0
+
+
+def assert_dir_contains(path, filename):
+    assert os.path.exists(os.path.join(path, filename))
