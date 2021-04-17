@@ -5,9 +5,9 @@ from trashcli.empty import EmptyCmd
 
 from unit_tests.myStringIO import StringIO
 import os
-from .files import make_file, require_empty_dir, make_dirs, set_sticky_bit
+from .files import make_file, require_empty_dir, make_dirs, set_sticky_bit, \
+    make_unreadable_dir, make_empty_file
 from unit_tests.support import MyPath
-from .files import make_empty_file
 from mock import MagicMock
 from trashcli.fs import FileSystemReader
 from trashcli.fs import FileRemover
@@ -30,8 +30,7 @@ class TestTrashEmptyCmd(unittest.TestCase):
         out = StringIO()
         err = StringIO()
         mkdirs('data/Trash/files')
-        mkdirs('data/Trash/files/unreadable')
-        os.chmod('data/Trash/files/unreadable', 0o300)
+        make_unreadable_dir('data/Trash/files/unreadable')
 
         assert os.path.exists('data/Trash/files/unreadable')
 
@@ -44,8 +43,7 @@ class TestTrashEmptyCmd(unittest.TestCase):
         shutil.rmtree('data')
 
     def test_the_core_of_failures_for_issue_48(self):
-        mkdirs('unreadable-dir')
-        os.chmod('unreadable-dir', 0o300)
+        make_unreadable_dir('unreadable-dir')
 
         assert os.path.exists('unreadable-dir')
 

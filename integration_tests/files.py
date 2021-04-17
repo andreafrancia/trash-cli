@@ -1,6 +1,6 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from trashcli.fs import has_sticky_bit, write_file
+from trashcli.fs import has_sticky_bit, write_file, mkdirs
 import os, shutil
 
 
@@ -57,7 +57,13 @@ def ensure_non_sticky_dir(path):
     assert os.path.isdir(path)
     assert not has_sticky_bit(path)
 
+
 def make_unreadable_file(path):
     make_file(path, '')
     import os
     os.chmod(path, 0)
+
+
+def make_unreadable_dir(path):
+    mkdirs(path)
+    os.chmod(path, 0o300)
