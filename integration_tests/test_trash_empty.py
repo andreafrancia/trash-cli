@@ -17,12 +17,15 @@ from trashcli.empty import main as empty
 from trashcli.fs import mkdirs
 import shutil
 
-class TestTrashEmptyCmd(unittest.TestCase):
+
+class TestEmptyCmd_with_help(unittest.TestCase):
     def test(self):
         out = StringIO()
         empty(['trash-empty', '-h'], stdout = out)
         six.assertRegex(self, out.getvalue(), '^Usage. trash-empty.*')
 
+
+class TestTrashEmptyCmd(unittest.TestCase):
     def test_trash_empty_will_crash_on_unreadable_directory_issue_48(self):
         out = StringIO()
         err = StringIO()
