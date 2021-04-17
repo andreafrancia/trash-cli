@@ -42,20 +42,6 @@ class TestTrashEmptyCmd(unittest.TestCase):
         os.chmod('data/Trash/files/unreadable', 0o700)
         shutil.rmtree('data')
 
-    def test_the_core_of_failures_for_issue_48(self):
-        make_unreadable_dir('unreadable-dir')
-
-        assert os.path.exists('unreadable-dir')
-
-        try:
-            FileRemover().remove_file('unreadable-dir')
-            assert False
-        except OSError:
-            pass
-
-        os.chmod('unreadable-dir', 0o700)
-        shutil.rmtree('unreadable-dir')
-
 
 class TestWhenCalledWithoutArguments(unittest.TestCase):
 
