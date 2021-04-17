@@ -5,6 +5,7 @@ from trashcli.fstab import volume_of
 from trashcli.list_mount_points import os_mount_points
 from trashcli.restore import RestoreCmd, TrashDirectories, TrashDirectory, \
     TrashedFiles, TrashDirectories2
+from unit_tests.support import MyPath
 from .files import require_empty_dir
 from trashcli.fs import remove_file, contents_of
 from .fake_trash_dir import a_trashinfo
@@ -77,11 +78,15 @@ class TestRestoreTrash(unittest.TestCase):
                          self.user.stderr())
 
     def setUp(self):
-        require_empty_dir('XDG_DATA_HOME')
-        self.user = RestoreTrashUser('XDG_DATA_HOME')
+        self.tmp_dir = MyPath.make_temp_dir()
+        require_empty_dir(self.tmp_dir / 'XDG_DATA_HOME')
+        self.user = RestoreTrashUser(self.tmp_dir / 'XDG_DATA_HOME')
 
     def file_should_have_been_restored(self, filename):
         assert os.path.exists(filename)
+
+    def tearDown(self):
+        self.tmp_dir.clean_up()
 
 
 class RestoreTrashUser:
