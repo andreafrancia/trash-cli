@@ -12,7 +12,6 @@ from trashcli.fs import FileSystemReader
 
 class TestTrashRm(unittest.TestCase):
     def setUp(self):
-        require_empty_dir('sandbox/xdh')
         self.xdg_data_home = MyPath.make_temp_dir()
         self.stderr = StringIO()
         self.trash_rm = RmCmd(environ = {'XDG_DATA_HOME': self.xdg_data_home}
