@@ -67,3 +67,7 @@ def make_unreadable_file(path):
 def make_unreadable_dir(path):
     mkdirs(path)
     os.chmod(path, 0o300)
+
+
+def make_readable(path):
+    os.chmod(path, 0o700)

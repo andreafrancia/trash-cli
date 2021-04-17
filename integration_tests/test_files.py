@@ -3,7 +3,8 @@ import os
 import shutil
 import unittest
 
-from integration_tests.files import make_unreadable_file, make_unreadable_dir
+from integration_tests.files import make_unreadable_file, make_unreadable_dir,\
+    make_readable
 from trashcli.fs import read_file, FileRemover
 from unit_tests.support import MyPath
 
@@ -40,5 +41,5 @@ class Test_make_unreadable_dir(unittest.TestCase):
             self.assertEqual(errno.errorcode[e.errno], 'EACCES')
 
     def tearDown(self):
-        os.chmod(self.unreadable_dir, 0o700)
+        make_readable(self.unreadable_dir)
         shutil.rmtree(self.unreadable_dir)

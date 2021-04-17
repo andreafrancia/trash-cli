@@ -6,7 +6,7 @@ from trashcli.empty import EmptyCmd
 from unit_tests.myStringIO import StringIO
 import os
 from .files import make_file, require_empty_dir, make_dirs, set_sticky_bit, \
-    make_unreadable_dir, make_empty_file
+    make_unreadable_dir, make_empty_file, make_readable
 from unit_tests.support import MyPath
 from mock import MagicMock
 from trashcli.fs import FileSystemReader
@@ -14,8 +14,6 @@ from trashcli.fs import FileRemover
 import six
 
 from trashcli.empty import main as empty
-from trashcli.fs import mkdirs
-import shutil
 
 
 class TestEmptyCmd_with_help(unittest.TestCase):
@@ -26,21 +24,25 @@ class TestEmptyCmd_with_help(unittest.TestCase):
 
 
 class TestTrashEmptyCmd(unittest.TestCase):
-    def test_trash_empty_will_crash_on_unreadable_directory_issue_48(self):
+    def setUp(self):
+        self.tmp_dir = MyPath.make_temp_dir()
+        self.unreadable_dir = self.tmp_dir / 'data/Trash/files/unreadable'
+
+    def test_trash_empty_will_skip_unreadable_dir(self):
         out = StringIO()
         err = StringIO()
-        mkdirs('data/Trash/files')
-        make_unreadable_dir('data/Trash/files/unreadable')
 
-        assert os.path.exists('data/Trash/files/unreadable')
+        make_unreadable_dir(self.unreadable_dir)
 
         empty(['trash-empty'], stdout = out, stderr = err,
-                environ={'XDG_DATA_HOME':'data'})
+                environ={'XDG_DATA_HOME':self.tmp_dir / 'data'})
 
-        assert ("trash-empty: cannot remove data/Trash/files/unreadable\n" ==
+        assert ("trash-empty: cannot remove %s\n"  % self.unreadable_dir ==
                      err.getvalue())
-        os.chmod('data/Trash/files/unreadable', 0o700)
-        shutil.rmtree('data')
+
+    def tearDown(self):
+        make_readable(self.unreadable_dir)
+        self.tmp_dir.clean_up()
 
 
 class TestWhenCalledWithoutArguments(unittest.TestCase):
