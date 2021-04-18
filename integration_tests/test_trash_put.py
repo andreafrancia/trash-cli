@@ -76,12 +76,15 @@ class Test_when_deleting_an_existing_file_in_verbose_mode(unittest.TestCase):
 
 class Test_when_deleting_a_non_existing_file(unittest.TestCase):
     def setUp(self):
-        self.fixture = TrashPutFixture([])
-        self.fixture.run_trashput('trash-put', '-v', 'non-existent')
+        self.tmp_dir = MyPath.make_temp_dir()
+        self.fixture = TrashPutFixture([self.tmp_dir])
 
     def test_should_be_succesfull(self):
+        self.fixture.run_trashput('trash-put', '-v', self.tmp_dir / 'non-existent')
         assert 0 != self.fixture.exit_code
 
+    def tearDown(self):
+        self.tmp_dir.clean_up()
 
 class Test_when_fed_with_dot_arguments(unittest.TestCase):
 
