@@ -2,13 +2,13 @@ import os
 
 
 def volume_of(path) :
-    func = VolumeOf(RealIsMount(), os.path.abspath)
-    return func.volume_of(path)
+    volumes = Volumes(RealIsMount(), os.path.abspath)
+    return volumes.volume_of(path)
 
 
 def create_fake_volume_of(volumes):
-    obj = VolumeOf(FakeIsMount(volumes), os.path.normpath)
-    return obj.volume_of
+    volumes = Volumes(FakeIsMount(volumes), os.path.normpath)
+    return volumes.volume_of
 
 
 class RealIsMount:
@@ -31,7 +31,7 @@ class FakeIsMount:
         return False
 
 
-class VolumeOf:
+class Volumes:
     def __init__(self, ismount, abspath):
         self.ismount = ismount
         self.abspath = abspath
