@@ -16,7 +16,7 @@ class TestHomeFallback(unittest.TestCase):
         self.trashcan = GlobalTrashCan(
                 reporter = self.reporter,
                 getuid = lambda: 123,
-                volume_of = create_fake_volume_of(mount_points),
+                volumes = create_fake_volume_of(mount_points),
                 now = datetime.now,
                 environ = dict(),
                 fs = self.fs,

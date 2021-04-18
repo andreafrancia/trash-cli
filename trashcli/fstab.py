@@ -2,13 +2,11 @@ import os
 
 
 def volume_of(path) :
-    volumes = Volumes(RealIsMount(), os.path.abspath)
     return volumes.volume_of(path)
 
 
 def create_fake_volume_of(volumes):
-    volumes = Volumes(FakeIsMount(volumes), os.path.normpath)
-    return volumes.volume_of
+    return Volumes(FakeIsMount(volumes), os.path.normpath)
 
 
 class RealIsMount:
@@ -43,3 +41,5 @@ class Volumes:
                 break
             path = os.path.dirname(path)
         return path
+
+volumes = Volumes(RealIsMount(), os.path.abspath)

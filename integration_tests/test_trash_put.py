@@ -19,7 +19,7 @@ import unittest
 class TrashPutFixture:
 
     def __init__(self, volumes):
-        self.volume_of = create_fake_volume_of(volumes)
+        self.volumes = create_fake_volume_of(volumes)
         self.temp_dir = MyPath.make_temp_dir()
 
     def run_trashput(self, *argv):
@@ -30,7 +30,7 @@ class TrashPutFixture:
             stdout      = self.out,
             stderr      = self.err,
             environ     = self.environ,
-            volume_of   = self.volume_of,
+            volumes     = self.volumes,
             parent_path = os.path.dirname,
             realpath    = lambda x:x,
             fs          = RealFs(),

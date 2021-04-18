@@ -13,12 +13,15 @@ from mock import Mock, call
 class TestTrashPutTrashDirectory(unittest.TestCase):
     def setUp(self):
         parent_path = lambda _ : None
-        volume_of = lambda _ : '/'
+        class MyVolumes:
+            def volume_of(self, path):
+                return '/'
+        volumes = MyVolumes()
         self.try_trash_file_using_candidates = Mock()
         self.cmd = TrashPutCmd(None,
                                None,
                                {'XDG_DATA_HOME':'~/xdh'},
-                               volume_of,
+                               volumes,
                                parent_path,
                                None,
                                None,

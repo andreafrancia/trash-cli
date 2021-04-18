@@ -4,7 +4,7 @@ import sys
 import random
 from datetime import datetime
 
-from .fstab import volume_of
+from .fstab import volumes
 from .trash import EX_OK, EX_IOERR, home_trash_dir, volume_trash_dir1, \
     volume_trash_dir2
 from .trash import backup_file_path_from
@@ -17,7 +17,7 @@ def main():
         sys.stdout,
         sys.stderr,
         os.environ,
-        volume_of,
+        volumes,
         parent_path,
         os.path.realpath,
         RealFs(),
@@ -33,7 +33,7 @@ class TrashPutCmd:
                  stdout,
                  stderr,
                  environ,
-                 volume_of,
+                 volumes,
                  parent_path,
                  realpath,
                  fs,
@@ -42,7 +42,7 @@ class TrashPutCmd:
         self.stdout      = stdout
         self.stderr      = stderr
         self.environ     = environ
-        self.volume_of   = volume_of
+        self.volumes     = volumes
         self.fs          = fs
         self.getuid      = getuid
         self.now         = now
@@ -181,7 +181,7 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                                              path_maker(volume),
                                              info_dir)
             if self._is_trash_dir_secure(trash_dir.path, checker):
-                volume_of_trash_dir = self.volume_of(self.realpath(trash_dir.path))
+                volume_of_trash_dir = self.volumes.volume_of(self.realpath(trash_dir.path))
                 self.reporter.trash_dir_with_volume(trash_dir.path,
                                                     volume_of_trash_dir)
                 if self._file_could_be_trashed_in(volume_of_file_to_be_trashed,
@@ -203,7 +203,7 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
             self.reporter.unable_to_trash_file(file)
 
     def volume_of_parent(self, file):
-        return self.volume_of(self.parent_path(file))
+        return self.volumes.volume_of(self.parent_path(file))
 
     def _is_trash_dir_secure(self, trash_dir_path, checker):
         class ValidationOutput:
@@ -254,13 +254,13 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
 
         if hasattr(self, 'trashdir') and self.trashdir:
             path = self.trashdir
-            volume = self.volume_of(path)
+            volume = self.volumes.volume_of(path)
             path_maker = TopDirRelativePaths
             checker = all_is_ok_rules
             trash_dirs.append((path, volume, path_maker, checker))
         else:
             for path, dir_volume in home_trash_dir(self.environ,
-                                                   self.volume_of):
+                                                   self.volumes.volume_of):
                 add_home_trash(path, dir_volume)
             for path, dir_volume in volume_trash_dir1(volume, self.getuid):
                 add_top_trash_dir(path, dir_volume)
@@ -270,11 +270,11 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
 
 
 class GlobalTrashCan(TrashPutCmd):
-    def __init__(self, environ, volume_of, reporter, fs, getuid, now,
+    def __init__(self, environ, volumes, reporter, fs, getuid, now,
                  parent_path, realpath, logger):
         self.getuid            = getuid
         self.reporter          = reporter
-        self.volume_of         = volume_of
+        self.volumes           = volumes
         self.now               = now
         self.fs                = fs
         self.environ           = environ

@@ -9,7 +9,10 @@ import os
 class TestTopDirRules:
     def test(self):
         parent_path = lambda _:None
-        volume_of = lambda _:'/volume'
+        class MyVolumes:
+            def volume_of(self, _path):
+                return '/volume'
+        volumes = MyVolumes()
         realpath = lambda _: None
         fs = Mock(['move',
                    'atomic_write',
@@ -29,7 +32,7 @@ class TestTopDirRules:
                          'trash_dir_with_volume',
                          'file_has_been_trashed_in_as'])
         trashcan = GlobalTrashCan({},
-                                  volume_of,
+                                  volumes,
                                   reporter,
                                   fs,
                                   lambda :'uid',
@@ -48,11 +51,11 @@ class TestGlobalTrashCan(unittest.TestCase):
     def setUp(self):
         self.reporter = Mock()
         self.fs = Mock()
-        self.volume_of = Mock()
-        self.volume_of.return_value = '/'
+        self.volumes = Mock()
+        self.volumes.volume_of.return_value = '/'
 
         self.trashcan = GlobalTrashCan(
-                volume_of = self.volume_of,
+                volumes = self.volumes,
                 reporter = self.reporter,
                 getuid = lambda:123,
                 now = datetime.now,
@@ -92,7 +95,7 @@ class TestGlobalTrashCan(unittest.TestCase):
             'has_sticky_bit',
             ], True)
         self.fs.islink.side_effect = (lambda path: { '/.Trash':False }[path])
-        self.volume_of.side_effect = (lambda path: {
+        self.volumes.volume_of.side_effect = (lambda path: {
             '/foo': '/',
             '': '/',
             '/.Trash/123': '/',
