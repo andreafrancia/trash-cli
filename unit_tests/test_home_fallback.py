@@ -2,7 +2,7 @@ import unittest
 
 from mock import Mock, call, ANY
 
-from trashcli.fstab import FakeFstab
+from trashcli.fstab import create_fake_volume_of
 from trashcli.put import GlobalTrashCan
 from datetime import datetime
 import os
@@ -16,7 +16,7 @@ class TestHomeFallback(unittest.TestCase):
         self.trashcan = GlobalTrashCan(
                 reporter = self.reporter,
                 getuid = lambda: 123,
-                volume_of = self.fake_volume_of(mount_points),
+                volume_of = create_fake_volume_of(mount_points),
                 now = datetime.now,
                 environ = dict(),
                 fs = self.fs,
@@ -63,8 +63,3 @@ class TestHomeFallback(unittest.TestCase):
             call.ensure_dir('.Trash-123/files', 448),
             call.move('sandbox/foo', '.Trash-123/files/foo')
         ] == self.fs.mock_calls, self.fs.mock_calls
-
-    def fake_volume_of(self, volumes):
-        fstab = FakeFstab(volumes)
-        return fstab.volume_of
-

@@ -6,10 +6,9 @@ def volume_of(path) :
     return func.volume_of(path)
 
 
-class FakeFstab:
-    def __init__(self, volumes):
-        self.volume_of = VolumeOf(FakeIsMount(volumes),
-                                  os.path.normpath).volume_of
+def create_fake_volume_of(volumes):
+    obj = VolumeOf(FakeIsMount(volumes), os.path.normpath)
+    return obj.volume_of
 
 
 class RealIsMount:
