@@ -13,7 +13,14 @@ from .files import make_file
 from unit_tests.myStringIO import StringIO
 from trashcli import restore
 
+
 class TestRestoreTrash(unittest.TestCase):
+    def setUp(self):
+        self.tmp_dir = MyPath.make_temp_dir()
+        require_empty_dir(self.tmp_dir / 'XDG_DATA_HOME')
+        self.cwd = self.tmp_dir / "cwd"
+        self.user = RestoreTrashUser(self.tmp_dir / 'XDG_DATA_HOME', self.cwd)
+
     def test_it_does_nothing_when_no_file_have_been_found_in_current_dir(self):
         self.user.chdir('/')
 
@@ -61,26 +68,21 @@ class TestRestoreTrash(unittest.TestCase):
 
     def test_it_restores_the_file_selected_by_the_user(self):
         self.user.having_a_file_trashed_from_current_dir('foo')
-        self.user.chdir(os.getcwd())
+        self.user.chdir(self.cwd)
 
         self.user.run_restore(with_user_typing='0')
 
-        self.file_should_have_been_restored('foo')
+        self.file_should_have_been_restored(self.cwd / 'foo')
 
     def test_it_refuses_overwriting_existing_file(self):
         self.user.having_a_file_trashed_from_current_dir('foo')
-        self.user.chdir(os.getcwd())
-        make_file("foo")
+        self.user.chdir(self.cwd)
+        make_file(self.cwd / "foo")
 
         self.user.run_restore(with_user_typing='0')
 
         self.assertEqual('Refusing to overwrite existing file "foo".\n',
                          self.user.stderr())
-
-    def setUp(self):
-        self.tmp_dir = MyPath.make_temp_dir()
-        require_empty_dir(self.tmp_dir / 'XDG_DATA_HOME')
-        self.user = RestoreTrashUser(self.tmp_dir / 'XDG_DATA_HOME')
 
     def file_should_have_been_restored(self, filename):
         assert os.path.exists(filename)
@@ -90,10 +92,11 @@ class TestRestoreTrash(unittest.TestCase):
 
 
 class RestoreTrashUser:
-    def __init__(self, XDG_DATA_HOME):
+    def __init__(self, XDG_DATA_HOME, cwd):
         self.XDG_DATA_HOME = XDG_DATA_HOME
         self.out = StringIO()
         self.err = StringIO()
+        self.cwd = cwd
 
     def chdir(self, dir):
         self.current_dir = dir
@@ -116,7 +119,7 @@ class RestoreTrashUser:
         ).run([])
 
     def having_a_file_trashed_from_current_dir(self, filename):
-        self.having_a_trashed_file(os.path.join(os.getcwd(), filename))
+        self.having_a_trashed_file(os.path.join(self.cwd, filename))
         remove_file(filename)
         assert not os.path.exists(filename)
 
