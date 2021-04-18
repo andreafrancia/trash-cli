@@ -4,7 +4,7 @@ from trashcli.fstab import FakeIsMount
 
 class TestOnDefault(unittest.TestCase):
     def setUp(self):
-        self.ismount = FakeIsMount()
+        self.ismount = FakeIsMount([])
 
     def test_by_default_root_is_mount(self):
 
@@ -16,8 +16,7 @@ class TestOnDefault(unittest.TestCase):
 
 class WhenOneFakeVolumeIsDefined(unittest.TestCase):
     def setUp(self):
-        self.ismount = FakeIsMount()
-        self.ismount.add_mount('/fake-vol')
+        self.ismount = FakeIsMount(['/fake-vol'])
 
     def test_accept_fake_mount_point(self):
 
@@ -34,9 +33,7 @@ class WhenOneFakeVolumeIsDefined(unittest.TestCase):
 
 class TestWhenMultipleFakesMountPoints(unittest.TestCase):
     def setUp(self):
-        self.ismount = FakeIsMount()
-        self.ismount.add_mount('/vol1')
-        self.ismount.add_mount('/vol2')
+        self.ismount = FakeIsMount(['/vol1', '/vol2'])
 
     def test_recognize_both(self):
         assert self.ismount('/vol1')
@@ -45,6 +42,5 @@ class TestWhenMultipleFakesMountPoints(unittest.TestCase):
 
 
 def test_should_handle_relative_volumes():
-    ismount = FakeIsMount()
-    ismount.add_mount('fake-vol')
+    ismount = FakeIsMount(['fake-vol'])
     assert ismount('fake-vol')

@@ -65,8 +65,6 @@ class TestHomeFallback(unittest.TestCase):
         ] == self.fs.mock_calls, self.fs.mock_calls
 
     def fake_volume_of(self, volumes):
-        fstab = FakeFstab()
-        for vol in volumes:
-            fstab.add_mount(vol)
+        fstab = FakeFstab(volumes)
         return fstab.volume_of
 

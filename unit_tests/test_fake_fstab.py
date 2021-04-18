@@ -4,19 +4,17 @@ from trashcli.fstab import FakeFstab
 
 
 class TestFakeFstab(unittest.TestCase):
-    def setUp(self):
-        self.fstab = FakeFstab()
 
     def test_default(self):
+        self.fstab = FakeFstab([])
         assert ["/"] == self.filter_only_mount_points("/")
 
     def test_it_should_accept_fake_mount_points(self):
-        self.fstab.add_mount('/fake')
+        self.fstab = FakeFstab(['/fake'])
         assert ['/', '/fake'] == self.filter_only_mount_points('/', '/fake')
 
     def test_something(self):
-        fstab = FakeFstab()
-        fstab.add_mount('/fake')
+        fstab = FakeFstab(['/fake'])
         assert '/fake' == fstab.volume_of('/fake/foo')
 
     def filter_only_mount_points(self, *supposed_mount_points):

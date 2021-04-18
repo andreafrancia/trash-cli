@@ -18,8 +18,8 @@ import unittest
 
 class TrashPutFixture:
 
-    def __init__(self):
-        self.fstab   = FakeFstab()
+    def __init__(self, volumes):
+        self.fstab   = FakeFstab(volumes)
         self.temp_dir = MyPath.make_temp_dir()
 
     def run_trashput(self, *argv):
@@ -44,7 +44,7 @@ class TrashPutFixture:
 
 class Test_when_deleting_an_existing_file(unittest.TestCase):
     def setUp(self):
-        self.fixture = TrashPutFixture()
+        self.fixture = TrashPutFixture([])
         make_empty_file(self.fixture.temp_dir / 'foo')
         self.fixture.run_trashput('trash-put', self.fixture.temp_dir / 'foo')
 
@@ -59,7 +59,7 @@ class Test_when_deleting_an_existing_file(unittest.TestCase):
 
 class Test_when_deleting_an_existing_file_in_verbose_mode(unittest.TestCase):
     def setUp(self):
-        self.fixture = TrashPutFixture()
+        self.fixture = TrashPutFixture([])
         self.foo_file = self.fixture.temp_dir / "foo"
         make_empty_file(self.foo_file)
         self.fixture.run_trashput('trash-put', '-v', self.foo_file)
@@ -76,7 +76,7 @@ class Test_when_deleting_an_existing_file_in_verbose_mode(unittest.TestCase):
 
 class Test_when_deleting_a_non_existing_file(unittest.TestCase):
     def setUp(self):
-        self.fixture = TrashPutFixture()
+        self.fixture = TrashPutFixture([])
         self.fixture.run_trashput('trash-put', '-v', 'non-existent')
 
     def test_should_be_succesfull(self):
@@ -86,7 +86,7 @@ class Test_when_deleting_a_non_existing_file(unittest.TestCase):
 class Test_when_fed_with_dot_arguments(unittest.TestCase):
 
     def setUp(self):
-        self.fixture = TrashPutFixture()
+        self.fixture = TrashPutFixture([])
 
     def test_dot_argument_is_skipped(self):
 
@@ -137,11 +137,10 @@ class Test_when_fed_with_dot_arguments(unittest.TestCase):
 
 class TestUnsecureTrashDirMessages(unittest.TestCase):
     def setUp(self):
-        self.fixture = TrashPutFixture()
         self.temp_dir = MyPath.make_temp_dir()
         self.fake_vol = self.temp_dir / 'fake-vol'
+        self.fixture = TrashPutFixture([self.fake_vol])
         require_empty_dir(self.fake_vol)
-        self.fixture.fstab.add_mount(self.fake_vol)
         make_empty_file(self.fake_vol / 'foo')
 
     def test_when_is_unsticky(self):

@@ -6,12 +6,12 @@ def volume_of(path) :
     return func(path)
 
 class FakeFstab:
-    def __init__(self):
-        self.ismount = FakeIsMount()
+    def __init__(self, volumes):
+        self.ismount = FakeIsMount(volumes)
         self.volume_of = VolumeOf(self.ismount, os.path.normpath)
 
     def add_mount(self, path):
-        self.ismount.add_mount(path)
+        pass
 
 from trashcli.list_mount_points import os_mount_points
 class OsIsMount:
@@ -21,10 +21,10 @@ class OsIsMount:
         return os_mount_points()
 
 class FakeIsMount:
-    def __init__(self):
+    def __init__(self, mount_points):
         self.fakes = set(['/'])
-    def add_mount(self, path):
-        self.fakes.add(path)
+        for mp in mount_points:
+            self.fakes.add(mp)
     def __call__(self, path):
         if path == '/':
             return True
