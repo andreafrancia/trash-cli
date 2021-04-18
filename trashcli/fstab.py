@@ -10,13 +10,6 @@ class FakeFstab:
         self.ismount = FakeIsMount()
         self.volume_of = VolumeOf(self.ismount, os.path.normpath)
 
-    def mount_points(self):
-        return self.ismount.mount_points()
-
-    def volume_of(self, path):
-        volume_of = VolumeOf(self.ismount, os.path.abspath)
-        return volume_of(path)
-
     def add_mount(self, path):
         self.ismount.add_mount(path)
 
