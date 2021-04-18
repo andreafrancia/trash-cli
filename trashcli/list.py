@@ -7,7 +7,6 @@ from .trash import version
 from .trash import TopTrashDirRules
 from .trash import TrashDirsScanner
 from .trash import Harvester
-from .trash import PrintHelp
 from .trash import PrintVersion
 from .trash import parse_deletion_date
 from .trash import ParseError
