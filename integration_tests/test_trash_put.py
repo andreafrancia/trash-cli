@@ -16,48 +16,6 @@ from .asserts import assert_line_in_text
 import unittest
 
 
-class TestPath(unittest.TestCase):
-    def setUp(self):
-        self.base = os.path.realpath(os.getcwd())
-
-    def test(self):
-        require_empty_dir('other_dir/dir')
-        remove_file('dir')
-        os.symlink('other_dir/dir', 'dir')
-        make_empty_file('dir/foo')
-        assert (os.path.join(self.base, 'other_dir/dir') ==
-                     parent_path('dir/foo'))
-        remove_file('dir')
-        remove_file('other_dir')
-    def test2(self):
-        require_empty_dir('test-disk/dir')
-        remove_file('link-to-non-existent')
-        os.symlink('test-disk/non-existent', 'link-to-non-existent')
-        assert (self.base ==
-                     parent_path('link-to-non-existent'))
-        remove_file('link-to-non-existent')
-
-    def test3(self):
-        remove_file('foo')
-        remove_file('bar')
-        require_empty_dir('foo')
-        require_empty_dir('bar')
-        os.symlink('../bar/zap', 'foo/zap')
-        assert os.path.join(self.base, 'foo') == parent_path('foo/zap')
-        remove_file('foo')
-        remove_file('bar')
-
-    def test4(self):
-        remove_file('foo')
-        remove_file('bar')
-        require_empty_dir('foo')
-        require_empty_dir('bar')
-        os.symlink('../bar/zap', 'foo/zap')
-        make_empty_file('bar/zap')
-        assert os.path.join(self.base,'foo') == parent_path('foo/zap')
-        remove_file('foo')
-        remove_file('bar')
-
 class TrashPutFixture:
 
     def __init__(self):
