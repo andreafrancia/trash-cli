@@ -228,8 +228,8 @@ Debian/Ubuntu (apt)::
 
 ::
 
-   pytest unit_tests           # 只运行单元测试
-   pytest integration_tests    # 运行所有集成测试
+   pytest -m 'not slow'        # 只运行单元测试
+   pytest -m 'slow'            # 运行所有集成测试
    pytest                      # 运行所有测试
 
 发布前检测安装进程：

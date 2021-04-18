@@ -197,8 +197,8 @@ Environment setup::
 
 Running tests::
 
-    pytest unit_tests           # run only unit tests
-    pytest integration_tests    # run all integration tests
+    pytest -m 'not slow'        # run only fast tests
+    pytest -m 'slow'            # run slow tests
     pytest                      # run all tests
 
 Check the installation process before release::
