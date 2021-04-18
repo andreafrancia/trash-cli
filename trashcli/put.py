@@ -327,9 +327,6 @@ class NoWrapFormatter(IndentedHelpFormatter) :
         "[Does not] format a text, return the text as it is."
         return text
 
-class NullObject:
-    def __getattr__(self, name):
-        return lambda *argl,**args:None
 
 class TrashPutReporter:
     def __init__(self, logger):
