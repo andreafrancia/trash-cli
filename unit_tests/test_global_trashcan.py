@@ -3,7 +3,7 @@ import unittest
 from mock import Mock, call
 from datetime import datetime
 
-from trashcli.put import GlobalTrashCan
+from trashcli.put import TrashPutCmd
 import os
 
 class TestTopDirRules:
@@ -31,16 +31,18 @@ class TestTopDirRules:
                          'found_unsecure_trash_dir_unsticky',
                          'trash_dir_with_volume',
                          'file_has_been_trashed_in_as'])
-        trashcan = GlobalTrashCan({},
-                                  volumes,
-                                  reporter,
-                                  fs,
-                                  lambda :'uid',
-                                  datetime.now,
-                                  parent_path,
-                                  realpath,
-                                  Mock())
-
+        trashcan = TrashPutCmd(stdout=None,
+                               stderr=None,
+                               environ={},
+                               volumes=volumes,
+                               fs=fs,
+                               getuid=lambda: 'uid',
+                               now=datetime.now,
+                               parent_path=parent_path,
+                               realpath=realpath)
+        trashcan.reporter = reporter
+        trashcan.ignore_missing = False
+        trashcan.logger = Mock()
         trashcan.trash('')
         assert [
             call('', '/volume/.Trash-uid')
@@ -54,16 +56,19 @@ class TestGlobalTrashCan(unittest.TestCase):
         self.volumes = Mock()
         self.volumes.volume_of.return_value = '/'
 
-        self.trashcan = GlobalTrashCan(
-                volumes = self.volumes,
-                reporter = self.reporter,
-                getuid = lambda:123,
-                now = datetime.now,
-                environ = dict(),
-                fs = self.fs,
-                parent_path = os.path.dirname,
-                realpath = lambda x:x,
-                logger = Mock())
+        self.trashcan = TrashPutCmd(
+            stdout=None,
+            stderr=None,
+            volumes=self.volumes,
+            getuid=lambda: 123,
+            now=datetime.now,
+            environ=dict(),
+            fs=self.fs,
+            parent_path=os.path.dirname,
+            realpath=lambda x: x)
+        self.trashcan.reporter = self.reporter
+        self.trashcan.logger = Mock()
+        self.trashcan.ignore_missing = False
 
     def test_log_volume(self):
         self.trashcan.trash('a-dir/with-a-file')

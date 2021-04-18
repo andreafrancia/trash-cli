@@ -269,20 +269,6 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
         return trash_dirs
 
 
-class GlobalTrashCan(TrashPutCmd):
-    def __init__(self, environ, volumes, reporter, fs, getuid, now,
-                 parent_path, realpath, logger):
-        self.getuid            = getuid
-        self.reporter          = reporter
-        self.volumes           = volumes
-        self.now               = now
-        self.fs                = fs
-        self.environ           = environ
-        self.parent_path       = parent_path
-        self.realpath          = realpath
-        self.logger            = logger
-        self.ignore_missing    = False
-
 def describe(path):
     """
     Return a textual description of the file pointed by this path.
