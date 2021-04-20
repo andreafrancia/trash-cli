@@ -1,6 +1,0 @@
-# Clean up
-rm env/bin/trash-rm
-
-python setup.py develop --script-dir env/bin
-
-env/bin/trash-rm --help
