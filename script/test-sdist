@@ -3,7 +3,7 @@ set -xe
 
 version="$(python setup.py --version)"
 python setup.py sdist
-# pip install "dist/trash-cli-$version.tar.gz"
+pip install "dist/trash-cli-$version.tar.gz"
 
 trash --version
 trash-put --version
