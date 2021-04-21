@@ -232,12 +232,6 @@ Debian/Ubuntu (apt)::
    pytest -m 'slow'            # 运行所有集成测试
    pytest                      # 运行所有测试
 
-发布前检测安装进程：
-
-::
-
-   python check_release_installation.py
-
 .. |Donate| image:: https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif
 .. _Donate: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=93L6PYT4WBN5A
 .. _English: https://github.com/andreafrancia/trash-cli/blob/master/README.rst

@@ -10,10 +10,9 @@ Run all tests:
 
     pytest
 
-Test the installation from tarball:
+Create the tarball:
   
     python setup.py sdist
-    python check_release_installation.py
 
 Register and upload:
 
