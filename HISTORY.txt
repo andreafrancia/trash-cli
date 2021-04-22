@@ -1,4 +1,4 @@
-master:
+0.21.4.18:
  - fix bug #166 'trash goes into an infinite loop when trashing files with a long filename'
  - trash-list learnt the `--trash-dir` option
  - trash-restore now supports relative paths in argument (fixes #165)
