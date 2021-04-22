@@ -14,9 +14,17 @@ Create the tarball:
   
     python setup.py sdist
 
+Upload to Test PyPI:
+
+    twine upload --repository testpypi dist/*
+
+Test the installation:
+
+    python3 -m pip install --index-url https://test.pypi.org/simple/ your-package
+
 Register and upload:
 
-    python setup.py sdist upload
+    twine upload dist/*
 
 Now you can tag the repo status:
 
