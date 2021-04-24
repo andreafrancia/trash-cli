@@ -71,8 +71,7 @@ class TrashPutCmd:
             self.ignore_missing = options.ignore_missing
             self.reporter = TrashPutReporter(logger, self.environ)
             self.logger = trash_logger
-            self.trashdir = options.trashdir
-            self.trash_all(args)
+            self.trash_all(args, options.trashdir)
 
             return self.reporter.exit_code()
 
@@ -132,11 +131,11 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
         parser.exit = patched_exit
         return parser
 
-    def trash_all(self, args):
+    def trash_all(self, args, user_trash_dir):
         for arg in args :
-            self.trash(arg)
+            self.trash(arg, user_trash_dir)
 
-    def trash(self, file) :
+    def trash(self, file, user_trash_dir) :
         """
         Trash a file in the appropriate trash directory.
         If the file belong to the same volume of the trash home directory it
@@ -163,7 +162,7 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
         self.reporter.volume_of_file(volume_of_file_to_be_trashed)
         candidates = self.trash_directories_finder.\
             possible_trash_directories_for(volume_of_file_to_be_trashed,
-                                           self.trashdir)
+                                           user_trash_dir)
         self.try_trash_file_using_candidates(file,
                                              volume_of_file_to_be_trashed,
                                              candidates)

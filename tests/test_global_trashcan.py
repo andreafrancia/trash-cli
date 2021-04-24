@@ -43,8 +43,7 @@ class TestTopDirRules:
         trashcan.reporter = reporter
         trashcan.ignore_missing = False
         trashcan.logger = Mock()
-        trashcan.trashdir = False
-        trashcan.trash('')
+        trashcan.trash('', False)
         assert [
             call('', '/volume/.Trash-uid')
             ] == reporter.file_has_been_trashed_in_as.mock_calls
@@ -70,23 +69,22 @@ class TestGlobalTrashCan(unittest.TestCase):
         self.trashcan.reporter = self.reporter
         self.trashcan.logger = Mock()
         self.trashcan.ignore_missing = False
-        self.trashcan.trashdir = False
 
     def test_log_volume(self):
-        self.trashcan.trash('a-dir/with-a-file')
+        self.trashcan.trash('a-dir/with-a-file', False)
 
         self.reporter.volume_of_file.assert_called_with('/')
 
     def test_should_report_when_trash_fail(self):
         self.fs.move.side_effect = IOError
 
-        self.trashcan.trash('non-existent')
+        self.trashcan.trash('non-existent', False)
 
         self.reporter.unable_to_trash_file.assert_called_with('non-existent')
 
     def test_should_not_delete_a_dot_entru(self):
 
-        self.trashcan.trash('.')
+        self.trashcan.trash('.', False)
 
         self.reporter.unable_to_trash_dot_entries.assert_called_with('.')
 
@@ -108,20 +106,5 @@ class TestGlobalTrashCan(unittest.TestCase):
             '/.Trash/123': '/',
             }[path])
 
-        self.trashcan.trash('foo')
-
-    def test_what_happen_when_trashing_with_trash_dir(self):
-        from trashcli.put import TrashDirectoryForPut
-        fs = Mock()
-        now = Mock()
-        fs.mock_add_spec([
-            'move', 'atomic_write', 'remove_file', 'ensure_dir',
-            ], True)
-
-        from unittest import SkipTest
-        raise SkipTest("")
-
-        trash_dir = TrashDirectoryForPut('/path', '/volume', fs)
-
-        trash_dir.trash('garbage', now)
+        self.trashcan.trash('foo', False)
 
