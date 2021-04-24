@@ -159,7 +159,8 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
         volume_of_file_to_be_trashed = self.volume_of_parent(file)
         self.reporter.volume_of_file(volume_of_file_to_be_trashed)
         candidates = self._possible_trash_directories_for(
-                        volume_of_file_to_be_trashed)
+            volume_of_file_to_be_trashed,
+            self.trashdir)
 
         self.try_trash_file_using_candidates(file,
                                              volume_of_file_to_be_trashed,
@@ -236,7 +237,9 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                                   volume_of_trash_dir):
         return volume_of_trash_dir == volume_of_file_to_be_trashed
 
-    def _possible_trash_directories_for(self, volume):
+    def _possible_trash_directories_for(self,
+                                        volume,
+                                        specific_trash_dir):
         trash_dirs = []
         def add_home_trash(path, volume):
             path_maker = AbsolutePaths
@@ -251,8 +254,8 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
             checker = all_is_ok_rules
             trash_dirs.append((path, volume, path_maker, checker))
 
-        if self.trashdir:
-            path = self.trashdir
+        if specific_trash_dir:
+            path = specific_trash_dir
             volume = self.volumes.volume_of(path)
             path_maker = TopDirRelativePaths
             checker = all_is_ok_rules
