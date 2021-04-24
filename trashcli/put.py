@@ -48,6 +48,9 @@ class TrashPutCmd:
         self.now         = now
         self.parent_path = parent_path
         self.realpath    = realpath
+        self.trash_directories_finder = TrashDirectoriesFinder(self.environ,
+                                                               self.getuid,
+                                                               self.volumes)
 
     def run(self, argv):
         program_name  = os.path.basename(argv[0])
@@ -158,10 +161,9 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
 
         volume_of_file_to_be_trashed = self.volume_of_parent(file)
         self.reporter.volume_of_file(volume_of_file_to_be_trashed)
-        candidates = self._possible_trash_directories_for(
-            volume_of_file_to_be_trashed,
-            self.trashdir)
-
+        candidates = self.trash_directories_finder.\
+            possible_trash_directories_for(volume_of_file_to_be_trashed,
+                                           self.trashdir)
         self.try_trash_file_using_candidates(file,
                                              volume_of_file_to_be_trashed,
                                              candidates)
@@ -237,9 +239,16 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                                   volume_of_trash_dir):
         return volume_of_trash_dir == volume_of_file_to_be_trashed
 
-    def _possible_trash_directories_for(self,
-                                        volume,
-                                        specific_trash_dir):
+
+class TrashDirectoriesFinder:
+    def __init__(self, environ, getuid, volumes):
+        self.environ = environ
+        self.getuid = getuid
+        self.volumes = volumes
+
+    def possible_trash_directories_for(self,
+                                       volume,
+                                       specific_trash_dir):
         trash_dirs = []
         def add_home_trash(path, volume):
             path_maker = AbsolutePaths

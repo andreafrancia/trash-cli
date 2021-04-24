@@ -25,9 +25,8 @@ class TestTrashPutTrashDirectory(unittest.TestCase):
                                parent_path,
                                None,
                                None,
-                               None,
+                               lambda : '123',
                                None)
-        self.cmd.getuid = lambda : '123'
         self.cmd.try_trash_file_using_candidates = self.try_trash_file_using_candidates
 
     def test_normally(self):
