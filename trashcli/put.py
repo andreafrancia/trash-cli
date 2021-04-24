@@ -64,12 +64,11 @@ class TrashPutCmd:
             return e.code
         else:
             if options.verbose: logger.be_verbose()
-            if options.trashdir:
-                self.trashdir = options.trashdir
 
             self.ignore_missing = options.ignore_missing
             self.reporter = TrashPutReporter(logger, self.environ)
             self.logger = trash_logger
+            self.trashdir = options.trashdir
             self.trash_all(args)
 
             return self.reporter.exit_code()
@@ -252,7 +251,7 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
             checker = all_is_ok_rules
             trash_dirs.append((path, volume, path_maker, checker))
 
-        if hasattr(self, 'trashdir') and self.trashdir:
+        if self.trashdir:
             path = self.trashdir
             volume = self.volumes.volume_of(path)
             path_maker = TopDirRelativePaths

@@ -43,6 +43,7 @@ class TestTopDirRules:
         trashcan.reporter = reporter
         trashcan.ignore_missing = False
         trashcan.logger = Mock()
+        trashcan.trashdir = False
         trashcan.trash('')
         assert [
             call('', '/volume/.Trash-uid')
@@ -69,6 +70,7 @@ class TestGlobalTrashCan(unittest.TestCase):
         self.trashcan.reporter = self.reporter
         self.trashcan.logger = Mock()
         self.trashcan.ignore_missing = False
+        self.trashcan.trashdir = False
 
     def test_log_volume(self):
         self.trashcan.trash('a-dir/with-a-file')
