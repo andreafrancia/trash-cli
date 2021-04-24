@@ -1,6 +1,6 @@
 import unittest
 
-from trashcli.put import shrinkuser
+from trashcli.put import shrink_user
 
 class TestTrashDirectoryName(unittest.TestCase):
     def setUp(self):
@@ -32,6 +32,6 @@ class TestTrashDirectoryName(unittest.TestCase):
         self.assert_name_is('/foo/Trash')
 
     def assert_name_is(self, expected_name):
-        shrinked = shrinkuser(self.trash_dir, self.environ)
+        shrinked = shrink_user(self.trash_dir, self.environ)
         assert expected_name == shrinked
 

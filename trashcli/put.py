@@ -68,7 +68,7 @@ class TrashPutCmd:
                 self.trashdir = options.trashdir
 
             self.ignore_missing = options.ignore_missing
-            self.reporter = TrashPutReporter(logger)
+            self.reporter = TrashPutReporter(logger, self.environ)
             self.logger = trash_logger
             self.trash_all(args)
 
@@ -329,10 +329,11 @@ class NoWrapFormatter(IndentedHelpFormatter) :
 
 
 class TrashPutReporter:
-    def __init__(self, logger):
+    def __init__(self, logger, environ):
         self.logger = logger
         self.some_file_has_not_be_trashed = False
         self.no_argument_specified = False
+        self.environ = environ
     def unable_to_trash_dot_entries(self,file):
         self.logger.warning("cannot trash %s '%s'" % (describe(file), file))
     def unable_to_trash_file(self,f):
@@ -340,7 +341,8 @@ class TrashPutReporter:
         self.some_file_has_not_be_trashed = True
     def file_has_been_trashed_in_as(self, trashee, trash_directory):
         self.logger.info("'%s' trashed in %s" % (trashee,
-                                                 shrinkuser(trash_directory)))
+                                                 shrink_user(trash_directory,
+                                                             self.environ)))
     def found_unsercure_trash_dir_symlink(self, trash_dir_path):
         self.logger.info("found unsecure .Trash dir (should not be a symlink): %s"
                 % trash_dir_path)
@@ -354,7 +356,8 @@ class TrashPutReporter:
                                         file_to_be_trashed,
                                         trash_directory, error):
         self.logger.info("Failed to trash %s in %s, because: %s" % (
-           file_to_be_trashed, shrinkuser(trash_directory), error))
+            file_to_be_trashed, shrink_user(trash_directory,
+                                            self.environ), error))
     def trash_dir_with_volume(self, trash_dir_path, volume_path):
         self.logger.info("Trash-dir: %s from volume: %s" % (trash_dir_path,
                                                             volume_path))
@@ -478,7 +481,8 @@ def format_trashinfo(original_location, deletion_date):
                "DeletionDate=%s\n" % format_date(deletion_date)).encode('utf-8')
     return content
 
-def shrinkuser(path, environ=os.environ):
+
+def shrink_user(path, environ):
     import posixpath
     import re
     try:

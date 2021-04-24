@@ -6,7 +6,7 @@ from trashcli.put import TrashPutReporter
 class TestTrashPutReporter(unittest.TestCase):
     def test_it_should_record_failures(self):
 
-        reporter = TrashPutReporter(self)
+        reporter = TrashPutReporter(self, {})
         assert False == reporter.some_file_has_not_be_trashed
 
         reporter.unable_to_trash_file('a file')
