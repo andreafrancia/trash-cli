@@ -207,27 +207,24 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
         return self.volumes.volume_of(self.parent_path(file))
 
     def _is_trash_dir_secure(self, trash_dir_path, checker):
-        class ValidationOutput:
-            def __init__(self, reporter):
-                self.valid = True
-                self.reporter = reporter
-            def not_valid_should_be_a_dir(self):
-                self.reporter.invalid_top_trash_is_not_a_dir(
-                        os.path.dirname(trash_dir_path))
-                self.valid = False
-            def not_valid_parent_should_not_be_a_symlink(self):
-                self.reporter.found_unsercure_trash_dir_symlink(
-                        os.path.dirname(trash_dir_path))
-                self.valid = False
-            def not_valid_parent_should_be_sticky(self):
-                self.reporter.found_unsecure_trash_dir_unsticky(
-                        os.path.dirname(trash_dir_path))
-                self.valid = False
-            def is_valid(self):
-                self.valid = True
-        output = ValidationOutput(self.reporter)
-        checker.check_trash_dir_is_secure(trash_dir_path, output, self.fs)
-        return output.valid
+        result = checker.check_trash_dir_is_secure(trash_dir_path,
+                                                   self.fs)
+        if result == 'is_valid':
+            return True
+        elif result == 'not_valid_should_be_a_dir':
+            self.reporter.invalid_top_trash_is_not_a_dir(
+                os.path.dirname(trash_dir_path))
+            return False
+        elif result == 'not_valid_parent_should_not_be_a_symlink':
+            self.reporter.found_unsercure_trash_dir_symlink(
+                os.path.dirname(trash_dir_path))
+            return False
+        elif result == 'not_valid_parent_should_be_sticky':
+            self.reporter.found_unsecure_trash_dir_unsticky(
+                os.path.dirname(trash_dir_path))
+            return False
+        else:
+            raise TypeError('enum not valid: %s' % result)
 
     def _should_skipped_by_specs(self, file):
         basename = os.path.basename(file)
@@ -507,23 +504,20 @@ def shrink_user(path, environ):
 
 
 class AllIsOkRules:
-    def check_trash_dir_is_secure(self, trash_dir_path, output, fs):
-        pass
+    def check_trash_dir_is_secure(self, trash_dir_path, fs):
+        return 'is_valid'
 
 
 class TopTrashDirRules:
-    def check_trash_dir_is_secure(self, trash_dir_path, output, fs):
+    def check_trash_dir_is_secure(self, trash_dir_path, fs):
         parent = os.path.dirname(trash_dir_path)
         if not fs.isdir(parent):
-            output.not_valid_should_be_a_dir()
-            return
+            return 'not_valid_should_be_a_dir'
         if fs.islink(parent):
-            output.not_valid_parent_should_not_be_a_symlink()
-            return
+            return 'not_valid_parent_should_not_be_a_symlink'
         if not fs.has_sticky_bit(parent):
-            output.not_valid_parent_should_be_sticky()
-            return
-        output.is_valid()
+            return 'not_valid_parent_should_be_sticky'
+        return 'is_valid'
 
 
 top_trash_dir_rules = TopTrashDirRules()
