@@ -30,7 +30,8 @@ class TestTopDirRules:
         reporter = Mock(['volume_of_file',
                          'found_unsecure_trash_dir_unsticky',
                          'trash_dir_with_volume',
-                         'file_has_been_trashed_in_as'])
+                         'file_has_been_trashed_in_as',
+                         'log_info'])
         trashcan = TrashPutCmd(stdout=None,
                                stderr=None,
                                environ={},
