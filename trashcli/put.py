@@ -207,21 +207,18 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
         return self.volumes.volume_of(self.parent_path(file))
 
     def _is_trash_dir_secure(self, trash_dir_path, checker):
-        result = checker.check_trash_dir_is_secure(trash_dir_path,
-                                                   self.fs)
+        result, arg = checker.check_trash_dir_is_secure(trash_dir_path,
+                                                        self.fs)
         if result == 'is_valid':
             return True
         elif result == 'not_valid_should_be_a_dir':
-            self.reporter.invalid_top_trash_is_not_a_dir(
-                os.path.dirname(trash_dir_path))
+            self.reporter.invalid_top_trash_is_not_a_dir(arg)
             return False
         elif result == 'not_valid_parent_should_not_be_a_symlink':
-            self.reporter.found_unsercure_trash_dir_symlink(
-                os.path.dirname(trash_dir_path))
+            self.reporter.found_unsercure_trash_dir_symlink(arg)
             return False
         elif result == 'not_valid_parent_should_be_sticky':
-            self.reporter.found_unsecure_trash_dir_unsticky(
-                os.path.dirname(trash_dir_path))
+            self.reporter.found_unsecure_trash_dir_unsticky(arg)
             return False
         else:
             raise TypeError('enum not valid: %s' % result)
@@ -505,19 +502,19 @@ def shrink_user(path, environ):
 
 class AllIsOkRules:
     def check_trash_dir_is_secure(self, trash_dir_path, fs):
-        return 'is_valid'
+        return ('is_valid', None)
 
 
 class TopTrashDirRules:
     def check_trash_dir_is_secure(self, trash_dir_path, fs):
         parent = os.path.dirname(trash_dir_path)
         if not fs.isdir(parent):
-            return 'not_valid_should_be_a_dir'
+            return ('not_valid_should_be_a_dir', parent)
         if fs.islink(parent):
-            return 'not_valid_parent_should_not_be_a_symlink'
+            return ('not_valid_parent_should_not_be_a_symlink', parent)
         if not fs.has_sticky_bit(parent):
-            return 'not_valid_parent_should_be_sticky'
-        return 'is_valid'
+            return ('not_valid_parent_should_be_sticky', parent)
+        return ('is_valid', None)
 
 
 top_trash_dir_rules = TopTrashDirRules()

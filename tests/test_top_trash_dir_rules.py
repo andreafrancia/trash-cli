@@ -18,7 +18,7 @@ class TestTopTrashDirRules(unittest.TestCase):
                                                       fs)
 
         assert [call.isdir('/parent')] == fs.mock_calls
-        assert 'not_valid_should_be_a_dir' == result
+        assert ('not_valid_should_be_a_dir', '/parent') == result
 
     def test_not_valid_parent_should_not_be_a_symlink(self):
         fs = Mock(spec=['isdir', 'islink'])
@@ -30,7 +30,7 @@ class TestTopTrashDirRules(unittest.TestCase):
 
         assert [call.isdir('/parent'),
                 call.islink('/parent')] == fs.mock_calls
-        assert 'not_valid_parent_should_not_be_a_symlink' == result
+        assert ('not_valid_parent_should_not_be_a_symlink', '/parent') == result
 
     def test_not_valid_parent_should_be_sticky(self):
         fs = Mock(spec=['isdir', 'islink', 'has_sticky_bit'])
@@ -44,7 +44,7 @@ class TestTopTrashDirRules(unittest.TestCase):
         assert [call.isdir('/parent'),
                 call.islink('/parent'),
                 call.has_sticky_bit('/parent')] == fs.mock_calls
-        assert 'not_valid_parent_should_be_sticky' == result
+        assert ('not_valid_parent_should_be_sticky', '/parent') == result
 
     def test_is_valid(self):
         fs = Mock(spec=['isdir', 'islink', 'has_sticky_bit'])
@@ -58,4 +58,4 @@ class TestTopTrashDirRules(unittest.TestCase):
         assert [call.isdir('/parent'),
                 call.islink('/parent'),
                 call.has_sticky_bit('/parent')] == fs.mock_calls
-        assert 'is_valid' == result
+        assert ('is_valid', None) == result
