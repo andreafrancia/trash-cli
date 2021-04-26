@@ -181,9 +181,9 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                                              self.fs,
                                              path_maker(volume),
                                              info_dir)
-            trash_dir_is_secure, messages = self._is_trash_dir_secure(
+            trash_dir_is_secure, messages = checker.check_trash_dir_is_secure(
                 trash_dir.path,
-                checker)
+                self.fs)
             for message in messages:
                 self.reporter.log_info(message)
 
@@ -211,21 +211,6 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
 
     def volume_of_parent(self, file):
         return self.volumes.volume_of(self.parent_path(file))
-
-    def _is_trash_dir_secure(self, trash_dir_path, checker):
-        result, arg = checker.check_trash_dir_is_secure(trash_dir_path,
-                                                        self.fs)
-        if result == 'is_valid':
-            return (True, [])
-        elif result == 'not_valid_should_be_a_dir':
-            return (False, [self.reporter.invalid_top_trash_is_not_a_dir(arg)])
-        elif result == 'not_valid_parent_should_not_be_a_symlink':
-            return (False, [self.reporter.found_unsercure_trash_dir_symlink(arg)])
-        elif result == 'not_valid_parent_should_be_sticky':
-            self.reporter.found_unsecure_trash_dir_unsticky(arg)
-            return (False, [self.reporter.found_unsecure_trash_dir_unsticky(arg)])
-        else:
-            raise TypeError('enum not valid: %s' % result)
 
     def _should_skipped_by_specs(self, file):
         basename = os.path.basename(file)
@@ -351,12 +336,7 @@ class TrashPutReporter:
         self.logger.info("'%s' trashed in %s" % (trashee,
                                                  shrink_user(trash_directory,
                                                              self.environ)))
-    def found_unsercure_trash_dir_symlink(self, trash_dir_path):
-        return "found unsecure .Trash dir (should not be a symlink): %s" % trash_dir_path
-    def invalid_top_trash_is_not_a_dir(self, trash_dir_path):
-        return "found unusable .Trash dir (should be a dir): %s" % trash_dir_path
-    def found_unsecure_trash_dir_unsticky(self, trash_dir_path):
-        return "found unsecure .Trash dir (should be sticky): %s" % trash_dir_path
+
     def log_info(self, message):
         self.logger.info(message)
     def unable_to_trash_file_in_because(self,
@@ -505,19 +485,19 @@ def shrink_user(path, environ):
 
 class AllIsOkRules:
     def check_trash_dir_is_secure(self, trash_dir_path, fs):
-        return ('is_valid', None)
+        return True, []
 
 
 class TopTrashDirRules:
     def check_trash_dir_is_secure(self, trash_dir_path, fs):
         parent = os.path.dirname(trash_dir_path)
         if not fs.isdir(parent):
-            return ('not_valid_should_be_a_dir', parent)
+            return False, ["found unusable .Trash dir (should be a dir): %s" % parent]
         if fs.islink(parent):
-            return ('not_valid_parent_should_not_be_a_symlink', parent)
+            return False, ["found unsecure .Trash dir (should not be a symlink): %s" % parent]
         if not fs.has_sticky_bit(parent):
-            return ('not_valid_parent_should_be_sticky', parent)
-        return ('is_valid', None)
+            return False, ["found unsecure .Trash dir (should be sticky): %s" % parent]
+        return True, []
 
 
 top_trash_dir_rules = TopTrashDirRules()
