@@ -2,6 +2,7 @@ import os
 import unittest
 
 import pytest
+from mock import Mock
 
 from trashcli.fstab import volume_of
 from trashcli.list_mount_points import os_mount_points
@@ -108,7 +109,10 @@ class RestoreTrashUser:
         environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME}
         trash_directories = TrashDirectories(volume_of, os.getuid, environ)
         trash_directories2 = TrashDirectories2(volume_of, trash_directories)
-        trashed_files = TrashedFiles(trash_directories2, TrashDirectory(),
+        logger = Mock(spec=[])
+        trashed_files = TrashedFiles(logger,
+                                     trash_directories2,
+                                     TrashDirectory(),
                                      contents_of)
         RestoreCmd(
             stdout  = self.out,

@@ -56,7 +56,11 @@ class Test_parse_args(unittest.TestCase):
 class TestListingInRestoreCmd(unittest.TestCase):
     def setUp(self):
         trash_directories = make_trash_directories()
-        trashed_files = TrashedFiles(trash_directories, None, contents_of)
+        self.logger = Mock(spec=[])
+        trashed_files = TrashedFiles(self.logger,
+                                     trash_directories,
+                                     None,
+                                     contents_of)
         self.cmd = RestoreCmd(None, None,
                               exit=None,
                               input=None,
@@ -123,7 +127,10 @@ class TestTrashRestoreCmd(unittest.TestCase):
         self.stdout = StringIO()
         self.stderr = StringIO()
         trash_directories = make_trash_directories()
-        trashed_files = TrashedFiles(trash_directories, TrashDirectory(),
+        self.logger = Mock(spec=[])
+        trashed_files = TrashedFiles(self.logger,
+                                     trash_directories,
+                                     TrashDirectory(),
                                      contents_of)
         self.fs = Mock(spec=restore.FileSystem)
         self.cmd = RestoreCmd(stdout=self.stdout,
@@ -192,7 +199,10 @@ class TestTrashedFileRestoreIntegration(unittest.TestCase):
     def setUp(self):
         self.temp_dir = MyPath.make_temp_dir()
         trash_directories = make_trash_directories()
-        trashed_files = TrashedFiles(trash_directories, TrashDirectory(),
+        self.logger = Mock(spec=[])
+        trashed_files = TrashedFiles(self.logger,
+                                     trash_directories,
+                                     TrashDirectory(),
                                      contents_of)
         self.cmd = RestoreCmd(None,
                               None,
@@ -231,7 +241,9 @@ class TestTrashedFiles(unittest.TestCase):
         self.trash_directories = Mock(spec=['trash_directories_or_user'])
         self.trash_directory = Mock(spec=['all_info_files'])
         self.contents_of = Mock()
-        self.trashed_files = TrashedFiles(self.trash_directories,
+        self.logger = Mock(spec=[])
+        self.trashed_files = TrashedFiles(self.logger,
+                                          self.trash_directories,
                                           self.trash_directory,
                                           self.contents_of)
 
@@ -258,7 +270,9 @@ class TestTrashedFilesIntegration(unittest.TestCase):
     def setUp(self):
         self.trash_directories = Mock(spec=['trash_directories_or_user'])
         self.trash_directory = Mock(spec=['all_info_files'])
-        self.trashed_files = TrashedFiles(self.trash_directories,
+        self.logger = Mock(spec=[])
+        self.trashed_files = TrashedFiles(self.logger,
+                                          self.trash_directories,
                                           self.trash_directory,
                                           contents_of)
 
