@@ -54,7 +54,7 @@ class TrashPutCmd:
 
     def run(self, argv):
         program_name  = os.path.basename(argv[0])
-        parser = self.get_option_parser(program_name)
+        parser = get_option_parser(program_name, self.stdout, self.stderr)
         try:
             (options, args) = parser.parse_args(argv[1:])
 
@@ -71,62 +71,6 @@ class TrashPutCmd:
             self.trash_all(args, options.trashdir)
 
             return self.reporter.exit_code()
-
-    def get_option_parser(self, program_name):
-        from optparse import OptionParser, SUPPRESS_HELP
-
-        parser = OptionParser(prog=program_name,
-                              usage="%prog [OPTION]... FILE...",
-                              description="Put files in trash",
-                              version="%%prog %s" % version,
-                              formatter=NoWrapFormatter(),
-                              epilog="""\
-To remove a file whose name starts with a '-', for example '-foo',
-use one of these commands:
-
-    trash -- -foo
-
-    trash ./-foo
-
-Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
-
-        parser.add_option("-d", "--directory",
-                          action="store_true",
-                          help="ignored (for GNU rm compatibility)")
-        parser.add_option("-f", "--force",
-                          action="store_true",
-                          dest="ignore_missing",
-                          help="silently ignore nonexistent files")
-        parser.add_option("-i", "--interactive",
-                          action="store_true",
-                          help="ignored (for GNU rm compatibility)")
-        parser.add_option("-r", "-R", "--recursive",
-                          action="store_true",
-                          help="ignored (for GNU rm compatibility)")
-        parser.add_option("--trash-dir",
-                          type='string',
-                          action="store", dest='trashdir',
-                          help='use TRASHDIR as trash folder')
-        parser.add_option("-v",
-                          "--verbose",
-                          action="store_true",
-                          dest="verbose",
-                          help="explain what is being done")
-        original_print_help = parser.print_help
-        def patched_print_help():
-            original_print_help(self.stdout)
-        def patched_error(msg):
-            parser.print_usage(self.stderr)
-            parser.exit(2, "%s: error: %s\n" % (program_name, msg))
-        def patched_exit(status=0, msg=None):
-            if msg: self.stderr.write(msg)
-            import sys
-            sys.exit(status)
-
-        parser.print_help = patched_print_help
-        parser.error = patched_error
-        parser.exit = patched_exit
-        return parser
 
     def trash_all(self, args, user_trash_dir):
         for arg in args :
@@ -218,6 +162,62 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                                   volume_of_trash_dir):
         return volume_of_trash_dir == volume_of_file_to_be_trashed
 
+
+def get_option_parser(program_name, stdout, stderr):
+    from optparse import OptionParser
+
+    parser = OptionParser(prog=program_name,
+                          usage="%prog [OPTION]... FILE...",
+                          description="Put files in trash",
+                          version="%%prog %s" % version,
+                          formatter=NoWrapFormatter(),
+                          epilog="""\
+To remove a file whose name starts with a '-', for example '-foo',
+use one of these commands:
+
+    trash -- -foo
+
+    trash ./-foo
+
+Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
+
+    parser.add_option("-d", "--directory",
+                      action="store_true",
+                      help="ignored (for GNU rm compatibility)")
+    parser.add_option("-f", "--force",
+                      action="store_true",
+                      dest="ignore_missing",
+                      help="silently ignore nonexistent files")
+    parser.add_option("-i", "--interactive",
+                      action="store_true",
+                      help="ignored (for GNU rm compatibility)")
+    parser.add_option("-r", "-R", "--recursive",
+                      action="store_true",
+                      help="ignored (for GNU rm compatibility)")
+    parser.add_option("--trash-dir",
+                      type='string',
+                      action="store", dest='trashdir',
+                      help='use TRASHDIR as trash folder')
+    parser.add_option("-v",
+                      "--verbose",
+                      action="store_true",
+                      dest="verbose",
+                      help="explain what is being done")
+    original_print_help = parser.print_help
+    def patched_print_help():
+        original_print_help(stdout)
+    def patched_error(msg):
+        parser.print_usage(stderr)
+        parser.exit(2, "%s: error: %s\n" % (program_name, msg))
+    def patched_exit(status=0, msg=None):
+        if msg: stderr.write(msg)
+        import sys
+        sys.exit(status)
+
+    parser.print_help = patched_print_help
+    parser.error = patched_error
+    parser.exit = patched_exit
+    return parser
 
 class TrashDirectoriesFinder:
     def __init__(self, environ, getuid, volumes):
