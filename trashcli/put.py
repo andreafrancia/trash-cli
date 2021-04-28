@@ -54,9 +54,6 @@ class TrashPutCmd:
 
     def run(self, argv):
         program_name  = os.path.basename(argv[0])
-
-        logger = MyLogger(self.stderr, program_name)
-
         parser = self.get_option_parser(program_name)
         try:
             (options, args) = parser.parse_args(argv[1:])
@@ -66,7 +63,7 @@ class TrashPutCmd:
         except SystemExit as e:
             return e.code
         else:
-            if options.verbose: logger.be_verbose()
+            logger = MyLogger(self.stderr, program_name, options.verbose)
 
             self.ignore_missing = options.ignore_missing
             self.reporter = TrashPutReporter(logger, self.environ)
@@ -299,18 +296,20 @@ def describe(path):
     else:
         return 'entry'
 
+
 class MyLogger:
-    def __init__(self, stderr, program_name):
+    def __init__(self, stderr, program_name, verbose):
         self.program_name = program_name
         self.stderr=stderr
-        self.verbose = False
-    def be_verbose(self):
-        self.verbose = True
+        self.verbose = verbose
+
     def info(self,message):
         if self.verbose:
             self.emit(message)
+
     def warning(self,message):
         self.emit(message)
+
     def emit(self, message):
         self.stderr.write("%s: %s\n" % (self.program_name,message))
 
