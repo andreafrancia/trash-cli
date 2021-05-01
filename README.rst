@@ -141,11 +141,17 @@ The easy way
 Requirements:
 
  - Python 3 (Python 2.7 may work)
- - pip (use `apt-get install python-pip` on Debian)
+ - pip (use `apt-get install python-pip` on Debian,
+   use `apt install python3-pip` on Ubuntu)
 
 Installation command::
  
     pip install trash-cli
+
+Note: you may want add ~/.local/bin to the PATH:
+
+    echo 'export PATH="$PATH":~/.local/bin' >> ~/.bashrc
+    source ~/.bashrc # reload .bashrc
 
 From sources
 ~~~~~~~~~~~~
