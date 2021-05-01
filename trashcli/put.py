@@ -8,7 +8,6 @@ from .fstab import volumes
 from .trash import EX_OK, EX_IOERR, home_trash_dir, volume_trash_dir1, \
     volume_trash_dir2
 from .trash import backup_file_path_from
-from .trash import logger as trash_logger
 from .trash import version
 
 
@@ -63,11 +62,9 @@ class TrashPutCmd:
         except SystemExit as e:
             return e.code
         else:
-            logger = MyLogger(self.stderr, program_name, options.verbose)
-
+            self.logger = MyLogger(self.stderr, program_name, options.verbose)
             self.ignore_missing = options.ignore_missing
-            self.reporter = TrashPutReporter(logger, self.environ)
-            self.logger = trash_logger
+            self.reporter = TrashPutReporter(self.logger, self.environ)
             self.trash_all(args, options.trashdir)
 
             return self.reporter.exit_code()
@@ -200,7 +197,8 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                       help='use TRASHDIR as trash folder')
     parser.add_option("-v",
                       "--verbose",
-                      action="store_true",
+                      default=0,
+                      action="count",
                       dest="verbose",
                       help="explain what is being done")
     original_print_help = parser.print_help
@@ -303,8 +301,12 @@ class MyLogger:
         self.stderr=stderr
         self.verbose = verbose
 
+    def debug(self, message):
+        if self.verbose > 1:
+            self.emit(message)
+
     def info(self,message):
-        if self.verbose:
+        if self.verbose > 0:
             self.emit(message)
 
     def warning(self,message):

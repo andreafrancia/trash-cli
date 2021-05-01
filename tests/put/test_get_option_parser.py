@@ -10,9 +10,14 @@ class Test_get_option_parser(unittest.TestCase):
     def test(self):
         (options, args) = self.parser.parse_args([])
 
-        assert options.verbose == None
+        assert options.verbose == 0
 
     def test2(self):
         (options, args) = self.parser.parse_args(['-v'])
 
-        assert options.verbose == True
+        assert options.verbose == 1
+
+    def test3(self):
+        (options, args) = self.parser.parse_args(['-vv'])
+
+        assert options.verbose == 2
