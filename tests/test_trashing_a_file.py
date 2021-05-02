@@ -23,8 +23,7 @@ class TestTrashing(unittest.TestCase):
 
         self.trashdir.trash2('foo', self.now)
 
-        assert self.fs.mock_calls == [call.ensure_dir('~/.Trash/files', 0o700),
-                                      call.move('foo', 'files/')]
+        assert self.fs.mock_calls == [call.move('foo', 'files/')]
         assert self.info_dir.mock_calls == [
             call.persist_trash_info(
                 'foo',
@@ -38,8 +37,7 @@ class TestTrashing(unittest.TestCase):
         except IOError:
             pass
 
-        assert self.fs.mock_calls == [call.ensure_dir('~/.Trash/files', 448),
-                                      call.move('foo', 'files/'),
+        assert self.fs.mock_calls == [call.move('foo', 'files/'),
                                       call.remove_file('info_file')]
         assert self.info_dir.mock_calls == [
             call.persist_trash_info(

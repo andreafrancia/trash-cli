@@ -132,6 +132,7 @@ class TrashPutCmd:
                 if self._file_could_be_trashed_in(volume_of_file_to_be_trashed,
                                                   volume_of_trash_dir):
                     try:
+                        self.fs.ensure_dir(os.path.join(path, 'files'), 0o700)
                         trash_dir.trash2(file, self.now)
                         self.reporter.file_has_been_trashed_in_as(
                             file,
@@ -371,7 +372,6 @@ class TrashDirectoryForPut:
         self.info_dir = info_dir
 
     def trash2(self, path, now):
-        self.fs.ensure_dir(os.path.join(self.path, 'files'), 0o700)
         path = os.path.normpath(path)
 
         original_location = self.path_for_trash_info_for_file(path)
