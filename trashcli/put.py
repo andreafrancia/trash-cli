@@ -366,12 +366,12 @@ class TrashDirectoryForPut:
     def __init__(self, path, volume, fs, path_maker, info_dir):
         self.path = os.path.normpath(path)
         self.volume = volume
-        self.files_dir = os.path.join(self.path, 'files')
         self.fs = fs
         self.path_maker = path_maker
         self.info_dir = info_dir
 
     def trash2(self, path, now):
+        self.fs.ensure_dir(os.path.join(self.path, 'files'), 0o700)
         path = os.path.normpath(path)
 
         original_location = self.path_for_trash_info_for_file(path)
@@ -381,8 +381,6 @@ class TrashDirectoryForPut:
         trash_info_file = self.info_dir.persist_trash_info(basename, content)
 
         where_to_store_trashed_file = backup_file_path_from(trash_info_file)
-
-        self.ensure_files_dir_exists()
 
         try:
             self.fs.move(path, where_to_store_trashed_file)
@@ -394,9 +392,6 @@ class TrashDirectoryForPut:
         path_for_trash_info = OriginalLocation(parent_realpath,
                                                self.path_maker)
         return path_for_trash_info.for_file(path)
-
-    def ensure_files_dir_exists(self):
-        self.fs.ensure_dir(self.files_dir, 0o700)
 
 
 class InfoDir:
