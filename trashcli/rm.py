@@ -91,19 +91,16 @@ class ListTrashinfos:
         self.out = out
         self.file_reader = file_reader
         self.unable_to_parse_path = unable_to_parse_path
+
     def list_from_volume_trashdir(self, trashdir_path, volume):
-        self.volume = volume
         trashdir = TrashDir(self.file_reader)
         trashdir.open(trashdir_path, volume)
-        for trash_info in trashdir.list_trashinfo():
-            self._report_original_location(trash_info)
-
-    def _report_original_location(self, trashinfo_path):
-        trashinfo = self.file_reader.contents_of(trashinfo_path)
-        try:
-            path = parse_path(trashinfo)
-        except ParseError:
-            self.unable_to_parse_path(trashinfo_path)
-        else:
-            complete_path = os.path.join(self.volume, path)
-            self.out(complete_path, trashinfo_path)
+        for trashinfo_path in trashdir.list_trashinfo():
+            trashinfo = self.file_reader.contents_of(trashinfo_path)
+            try:
+                path = parse_path(trashinfo)
+            except ParseError:
+                self.unable_to_parse_path(trashinfo_path)
+            else:
+                complete_path = os.path.join(volume, path)
+                self.out(complete_path, trashinfo_path)
