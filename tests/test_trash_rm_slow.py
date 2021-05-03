@@ -61,33 +61,38 @@ class TestListing(unittest.TestCase):
     def setUp(self):
         self.tmp_dir = MyPath.make_temp_dir()
         self.trash_dir = self.tmp_dir / 'Trash'
-        self.out = Mock()
-        self.listing = ListTrashinfos(self.out,
+        self.found = []
+        self.listing = ListTrashinfos(self.track_trashinfo,
                                       FileSystemReader(),
                                       None)
         self.index = 0
+
+    def track_trashinfo(self, a, b):
+        self.found.append((a, b))
 
     def test_should_report_original_location(self):
         self.add_trashinfo('/foo')
 
         self.listing.list_from_volume_trashdir(self.trash_dir, '/')
 
-        self.out.assert_called_with('/foo', ANY)
+        assert self.found == [('/foo', '%s/info/0.trashinfo' % self.trash_dir)]
 
     def test_should_report_trashinfo_path(self):
-        self.add_trashinfo(trashinfo_path=self.trash_dir / 'info/a.trashinfo')
+        self.add_trashinfo(path='/foo', trashinfo_path=self.trash_dir / 'info/a.trashinfo')
 
         self.listing.list_from_volume_trashdir(self.trash_dir, '/')
 
-        self.out.assert_called_with(ANY, self.trash_dir / 'info/a.trashinfo')
+        assert self.found == [('/foo', '%s/info/a.trashinfo' % self.trash_dir)]
 
     def test_should_handle_volume_trashdir(self):
-        self.add_trashinfo(trashinfo_path=self.tmp_dir / '.Trash/123/info/a.trashinfo')
+        self.add_trashinfo(path='foo',
+                           trashinfo_path=self.tmp_dir / '.Trash/123/info/a.trashinfo')
 
         self.listing.list_from_volume_trashdir(self.tmp_dir / '.Trash/123',
                                                '/fake/vol')
 
-        self.out.assert_called_with(ANY, self.tmp_dir / '.Trash/123/info/a.trashinfo')
+        assert self.found == [('/fake/vol/foo',
+                               self.tmp_dir / '.Trash/123/info/a.trashinfo')]
 
     def test_should_absolutize_relative_path_for_volume_trashdir(self):
         self.add_trashinfo(path='foo/bar', trashdir=self.tmp_dir / '.Trash/501')
@@ -95,7 +100,8 @@ class TestListing(unittest.TestCase):
         self.listing.list_from_volume_trashdir(self.tmp_dir / '.Trash/501',
                                                '/fake/vol')
 
-        self.out.assert_called_with('/fake/vol/foo/bar', ANY)
+        assert self.found == [('/fake/vol/foo/bar',
+                               self.tmp_dir / '.Trash/501/info/0.trashinfo')]
 
     def add_trashinfo(self, path='unspecified/original/location',
                             trashinfo_path=None,
@@ -103,6 +109,7 @@ class TestListing(unittest.TestCase):
         trashdir = trashdir or self.trash_dir
         trashinfo_path = trashinfo_path or self._trashinfo_path(trashdir)
         make_file(trashinfo_path, a_trashinfo_with_path(path))
+
     def _trashinfo_path(self, trashdir):
         path = '%s/info/%s.trashinfo' % (trashdir, self.index)
         self.index +=1
