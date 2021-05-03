@@ -95,7 +95,9 @@ class ListTrashinfos:
         self.volume = volume
         trashdir = TrashDir(self.file_reader)
         trashdir.open(trashdir_path, volume)
-        trashdir.each_trashinfo(self._report_original_location)
+        for trash_info in trashdir.list_trashinfo():
+            self._report_original_location(trash_info)
+
     def _report_original_location(self, trashinfo_path):
         trashinfo = self.file_reader.contents_of(trashinfo_path)
         try:

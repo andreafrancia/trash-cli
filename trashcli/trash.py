@@ -157,8 +157,10 @@ class Harvester:
         self.on_volume(volume_path)
         trashdir = TrashDir(self.file_reader)
         trashdir.open(trash_dir_path, volume_path)
-        trashdir.each_trashinfo(self.on_trashinfo_found)
-        trashdir.each_orphan(self.on_orphan_found)
+        for trash_info in trashdir.list_trashinfo():
+            self.on_trashinfo_found(trash_info)
+        for orphan in trashdir.list_orphans():
+            self.on_orphan_found(orphan)
 
 
 class HelpPrinter:
@@ -245,17 +247,21 @@ class TrashDir:
         self.volume_path    = volume_path
         self.files_dir      = Dir(self._files_dir(),
                                   self.file_reader.entries_if_dir_exists)
-    def each_orphan(self, action):
+
+    def list_orphans(self):
         for entry in self.files_dir.entries():
             trashinfo_path = self._trashinfo_path_from_file(entry)
             file_path = self.files_dir.full_path(entry)
-            if not self.file_reader.exists(trashinfo_path): action(file_path)
+            if not self.file_reader.exists(trashinfo_path):
+                yield file_path
+
     def _entries_if_dir_exists(self, path):
         return self.file_reader.entries_if_dir_exists(path)
 
-    def each_trashinfo(self, action):
+    def list_trashinfo(self):
         for entry in self._trashinfo_entries():
-            action(os.path.join(self._info_dir(), entry))
+            yield os.path.join(self._info_dir(), entry)
+
     def _info_dir(self):
         return os.path.join(self.trash_dir_path, 'info')
     def _trashinfo_path_from_file(self, file_entry):
