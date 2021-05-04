@@ -75,9 +75,12 @@ def main():
 class Filter:
     def __init__(self, delete):
         self.delete = delete
+
     def use_pattern(self, pattern):
         self.pattern = pattern
-    def delete_if_matches(self, original_location, info_file):
+
+    def delete_if_matches(self, trashed_file):
+        original_location, info_file = trashed_file
         if self.pattern[0] == '/':
             if self.pattern == original_location:
                 self.delete(info_file)
@@ -85,6 +88,7 @@ class Filter:
             basename = os.path.basename(original_location)
             if fnmatch.fnmatchcase(basename, self.pattern):
                 self.delete(info_file)
+
 
 class ListTrashinfos:
     def __init__(self, out, file_reader, unable_to_parse_path):
@@ -103,4 +107,4 @@ class ListTrashinfos:
                 self.unable_to_parse_path(trashinfo_path)
             else:
                 complete_path = os.path.join(volume, path)
-                self.out(complete_path, trashinfo_path)
+                self.out((complete_path, trashinfo_path))

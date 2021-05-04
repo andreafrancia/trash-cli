@@ -62,13 +62,10 @@ class TestListing(unittest.TestCase):
         self.tmp_dir = MyPath.make_temp_dir()
         self.trash_dir = self.tmp_dir / 'Trash'
         self.found = []
-        self.listing = ListTrashinfos(self.track_trashinfo,
+        self.listing = ListTrashinfos(self.found.append,
                                       FileSystemReader(),
                                       None)
         self.index = 0
-
-    def track_trashinfo(self, a, b):
-        self.found.append((a, b))
 
     def test_should_report_original_location(self):
         self.add_trashinfo('/foo')
