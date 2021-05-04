@@ -37,48 +37,48 @@ class TestTrashRmCmdRun(unittest.TestCase):
 class TestTrashRmCmd(unittest.TestCase):
 
     def setUp(self):
-        self.delete_trashinfo_and_backup_copy = Mock()
-        self.cmd = Filter(self.delete_trashinfo_and_backup_copy)
+        self.deleted = []
 
     def test_a_star_matches_all(self):
+        self.cmd = Filter(self.deleted.append, '*')
 
-        self.cmd.use_pattern('*')
         self.cmd.delete_if_matches(('/foo', 'info/foo'))
         self.cmd.delete_if_matches(('/bar', 'info/bar'))
 
         six.assertCountEqual(self, [
-            call('info/foo'),
-            call('info/bar'),
-        ], self.delete_trashinfo_and_backup_copy.mock_calls)
+            'info/foo',
+            'info/bar',
+        ], self.deleted)
 
     def test_basename_matches(self):
+        self.cmd = Filter(self.deleted.append, 'foo')
 
-        self.cmd.use_pattern('foo')
         self.cmd.delete_if_matches(('/foo', 'info/foo')),
         self.cmd.delete_if_matches(('/bar', 'info/bar'))
 
         six.assertCountEqual(self, [
-            call('info/foo'),
-        ], self.delete_trashinfo_and_backup_copy.mock_calls)
+            'info/foo',
+        ], self.deleted)
 
     def test_example_with_star_dot_o(self):
+        self.cmd = Filter(self.deleted.append, '*.o')
 
-        self.cmd.use_pattern('*.o')
         self.cmd.delete_if_matches(('/foo.h', 'info/foo.h')),
         self.cmd.delete_if_matches(('/foo.c', 'info/foo.c')),
         self.cmd.delete_if_matches(('/foo.o', 'info/foo.o')),
         self.cmd.delete_if_matches(('/bar.o', 'info/bar.o'))
 
         six.assertCountEqual(self, [
-            call('info/foo.o'),
-            call('info/bar.o'),
-        ], self.delete_trashinfo_and_backup_copy.mock_calls)
+            'info/foo.o',
+            'info/bar.o',
+        ], self.deleted)
 
     def test_absolute_pattern(self):
-        self.cmd.use_pattern('/foo/bar.baz')
+        self.cmd = Filter(self.deleted.append, '/foo/bar.baz')
+
         self.cmd.delete_if_matches(('/foo/bar.baz', '1')),
         self.cmd.delete_if_matches(('/foo/bar', '2')),
 
         six.assertCountEqual(self, [
-            call('1'),
-        ], self.delete_trashinfo_and_backup_copy.mock_calls)
+            '1',
+        ], self.deleted)

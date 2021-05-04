@@ -33,8 +33,8 @@ class RmCmd:
             return
 
         trashcan = CleanableTrashcan(FileRemover())
-        cmd = Filter(trashcan.delete_trashinfo_and_backup_copy)
-        cmd.use_pattern(args[0])
+        pattern = args[0]
+        cmd = Filter(trashcan.delete_trashinfo_and_backup_copy, pattern)
 
         listing = ListTrashinfos(cmd.delete_if_matches,
                                  self.file_reader,
@@ -73,10 +73,8 @@ def main():
     return cmd.exit_code
 
 class Filter:
-    def __init__(self, delete):
+    def __init__(self, delete, pattern):
         self.delete = delete
-
-    def use_pattern(self, pattern):
         self.pattern = pattern
 
     def delete_if_matches(self, trashed_file):
