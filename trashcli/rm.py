@@ -36,9 +36,7 @@ class RmCmd:
         pattern = args[0]
         cmd = Filter(trashcan.delete_trashinfo_and_backup_copy, pattern)
 
-        listing = ListTrashinfos(cmd.delete_if_matches,
-                                 self.file_reader,
-                                 self.unable_to_parse_path)
+        listing = ListTrashinfos(self.file_reader)
 
         scanner = TrashDirsScanner(self.environ,
                                    self.getuid,
@@ -48,7 +46,11 @@ class RmCmd:
         for event, args in scanner.scan_trash_dirs():
             if event == TrashDirsScanner.Found:
                 path, volume = args
-                listing.list_from_volume_trashdir(path, volume)
+                for type, arg in listing.list_from_volume_trashdir(path, volume):
+                    if type == 'unable_to_parse_path':
+                        self.unable_to_parse_path(arg)
+                    elif type == 'trashed_file':
+                        cmd.delete_if_matches(arg)
 
     def unable_to_parse_path(self, trashinfo):
         self.report_error('{}: unable to parse \'Path\''.format(trashinfo))
@@ -89,10 +91,8 @@ class Filter:
 
 
 class ListTrashinfos:
-    def __init__(self, out, file_reader, unable_to_parse_path):
-        self.out = out
+    def __init__(self, file_reader):
         self.file_reader = file_reader
-        self.unable_to_parse_path = unable_to_parse_path
 
     def list_from_volume_trashdir(self, trashdir_path, volume):
         trashdir = TrashDir(self.file_reader)
@@ -102,7 +102,7 @@ class ListTrashinfos:
             try:
                 path = parse_path(trashinfo)
             except ParseError:
-                self.unable_to_parse_path(trashinfo_path)
+                yield 'unable_to_parse_path', trashinfo_path
             else:
                 complete_path = os.path.join(volume, path)
-                self.out((complete_path, trashinfo_path))
+                yield 'trashed_file', (complete_path, trashinfo_path)
