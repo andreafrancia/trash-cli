@@ -3,29 +3,26 @@ import unittest
 
 from trashcli.trash import TrashDir
 
+
 class TestTrashDir_finding_orphans(unittest.TestCase):
+    def setUp(self):
+        self.fs = FakeFileSystem()
+        self.trash_dir = TrashDir(self.fs)
+
     def test(self):
         self.fs.create_fake_file('/info/foo.trashinfo')
 
-        self.find_orphan()
+        result = list(self.trash_dir.list_orphans('/'))
 
-        assert [] == self.orphan_found
+        assert [] == result
 
     def test2(self):
         self.fs.create_fake_file('/files/foo')
 
-        self.find_orphan()
+        result = list(self.trash_dir.list_orphans('/'))
 
-        assert ['/files/foo'] == self.orphan_found
+        assert ['/files/foo'] == result
 
-    def setUp(self):
-        self.orphan_found=[]
-        self.fs = FakeFileSystem()
-        self.trashdir=TrashDir(self.fs)
-
-    def find_orphan(self):
-        for orphan in self.trashdir.list_orphans('/'):
-            self.orphan_found.append(orphan)
 
 class FakeFileSystem:
     def __init__(self):
