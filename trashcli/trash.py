@@ -230,46 +230,33 @@ class TopTrashDirRules:
         else:
             return TopTrashDirValidationResult.Valid
 
-class Dir:
-    def __init__(self, path, entries_if_dir_exists):
-        self.path                  = path
-        self.entries_if_dir_exists = entries_if_dir_exists
-    def entries(self):
-        return self.entries_if_dir_exists(self.path)
-    def full_path(self, entry):
-        return os.path.join(self.path, entry)
-
 class TrashDir:
     def __init__(self, file_reader):
         self.file_reader    = file_reader
     def open(self, path, volume_path):
-        self.trash_dir_path = path
+        self.path = path
         self.volume_path    = volume_path
-        self.files_dir      = Dir(self._files_dir(),
-                                  self.file_reader.entries_if_dir_exists)
 
     def list_orphans(self):
-        for entry in self.files_dir.entries():
+        path = os.path.join(self.path, 'files')
+        for entry in self.file_reader.entries_if_dir_exists(path):
             trashinfo_path = self._trashinfo_path_from_file(entry)
-            file_path = self.files_dir.full_path(entry)
+            file_path = os.path.join(path, entry)
             if not self.file_reader.exists(trashinfo_path):
                 yield file_path
-
-    def _entries_if_dir_exists(self, path):
-        return self.file_reader.entries_if_dir_exists(path)
 
     def list_trashinfo(self):
         for entry in self._trashinfo_entries():
             yield os.path.join(self._info_dir(), entry)
 
     def _info_dir(self):
-        return os.path.join(self.trash_dir_path, 'info')
-    def _trashinfo_path_from_file(self, file_entry):
-        return os.path.join(self._info_dir(), file_entry + '.trashinfo')
-    def _files_dir(self):
-        return os.path.join(self.trash_dir_path, 'files')
+        return os.path.join(self.path, 'info')
+    def _trashinfo_path_from_file(self, entry):
+        return os.path.join(self._info_dir(), entry + '.trashinfo')
+
     def _trashinfo_entries(self, on_non_trashinfo=do_nothing):
-        for entry in self._entries_if_dir_exists(self._info_dir()):
+        info_dir = os.path.join(self.path, 'info')
+        for entry in self.file_reader.entries_if_dir_exists(info_dir):
             if entry.endswith('.trashinfo'):
                 yield entry
             else:
