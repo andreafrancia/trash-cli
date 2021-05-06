@@ -149,12 +149,10 @@ class TrashDirsScanner:
 class Harvester:
     def __init__(self, file_reader):
         self.file_reader = file_reader
-
         self.on_orphan_found                               = do_nothing
         self.on_trashinfo_found                            = do_nothing
-        self.on_volume                                     = do_nothing
+
     def analize_trash_directory(self, trash_dir_path, volume_path):
-        self.on_volume(volume_path)
         trashdir = TrashDir(self.file_reader)
         for trash_info in trashdir.list_trashinfo(trash_dir_path):
             self.on_trashinfo_found(trash_info)

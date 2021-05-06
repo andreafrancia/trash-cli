@@ -3,7 +3,7 @@ import os
 
 from .fs import FileSystemReader
 from .fstab import volume_of
-from .trash import version
+from .trash import version, TrashDir
 from .trash import TopTrashDirRules
 from .trash import TrashDirsScanner
 from .trash import Harvester
@@ -54,10 +54,6 @@ class ListCmd:
             self.list_trash(parsed.trash_dirs)
 
     def list_trash(self, user_specified_trash_dirs):
-        harvester = Harvester(self.file_reader)
-        harvester.on_volume = self.output.set_volume_path
-        harvester.on_trashinfo_found = self._print_trashinfo
-
         trashdirs_scanner = TrashDirsScanner(self.environ,
                                              self.getuid,
                                              self.list_volumes,
@@ -67,7 +63,9 @@ class ListCmd:
         for event, args in trash_dirs:
             if event == TrashDirsScanner.Found:
                 path, volume = args
-                harvester.analize_trash_directory(path, volume)
+                trash_dir = TrashDir(self.file_reader)
+                for trash_info in trash_dir.list_trashinfo(path):
+                    self._print_trashinfo(volume, trash_info)
             elif event == TrashDirsScanner.SkippedBecauseParentNotSticky:
                 path, = args
                 self.output.top_trashdir_skipped_because_parent_not_sticky(path)
@@ -75,7 +73,7 @@ class ListCmd:
                 path, = args
                 self.output.top_trashdir_skipped_because_parent_is_symlink(path)
 
-    def _print_trashinfo(self, path):
+    def _print_trashinfo(self, volume, path):
         try:
             contents = self.contents_of(path)
         except IOError as e :
@@ -87,7 +85,7 @@ class ListCmd:
             except ParseError:
                 self.output.print_parse_path_error(path)
             else:
-                self.output.print_entry(deletion_date, path)
+                self.output.print_entry(volume, deletion_date, path)
 
 
 def description(program_name, printer):
@@ -137,9 +135,7 @@ class ListCmdOutput:
     def top_trashdir_skipped_because_parent_is_symlink(self, trashdir):
         self.error("TrashDir skipped because parent is symlink: %s"
                 % trashdir)
-    def set_volume_path(self, volume_path):
-        self.volume_path = volume_path
-    def print_entry(self, maybe_deletion_date, relative_location):
-        import os
-        original_location = os.path.join(self.volume_path, relative_location)
+
+    def print_entry(self, volume, maybe_deletion_date, relative_location):
+        original_location = os.path.join(volume, relative_location)
         self.println("%s %s" %(maybe_deletion_date, original_location))
