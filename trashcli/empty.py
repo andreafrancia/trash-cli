@@ -1,6 +1,5 @@
-from .trash import TopTrashDirRules
+from .trash import TopTrashDirRules, TrashDir
 from .trash import TrashDirsScanner
-from .trash import Harvester
 from .trash import EX_OK
 from .trash import Parser
 from .trash import PrintHelp
@@ -106,10 +105,11 @@ class EmptyCmd:
                 self.delete_all_things_under_trash_dir(path, volume)
 
     def delete_all_things_under_trash_dir(self, trash_dir_path, volume_path):
-        harvester = Harvester(self.file_reader)
-        harvester.on_trashinfo_found = self.delete_trashinfo_and_backup_copy
-        harvester.on_orphan_found = self.delete_orphan
-        harvester.analize_trash_directory(trash_dir_path, volume_path)
+        trash_dir = TrashDir(self.file_reader)
+        for trash_info in trash_dir.list_trashinfo(trash_dir_path):
+            self.delete_trashinfo_and_backup_copy(trash_info)
+        for orphan in trash_dir.list_orphans(trash_dir_path):
+            self.delete_orphan(orphan)
 
     def delete_trashinfo_and_backup_copy(self, trashinfo_path):
         trashcan = self.make_trashcan()

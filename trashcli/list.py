@@ -6,7 +6,6 @@ from .fstab import volume_of
 from .trash import version, TrashDir
 from .trash import TopTrashDirRules
 from .trash import TrashDirsScanner
-from .trash import Harvester
 from .trash import PrintVersion
 from .trash import parse_deletion_date
 from .trash import ParseError
