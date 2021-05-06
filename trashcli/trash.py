@@ -238,29 +238,19 @@ class TrashDir:
         self.volume_path    = volume_path
 
     def list_orphans(self):
-        path = os.path.join(self.path, 'files')
-        for entry in self.file_reader.entries_if_dir_exists(path):
-            trashinfo_path = self._trashinfo_path_from_file(entry)
-            file_path = os.path.join(path, entry)
+        info_dir = os.path.join(self.path, 'info')
+        files_dir = os.path.join(self.path, 'files')
+        for entry in self.file_reader.entries_if_dir_exists(files_dir):
+            trashinfo_path = os.path.join(info_dir, entry + '.trashinfo')
+            file_path = os.path.join(files_dir, entry)
             if not self.file_reader.exists(trashinfo_path):
                 yield file_path
 
     def list_trashinfo(self):
-        for entry in self._trashinfo_entries():
-            yield os.path.join(self._info_dir(), entry)
-
-    def _info_dir(self):
-        return os.path.join(self.path, 'info')
-    def _trashinfo_path_from_file(self, entry):
-        return os.path.join(self._info_dir(), entry + '.trashinfo')
-
-    def _trashinfo_entries(self, on_non_trashinfo=do_nothing):
         info_dir = os.path.join(self.path, 'info')
         for entry in self.file_reader.entries_if_dir_exists(info_dir):
             if entry.endswith('.trashinfo'):
-                yield entry
-            else:
-                on_non_trashinfo()
+                yield os.path.join(info_dir, entry)
 
 class ParseError(ValueError): pass
 
