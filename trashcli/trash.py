@@ -156,10 +156,9 @@ class Harvester:
     def analize_trash_directory(self, trash_dir_path, volume_path):
         self.on_volume(volume_path)
         trashdir = TrashDir(self.file_reader)
-        trashdir.open(trash_dir_path, volume_path)
-        for trash_info in trashdir.list_trashinfo():
+        for trash_info in trashdir.list_trashinfo(trash_dir_path):
             self.on_trashinfo_found(trash_info)
-        for orphan in trashdir.list_orphans():
+        for orphan in trashdir.list_orphans(trash_dir_path):
             self.on_orphan_found(orphan)
 
 
@@ -230,24 +229,23 @@ class TopTrashDirRules:
         else:
             return TopTrashDirValidationResult.Valid
 
-class TrashDir:
-    def __init__(self, file_reader):
-        self.file_reader    = file_reader
-    def open(self, path, volume_path):
-        self.path = path
-        self.volume_path    = volume_path
 
-    def list_orphans(self):
-        info_dir = os.path.join(self.path, 'info')
-        files_dir = os.path.join(self.path, 'files')
+class TrashDir:
+
+    def __init__(self, file_reader):
+        self.file_reader = file_reader
+
+    def list_orphans(self, path):
+        info_dir = os.path.join(path, 'info')
+        files_dir = os.path.join(path, 'files')
         for entry in self.file_reader.entries_if_dir_exists(files_dir):
             trashinfo_path = os.path.join(info_dir, entry + '.trashinfo')
             file_path = os.path.join(files_dir, entry)
             if not self.file_reader.exists(trashinfo_path):
                 yield file_path
 
-    def list_trashinfo(self):
-        info_dir = os.path.join(self.path, 'info')
+    def list_trashinfo(self, path):
+        info_dir = os.path.join(path, 'info')
         for entry in self.file_reader.entries_if_dir_exists(info_dir):
             if entry.endswith('.trashinfo'):
                 yield os.path.join(info_dir, entry)

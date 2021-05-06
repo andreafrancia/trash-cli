@@ -96,8 +96,7 @@ class ListTrashinfos:
 
     def list_from_volume_trashdir(self, trashdir_path, volume):
         trashdir = TrashDir(self.file_reader)
-        trashdir.open(trashdir_path, volume)
-        for trashinfo_path in trashdir.list_trashinfo():
+        for trashinfo_path in trashdir.list_trashinfo(trashdir_path):
             trashinfo = self.file_reader.contents_of(trashinfo_path)
             try:
                 path = parse_path(trashinfo)

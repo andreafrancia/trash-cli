@@ -22,10 +22,9 @@ class TestTrashDir_finding_orphans(unittest.TestCase):
         self.orphan_found=[]
         self.fs = FakeFileSystem()
         self.trashdir=TrashDir(self.fs)
-        self.trashdir.open('/', None)
 
     def find_orphan(self):
-        for orphan in self.trashdir.list_orphans():
+        for orphan in self.trashdir.list_orphans('/'):
             self.orphan_found.append(orphan)
 
 class FakeFileSystem:
