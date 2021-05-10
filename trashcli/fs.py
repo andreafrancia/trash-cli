@@ -91,3 +91,6 @@ def write_file(name, contents):
 def make_file_executable(path):
     os.chmod(path, os.stat(path).st_mode | stat.S_IXUSR)
 
+
+def file_size(path):
+    return os.stat(path).st_size
