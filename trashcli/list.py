@@ -1,9 +1,9 @@
 import argparse
 import os
 
-from .fs import FileSystemReader
+from .fs import FileSystemReader, file_size
 from .fstab import volume_of
-from .trash import version, TrashDir
+from .trash import version, TrashDir, path_of_backup_copy
 from .trash import TopTrashDirRules
 from .trash import TrashDirsScanner
 from .trash import PrintVersion
@@ -49,9 +49,13 @@ class ListCmd:
             version_printer = PrintVersion(self.out, self.version)
             version_printer.print_version(argv[0])
         else:
-            self.list_trash(parsed.trash_dirs)
+            extract_attribute_func = {
+                'deletion_date':extract_deletion_date,
+                'size': extract_size,
+            }[parsed.attribute_to_print]
+            self.list_trash(parsed.trash_dirs, extract_attribute_func)
 
-    def list_trash(self, user_specified_trash_dirs):
+    def list_trash(self, user_specified_trash_dirs, extract_attribute_func):
         trashdirs_scanner = TrashDirsScanner(self.environ,
                                              self.getuid,
                                              self.list_volumes,
@@ -63,7 +67,7 @@ class ListCmd:
                 path, volume = args
                 trash_dir = TrashDir(self.file_reader)
                 for trash_info in trash_dir.list_trashinfo(path):
-                    self._print_trashinfo(volume, trash_info)
+                    self._print_trashinfo(volume, trash_info, extract_attribute_func)
             elif event == TrashDirsScanner.SkippedBecauseParentNotSticky:
                 path, = args
                 self.output.top_trashdir_skipped_because_parent_not_sticky(path)
@@ -71,19 +75,30 @@ class ListCmd:
                 path, = args
                 self.output.top_trashdir_skipped_because_parent_is_symlink(path)
 
-    def _print_trashinfo(self, volume, path):
+    def _print_trashinfo(self, volume, trashinfo_path, extract_attribute_func):
         try:
-            contents = self.file_reader.contents_of(path)
+            contents = self.file_reader.contents_of(trashinfo_path)
         except IOError as e :
             self.output.print_read_error(e)
         else:
-            deletion_date = parse_deletion_date(contents) or unknown_date()
             try:
-                path = parse_path(contents)
+                relative_location = parse_path(contents)
             except ParseError:
-                self.output.print_parse_path_error(path)
+                self.output.print_parse_path_error(trashinfo_path)
             else:
-                self.output.print_entry(volume, deletion_date, path)
+                deletion_date = extract_attribute_func(trashinfo_path, contents)
+                original_location = os.path.join(volume, relative_location)
+                info = (str(deletion_date), original_location)
+                self.output.print_entry(info)
+
+
+def extract_deletion_date(_trashinfo_path, contents):
+    return parse_deletion_date(contents) or unknown_date()
+
+
+def extract_size(trashinfo_path, _contents):
+    backup_copy = path_of_backup_copy(trashinfo_path)
+    return file_size(backup_copy)
 
 
 def description(program_name, printer):
@@ -112,6 +127,10 @@ def maker_parser(prog):
     parser.add_argument('--trash-dir', action='append', default=[],
                         dest='trash_dirs',
                         help='specify the trash directory to use')
+    parser.add_argument('--size', action='store_const', default='deletion_date',
+                        const='size',
+                        dest='attribute_to_print',
+                        help=argparse.SUPPRESS)
     return parser
 
 
@@ -134,6 +153,5 @@ class ListCmdOutput:
         self.error("TrashDir skipped because parent is symlink: %s"
                 % trashdir)
 
-    def print_entry(self, volume, maybe_deletion_date, relative_location):
-        original_location = os.path.join(volume, relative_location)
-        self.println("%s %s" %(maybe_deletion_date, original_location))
+    def print_entry(self, info):
+        self.println(" ".join(info))
