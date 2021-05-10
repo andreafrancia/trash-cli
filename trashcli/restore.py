@@ -5,7 +5,7 @@ from .list_mount_points import os_mount_points
 from .trash import version, home_trash_dir, volume_trash_dir1, volume_trash_dir2
 from .fstab import volume_of
 from .fs import contents_of, list_files_in_dir
-from .trash import backup_file_path_from
+from .trash import path_of_backup_copy
 from . import fs, trash
 
 try:
@@ -166,7 +166,7 @@ class TrashedFiles:
                                                      volume)
                         original_location = trash_info.original_location()
                         deletion_date     = trash_info.deletion_date()
-                        backup_file_path  = backup_file_path_from(info_file)
+                        backup_file_path = path_of_backup_copy(info_file)
                         trashedfile = TrashedFile(original_location,
                                                   deletion_date,
                                                   info_file,

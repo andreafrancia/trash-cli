@@ -7,7 +7,7 @@ from datetime import datetime
 from .fstab import volumes
 from .trash import EX_OK, EX_IOERR, home_trash_dir, volume_trash_dir1, \
     volume_trash_dir2
-from .trash import backup_file_path_from
+from .trash import path_of_backup_copy
 from .trash import version
 
 
@@ -380,7 +380,7 @@ class TrashDirectoryForPut:
         content = format_trashinfo(original_location, now())
         trash_info_file = self.info_dir.persist_trash_info(basename, content)
 
-        where_to_store_trashed_file = backup_file_path_from(trash_info_file)
+        where_to_store_trashed_file = path_of_backup_copy(trash_info_file)
 
         try:
             self.fs.move(path, where_to_store_trashed_file)

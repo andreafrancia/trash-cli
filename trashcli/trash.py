@@ -15,15 +15,12 @@ EX_OK    = getattr(os, 'EX_OK'   ,  0)
 EX_USAGE = getattr(os, 'EX_USAGE', 64)
 EX_IOERR = getattr(os, 'EX_IOERR', 74)
 
-import os
 
-def backup_file_path_from(trashinfo_file_path):
-    trashinfo_basename = os.path.basename(trashinfo_file_path)
-    backupfile_basename = trashinfo_basename[:-len('.trashinfo')]
-    info_dir = os.path.dirname(trashinfo_file_path)
-    trash_dir = os.path.dirname(info_dir)
-    files_dir = os.path.join(trash_dir, 'files')
-    return os.path.join(files_dir, backupfile_basename)
+def path_of_backup_copy(trashinfo_path):
+    trash_dir = os.path.dirname(os.path.dirname(trashinfo_path))
+    basename = os.path.basename(trashinfo_path)[:-len('.trashinfo')]
+    return os.path.join(trash_dir, 'files', basename)
+
 
 def home_trash_dir_path(environ):
     if 'XDG_DATA_HOME' in environ:
