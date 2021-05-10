@@ -40,7 +40,6 @@ class ListCmd:
         self.list_volumes = list_volumes
         self.getuid       = getuid
         self.file_reader  = file_reader
-        self.contents_of  = file_reader.contents_of
         self.version      = version
 
     def run(self, *argv):
@@ -74,7 +73,7 @@ class ListCmd:
 
     def _print_trashinfo(self, volume, path):
         try:
-            contents = self.contents_of(path)
+            contents = self.file_reader.contents_of(path)
         except IOError as e :
             self.output.print_read_error(e)
         else:
