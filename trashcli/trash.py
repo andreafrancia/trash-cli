@@ -1,7 +1,7 @@
 # Copyright (C) 2007-2011 Andrea Francia Trivolzio(PV) Italy
 from __future__ import absolute_import
 
-version='0.21.4.18'
+version='0.21.5.11'
 
 import os
 import logging
