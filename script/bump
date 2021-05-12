@@ -9,3 +9,5 @@ from trashcli import bump
 
 new_version = bump.version_from_date(datetime.date.today())
 bump.save_new_version(new_version, os.path.join(root, 'trashcli', 'trash.py'))
+
+os.system("git commit -m \"Bump version to '%s'\" -a" % new_version)

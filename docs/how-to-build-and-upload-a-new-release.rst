@@ -3,7 +3,10 @@ How to build a release
 
 Update the version number::
 
-    vim trashcli/trash.py
+    script/bump
+
+Load the version in an environment variable::
+
     version="$(python setup.py --version)"
 
 Run all tests::
