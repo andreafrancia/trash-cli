@@ -1,4 +1,4 @@
-master:
+0.21.5.11:
  - trash-put also accept -vv for enabling debug prints
  - add (hidden and undocumented) --size option to trash-list
 
