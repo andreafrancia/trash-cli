@@ -132,6 +132,15 @@ File trashed from the home partition will be moved here::
 
     ~/.local/share/Trash/
 
+How to auto delete files older that 30 days?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Run this::
+
+    (crontab -l ; echo "@daily $(which trash-empty) 30") | crontab -
+
+This will update your crontab file with a `trash-empty` command that runs daily
+and removes files older than 30 days. To review your crontab use: `crontab -l`
+
 Installation
 ------------
 
