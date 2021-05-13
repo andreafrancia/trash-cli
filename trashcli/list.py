@@ -49,13 +49,13 @@ class ListCmd:
             version_printer = PrintVersion(self.out, self.version)
             version_printer.print_version(argv[0])
         else:
-            extract_attribute_func = {
-                'deletion_date':extract_deletion_date,
-                'size': extract_size,
+            extractor = {
+                'deletion_date':DeletionDateExtractor(),
+                'size': SizeExtractor(),
             }[parsed.attribute_to_print]
-            self.list_trash(parsed.trash_dirs, extract_attribute_func)
+            self.list_trash(parsed.trash_dirs, extractor)
 
-    def list_trash(self, user_specified_trash_dirs, extract_attribute_func):
+    def list_trash(self, user_specified_trash_dirs, extractor):
         trashdirs_scanner = TrashDirsScanner(self.environ,
                                              self.getuid,
                                              self.list_volumes,
@@ -67,7 +67,7 @@ class ListCmd:
                 path, volume = args
                 trash_dir = TrashDir(self.file_reader)
                 for trash_info in trash_dir.list_trashinfo(path):
-                    self._print_trashinfo(volume, trash_info, extract_attribute_func)
+                    self._print_trashinfo(volume, trash_info, extractor)
             elif event == TrashDirsScanner.SkippedBecauseParentNotSticky:
                 path, = args
                 self.output.top_trashdir_skipped_because_parent_not_sticky(path)
@@ -75,7 +75,7 @@ class ListCmd:
                 path, = args
                 self.output.top_trashdir_skipped_because_parent_is_symlink(path)
 
-    def _print_trashinfo(self, volume, trashinfo_path, extract_attribute_func):
+    def _print_trashinfo(self, volume, trashinfo_path, extractor):
         try:
             contents = self.file_reader.contents_of(trashinfo_path)
         except IOError as e :
@@ -86,19 +86,21 @@ class ListCmd:
             except ParseError:
                 self.output.print_parse_path_error(trashinfo_path)
             else:
-                deletion_date = extract_attribute_func(trashinfo_path, contents)
+                deletion_date = extractor.extract_attribute(trashinfo_path, contents)
                 original_location = os.path.join(volume, relative_location)
                 info = (str(deletion_date), original_location)
                 self.output.print_entry(info)
 
 
-def extract_deletion_date(_trashinfo_path, contents):
-    return parse_deletion_date(contents) or unknown_date()
+class DeletionDateExtractor:
+    def extract_attribute(self, _trashinfo_path, contents):
+        return parse_deletion_date(contents) or unknown_date()
 
 
-def extract_size(trashinfo_path, _contents):
-    backup_copy = path_of_backup_copy(trashinfo_path)
-    return file_size(backup_copy)
+class SizeExtractor:
+    def extract_attribute(self, trashinfo_path, _contents):
+        backup_copy = path_of_backup_copy(trashinfo_path)
+        return file_size(backup_copy)
 
 
 def description(program_name, printer):
