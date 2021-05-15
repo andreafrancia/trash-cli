@@ -113,12 +113,12 @@ class Test_describe_trash_list(Setup):
             self.user.error())
 
     def test_should_warn_about_unexistent_path_entry(self):
-        self.user.home_trashdir.add_trashinfo(a_trashinfo_without_path())
+        self.user.home_trashdir.add_trashinfo(a_trashinfo_without_path(), "foo")
 
         self.user.run_trash_list()
 
         assert_equals_with_unidiff(
-            "Parse Error: %(XDG_DATA_HOME)s/Trash/info/1.trashinfo: "
+            "Parse Error: %(XDG_DATA_HOME)s/Trash/info/foo.trashinfo: "
             "Unable to parse Path.\n" % {
                 'XDG_DATA_HOME': self.xdg_data_home},
             self.user.error())

@@ -7,7 +7,6 @@ class FakeTrashDir:
     def __init__(self, path):
         self.info_path = os.path.join(path, 'info')
         self.files_path = os.path.join(path, 'files')
-        self.number = 1
 
     def add_unreadable_trashinfo(self, basename):
         path = self.a_trashinfo(basename)
@@ -25,19 +24,16 @@ class FakeTrashDir:
     def file_path(self, basename):
         return '%s/%s'  % (self.files_path, basename)
 
-    def add_trashinfo(self, contents, base_name = None):
-        if not base_name:
-            base_name = str(self.number)
-            self.number += 1
+    def add_trashinfo(self, contents, base_name = "basename"):
         path = '%(info_dir)s/%(name)s.trashinfo' % {'info_dir': self.info_path,
                                                     'name': base_name}
         make_parent_for(path)
         make_file(path, contents)
 
-        self.path_of_last_file_added = path
-
     def add_trashinfo2(self, escaped_path_entry, formatted_deletion_date):
-        self.add_trashinfo(a_trashinfo(escaped_path_entry, formatted_deletion_date))
+        self.add_trashinfo(a_trashinfo(escaped_path_entry,
+                                       formatted_deletion_date),
+                           os.path.basename(escaped_path_entry))
 
 def a_trashinfo(escaped_path_entry,
                 formatted_deletion_date = '2000-01-01T00:00:01'):

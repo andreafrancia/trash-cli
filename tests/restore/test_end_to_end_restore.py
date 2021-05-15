@@ -28,7 +28,7 @@ No files trashed from current dir ('%s')
 """ % self.curdir, result.stdout)
 
     def test_original_file_not_existing(self):
-        self.fake_trash_dir.add_trashinfo(a_trashinfo("/path"))
+        self.fake_trash_dir.add_trashinfo(a_trashinfo("/path"), 'foo')
 
         result = self.run_command("trash-restore", ["/"], input='0')
 
@@ -36,7 +36,7 @@ No files trashed from current dir ('%s')
    0 2000-01-01 00:00:01 /path
 What file to restore [0..0]: """,
                          result.stdout)
-        self.assertEqual("[Errno 2] No such file or directory: '%s/files/1'\n" %
+        self.assertEqual("[Errno 2] No such file or directory: '%s/files/foo'\n" %
                          self.trash_dir,
                          result.stderr)
 
