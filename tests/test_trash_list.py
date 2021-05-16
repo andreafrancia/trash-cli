@@ -10,8 +10,7 @@ from trashcli.list import ListCmd
 from .files import (require_empty_dir, make_sticky_dir, make_unsticky_dir)
 from .support import MyPath
 from .output_collector import OutputCollector
-from .fake_trash_dir import (
-    a_trashinfo_without_path, FakeTrashDir)
+from .fake_trash_dir import FakeTrashDir
 from trashcli.fs import FileSystemReader
 from .asserts import assert_equals_with_unidiff
 import unittest
@@ -110,7 +109,7 @@ class Test_describe_trash_list(Setup):
             self.user.error())
 
     def test_should_warn_about_unexistent_path_entry(self):
-        self.user.home_trashdir.add_trashinfo(contents=a_trashinfo_without_path(),
+        self.user.home_trashdir.add_trashinfo(path='',
                                               basename="foo")
 
         self.user.run_trash_list()

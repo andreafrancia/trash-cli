@@ -3,12 +3,11 @@ import unittest
 import pytest
 
 from six import StringIO
-from mock import Mock, ANY
 
 from .files import make_file
 from .support import MyPath
 from trashcli.rm import RmCmd, ListTrashinfos
-from .fake_trash_dir import a_trashinfo_with_path, a_trashinfo_without_path
+from .fake_trash_dir import a_trashinfo_without_path, a_trashinfo, FakeTrashDir
 from trashcli.fs import FileSystemReader
 
 
@@ -22,9 +21,10 @@ class TestTrashRm(unittest.TestCase):
                          , list_volumes = lambda:[]
                          , stderr = self.stderr
                          , file_reader = FileSystemReader())
+        self.fake_trash_dir = FakeTrashDir(self.xdg_data_home / 'Trash')
 
     def test_issue69(self):
-        self.add_trashinfo("foo.trashinfo", a_trashinfo_without_path())
+        self.fake_trash_dir.add_trashinfo(basename='foo', path='')
 
         self.trash_rm.run(['trash-rm', 'ignored'])
 
@@ -32,25 +32,13 @@ class TestTrashRm(unittest.TestCase):
                 "trash-rm: %s/Trash/info/foo.trashinfo: unable to parse 'Path'"
                 '\n' % self.xdg_data_home)
 
-
     def test_integration(self):
-        self.add_trashinfo("1.trashinfo", a_trashinfo_with_path('to/be/deleted'))
-        self.add_trashinfo("2.trashinfo", a_trashinfo_with_path('to/be/kept'))
+        self.fake_trash_dir.add_trashinfo(basename="del", path='to/be/deleted')
+        self.fake_trash_dir.add_trashinfo(basename="keep", path='to/be/kept')
 
         self.trash_rm.run(['trash-rm', 'delete*'])
 
-        self.assert_trashinfo_has_been_deleted("1.trashinfo")
-
-    def add_trashinfo(self, trashinfo_name, contents):
-        make_file(self.trashinfo_path(trashinfo_name), contents)
-
-    def trashinfo_path(self, trashinfo_name):
-        return self.xdg_data_home / 'Trash/info' / trashinfo_name
-
-    def assert_trashinfo_has_been_deleted(self, trashinfo_name):
-        import os
-        path = self.trashinfo_path(trashinfo_name)
-        assert not os.path.exists(path), 'File "%s" still exists' % path
+        assert self.fake_trash_dir.ls_info() == ['keep.trashinfo']
 
     def tearDown(self):
         self.xdg_data_home.clean_up()
@@ -109,7 +97,7 @@ class TestListing(unittest.TestCase):
                             trashdir=None):
         trashdir = trashdir or self.trash_dir
         trashinfo_path = trashinfo_path or self._trashinfo_path(trashdir)
-        make_file(trashinfo_path, a_trashinfo_with_path(path))
+        make_file(trashinfo_path, a_trashinfo(path))
 
     def _trashinfo_path(self, trashdir):
         path = '%s/info/%s.trashinfo' % (trashdir, self.index)

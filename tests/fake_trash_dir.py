@@ -27,11 +27,10 @@ class FakeTrashDir:
         return '%s/%s' % (self.files_path, basename)
 
     def add_trashinfo(self,
-                      path=None,
+                      path="foo",
                       formatted_deletion_date=None,
                       contents=None,
                       basename=None):
-        path = path or "foo"
         contents = contents if (contents!=None) else a_trashinfo(path, formatted_deletion_date)
         basename = basename or str(uuid.uuid4())
         trashinfo_path = '%(info_dir)s/%(name)s.trashinfo' % {'info_dir': self.info_path,
@@ -39,6 +38,8 @@ class FakeTrashDir:
         make_parent_for(trashinfo_path)
         make_file(trashinfo_path, contents)
 
+    def ls_info(self):
+        return os.listdir(self.info_path)
 
 def a_trashinfo(path,
                 formatted_deletion_date='2000-01-01T00:00:01'):
@@ -48,15 +49,4 @@ def a_trashinfo(path,
 
 
 def a_trashinfo_without_path():
-    return ("[Trash Info]\n"
-            "DeletionDate='2000-01-01T00:00:00'\n")
-
-
-def a_trashinfo_with_date(date):
-    return ("[Trash Info]\n"
-            "DeletionDate=%s\n" % date)
-
-
-def a_trashinfo_with_path(path):
-    return ("[Trash Info]\n"
-            "Path=%s\n" % path)
+    return a_trashinfo(None, '2000-01-01T00:00:01')
