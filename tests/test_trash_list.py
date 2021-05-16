@@ -53,7 +53,7 @@ class Test_describe_trash_list(Setup):
         assert_equals_with_unidiff('', self.user.output())
 
     def test_should_output_deletion_date_and_path(self):
-        self.user.home_trashdir.add_trashinfo2('/aboslute/path',
+        self.user.home_trashdir.add_trashinfo('/aboslute/path',
                                               '2001-02-03T23:55:59')
 
         self.user.run_trash_list()
@@ -62,9 +62,9 @@ class Test_describe_trash_list(Setup):
                                    self.user.output())
 
     def test_should_output_info_for_multiple_files(self):
-        self.user.home_trashdir.add_trashinfo2("/file1", "2000-01-01T00:00:01")
-        self.user.home_trashdir.add_trashinfo2("/file2", "2000-01-01T00:00:02")
-        self.user.home_trashdir.add_trashinfo2("/file3", "2000-01-01T00:00:03")
+        self.user.home_trashdir.add_trashinfo("/file1", "2000-01-01T00:00:01")
+        self.user.home_trashdir.add_trashinfo("/file2", "2000-01-01T00:00:02")
+        self.user.home_trashdir.add_trashinfo("/file3", "2000-01-01T00:00:03")
 
         self.user.run_trash_list()
         output = self.user.output()
@@ -75,7 +75,7 @@ class Test_describe_trash_list(Setup):
                                    sort_lines(output))
 
     def test_should_output_unknown_dates_with_question_marks(self):
-        self.user.home_trashdir.add_trashinfo(a_trashinfo_without_date())
+        self.user.home_trashdir.add_trashinfo(contents=a_trashinfo_without_date())
 
         self.user.run_trash_list()
 
@@ -83,7 +83,7 @@ class Test_describe_trash_list(Setup):
                                    self.user.output())
 
     def test_should_output_invalid_dates_using_question_marks(self):
-        self.user.home_trashdir.add_trashinfo(a_trashinfo_with_invalid_date())
+        self.user.home_trashdir.add_trashinfo(contents=a_trashinfo_with_invalid_date())
 
         self.user.run_trash_list()
 
@@ -91,7 +91,7 @@ class Test_describe_trash_list(Setup):
                                    self.user.output())
 
     def test_should_warn_about_empty_trashinfos(self):
-        self.user.home_trashdir.add_trashinfo('', 'empty')
+        self.user.home_trashdir.add_trashinfo(contents='', basename='empty')
 
         self.user.run_trash_list()
 
@@ -113,7 +113,8 @@ class Test_describe_trash_list(Setup):
             self.user.error())
 
     def test_should_warn_about_unexistent_path_entry(self):
-        self.user.home_trashdir.add_trashinfo(a_trashinfo_without_path(), "foo")
+        self.user.home_trashdir.add_trashinfo(contents=a_trashinfo_without_path(),
+                                              basename="foo")
 
         self.user.run_trash_list()
 
@@ -194,7 +195,7 @@ class Test_with_a_top_trash_dir(Setup):
         os.mkdir(path)
         assert os.path.isdir(path)
     def and_contains_a_valid_trashinfo(self):
-        self.top_trashdir1.add_trashinfo2('file1', '2000-01-01T00:00:00')
+        self.top_trashdir1.add_trashinfo('file1', '2000-01-01T00:00:00')
     def when_is_a_symlink_to_a_dir(self, path):
         dest = "%s-dest" % path
         os.mkdir(dest)
@@ -208,7 +209,7 @@ class Test_describe_when_a_file_is_in_alternate_top_trashdir(Setup):
         self.user.set_fake_uid(123)
         self.user.add_volume(self.top_dir)
         self.top_trashdir2 = FakeTrashDir(self.top_dir / '.Trash-123')
-        self.top_trashdir2.add_trashinfo2('file', '2000-01-01T00:00:00')
+        self.top_trashdir2.add_trashinfo('file', '2000-01-01T00:00:00')
 
         self.user.run_trash_list()
 

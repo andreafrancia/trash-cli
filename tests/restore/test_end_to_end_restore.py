@@ -28,7 +28,7 @@ No files trashed from current dir ('%s')
 """ % self.curdir, result.stdout)
 
     def test_original_file_not_existing(self):
-        self.fake_trash_dir.add_trashinfo(a_trashinfo("/path"), 'foo')
+        self.fake_trash_dir.add_trashinfo(contents=a_trashinfo("/path"), basename='foo')
 
         result = self.run_command("trash-restore", ["/"], input='0')
 

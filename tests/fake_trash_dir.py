@@ -1,4 +1,5 @@
 import os
+import uuid
 
 from trashcli.put import format_original_location
 from .files import make_parent_for, make_file, make_unreadable_file
@@ -23,17 +24,19 @@ class FakeTrashDir:
         return '%s/%s.trashinfo' % (self.info_path, basename)
 
     def file_path(self, basename):
-        return '%s/%s'  % (self.files_path, basename)
+        return '%s/%s' % (self.files_path, basename)
 
-    def add_trashinfo(self, contents, base_name = "basename"):
-        path = '%(info_dir)s/%(name)s.trashinfo' % {'info_dir': self.info_path,
-                                                    'name': base_name}
-        make_parent_for(path)
-        make_file(path, contents)
-
-    def add_trashinfo2(self, path, formatted_deletion_date):
-        self.add_trashinfo(a_trashinfo(path, formatted_deletion_date),
-                           os.path.basename(path))
+    def add_trashinfo(self,
+                      path=None,
+                      formatted_deletion_date=None,
+                      contents=None,
+                      basename=None):
+        contents = contents if (contents!=None) else a_trashinfo(path, formatted_deletion_date)
+        basename = basename or str(uuid.uuid4())
+        trashinfo_path = '%(info_dir)s/%(name)s.trashinfo' % {'info_dir': self.info_path,
+                                                              'name': basename}
+        make_parent_for(trashinfo_path)
+        make_file(trashinfo_path, contents)
 
 
 def a_trashinfo(path,
@@ -47,18 +50,22 @@ def a_trashinfo_without_date():
     return ("[Trash Info]\n"
             "Path=/path\n")
 
+
 def a_trashinfo_with_invalid_date():
     return ("[Trash Info]\n"
             "Path=/path\n"
             "DeletionDate=Wrong Date")
 
+
 def a_trashinfo_without_path():
     return ("[Trash Info]\n"
             "DeletionDate='2000-01-01T00:00:00'\n")
 
+
 def a_trashinfo_with_date(date):
     return ("[Trash Info]\n"
             "DeletionDate=%s\n" % date)
+
 
 def a_trashinfo_with_path(path):
     return ("[Trash Info]\n"
