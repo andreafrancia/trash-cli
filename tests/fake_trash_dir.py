@@ -1,5 +1,6 @@
 import os
 
+from trashcli.put import format_original_location
 from .files import make_parent_for, make_file, make_unreadable_file
 
 
@@ -30,16 +31,17 @@ class FakeTrashDir:
         make_parent_for(path)
         make_file(path, contents)
 
-    def add_trashinfo2(self, escaped_path_entry, formatted_deletion_date):
-        self.add_trashinfo(a_trashinfo(escaped_path_entry,
-                                       formatted_deletion_date),
-                           os.path.basename(escaped_path_entry))
+    def add_trashinfo2(self, path, formatted_deletion_date):
+        self.add_trashinfo(a_trashinfo(path, formatted_deletion_date),
+                           os.path.basename(path))
 
-def a_trashinfo(escaped_path_entry,
-                formatted_deletion_date = '2000-01-01T00:00:01'):
-    return ("[Trash Info]\n"                          +
-            "Path=%s\n"         % escaped_path_entry +
+
+def a_trashinfo(path,
+                formatted_deletion_date='2000-01-01T00:00:01'):
+    return ("[Trash Info]\n" +
+            "Path=%s\n" % format_original_location(path) +
             "DeletionDate=%s\n" % formatted_deletion_date)
+
 
 def a_trashinfo_without_date():
     return ("[Trash Info]\n"
