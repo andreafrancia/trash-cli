@@ -31,6 +31,7 @@ class FakeTrashDir:
                       formatted_deletion_date=None,
                       contents=None,
                       basename=None):
+        path = path or "foo"
         contents = contents if (contents!=None) else a_trashinfo(path, formatted_deletion_date)
         basename = basename or str(uuid.uuid4())
         trashinfo_path = '%(info_dir)s/%(name)s.trashinfo' % {'info_dir': self.info_path,
@@ -42,19 +43,8 @@ class FakeTrashDir:
 def a_trashinfo(path,
                 formatted_deletion_date='2000-01-01T00:00:01'):
     return ("[Trash Info]\n" +
-            "Path=%s\n" % format_original_location(path) +
-            "DeletionDate=%s\n" % formatted_deletion_date)
-
-
-def a_trashinfo_without_date():
-    return ("[Trash Info]\n"
-            "Path=/path\n")
-
-
-def a_trashinfo_with_invalid_date():
-    return ("[Trash Info]\n"
-            "Path=/path\n"
-            "DeletionDate=Wrong Date")
+            ("Path=%s\n" % format_original_location(path) if path else '') +
+            ("DeletionDate=%s\n" % formatted_deletion_date if formatted_deletion_date else ''))
 
 
 def a_trashinfo_without_path():

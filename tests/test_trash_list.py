@@ -11,10 +11,7 @@ from .files import (require_empty_dir, make_sticky_dir, make_unsticky_dir)
 from .support import MyPath
 from .output_collector import OutputCollector
 from .fake_trash_dir import (
-    a_trashinfo_without_date,
-    a_trashinfo_without_path,
-    a_trashinfo_with_invalid_date, FakeTrashDir)
-from textwrap import dedent
+    a_trashinfo_without_path, FakeTrashDir)
 from trashcli.fs import FileSystemReader
 from .asserts import assert_equals_with_unidiff
 import unittest
@@ -75,19 +72,19 @@ class Test_describe_trash_list(Setup):
                                    sort_lines(output))
 
     def test_should_output_unknown_dates_with_question_marks(self):
-        self.user.home_trashdir.add_trashinfo(contents=a_trashinfo_without_date())
+        self.user.home_trashdir.add_trashinfo('without-date', formatted_deletion_date=None)
 
         self.user.run_trash_list()
 
-        assert_equals_with_unidiff("????-??-?? ??:??:?? /path\n",
-                                   self.user.output())
+        assert self.user.output() == "????-??-?? ??:??:?? /without-date\n"
+
 
     def test_should_output_invalid_dates_using_question_marks(self):
-        self.user.home_trashdir.add_trashinfo(contents=a_trashinfo_with_invalid_date())
+        self.user.home_trashdir.add_trashinfo('with-invalid-date', formatted_deletion_date='Wrong date')
 
         self.user.run_trash_list()
 
-        assert_equals_with_unidiff("????-??-?? ??:??:?? /path\n",
+        assert_equals_with_unidiff("????-??-?? ??:??:?? /with-invalid-date\n",
                                    self.user.output())
 
     def test_should_warn_about_empty_trashinfos(self):
