@@ -450,19 +450,24 @@ class Suffix:
         else:
             return "_%s" % self.randint(0, 65535)
 
+
 def format_trashinfo(original_location, deletion_date):
-    def format_date(deletion_date):
-        return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
-    def format_original_location(original_location):
-        try:
-            from urllib import quote
-        except ImportError:
-            from urllib.parse import quote
-        return quote(original_location,'/')
     content = ("[Trash Info]\n" +
                "Path=%s\n" % format_original_location(original_location) +
                "DeletionDate=%s\n" % format_date(deletion_date)).encode('utf-8')
     return content
+
+
+def format_date(deletion_date):
+    return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
+
+
+def format_original_location(original_location):
+    try:
+        from urllib import quote
+    except ImportError:
+        from urllib.parse import quote
+    return quote(original_location,'/')
 
 
 def shrink_user(path, environ):
