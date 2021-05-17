@@ -1,3 +1,4 @@
+import datetime
 import unittest
 
 import pytest
@@ -15,8 +16,8 @@ class TestEndToEndList(unittest.TestCase):
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
 
     def test_list(self):
-        self.fake_trash_dir.add_trashinfo("/file1", '2000-01-01T00:00:01')
-        self.fake_trash_dir.add_trashinfo("/file2", '2000-01-01T00:00:01')
+        self.fake_trash_dir.add_trashinfo2("/file1", datetime.datetime(2000,1,1,0,0,1))
+        self.fake_trash_dir.add_trashinfo2("/file2", datetime.datetime(2000,1,1,0,0,1))
 
         result = run_command.run_command(self.tmp_dir, "trash-list",
                                          ['--trash-dir', self.trash_dir])

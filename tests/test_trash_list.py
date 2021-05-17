@@ -71,7 +71,7 @@ class Test_describe_trash_list(Setup):
                                    sort_lines(output))
 
     def test_should_output_unknown_dates_with_question_marks(self):
-        self.user.home_trashdir.add_trashinfo('without-date', formatted_deletion_date=None)
+        self.user.home_trashdir.add_trashinfo_without_date('without-date')
 
         self.user.run_trash_list()
 
@@ -79,7 +79,8 @@ class Test_describe_trash_list(Setup):
 
 
     def test_should_output_invalid_dates_using_question_marks(self):
-        self.user.home_trashdir.add_trashinfo('with-invalid-date', formatted_deletion_date='Wrong date')
+        self.user.home_trashdir.add_trashinfo_wrong_date('with-invalid-date',
+                                                         'Wrong date')
 
         self.user.run_trash_list()
 
@@ -87,7 +88,7 @@ class Test_describe_trash_list(Setup):
                                    self.user.output())
 
     def test_should_warn_about_empty_trashinfos(self):
-        self.user.home_trashdir.add_trashinfo(content='', basename='empty')
+        self.user.home_trashdir.add_trashinfo_content('empty', '')
 
         self.user.run_trash_list()
 
@@ -109,8 +110,7 @@ class Test_describe_trash_list(Setup):
             self.user.error())
 
     def test_should_warn_about_unexistent_path_entry(self):
-        self.user.home_trashdir.add_trashinfo(path='',
-                                              basename="foo")
+        self.user.home_trashdir.add_trashinfo_without_path("foo")
 
         self.user.run_trash_list()
 
@@ -190,8 +190,10 @@ class Test_with_a_top_trash_dir(Setup):
     def and_dir_exists(self, path):
         os.mkdir(path)
         assert os.path.isdir(path)
+
     def and_contains_a_valid_trashinfo(self):
-        self.top_trashdir1.add_trashinfo('file1', '2000-01-01T00:00:00')
+        self.top_trashdir1.add_trashinfo2('file1', datetime(2000,1,1,0,0,0))
+
     def when_is_a_symlink_to_a_dir(self, path):
         dest = "%s-dest" % path
         os.mkdir(dest)
@@ -205,7 +207,7 @@ class Test_describe_when_a_file_is_in_alternate_top_trashdir(Setup):
         self.user.set_fake_uid(123)
         self.user.add_volume(self.top_dir)
         self.top_trashdir2 = FakeTrashDir(self.top_dir / '.Trash-123')
-        self.top_trashdir2.add_trashinfo('file', '2000-01-01T00:00:00')
+        self.top_trashdir2.add_trashinfo2('file', datetime(2000,1,1,0,0,0))
 
         self.user.run_trash_list()
 

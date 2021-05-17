@@ -24,7 +24,7 @@ class TestTrashRm(unittest.TestCase):
         self.fake_trash_dir = FakeTrashDir(self.xdg_data_home / 'Trash')
 
     def test_issue69(self):
-        self.fake_trash_dir.add_trashinfo(basename='foo', path='')
+        self.fake_trash_dir.add_trashinfo_without_path('foo')
 
         self.trash_rm.run(['trash-rm', 'ignored'])
 
@@ -33,8 +33,8 @@ class TestTrashRm(unittest.TestCase):
                 '\n' % self.xdg_data_home)
 
     def test_integration(self):
-        self.fake_trash_dir.add_trashinfo(basename="del", path='to/be/deleted')
-        self.fake_trash_dir.add_trashinfo(basename="keep", path='to/be/kept')
+        self.fake_trash_dir.add_trashinfo_basename_path("del", 'to/be/deleted')
+        self.fake_trash_dir.add_trashinfo_basename_path("keep", 'to/be/kept')
 
         self.trash_rm.run(['trash-rm', 'delete*'])
 

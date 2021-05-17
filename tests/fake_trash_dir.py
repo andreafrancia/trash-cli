@@ -12,20 +12,21 @@ class FakeTrashDir:
         self.files_path = os.path.join(path, 'files')
 
     def add_unreadable_trashinfo(self, basename):
-        path = self.a_trashinfo(basename)
+        path = self.a_trashinfo_path(basename)
         make_unreadable_file(path)
 
     def add_trashed_file(self, basename, path, content):
-        trashinfo_path = self.a_trashinfo(basename)
-        file_path = self.file_path(basename)
-        make_file(trashinfo_path, trashinfo_content_default_date(path))
-        make_file(file_path, content)
+        self.add_trashinfo3(basename, path, a_default_datetime())
+        make_file(self.file_path(basename), content)
 
-    def a_trashinfo(self, basename):
-        return '%s/%s.trashinfo' % (self.info_path, basename)
+    def a_trashinfo_path(self, basename):
+        return os.path.join(self.info_path, '%s.trashinfo' % basename)
 
     def file_path(self, basename):
-        return '%s/%s' % (self.files_path, basename)
+        return os.path.join(self.files_path, basename)
+
+    def add_trashinfo_basename_path(self, basename, path):
+        self.add_trashinfo3(basename, path, a_default_datetime())
 
     def add_trashinfo2(self, path, deletion_date):
         basename = str(uuid.uuid4())
@@ -35,21 +36,33 @@ class FakeTrashDir:
         content = trashinfo_content(path, deletion_date)
         self.add_trashinfo_content(basename, content)
 
-    def add_trashinfo_content(self, basename, content):
-        trashinfo_path = '%(info_dir)s/%(name)s.trashinfo' % {'info_dir': self.info_path,
-                                                              'name': basename}
-        make_parent_for(trashinfo_path)
-        make_file(trashinfo_path, content)
+    def add_trashinfo_without_path(self, basename):
+        deletion_date = a_default_datetime()
+        content = trashinfo_content2([
+            ("DeletionDate", deletion_date.strftime('%Y-%m-%dT%H:%M:%S')),
+        ])
 
-    def add_trashinfo(self,
-                      path="foo",
-                      formatted_deletion_date=None,
-                      content=None,
-                      basename=None):
-        content = content if (content!=None) else a_trashinfo(path, formatted_deletion_date)
-        basename = basename or str(uuid.uuid4())
-        trashinfo_path = '%(info_dir)s/%(name)s.trashinfo' % {'info_dir': self.info_path,
-                                                              'name': basename}
+        self.add_trashinfo_content(basename, content)
+
+    def add_trashinfo_without_date(self, path):
+        basename = str(uuid.uuid4())
+        content = trashinfo_content2([
+            ('Path', format_original_location(path)),
+        ])
+
+        self.add_trashinfo_content(basename, content)
+
+    def add_trashinfo_wrong_date(self, path, wrong_date):
+        basename = str(uuid.uuid4())
+        content = trashinfo_content2([
+            ('Path', format_original_location(path)),
+            ("DeletionDate", wrong_date),
+        ])
+
+        self.add_trashinfo_content(basename, content)
+
+    def add_trashinfo_content(self, basename, content):
+        trashinfo_path = self.a_trashinfo_path(basename)
         make_parent_for(trashinfo_path)
         make_file(trashinfo_path, content)
 
@@ -57,17 +70,21 @@ class FakeTrashDir:
         return os.listdir(self.info_path)
 
 
-def a_trashinfo(path, formatted_deletion_date):
-    return ("[Trash Info]\n" +
-            ("Path=%s\n" % format_original_location(path) if path else '') +
-            ("DeletionDate=%s\n" % formatted_deletion_date if formatted_deletion_date else ''))
-
-
 def trashinfo_content_default_date(path):
-    return trashinfo_content(path, datetime.datetime(2000,1,1,0,0,1))
+    return trashinfo_content(path, a_default_datetime())
+
+
+def a_default_datetime():
+    return datetime.datetime(2000, 1, 1, 0, 0, 1)
 
 
 def trashinfo_content(path, deletion_date):
+    return trashinfo_content2([
+        ('Path', format_original_location(path)),
+        ("DeletionDate", deletion_date.strftime('%Y-%m-%dT%H:%M:%S')),
+    ])
+
+
+def trashinfo_content2(values):
     return ("[Trash Info]\n" +
-            ("Path=%s\n" % format_original_location(path) if path else '') +
-            ("DeletionDate=%s\n" % deletion_date.strftime('%Y-%m-%dT%H:%M:%S') if deletion_date else ''))
+            "".join("%s=%s\n" % (name, value) for name, value in values))
