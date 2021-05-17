@@ -7,7 +7,7 @@ from six import StringIO
 from .files import make_file
 from .support import MyPath
 from trashcli.rm import RmCmd, ListTrashinfos
-from .fake_trash_dir import a_trashinfo, FakeTrashDir
+from .fake_trash_dir import FakeTrashDir, trashinfo_content_default_date
 from trashcli.fs import FileSystemReader
 
 
@@ -97,7 +97,7 @@ class TestListing(unittest.TestCase):
                             trashdir=None):
         trashdir = trashdir or self.trash_dir
         trashinfo_path = trashinfo_path or self._trashinfo_path(trashdir)
-        make_file(trashinfo_path, a_trashinfo(path))
+        make_file(trashinfo_path, trashinfo_content_default_date(path))
 
     def _trashinfo_path(self, trashdir):
         path = '%s/info/%s.trashinfo' % (trashdir, self.index)

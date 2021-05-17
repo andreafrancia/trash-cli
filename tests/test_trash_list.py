@@ -1,5 +1,5 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
-
+from datetime import datetime
 import os
 
 import pytest
@@ -49,8 +49,8 @@ class Test_describe_trash_list(Setup):
         assert_equals_with_unidiff('', self.user.output())
 
     def test_should_output_deletion_date_and_path(self):
-        self.user.home_trashdir.add_trashinfo('/aboslute/path',
-                                              '2001-02-03T23:55:59')
+        self.user.home_trashdir.add_trashinfo2('/aboslute/path',
+                                               datetime(2001,2,3,23,55,59))
 
         self.user.run_trash_list()
 
@@ -58,9 +58,9 @@ class Test_describe_trash_list(Setup):
                                    self.user.output())
 
     def test_should_output_info_for_multiple_files(self):
-        self.user.home_trashdir.add_trashinfo("/file1", "2000-01-01T00:00:01")
-        self.user.home_trashdir.add_trashinfo("/file2", "2000-01-01T00:00:02")
-        self.user.home_trashdir.add_trashinfo("/file3", "2000-01-01T00:00:03")
+        self.user.home_trashdir.add_trashinfo2("/file1", datetime(2000,1,1,0,0,1))
+        self.user.home_trashdir.add_trashinfo2("/file2", datetime(2000,1,1,0,0,2))
+        self.user.home_trashdir.add_trashinfo2("/file3", datetime(2000,1,1,0,0,3))
 
         self.user.run_trash_list()
         output = self.user.output()
@@ -87,7 +87,7 @@ class Test_describe_trash_list(Setup):
                                    self.user.output())
 
     def test_should_warn_about_empty_trashinfos(self):
-        self.user.home_trashdir.add_trashinfo(contents='', basename='empty')
+        self.user.home_trashdir.add_trashinfo(content='', basename='empty')
 
         self.user.run_trash_list()
 

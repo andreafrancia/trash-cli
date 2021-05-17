@@ -1,8 +1,9 @@
 import unittest
+from datetime import datetime
 
 import pytest
 
-from ..fake_trash_dir import FakeTrashDir, a_trashinfo
+from ..fake_trash_dir import FakeTrashDir
 from trashcli.fs import read_file
 from ..support import MyPath
 import os
@@ -28,7 +29,7 @@ No files trashed from current dir ('%s')
 """ % self.curdir, result.stdout)
 
     def test_original_file_not_existing(self):
-        self.fake_trash_dir.add_trashinfo(contents=a_trashinfo("/path"), basename='foo')
+        self.fake_trash_dir.add_trashinfo3("foo", "/path", datetime(2000,1,1,0,0,1))
 
         result = self.run_command("trash-restore", ["/"], input='0')
 

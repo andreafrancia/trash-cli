@@ -11,7 +11,7 @@ from trashcli.restore import RestoreCmd, TrashDirectories, TrashDirectory, \
 from .support import MyPath
 from .files import require_empty_dir
 from trashcli.fs import remove_file, contents_of
-from .fake_trash_dir import a_trashinfo
+from .fake_trash_dir import trashinfo_content_default_date
 from .files import make_file
 from six import StringIO
 from trashcli import restore
@@ -132,7 +132,7 @@ class RestoreTrashUser:
 
     def having_a_trashed_file(self, path):
         make_file('%s/info/foo.trashinfo' % self._trash_dir(),
-                  a_trashinfo(path))
+                  trashinfo_content_default_date(path))
         make_file('%s/files/foo' % self._trash_dir())
 
     def _trash_dir(self):
