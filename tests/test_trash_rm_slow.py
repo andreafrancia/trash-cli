@@ -7,7 +7,7 @@ from six import StringIO
 from .files import make_file
 from .support import MyPath
 from trashcli.rm import RmCmd, ListTrashinfos
-from .fake_trash_dir import a_trashinfo_without_path, a_trashinfo, FakeTrashDir
+from .fake_trash_dir import a_trashinfo, FakeTrashDir
 from trashcli.fs import FileSystemReader
 
 

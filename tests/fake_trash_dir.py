@@ -46,7 +46,3 @@ def a_trashinfo(path,
     return ("[Trash Info]\n" +
             ("Path=%s\n" % format_original_location(path) if path else '') +
             ("DeletionDate=%s\n" % formatted_deletion_date if formatted_deletion_date else ''))
-
-
-def a_trashinfo_without_path():
-    return a_trashinfo(None, '2000-01-01T00:00:01')
