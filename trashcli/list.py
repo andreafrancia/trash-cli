@@ -160,6 +160,3 @@ class ListCmdOutput:
     def top_trashdir_skipped_because_parent_is_symlink(self, trashdir):
         self.error("TrashDir skipped because parent is symlink: %s"
                 % trashdir)
-
-    def print_entry(self, info):
-        self.println(" ".join(info))
