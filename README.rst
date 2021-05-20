@@ -119,7 +119,8 @@ You could alias `rm` to something that will remind you to not use it::
 
     alias rm='echo "This is not the command you are looking for."; false'
 
-Then, if you really want to use `rm`, simply prepend a slash to bypass the alias::
+Then, if you really want to use `rm`, simply prepend a backslash to bypass the
+alias::
 
     \rm file-without-hope
 
