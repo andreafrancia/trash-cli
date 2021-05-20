@@ -1,3 +1,6 @@
+0.21.5.20:
+ - add (hidden and undocumented) --files option to trash-list
+
 0.21.5.11:
  - trash-put also accept -vv for enabling debug prints
  - add (hidden and undocumented) --size option to trash-list
