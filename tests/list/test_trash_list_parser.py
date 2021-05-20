@@ -34,6 +34,17 @@ class TestTrashListParser(unittest.TestCase):
 
         assert 'size' == parsed.attribute_to_print
 
+    def test_files_off(self):
+        parsed = self.parser.parse_args([])
+
+        assert False == parsed.show_files
+
+    def test_files_on(self):
+        parsed = self.parser.parse_args(['--files'])
+
+        assert True == parsed.show_files
+
+
 class TestPrintHelp(unittest.TestCase):
     def test(self):
         out = StringIO()

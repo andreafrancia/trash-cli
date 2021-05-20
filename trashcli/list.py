@@ -86,11 +86,14 @@ class ListCmd:
             except ParseError:
                 self.output.print_parse_path_error(trashinfo_path)
             else:
-                deletion_date = extractor.extract_attribute(trashinfo_path, contents)
+                attribute = extractor.extract_attribute(trashinfo_path, contents)
                 original_location = os.path.join(volume, relative_location)
-                info = (str(deletion_date), original_location)
-                self.output.print_entry(info)
+                line = format_line(attribute, original_location)
+                self.output.println(line)
 
+
+def format_line(attribute, original_location):
+    return "%s %s" % (attribute, original_location)
 
 class DeletionDateExtractor:
     def extract_attribute(self, _trashinfo_path, contents):
@@ -100,7 +103,7 @@ class DeletionDateExtractor:
 class SizeExtractor:
     def extract_attribute(self, trashinfo_path, _contents):
         backup_copy = path_of_backup_copy(trashinfo_path)
-        return file_size(backup_copy)
+        return str(file_size(backup_copy))
 
 
 def description(program_name, printer):
@@ -132,6 +135,9 @@ def maker_parser(prog):
     parser.add_argument('--size', action='store_const', default='deletion_date',
                         const='size',
                         dest='attribute_to_print',
+                        help=argparse.SUPPRESS)
+    parser.add_argument('--files', action='store_true', default=False,
+                        dest='show_files',
                         help=argparse.SUPPRESS)
     return parser
 

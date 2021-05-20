@@ -27,6 +27,19 @@ class TestEndToEndList(unittest.TestCase):
                    '2000-01-01 00:00:01 /file2',
                ] == sorted(result.stdout.splitlines())
 
+    def test_list_with_paths(self):
+        self.fake_trash_dir.add_trashinfo3("base1", "/file1", datetime.datetime(2000,1,1,0,0,1))
+        self.fake_trash_dir.add_trashinfo3("base2", "/file2", datetime.datetime(2000,1,1,0,0,1))
+
+        result = run_command.run_command(self.tmp_dir, "trash-list",
+                                         ['--trash-dir', self.trash_dir,
+                                          '--files'])
+
+        assert [
+                   '2000-01-01 00:00:01 /file1',
+                   '2000-01-01 00:00:01 /file2',
+               ] == sorted(result.stdout.splitlines())
+
     def test_help(self):
         result = run_command.run_command(self.tmp_dir, "trash-list", ['--help'])
 
