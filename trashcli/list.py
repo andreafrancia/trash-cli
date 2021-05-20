@@ -53,9 +53,9 @@ class ListCmd:
                 'deletion_date':DeletionDateExtractor(),
                 'size': SizeExtractor(),
             }[parsed.attribute_to_print]
-            self.list_trash(parsed.trash_dirs, extractor)
+            self.list_trash(parsed.trash_dirs, extractor, parsed.show_files)
 
-    def list_trash(self, user_specified_trash_dirs, extractor):
+    def list_trash(self, user_specified_trash_dirs, extractor, show_files):
         trashdirs_scanner = TrashDirsScanner(self.environ,
                                              self.getuid,
                                              self.list_volumes,
@@ -67,7 +67,7 @@ class ListCmd:
                 path, volume = args
                 trash_dir = TrashDir(self.file_reader)
                 for trash_info in trash_dir.list_trashinfo(path):
-                    self._print_trashinfo(volume, trash_info, extractor)
+                    self._print_trashinfo(volume, trash_info, extractor, show_files)
             elif event == TrashDirsScanner.SkippedBecauseParentNotSticky:
                 path, = args
                 self.output.top_trashdir_skipped_because_parent_not_sticky(path)
@@ -75,7 +75,7 @@ class ListCmd:
                 path, = args
                 self.output.top_trashdir_skipped_because_parent_is_symlink(path)
 
-    def _print_trashinfo(self, volume, trashinfo_path, extractor):
+    def _print_trashinfo(self, volume, trashinfo_path, extractor, show_files):
         try:
             contents = self.file_reader.contents_of(trashinfo_path)
         except IOError as e :
@@ -88,12 +88,20 @@ class ListCmd:
             else:
                 attribute = extractor.extract_attribute(trashinfo_path, contents)
                 original_location = os.path.join(volume, relative_location)
-                line = format_line(attribute, original_location)
+
+                if show_files:
+                    original_file = path_of_backup_copy(trashinfo_path)
+                    line = format_line2(attribute, original_location, original_file)
+                else:
+                    line = format_line(attribute, original_location)
                 self.output.println(line)
 
 
 def format_line(attribute, original_location):
     return "%s %s" % (attribute, original_location)
+
+def format_line2(attribute, original_location, original_file):
+    return "%s %s -> %s" % (attribute, original_location, original_file)
 
 class DeletionDateExtractor:
     def extract_attribute(self, _trashinfo_path, contents):
