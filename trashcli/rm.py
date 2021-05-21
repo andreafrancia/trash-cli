@@ -33,8 +33,7 @@ class RmCmd:
             return
 
         trashcan = CleanableTrashcan(FileRemover())
-        pattern = args[0]
-        cmd = Filter(trashcan.delete_trashinfo_and_backup_copy, pattern)
+        cmd = Filter(args[0])
 
         listing = ListTrashinfos(self.file_reader)
 
@@ -50,7 +49,9 @@ class RmCmd:
                     if type == 'unable_to_parse_path':
                         self.unable_to_parse_path(arg)
                     elif type == 'trashed_file':
-                        cmd.delete_if_matches(arg)
+                        original_location, info_file = arg
+                        if cmd.matches(original_location):
+                            trashcan.delete_trashinfo_and_backup_copy(info_file)
 
     def unable_to_parse_path(self, trashinfo):
         self.report_error('{}: unable to parse \'Path\''.format(trashinfo))
@@ -74,20 +75,20 @@ def main():
 
     return cmd.exit_code
 
+
 class Filter:
-    def __init__(self, delete, pattern):
-        self.delete = delete
+    def __init__(self, pattern):
         self.pattern = pattern
 
-    def delete_if_matches(self, trashed_file):
-        original_location, info_file = trashed_file
+    def matches(self, original_location):
         if self.pattern[0] == '/':
             if self.pattern == original_location:
-                self.delete(info_file)
+                return True
         else:
             basename = os.path.basename(original_location)
             if fnmatch.fnmatchcase(basename, self.pattern):
-                self.delete(info_file)
+                return True
+        return False
 
 
 class ListTrashinfos:
