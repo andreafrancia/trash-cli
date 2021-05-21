@@ -1,3 +1,6 @@
+master:
+ - trash-rm: fixed pattern matching for absolute paths
+
 0.21.5.20:
  - add (hidden and undocumented) --files option to trash-list
 

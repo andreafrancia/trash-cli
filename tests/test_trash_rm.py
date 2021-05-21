@@ -61,3 +61,9 @@ class TestTrashRmCmd(unittest.TestCase):
 
         assert self.cmd.matches('/foo/bar.baz') == True
         assert self.cmd.matches('/foo/bar') == False
+
+    def test(self):
+        self.cmd = Filter('/foo/*.baz')
+
+        assert self.cmd.matches('/foo/bar.baz') == True
+        assert self.cmd.matches('/foo/bar.bar') == False

@@ -81,14 +81,9 @@ class Filter:
         self.pattern = pattern
 
     def matches(self, original_location):
-        if self.pattern[0] == '/':
-            if self.pattern == original_location:
-                return True
-        else:
-            basename = os.path.basename(original_location)
-            if fnmatch.fnmatchcase(basename, self.pattern):
-                return True
-        return False
+        basename = os.path.basename(original_location)
+        subject = original_location if self.pattern[0] == '/' else basename
+        return fnmatch.fnmatchcase(subject, self.pattern)
 
 
 class ListTrashinfos:
