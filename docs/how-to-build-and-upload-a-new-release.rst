@@ -19,7 +19,7 @@ Create the tarball::
 
 Upload to Test PyPI::
 
-    twine upload --repository testpypi dist/*
+    twine upload --repository testpypi dist/*-${version}*.tar.gz
 
 Remove previous installation::
 
@@ -31,7 +31,7 @@ Test the installation::
 
 Register and upload::
 
-    twine upload dist/*
+    twine upload dist/*-${version}*.tar.gz
 
 Now you can tag the repo status::
 
