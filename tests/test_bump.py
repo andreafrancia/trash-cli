@@ -24,6 +24,7 @@ class Test_save_new_version(unittest.TestCase):
 somecode before
 version="0.20.1.20"
 somecode after
+dont change this line: version="0.20.1.20"
 """)
 
         bump.save_new_version('0.21.5.11', self.tmp_dir / 'trash.py')
@@ -32,6 +33,23 @@ somecode after
         assert result == """\
 somecode before
 version = '0.21.5.11'
+somecode after
+dont change this line: version="0.20.1.20"
+"""
+
+    def test2(self):
+        make_file(self.tmp_dir / 'trash.py', """\
+somecode before
+    version="0.20.1.20"
+somecode after
+""")
+
+        bump.save_new_version('0.21.5.11', self.tmp_dir / 'trash.py')
+
+        result = read_file(self.tmp_dir / "trash.py")
+        assert result == """\
+somecode before
+    version="0.20.1.20"
 somecode after
 """
 
