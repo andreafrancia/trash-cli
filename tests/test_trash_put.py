@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 import unittest
 
-from trashcli.put import TrashPutCmd
+from trashcli.put import TrashPutCmd, TrashResult
 from trashcli.put import TopDirRelativePaths, AbsolutePaths
 from trashcli.put import top_trash_dir_rules, all_is_ok_rules
 
@@ -30,21 +30,20 @@ class TestTrashPutTrashDirectory(unittest.TestCase):
         self.cmd.try_trash_file_using_candidates = self.try_trash_file_using_candidates
 
     def test_normally(self):
-
         self.cmd.run(['trash-put', 'file'])
 
         assert [call('file', '/', [
             ('~/xdh/Trash', '/', AbsolutePaths, all_is_ok_rules),
             ('/.Trash/123', '/', TopDirRelativePaths, top_trash_dir_rules),
             ('/.Trash-123', '/', TopDirRelativePaths, all_is_ok_rules),
-            ])] == self.try_trash_file_using_candidates.mock_calls
+        ], TrashResult(False))] == self.try_trash_file_using_candidates.mock_calls
 
     def test_with_a_specified_trashdir(self):
         self.cmd.run(['trash-put', '--trash-dir=/Trash2', 'file'])
 
         assert [call('file', '/', [
             ('/Trash2', '/', TopDirRelativePaths, all_is_ok_rules),
-            ])] == self.try_trash_file_using_candidates.mock_calls
+        ], TrashResult(False))] == self.try_trash_file_using_candidates.mock_calls
 
 
 class TrashPutTest(unittest.TestCase):
@@ -157,4 +156,3 @@ class TestTrashPutCmd(TrashPutTest):
         self.run_trash_put('-f', 'this_file_does_not_exist', 'nor_does_this_file')
         self.stderr_should_be('')
         self.stdout_should_be('')
-

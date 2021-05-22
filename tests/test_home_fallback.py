@@ -3,7 +3,7 @@ import unittest
 from mock import Mock, call, ANY
 
 from trashcli.fstab import create_fake_volume_of
-from trashcli.put import TrashPutCmd
+from trashcli.put import TrashPutCmd, TrashResult
 from datetime import datetime
 import os
 
@@ -35,7 +35,8 @@ class TestHomeFallback(unittest.TestCase):
         self.fs.islink.return_value = False
         self.fs.has_sticky_bit.return_value = True
 
-        self.trashcan.trash('sandbox/foo', False)
+        result = TrashResult(False)
+        self.trashcan.trash('sandbox/foo', False, result)
 
         assert self.fs.mock_calls == [
             call.isdir('.Trash'),
@@ -55,7 +56,8 @@ class TestHomeFallback(unittest.TestCase):
         self.fs.islink.return_value = False
         self.fs.has_sticky_bit.return_value = False
 
-        self.trashcan.trash('sandbox/foo', False)
+        result = TrashResult(False)
+        self.trashcan.trash('sandbox/foo', False, result)
 
         assert self.fs.mock_calls == [
             call.isdir('.Trash'),

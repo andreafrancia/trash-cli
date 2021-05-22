@@ -65,15 +65,17 @@ class TrashPutCmd:
             self.logger = MyLogger(self.stderr, program_name, options.verbose)
             self.ignore_missing = options.ignore_missing
             self.reporter = TrashPutReporter(self.logger, self.environ)
-            self.trash_all(args, options.trashdir)
+            result = self.trash_all(args, options.trashdir)
 
-            return self.reporter.exit_code()
+            return self.reporter.exit_code(result)
 
     def trash_all(self, args, user_trash_dir):
+        result = TrashResult(False)
         for arg in args :
-            self.trash(arg, user_trash_dir)
+            result = self.trash(arg, user_trash_dir, result)
+        return result
 
-    def trash(self, file, user_trash_dir) :
+    def trash(self, file, user_trash_dir, result) :
         """
         Trash a file in the appropriate trash directory.
         If the file belong to the same volume of the trash home directory it
@@ -91,24 +93,27 @@ class TrashPutCmd:
 
         if self._should_skipped_by_specs(file):
             self.reporter.unable_to_trash_dot_entries(file)
-            return
+            return TrashResult(False)
 
         if self.ignore_missing and not os.access(file, os.F_OK):
-            return
+            return TrashResult(False)
 
         volume_of_file_to_be_trashed = self.volume_of_parent(file)
         self.reporter.volume_of_file(volume_of_file_to_be_trashed)
         candidates = self.trash_directories_finder.\
             possible_trash_directories_for(volume_of_file_to_be_trashed,
                                            user_trash_dir)
-        self.try_trash_file_using_candidates(file,
-                                             volume_of_file_to_be_trashed,
-                                             candidates)
+        return self.try_trash_file_using_candidates(file,
+                                                    volume_of_file_to_be_trashed,
+                                                    candidates,
+                                                    result)
+
 
     def try_trash_file_using_candidates(self,
                                         file,
                                         volume_of_file_to_be_trashed,
-                                        candidates):
+                                        candidates,
+                                        result):
         file_has_been_trashed = False
         for path, volume, path_maker, checker in candidates:
             suffix = Suffix(random.randint)
@@ -146,7 +151,10 @@ class TrashPutCmd:
             if file_has_been_trashed: break
 
         if not file_has_been_trashed:
+            result = result.mark_unable_to_trash_file()
             self.reporter.unable_to_trash_file(file)
+
+        return result
 
     def volume_of_parent(self, file):
         return self.volumes.volume_of(self.parent_path(file))
@@ -323,17 +331,29 @@ class NoWrapFormatter(IndentedHelpFormatter) :
         return text
 
 
+class TrashResult:
+    def __init__(self, some_file_has_not_be_trashed):
+        self.some_file_has_not_be_trashed = some_file_has_not_be_trashed
+
+    def mark_unable_to_trash_file(self):
+        return TrashResult(True)
+
+    def __eq__(self, other):
+        return self.some_file_has_not_be_trashed == \
+               other.some_file_has_not_be_trashed
+
+    def __repr__(self):
+        return 'TrashResult(%s)' % self.some_file_has_not_be_trashed
+
 class TrashPutReporter:
     def __init__(self, logger, environ):
         self.logger = logger
-        self.some_file_has_not_be_trashed = False
         self.no_argument_specified = False
         self.environ = environ
     def unable_to_trash_dot_entries(self,file):
         self.logger.warning("cannot trash %s '%s'" % (describe(file), file))
     def unable_to_trash_file(self,f):
         self.logger.warning("cannot trash %s '%s'" % (describe(f), f))
-        self.some_file_has_not_be_trashed = True
     def file_has_been_trashed_in_as(self, trashee, trash_directory):
         self.logger.info("'%s' trashed in %s" % (trashee,
                                                  shrink_user(trash_directory,
@@ -350,11 +370,13 @@ class TrashPutReporter:
     def trash_dir_with_volume(self, trash_dir_path, volume_path):
         self.logger.info("Trash-dir: %s from volume: %s" % (trash_dir_path,
                                                             volume_path))
-    def exit_code(self):
-        if not self.some_file_has_not_be_trashed:
+
+    def exit_code(self, result):
+        if not result.some_file_has_not_be_trashed:
             return EX_OK
         else:
             return EX_IOERR
+
     def volume_of_file(self,volume):
         self.logger.info("Volume of file: %s" % volume)
 
