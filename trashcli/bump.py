@@ -10,9 +10,8 @@ def version_from_date(today):
 
 def save_new_version(new_version, path):
     content = read_file(path)
-    new_content = re.sub('^version(\s*)=.*',
+    new_content = re.sub(r'^version(\s*)=.*',
                          'version = \'%s\'' % new_version,
                          content,
                          flags=re.MULTILINE)
     write_file(path, new_content)
-
