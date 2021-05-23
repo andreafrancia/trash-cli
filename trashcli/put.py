@@ -42,18 +42,14 @@ class TrashPutCmd:
         self.stderr      = stderr
         self.environ     = environ
         self.volumes     = volumes
-        self.fs          = fs
-        self.getuid      = getuid
-        self.now         = now
         self.parent_path = parent_path
-        self.realpath    = realpath
-        self.trash_directories_finder = TrashDirectoriesFinder(self.environ,
-                                                               self.getuid,
-                                                               self.volumes)
-        self.file_trasher = FileTrasher(self.fs,
-                                        self.volumes,
-                                        self.realpath,
-                                        self.now)
+        self.trash_directories_finder = TrashDirectoriesFinder(environ,
+                                                               getuid,
+                                                               volumes)
+        self.file_trasher = FileTrasher(fs,
+                                        volumes,
+                                        realpath,
+                                        now)
 
     def run(self, argv):
         program_name  = os.path.basename(argv[0])
