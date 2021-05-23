@@ -42,10 +42,9 @@ class TestTopDirRules:
                                parent_path=parent_path,
                                realpath=realpath)
         trashcan.reporter = reporter
-        trashcan.ignore_missing = False
         logger = Mock()
         result = TrashResult(False)
-        trashcan.trash('', False, result, logger)
+        trashcan.trash('', False, result, logger, False)
         assert [
             call('', '/volume/.Trash-uid')
             ] == reporter.file_has_been_trashed_in_as.mock_calls
@@ -70,11 +69,15 @@ class TestGlobalTrashCan(unittest.TestCase):
             realpath=lambda x: x)
         self.trashcan.reporter = self.reporter
         self.logger = Mock()
-        self.trashcan.ignore_missing = False
+        self.ignore_missing = False
 
     def test_log_volume(self):
         result = TrashResult(False)
-        self.trashcan.trash('a-dir/with-a-file', False, result, self.logger)
+        self.trashcan.trash('a-dir/with-a-file',
+                            False,
+                            result,
+                            self.logger,
+                            self.ignore_missing)
 
         self.reporter.volume_of_file.assert_called_with('/')
 
@@ -82,14 +85,22 @@ class TestGlobalTrashCan(unittest.TestCase):
         self.fs.move.side_effect = IOError
 
         result = TrashResult(False)
-        self.trashcan.trash('non-existent', False, result, self.logger)
+        self.trashcan.trash('non-existent',
+                            False,
+                            result,
+                            self.logger,
+                            self.ignore_missing)
 
         self.reporter.unable_to_trash_file.assert_called_with('non-existent')
 
     def test_should_not_delete_a_dot_entru(self):
 
         result = TrashResult(False)
-        self.trashcan.trash('.', False, result, self.logger)
+        self.trashcan.trash('.',
+                            False,
+                            result,
+                            self.logger,
+                            self.ignore_missing)
 
         self.reporter.unable_to_trash_dot_entries.assert_called_with('.')
 
@@ -112,5 +123,9 @@ class TestGlobalTrashCan(unittest.TestCase):
             }[path])
 
         result = TrashResult(False)
-        self.trashcan.trash('foo', False, result, self.logger)
+        self.trashcan.trash('foo',
+                            False,
+                            result,
+                            self.logger,
+                            self.ignore_missing)
 

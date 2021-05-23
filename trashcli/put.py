@@ -63,19 +63,25 @@ class TrashPutCmd:
             return e.code
         else:
             logger = MyLogger(self.stderr, program_name, options.verbose)
-            self.ignore_missing = options.ignore_missing
             self.reporter = TrashPutReporter(logger, self.environ)
-            result = self.trash_all(args, options.trashdir, logger)
+            result = self.trash_all(args,
+                                    options.trashdir,
+                                    logger,
+                                    options.ignore_missing)
 
             return self.reporter.exit_code(result)
 
-    def trash_all(self, args, user_trash_dir, logger):
+    def trash_all(self, args, user_trash_dir, logger, ignore_missing):
         result = TrashResult(False)
         for arg in args :
-            result = self.trash(arg, user_trash_dir, result, logger)
+            result = self.trash(arg,
+                                user_trash_dir,
+                                result,
+                                logger,
+                                ignore_missing)
         return result
 
-    def trash(self, file, user_trash_dir, result, logger) :
+    def trash(self, file, user_trash_dir, result, logger, ignore_missing) :
         """
         Trash a file in the appropriate trash directory.
         If the file belong to the same volume of the trash home directory it
@@ -95,7 +101,7 @@ class TrashPutCmd:
             self.reporter.unable_to_trash_dot_entries(file)
             return TrashResult(False)
 
-        if self.ignore_missing and not os.access(file, os.F_OK):
+        if ignore_missing and not os.access(file, os.F_OK):
             return TrashResult(False)
 
         volume_of_file_to_be_trashed = self.volume_of_parent(file)
