@@ -108,6 +108,7 @@ class Trasher:
         self.file_trasher = file_trasher
         self.volumes = volumes
         self.parent_path = parent_path
+
     def trash(self,
               file,
               user_trash_dir,

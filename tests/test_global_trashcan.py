@@ -32,15 +32,14 @@ class TestTopDirRules:
                          'trash_dir_with_volume',
                          'file_has_been_trashed_in_as',
                          'log_info'])
-        trashcan = TrashPutCmd(stdout=None,
-                               stderr=None,
-                               environ={},
-                               volumes=volumes,
-                               fs=fs,
-                               getuid=lambda: 'uid',
-                               now=datetime.now,
-                               parent_path=parent_path,
-                               realpath=realpath)
+        trash_directories_finder = TrashDirectoriesFinder({},
+                                                          lambda: 'uid',
+                                                          volumes)
+        file_trasher = FileTrasher(fs, volumes, realpath, datetime.now)
+        trashcan = Trasher(trash_directories_finder,
+                           file_trasher,
+                           volumes,
+                           parent_path)
         logger = Mock()
         result = TrashResult(False)
         trashcan.trash('', False, result, logger, False, reporter)

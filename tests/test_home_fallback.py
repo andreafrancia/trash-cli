@@ -3,7 +3,7 @@ import unittest
 from mock import Mock, call, ANY
 
 from trashcli.fstab import create_fake_volume_of
-from trashcli.put import TrashPutCmd, TrashResult
+from trashcli.put import TrashPutCmd, TrashResult, Trasher, TrashDirectoriesFinder, FileTrasher
 from datetime import datetime
 import os
 
@@ -13,16 +13,18 @@ class TestHomeFallback(unittest.TestCase):
         self.reporter = Mock()
         mount_points = ['/', 'sandbox/other_partition']
         self.fs = Mock()
-        self.trashcan = TrashPutCmd(
-                stdout=None,
-                stderr=None,
-                getuid = lambda: 123,
-                volumes = create_fake_volume_of(mount_points),
-                now = datetime.now,
-                environ = dict(),
-                fs = self.fs,
-                parent_path = os.path.dirname,
-                realpath = lambda x:x)
+        volumes = create_fake_volume_of(mount_points)
+        trash_directories_finder = TrashDirectoriesFinder({},
+                                                          lambda: 123,
+                                                          volumes)
+        file_trasher = FileTrasher(self.fs,
+                                   volumes,
+                                   lambda x:x,
+                                   datetime.now)
+        self.trashcan = Trasher(trash_directories_finder,
+                                file_trasher,
+                                volumes,
+                                os.path.dirname)
         self.logger = Mock()
         self.ignore_missing = False
 
