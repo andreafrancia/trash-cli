@@ -318,7 +318,7 @@ class MyLogger:
         if self.verbose > 0:
             self.emit(message)
 
-    def warning(self,message):
+    def warning2(self,message):
         self.emit(message)
 
     def emit(self, message):
@@ -351,9 +351,9 @@ class TrashPutReporter:
         self.no_argument_specified = False
         self.environ = environ
     def unable_to_trash_dot_entries(self,file):
-        self.logger.warning("cannot trash %s '%s'" % (describe(file), file))
+        self.logger.warning2("cannot trash %s '%s'" % (describe(file), file))
     def unable_to_trash_file(self,f):
-        self.logger.warning("cannot trash %s '%s'" % (describe(f), f))
+        self.logger.warning2("cannot trash %s '%s'" % (describe(f), f))
     def file_has_been_trashed_in_as(self, trashee, trash_directory):
         self.logger.info("'%s' trashed in %s" % (trashee,
                                                  shrink_user(trash_directory,
