@@ -43,9 +43,9 @@ class TestTopDirRules:
                                realpath=realpath)
         trashcan.reporter = reporter
         trashcan.ignore_missing = False
-        trashcan.logger = Mock()
+        logger = Mock()
         result = TrashResult(False)
-        trashcan.trash('', False, result)
+        trashcan.trash('', False, result, logger)
         assert [
             call('', '/volume/.Trash-uid')
             ] == reporter.file_has_been_trashed_in_as.mock_calls
@@ -69,12 +69,12 @@ class TestGlobalTrashCan(unittest.TestCase):
             parent_path=os.path.dirname,
             realpath=lambda x: x)
         self.trashcan.reporter = self.reporter
-        self.trashcan.logger = Mock()
+        self.logger = Mock()
         self.trashcan.ignore_missing = False
 
     def test_log_volume(self):
         result = TrashResult(False)
-        self.trashcan.trash('a-dir/with-a-file', False, result)
+        self.trashcan.trash('a-dir/with-a-file', False, result, self.logger)
 
         self.reporter.volume_of_file.assert_called_with('/')
 
@@ -82,14 +82,14 @@ class TestGlobalTrashCan(unittest.TestCase):
         self.fs.move.side_effect = IOError
 
         result = TrashResult(False)
-        self.trashcan.trash('non-existent', False, result)
+        self.trashcan.trash('non-existent', False, result, self.logger)
 
         self.reporter.unable_to_trash_file.assert_called_with('non-existent')
 
     def test_should_not_delete_a_dot_entru(self):
 
         result = TrashResult(False)
-        self.trashcan.trash('.', False, result)
+        self.trashcan.trash('.', False, result, self.logger)
 
         self.reporter.unable_to_trash_dot_entries.assert_called_with('.')
 
@@ -112,5 +112,5 @@ class TestGlobalTrashCan(unittest.TestCase):
             }[path])
 
         result = TrashResult(False)
-        self.trashcan.trash('foo', False, result)
+        self.trashcan.trash('foo', False, result, self.logger)
 

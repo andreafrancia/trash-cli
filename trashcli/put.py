@@ -62,20 +62,20 @@ class TrashPutCmd:
         except SystemExit as e:
             return e.code
         else:
-            self.logger = MyLogger(self.stderr, program_name, options.verbose)
+            logger = MyLogger(self.stderr, program_name, options.verbose)
             self.ignore_missing = options.ignore_missing
-            self.reporter = TrashPutReporter(self.logger, self.environ)
-            result = self.trash_all(args, options.trashdir)
+            self.reporter = TrashPutReporter(logger, self.environ)
+            result = self.trash_all(args, options.trashdir, logger)
 
             return self.reporter.exit_code(result)
 
-    def trash_all(self, args, user_trash_dir):
+    def trash_all(self, args, user_trash_dir, logger):
         result = TrashResult(False)
         for arg in args :
-            result = self.trash(arg, user_trash_dir, result)
+            result = self.trash(arg, user_trash_dir, result, logger)
         return result
 
-    def trash(self, file, user_trash_dir, result) :
+    def trash(self, file, user_trash_dir, result, logger) :
         """
         Trash a file in the appropriate trash directory.
         If the file belong to the same volume of the trash home directory it
@@ -106,19 +106,21 @@ class TrashPutCmd:
         return self.try_trash_file_using_candidates(file,
                                                     volume_of_file_to_be_trashed,
                                                     candidates,
-                                                    result)
+                                                    result,
+                                                    logger)
 
 
     def try_trash_file_using_candidates(self,
                                         file,
                                         volume_of_file_to_be_trashed,
                                         candidates,
-                                        result):
+                                        result,
+                                        logger):
         file_has_been_trashed = False
         for path, volume, path_maker, checker in candidates:
             suffix = Suffix(random.randint)
             info_dir_path = os.path.join(path, 'info')
-            info_dir = InfoDir(info_dir_path, self.fs, self.logger, suffix)
+            info_dir = InfoDir(info_dir_path, self.fs, logger, suffix)
             trash_dir = TrashDirectoryForPut(path,
                                              volume,
                                              self.fs,

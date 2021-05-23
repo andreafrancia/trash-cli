@@ -24,7 +24,7 @@ class TestHomeFallback(unittest.TestCase):
                 parent_path = os.path.dirname,
                 realpath = lambda x:x)
         self.trashcan.reporter = self.reporter
-        self.trashcan.logger = Mock()
+        self.logger = Mock()
         self.trashcan.ignore_missing = False
 
     def test_use_of_top_trash_dir_when_sticky(self):
@@ -36,7 +36,7 @@ class TestHomeFallback(unittest.TestCase):
         self.fs.has_sticky_bit.return_value = True
 
         result = TrashResult(False)
-        self.trashcan.trash('sandbox/foo', False, result)
+        self.trashcan.trash('sandbox/foo', False, result, self.logger)
 
         assert self.fs.mock_calls == [
             call.isdir('.Trash'),
@@ -57,7 +57,7 @@ class TestHomeFallback(unittest.TestCase):
         self.fs.has_sticky_bit.return_value = False
 
         result = TrashResult(False)
-        self.trashcan.trash('sandbox/foo', False, result)
+        self.trashcan.trash('sandbox/foo', False, result, self.logger)
 
         assert self.fs.mock_calls == [
             call.isdir('.Trash'),

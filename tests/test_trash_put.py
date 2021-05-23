@@ -1,6 +1,8 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 import unittest
 
+import mock
+
 from trashcli.put import TrashPutCmd, TrashResult
 from trashcli.put import TopDirRelativePaths, AbsolutePaths
 from trashcli.put import top_trash_dir_rules, all_is_ok_rules
@@ -9,6 +11,7 @@ from six import StringIO
 from .asserts import assert_equals_with_unidiff
 from textwrap import dedent
 from mock import Mock, call
+
 
 class TestTrashPutTrashDirectory(unittest.TestCase):
     def setUp(self):
@@ -36,14 +39,16 @@ class TestTrashPutTrashDirectory(unittest.TestCase):
             ('~/xdh/Trash', '/', AbsolutePaths, all_is_ok_rules),
             ('/.Trash/123', '/', TopDirRelativePaths, top_trash_dir_rules),
             ('/.Trash-123', '/', TopDirRelativePaths, all_is_ok_rules),
-        ], TrashResult(False))] == self.try_trash_file_using_candidates.mock_calls
+        ], TrashResult(False), mock.ANY)] == \
+               self.try_trash_file_using_candidates.mock_calls
 
     def test_with_a_specified_trashdir(self):
         self.cmd.run(['trash-put', '--trash-dir=/Trash2', 'file'])
 
         assert [call('file', '/', [
             ('/Trash2', '/', TopDirRelativePaths, all_is_ok_rules),
-        ], TrashResult(False))] == self.try_trash_file_using_candidates.mock_calls
+        ], TrashResult(False), mock.ANY)] == \
+               self.try_trash_file_using_candidates.mock_calls
 
 
 class TrashPutTest(unittest.TestCase):
