@@ -73,33 +73,19 @@ class TrashPutCmd:
             return reporter.exit_code(result)
 
     def trash_all(self, args, user_trash_dir, logger, ignore_missing, reporter):
-        result = TrashResult(False)
-        for arg in args :
-            result = self.trash(arg,
-                                user_trash_dir,
-                                result,
-                                logger,
-                                ignore_missing,
-                                reporter)
-        return result
-
-    def trash(self,
-              file,
-              user_trash_dir,
-              result,
-              logger,
-              ignore_missing,
-              reporter) :
         trasher = Trasher(self.trash_directories_finder,
                           self.file_trasher,
                           self.volumes,
                           self.parent_path)
-        return trasher.trash(file,
-                             user_trash_dir,
-                             result,
-                             logger,
-                             ignore_missing,
-                             reporter)
+        result = TrashResult(False)
+        for arg in args :
+            result = trasher.trash(arg,
+                                   user_trash_dir,
+                                   result,
+                                   logger,
+                                   ignore_missing,
+                                   reporter)
+        return result
 
 
 class Trasher:
