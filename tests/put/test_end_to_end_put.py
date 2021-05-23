@@ -1,12 +1,15 @@
 # Copyright (C) 2021 Andrea Francia Bereguardo(PV) Italy
 import unittest
 
+import pytest
+
 from tests import run_command
 from tests.run_command import last_line_of, first_line_of
 from tests.support import MyPath
 from textwrap import dedent
 
 
+@pytest.mark.slow
 class TestEndToEndPut(unittest.TestCase):
     def setUp(self):
         self.tmp_dir = MyPath.make_temp_dir()
