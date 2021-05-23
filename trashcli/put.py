@@ -312,17 +312,15 @@ class MyLogger:
 
     def debug(self, message):
         if self.verbose > 1:
-            self.emit(message)
+            self.stderr.write("%s: %s\n" % (self.program_name, message))
 
     def info(self,message):
         if self.verbose > 0:
-            self.emit(message)
+            self.stderr.write("%s: %s\n" % (self.program_name, message))
 
     def warning2(self,message):
-        self.emit(message)
+        self.stderr.write("%s: %s\n" % (self.program_name, message))
 
-    def emit(self, message):
-        self.stderr.write("%s: %s\n" % (self.program_name,message))
 
 from optparse import IndentedHelpFormatter
 class NoWrapFormatter(IndentedHelpFormatter) :
