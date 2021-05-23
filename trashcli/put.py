@@ -63,25 +63,33 @@ class TrashPutCmd:
             return e.code
         else:
             logger = MyLogger(self.stderr, program_name, options.verbose)
-            self.reporter = TrashPutReporter(logger, self.environ)
+            reporter = TrashPutReporter(logger, self.environ)
             result = self.trash_all(args,
                                     options.trashdir,
                                     logger,
-                                    options.ignore_missing)
+                                    options.ignore_missing,
+                                    reporter)
 
-            return self.reporter.exit_code(result)
+            return reporter.exit_code(result)
 
-    def trash_all(self, args, user_trash_dir, logger, ignore_missing):
+    def trash_all(self, args, user_trash_dir, logger, ignore_missing, reporter):
         result = TrashResult(False)
         for arg in args :
             result = self.trash(arg,
                                 user_trash_dir,
                                 result,
                                 logger,
-                                ignore_missing)
+                                ignore_missing,
+                                reporter)
         return result
 
-    def trash(self, file, user_trash_dir, result, logger, ignore_missing) :
+    def trash(self,
+              file,
+              user_trash_dir,
+              result,
+              logger,
+              ignore_missing,
+              reporter) :
         """
         Trash a file in the appropriate trash directory.
         If the file belong to the same volume of the trash home directory it
@@ -98,14 +106,14 @@ class TrashPutCmd:
         """
 
         if self._should_skipped_by_specs(file):
-            self.reporter.unable_to_trash_dot_entries(file)
+            reporter.unable_to_trash_dot_entries(file)
             return TrashResult(False)
 
         if ignore_missing and not os.access(file, os.F_OK):
             return TrashResult(False)
 
         volume_of_file_to_be_trashed = self.volume_of_parent(file)
-        self.reporter.volume_of_file(volume_of_file_to_be_trashed)
+        reporter.volume_of_file(volume_of_file_to_be_trashed)
         candidates = self.trash_directories_finder.\
             possible_trash_directories_for(volume_of_file_to_be_trashed,
                                            user_trash_dir)
@@ -113,7 +121,8 @@ class TrashPutCmd:
                                                     volume_of_file_to_be_trashed,
                                                     candidates,
                                                     result,
-                                                    logger)
+                                                    logger,
+                                                    reporter)
 
 
     def try_trash_file_using_candidates(self,
@@ -121,7 +130,8 @@ class TrashPutCmd:
                                         volume_of_file_to_be_trashed,
                                         candidates,
                                         result,
-                                        logger):
+                                        logger,
+                                        reporter):
         file_has_been_trashed = False
         for path, volume, path_maker, checker in candidates:
             suffix = Suffix(random.randint)
@@ -136,31 +146,31 @@ class TrashPutCmd:
                 trash_dir.path,
                 self.fs)
             for message in messages:
-                self.reporter.log_info(message)
+                reporter.log_info(message)
 
             if trash_dir_is_secure:
                 volume_of_trash_dir = self.volumes.volume_of(self.realpath(trash_dir.path))
-                self.reporter.trash_dir_with_volume(trash_dir.path,
+                reporter.trash_dir_with_volume(trash_dir.path,
                                                     volume_of_trash_dir)
                 if self._file_could_be_trashed_in(volume_of_file_to_be_trashed,
                                                   volume_of_trash_dir):
                     try:
                         self.fs.ensure_dir(os.path.join(path, 'files'), 0o700)
                         trash_dir.trash2(file, self.now)
-                        self.reporter.file_has_been_trashed_in_as(
+                        reporter.file_has_been_trashed_in_as(
                             file,
                             trash_dir.path)
                         file_has_been_trashed = True
 
                     except (IOError, OSError) as error:
-                        self.reporter.unable_to_trash_file_in_because(
+                        reporter.unable_to_trash_file_in_because(
                                 file, trash_dir.path, str(error))
 
             if file_has_been_trashed: break
 
         if not file_has_been_trashed:
             result = result.mark_unable_to_trash_file()
-            self.reporter.unable_to_trash_file(file)
+            reporter.unable_to_trash_file(file)
 
         return result
 

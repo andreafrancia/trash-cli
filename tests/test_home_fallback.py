@@ -23,7 +23,6 @@ class TestHomeFallback(unittest.TestCase):
                 fs = self.fs,
                 parent_path = os.path.dirname,
                 realpath = lambda x:x)
-        self.trashcan.reporter = self.reporter
         self.logger = Mock()
         self.ignore_missing = False
 
@@ -40,7 +39,8 @@ class TestHomeFallback(unittest.TestCase):
                             False,
                             result,
                             self.logger,
-                            self.ignore_missing)
+                            self.ignore_missing,
+                            self.reporter)
 
         assert self.fs.mock_calls == [
             call.isdir('.Trash'),
@@ -65,7 +65,8 @@ class TestHomeFallback(unittest.TestCase):
                             False,
                             result,
                             self.logger,
-                            self.ignore_missing)
+                            self.ignore_missing,
+                            self.reporter)
 
         assert self.fs.mock_calls == [
             call.isdir('.Trash'),

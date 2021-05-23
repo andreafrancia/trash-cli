@@ -41,10 +41,9 @@ class TestTopDirRules:
                                now=datetime.now,
                                parent_path=parent_path,
                                realpath=realpath)
-        trashcan.reporter = reporter
         logger = Mock()
         result = TrashResult(False)
-        trashcan.trash('', False, result, logger, False)
+        trashcan.trash('', False, result, logger, False, reporter)
         assert [
             call('', '/volume/.Trash-uid')
             ] == reporter.file_has_been_trashed_in_as.mock_calls
@@ -67,7 +66,6 @@ class TestGlobalTrashCan(unittest.TestCase):
             fs=self.fs,
             parent_path=os.path.dirname,
             realpath=lambda x: x)
-        self.trashcan.reporter = self.reporter
         self.logger = Mock()
         self.ignore_missing = False
 
@@ -77,7 +75,8 @@ class TestGlobalTrashCan(unittest.TestCase):
                             False,
                             result,
                             self.logger,
-                            self.ignore_missing)
+                            self.ignore_missing,
+                            self.reporter)
 
         self.reporter.volume_of_file.assert_called_with('/')
 
@@ -89,7 +88,8 @@ class TestGlobalTrashCan(unittest.TestCase):
                             False,
                             result,
                             self.logger,
-                            self.ignore_missing)
+                            self.ignore_missing,
+                            self.reporter)
 
         self.reporter.unable_to_trash_file.assert_called_with('non-existent')
 
@@ -100,7 +100,8 @@ class TestGlobalTrashCan(unittest.TestCase):
                             False,
                             result,
                             self.logger,
-                            self.ignore_missing)
+                            self.ignore_missing,
+                            self.reporter)
 
         self.reporter.unable_to_trash_dot_entries.assert_called_with('.')
 
@@ -127,5 +128,6 @@ class TestGlobalTrashCan(unittest.TestCase):
                             False,
                             result,
                             self.logger,
-                            self.ignore_missing)
+                            self.ignore_missing,
+                            self.reporter)
 

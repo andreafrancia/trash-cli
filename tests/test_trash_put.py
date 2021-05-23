@@ -39,7 +39,7 @@ class TestTrashPutTrashDirectory(unittest.TestCase):
             ('~/xdh/Trash', '/', AbsolutePaths, all_is_ok_rules),
             ('/.Trash/123', '/', TopDirRelativePaths, top_trash_dir_rules),
             ('/.Trash-123', '/', TopDirRelativePaths, all_is_ok_rules),
-        ], TrashResult(False), mock.ANY)] == \
+        ], TrashResult(False), mock.ANY, mock.ANY)] == \
                self.try_trash_file_using_candidates.mock_calls
 
     def test_with_a_specified_trashdir(self):
@@ -47,7 +47,7 @@ class TestTrashPutTrashDirectory(unittest.TestCase):
 
         assert [call('file', '/', [
             ('/Trash2', '/', TopDirRelativePaths, all_is_ok_rules),
-        ], TrashResult(False), mock.ANY)] == \
+        ], TrashResult(False), mock.ANY, mock.ANY)] == \
                self.try_trash_file_using_candidates.mock_calls
 
 
