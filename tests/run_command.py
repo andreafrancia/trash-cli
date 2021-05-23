@@ -4,20 +4,24 @@ import subprocess
 from trashcli import base_dir
 
 
-def run_command(cwd, command, args=None, input=''):
+def run_command(cwd, command, args=None, input='', env=None):
     class Result:
         def __init__(self, stdout, stderr, exit_code):
             self.stdout = stdout
             self.stderr = stderr
             self.exit_code = exit_code
 
+    if env == None:
+        env = {}
     if args == None:
         args = []
     command_full_path = os.path.join(base_dir, command)
     process = subprocess.Popen(["python", command_full_path] + args,
                                stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE, cwd=cwd)
+                               stderr=subprocess.PIPE,
+                               cwd=cwd,
+                               env=env)
     stdout, stderr = process.communicate(input=input.encode('utf-8'))
 
     return Result(stdout.decode('utf-8'),

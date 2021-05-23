@@ -8,6 +8,8 @@ from os.path import exists as file_exists
 from datetime import datetime
 
 from six import StringIO
+
+from . import run_command
 from .files import make_empty_file, require_empty_dir
 from .support import MyPath
 from .files import make_sticky_dir
@@ -45,20 +47,26 @@ class TrashPutFixture:
 
 
 @pytest.mark.slow
-class Test_when_deleting_an_existing_file(unittest.TestCase):
+class TestDeletingExistingFile(unittest.TestCase):
     def setUp(self):
-        self.fixture = TrashPutFixture([])
-        make_empty_file(self.fixture.temp_dir / 'foo')
-        self.fixture.run_trashput('trash-put', self.fixture.temp_dir / 'foo')
+        self.temp_dir = MyPath.make_temp_dir()
+        env = {'XDG_DATA_HOME': self.temp_dir / 'XDG_DATA_HOME' }
+        make_empty_file(self.temp_dir / 'foo')
+        self.result = run_command.run_command(self.temp_dir, "trash-put",
+                                              [self.temp_dir / 'foo'],
+                                              env=env)
 
     def test_it_should_remove_the_file(self):
-        assert not file_exists(self.fixture.temp_dir / 'foo')
+        assert not file_exists(self.temp_dir / 'foo')
 
     def test_it_should_remove_it_silently(self):
-        self.assertEqual("", self.fixture.stdout)
+        self.assertEqual("", self.result.stdout)
 
     def test_a_trashinfo_file_should_have_been_created(self):
-        read_file(self.fixture.temp_dir / 'XDG_DATA_HOME/Trash/info/foo.trashinfo')
+        read_file(self.temp_dir / 'XDG_DATA_HOME/Trash/info/foo.trashinfo')
+
+    def tearDown(self):
+        self.temp_dir.clean_up()
 
 @pytest.mark.slow
 class Test_when_deleting_an_existing_file_in_verbose_mode(unittest.TestCase):
