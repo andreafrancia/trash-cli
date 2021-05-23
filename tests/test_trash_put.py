@@ -1,55 +1,11 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 import unittest
 
-import mock
-
 from trashcli.put import TrashPutCmd, TrashResult
-from trashcli.put import TopDirRelativePaths, AbsolutePaths
-from trashcli.put import top_trash_dir_rules, all_is_ok_rules
 
 from six import StringIO
 from .asserts import assert_equals_with_unidiff
 from textwrap import dedent
-from mock import Mock, call
-
-
-class TestTrashPutTrashDirectory(unittest.TestCase):
-    def setUp(self):
-        parent_path = lambda _ : None
-        class MyVolumes:
-            def volume_of(self, path):
-                return '/'
-        volumes = MyVolumes()
-        self.try_trash_file_using_candidates = Mock()
-        self.file_trasher = Mock(spec=['try_trash_file_using_candidates'])
-        self.cmd = TrashPutCmd(None,
-                               None,
-                               {'XDG_DATA_HOME':'~/xdh'},
-                               volumes,
-                               parent_path,
-                               None,
-                               None,
-                               lambda : '123',
-                               None)
-        self.cmd.file_trasher = self.file_trasher
-
-    def test_normally(self):
-        self.cmd.run(['trash-put', 'file'])
-
-        assert [call('file', '/', [
-            ('~/xdh/Trash', '/', AbsolutePaths, all_is_ok_rules),
-            ('/.Trash/123', '/', TopDirRelativePaths, top_trash_dir_rules),
-            ('/.Trash-123', '/', TopDirRelativePaths, all_is_ok_rules),
-        ], TrashResult(False), mock.ANY, mock.ANY)] == \
-               self.file_trasher.try_trash_file_using_candidates.mock_calls
-
-    def test_with_a_specified_trashdir(self):
-        self.cmd.run(['trash-put', '--trash-dir=/Trash2', 'file'])
-
-        assert [call('file', '/', [
-            ('/Trash2', '/', TopDirRelativePaths, all_is_ok_rules),
-        ], TrashResult(False), mock.ANY, mock.ANY)] == \
-               self.file_trasher.try_trash_file_using_candidates.mock_calls
 
 
 class TrashPutTest(unittest.TestCase):
@@ -112,6 +68,7 @@ def assert_line_in_text(expected_line, text):
                 'Line not found in text\n'
                 'line: %s\n' % expected_line +
                 'text:\n%s\n' % format(text.splitlines()))
+
 
 class TestTrashPutCmd(TrashPutTest):
 

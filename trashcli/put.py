@@ -41,15 +41,17 @@ class TrashPutCmd:
         self.stdout      = stdout
         self.stderr      = stderr
         self.environ     = environ
-        self.volumes     = volumes
-        self.parent_path = parent_path
-        self.trash_directories_finder = TrashDirectoriesFinder(environ,
-                                                               getuid,
-                                                               volumes)
-        self.file_trasher = FileTrasher(fs,
-                                        volumes,
-                                        realpath,
-                                        now)
+        trash_directories_finder = TrashDirectoriesFinder(environ,
+                                                          getuid,
+                                                          volumes)
+        file_trasher = FileTrasher(fs,
+                                   volumes,
+                                   realpath,
+                                   now)
+        self.trasher = Trasher(trash_directories_finder,
+                               file_trasher,
+                               volumes,
+                               parent_path)
 
     def run(self, argv):
         program_name  = os.path.basename(argv[0])
@@ -73,18 +75,14 @@ class TrashPutCmd:
             return reporter.exit_code(result)
 
     def trash_all(self, args, user_trash_dir, logger, ignore_missing, reporter):
-        trasher = Trasher(self.trash_directories_finder,
-                          self.file_trasher,
-                          self.volumes,
-                          self.parent_path)
         result = TrashResult(False)
         for arg in args :
-            result = trasher.trash(arg,
-                                   user_trash_dir,
-                                   result,
-                                   logger,
-                                   ignore_missing,
-                                   reporter)
+            result = self.trasher.trash(arg,
+                                        user_trash_dir,
+                                        result,
+                                        logger,
+                                        ignore_missing,
+                                        reporter)
         return result
 
 
