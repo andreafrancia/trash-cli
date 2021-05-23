@@ -13,17 +13,15 @@ from . import run_command
 from .files import make_empty_file, require_empty_dir
 from .support import MyPath
 from .files import make_sticky_dir
-from trashcli.fstab import create_fake_volume_of
+from trashcli import fstab
 from trashcli.fs import read_file
 from trashcli.put import RealFs
 from .asserts import assert_line_in_text
 import unittest
 
-
 class TrashPutFixture:
 
-    def __init__(self, volumes):
-        self.volumes = create_fake_volume_of(volumes)
+    def __init__(self):
         self.temp_dir = MyPath.make_temp_dir()
 
     def run_trashput(self, *argv):
@@ -34,7 +32,7 @@ class TrashPutFixture:
             stdout      = self.out,
             stderr      = self.err,
             environ     = self.environ,
-            volumes     = self.volumes,
+            volumes     = fstab.volumes,
             parent_path = os.path.dirname,
             realpath    = lambda x:x,
             fs          = RealFs(),
@@ -71,7 +69,7 @@ class TestDeletingExistingFile(unittest.TestCase):
 @pytest.mark.slow
 class Test_when_deleting_an_existing_file_in_verbose_mode(unittest.TestCase):
     def setUp(self):
-        self.fixture = TrashPutFixture([])
+        self.fixture = TrashPutFixture()
         self.foo_file = self.fixture.temp_dir / "foo"
         make_empty_file(self.foo_file)
         self.fixture.run_trashput('trash-put', '-v', self.foo_file)
@@ -90,7 +88,7 @@ class Test_when_deleting_an_existing_file_in_verbose_mode(unittest.TestCase):
 class Test_when_deleting_a_non_existing_file(unittest.TestCase):
     def setUp(self):
         self.tmp_dir = MyPath.make_temp_dir()
-        self.fixture = TrashPutFixture([])
+        self.fixture = TrashPutFixture()
 
     def test_should_be_succesfull(self):
         self.fixture.run_trashput('trash-put', '-v', self.tmp_dir / 'non-existent')
@@ -104,7 +102,7 @@ class Test_when_deleting_a_non_existing_file(unittest.TestCase):
 class Test_when_fed_with_dot_arguments(unittest.TestCase):
 
     def setUp(self):
-        self.fixture = TrashPutFixture([])
+        self.fixture = TrashPutFixture()
 
     def test_dot_argument_is_skipped(self):
 
@@ -158,7 +156,7 @@ class TestUnsecureTrashDirMessages(unittest.TestCase):
     def setUp(self):
         self.temp_dir = MyPath.make_temp_dir()
         self.fake_vol = self.temp_dir / 'fake-vol'
-        self.fixture = TrashPutFixture([])
+        self.fixture = TrashPutFixture()
         require_empty_dir(self.fake_vol)
         make_empty_file(self.fake_vol / 'foo')
 
