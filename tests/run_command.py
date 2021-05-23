@@ -6,9 +6,10 @@ from trashcli import base_dir
 
 def run_command(cwd, command, args=None, input=''):
     class Result:
-        def __init__(self, stdout, stderr):
+        def __init__(self, stdout, stderr, exit_code):
             self.stdout = stdout
             self.stderr = stderr
+            self.exit_code = exit_code
 
     if args == None:
         args = []
@@ -19,7 +20,9 @@ def run_command(cwd, command, args=None, input=''):
                                stderr=subprocess.PIPE, cwd=cwd)
     stdout, stderr = process.communicate(input=input.encode('utf-8'))
 
-    return Result(stdout.decode('utf-8'), stderr.decode('utf-8'))
+    return Result(stdout.decode('utf-8'),
+                  stderr.decode('utf-8'),
+                  process.returncode)
 
 
 def last_line_of(stdout):
@@ -27,3 +30,6 @@ def last_line_of(stdout):
         return stdout.splitlines()[-1]
     else:
         return ''
+
+def first_line_of(out):
+    return out.splitlines()[0]
