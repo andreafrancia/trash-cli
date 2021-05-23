@@ -42,7 +42,7 @@ class TestTopDirRules:
                            parent_path)
         logger = Mock()
         result = TrashResult(False)
-        trashcan.trash('', False, result, logger, False, reporter)
+        trashcan.trash('', False, result, logger, False, reporter, None)
         assert [
             call('', '/volume/.Trash-uid')
             ] == reporter.file_has_been_trashed_in_as.mock_calls
@@ -76,7 +76,8 @@ class TestGlobalTrashCan(unittest.TestCase):
                            result,
                            self.logger,
                            self.ignore_missing,
-                           self.reporter)
+                           self.reporter,
+                           None)
 
         self.reporter.volume_of_file.assert_called_with('/')
 
@@ -89,7 +90,8 @@ class TestGlobalTrashCan(unittest.TestCase):
                            result,
                            self.logger,
                            self.ignore_missing,
-                           self.reporter)
+                           self.reporter,
+                           None)
 
         self.reporter.unable_to_trash_file.assert_called_with('non-existent')
 
@@ -101,7 +103,8 @@ class TestGlobalTrashCan(unittest.TestCase):
                            result,
                            self.logger,
                            self.ignore_missing,
-                           self.reporter)
+                           self.reporter,
+                           None)
 
         self.reporter.unable_to_trash_dot_entries.assert_called_with('.')
 
@@ -129,5 +132,6 @@ class TestGlobalTrashCan(unittest.TestCase):
                            result,
                            self.logger,
                            self.ignore_missing,
-                           self.reporter)
+                           self.reporter,
+                           None)
 

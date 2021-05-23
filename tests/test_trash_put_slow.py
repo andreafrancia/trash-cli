@@ -158,14 +158,17 @@ class TestUnsecureTrashDirMessages(unittest.TestCase):
     def setUp(self):
         self.temp_dir = MyPath.make_temp_dir()
         self.fake_vol = self.temp_dir / 'fake-vol'
-        self.fixture = TrashPutFixture([self.fake_vol])
+        self.fixture = TrashPutFixture([])
         require_empty_dir(self.fake_vol)
         make_empty_file(self.fake_vol / 'foo')
 
     def test_when_is_unsticky(self):
         require_empty_dir(self.fake_vol / '.Trash')
 
-        self.fixture.run_trashput('trash-put', '-v', self.fake_vol / 'foo')
+        self.fixture.run_trashput('trash-put',
+                                  '--force-volume', self.fake_vol,
+                                  '-v',
+                                  self.fake_vol / 'foo')
 
         assert_line_in_text(
                 'trash-put: found unsecure .Trash dir (should be sticky): ' +
@@ -174,7 +177,10 @@ class TestUnsecureTrashDirMessages(unittest.TestCase):
     def test_when_it_is_not_a_dir(self):
         make_empty_file(self.fake_vol / '.Trash')
 
-        self.fixture.run_trashput('trash-put', '-v', self.fake_vol / 'foo')
+        self.fixture.run_trashput('trash-put',
+                                  '--force-volume', self.fake_vol,
+                                  '-v',
+                                  self.fake_vol / 'foo')
 
         assert_line_in_text(
                 'trash-put: found unusable .Trash dir (should be a dir): ' +
@@ -184,7 +190,9 @@ class TestUnsecureTrashDirMessages(unittest.TestCase):
         make_sticky_dir( self.fake_vol / 'link-destination')
         os.symlink('link-destination',  self.fake_vol / '.Trash')
 
-        self.fixture.run_trashput('trash-put', '-v', self.fake_vol / 'foo')
+        self.fixture.run_trashput('trash-put',
+                                  '--force-volume', self.fake_vol,
+                                  '-v', self.fake_vol / 'foo')
 
         assert_line_in_text(
                 'trash-put: found unsecure .Trash dir (should not be a symlink): ' +

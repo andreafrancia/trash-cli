@@ -31,3 +31,13 @@ class Test_get_option_parser(unittest.TestCase):
         (options, args) = self.parser.parse_args(['--trash-dir', '/MyTrash'])
 
         assert options.trashdir == '/MyTrash'
+
+    def test_force_volume_off(self):
+        (options, args) = self.parser.parse_args([])
+
+        assert options.forced_volume == None
+
+    def test_force_volume_on(self):
+        (options, args) = self.parser.parse_args(['--force-volume', '/fake-vol'])
+
+        assert options.forced_volume == '/fake-vol'

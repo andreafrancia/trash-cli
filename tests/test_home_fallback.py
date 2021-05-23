@@ -42,7 +42,8 @@ class TestHomeFallback(unittest.TestCase):
                             result,
                             self.logger,
                             self.ignore_missing,
-                            self.reporter)
+                            self.reporter,
+                            None)
 
         assert self.fs.mock_calls == [
             call.isdir('.Trash'),
@@ -68,7 +69,8 @@ class TestHomeFallback(unittest.TestCase):
                             result,
                             self.logger,
                             self.ignore_missing,
-                            self.reporter)
+                            self.reporter,
+                            None)
 
         assert self.fs.mock_calls == [
             call.isdir('.Trash'),

@@ -70,11 +70,18 @@ class TrashPutCmd:
                                     options.trashdir,
                                     logger,
                                     options.ignore_missing,
-                                    reporter)
+                                    reporter,
+                                    options.forced_volume)
 
             return reporter.exit_code(result)
 
-    def trash_all(self, args, user_trash_dir, logger, ignore_missing, reporter):
+    def trash_all(self,
+                  args,
+                  user_trash_dir,
+                  logger,
+                  ignore_missing,
+                  reporter,
+                  forced_volume):
         result = TrashResult(False)
         for arg in args :
             result = self.trasher.trash(arg,
@@ -82,7 +89,8 @@ class TrashPutCmd:
                                         result,
                                         logger,
                                         ignore_missing,
-                                        reporter)
+                                        reporter,
+                                        forced_volume)
         return result
 
 
@@ -99,7 +107,8 @@ class Trasher:
               result,
               logger,
               ignore_missing,
-              reporter) :
+              reporter,
+              forced_volume) :
         """
         Trash a file in the appropriate trash directory.
         If the file belong to the same volume of the trash home directory it
@@ -122,7 +131,8 @@ class Trasher:
         if ignore_missing and not os.access(file, os.F_OK):
             return result
 
-        volume_of_file_to_be_trashed = self.volume_of_parent(file)
+        volume_of_file_to_be_trashed = forced_volume or \
+                                       self.volume_of_parent(file)
         reporter.volume_of_file(volume_of_file_to_be_trashed)
         candidates = self.trash_directories_finder.\
             possible_trash_directories_for(volume_of_file_to_be_trashed,
@@ -245,6 +255,11 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                       action="count",
                       dest="verbose",
                       help="explain what is being done")
+    parser.add_option('--force-volume',
+                      default=None,
+                      action="store",
+                      dest="forced_volume",
+                      help=SUPPRESS_HELP)
     original_print_help = parser.print_help
     def patched_print_help():
         original_print_help(stdout)
@@ -358,7 +373,9 @@ class MyLogger:
         self.stderr.write("%s: %s\n" % (self.program_name, message))
 
 
-from optparse import IndentedHelpFormatter
+from optparse import IndentedHelpFormatter, SUPPRESS_HELP
+
+
 class NoWrapFormatter(IndentedHelpFormatter) :
     def _format_text(self, text) :
         "[Does not] format a text, return the text as it is."

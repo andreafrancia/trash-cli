@@ -25,7 +25,8 @@ class TestTrasher(unittest.TestCase):
                            'result',
                            'logger',
                            False,
-                           self.reporter)
+                           self.reporter,
+                           None)
 
         assert self.trash_directories_finder.mock_calls == \
                [call.possible_trash_directories_for(
