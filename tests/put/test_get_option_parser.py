@@ -21,3 +21,13 @@ class Test_get_option_parser(unittest.TestCase):
         (options, args) = self.parser.parse_args(['-vv'])
 
         assert options.verbose == 2
+
+    def test_trash_dir_not_specified(self):
+        (options, args) = self.parser.parse_args([])
+
+        assert options.trashdir == None
+
+    def test_trash_dir_specified(self):
+        (options, args) = self.parser.parse_args(['--trash-dir', '/MyTrash'])
+
+        assert options.trashdir == '/MyTrash'
