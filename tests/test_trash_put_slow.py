@@ -90,7 +90,7 @@ class Test_when_deleting_an_existing_file_in_verbose_mode(unittest.TestCase):
 class Test_when_deleting_a_non_existing_file(unittest.TestCase):
     def setUp(self):
         self.tmp_dir = MyPath.make_temp_dir()
-        self.fixture = TrashPutFixture([self.tmp_dir])
+        self.fixture = TrashPutFixture([])
 
     def test_should_be_succesfull(self):
         self.fixture.run_trashput('trash-put', '-v', self.tmp_dir / 'non-existent')
