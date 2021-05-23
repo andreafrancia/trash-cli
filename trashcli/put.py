@@ -12,46 +12,31 @@ from .trash import version
 
 
 def main():
-    return TrashPutCmd(
-        sys.stdout,
-        sys.stderr,
-        os.environ,
-        volumes,
-        parent_path,
-        os.path.realpath,
-        RealFs(),
-        os.getuid,
-        datetime.now
-    ).run(sys.argv)
+    trash_directories_finder = TrashDirectoriesFinder(os.environ,
+                                                      os.getuid,
+                                                      volumes)
+    file_trasher = FileTrasher(RealFs(),
+                               volumes,
+                               os.path.realpath,
+                               datetime.now)
+    trasher = Trasher(trash_directories_finder,
+                      file_trasher,
+                      volumes,
+                      parent_path)
+    cmd = TrashPutCmd(sys.stdout, sys.stderr, os.environ, trasher)
+    return cmd.run(sys.argv)
+
 
 def parent_path(path):
     return os.path.realpath(os.path.dirname(path))
 
+
 class TrashPutCmd:
-    def __init__(self,
-                 stdout,
-                 stderr,
-                 environ,
-                 volumes,
-                 parent_path,
-                 realpath,
-                 fs,
-                 getuid,
-                 now):
-        self.stdout      = stdout
-        self.stderr      = stderr
-        self.environ     = environ
-        trash_directories_finder = TrashDirectoriesFinder(environ,
-                                                          getuid,
-                                                          volumes)
-        file_trasher = FileTrasher(fs,
-                                   volumes,
-                                   realpath,
-                                   now)
-        self.trasher = Trasher(trash_directories_finder,
-                               file_trasher,
-                               volumes,
-                               parent_path)
+    def __init__(self, stdout, stderr, environ, trasher):
+        self.stdout = stdout
+        self.stderr = stderr
+        self.environ = environ
+        self.trasher = trasher
 
     def run(self, argv):
         program_name  = os.path.basename(argv[0])
