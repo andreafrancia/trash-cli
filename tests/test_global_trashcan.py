@@ -3,7 +3,7 @@ import unittest
 from mock import Mock, call
 from datetime import datetime
 
-from trashcli.put import TrashPutCmd, TrashResult
+from trashcli.put import TrashPutCmd, TrashResult, Trasher, TrashDirectoriesFinder, FileTrasher
 import os
 
 class TestTopDirRules:
@@ -56,27 +56,28 @@ class TestGlobalTrashCan(unittest.TestCase):
         self.volumes = Mock()
         self.volumes.volume_of.return_value = '/'
 
-        self.trashcan = TrashPutCmd(
-            stdout=None,
-            stderr=None,
-            volumes=self.volumes,
-            getuid=lambda: 123,
-            now=datetime.now,
-            environ=dict(),
-            fs=self.fs,
-            parent_path=os.path.dirname,
-            realpath=lambda x: x)
+        trash_directories_finder = TrashDirectoriesFinder(dict(),
+                                                          lambda: 123,
+                                                          self.volumes)
+        file_trasher = FileTrasher(self.fs,
+                                   self.volumes,
+                                   lambda x: x,
+                                   datetime.now)
+        self.trasher = Trasher(trash_directories_finder,
+                               file_trasher,
+                               self.volumes,
+                               os.path.dirname)
         self.logger = Mock()
         self.ignore_missing = False
 
     def test_log_volume(self):
         result = TrashResult(False)
-        self.trashcan.trash('a-dir/with-a-file',
-                            False,
-                            result,
-                            self.logger,
-                            self.ignore_missing,
-                            self.reporter)
+        self.trasher.trash('a-dir/with-a-file',
+                           False,
+                           result,
+                           self.logger,
+                           self.ignore_missing,
+                           self.reporter)
 
         self.reporter.volume_of_file.assert_called_with('/')
 
@@ -84,24 +85,24 @@ class TestGlobalTrashCan(unittest.TestCase):
         self.fs.move.side_effect = IOError
 
         result = TrashResult(False)
-        self.trashcan.trash('non-existent',
-                            False,
-                            result,
-                            self.logger,
-                            self.ignore_missing,
-                            self.reporter)
+        self.trasher.trash('non-existent',
+                           False,
+                           result,
+                           self.logger,
+                           self.ignore_missing,
+                           self.reporter)
 
         self.reporter.unable_to_trash_file.assert_called_with('non-existent')
 
     def test_should_not_delete_a_dot_entru(self):
 
         result = TrashResult(False)
-        self.trashcan.trash('.',
-                            False,
-                            result,
-                            self.logger,
-                            self.ignore_missing,
-                            self.reporter)
+        self.trasher.trash('.',
+                           False,
+                           result,
+                           self.logger,
+                           self.ignore_missing,
+                           self.reporter)
 
         self.reporter.unable_to_trash_dot_entries.assert_called_with('.')
 
@@ -124,10 +125,10 @@ class TestGlobalTrashCan(unittest.TestCase):
             }[path])
 
         result = TrashResult(False)
-        self.trashcan.trash('foo',
-                            False,
-                            result,
-                            self.logger,
-                            self.ignore_missing,
-                            self.reporter)
+        self.trasher.trash('foo',
+                           False,
+                           result,
+                           self.logger,
+                           self.ignore_missing,
+                           self.reporter)
 
