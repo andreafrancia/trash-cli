@@ -107,10 +107,10 @@ class TrashPutCmd:
 
         if self._should_skipped_by_specs(file):
             reporter.unable_to_trash_dot_entries(file)
-            return TrashResult(False)
+            return result
 
         if ignore_missing and not os.access(file, os.F_OK):
-            return TrashResult(False)
+            return result
 
         volume_of_file_to_be_trashed = self.volume_of_parent(file)
         reporter.volume_of_file(volume_of_file_to_be_trashed)
