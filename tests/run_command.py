@@ -21,3 +21,9 @@ def run_command(cwd, command, args=None, input=''):
 
     return Result(stdout.decode('utf-8'), stderr.decode('utf-8'))
 
+
+def last_line_of(stdout):
+    if len(stdout.splitlines()) > 0:
+        return stdout.splitlines()[-1]
+    else:
+        return ''
