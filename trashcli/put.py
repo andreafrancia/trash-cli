@@ -263,6 +263,7 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
     parser.exit = patched_exit
     return parser
 
+
 class TrashDirectoriesFinder:
     def __init__(self, environ, getuid, volumes):
         self.environ = environ
