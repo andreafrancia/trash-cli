@@ -3,7 +3,7 @@ import unittest
 from mock import Mock, call
 from datetime import datetime
 
-from trashcli.put import TrashPutCmd, TrashResult, Trasher, TrashDirectoriesFinder, FileTrasher
+from trashcli.put import TrashResult, Trasher, TrashDirectoriesFinder, FileTrasher
 import os
 
 class TestTopDirRules:

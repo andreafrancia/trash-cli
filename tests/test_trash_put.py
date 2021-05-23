@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 import unittest
 
-from trashcli.put import TrashPutCmd, TrashResult
+from trashcli.put import TrashPutCmd
 
 from six import StringIO
 from .asserts import assert_equals_with_unidiff
