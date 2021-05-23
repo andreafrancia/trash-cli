@@ -35,5 +35,6 @@ def last_line_of(stdout):
     else:
         return ''
 
+
 def first_line_of(out):
     return out.splitlines()[0]
