@@ -1,14 +1,14 @@
 import unittest
 
+from mock import Mock, call
+
 from trashcli.put import TrashPutReporter
 
 
 class TestTrashPutReporter(unittest.TestCase):
     def test_it_should_record_failures(self):
-        reporter = TrashPutReporter(self, {})
+        logger = Mock(['warning'])
+        reporter = TrashPutReporter(logger, {})
         reporter.unable_to_trash_file('a file')
-        assert 'cannot trash non existent \'a file\'' == self.warning_msg
-
-    def warning(self, msg):
-        self.warning_msg = msg
-
+        assert [call('cannot trash non existent \'a file\'')] == \
+               logger.warning.mock_calls
