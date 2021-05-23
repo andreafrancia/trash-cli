@@ -21,6 +21,7 @@ class TestTrashPutTrashDirectory(unittest.TestCase):
                 return '/'
         volumes = MyVolumes()
         self.try_trash_file_using_candidates = Mock()
+        self.file_trasher = Mock(spec=['try_trash_file_using_candidates'])
         self.cmd = TrashPutCmd(None,
                                None,
                                {'XDG_DATA_HOME':'~/xdh'},
@@ -30,7 +31,7 @@ class TestTrashPutTrashDirectory(unittest.TestCase):
                                None,
                                lambda : '123',
                                None)
-        self.cmd.try_trash_file_using_candidates = self.try_trash_file_using_candidates
+        self.cmd.file_trasher = self.file_trasher
 
     def test_normally(self):
         self.cmd.run(['trash-put', 'file'])
@@ -40,7 +41,7 @@ class TestTrashPutTrashDirectory(unittest.TestCase):
             ('/.Trash/123', '/', TopDirRelativePaths, top_trash_dir_rules),
             ('/.Trash-123', '/', TopDirRelativePaths, all_is_ok_rules),
         ], TrashResult(False), mock.ANY, mock.ANY)] == \
-               self.try_trash_file_using_candidates.mock_calls
+               self.file_trasher.try_trash_file_using_candidates.mock_calls
 
     def test_with_a_specified_trashdir(self):
         self.cmd.run(['trash-put', '--trash-dir=/Trash2', 'file'])
@@ -48,7 +49,7 @@ class TestTrashPutTrashDirectory(unittest.TestCase):
         assert [call('file', '/', [
             ('/Trash2', '/', TopDirRelativePaths, all_is_ok_rules),
         ], TrashResult(False), mock.ANY, mock.ANY)] == \
-               self.try_trash_file_using_candidates.mock_calls
+               self.file_trasher.try_trash_file_using_candidates.mock_calls
 
 
 class TrashPutTest(unittest.TestCase):

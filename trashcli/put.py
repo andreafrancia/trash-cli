@@ -50,6 +50,10 @@ class TrashPutCmd:
         self.trash_directories_finder = TrashDirectoriesFinder(self.environ,
                                                                self.getuid,
                                                                self.volumes)
+        self.file_trasher = FileTrasher(self.fs,
+                                        self.volumes,
+                                        self.realpath,
+                                        self.now)
 
     def run(self, argv):
         program_name  = os.path.basename(argv[0])
@@ -117,13 +121,28 @@ class TrashPutCmd:
         candidates = self.trash_directories_finder.\
             possible_trash_directories_for(volume_of_file_to_be_trashed,
                                            user_trash_dir)
-        return self.try_trash_file_using_candidates(file,
-                                                    volume_of_file_to_be_trashed,
-                                                    candidates,
-                                                    result,
-                                                    logger,
-                                                    reporter)
+        return self.file_trasher.try_trash_file_using_candidates(file,
+                                                                 volume_of_file_to_be_trashed,
+                                                                 candidates,
+                                                                 result,
+                                                                 logger,
+                                                                 reporter)
 
+
+    def volume_of_parent(self, file):
+        return self.volumes.volume_of(self.parent_path(file))
+
+    def _should_skipped_by_specs(self, file):
+        basename = os.path.basename(file)
+        return (basename == ".") or (basename == "..")
+
+
+class FileTrasher:
+    def __init__(self, fs, volumes, realpath, now):
+        self.fs = fs
+        self.volumes = volumes
+        self.realpath = realpath
+        self.now = now
 
     def try_trash_file_using_candidates(self,
                                         file,
@@ -151,7 +170,7 @@ class TrashPutCmd:
             if trash_dir_is_secure:
                 volume_of_trash_dir = self.volumes.volume_of(self.realpath(trash_dir.path))
                 reporter.trash_dir_with_volume(trash_dir.path,
-                                                    volume_of_trash_dir)
+                                               volume_of_trash_dir)
                 if self._file_could_be_trashed_in(volume_of_file_to_be_trashed,
                                                   volume_of_trash_dir):
                     try:
@@ -164,7 +183,7 @@ class TrashPutCmd:
 
                     except (IOError, OSError) as error:
                         reporter.unable_to_trash_file_in_because(
-                                file, trash_dir.path, str(error))
+                            file, trash_dir.path, str(error))
 
             if file_has_been_trashed: break
 
@@ -174,12 +193,6 @@ class TrashPutCmd:
 
         return result
 
-    def volume_of_parent(self, file):
-        return self.volumes.volume_of(self.parent_path(file))
-
-    def _should_skipped_by_specs(self, file):
-        basename = os.path.basename(file)
-        return (basename == ".") or (basename == "..")
 
     def _file_could_be_trashed_in(self,
                                   volume_of_file_to_be_trashed,
