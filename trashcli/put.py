@@ -90,6 +90,31 @@ class TrashPutCmd:
               logger,
               ignore_missing,
               reporter) :
+        trasher = Trasher(self.trash_directories_finder,
+                          self.file_trasher,
+                          self.volumes,
+                          self.parent_path)
+        return trasher.trash(file,
+                             user_trash_dir,
+                             result,
+                             logger,
+                             ignore_missing,
+                             reporter)
+
+
+class Trasher:
+    def __init__(self, trash_directories_finder, file_trasher, volumes, parent_path):
+        self.trash_directories_finder = trash_directories_finder
+        self.file_trasher = file_trasher
+        self.volumes = volumes
+        self.parent_path = parent_path
+    def trash(self,
+              file,
+              user_trash_dir,
+              result,
+              logger,
+              ignore_missing,
+              reporter) :
         """
         Trash a file in the appropriate trash directory.
         If the file belong to the same volume of the trash home directory it
@@ -123,14 +148,12 @@ class TrashPutCmd:
                                                                  result,
                                                                  logger,
                                                                  reporter)
-
-
-    def volume_of_parent(self, file):
-        return self.volumes.volume_of(self.parent_path(file))
-
     def _should_skipped_by_specs(self, file):
         basename = os.path.basename(file)
         return (basename == ".") or (basename == "..")
+
+    def volume_of_parent(self, file):
+        return self.volumes.volume_of(self.parent_path(file))
 
 
 class FileTrasher:
