@@ -8,7 +8,8 @@ from trashcli.put import Trasher
 class TestTrasher(unittest.TestCase):
     def setUp(self):
         self.file_trasher = Mock(spec=['trash_file'])
-        self.trasher = Trasher(self.file_trasher)
+        self.input = Mock()
+        self.trasher = Trasher(self.file_trasher, self.input)
 
     def test(self):
         self.trasher.trash('file',
@@ -17,7 +18,8 @@ class TestTrasher(unittest.TestCase):
                            'logger',
                            False,
                            'reporter',
-                           'forced_volume')
+                           'forced_volume',
+                           'program_name')
 
         assert self.file_trasher.mock_calls == \
                [call.trash_file(
@@ -37,7 +39,8 @@ class TestTrasher(unittest.TestCase):
                            'logger',
                            False,
                            self.reporter,
-                           'forced_volume')
+                           'forced_volume',
+                           'program_name')
 
         assert self.reporter.mock_calls == \
                [call.unable_to_trash_dot_entries('.')]

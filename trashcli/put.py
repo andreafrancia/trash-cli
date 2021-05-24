@@ -6,7 +6,7 @@ from datetime import datetime
 
 from .fstab import volumes
 from .trash import EX_OK, EX_IOERR, home_trash_dir, volume_trash_dir1, \
-    volume_trash_dir2
+    volume_trash_dir2, my_input
 from .trash import path_of_backup_copy
 from .trash import version
 
@@ -21,7 +21,7 @@ def main():
                                datetime.now,
                                trash_directories_finder,
                                parent_path)
-    trasher = Trasher(file_trasher)
+    trasher = Trasher(file_trasher, my_input)
     cmd = TrashPutCmd(sys.stdout, sys.stderr, os.environ, trasher)
     return cmd.run(sys.argv)
 
@@ -55,7 +55,8 @@ class TrashPutCmd:
                                     logger,
                                     options.ignore_missing,
                                     reporter,
-                                    options.forced_volume)
+                                    options.forced_volume,
+                                    program_name)
 
             return reporter.exit_code(result)
 
@@ -65,7 +66,8 @@ class TrashPutCmd:
                   logger,
                   ignore_missing,
                   reporter,
-                  forced_volume):
+                  forced_volume,
+                  program_name):
         result = TrashResult(False)
         for arg in args :
             result = self.trasher.trash(arg,
@@ -74,13 +76,15 @@ class TrashPutCmd:
                                         logger,
                                         ignore_missing,
                                         reporter,
-                                        forced_volume)
+                                        forced_volume,
+                                        program_name)
         return result
 
 
 class Trasher:
-    def __init__(self, file_trasher):
+    def __init__(self, file_trasher, input):
         self.file_trasher = file_trasher
+        self.input = input
 
     def trash(self,
               file,
@@ -89,7 +93,8 @@ class Trasher:
               logger,
               ignore_missing,
               reporter,
-              forced_volume) :
+              forced_volume,
+              program_name) :
         """
         Trash a file in the appropriate trash directory.
         If the file belong to the same volume of the trash home directory it
