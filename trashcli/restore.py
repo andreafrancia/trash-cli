@@ -2,7 +2,8 @@ import os
 import sys
 
 from .list_mount_points import os_mount_points
-from .trash import version, home_trash_dir, volume_trash_dir1, volume_trash_dir2
+from .trash import (version, home_trash_dir, volume_trash_dir1,
+                    volume_trash_dir2, my_input)
 from .fstab import volume_of
 from .fs import contents_of, list_files_in_dir
 from .trash import path_of_backup_copy
@@ -88,10 +89,6 @@ class FileSystem:
 
 
 def main():
-    try:
-        input23 = raw_input # Python 2
-    except NameError:
-        input23 = input # Python 3
     trash_directories = make_trash_directories()
     logger = trash.logger
     trashed_files = TrashedFiles(logger,
@@ -102,7 +99,7 @@ def main():
         stdout  = sys.stdout,
         stderr  = sys.stderr,
         exit    = sys.exit,
-        input   = input23,
+        input   = my_input,
         trashed_files=trashed_files,
         mount_points=os_mount_points,
         fs=FileSystem()
