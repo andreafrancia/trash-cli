@@ -1,49 +1,10 @@
 import unittest
 
-from mock import Mock, call
+from mock import Mock
 from datetime import datetime
 
-from trashcli.put import TrashResult, Trasher, TrashDirectoriesFinder, FileTrasher
+from trashcli.put import TrashResult, Trasher, FileTrasher
 import os
-
-class TestTopDirRules:
-    def test(self):
-        parent_path = lambda _:None
-        class MyVolumes:
-            def volume_of(self, _path):
-                return '/volume'
-        volumes = MyVolumes()
-        realpath = lambda _: None
-        fs = Mock(['move',
-                   'atomic_write',
-                   'remove_file',
-                   'ensure_dir',
-                   'isdir',
-                   'islink',
-                   'has_sticky_bit'])
-        fs.islink.side_effect = lambda path: {
-                                                '/volume/.Trash':False
-                                             }[path]
-        fs.has_sticky_bit.side_effect = lambda path: {
-                                                '/volume/.Trash':False
-                                             }[path]
-        reporter = Mock(['volume_of_file',
-                         'found_unsecure_trash_dir_unsticky',
-                         'trash_dir_with_volume',
-                         'file_has_been_trashed_in_as',
-                         'log_info'])
-        trash_directories_finder = TrashDirectoriesFinder({},
-                                                          lambda: 'uid',
-                                                          volumes)
-        file_trasher = FileTrasher(fs, volumes, realpath, datetime.now,
-                                   trash_directories_finder, parent_path)
-        trashcan = Trasher(file_trasher)
-        logger = Mock()
-        result = TrashResult(False)
-        trashcan.trash('', False, result, logger, False, reporter, None)
-        assert [
-            call('', '/volume/.Trash-uid')
-            ] == reporter.file_has_been_trashed_in_as.mock_calls
 
 
 class TestGlobalTrashCan(unittest.TestCase):
