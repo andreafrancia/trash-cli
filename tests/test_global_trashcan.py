@@ -53,9 +53,8 @@ class TestGlobalTrashCan(unittest.TestCase):
         self.volumes = Mock()
         self.volumes.volume_of.return_value = '/'
 
-        trash_directories_finder = TrashDirectoriesFinder(dict(),
-                                                          lambda: 123,
-                                                          self.volumes)
+        trash_directories_finder = Mock(spec=['possible_trash_directories_for'])
+        trash_directories_finder.possible_trash_directories_for.return_value = []
         file_trasher = FileTrasher(self.fs,
                                    self.volumes,
                                    lambda x: x,
