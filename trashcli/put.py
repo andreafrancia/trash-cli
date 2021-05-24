@@ -280,20 +280,16 @@ class TrashDirectoriesFinder:
                                        specific_trash_dir):
         trash_dirs = []
         def add_home_trash(path, volume):
-            checker = all_is_ok_rules
-            trash_dirs.append((path, volume, absolute_paths, checker))
+            trash_dirs.append((path, volume, absolute_paths, all_is_ok_rules))
         def add_top_trash_dir(path, volume):
-            checker = top_trash_dir_rules
-            trash_dirs.append((path, volume, relative_paths, checker))
+            trash_dirs.append((path, volume, relative_paths, top_trash_dir_rules))
         def add_alt_top_trash_dir(path, volume):
-            checker = all_is_ok_rules
-            trash_dirs.append((path, volume, relative_paths, checker))
+            trash_dirs.append((path, volume, relative_paths, all_is_ok_rules))
 
         if specific_trash_dir:
             path = specific_trash_dir
             volume = self.volumes.volume_of(path)
-            checker = all_is_ok_rules
-            trash_dirs.append((path, volume, relative_paths, checker))
+            trash_dirs.append((path, volume, relative_paths, all_is_ok_rules))
         else:
             for path, dir_volume in home_trash_dir(self.environ,
                                                    self.volumes.volume_of):
