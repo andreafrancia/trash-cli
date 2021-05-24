@@ -28,3 +28,16 @@ class TestTrasher(unittest.TestCase):
                    'logger',
                    'reporter'
                )]
+
+    def test_dot_entry(self):
+        self.reporter = Mock()
+        self.trasher.trash('.',
+                           'user-trash-dir',
+                           'result',
+                           'logger',
+                           False,
+                           self.reporter,
+                           'forced_volume')
+
+        assert self.reporter.mock_calls == \
+               [call.unable_to_trash_dot_entries('.')]
