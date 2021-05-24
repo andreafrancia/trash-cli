@@ -153,10 +153,12 @@ class FileTrasher:
             suffix = Suffix(random.randint)
             info_dir_path = os.path.join(path, 'info')
             info_dir = InfoDir(info_dir_path, self.fs, logger, suffix)
+            path_maker = {absolute_paths: AbsolutePaths(),
+                          relative_paths: TopDirRelativePaths(volume)}[path_maker]
             trash_dir = TrashDirectoryForPut(path,
                                              volume,
                                              self.fs,
-                                             path_maker(volume),
+                                             path_maker,
                                              info_dir)
             trash_dir_is_secure, messages = checker.check_trash_dir_is_secure(
                 trash_dir.path,
@@ -263,6 +265,10 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
     return parser
 
 
+absolute_paths = 'absolute_paths'
+relative_paths = 'relative_paths'
+
+
 class TrashDirectoriesFinder:
     def __init__(self, environ, getuid, volumes):
         self.environ = environ
@@ -274,24 +280,20 @@ class TrashDirectoriesFinder:
                                        specific_trash_dir):
         trash_dirs = []
         def add_home_trash(path, volume):
-            path_maker = AbsolutePaths
             checker = all_is_ok_rules
-            trash_dirs.append((path, volume, path_maker, checker))
+            trash_dirs.append((path, volume, absolute_paths, checker))
         def add_top_trash_dir(path, volume):
-            path_maker = TopDirRelativePaths
             checker = top_trash_dir_rules
-            trash_dirs.append((path, volume, path_maker, checker))
+            trash_dirs.append((path, volume, relative_paths, checker))
         def add_alt_top_trash_dir(path, volume):
-            path_maker = TopDirRelativePaths
             checker = all_is_ok_rules
-            trash_dirs.append((path, volume, path_maker, checker))
+            trash_dirs.append((path, volume, relative_paths, checker))
 
         if specific_trash_dir:
             path = specific_trash_dir
             volume = self.volumes.volume_of(path)
-            path_maker = TopDirRelativePaths
             checker = all_is_ok_rules
-            trash_dirs.append((path, volume, path_maker, checker))
+            trash_dirs.append((path, volume, relative_paths, checker))
         else:
             for path, dir_volume in home_trash_dir(self.environ,
                                                    self.volumes.volume_of):
@@ -578,17 +580,19 @@ class OriginalLocation:
 
         return os.path.join(parent, basename)
 
+
 class TopDirRelativePaths:
     def __init__(self, topdir):
         self.topdir = topdir
+
     def calc_parent_path(self, parent):
         if (parent == self.topdir) or parent.startswith(self.topdir+os.path.sep) :
             parent = parent[len(self.topdir+os.path.sep):]
         return parent
 
+
 class AbsolutePaths:
-    def __init__(self, topdir):
-        self.topdir = topdir
+
     def calc_parent_path(self, parent):
         return parent
 
