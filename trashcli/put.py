@@ -112,12 +112,12 @@ class Trasher:
         if ignore_missing and not os.access(file, os.F_OK):
             return result
 
-        return self.file_trasher.try_trash_file_using_candidates(file,
-                                                                 forced_volume,
-                                                                 user_trash_dir,
-                                                                 result,
-                                                                 logger,
-                                                                 reporter)
+        return self.file_trasher.trash_file(file,
+                                            forced_volume,
+                                            user_trash_dir,
+                                            result,
+                                            logger,
+                                            reporter)
 
     def _should_skipped_by_specs(self, file):
         basename = os.path.basename(file)
@@ -135,13 +135,13 @@ class FileTrasher:
         self.trash_directories_finder = trash_directories_finder
         self.parent_path = parent_path
 
-    def try_trash_file_using_candidates(self,
-                                        file,
-                                        forced_volume,
-                                        user_trash_dir,
-                                        result,
-                                        logger,
-                                        reporter):
+    def trash_file(self,
+                   file,
+                   forced_volume,
+                   user_trash_dir,
+                   result,
+                   logger,
+                   reporter):
         volume_of_file_to_be_trashed = forced_volume or \
                                        self.volume_of_parent(file)
         candidates = self.trash_directories_finder.\
