@@ -35,11 +35,9 @@ class TestTopDirRules:
         trash_directories_finder = TrashDirectoriesFinder({},
                                                           lambda: 'uid',
                                                           volumes)
-        file_trasher = FileTrasher(fs, volumes, realpath, datetime.now)
-        trashcan = Trasher(trash_directories_finder,
-                           file_trasher,
-                           volumes,
-                           parent_path)
+        file_trasher = FileTrasher(fs, volumes, realpath, datetime.now,
+                                   trash_directories_finder, parent_path)
+        trashcan = Trasher(file_trasher)
         logger = Mock()
         result = TrashResult(False)
         trashcan.trash('', False, result, logger, False, reporter, None)
@@ -61,11 +59,10 @@ class TestGlobalTrashCan(unittest.TestCase):
         file_trasher = FileTrasher(self.fs,
                                    self.volumes,
                                    lambda x: x,
-                                   datetime.now)
-        self.trasher = Trasher(trash_directories_finder,
-                               file_trasher,
-                               self.volumes,
-                               os.path.dirname)
+                                   datetime.now,
+                                   trash_directories_finder,
+                                   os.path.dirname)
+        self.trasher = Trasher(file_trasher)
         self.logger = Mock()
         self.ignore_missing = False
 

@@ -18,11 +18,10 @@ def main():
     file_trasher = FileTrasher(RealFs(),
                                volumes,
                                os.path.realpath,
-                               datetime.now)
-    trasher = Trasher(trash_directories_finder,
-                      file_trasher,
-                      volumes,
-                      parent_path)
+                               datetime.now,
+                               trash_directories_finder,
+                               parent_path)
+    trasher = Trasher(file_trasher)
     cmd = TrashPutCmd(sys.stdout, sys.stderr, os.environ, trasher)
     return cmd.run(sys.argv)
 
@@ -80,11 +79,8 @@ class TrashPutCmd:
 
 
 class Trasher:
-    def __init__(self, trash_directories_finder, file_trasher, volumes, parent_path):
-        self.trash_directories_finder = trash_directories_finder
+    def __init__(self, file_trasher):
         self.file_trasher = file_trasher
-        self.volumes = volumes
-        self.parent_path = parent_path
 
     def trash(self,
               file,
@@ -116,40 +112,42 @@ class Trasher:
         if ignore_missing and not os.access(file, os.F_OK):
             return result
 
-        volume_of_file_to_be_trashed = forced_volume or \
-                                       self.volume_of_parent(file)
-        reporter.volume_of_file(volume_of_file_to_be_trashed)
-        candidates = self.trash_directories_finder.\
-            possible_trash_directories_for(volume_of_file_to_be_trashed,
-                                           user_trash_dir)
         return self.file_trasher.try_trash_file_using_candidates(file,
-                                                                 volume_of_file_to_be_trashed,
-                                                                 candidates,
+                                                                 forced_volume,
+                                                                 user_trash_dir,
                                                                  result,
                                                                  logger,
                                                                  reporter)
+
     def _should_skipped_by_specs(self, file):
         basename = os.path.basename(file)
         return (basename == ".") or (basename == "..")
 
-    def volume_of_parent(self, file):
-        return self.volumes.volume_of(self.parent_path(file))
-
 
 class FileTrasher:
-    def __init__(self, fs, volumes, realpath, now):
+
+    def __init__(self, fs, volumes, realpath, now, trash_directories_finder,
+                 parent_path):
         self.fs = fs
         self.volumes = volumes
         self.realpath = realpath
         self.now = now
+        self.trash_directories_finder = trash_directories_finder
+        self.parent_path = parent_path
 
     def try_trash_file_using_candidates(self,
                                         file,
-                                        volume_of_file_to_be_trashed,
-                                        candidates,
+                                        forced_volume,
+                                        user_trash_dir,
                                         result,
                                         logger,
                                         reporter):
+        volume_of_file_to_be_trashed = forced_volume or \
+                                       self.volume_of_parent(file)
+        candidates = self.trash_directories_finder.\
+            possible_trash_directories_for(volume_of_file_to_be_trashed,
+                                           user_trash_dir)
+        reporter.volume_of_file(volume_of_file_to_be_trashed)
         file_has_been_trashed = False
         for path, volume, path_maker, checker in candidates:
             suffix = Suffix(random.randint)
@@ -197,6 +195,9 @@ class FileTrasher:
                                   volume_of_file_to_be_trashed,
                                   volume_of_trash_dir):
         return volume_of_trash_dir == volume_of_file_to_be_trashed
+
+    def volume_of_parent(self, file):
+        return self.volumes.volume_of(self.parent_path(file))
 
 
 def get_option_parser(program_name, stdout, stderr):

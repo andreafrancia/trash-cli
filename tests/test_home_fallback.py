@@ -20,11 +20,10 @@ class TestHomeFallback(unittest.TestCase):
         file_trasher = FileTrasher(self.fs,
                                    volumes,
                                    lambda x:x,
-                                   datetime.now)
-        self.trashcan = Trasher(trash_directories_finder,
-                                file_trasher,
-                                volumes,
-                                os.path.dirname)
+                                   datetime.now,
+                                   trash_directories_finder,
+                                   os.path.dirname)
+        self.trashcan = Trasher(file_trasher)
         self.logger = Mock()
         self.ignore_missing = False
 
