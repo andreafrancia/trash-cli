@@ -155,6 +155,8 @@ class FileTrasher:
             info_dir = InfoDir(info_dir_path, self.fs, logger, suffix)
             path_maker = {absolute_paths: AbsolutePaths(),
                           relative_paths: TopDirRelativePaths(volume)}[path_maker]
+            checker = {top_trash_dir_rules:TopTrashDirRules(),
+                       all_is_ok_rules:AllIsOkRules()}[checker]
             trash_dir = TrashDirectoryForPut(path,
                                              volume,
                                              self.fs,
@@ -558,8 +560,8 @@ class TopTrashDirRules:
         return True, []
 
 
-top_trash_dir_rules = TopTrashDirRules()
-all_is_ok_rules = AllIsOkRules()
+top_trash_dir_rules = 'top_trash_dir_rules'
+all_is_ok_rules = 'all_is_ok_rules'
 
 class OriginalLocation:
     def __init__(self, parent_realpath, path_maker):
