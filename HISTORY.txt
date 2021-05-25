@@ -1,3 +1,6 @@
+master:
+ - now trash-put honors the -i option (also the --interactive one)
+
 0.21.5.22:
  - trash-rm: fixed pattern matching for absolute paths, fixes
    https://github.com/andreafrancia/trash-cli/issues/124

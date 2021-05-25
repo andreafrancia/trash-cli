@@ -22,14 +22,10 @@ def main():
                                trash_directories_finder,
                                parent_path)
     access = Access()
-    user = User(no_input)
+    user = User(my_input)
     trasher = Trasher(file_trasher, user, access)
     cmd = TrashPutCmd(sys.stdout, sys.stderr, os.environ, trasher)
     return cmd.run(sys.argv)
-
-
-def no_input(_question):
-    return 'y'
 
 
 def parent_path(path):
@@ -281,7 +277,7 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                       action="store_const",
                       dest="mode",
                       const=mode_interactive,
-                      help="ignored (for GNU rm compatibility)")
+                      help="prompt before every removal")
     parser.add_option("-r", "-R", "--recursive",
                       action="store_true",
                       help="ignored (for GNU rm compatibility)")

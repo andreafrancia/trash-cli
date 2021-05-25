@@ -49,7 +49,7 @@ class TestEndToEndPut(unittest.TestCase):
               -h, --help            show this help message and exit
               -d, --directory       ignored (for GNU rm compatibility)
               -f, --force           silently ignore nonexistent files
-              -i, --interactive     ignored (for GNU rm compatibility)
+              -i, --interactive     prompt before every removal
               -r, -R, --recursive   ignored (for GNU rm compatibility)
               --trash-dir=TRASHDIR  use TRASHDIR as trash folder
               -v, --verbose         explain what is being done
