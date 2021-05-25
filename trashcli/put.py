@@ -29,7 +29,7 @@ def main():
 
 
 def no_input(_question):
-    pass
+    return 'y'
 
 
 def parent_path(path):
@@ -102,9 +102,19 @@ class User:
         self.my_input = my_input
 
     def ask_user_about_deleting_file(self, program_name, path):
-        self.my_input("%s: trash %s '%s'? " % (program_name,
-                                               describe(path),
-                                               path))
+        reply = self.my_input("%s: trash %s '%s'? " % (program_name,
+                                                        describe(path),
+                                                        path))
+        return parse_user_reply(reply)
+
+
+user_replied_no = "user_replied_no"
+user_replied_yes = "user_replied_yes"
+
+
+def parse_user_reply(reply):
+    return {False: user_replied_no,
+            True: user_replied_yes}[reply.lower().startswith("y")]
 
 
 class Trasher:
