@@ -22,9 +22,14 @@ def main():
                                trash_directories_finder,
                                parent_path)
     access = Access()
-    trasher = Trasher(file_trasher, my_input, access)
+    user = User(no_input)
+    trasher = Trasher(file_trasher, user, access)
     cmd = TrashPutCmd(sys.stdout, sys.stderr, os.environ, trasher)
     return cmd.run(sys.argv)
+
+
+def no_input(_question):
+    pass
 
 
 def parent_path(path):
@@ -34,7 +39,7 @@ def parent_path(path):
 class Access:
     @staticmethod
     def is_accessible(file):
-        return not os.access(file, os.F_OK)
+        return os.access(file, os.F_OK)
 
 
 class TrashPutCmd:
@@ -92,10 +97,20 @@ mode_force = 'force'
 mode_interactive = 'interactive'
 
 
+class User:
+    def __init__(self, my_input):
+        self.my_input = my_input
+
+    def ask_user_about_deleting_file(self, program_name, path):
+        self.my_input("%s: trash %s '%s'? " % (program_name,
+                                               describe(path),
+                                               path))
+
+
 class Trasher:
-    def __init__(self, file_trasher, input, access):
+    def __init__(self, file_trasher, user, access):
         self.file_trasher = file_trasher
-        self.input = input
+        self.user = user
         self.access = access
 
     def trash(self,
@@ -128,6 +143,9 @@ class Trasher:
 
         if mode == mode_force and not self.access.is_accessible(file):
             return result
+
+        if mode == mode_interactive and self.access.is_accessible(file):
+            self.user.ask_user_about_deleting_file(program_name, file)
 
         return self.file_trasher.trash_file(file,
                                             forced_volume,
