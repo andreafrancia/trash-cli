@@ -21,13 +21,20 @@ def main():
                                datetime.now,
                                trash_directories_finder,
                                parent_path)
-    trasher = Trasher(file_trasher, my_input)
+    access = Access()
+    trasher = Trasher(file_trasher, my_input, access)
     cmd = TrashPutCmd(sys.stdout, sys.stderr, os.environ, trasher)
     return cmd.run(sys.argv)
 
 
 def parent_path(path):
     return os.path.realpath(os.path.dirname(path))
+
+
+class Access:
+    @staticmethod
+    def is_accessible(file):
+        return not os.access(file, os.F_OK)
 
 
 class TrashPutCmd:
@@ -86,9 +93,10 @@ mode_interactive = 'interactive'
 
 
 class Trasher:
-    def __init__(self, file_trasher, input):
+    def __init__(self, file_trasher, input, access):
         self.file_trasher = file_trasher
         self.input = input
+        self.access = access
 
     def trash(self,
               file,
@@ -118,7 +126,7 @@ class Trasher:
             reporter.unable_to_trash_dot_entries(file)
             return result
 
-        if mode == mode_force and not os.access(file, os.F_OK):
+        if mode == mode_force and not self.access.is_accessible(file):
             return result
 
         return self.file_trasher.trash_file(file,

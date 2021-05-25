@@ -9,7 +9,9 @@ class TestTrasher(unittest.TestCase):
     def setUp(self):
         self.file_trasher = Mock(spec=['trash_file'])
         self.input = Mock()
-        self.trasher = Trasher(self.file_trasher, self.input)
+        self.access = Mock(spec=['is_accessible'])
+        self.access.is_accessible.return_value = True
+        self.trasher = Trasher(self.file_trasher, self.input, self.access)
 
     def test(self):
         self.trasher.trash('file',
