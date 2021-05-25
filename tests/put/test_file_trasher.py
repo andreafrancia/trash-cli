@@ -23,7 +23,6 @@ class TestFileTrasher(unittest.TestCase):
                                         trash_directories_finder,
                                         os.path.dirname)
         self.logger = Mock()
-        self.ignore_missing = False
 
     def test_log_volume(self):
         result = TrashResult(False)
