@@ -41,3 +41,23 @@ class Test_get_option_parser(unittest.TestCase):
         (options, args) = self.parser.parse_args(['--force-volume', '/fake-vol'])
 
         assert options.forced_volume == '/fake-vol'
+
+    def test_force_option_default(self):
+        (options, args) = self.parser.parse_args([])
+
+        assert options.mode == None
+
+    def test_force_option(self):
+        (options, args) = self.parser.parse_args(['-f'])
+
+        assert options.mode == 'force'
+
+    def test_interactive_override_force_option(self):
+        (options, args) = self.parser.parse_args(['-f', '-i'])
+
+        assert options.mode == 'interactive'
+
+    def test_interactive_option(self):
+        (options, args) = self.parser.parse_args(['-i'])
+
+        assert options.mode == 'interactive'

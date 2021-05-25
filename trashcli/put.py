@@ -53,7 +53,7 @@ class TrashPutCmd:
             result = self.trash_all(args,
                                     options.trashdir,
                                     logger,
-                                    options.ignore_missing,
+                                    options.mode,
                                     reporter,
                                     options.forced_volume,
                                     program_name)
@@ -64,7 +64,7 @@ class TrashPutCmd:
                   args,
                   user_trash_dir,
                   logger,
-                  ignore_missing,
+                  mode,
                   reporter,
                   forced_volume,
                   program_name):
@@ -74,11 +74,15 @@ class TrashPutCmd:
                                         user_trash_dir,
                                         result,
                                         logger,
-                                        ignore_missing,
+                                        mode,
                                         reporter,
                                         forced_volume,
                                         program_name)
         return result
+
+
+mode_force = 'force'
+mode_interactive = 'interactive'
 
 
 class Trasher:
@@ -91,7 +95,7 @@ class Trasher:
               user_trash_dir,
               result,
               logger,
-              ignore_missing,
+              mode,
               reporter,
               forced_volume,
               program_name) :
@@ -114,7 +118,7 @@ class Trasher:
             reporter.unable_to_trash_dot_entries(file)
             return result
 
-        if ignore_missing and not os.access(file, os.F_OK):
+        if mode == mode_force and not os.access(file, os.F_OK):
             return result
 
         return self.file_trasher.trash_file(file,
@@ -231,11 +235,14 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                       action="store_true",
                       help="ignored (for GNU rm compatibility)")
     parser.add_option("-f", "--force",
-                      action="store_true",
-                      dest="ignore_missing",
+                      action="store_const",
+                      dest="mode",
+                      const=mode_force,
                       help="silently ignore nonexistent files")
     parser.add_option("-i", "--interactive",
-                      action="store_true",
+                      action="store_const",
+                      dest="mode",
+                      const=mode_interactive,
                       help="ignored (for GNU rm compatibility)")
     parser.add_option("-r", "-R", "--recursive",
                       action="store_true",
