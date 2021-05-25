@@ -1,4 +1,4 @@
-master:
+0.21.5.25:
  - now trash-put honors the -i option (also the --interactive one)
 
 0.21.5.22:
