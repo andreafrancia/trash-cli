@@ -155,7 +155,9 @@ class Trasher:
             return result
 
         if mode == mode_interactive and self.access.is_accessible(file):
-            self.user.ask_user_about_deleting_file(program_name, file)
+            reply = self.user.ask_user_about_deleting_file(program_name, file)
+            if reply == user_replied_no:
+                return result
 
         return self.file_trasher.trash_file(file,
                                             forced_volume,
