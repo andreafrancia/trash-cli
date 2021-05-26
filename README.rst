@@ -158,7 +158,7 @@ Installation command::
  
     pip install trash-cli
 
-Note: you may want add ~/.local/bin to the PATH:
+Note: you may want add ~/.local/bin to the PATH::
 
     echo 'export PATH="$PATH":~/.local/bin' >> ~/.bashrc
     source ~/.bashrc # reload .bashrc
