@@ -51,67 +51,6 @@ def volume_trash_dir2(volume, getuid):
     yield path, volume
 
 
-def do_nothing(*argv, **argvk): pass
-class Parser:
-    def __init__(self):
-        self.default_action = do_nothing
-        self.argument_action = do_nothing
-        self.short_options = ''
-        self.long_options = []
-        self.actions = dict()
-        self._on_invalid_option = do_nothing
-
-    def parse_argv(self, argv):
-        program_name = argv[0]
-        from getopt import getopt, GetoptError
-
-        try:
-            options, arguments = getopt(argv[1:],
-                                        self.short_options,
-                                        self.long_options)
-        except GetoptError as e:
-            invalid_option = e.opt
-            self._on_invalid_option(program_name, invalid_option)
-        else:
-            for option, value in options:
-                if option in ('--help', '-h', '--version'):
-                    self.actions[option](program_name)
-                    return
-                if option in self.actions:
-                    self.actions[option](value)
-                    return
-            for argument in arguments:
-                self.argument_action(argument)
-            self.default_action()
-
-    def on_invalid_option(self, action):
-        self._on_invalid_option = action
-
-    def on_help(self, action):
-        self.add_option('help', action, 'h')
-
-    def on_version(self, action):
-        self.add_option('version', action)
-
-    def add_option(self, long_option, action, short_aliases=''):
-        self.long_options.append(long_option)
-        if long_option.endswith('='):
-            import re
-            long_option = re.sub('=$', '', long_option)
-        self.actions['--' + long_option] = action
-        for short_alias in short_aliases:
-            self.add_short_option(short_alias, action)
-
-    def add_short_option(self, short_option, action):
-        self.short_options += short_option
-        self.actions['-' + short_option] = action
-
-    def on_argument(self, argument_action):
-        self.argument_action = argument_action
-    def as_default(self, default_action):
-        self.default_action = default_action
-
-
 class MyEnum:
     def __init__(self, name):
         self.name = name
@@ -253,6 +192,10 @@ try:
     from urllib import unquote
 except ImportError:
     from urllib.parse import unquote
+
+
+def do_nothing(*argv, **argvk): pass
+
 
 class ParseTrashInfo:
     def __init__(self,

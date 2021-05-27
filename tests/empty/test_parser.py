@@ -1,6 +1,6 @@
 import unittest
 
-from trashcli.trash import Parser
+from trashcli.empty import Parser
 from mock import call, Mock
 
 
