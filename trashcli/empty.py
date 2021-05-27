@@ -65,7 +65,7 @@ class EmptyCmd:
         parse.on_invalid_option(self.report_invalid_option_usage)
         parse.add_option('trash-dir=', self.empty_trashdir)
 
-        parse(argv)
+        parse.parse_argv(argv)
 
         return self.exit_code
 

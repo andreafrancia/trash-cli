@@ -61,7 +61,7 @@ class Parser:
         self.actions = dict()
         self._on_invalid_option = do_nothing
 
-    def __call__(self, argv):
+    def parse_argv(self, argv):
         program_name = argv[0]
         from getopt import getopt, GetoptError
 
