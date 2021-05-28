@@ -1,3 +1,7 @@
+master:
+ - `trash-empty --help` now shows only the command basename and not the full
+   path to the command.
+
 0.21.5.25:
  - now trash-put honors the -i option (also the --interactive one)
 

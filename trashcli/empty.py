@@ -222,7 +222,7 @@ class Parser:
         self._on_invalid_option = do_nothing
 
     def parse_argv(self, argv):
-        program_name = argv[0]
+        program_name = os.path.basename(argv[0])
         from getopt import getopt, GetoptError
 
         try:
