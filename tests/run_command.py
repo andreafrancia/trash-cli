@@ -10,6 +10,7 @@ def run_command(cwd, command, args=None, input='', env=None):
             self.stdout = stdout
             self.stderr = stderr
             self.exit_code = exit_code
+            self.all = [stdout, stderr, exit_code]
 
     if env == None:
         env = {}
@@ -21,13 +22,18 @@ def run_command(cwd, command, args=None, input='', env=None):
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE,
                                cwd=cwd,
-                               env=env)
+                               env=merge_dicts(os.environ, env))
     stdout, stderr = process.communicate(input=input.encode('utf-8'))
 
     return Result(stdout.decode('utf-8'),
                   stderr.decode('utf-8'),
                   process.returncode)
 
+
+def merge_dicts(x, y):
+    z = x.copy()
+    z.update(y)
+    return z
 
 def last_line_of(stdout):
     if len(stdout.splitlines()) > 0:
