@@ -52,3 +52,6 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues
                          [result.stdout,
                           result.stderr,
                           result.exit_code])
+
+    def tearDown(self):
+        self.tmp_dir.clean_up()
