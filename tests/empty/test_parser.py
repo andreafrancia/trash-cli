@@ -14,31 +14,31 @@ class TestParser(unittest.TestCase):
         self.parser = Parser()
         self.parser.on_invalid_option(self.invalid_option_callback)
         self.parser.add_option('raw', self.on_raw)
-        self.parser.add_option('opt=', self.on_option)
+        self.parser.add_option('trash-dir=', self.on_option)
         self.parser.on_help(self.on_help)
 
     def test_argument_option_called_without_argument(self):
 
-        self.parser.parse_argv(['trash-list', '--opt'])
+        self.parser.parse_argv(['trash-list', '--trash-dir'])
 
         assert [] == self.on_option.mock_calls
-        self.invalid_option_callback.assert_called_with('trash-list', 'opt')
+        self.invalid_option_callback.assert_called_with('trash-list', 'trash-dir')
 
     def test_argument_option_called_with_argument(self):
 
-        self.parser.parse_argv(['trash-list', '--opt=', 'arg'])
+        self.parser.parse_argv(['trash-list', '--trash-dir=', 'arg'])
 
         assert [call('')] == self.on_option.mock_calls
 
     def test_argument_option_called_with_argument2(self):
 
-        self.parser.parse_argv(['trash-list', '--opt=arg'])
+        self.parser.parse_argv(['trash-list', '--trash-dir=arg'])
 
         assert [call('arg')] == self.on_option.mock_calls
 
     def test_argument_option_called_with_argument3(self):
 
-        self.parser.parse_argv(['trash-list', '--opt', 'arg'])
+        self.parser.parse_argv(['trash-list', '--trash-dir', 'arg'])
 
         assert [call('arg')] == self.on_option.mock_calls
 
