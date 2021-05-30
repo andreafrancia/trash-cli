@@ -6,6 +6,10 @@ from trashcli.put import format_original_location
 from .files import make_parent_for, make_file, make_unreadable_file
 
 
+def a_default_datetime():
+    return datetime.datetime(2000, 1, 1, 0, 0, 1)
+
+
 class FakeTrashDir:
     def __init__(self, path):
         self.info_path = os.path.join(path, 'info')
@@ -15,8 +19,9 @@ class FakeTrashDir:
         path = self.a_trashinfo_path(basename)
         make_unreadable_file(path)
 
-    def add_trashed_file(self, basename, path, content):
-        self.add_trashinfo3(basename, path, a_default_datetime())
+    def add_trashed_file(self, basename, path, content,
+                         date=a_default_datetime()):
+        self.add_trashinfo3(basename, path, date)
         make_file(self.file_path(basename), content)
 
     def a_trashinfo_path(self, basename):
@@ -72,10 +77,6 @@ class FakeTrashDir:
 
 def trashinfo_content_default_date(path):
     return trashinfo_content(path, a_default_datetime())
-
-
-def a_default_datetime():
-    return datetime.datetime(2000, 1, 1, 0, 0, 1)
 
 
 def trashinfo_content(path, deletion_date):
