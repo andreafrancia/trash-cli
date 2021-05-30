@@ -55,6 +55,15 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues
                           result.stderr,
                           result.exit_code])
 
+    def test_on_invalid_option(self):
+        result = run_command.run_command(self.tmp_dir, "trash-empty",
+                                         ['--wrong-option'])
+
+        self.assertEqual(['',
+                          "trash-empty: invalid option -- 'wrong-option'\n",
+                          64],
+                         result.all)
+
     def tearDown(self):
         self.tmp_dir.clean_up()
 
