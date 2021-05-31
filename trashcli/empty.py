@@ -58,14 +58,14 @@ class EmptyCmd:
         self.program_name = os.path.basename(argv[0])
         self.exit_code = EX_OK
 
-        parse = Parser()
-        parse.on_help(PrintHelp(self.description, self.out).my_print_help)
-        parse.on_version(PrintVersion(self.out, self.version).print_version)
-        parse.on_argument(self.set_max_age_in_days)
-        parse.as_default(self.empty_all_trashdirs)
-        parse.on_invalid_option(self.report_invalid_option_usage)
-        parse.add_option('trash-dir=', self.empty_trashdir)
-
+        parse = Parser(
+            on_help=PrintHelp(self.description, self.out).my_print_help,
+            on_version=PrintVersion(self.out, self.version).print_version,
+            on_invalid_option=self.report_invalid_option_usage,
+            on_trash_dir=self.empty_trashdir,
+            on_argument=self.set_max_age_in_days,
+            on_default=self.empty_all_trashdirs,
+        )
         parse.parse_argv(argv)
 
         return self.exit_code
@@ -209,17 +209,20 @@ class CleanableTrashcan:
         self._file_remover.remove_file(trashinfo_path)
 
 
-def do_nothing(*_argv, **_argvk): pass
-
-
 class Parser:
-    def __init__(self):
-        self.default_action = do_nothing
-        self.argument_action = do_nothing
-        self.short_options = ''
-        self.long_options = []
-        self.actions = dict()
-        self._on_invalid_option = do_nothing
+    def __init__(self,
+                 on_help,
+                 on_version,
+                 on_trash_dir,
+                 on_invalid_option,
+                 on_argument,
+                 on_default):
+        self.on_help = on_help
+        self.on_version = on_version
+        self.on_trash_dir = on_trash_dir
+        self.on_invalid_option = on_invalid_option
+        self.on_argument = on_argument
+        self.on_default = on_default
 
     def parse_argv(self, argv):
         program_name = os.path.basename(argv[0])
@@ -227,47 +230,22 @@ class Parser:
 
         try:
             options, arguments = getopt(argv[1:],
-                                        self.short_options,
-                                        self.long_options)
+                                        'h',
+                                        ['help', 'version', 'trash-dir='])
         except GetoptError as e:
             invalid_option = e.opt
-            self._on_invalid_option(program_name, invalid_option)
+            self.on_invalid_option(program_name, invalid_option)
         else:
             for option, value in options:
-                if option in ('--help', '-h', '--version'):
-                    self.actions[option](program_name)
+                if option in ('--help', '-h'):
+                    self.on_help(program_name)
                     return
-                if option in self.actions:
-                    self.actions[option](value)
+                if option == '--version':
+                    self.on_version(program_name)
+                    return
+                if option == '--trash-dir':
+                    self.on_trash_dir(value)
                     return
             for argument in arguments:
-                self.argument_action(argument)
-            self.default_action()
-
-    def on_invalid_option(self, action):
-        self._on_invalid_option = action
-
-    def on_help(self, action):
-        self.add_option('help', action, 'h')
-
-    def on_version(self, action):
-        self.add_option('version', action)
-
-    def add_option(self, long_option, action, short_aliases=''):
-        self.long_options.append(long_option)
-        if long_option.endswith('='):
-            import re
-            long_option = re.sub('=$', '', long_option)
-        self.actions['--' + long_option] = action
-        for short_alias in short_aliases:
-            self.add_short_option(short_alias, action)
-
-    def add_short_option(self, short_option, action):
-        self.short_options += short_option
-        self.actions['-' + short_option] = action
-
-    def on_argument(self, argument_action):
-        self.argument_action = argument_action
-
-    def as_default(self, default_action):
-        self.default_action = default_action
+                self.on_argument(argument)
+            self.on_default()

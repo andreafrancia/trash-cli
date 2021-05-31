@@ -13,13 +13,14 @@ class TestParser(unittest.TestCase):
         self.on_invalid_option = Mock()
         self.on_trash_dir = Mock()
 
-        self.parser = Parser()
-        self.parser.on_help(self.on_help)
-        self.parser.on_version(self.on_version)
-        self.parser.on_argument(self.on_argument)
-        self.parser.as_default(self.on_default)
-        self.parser.on_invalid_option(self.on_invalid_option)
-        self.parser.add_option('trash-dir=', self.on_trash_dir)
+        self.parser = Parser(
+            on_help=self.on_help,
+            on_version=self.on_version,
+            on_invalid_option=self.on_invalid_option,
+            on_trash_dir=self.on_trash_dir,
+            on_argument=self.on_argument,
+            on_default=self.on_default,
+        )
 
     def all_calls(self):
         return {
@@ -135,4 +136,3 @@ class TestParser(unittest.TestCase):
                 'on_invalid_option': [],
                 'on_trash_dir': [call('one')],
                 'on_version': []}
-
