@@ -33,20 +33,18 @@ class TestParser(unittest.TestCase):
         }
 
     def test_argument_option_called_without_argument(self):
-
-        self.parser.parse_argv(['trash-list', '--trash-dir'])
+        self.my_parse_args(['--trash-dir'])
 
         assert self.all_calls() == \
                {'on_argument': [],
                 'on_default': [],
                 'on_help': [],
-                'on_invalid_option': [call('trash-list', 'trash-dir')],
+                'on_invalid_option': [call('trash-empty', 'trash-dir')],
                 'on_trash_dir': [],
                 'on_version': []}
 
     def test_argument_option_called_with_argument(self):
-
-        self.parser.parse_argv(['trash-list', '--trash-dir', 'arg'])
+        self.my_parse_args(['--trash-dir', 'arg'])
 
         assert self.all_calls() == \
                {'on_argument': [],
@@ -57,8 +55,7 @@ class TestParser(unittest.TestCase):
                 'on_version': []}
 
     def test_argument_option_called_with_argument2(self):
-
-        self.parser.parse_argv(['trash-list', '--trash-dir=arg'])
+        self.my_parse_args(['--trash-dir=arg'])
 
         assert self.all_calls() == \
                {'on_argument': [],
@@ -68,10 +65,8 @@ class TestParser(unittest.TestCase):
                 'on_trash_dir': [call('arg')],
                 'on_version': []}
 
-
     def test_argument_option_called_with_argument3(self):
-
-        self.parser.parse_argv(['trash-list', '--trash-dir', 'arg'])
+        self.my_parse_args(['--trash-dir', 'arg'])
 
         assert self.all_calls() == \
                {'on_argument': [],
@@ -82,26 +77,29 @@ class TestParser(unittest.TestCase):
                 'on_version': []}
 
     def test_it_calls_help(self):
+        self.my_parse_args(['--help'])
 
-        self.parser.parse_argv(['trash-list', '--help'])
-
-        self.on_help.assert_called_with('trash-list')
+        assert self.all_calls() == \
+               {'on_argument': [],
+                'on_default': [],
+                'on_help': [call('trash-empty')],
+                'on_invalid_option': [],
+                'on_trash_dir': [],
+                'on_version': []}
 
     def test_how_getopt_works_with_an_invalid_option(self):
-
-        self.parser.parse_argv(['command-name', '-x'])
+        self.my_parse_args(['-x'])
 
         assert self.all_calls() == \
                {'on_argument': [],
                 'on_default': [],
                 'on_help': [],
-                'on_invalid_option': [call('command-name', 'x')],
+                'on_invalid_option': [call('trash-empty', 'x')],
                 'on_trash_dir': [],
                 'on_version': []}
 
     def test_on_argument(self):
-
-        self.parser.parse_argv(['command-name', '1'])
+        self.my_parse_args(['1'])
 
         assert self.all_calls() == \
                {'on_argument': [call('1')],
@@ -112,22 +110,19 @@ class TestParser(unittest.TestCase):
                 'on_version': []}
 
     def test_on_help(self):
-
-        self.parser.parse_argv(['command-name', '--help'])
+        self.my_parse_args(['--help'])
 
         assert self.all_calls() == \
                {'on_argument': [],
                 'on_default': [],
-                'on_help': [call('command-name')],
+                'on_help': [call('trash-empty')],
                 'on_invalid_option': [],
                 'on_trash_dir': [],
                 'on_version': []}
 
     def test_trash_dir_multiple_days(self):
-
-        self.parser.parse_argv(['trash-list',
-                                '--trash-dir', 'one',
-                                '--trash-dir', 'two'])
+        self.my_parse_args(['--trash-dir', 'one',
+                            '--trash-dir', 'two'])
 
         assert self.all_calls() == \
                {'on_argument': [],
@@ -136,3 +131,6 @@ class TestParser(unittest.TestCase):
                 'on_invalid_option': [],
                 'on_trash_dir': [call('one')],
                 'on_version': []}
+
+    def my_parse_args(self, args):
+        self.parser.parse_argv(['trash-empty'] + args)
