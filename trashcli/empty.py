@@ -227,6 +227,9 @@ class Parser:
     def parse_argv(self, argv):
         program_name = os.path.basename(argv[0])
         result, args = self.parse_argv2(argv[1:])
+        self.use_parsed_values(program_name, result, args)
+
+    def use_parsed_values(self, program_name, result, args):
         if result == 'print_version':
             self.on_version(program_name)
         elif result == 'print_help':
