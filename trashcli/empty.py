@@ -226,26 +226,39 @@ class Parser:
 
     def parse_argv(self, argv):
         program_name = os.path.basename(argv[0])
+        result, args = self.parse_argv2(argv[1:])
+        if result == 'print_version':
+            self.on_version(program_name)
+        elif result == 'print_help':
+            self.on_help(program_name)
+        elif result == 'invalid_option':
+            invalid_option, = args
+            self.on_invalid_option(program_name, invalid_option)
+        elif result == 'on_trash_dir':
+            value, = args
+            self.on_trash_dir(value)
+        elif result == 'default':
+            arguments, = args
+            for argument in arguments:
+                self.on_argument(argument)
+            self.on_default()
+
+    def parse_argv2(self, args):
         from getopt import getopt, GetoptError
 
         try:
-            options, arguments = getopt(argv[1:],
+            options, arguments = getopt(args,
                                         'h',
                                         ['help', 'version', 'trash-dir='])
         except GetoptError as e:
             invalid_option = e.opt
-            self.on_invalid_option(program_name, invalid_option)
+            return 'invalid_option', (invalid_option,)
         else:
             for option, value in options:
                 if option in ('--help', '-h'):
-                    self.on_help(program_name)
-                    return
+                    return 'print_help', ()
                 if option == '--version':
-                    self.on_version(program_name)
-                    return
+                    return 'print_version', ()
                 if option == '--trash-dir':
-                    self.on_trash_dir(value)
-                    return
-            for argument in arguments:
-                self.on_argument(argument)
-            self.on_default()
+                    return 'on_trash_dir', (value,)
+            return 'default', (arguments,)
