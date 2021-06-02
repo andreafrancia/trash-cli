@@ -122,12 +122,10 @@ class PrintHelp:
     def my_print_help(self, program_name):
         self.description(program_name, self.printer)
 
-class PrintVersion:
-    def __init__(self, out, version):
-        self.out = out
-        self.version = version
-    def print_version(self, program_name):
-        println(self.out, "%s %s" % (program_name, self.version))
+
+def print_version(out, program_name, version):
+    println(out, "%s %s" % (program_name, version))
+
 
 class TopTrashDirValidationResult:
     class DoesNotExist:

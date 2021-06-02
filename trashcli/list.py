@@ -3,10 +3,9 @@ import os
 
 from .fs import FileSystemReader, file_size
 from .fstab import volume_of
-from .trash import version, TrashDir, path_of_backup_copy
+from .trash import version, TrashDir, path_of_backup_copy, print_version
 from .trash import TopTrashDirRules
 from .trash import TrashDirsScanner
-from .trash import PrintVersion
 from .trash import parse_deletion_date
 from .trash import ParseError
 from .trash import parse_path
@@ -46,8 +45,7 @@ class ListCmd:
         parser = maker_parser(os.path.basename(argv[0]))
         parsed = parser.parse_args(argv[1:])
         if parsed.version:
-            version_printer = PrintVersion(self.out, self.version)
-            version_printer.print_version(argv[0])
+            print_version(self.out, argv[0], self.version)
         else:
             extractor = {
                 'deletion_date':DeletionDateExtractor(),

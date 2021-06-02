@@ -1,8 +1,7 @@
-from .trash import TopTrashDirRules, TrashDir, path_of_backup_copy
+from .trash import TopTrashDirRules, TrashDir, path_of_backup_copy, print_version
 from .trash import TrashDirsScanner
 from .trash import EX_OK
 from .trash import PrintHelp
-from .trash import PrintVersion
 from .trash import EX_USAGE
 from .trash import ParseTrashInfo
 import os
@@ -62,7 +61,7 @@ class EmptyCmd:
         result, args = parse_argv(argv[1:])
 
         if result == 'print_version':
-            PrintVersion(self.out, self.version).print_version(program_name)
+            print_version(self.out, program_name, self.version)
         elif result == 'print_help':
             PrintHelp(self.description, self.out).my_print_help(program_name)
         elif result == 'invalid_option':

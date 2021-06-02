@@ -3,7 +3,7 @@ import sys
 
 from .list_mount_points import os_mount_points
 from .trash import (version, home_trash_dir, volume_trash_dir1,
-                    volume_trash_dir2, my_input)
+                    volume_trash_dir2, my_input, print_version)
 from .fstab import volume_of
 from .fs import contents_of, list_files_in_dir
 from .trash import path_of_backup_copy
@@ -275,7 +275,7 @@ class RestoreCmd(object):
         cmd, args = parse_args(argv, self.curdir() + os.path.sep)
         if cmd == Command.PrintVersion:
             command = os.path.basename(argv[0])
-            self.println('%s %s' % (command, self.version))
+            print_version(self.out, command, self.version)
             return
         elif cmd == Command.RunRestore:
             trash_dir_from_cli = args['trash_dir']
