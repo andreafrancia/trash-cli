@@ -58,15 +58,24 @@ class EmptyCmd:
         self.program_name = os.path.basename(argv[0])
         self.exit_code = EX_OK
 
-        parse = Parser(
-            on_help=PrintHelp(self.description, self.out).my_print_help,
-            on_version=PrintVersion(self.out, self.version).print_version,
-            on_invalid_option=self.report_invalid_option_usage,
-            on_trash_dir=self.empty_trashdir,
-            on_argument=self.set_max_age_in_days,
-            on_default=self.empty_all_trashdirs,
-        )
-        parse.parse_argv(argv)
+        program_name = os.path.basename(argv[0])
+        result, args = parse_argv(argv[1:])
+
+        if result == 'print_version':
+            PrintVersion(self.out, self.version).print_version(program_name)
+        elif result == 'print_help':
+            PrintHelp(self.description, self.out).my_print_help(program_name)
+        elif result == 'invalid_option':
+            invalid_option, = args
+            self.report_invalid_option_usage(program_name, invalid_option)
+        elif result == 'on_trash_dir':
+            value, = args
+            self.empty_trashdir(value)
+        elif result == 'default':
+            arguments, = args
+            for argument in arguments:
+                self.set_max_age_in_days(argument)
+            self.empty_all_trashdirs()
 
         return self.exit_code
 
@@ -132,9 +141,6 @@ class EmptyCmd:
         self.println_err("{program_name}: {msg}".format(
             program_name=self.program_name,
             msg=error_message))
-
-    def println(self, line):
-        self.out.write(line + '\n')
 
 
 class FileRemoveWithErrorHandling:
@@ -209,59 +215,22 @@ class CleanableTrashcan:
         self._file_remover.remove_file(trashinfo_path)
 
 
-class Parser:
-    def __init__(self,
-                 on_help,
-                 on_version,
-                 on_trash_dir,
-                 on_invalid_option,
-                 on_argument,
-                 on_default):
-        self.on_help = on_help
-        self.on_version = on_version
-        self.on_trash_dir = on_trash_dir
-        self.on_invalid_option = on_invalid_option
-        self.on_argument = on_argument
-        self.on_default = on_default
+def parse_argv(args):
+    from getopt import getopt, GetoptError
 
-    def parse_argv(self, argv):
-        program_name = os.path.basename(argv[0])
-        result, args = self.parse_argv2(argv[1:])
-        self.use_parsed_values(program_name, result, args)
-
-    def use_parsed_values(self, program_name, result, args):
-        if result == 'print_version':
-            self.on_version(program_name)
-        elif result == 'print_help':
-            self.on_help(program_name)
-        elif result == 'invalid_option':
-            invalid_option, = args
-            self.on_invalid_option(program_name, invalid_option)
-        elif result == 'on_trash_dir':
-            value, = args
-            self.on_trash_dir(value)
-        elif result == 'default':
-            arguments, = args
-            for argument in arguments:
-                self.on_argument(argument)
-            self.on_default()
-
-    def parse_argv2(self, args):
-        from getopt import getopt, GetoptError
-
-        try:
-            options, arguments = getopt(args,
-                                        'h',
-                                        ['help', 'version', 'trash-dir='])
-        except GetoptError as e:
-            invalid_option = e.opt
-            return 'invalid_option', (invalid_option,)
-        else:
-            for option, value in options:
-                if option in ('--help', '-h'):
-                    return 'print_help', ()
-                if option == '--version':
-                    return 'print_version', ()
-                if option == '--trash-dir':
-                    return 'on_trash_dir', (value,)
-            return 'default', (arguments,)
+    try:
+        options, arguments = getopt(args,
+                                    'h',
+                                    ['help', 'version', 'trash-dir='])
+    except GetoptError as e:
+        invalid_option = e.opt
+        return 'invalid_option', (invalid_option,)
+    else:
+        for option, value in options:
+            if option in ('--help', '-h'):
+                return 'print_help', ()
+            if option == '--version':
+                return 'print_version', ()
+            if option == '--trash-dir':
+                return 'on_trash_dir', (value,)
+        return 'default', (arguments,)
