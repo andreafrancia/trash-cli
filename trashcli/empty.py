@@ -102,7 +102,7 @@ class EmptyCmd:
         printer.bug_reporting()
 
     def empty_trashdir(self, specific_dir):
-        self.delete_all_things_under_trash_dir(specific_dir, None)
+        self.delete_all_things_under_trash_dir(specific_dir)
 
     def empty_all_trashdirs(self):
         scanner = TrashDirsScanner(self.environ,
@@ -113,9 +113,9 @@ class EmptyCmd:
         for event, args in scanner.scan_trash_dirs():
             if event == TrashDirsScanner.Found:
                 path, volume = args
-                self.delete_all_things_under_trash_dir(path, volume)
+                self.delete_all_things_under_trash_dir(path)
 
-    def delete_all_things_under_trash_dir(self, trash_dir_path, _volume_path):
+    def delete_all_things_under_trash_dir(self, trash_dir_path):
         trash_dir = TrashDir(self.file_reader)
         for trash_info in trash_dir.list_trashinfo(trash_dir_path):
             self.delete_trashinfo_and_backup_copy(trash_info)
