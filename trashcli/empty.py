@@ -67,14 +67,15 @@ class EmptyCmd:
         elif result == 'invalid_option':
             invalid_option, = args
             self.report_invalid_option_usage(program_name, invalid_option)
-        elif result == 'on_trash_dir':
-            value, = args
-            self.empty_trashdir(value)
         elif result == 'default':
-            arguments, = args
-            for argument in arguments:
-                self.set_max_age_in_days(argument)
-            self.empty_all_trashdirs()
+            trash_dirs, arguments, = args
+            if len(trash_dirs) > 0:
+                for trash_dir in trash_dirs:
+                    self.empty_trashdir(trash_dir)
+            else:
+                for argument in arguments:
+                    self.set_max_age_in_days(argument)
+                self.empty_all_trashdirs()
 
         return self.exit_code
 
@@ -225,11 +226,12 @@ def parse_argv(args):
         invalid_option = e.opt
         return 'invalid_option', (invalid_option,)
     else:
+        trash_dirs = []
         for option, value in options:
             if option in ('--help', '-h'):
                 return 'print_help', ()
             if option == '--version':
                 return 'print_version', ()
             if option == '--trash-dir':
-                return 'on_trash_dir', (value,)
-        return 'default', (arguments,)
+                trash_dirs.append(value)
+        return 'default', (trash_dirs, arguments)
