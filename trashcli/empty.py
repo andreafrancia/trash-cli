@@ -51,11 +51,10 @@ class EmptyCmd:
         self.version = version
         self._now = now
         self.file_remover = file_remover
-        self._dustman = DeleteAnything()
 
     def run(self, *argv):
         self.program_name = os.path.basename(argv[0])
-        self.exit_code = EX_OK
+        exit_code = EX_OK
 
         program_name = os.path.basename(argv[0])
         result, args = parse_argv(argv[1:])
@@ -67,28 +66,26 @@ class EmptyCmd:
         elif result == 'invalid_option':
             invalid_option, = args
             self.report_invalid_option_usage(program_name, invalid_option)
+            exit_code |= EX_USAGE
         elif result == 'default':
             trash_dirs, arguments, = args
+            self._dustman = DeleteAnything()
             if len(trash_dirs) > 0:
                 for trash_dir in trash_dirs:
                     self.empty_trashdir(trash_dir)
             else:
                 for argument in arguments:
-                    self.set_max_age_in_days(argument)
+                    max_age_in_days = int(argument)
+                    self._dustman = DeleteAccordingDate(self.file_reader.contents_of,
+                                                        self._now,
+                                                        max_age_in_days)
                 self.empty_all_trashdirs()
 
-        return self.exit_code
-
-    def set_max_age_in_days(self, arg):
-        max_age_in_days = int(arg)
-        self._dustman = DeleteAccordingDate(self.file_reader.contents_of,
-                                            self._now,
-                                            max_age_in_days)
+        return exit_code
 
     def report_invalid_option_usage(self, program_name, option):
         self.println_err("{program_name}: invalid option -- '{option}'"
                          .format(**locals()))
-        self.exit_code |= EX_USAGE
 
     def println_err(self, msg):
         self.err.write("{}\n".format(msg))
