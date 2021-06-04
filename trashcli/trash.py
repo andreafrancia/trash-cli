@@ -1,6 +1,8 @@
 # Copyright (C) 2007-2011 Andrea Francia Trivolzio(PV) Italy
 from __future__ import absolute_import
 
+import datetime
+
 version = '0.21.5.25'
 
 import os
@@ -235,3 +237,13 @@ def parse_path(contents):
     raise ParseError('Unable to parse Path')
 
 
+class Clock:
+    def __init__(self, real_now, environ):
+        self.real_now = real_now
+        self.environ = environ
+
+    def now(self):
+        if 'TRASH_DATE' in self.environ:
+            return datetime.datetime.strptime(self.environ['TRASH_DATE'],
+                                              "%Y-%m-%dT%H:%M:%S")
+        return self.real_now()
