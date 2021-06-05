@@ -30,6 +30,15 @@ def main(argv=sys.argv,
     ).run(*argv)
 
 
+class Errors:
+    def __init__(self, program_name, err):
+        self.program_name = program_name
+        self.err = err
+
+    def print_error(self, msg):
+        self.err.write("%s: %s\n" % (self.program_name, msg))
+
+
 class EmptyCmd:
     def __init__(self,
                  out,
@@ -53,19 +62,19 @@ class EmptyCmd:
         self.file_remover = file_remover
 
     def run(self, *argv):
-        self.program_name = os.path.basename(argv[0])
-        exit_code = EX_OK
-
         program_name = os.path.basename(argv[0])
+        self.errors = Errors(program_name, self.err)
+
         result, args = parse_argv(argv[1:])
 
+        exit_code = EX_OK
         if result == 'print_version':
             print_version(self.out, program_name, self.version)
         elif result == 'print_help':
             PrintHelp(self.description, self.out).my_print_help(program_name)
         elif result == 'invalid_option':
             invalid_option, = args
-            self.report_invalid_option_usage(program_name, invalid_option)
+            self.errors.print_error("invalid option -- '%s'" % invalid_option)
             exit_code |= EX_USAGE
         elif result == 'print_time':
             println(self.out, self.clock.get_now_value().replace(microsecond=0).isoformat())
@@ -84,13 +93,6 @@ class EmptyCmd:
                 self.empty_all_trashdirs()
 
         return exit_code
-
-    def report_invalid_option_usage(self, program_name, option):
-        self.println_err("{program_name}: invalid option -- '{option}'"
-                         .format(**locals()))
-
-    def println_err(self, msg):
-        self.err.write("{}\n".format(msg))
 
     def description(self, program_name, printer):
         printer.usage('Usage: %s [days]' % program_name)
@@ -135,11 +137,8 @@ class EmptyCmd:
         trashcan = CleanableTrashcan(file_remover_with_error)
         return trashcan
 
-    def print_cannot_remove_error(self, _exc, path):
-        error_message = "cannot remove {path}".format(path=path)
-        self.println_err("{program_name}: {msg}".format(
-            program_name=self.program_name,
-            msg=error_message))
+    def print_cannot_remove_error(self, path):
+        self.errors.print_error("cannot remove %s" % path)
 
 
 class FileRemoveWithErrorHandling:
@@ -150,14 +149,14 @@ class FileRemoveWithErrorHandling:
     def remove_file(self, path):
         try:
             return self.file_remover.remove_file(path)
-        except OSError as e:
-            self.on_error(e, path)
+        except OSError:
+            self.on_error(path)
 
     def remove_file_if_exists(self, path):
         try:
             return self.file_remover.remove_file_if_exists(path)
-        except OSError as e:
-            self.on_error(e, path)
+        except OSError:
+            self.on_error(path)
 
 
 class DeleteAccordingDate:
