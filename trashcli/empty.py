@@ -1,4 +1,4 @@
-from .trash import TopTrashDirRules, TrashDir, path_of_backup_copy, print_version
+from .trash import TopTrashDirRules, TrashDir, path_of_backup_copy, print_version, println, Clock
 from .trash import TrashDirsScanner
 from .trash import EX_OK
 from .trash import PrintHelp
@@ -49,7 +49,7 @@ class EmptyCmd:
         self.getuid = getuid
         self.list_volumes = list_volumes
         self.version = version
-        self._now = now
+        self._now = Clock(now, environ).now
         self.file_remover = file_remover
 
     def run(self, *argv):
@@ -67,6 +67,8 @@ class EmptyCmd:
             invalid_option, = args
             self.report_invalid_option_usage(program_name, invalid_option)
             exit_code |= EX_USAGE
+        elif result == 'print_time':
+            println(self.out, self._now().replace(microsecond=0).isoformat())
         elif result == 'default':
             trash_dirs, arguments, = args
             self._dustman = DeleteAnything()
@@ -218,7 +220,8 @@ def parse_argv(args):
     try:
         options, arguments = getopt(args,
                                     'h',
-                                    ['help', 'version', 'trash-dir='])
+                                    ['help', 'version', 'trash-dir=',
+                                     'print-time'])
     except GetoptError as e:
         invalid_option = e.opt
         return 'invalid_option', (invalid_option,)
@@ -229,6 +232,8 @@ def parse_argv(args):
                 return 'print_help', ()
             if option == '--version':
                 return 'print_version', ()
+            if option == '--print-time':
+                return 'print_time', ()
             if option == '--trash-dir':
                 trash_dirs.append(value)
         return 'default', (trash_dirs, arguments)

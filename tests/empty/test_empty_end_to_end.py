@@ -65,6 +65,17 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues
                           64],
                          result.all)
 
+    def test_on_print_time(self):
+        result = run_command.run_command(
+            self.tmp_dir, "trash-empty",
+            ['--print-time'],
+            env={'TRASH_DATE': '1970-12-31T23:59:59'})
+
+        self.assertEqual(['1970-12-31T23:59:59\n',
+                          '',
+                          0],
+                         result.all)
+
     def tearDown(self):
         self.tmp_dir.clean_up()
 
