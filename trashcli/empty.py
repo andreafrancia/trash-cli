@@ -49,7 +49,7 @@ class EmptyCmd:
         self.getuid = getuid
         self.list_volumes = list_volumes
         self.version = version
-        self._now = Clock(now, environ).now
+        self.clock = Clock(now, environ)
         self.file_remover = file_remover
 
     def run(self, *argv):
@@ -68,7 +68,7 @@ class EmptyCmd:
             self.report_invalid_option_usage(program_name, invalid_option)
             exit_code |= EX_USAGE
         elif result == 'print_time':
-            println(self.out, self._now().replace(microsecond=0).isoformat())
+            println(self.out, self.clock.now().replace(microsecond=0).isoformat())
         elif result == 'default':
             trash_dirs, arguments, = args
             self._dustman = DeleteAnything()
@@ -79,7 +79,7 @@ class EmptyCmd:
                 for argument in arguments:
                     max_age_in_days = int(argument)
                     self._dustman = DeleteAccordingDate(self.file_reader.contents_of,
-                                                        self._now,
+                                                        self.clock,
                                                         max_age_in_days)
                 self.empty_all_trashdirs()
 
@@ -161,16 +161,17 @@ class FileRemoveWithErrorHandling:
 
 
 class DeleteAccordingDate:
-    def __init__(self, contents_of, now, max_age_in_days):
+    def __init__(self, contents_of, clock, max_age_in_days):
         self._contents_of = contents_of
-        self._now = now
+        self.clock = clock
         self.max_age_in_days = max_age_in_days
 
     def delete_if_ok(self, trashinfo_path, trashcan):
         contents = self._contents_of(trashinfo_path)
+        now_value = self.clock.now()
         ParseTrashInfo(
             on_deletion_date=IfDate(
-                OlderThan(self.max_age_in_days, self._now),
+                OlderThan(self.max_age_in_days, now_value),
                 lambda: trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
             ),
         )(contents)
@@ -193,9 +194,9 @@ class IfDate:
 
 
 class OlderThan:
-    def __init__(self, days_ago, now):
+    def __init__(self, days_ago, now_value):
         from datetime import timedelta
-        self.limit_date = now() - timedelta(days=days_ago)
+        self.limit_date = now_value - timedelta(days=days_ago)
 
     def __call__(self, deletion_date):
         return deletion_date < self.limit_date
