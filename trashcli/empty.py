@@ -68,7 +68,7 @@ class EmptyCmd:
             self.report_invalid_option_usage(program_name, invalid_option)
             exit_code |= EX_USAGE
         elif result == 'print_time':
-            println(self.out, self.clock.now().replace(microsecond=0).isoformat())
+            println(self.out, self.clock.get_now_value().replace(microsecond=0).isoformat())
         elif result == 'default':
             trash_dirs, arguments, = args
             self._dustman = DeleteAnything()
@@ -168,7 +168,7 @@ class DeleteAccordingDate:
 
     def delete_if_ok(self, trashinfo_path, trashcan):
         contents = self._contents_of(trashinfo_path)
-        now_value = self.clock.now()
+        now_value = self.clock.get_now_value()
         ParseTrashInfo(
             on_deletion_date=IfDate(
                 OlderThan(self.max_age_in_days, now_value),
