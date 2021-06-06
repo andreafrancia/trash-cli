@@ -77,7 +77,8 @@ class EmptyCmd:
             self.errors.print_error("invalid option -- '%s'" % invalid_option)
             exit_code |= EX_USAGE
         elif result == 'print_time':
-            println(self.out, self.clock.get_now_value().replace(microsecond=0).isoformat())
+            now_value = self.clock.get_now_value(self.errors)
+            println(self.out, now_value.replace(microsecond=0).isoformat())
         elif result == 'default':
             trash_dirs, arguments, = args
             self._dustman = DeleteAnything()
@@ -89,7 +90,8 @@ class EmptyCmd:
                     max_age_in_days = int(argument)
                     self._dustman = DeleteAccordingDate(self.file_reader.contents_of,
                                                         self.clock,
-                                                        max_age_in_days)
+                                                        max_age_in_days,
+                                                        self.errors)
                 self.empty_all_trashdirs()
 
         return exit_code
@@ -160,14 +162,15 @@ class FileRemoveWithErrorHandling:
 
 
 class DeleteAccordingDate:
-    def __init__(self, contents_of, clock, max_age_in_days):
+    def __init__(self, contents_of, clock, max_age_in_days, errors):
         self._contents_of = contents_of
         self.clock = clock
         self.max_age_in_days = max_age_in_days
+        self.errors = errors
 
     def delete_if_ok(self, trashinfo_path, trashcan):
         contents = self._contents_of(trashinfo_path)
-        now_value = self.clock.get_now_value()
+        now_value = self.clock.get_now_value(self.errors)
         ParseTrashInfo(
             on_deletion_date=IfDate(
                 OlderThan(self.max_age_in_days, now_value),
