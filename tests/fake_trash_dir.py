@@ -41,6 +41,18 @@ class FakeTrashDir:
         content = trashinfo_content(path, deletion_date)
         self.add_trashinfo_content(basename, content)
 
+    def add_trashinfo_with_date(self, basename, deletion_date):
+        content = trashinfo_content2([
+            ("DeletionDate", deletion_date.strftime('%Y-%m-%dT%H:%M:%S')),
+        ])
+        self.add_trashinfo_content(basename, content)
+
+    def add_trashinfo_with_invalid_date(self, basename, invalid_date):
+        content = trashinfo_content2([
+            ("DeletionDate", invalid_date),
+        ])
+        self.add_trashinfo_content(basename, content)
+
     def add_trashinfo_without_path(self, basename):
         deletion_date = a_default_datetime()
         content = trashinfo_content2([
