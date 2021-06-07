@@ -244,6 +244,11 @@ class Clock:
 
     def get_now_value(self, errors):
         if 'TRASH_DATE' in self.environ:
-            return datetime.datetime.strptime(self.environ['TRASH_DATE'],
-                                              "%Y-%m-%dT%H:%M:%S")
+            try:
+                return datetime.datetime.strptime(self.environ['TRASH_DATE'],
+                                                  "%Y-%m-%dT%H:%M:%S")
+            except ValueError:
+                errors.print_error('invalid TRASH_DATE: %s' %
+                                   self.environ['TRASH_DATE'])
+                return self.real_now()
         return self.real_now()

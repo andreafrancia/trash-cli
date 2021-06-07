@@ -76,6 +76,16 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues
                           0],
                          result.all)
 
+    def test_on_trash_date_not_parsable(self):
+        result = run_command.run_command(
+            self.tmp_dir, "trash-empty",
+            ['--print-time'],
+            env={'TRASH_DATE': 'not a valid date'})
+
+        self.assertEqual(['trash-empty: invalid TRASH_DATE: not a valid date\n',
+                          0],
+                         [result.stderr, result.exit_code])
+
     def tearDown(self):
         self.tmp_dir.clean_up()
 
