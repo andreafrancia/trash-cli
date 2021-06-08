@@ -12,6 +12,7 @@ from ..files import require_empty_dir, make_file
 from trashcli.empty import EmptyCmd
 from trashcli.fs import FileSystemReader, FileRemover, read_file
 from ..support import MyPath
+from .. import run_command
 
 
 @pytest.mark.slow
@@ -40,11 +41,19 @@ class TestWhen_invoked_with_N_days_as_argument(unittest.TestCase):
         self.empty_cmd.run('trash-empty', *args)
 
     def set_clock_at(self, yyyy_mm_dd):
-        self.now.side_effect = lambda: date(yyyy_mm_dd)
-
         def date(yyyy_mm_dd):
             from datetime import datetime
             return datetime.strptime(yyyy_mm_dd, '%Y-%m-%d')
+        self.now.side_effect = lambda: date(yyyy_mm_dd)
+        self.environ['TRASH_DATE'] = '%sT00:00:00' % yyyy_mm_dd
+
+    def test_set_clock(self):
+        self.set_clock_at('2000-01-01')
+
+        result = run_command.run_command(self.tmp_dir, "trash-empty",
+                                         ['--print-time'], env=self.environ)
+
+        self.assertEqual(['2000-01-01T00:00:00\n', '', 0], result.all)
 
     def test_it_should_keep_files_newer_than_N_days(self):
         self.fake_trash_dir.add_trashinfo_with_date('foo', datetime.date(2000, 1, 1))
