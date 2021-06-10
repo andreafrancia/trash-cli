@@ -2,7 +2,7 @@ import unittest
 from textwrap import dedent
 import mock
 from mock import Mock
-from trashcli.scripts import Scripts
+from setup import Scripts
 
 
 class TestMakeScript(unittest.TestCase):

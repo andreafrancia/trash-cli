@@ -1,10 +1,8 @@
 # Copyright (C) 2007-2021 Andrea Francia Trivolzio(PV) Italy
 
-from setuptools import setup
-
 from trashcli.fs import read_file, write_file, make_file_executable
 from trashcli import trash
-from trashcli.scripts import Scripts
+from textwrap import dedent
 
 
 def main():
@@ -38,5 +36,25 @@ def main():
     )
 
 
+class Scripts:
+    def __init__(self, write_file, make_file_executable):
+        self.write_file = write_file
+        self.make_file_executable = make_file_executable
+        self.created_scripts = []
+
+    def add_script(self, name, module, main_function):
+        script_contents = dedent("""\
+            #!/usr/bin/env python
+            from __future__ import absolute_import
+            import sys
+            from %(module)s import %(main_function)s as main
+            sys.exit(main())
+            """) % locals()
+        self.write_file(name, script_contents)
+        self.make_file_executable(name)
+        self.created_scripts.append(name)
+
+
 if __name__ == '__main__':
+    from setuptools import setup
     main()
