@@ -3,6 +3,15 @@ import shutil
 import tempfile
 
 
+def list_trash_dir(trash_dir_path):
+    return (list_files_in_subdir(trash_dir_path, 'info') +
+            list_files_in_subdir(trash_dir_path, 'files'))
+
+
+def list_files_in_subdir(path, subdir):
+    return ["%s/%s" % (subdir, f) for f in list_files_in_dir(path / subdir)]
+
+
 def list_files_in_dir(path):
     if not os.path.isdir(path):
         return []

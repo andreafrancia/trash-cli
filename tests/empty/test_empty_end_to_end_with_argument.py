@@ -1,11 +1,10 @@
 import datetime
-import os
 import unittest
 
 import pytest
 
 from ..fake_trash_dir import FakeTrashDir
-from ..support import MyPath
+from ..support import MyPath, list_trash_dir
 from .. import run_command
 
 
@@ -38,7 +37,7 @@ class TestEmptyEndToEndWithArgument(unittest.TestCase):
 
         self.user_run_trash_empty(['2'])
 
-        assert self.list_trash() == ['foo.trashinfo']
+        assert list_trash_dir(self.trash_dir) == ['info/foo.trashinfo']
 
     def test_it_should_remove_files_older_than_N_days(self):
         self.fake_trash_dir.add_trashinfo_with_date('foo', datetime.date(1999, 1, 1))
@@ -46,7 +45,7 @@ class TestEmptyEndToEndWithArgument(unittest.TestCase):
 
         self.user_run_trash_empty(['2'])
 
-        assert self.list_trash() == []
+        assert list_trash_dir(self.trash_dir) == []
 
     def test_it_should_kept_files_with_invalid_deletion_date(self):
         self.fake_trash_dir.add_trashinfo_with_invalid_date('foo', 'Invalid Date')
@@ -54,8 +53,4 @@ class TestEmptyEndToEndWithArgument(unittest.TestCase):
 
         self.user_run_trash_empty(['2'])
 
-        assert self.list_trash() == ['foo.trashinfo']
-
-    def list_trash(self):
-        return os.listdir(self.trash_dir / 'info')
-
+        assert list_trash_dir(self.trash_dir) == ['info/foo.trashinfo']
