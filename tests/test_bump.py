@@ -1,10 +1,14 @@
+import os
 import unittest
 import datetime
 
 from tests.files import make_file
 from tests.support import MyPath
 from trashcli.fs import read_file
-from trashcli import bump
+from trashcli import base_dir
+import sys
+sys.path.insert(0, os.path.join(base_dir, 'script'))
+import bump
 
 
 class Test_version_from_date(unittest.TestCase):

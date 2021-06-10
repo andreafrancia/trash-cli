@@ -1,13 +1,15 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import sys
 import os
 import datetime
-
 root = os.path.realpath(os.path.join(__file__, "..", ".."))
 sys.path.insert(0, root)
-from trashcli import bump
+import bump
+
 
 new_version = bump.version_from_date(datetime.date.today())
 bump.save_new_version(new_version, os.path.join(root, 'trashcli', 'trash.py'))
 
-os.system("git commit -m \"Bump version to '%s'\" -a" % new_version)
+system = print if '--dry-run' in sys.argv else os.system
+system("git diff --quiet && git commit -m \"Bump version to '%s'\" -a" % new_version)
