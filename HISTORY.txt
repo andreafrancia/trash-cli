@@ -1,4 +1,4 @@
-0.21.6.10:
+master:
  - `trash-empty --help` now shows only the command basename and not the full
    path to the command.
  - Now `trash-empty` honors multiple --trash-dir options
