@@ -4,7 +4,7 @@ import datetime
 from tests.files import make_file
 from tests.support import MyPath
 from trashcli.fs import read_file
-from trashcli_support import bump
+from trashcli import bump
 
 
 class Test_version_from_date(unittest.TestCase):

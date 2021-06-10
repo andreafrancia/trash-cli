@@ -4,7 +4,7 @@ from setuptools import setup
 
 from trashcli.fs import read_file, write_file, make_file_executable
 from trashcli import trash
-from trashcli_support.scripts import Scripts
+from trashcli.scripts import Scripts
 
 
 def main():

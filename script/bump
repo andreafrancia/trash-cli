@@ -5,7 +5,7 @@ import datetime
 
 root = os.path.realpath(os.path.join(__file__, "..", ".."))
 sys.path.insert(0, root)
-from trashcli_support import bump
+from trashcli import bump
 
 new_version = bump.version_from_date(datetime.date.today())
 bump.save_new_version(new_version, os.path.join(root, 'trashcli', 'trash.py'))
