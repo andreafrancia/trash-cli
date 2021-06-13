@@ -39,6 +39,15 @@ class Errors:
         self.err.write("%s: %s\n" % (self.program_name, msg))
 
 
+def description(program_name, printer):
+    printer.usage('Usage: %s [days]' % program_name)
+    printer.summary('Purge trashed files.')
+    printer.options(
+       "  --version   show program's version number and exit",
+       "  -h, --help  show this help message and exit")
+    printer.bug_reporting()
+
+
 class EmptyCmd:
     def __init__(self,
                  out,
@@ -54,12 +63,17 @@ class EmptyCmd:
         self.out = out
         self.err = err
         self.file_reader = file_reader
-        self.environ = environ
-        self.getuid = getuid
-        self.list_volumes = list_volumes
         self.version = version
         self.clock = Clock(now, environ)
-        self.file_remover = file_remover
+        file_remover_with_error = FileRemoveWithErrorHandling(file_remover,
+                                                              self.print_cannot_remove_error)
+        self.trashcan = CleanableTrashcan(file_remover_with_error)
+        self.scanner = TrashDirsScanner(environ,
+                                        getuid,
+                                        list_volumes,
+                                        TopTrashDirRules(file_reader))
+
+
 
     def run(self, *argv):
         program_name = os.path.basename(argv[0])
@@ -71,7 +85,7 @@ class EmptyCmd:
         if result == 'print_version':
             print_version(self.out, program_name, self.version)
         elif result == 'print_help':
-            PrintHelp(self.description, self.out).my_print_help(program_name)
+            PrintHelp(description, self.out).my_print_help(program_name)
         elif result == 'invalid_option':
             invalid_option, = args
             self.errors.print_error("invalid option -- '%s'" % invalid_option)
@@ -81,13 +95,17 @@ class EmptyCmd:
             println(self.out, now_value.replace(microsecond=0).isoformat())
         elif result == 'default':
             trash_dirs, arguments, = args
-            self._dustman = DeleteAnything()
+            self._dustman = DeleteAnything(self.file_reader.contents_of,
+                                           self.clock,
+                                           self.errors)
+            delete_mode = ('delete_all', ())
             if len(trash_dirs) > 0:
                 for trash_dir in trash_dirs:
                     self.empty_trashdir(trash_dir)
             else:
                 for argument in arguments:
                     max_age_in_days = int(argument)
+                    delete_mode = ('delete_older_than', (max_age_in_days))
                     self._dustman = DeleteAccordingDate(self.file_reader.contents_of,
                                                         self.clock,
                                                         max_age_in_days,
@@ -96,24 +114,11 @@ class EmptyCmd:
 
         return exit_code
 
-    def description(self, program_name, printer):
-        printer.usage('Usage: %s [days]' % program_name)
-        printer.summary('Purge trashed files.')
-        printer.options(
-           "  --version   show program's version number and exit",
-           "  -h, --help  show this help message and exit")
-        printer.bug_reporting()
-
     def empty_trashdir(self, specific_dir):
         self.delete_all_things_under_trash_dir(specific_dir)
 
     def empty_all_trashdirs(self):
-        scanner = TrashDirsScanner(self.environ,
-                                   self.getuid,
-                                   self.list_volumes,
-                                   TopTrashDirRules(self.file_reader))
-
-        for event, args in scanner.scan_trash_dirs():
+        for event, args in self.scanner.scan_trash_dirs():
             if event == TrashDirsScanner.Found:
                 path, volume = args
                 self.delete_all_things_under_trash_dir(path)
@@ -123,21 +128,10 @@ class EmptyCmd:
         for trash_info in trash_dir.list_trashinfo(trash_dir_path):
             self.delete_trashinfo_and_backup_copy(trash_info)
         for orphan in trash_dir.list_orphans(trash_dir_path):
-            self.delete_orphan(orphan)
+            self.trashcan.delete_orphan(orphan)
 
     def delete_trashinfo_and_backup_copy(self, trashinfo_path):
-        trashcan = self.make_trashcan()
-        self._dustman.delete_if_ok(trashinfo_path, trashcan)
-
-    def delete_orphan(self, path_to_backup_copy):
-        trashcan = self.make_trashcan()
-        trashcan.delete_orphan(path_to_backup_copy)
-
-    def make_trashcan(self):
-        file_remover_with_error = FileRemoveWithErrorHandling(self.file_remover,
-                                                              self.print_cannot_remove_error)
-        trashcan = CleanableTrashcan(file_remover_with_error)
-        return trashcan
+        self._dustman.delete_if_ok(trashinfo_path, self.trashcan)
 
     def print_cannot_remove_error(self, path):
         self.errors.print_error("cannot remove %s" % path)
@@ -180,6 +174,10 @@ class DeleteAccordingDate:
 
 
 class DeleteAnything:
+    def __init__(self, contents_of, clock, errors):
+        self._contents_of = contents_of
+        self.clock = clock
+        self.errors = errors
 
     def delete_if_ok(self, trashinfo_path, trashcan):
         trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
