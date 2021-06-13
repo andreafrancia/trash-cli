@@ -1,3 +1,4 @@
+from .list import decide_trash_dirs
 from .trash import TopTrashDirRules, TrashDir, path_of_backup_copy, print_version, println, Clock
 from .trash import TrashDirsScanner
 from .trash import EX_OK
@@ -94,44 +95,33 @@ class EmptyCmd:
             now_value = self.clock.get_now_value(self.errors)
             println(self.out, now_value.replace(microsecond=0).isoformat())
         elif result == 'default':
-            trash_dirs, arguments, = args
+            user_specified_trash_dirs, arguments, = args
             self._dustman = DeleteAnything(self.file_reader.contents_of,
                                            self.clock,
                                            self.errors)
             delete_mode = ('delete_all', ())
-            if len(trash_dirs) > 0:
-                for trash_dir in trash_dirs:
-                    self.empty_trashdir(trash_dir)
-            else:
-                for argument in arguments:
-                    max_age_in_days = int(argument)
-                    delete_mode = ('delete_older_than', (max_age_in_days))
-                    self._dustman = DeleteAccordingDate(self.file_reader.contents_of,
-                                                        self.clock,
-                                                        max_age_in_days,
-                                                        self.errors)
-                self.empty_all_trashdirs()
+            for argument in arguments:
+                max_age_in_days = int(argument)
+                delete_mode = ('delete_older_than', (max_age_in_days))
+                self._dustman = DeleteAccordingDate(self.file_reader.contents_of,
+                                                    self.clock,
+                                                    max_age_in_days,
+                                                    self.errors)
+            trash_dirs = decide_trash_dirs(user_specified_trash_dirs,
+                                           self.scanner.scan_trash_dirs())
+            for event, args in trash_dirs:
+                if event == TrashDirsScanner.Found:
+                    path, volume = args
+                    self.delete_all_things_under_trash_dir(path)
 
         return exit_code
 
-    def empty_trashdir(self, specific_dir):
-        self.delete_all_things_under_trash_dir(specific_dir)
-
-    def empty_all_trashdirs(self):
-        for event, args in self.scanner.scan_trash_dirs():
-            if event == TrashDirsScanner.Found:
-                path, volume = args
-                self.delete_all_things_under_trash_dir(path)
-
     def delete_all_things_under_trash_dir(self, trash_dir_path):
         trash_dir = TrashDir(self.file_reader)
-        for trash_info in trash_dir.list_trashinfo(trash_dir_path):
-            self.delete_trashinfo_and_backup_copy(trash_info)
+        for trashinfo_path in trash_dir.list_trashinfo(trash_dir_path):
+            self._dustman.delete_if_ok(trashinfo_path, self.trashcan)
         for orphan in trash_dir.list_orphans(trash_dir_path):
             self.trashcan.delete_orphan(orphan)
-
-    def delete_trashinfo_and_backup_copy(self, trashinfo_path):
-        self._dustman.delete_if_ok(trashinfo_path, self.trashcan)
 
     def print_cannot_remove_error(self, path):
         self.errors.print_error("cannot remove %s" % path)
