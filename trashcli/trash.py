@@ -179,16 +179,16 @@ class ParseError(ValueError): pass
 
 
 def maybe_parse_deletion_date(contents):
-    result = Basket(unknown_date())
+    result = Basket(unknown_date)
     parser = ParseTrashInfo(
             on_deletion_date = lambda date: result.collect(date),
-            on_invalid_date = lambda: result.collect(unknown_date())
+            on_invalid_date = lambda: result.collect(unknown_date)
     )
     parser.parse_trashinfo(contents)
     return result.collected
 
-def unknown_date():
-    return '????-??-?? ??:??:??'
+
+unknown_date = '????-??-?? ??:??:??'
 
 try:
     from urllib import unquote

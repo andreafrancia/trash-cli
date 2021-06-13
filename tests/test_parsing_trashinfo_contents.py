@@ -4,7 +4,7 @@ import unittest
 from datetime import datetime
 from mock import MagicMock
 
-from trashcli.trash import ParseTrashInfo
+from trashcli.trash import ParseTrashInfo, unknown_date
 from trashcli.trash import parse_deletion_date
 from trashcli.trash import parse_path
 from trashcli.trash import maybe_parse_deletion_date
@@ -41,12 +41,9 @@ def test_how_to_parse_date_from_trashinfo():
     assert datetime(2000,12,31,23,59,58) == parse_deletion_date('[Trash Info]\nDeletionDate=2000-12-31T23:59:58')
 
 
-UNKNOWN_DATE='????-??-?? ??:??:??'
-
-
 class Test_maybe_parse_deletion_date(unittest.TestCase):
     def test_on_trashinfo_without_date_parse_to_unknown_date(self):
-        assert (UNKNOWN_DATE ==
+        assert (unknown_date ==
                       maybe_parse_deletion_date(a_trashinfo_without_deletion_date()))
 
     def test_on_trashinfo_with_date_parse_to_date(self):
@@ -58,7 +55,7 @@ class Test_maybe_parse_deletion_date(unittest.TestCase):
 
     def test_on_trashinfo_with_invalid_date_parse_to_unknown_date(self):
         invalid_date='A long time ago'
-        assert (UNKNOWN_DATE ==
+        assert (unknown_date ==
                       maybe_parse_deletion_date(make_trashinfo(invalid_date)))
 
 def test_how_to_parse_original_path():

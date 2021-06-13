@@ -3,10 +3,9 @@ import os
 
 from .fs import FileSystemReader, file_size
 from .fstab import volume_of
-from .trash import version, TrashDir, path_of_backup_copy, print_version
+from .trash import version, TrashDir, path_of_backup_copy, print_version, maybe_parse_deletion_date
 from .trash import TopTrashDirRules
 from .trash import TrashDirsScanner
-from .trash import parse_deletion_date
 from .trash import ParseError
 from .trash import parse_path
 from .trash import unknown_date
@@ -103,7 +102,7 @@ def format_line2(attribute, original_location, original_file):
 
 class DeletionDateExtractor:
     def extract_attribute(self, _trashinfo_path, contents):
-        return parse_deletion_date(contents) or unknown_date()
+        return maybe_parse_deletion_date(contents)
 
 
 class SizeExtractor:
