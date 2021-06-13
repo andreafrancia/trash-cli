@@ -3,7 +3,7 @@ import sys
 
 from .list_mount_points import os_mount_points
 from .trash import (version, home_trash_dir, volume_trash_dir1,
-                    volume_trash_dir2, my_input, print_version)
+                    volume_trash_dir2, my_input, print_version, parse_original_location)
 from .fstab import volume_of
 from .fs import contents_of, list_files_in_dir
 from .trash import path_of_backup_copy
@@ -159,10 +159,10 @@ class TrashedFiles:
                     self.logger.warning("Non .trashinfo file in info dir")
                 elif type == 'trashinfo':
                     try:
-                        trash_info = TrashInfoParser(self.contents_of(info_file),
-                                                     volume)
-                        original_location = trash_info.original_location()
-                        deletion_date     = trash_info.deletion_date()
+                        contents = self.contents_of(info_file)
+                        original_location = parse_original_location(contents,
+                                                                    volume)
+                        deletion_date = parse_deletion_date(contents)
                         backup_file_path = path_of_backup_copy(info_file)
                         trashedfile = TrashedFile(original_location,
                                                   deletion_date,
@@ -292,7 +292,9 @@ class RestoreCmd(object):
             self.report_no_files_found()
         else :
             for i, trashedfile in enumerate(trashed_files):
-                self.println("%4d %s %s" % (i, trashedfile.deletion_date, trashedfile.original_location))
+                self.println("%4d %s %s" % (i,
+                                            trashedfile.deletion_date,
+                                            trashedfile.original_location))
             self.restore_asking_the_user(trashed_files)
     def restore_asking_the_user(self, trashed_files):
         restore_asking_the_user = RestoreAskingTheUser(self.input,
@@ -328,17 +330,8 @@ def parse_additional_volumes(volume_from_args):
         return []
     return volume_from_args
 
-from .trash import parse_path
+
 from .trash import parse_deletion_date
-class TrashInfoParser:
-    def __init__(self, contents, volume_path):
-        self.contents    = contents
-        self.volume_path = volume_path
-    def deletion_date(self):
-        return parse_deletion_date(self.contents)
-    def original_location(self):
-        path = parse_path(self.contents)
-        return os.path.join(self.volume_path, path)
 
 
 class TrashDirectories2:

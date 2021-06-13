@@ -244,6 +244,11 @@ def parse_path(contents):
     raise ParseError('Unable to parse Path')
 
 
+def parse_original_location(contents, volume_path):
+    path = parse_path(contents)
+    return os.path.join(volume_path, path)
+
+
 class Clock:
     def __init__(self, real_now, environ):
         self.real_now = real_now

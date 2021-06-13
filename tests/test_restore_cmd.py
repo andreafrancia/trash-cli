@@ -117,9 +117,10 @@ class FakeTrashedFile(object):
     def __init__(self, deletion_date, original_location):
         self.deletion_date = deletion_date
         self.original_location = original_location
+
     def __repr__(self):
-        return ('FakeTrashedFile(\'%s\', ' % self.deletion_date +
-               '\'%s\')' % self.original_location)
+        return ('FakeTrashedFile(\'%s\', \'%s\')' % (self.deletion_date,
+                                                     self.original_location))
 
 
 class TestTrashRestoreCmd(unittest.TestCase):
