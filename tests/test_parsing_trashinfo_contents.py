@@ -10,21 +10,21 @@ from trashcli.trash import ParseTrashInfo
 class Test_describe_ParseTrashInfo2(unittest.TestCase):
     def test_it_should_parse_date(self):
         out = MagicMock()
-        parse = ParseTrashInfo(on_deletion_date = out)
+        parser = ParseTrashInfo(on_deletion_date = out)
 
-        parse('[Trash Info]\n'
-              'Path=foo\n'
-              'DeletionDate=1970-01-01T00:00:00\n')
+        parser.parse_trashinfo('[Trash Info]\n'
+                               'Path=foo\n'
+                               'DeletionDate=1970-01-01T00:00:00\n')
         
         out.assert_called_with(datetime(1970,1,1,0,0,0))
 
     def test_it_should_parse_path(self):
         out = MagicMock()
-        self.parse = ParseTrashInfo(on_path = out)
+        parser = ParseTrashInfo(on_path = out)
 
-        self.parse( '[Trash Info]\n'
-                    'Path=foo\n'
-                    'DeletionDate=1970-01-01T00:00:00\n')
+        parser.parse_trashinfo('[Trash Info]\n'
+                               'Path=foo\n'
+                               'DeletionDate=1970-01-01T00:00:00\n')
 
         out.assert_called_with('foo')
 

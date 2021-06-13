@@ -177,12 +177,14 @@ class TrashDir:
 
 class ParseError(ValueError): pass
 
+
 def maybe_parse_deletion_date(contents):
     result = Basket(unknown_date())
-    ParseTrashInfo(
+    parser = ParseTrashInfo(
             on_deletion_date = lambda date: result.collect(date),
             on_invalid_date = lambda: result.collect(unknown_date())
-    )(contents)
+    )
+    parser.parse_trashinfo(contents)
     return result.collected
 
 def unknown_date():
@@ -205,7 +207,8 @@ class ParseTrashInfo:
         self.found_deletion_date = on_deletion_date
         self.found_invalid_date = on_invalid_date
         self.found_path = on_path
-    def __call__(self, contents):
+
+    def parse_trashinfo(self, contents):
         from datetime import datetime
         for line in contents.split('\n'):
             if line.startswith('DeletionDate='):
@@ -225,10 +228,14 @@ class Basket:
         self.collected = initial_value
     def collect(self, value):
         self.collected = value
+
+
 def parse_deletion_date(contents):
     result = Basket()
-    ParseTrashInfo(on_deletion_date=result.collect)(contents)
+    parser = ParseTrashInfo(on_deletion_date=result.collect)
+    parser.parse_trashinfo(contents)
     return result.collected
+
 
 def parse_path(contents):
     for line in contents.split('\n'):

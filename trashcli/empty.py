@@ -155,12 +155,13 @@ class DeleteAccordingDate:
     def delete_if_ok(self, trashinfo_path, trashcan):
         contents = self._contents_of(trashinfo_path)
         now_value = self.clock.get_now_value(self.errors)
-        ParseTrashInfo(
+        parser = ParseTrashInfo(
             on_deletion_date=IfDate(
                 OlderThan(self.max_age_in_days, now_value),
                 lambda: trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
             ),
-        )(contents)
+        )
+        parser.parse_trashinfo(contents)
 
 
 class DeleteAnything:
