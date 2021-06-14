@@ -209,8 +209,10 @@ class ParseTrashInfo:
         self.found_path = on_path
 
     def parse_trashinfo(self, contents):
+        found_deletion_date = False
         for line in contents.split('\n'):
-            if line.startswith('DeletionDate='):
+            if not found_deletion_date and line.startswith('DeletionDate='):
+                found_deletion_date = True
                 try:
                     date = datetime.datetime.strptime(
                         line, "DeletionDate=%Y-%m-%dT%H:%M:%S")
