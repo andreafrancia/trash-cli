@@ -1,5 +1,5 @@
 from .list import decide_trash_dirs
-from .trash import TopTrashDirRules, TrashDir, path_of_backup_copy, print_version, println, Clock
+from .trash import TopTrashDirRules, TrashDir, path_of_backup_copy, print_version, println, Clock, parse_deletion_date
 from .trash import TrashDirsScanner
 from .trash import EX_OK
 from .trash import PrintHelp
@@ -155,13 +155,10 @@ class DeleteAccordingDate:
     def delete_if_ok(self, trashinfo_path, trashcan):
         contents = self._contents_of(trashinfo_path)
         now_value = self.clock.get_now_value(self.errors)
-        parser = ParseTrashInfo(
-            on_deletion_date=IfDate(
-                OlderThan(self.max_age_in_days, now_value),
-                lambda: trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
-            ),
-        )
-        parser.parse_trashinfo(contents)
+        deletion_date = parse_deletion_date(contents)
+        if deletion_date is not None:
+            if older_than(self.max_age_in_days, now_value, deletion_date):
+                trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
 
 
 class DeleteAnything:
@@ -184,13 +181,10 @@ class IfDate:
             self.then()
 
 
-class OlderThan:
-    def __init__(self, days_ago, now_value):
-        from datetime import timedelta
-        self.limit_date = now_value - timedelta(days=days_ago)
-
-    def __call__(self, deletion_date):
-        return deletion_date < self.limit_date
+def older_than(days_ago, now_value, deletion_date):
+    from datetime import timedelta
+    limit_date = now_value - timedelta(days=days_ago)
+    return deletion_date < limit_date
 
 
 class CleanableTrashcan:

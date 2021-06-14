@@ -209,11 +209,11 @@ class ParseTrashInfo:
         self.found_path = on_path
 
     def parse_trashinfo(self, contents):
-        from datetime import datetime
         for line in contents.split('\n'):
             if line.startswith('DeletionDate='):
                 try:
-                    date = datetime.strptime(line, "DeletionDate=%Y-%m-%dT%H:%M:%S")
+                    date = datetime.datetime.strptime(
+                        line, "DeletionDate=%Y-%m-%dT%H:%M:%S")
                 except ValueError:
                     self.found_invalid_date()
                 else:
