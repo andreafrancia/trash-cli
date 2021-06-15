@@ -4,7 +4,6 @@ from .trash import TrashDirsScanner
 from .trash import EX_OK
 from .trash import PrintHelp
 from .trash import EX_USAGE
-from .trash import ParseTrashInfo
 import os
 import sys
 from trashcli.list_mount_points import os_mount_points
@@ -169,16 +168,6 @@ class DeleteAnything:
 
     def delete_if_ok(self, trashinfo_path, trashcan):
         trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
-
-
-class IfDate:
-    def __init__(self, date_criteria, then):
-        self.date_criteria = date_criteria
-        self.then = then
-
-    def __call__(self, date2):
-        if self.date_criteria(date2):
-            self.then()
 
 
 def older_than(days_ago, now_value, deletion_date):
