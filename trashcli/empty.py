@@ -94,10 +94,10 @@ class EmptyCmd:
             now_value = self.clock.get_now_value(self.errors)
             println(self.out, now_value.replace(microsecond=0).isoformat())
         elif result == 'default':
-            user_specified_trash_dirs, arguments, = args
-            delete_mode = DeleteAnything()
-            for argument in arguments:
-                max_age_in_days = int(argument)
+            user_specified_trash_dirs, max_age_in_days = args
+            if not max_age_in_days:
+                delete_mode = DeleteAnything()
+            else:
                 delete_mode = DeleteAccordingDate(self.file_reader.contents_of,
                                                   self.clock,
                                                   max_age_in_days,
@@ -193,6 +193,7 @@ def parse_argv(args):
         return 'invalid_option', (invalid_option,)
     else:
         trash_dirs = []
+        max_days = None
         for option, value in options:
             if option in ('--help', '-h'):
                 return 'print_help', ()
@@ -202,4 +203,6 @@ def parse_argv(args):
                 return 'print_time', ()
             if option == '--trash-dir':
                 trash_dirs.append(value)
-        return 'default', (trash_dirs, arguments)
+        for arg in arguments:
+            max_days = int(arg)
+        return 'default', (trash_dirs, max_days)
