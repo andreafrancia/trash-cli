@@ -95,32 +95,26 @@ class EmptyCmd:
             println(self.out, now_value.replace(microsecond=0).isoformat())
         elif result == 'default':
             user_specified_trash_dirs, arguments, = args
-            self._dustman = DeleteAnything(self.file_reader.contents_of,
-                                           self.clock,
-                                           self.errors)
-            delete_mode = ('delete_all', ())
+            delete_mode = DeleteAnything()
             for argument in arguments:
                 max_age_in_days = int(argument)
-                delete_mode = ('delete_older_than', (max_age_in_days))
-                self._dustman = DeleteAccordingDate(self.file_reader.contents_of,
-                                                    self.clock,
-                                                    max_age_in_days,
-                                                    self.errors)
+                delete_mode = DeleteAccordingDate(self.file_reader.contents_of,
+                                                  self.clock,
+                                                  max_age_in_days,
+                                                  self.errors)
             trash_dirs = decide_trash_dirs(user_specified_trash_dirs,
                                            self.scanner.scan_trash_dirs())
             for event, args in trash_dirs:
                 if event == TrashDirsScanner.Found:
-                    path, volume = args
-                    self.delete_all_things_under_trash_dir(path)
+                    trash_dir_path, volume = args
+                    trash_dir = TrashDir(self.file_reader)
+                    for trashinfo_path in trash_dir.list_trashinfo(trash_dir_path):
+                        if delete_mode.ok_to_delete(trashinfo_path):
+                            self.trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
+                    for orphan in trash_dir.list_orphans(trash_dir_path):
+                        self.trashcan.delete_orphan(orphan)
 
         return exit_code
-
-    def delete_all_things_under_trash_dir(self, trash_dir_path):
-        trash_dir = TrashDir(self.file_reader)
-        for trashinfo_path in trash_dir.list_trashinfo(trash_dir_path):
-            self._dustman.delete_if_ok(trashinfo_path, self.trashcan)
-        for orphan in trash_dir.list_orphans(trash_dir_path):
-            self.trashcan.delete_orphan(orphan)
 
     def print_cannot_remove_error(self, path):
         self.errors.print_error("cannot remove %s" % path)
@@ -146,28 +140,25 @@ class FileRemoveWithErrorHandling:
 
 class DeleteAccordingDate:
     def __init__(self, contents_of, clock, max_age_in_days, errors):
-        self._contents_of = contents_of
+        self.contents_of = contents_of
         self.clock = clock
         self.max_age_in_days = max_age_in_days
         self.errors = errors
 
-    def delete_if_ok(self, trashinfo_path, trashcan):
-        contents = self._contents_of(trashinfo_path)
+    def ok_to_delete(self, trashinfo_path):
+        contents = self.contents_of(trashinfo_path)
         now_value = self.clock.get_now_value(self.errors)
         deletion_date = parse_deletion_date(contents)
         if deletion_date is not None:
             if older_than(self.max_age_in_days, now_value, deletion_date):
-                trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
+                return True
+        return False
 
 
 class DeleteAnything:
-    def __init__(self, contents_of, clock, errors):
-        self._contents_of = contents_of
-        self.clock = clock
-        self.errors = errors
 
-    def delete_if_ok(self, trashinfo_path, trashcan):
-        trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
+    def ok_to_delete(self, _trashinfo_path):
+        return True
 
 
 def older_than(days_ago, now_value, deletion_date):
