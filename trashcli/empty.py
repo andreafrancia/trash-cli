@@ -1,3 +1,5 @@
+import collections
+
 from .list import decide_trash_dirs
 from .trash import TopTrashDirRules, TrashDir, path_of_backup_copy, print_version, println, Clock, parse_deletion_date
 from .trash import TrashDirsScanner
@@ -73,8 +75,6 @@ class EmptyCmd:
                                         list_volumes,
                                         TopTrashDirRules(file_reader))
 
-
-
     def run(self, *argv):
         program_name = os.path.basename(argv[0])
         self.errors = Errors(program_name, self.err)
@@ -94,15 +94,14 @@ class EmptyCmd:
             now_value = self.clock.get_now_value(self.errors)
             println(self.out, now_value.replace(microsecond=0).isoformat())
         elif result == 'default':
-            user_specified_trash_dirs, max_age_in_days = args
-            if not max_age_in_days:
+            if not args.max_age_in_days:
                 delete_mode = DeleteAnything()
             else:
                 delete_mode = DeleteAccordingDate(self.file_reader.contents_of,
                                                   self.clock,
-                                                  max_age_in_days,
+                                                  args.max_age_in_days,
                                                   self.errors)
-            trash_dirs = decide_trash_dirs(user_specified_trash_dirs,
+            trash_dirs = decide_trash_dirs(args.user_specified_trash_dirs,
                                            self.scanner.scan_trash_dirs())
             for event, args in trash_dirs:
                 if event == TrashDirsScanner.Found:
@@ -180,6 +179,11 @@ class CleanableTrashcan:
         self._file_remover.remove_file(trashinfo_path)
 
 
+Parsed = collections.namedtuple('Parsed', ['trash_dirs_source',
+                                           'user_specified_trash_dirs',
+                                           'max_age_in_days'])
+
+
 def parse_argv(args):
     from getopt import getopt, GetoptError
 
@@ -193,6 +197,7 @@ def parse_argv(args):
         return 'invalid_option', (invalid_option,)
     else:
         trash_dirs = []
+        trash_dir_source = 'current_user'
         max_days = None
         for option, value in options:
             if option in ('--help', '-h'):
@@ -203,6 +208,7 @@ def parse_argv(args):
                 return 'print_time', ()
             if option == '--trash-dir':
                 trash_dirs.append(value)
+                trash_dir_source = 'user_specified'
         for arg in arguments:
             max_days = int(arg)
-        return 'default', (trash_dirs, max_days)
+        return 'default', Parsed(trash_dir_source, trash_dirs, max_days)

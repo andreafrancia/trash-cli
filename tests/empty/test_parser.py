@@ -13,17 +13,17 @@ class TestParser(unittest.TestCase):
     def test_argument_option_called_with_argument(self):
         result = parse_argv(['--trash-dir', 'trash-dir1'])
 
-        assert result == ('default', (['trash-dir1'], None))
+        assert result == ('default', ('user_specified', ['trash-dir1'], None))
 
     def test_argument_option_called_with_argument2(self):
         result = parse_argv(['--trash-dir=trash-dir1'])
 
-        assert result == ('default', (['trash-dir1'], None))
+        assert result == ('default', ('user_specified', ['trash-dir1'], None))
 
     def test_argument_option_called_with_argument3(self):
         result = parse_argv(['--trash-dir', 'trash-dir1'])
 
-        assert result == ('default', (['trash-dir1'], None))
+        assert result == ('default', ('user_specified', ['trash-dir1'], None))
 
     def test_it_calls_help(self):
         result = parse_argv(['--help'])
@@ -38,7 +38,7 @@ class TestParser(unittest.TestCase):
     def test_on_argument(self):
         result = parse_argv(['1'])
 
-        assert result == ('default', ([], 1))
+        assert result == ('default', ('current_user', [], 1))
 
     def test_on_help(self):
         result = parse_argv(['--help'])
@@ -49,4 +49,4 @@ class TestParser(unittest.TestCase):
         result = parse_argv(['--trash-dir', 'one',
                             '--trash-dir', 'two'])
 
-        assert result == ('default', (['one', 'two'], None))
+        assert result == ('default', ('user_specified', ['one', 'two'], None))
