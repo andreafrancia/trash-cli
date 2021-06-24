@@ -57,7 +57,8 @@ class ListCmd:
                                              self.getuid,
                                              self.list_volumes,
                                              TopTrashDirRules(self.file_reader))
-        trash_dirs = decide_trash_dirs(user_specified_trash_dirs,
+        trash_dirs = decide_trash_dirs(False,
+                                       user_specified_trash_dirs,
                                        trashdirs_scanner.scan_trash_dirs())
         for event, args in trash_dirs:
             if event == TrashDirsScanner.Found:
@@ -120,7 +121,8 @@ def description(program_name, printer):
     printer.bug_reporting()
 
 
-def decide_trash_dirs(user_specified_dirs,
+def decide_trash_dirs(all_users,
+                      user_specified_dirs,
                       system_dirs):
     if not user_specified_dirs:
         for dir in  system_dirs:

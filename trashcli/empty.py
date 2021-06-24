@@ -101,7 +101,8 @@ class EmptyCmd:
                                                   self.clock,
                                                   args.max_age_in_days,
                                                   self.errors)
-            trash_dirs = decide_trash_dirs(args.user_specified_trash_dirs,
+            trash_dirs = decide_trash_dirs(args.all_users,
+                                           args.user_specified_trash_dirs,
                                            self.scanner.scan_trash_dirs())
             for event, args in trash_dirs:
                 if event == TrashDirsScanner.Found:
@@ -179,7 +180,7 @@ class CleanableTrashcan:
         self._file_remover.remove_file(trashinfo_path)
 
 
-Parsed = collections.namedtuple('Parsed', ['trash_dirs_source',
+Parsed = collections.namedtuple('Parsed', ['all_users',
                                            'user_specified_trash_dirs',
                                            'max_age_in_days'])
 
@@ -191,14 +192,14 @@ def parse_argv(args):
         options, arguments = getopt(args,
                                     'h',
                                     ['help', 'version', 'trash-dir=',
-                                     'print-time'])
+                                     'print-time', 'all-users'])
     except GetoptError as e:
         invalid_option = e.opt
         return 'invalid_option', (invalid_option,)
     else:
         trash_dirs = []
-        trash_dir_source = 'current_user'
         max_days = None
+        all_users = False
         for option, value in options:
             if option in ('--help', '-h'):
                 return 'print_help', ()
@@ -208,7 +209,8 @@ def parse_argv(args):
                 return 'print_time', ()
             if option == '--trash-dir':
                 trash_dirs.append(value)
-                trash_dir_source = 'user_specified'
+            if option == '--all-users':
+                all_users = True
         for arg in arguments:
             max_days = int(arg)
-        return 'default', Parsed(trash_dir_source, trash_dirs, max_days)
+        return 'default', Parsed(all_users, trash_dirs, max_days)
