@@ -3,7 +3,10 @@ import os
 
 from .fs import FileSystemReader, file_size
 from .fstab import volume_of
-from .trash import version, TrashDir, path_of_backup_copy, print_version, maybe_parse_deletion_date
+from .trash import ( version, TrashDir, path_of_backup_copy, print_version,
+                     maybe_parse_deletion_date, trash_dir_found,
+                     trash_dir_skipped_because_parent_is_symlink,
+                     trash_dir_skipped_because_parent_not_sticky )
 from .trash import TopTrashDirRules
 from .trash import TrashDirsScanner
 from .trash import ParseError
@@ -61,15 +64,15 @@ class ListCmd:
                                        user_specified_trash_dirs,
                                        trashdirs_scanner.scan_trash_dirs())
         for event, args in trash_dirs:
-            if event == TrashDirsScanner.Found:
+            if event == trash_dir_found:
                 path, volume = args
                 trash_dir = TrashDir(self.file_reader)
                 for trash_info in trash_dir.list_trashinfo(path):
                     self._print_trashinfo(volume, trash_info, extractor, show_files)
-            elif event == TrashDirsScanner.SkippedBecauseParentNotSticky:
+            elif event == trash_dir_skipped_because_parent_not_sticky:
                 path, = args
                 self.output.top_trashdir_skipped_because_parent_not_sticky(path)
-            elif event == TrashDirsScanner.SkippedBecauseParentIsSymlink:
+            elif event == trash_dir_skipped_because_parent_is_symlink:
                 path, = args
                 self.output.top_trashdir_skipped_because_parent_is_symlink(path)
 
@@ -128,7 +131,8 @@ def decide_trash_dirs(all_users,
         for dir in  system_dirs:
             yield dir
     for dir in user_specified_dirs:
-        yield (TrashDirsScanner.Found, (dir, volume_of(dir)))
+        yield trash_dir_found, (dir, volume_of(dir))
+
 
 def maker_parser(prog):
     parser = argparse.ArgumentParser(prog=prog,

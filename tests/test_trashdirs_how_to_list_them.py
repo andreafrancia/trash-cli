@@ -1,6 +1,6 @@
 import unittest
 
-from trashcli.trash import TrashDirsScanner
+from trashcli.trash import TrashDirsScanner, trash_dir_found
 from mock import Mock
 
 
@@ -16,6 +16,7 @@ class TestListTrashinfo(unittest.TestCase):
 
         result = list(scanner.scan_trash_dirs())
 
-        self.assertEqual([(TrashDirsScanner.Found, ('/home/user/.local/share/Trash', '/')),
-                          (TrashDirsScanner.Found, ('/vol/.Trash-123', '/vol')),
-                          (TrashDirsScanner.Found, ('/vol2/.Trash-123', '/vol2'))], result)
+        self.assertEqual(
+            [(trash_dir_found, ('/home/user/.local/share/Trash', '/')),
+             (trash_dir_found, ('/vol/.Trash-123', '/vol')),
+             (trash_dir_found, ('/vol2/.Trash-123', '/vol2'))], result)

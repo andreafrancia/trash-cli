@@ -1,9 +1,11 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 import unittest
 
-from trashcli.trash import TrashDirsScanner, TopTrashDirValidationResult
+from trashcli.trash import (TrashDirsScanner, TopTrashDirValidationResult,
+                            trash_dir_found,
+                            trash_dir_skipped_because_parent_not_sticky,
+                            trash_dir_skipped_because_parent_is_symlink)
 from mock import Mock
-from mock import MagicMock
 from trashcli.trash import TopTrashDirRules
 
 
@@ -49,7 +51,7 @@ class TestTrashDirs_listing(unittest.TestCase):
             list_volumes = lambda: self.volumes,
         )
         for event, args in scanner.scan_trash_dirs():
-            if event == TrashDirsScanner.Found:
+            if event == trash_dir_found:
                 path, _volume = args
                 result.append(path)
         return result
@@ -86,9 +88,9 @@ class TestDescribe_AvailableTrashDirs_when_parent_is_unsticky(unittest.TestCase)
         result = list(self.scanner.scan_trash_dirs())
 
         self.assertEqual(
-            [(TrashDirsScanner.SkippedBecauseParentNotSticky,
+            [(trash_dir_skipped_because_parent_not_sticky,
               ('/topdir/.Trash/123',)),
-             (TrashDirsScanner.Found, ('/topdir/.Trash-123', '/topdir'))],
+             (trash_dir_found, ('/topdir/.Trash-123', '/topdir'))],
             result)
 
     def test_it_shouldnot_care_about_non_existent(self):
@@ -98,7 +100,7 @@ class TestDescribe_AvailableTrashDirs_when_parent_is_unsticky(unittest.TestCase)
         result = list(self.scanner.scan_trash_dirs())
 
         self.assertEqual(
-            [(TrashDirsScanner.Found, ('/topdir/.Trash-123', '/topdir'))],
+            [(trash_dir_found, ('/topdir/.Trash-123', '/topdir'))],
             result)
 
 
@@ -119,9 +121,9 @@ class TestDescribe_AvailableTrashDirs_when_parent_is_symlink(unittest.TestCase):
         result = list(self.scanner.scan_trash_dirs())
 
         self.assertEqual([
-            (TrashDirsScanner.SkippedBecauseParentIsSymlink,
+            (trash_dir_skipped_because_parent_is_symlink,
              ('/topdir/.Trash/123',)),
-            (TrashDirsScanner.Found, ('/topdir/.Trash-123', '/topdir'))
+            (trash_dir_found, ('/topdir/.Trash-123', '/topdir'))
         ], result)
 
 

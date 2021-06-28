@@ -53,19 +53,19 @@ def volume_trash_dir2(volume, getuid):
     yield path, volume
 
 
-class MyEnum:
-    def __init__(self, name):
-        self.name = name
-
+class MyEnum(str):
     def __repr__(self):
-        return self.name
+        return str(self)
+
+
+trash_dir_found = MyEnum('trash_dir_found')
+trash_dir_skipped_because_parent_not_sticky = \
+    MyEnum('trash_dir_skipped_because_parent_not_sticky')
+trash_dir_skipped_because_parent_is_symlink = \
+    MyEnum('trash_dir_skipped_because_parent_is_symlink')
 
 
 class TrashDirsScanner:
-    Found = MyEnum('TrashDirsScanner.Found')
-    SkippedBecauseParentNotSticky = MyEnum('TrashDirsScanner.SkippedBecauseParentNotSticky')
-    SkippedBecauseParentIsSymlink = MyEnum('TrashDirsScanner.SkippedBecauseParentIsSymlink')
-
     def __init__(self, environ, getuid, list_volumes, top_trash_dir_rules):
         self.getuid = getuid
         self.mount_points = list_volumes
@@ -75,18 +75,18 @@ class TrashDirsScanner:
     def scan_trash_dirs(self):
         home_trash_dir_paths = home_trash_dir_path(self.environ)
         for path in home_trash_dir_paths:
-            yield TrashDirsScanner.Found, (path, '/')
+            yield trash_dir_found, (path, '/')
         for volume in self.mount_points():
             top_trash_dir_path = os.path.join(volume, '.Trash', str(self.getuid()))
             result = self.top_trash_dir_rules.valid_to_be_read(top_trash_dir_path)
             if result == TopTrashDirValidationResult.Valid:
-                yield TrashDirsScanner.Found, (top_trash_dir_path, volume)
+                yield trash_dir_found, (top_trash_dir_path, volume)
             elif result == TopTrashDirValidationResult.NotValidBecauseIsNotSticky:
-                yield TrashDirsScanner.SkippedBecauseParentNotSticky, (top_trash_dir_path,)
+                yield trash_dir_skipped_because_parent_not_sticky, (top_trash_dir_path,)
             elif result == TopTrashDirValidationResult.NotValidBecauseParentIsSymlink:
-                yield TrashDirsScanner.SkippedBecauseParentIsSymlink, (top_trash_dir_path,)
+                yield trash_dir_skipped_because_parent_is_symlink, (top_trash_dir_path,)
             alt_top_trash_dir = os.path.join(volume, '.Trash-%s' % self.getuid())
-            yield TrashDirsScanner.Found, (alt_top_trash_dir, volume)
+            yield trash_dir_found, (alt_top_trash_dir, volume)
 
 
 class HelpPrinter:

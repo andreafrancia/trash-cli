@@ -1,9 +1,8 @@
 import fnmatch
 import os, sys
 
-from trashcli.trash import TrashDir, parse_path, ParseError
-from trashcli.trash import TrashDirsScanner
-from trashcli.trash import TopTrashDirRules
+from trashcli.trash import ( TrashDir, parse_path, ParseError, trash_dir_found,
+                             TrashDirsScanner, TopTrashDirRules)
 from trashcli.empty import CleanableTrashcan
 from trashcli.fs import FileSystemReader
 from trashcli.fs import FileRemover
@@ -43,7 +42,7 @@ class RmCmd:
                                    TopTrashDirRules(self.file_reader))
 
         for event, args in scanner.scan_trash_dirs():
-            if event == TrashDirsScanner.Found:
+            if event == trash_dir_found:
                 path, volume = args
                 for type, arg in listing.list_from_volume_trashdir(path, volume):
                     if type == 'unable_to_parse_path':

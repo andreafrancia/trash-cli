@@ -1,7 +1,8 @@
 import collections
 
 from .list import decide_trash_dirs
-from .trash import TopTrashDirRules, TrashDir, path_of_backup_copy, print_version, println, Clock, parse_deletion_date
+from .trash import TopTrashDirRules, TrashDir, path_of_backup_copy, \
+    print_version, println, Clock, parse_deletion_date, trash_dir_found
 from .trash import TrashDirsScanner
 from .trash import EX_OK
 from .trash import PrintHelp
@@ -105,7 +106,7 @@ class EmptyCmd:
                                            args.user_specified_trash_dirs,
                                            self.scanner.scan_trash_dirs())
             for event, args in trash_dirs:
-                if event == TrashDirsScanner.Found:
+                if event == trash_dir_found:
                     trash_dir_path, volume = args
                     trash_dir = TrashDir(self.file_reader)
                     for trashinfo_path in trash_dir.list_trashinfo(trash_dir_path):

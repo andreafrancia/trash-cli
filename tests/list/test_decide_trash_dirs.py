@@ -1,7 +1,7 @@
 import unittest
 
 from trashcli.list import decide_trash_dirs
-from trashcli.trash import TrashDirsScanner
+from trashcli.trash import trash_dir_found
 
 
 class Test_decide_trash_dirs(unittest.TestCase):
@@ -15,4 +15,4 @@ class Test_decide_trash_dirs(unittest.TestCase):
 
         result = list(decide_trash_dirs(False, ['user-specified-dirs'], ['system-dirs']))
 
-        assert result == [(TrashDirsScanner.Found, ('user-specified-dirs', '/'))]
+        assert result == [(trash_dir_found, ('user-specified-dirs', '/'))]
