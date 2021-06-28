@@ -65,28 +65,48 @@ trash_dir_skipped_because_parent_is_symlink = \
     MyEnum('trash_dir_skipped_because_parent_is_symlink')
 
 
+class UserInfo:
+    def __init__(self, environ, getuid):
+        self.environ = environ
+        self.getuid = getuid
+
+    def home_trash_dir_paths(self):
+        return home_trash_dir_path(self.environ)
+
+    def getuid(self):
+        return self.getuid()
+
+
+class UserInfoProvider:
+    def __init__(self, environ, getuid):
+        self.environ = environ
+        self.getuid = getuid
+
+    def get_user_info(self):
+        return [UserInfo(self.environ, self.getuid)]
+
+
 class TrashDirsScanner:
     def __init__(self, environ, getuid, list_volumes, top_trash_dir_rules):
-        self.getuid = getuid
+        self.user_info_provider = UserInfoProvider(environ, getuid)
         self.mount_points = list_volumes
         self.top_trash_dir_rules = top_trash_dir_rules
-        self.environ = environ
 
     def scan_trash_dirs(self):
-        home_trash_dir_paths = home_trash_dir_path(self.environ)
-        for path in home_trash_dir_paths:
-            yield trash_dir_found, (path, '/')
-        for volume in self.mount_points():
-            top_trash_dir_path = os.path.join(volume, '.Trash', str(self.getuid()))
-            result = self.top_trash_dir_rules.valid_to_be_read(top_trash_dir_path)
-            if result == TopTrashDirValidationResult.Valid:
-                yield trash_dir_found, (top_trash_dir_path, volume)
-            elif result == TopTrashDirValidationResult.NotValidBecauseIsNotSticky:
-                yield trash_dir_skipped_because_parent_not_sticky, (top_trash_dir_path,)
-            elif result == TopTrashDirValidationResult.NotValidBecauseParentIsSymlink:
-                yield trash_dir_skipped_because_parent_is_symlink, (top_trash_dir_path,)
-            alt_top_trash_dir = os.path.join(volume, '.Trash-%s' % self.getuid())
-            yield trash_dir_found, (alt_top_trash_dir, volume)
+        for user_info in self.user_info_provider.get_user_info():
+            for path in user_info.home_trash_dir_paths():
+                yield trash_dir_found, (path, '/')
+            for volume in self.mount_points():
+                top_trash_dir_path = os.path.join(volume, '.Trash', str(user_info.getuid()))
+                result = self.top_trash_dir_rules.valid_to_be_read(top_trash_dir_path)
+                if result == TopTrashDirValidationResult.Valid:
+                    yield trash_dir_found, (top_trash_dir_path, volume)
+                elif result == TopTrashDirValidationResult.NotValidBecauseIsNotSticky:
+                    yield trash_dir_skipped_because_parent_not_sticky, (top_trash_dir_path,)
+                elif result == TopTrashDirValidationResult.NotValidBecauseParentIsSymlink:
+                    yield trash_dir_skipped_because_parent_is_symlink, (top_trash_dir_path,)
+                alt_top_trash_dir = os.path.join(volume, '.Trash-%s' % user_info.getuid())
+                yield trash_dir_found, (alt_top_trash_dir, volume)
 
 
 class HelpPrinter:
