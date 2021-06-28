@@ -99,11 +99,11 @@ class TrashDirsScanner:
             for volume in self.mount_points():
                 top_trash_dir_path = os.path.join(volume, '.Trash', str(user_info.getuid()))
                 result = self.top_trash_dir_rules.valid_to_be_read(top_trash_dir_path)
-                if result == TopTrashDirValidationResult.Valid:
+                if result == top_trash_dir_valid:
                     yield trash_dir_found, (top_trash_dir_path, volume)
-                elif result == TopTrashDirValidationResult.NotValidBecauseIsNotSticky:
+                elif result == top_trash_dir_invalid_because_not_sticky:
                     yield trash_dir_skipped_because_parent_not_sticky, (top_trash_dir_path,)
-                elif result == TopTrashDirValidationResult.NotValidBecauseParentIsSymlink:
+                elif result == top_trash_dir_invalid_because_parent_is_symlink:
                     yield trash_dir_skipped_because_parent_is_symlink, (top_trash_dir_path,)
                 alt_top_trash_dir = os.path.join(volume, '.Trash-%s' % user_info.getuid())
                 yield trash_dir_found, (alt_top_trash_dir, volume)
@@ -149,15 +149,13 @@ def print_version(out, program_name, version):
     println(out, "%s %s" % (program_name, version))
 
 
-class TopTrashDirValidationResult:
-    class DoesNotExist:
-        pass
-    class NotValidBecauseIsNotSticky:
-        pass
-    class NotValidBecauseParentIsSymlink:
-        pass
-    class Valid:
-        pass
+top_trash_dir_does_not_exist = MyEnum('top_trash_dir_does_not_exist')
+top_trash_dir_invalid_because_not_sticky = \
+    MyEnum('top_trash_dir_invalid_because_not_sticky')
+top_trash_dir_invalid_because_parent_is_symlink = \
+    MyEnum('top_trash_dir_invalid_because_parent_is_symlink')
+top_trash_dir_valid = MyEnum('top_trash_dir_valid')
+
 
 class TopTrashDirRules:
     def __init__(self, fs):
@@ -166,13 +164,13 @@ class TopTrashDirRules:
     def valid_to_be_read(self, path):
         parent_trashdir = os.path.dirname(path)
         if not self.fs.exists(path):
-            return TopTrashDirValidationResult.DoesNotExist
+            return top_trash_dir_does_not_exist
         if not self.fs.is_sticky_dir(parent_trashdir):
-            return TopTrashDirValidationResult.NotValidBecauseIsNotSticky
+            return top_trash_dir_invalid_because_not_sticky
         if self.fs.is_symlink(parent_trashdir):
-            return TopTrashDirValidationResult.NotValidBecauseParentIsSymlink
+            return top_trash_dir_invalid_because_parent_is_symlink
         else:
-            return TopTrashDirValidationResult.Valid
+            return top_trash_dir_valid
 
 
 class TrashDir:

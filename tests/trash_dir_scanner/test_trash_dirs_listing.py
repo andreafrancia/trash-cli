@@ -1,10 +1,12 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 import unittest
 
-from trashcli.trash import (TrashDirsScanner, TopTrashDirValidationResult,
+from trashcli.trash import (TrashDirsScanner,
                             trash_dir_found,
                             trash_dir_skipped_because_parent_not_sticky,
-                            trash_dir_skipped_because_parent_is_symlink)
+                            trash_dir_skipped_because_parent_is_symlink,
+                            top_trash_dir_invalid_because_not_sticky,
+                            top_trash_dir_valid)
 from mock import Mock
 from trashcli.trash import TopTrashDirRules
 
@@ -38,17 +40,19 @@ class TestTrashDirs_listing(unittest.TestCase):
 
     def trashdirs(self):
         result = []
+
         class FakeTopTrashDirRules:
             def valid_to_be_read(_, _path):
                 if self.Trash_dir_is_sticky:
-                    return TopTrashDirValidationResult.Valid
+                    return top_trash_dir_valid
                 else:
-                    return TopTrashDirValidationResult.NotValidBecauseIsNotSticky
+                    return top_trash_dir_invalid_because_not_sticky
+
         scanner = TrashDirsScanner(
             environ=self.environ,
-            getuid=lambda:self.uid,
-            top_trash_dir_rules= FakeTopTrashDirRules(),
-            list_volumes = lambda: self.volumes,
+            getuid=lambda: self.uid,
+            top_trash_dir_rules=FakeTopTrashDirRules(),
+            list_volumes=lambda: self.volumes,
         )
         for event, args in scanner.scan_trash_dirs():
             if event == trash_dir_found:
@@ -61,8 +65,12 @@ class TestTrashDirs_listing(unittest.TestCase):
         self.volumes = ()
         self.Trash_dir_is_sticky = not_important_for_now()
         self.environ = {}
-    def having_sticky_Trash_dir(self): self.Trash_dir_is_sticky = True
-    def having_non_sticky_Trash_dir(self): self.Trash_dir_is_sticky = False
+
+    def having_sticky_Trash_dir(self):
+        self.Trash_dir_is_sticky = True
+
+    def having_non_sticky_Trash_dir(self):
+        self.Trash_dir_is_sticky = False
 
 
 def not_important_for_now():
@@ -79,11 +87,11 @@ class TestDescribe_AvailableTrashDirs_when_parent_is_unsticky(unittest.TestCase)
             list_volumes=lambda: ['/topdir'],
         )
         self.fs.is_sticky_dir.side_effect = (
-                lambda path: {'/topdir/.Trash':False}[path])
+            lambda path: {'/topdir/.Trash': False}[path])
 
     def test_it_should_report_skipped_dir_non_sticky(self):
         self.fs.exists.side_effect = (
-                lambda path: {'/topdir/.Trash/123':True}[path])
+            lambda path: {'/topdir/.Trash/123': True}[path])
 
         result = list(self.scanner.scan_trash_dirs())
 
@@ -95,7 +103,7 @@ class TestDescribe_AvailableTrashDirs_when_parent_is_unsticky(unittest.TestCase)
 
     def test_it_shouldnot_care_about_non_existent(self):
         self.fs.exists.side_effect = (
-                lambda path: {'/topdir/.Trash/123':False}[path])
+            lambda path: {'/topdir/.Trash/123': False}[path])
 
         result = list(self.scanner.scan_trash_dirs())
 
