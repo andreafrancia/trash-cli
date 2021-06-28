@@ -4,8 +4,8 @@ from trashcli.trash import TrashDirsScanner, trash_dir_found
 from mock import Mock
 
 
-class TestListTrashinfo(unittest.TestCase):
-    def test_howto_list_trashdirs(self):
+class TestTrashDirScanner(unittest.TestCase):
+    def test_scan_trash_dirs(self):
         environ = {'HOME':'/home/user'}
         scanner = TrashDirsScanner(
                 environ = environ,
