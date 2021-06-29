@@ -3,10 +3,10 @@ import os
 
 from .fs import FileSystemReader, file_size
 from .fstab import volume_of
-from .trash import ( version, TrashDir, path_of_backup_copy, print_version,
-                     maybe_parse_deletion_date, trash_dir_found,
-                     trash_dir_skipped_because_parent_is_symlink,
-                     trash_dir_skipped_because_parent_not_sticky )
+from .trash import (version, TrashDir, path_of_backup_copy, print_version,
+                    maybe_parse_deletion_date, trash_dir_found,
+                    trash_dir_skipped_because_parent_is_symlink,
+                    trash_dir_skipped_because_parent_not_sticky, UserInfoProvider)
 from .trash import TopTrashDirRules
 from .trash import TrashDirsScanner
 from .trash import ParseError
@@ -56,8 +56,8 @@ class ListCmd:
             self.list_trash(parsed.trash_dirs, extractor, parsed.show_files)
 
     def list_trash(self, user_specified_trash_dirs, extractor, show_files):
-        trashdirs_scanner = TrashDirsScanner(self.environ,
-                                             self.getuid,
+        user_info_provider = UserInfoProvider(self.environ, self.getuid)
+        trashdirs_scanner = TrashDirsScanner(user_info_provider,
                                              self.list_volumes,
                                              TopTrashDirRules(self.file_reader))
         trash_dirs = decide_trash_dirs(False,

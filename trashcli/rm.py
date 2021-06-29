@@ -1,8 +1,8 @@
 import fnmatch
 import os, sys
 
-from trashcli.trash import ( TrashDir, parse_path, ParseError, trash_dir_found,
-                             TrashDirsScanner, TopTrashDirRules)
+from trashcli.trash import (TrashDir, parse_path, ParseError, trash_dir_found,
+                            TrashDirsScanner, TopTrashDirRules, UserInfoProvider)
 from trashcli.empty import CleanableTrashcan
 from trashcli.fs import FileSystemReader
 from trashcli.fs import FileRemover
@@ -36,8 +36,8 @@ class RmCmd:
 
         listing = ListTrashinfos(self.file_reader)
 
-        scanner = TrashDirsScanner(self.environ,
-                                   self.getuid,
+        user_info_provider = UserInfoProvider(self.environ, self.getuid)
+        scanner = TrashDirsScanner(user_info_provider,
                                    self.list_volumes,
                                    TopTrashDirRules(self.file_reader))
 

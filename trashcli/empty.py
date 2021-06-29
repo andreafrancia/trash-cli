@@ -2,7 +2,7 @@ import collections
 
 from .list import decide_trash_dirs
 from .trash import TopTrashDirRules, TrashDir, path_of_backup_copy, \
-    print_version, println, Clock, parse_deletion_date, trash_dir_found
+    print_version, println, Clock, parse_deletion_date, trash_dir_found, UserInfoProvider
 from .trash import TrashDirsScanner
 from .trash import EX_OK
 from .trash import PrintHelp
@@ -71,8 +71,8 @@ class EmptyCmd:
         file_remover_with_error = FileRemoveWithErrorHandling(file_remover,
                                                               self.print_cannot_remove_error)
         self.trashcan = CleanableTrashcan(file_remover_with_error)
-        self.scanner = TrashDirsScanner(environ,
-                                        getuid,
+        user_info_provider = UserInfoProvider(environ, getuid)
+        self.scanner = TrashDirsScanner(user_info_provider,
                                         list_volumes,
                                         TopTrashDirRules(file_reader))
 

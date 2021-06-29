@@ -87,8 +87,8 @@ class UserInfoProvider:
 
 
 class TrashDirsScanner:
-    def __init__(self, environ, getuid, list_volumes, top_trash_dir_rules):
-        self.user_info_provider = UserInfoProvider(environ, getuid)
+    def __init__(self, user_info_provider, list_volumes, top_trash_dir_rules):
+        self.user_info_provider = user_info_provider
         self.mount_points = list_volumes
         self.top_trash_dir_rules = top_trash_dir_rules
 
