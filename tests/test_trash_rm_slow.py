@@ -16,7 +16,7 @@ class TestTrashRm(unittest.TestCase):
         self.xdg_data_home = MyPath.make_temp_dir()
         self.stderr = StringIO()
         self.trash_rm = RmCmd(environ = {'XDG_DATA_HOME': self.xdg_data_home}
-                         , getuid = 123
+                         , getuid = lambda: 123
                          , list_volumes = lambda:[]
                          , stderr = self.stderr
                          , file_reader = FileSystemReader())

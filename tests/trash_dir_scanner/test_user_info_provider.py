@@ -9,7 +9,7 @@ class TestUserInfoProvider(unittest.TestCase):
 
         info = provider.get_user_info()
 
-        assert [123] == [i.getuid() for i in info]
+        assert [123] == [i.uid for i in info]
 
     def test_home(self):
         provider = UserInfoProvider({'HOME':"~"}, lambda: 123)

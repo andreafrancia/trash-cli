@@ -68,13 +68,10 @@ trash_dir_skipped_because_parent_is_symlink = \
 class UserInfo:
     def __init__(self, environ, getuid):
         self.environ = environ
-        self.getuid = getuid
+        self.uid = getuid()
 
     def home_trash_dir_paths(self):
         return home_trash_dir_path(self.environ)
-
-    def getuid(self):
-        return self.getuid()
 
 
 class UserInfoProvider:
@@ -97,7 +94,7 @@ class TrashDirsScanner:
             for path in user_info.home_trash_dir_paths():
                 yield trash_dir_found, (path, '/')
             for volume in self.mount_points():
-                top_trash_dir_path = os.path.join(volume, '.Trash', str(user_info.getuid()))
+                top_trash_dir_path = os.path.join(volume, '.Trash', str(user_info.uid))
                 result = self.top_trash_dir_rules.valid_to_be_read(top_trash_dir_path)
                 if result == top_trash_dir_valid:
                     yield trash_dir_found, (top_trash_dir_path, volume)
@@ -105,7 +102,7 @@ class TrashDirsScanner:
                     yield trash_dir_skipped_because_parent_not_sticky, (top_trash_dir_path,)
                 elif result == top_trash_dir_invalid_because_parent_is_symlink:
                     yield trash_dir_skipped_because_parent_is_symlink, (top_trash_dir_path,)
-                alt_top_trash_dir = os.path.join(volume, '.Trash-%s' % user_info.getuid())
+                alt_top_trash_dir = os.path.join(volume, '.Trash-%s' % user_info.uid)
                 yield trash_dir_found, (alt_top_trash_dir, volume)
 
 
