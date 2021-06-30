@@ -29,7 +29,7 @@ def path_of_backup_copy(trashinfo_path):
     return os.path.join(trash_dir, 'files', basename)
 
 
-def home_trash_dir_path(environ):
+def home_trash_dir_path_from_env(environ):
     if 'XDG_DATA_HOME' in environ:
         return ['%(XDG_DATA_HOME)s/Trash' % environ]
     elif 'HOME' in environ:
@@ -37,8 +37,12 @@ def home_trash_dir_path(environ):
     return []
 
 
+def home_trash_dir_path_from_home(home_dir):
+    return '%(HOME)s/.local/share/Trash' % home_dir
+
+
 def home_trash_dir(environ, volume_of):
-    paths = home_trash_dir_path(environ)
+    paths = home_trash_dir_path_from_env(environ)
     for path in paths:
         yield path, volume_of(path)
 
@@ -77,7 +81,8 @@ class UserInfoProvider:
         self.getuid = getuid
 
     def get_user_info(self):
-        return [UserInfo(home_trash_dir_path(self.environ), self.getuid())]
+        return [UserInfo(home_trash_dir_path_from_env(self.environ),
+                         self.getuid())]
 
 
 class TrashDirsScanner:
