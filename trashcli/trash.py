@@ -39,7 +39,7 @@ def home_trash_dir_path_from_env(environ):
 
 
 def home_trash_dir_path_from_home(home_dir):
-    return '%(HOME)s/.local/share/Trash' % home_dir
+    return '%s/.local/share/Trash' % home_dir
 
 
 def home_trash_dir(environ, volume_of):

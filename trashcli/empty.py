@@ -2,7 +2,7 @@ import collections
 
 from .list import TrashDirsSelector
 from .trash import TopTrashDirRules, TrashDir, path_of_backup_copy, \
-    print_version, println, Clock, parse_deletion_date, trash_dir_found, UserInfoProvider
+    print_version, println, Clock, parse_deletion_date, trash_dir_found, UserInfoProvider, AllUsersInfoProvider
 from .trash import TrashDirsScanner
 from .trash import EX_OK
 from .trash import PrintHelp
@@ -75,9 +75,12 @@ class EmptyCmd:
         user_dir_scanner = TrashDirsScanner(user_info_provider,
                                             list_volumes,
                                             TopTrashDirRules(file_reader))
-
+        all_users_info_provider = AllUsersInfoProvider()
+        all_users_scanner = TrashDirsScanner(all_users_info_provider,
+                                             list_volumes,
+                                             TopTrashDirRules(file_reader))
         self.selector = TrashDirsSelector(user_dir_scanner.scan_trash_dirs(),
-                                          [])
+                                          all_users_scanner.scan_trash_dirs())
 
     def run(self, *argv):
         program_name = os.path.basename(argv[0])
