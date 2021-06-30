@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 
 import datetime
+import pwd
 
 version = '0.21.6.10.1'
 
@@ -83,6 +84,13 @@ class UserInfoProvider:
     def get_user_info(self):
         return [UserInfo(home_trash_dir_path_from_env(self.environ),
                          self.getuid())]
+
+
+class AllUsersInfoProvider:
+    def get_user_info(self):
+        for user in pwd.getpwall():
+            yield UserInfo([home_trash_dir_path_from_home(user.pw_dir)],
+                           user.pw_uid)
 
 
 class TrashDirsScanner:
