@@ -17,4 +17,4 @@ class TestUserInfoProvider(unittest.TestCase):
         info = provider.get_user_info()
 
         assert [['~/.local/share/Trash']] == \
-               [i.home_trash_dir_paths() for i in info]
+               [i.home_trash_dir_paths for i in info]
