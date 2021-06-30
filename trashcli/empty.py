@@ -1,6 +1,6 @@
 import collections
 
-from .list import decide_trash_dirs
+from .list import TrashDirsSelector
 from .trash import TopTrashDirRules, TrashDir, path_of_backup_copy, \
     print_version, println, Clock, parse_deletion_date, trash_dir_found, UserInfoProvider
 from .trash import TrashDirsScanner
@@ -72,9 +72,12 @@ class EmptyCmd:
                                                               self.print_cannot_remove_error)
         self.trashcan = CleanableTrashcan(file_remover_with_error)
         user_info_provider = UserInfoProvider(environ, getuid)
-        self.scanner = TrashDirsScanner(user_info_provider,
-                                        list_volumes,
-                                        TopTrashDirRules(file_reader))
+        user_dir_scanner = TrashDirsScanner(user_info_provider,
+                                            list_volumes,
+                                            TopTrashDirRules(file_reader))
+
+        self.selector = TrashDirsSelector(user_dir_scanner.scan_trash_dirs(),
+                                          [])
 
     def run(self, *argv):
         program_name = os.path.basename(argv[0])
@@ -102,9 +105,8 @@ class EmptyCmd:
                                                   self.clock,
                                                   args.max_age_in_days,
                                                   self.errors)
-            trash_dirs = decide_trash_dirs(args.all_users,
-                                           args.user_specified_trash_dirs,
-                                           self.scanner.scan_trash_dirs())
+            trash_dirs = self.selector.select(args.all_users,
+                                              args.user_specified_trash_dirs)
             for event, args in trash_dirs:
                 if event == trash_dir_found:
                     trash_dir_path, volume = args

@@ -37,11 +37,14 @@ class ListCmd:
         self.out          = out
         self.output       = ListCmdOutput(out, err)
         self.err          = self.output.err
-        self.environ      = environ
-        self.list_volumes = list_volumes
-        self.getuid       = getuid
-        self.file_reader  = file_reader
         self.version      = version
+        self.file_reader = file_reader
+        user_info_provider = UserInfoProvider(environ, getuid)
+        trashdirs_scanner = TrashDirsScanner(user_info_provider,
+                                             list_volumes,
+                                             TopTrashDirRules(file_reader))
+        self.selector = TrashDirsSelector(trashdirs_scanner.scan_trash_dirs(),
+                                          [])
 
     def run(self, *argv):
         parser = maker_parser(os.path.basename(argv[0]))
@@ -56,13 +59,8 @@ class ListCmd:
             self.list_trash(parsed.trash_dirs, extractor, parsed.show_files)
 
     def list_trash(self, user_specified_trash_dirs, extractor, show_files):
-        user_info_provider = UserInfoProvider(self.environ, self.getuid)
-        trashdirs_scanner = TrashDirsScanner(user_info_provider,
-                                             self.list_volumes,
-                                             TopTrashDirRules(self.file_reader))
-        trash_dirs = decide_trash_dirs(False,
-                                       user_specified_trash_dirs,
-                                       trashdirs_scanner.scan_trash_dirs())
+        trash_dirs = self.selector.select(False,
+                                     user_specified_trash_dirs)
         for event, args in trash_dirs:
             if event == trash_dir_found:
                 path, volume = args
@@ -124,14 +122,17 @@ def description(program_name, printer):
     printer.bug_reporting()
 
 
-def decide_trash_dirs(all_users,
-                      user_specified_dirs,
-                      system_dirs):
-    if not user_specified_dirs:
-        for dir in  system_dirs:
-            yield dir
-    for dir in user_specified_dirs:
-        yield trash_dir_found, (dir, volume_of(dir))
+class TrashDirsSelector:
+    def __init__(self, current_user_dirs, all_users_dirs):
+        self.current_user_dirs = current_user_dirs
+        self.all_users_dirs = all_users_dirs
+
+    def select(self, all_users_flag, user_specified_dirs):
+        if not user_specified_dirs:
+            for dir in self.current_user_dirs:
+                yield dir
+        for dir in user_specified_dirs:
+            yield trash_dir_found, (dir, volume_of(dir))
 
 
 def maker_parser(prog):
