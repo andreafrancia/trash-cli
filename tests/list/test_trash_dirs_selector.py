@@ -20,3 +20,9 @@ class TestTrashDirsSelector(unittest.TestCase):
         result = list(self.selector.select(False, ['user-specified-dirs']))
 
         assert result == [(trash_dir_found, ('user-specified-dirs', '/'))]
+
+    def test_all_user_specified(self):
+
+        result = list(self.selector.select(True, ['user-specified-dirs']))
+
+        assert result == ['all-user-dirs']

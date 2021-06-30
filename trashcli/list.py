@@ -128,11 +128,15 @@ class TrashDirsSelector:
         self.all_users_dirs = all_users_dirs
 
     def select(self, all_users_flag, user_specified_dirs):
-        if not user_specified_dirs:
-            for dir in self.current_user_dirs:
+        if all_users_flag:
+            for dir in self.all_users_dirs:
                 yield dir
-        for dir in user_specified_dirs:
-            yield trash_dir_found, (dir, volume_of(dir))
+        else:
+            if not user_specified_dirs:
+                for dir in self.current_user_dirs:
+                    yield dir
+            for dir in user_specified_dirs:
+                yield trash_dir_found, (dir, volume_of(dir))
 
 
 def maker_parser(prog):
