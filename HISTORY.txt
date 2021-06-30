@@ -4,6 +4,7 @@ master:
  - Now `trash-empty` honors multiple --trash-dir options
  - trash-empty learnt the hidden option --print-time and now uses TRASH_DATE
    environment variable if present
+ - trash-empty learnt the --all-users option
 
 0.21.5.25:
  - now trash-put honors the -i option (also the --interactive one)
