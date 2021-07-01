@@ -1,12 +1,10 @@
-import collections
+import argparse
 
 from .list import TrashDirsSelector
 from .trash import TopTrashDirRules, TrashDir, path_of_backup_copy, \
     print_version, println, Clock, parse_deletion_date, trash_dir_found, UserInfoProvider, AllUsersInfoProvider
 from .trash import TrashDirsScanner
 from .trash import EX_OK
-from .trash import PrintHelp
-from .trash import EX_USAGE
 import os
 import sys
 from trashcli.list_mount_points import os_mount_points
@@ -86,30 +84,24 @@ class EmptyCmd:
         program_name = os.path.basename(argv[0])
         self.errors = Errors(program_name, self.err)
 
-        result, args = parse_argv(argv[1:])
+        parser = make_parser()
+        parsed = parser.parse_args(argv[1:])
 
-        exit_code = EX_OK
-        if result == 'print_version':
+        if parsed.version:
             print_version(self.out, program_name, self.version)
-        elif result == 'print_help':
-            PrintHelp(description, self.out).my_print_help(program_name)
-        elif result == 'invalid_option':
-            invalid_option, = args
-            self.errors.print_error("invalid option -- '%s'" % invalid_option)
-            exit_code |= EX_USAGE
-        elif result == 'print_time':
+        elif parsed.print_time:
             now_value = self.clock.get_now_value(self.errors)
             println(self.out, now_value.replace(microsecond=0).isoformat())
-        elif result == 'default':
-            if not args.max_age_in_days:
+        else:
+            if not parsed.days:
                 delete_mode = DeleteAnything()
             else:
                 delete_mode = DeleteAccordingDate(self.file_reader.contents_of,
                                                   self.clock,
-                                                  args.max_age_in_days,
+                                                  int(parsed.days),
                                                   self.errors)
-            trash_dirs = self.selector.select(args.all_users,
-                                              args.user_specified_trash_dirs)
+            trash_dirs = self.selector.select(parsed.all_users,
+                                              parsed.user_specified_trash_dirs)
             for event, args in trash_dirs:
                 if event == trash_dir_found:
                     trash_dir_path, volume = args
@@ -120,7 +112,7 @@ class EmptyCmd:
                     for orphan in trash_dir.list_orphans(trash_dir_path):
                         self.trashcan.delete_orphan(orphan)
 
-        return exit_code
+        return EX_OK
 
     def print_cannot_remove_error(self, path):
         self.errors.print_error("cannot remove %s" % path)
@@ -186,37 +178,20 @@ class CleanableTrashcan:
         self._file_remover.remove_file(trashinfo_path)
 
 
-Parsed = collections.namedtuple('Parsed', ['all_users',
-                                           'user_specified_trash_dirs',
-                                           'max_age_in_days'])
-
-
-def parse_argv(args):
-    from getopt import getopt, GetoptError
-
-    try:
-        options, arguments = getopt(args,
-                                    'h',
-                                    ['help', 'version', 'trash-dir=',
-                                     'print-time', 'all-users'])
-    except GetoptError as e:
-        invalid_option = e.opt
-        return 'invalid_option', (invalid_option,)
-    else:
-        trash_dirs = []
-        max_days = None
-        all_users = False
-        for option, value in options:
-            if option in ('--help', '-h'):
-                return 'print_help', ()
-            if option == '--version':
-                return 'print_version', ()
-            if option == '--print-time':
-                return 'print_time', ()
-            if option == '--trash-dir':
-                trash_dirs.append(value)
-            if option == '--all-users':
-                all_users = True
-        for arg in arguments:
-            max_days = int(arg)
-        return 'default', Parsed(all_users, trash_dirs, max_days)
+def make_parser():
+    parser = argparse.ArgumentParser(
+        description='Purge trashed files.',
+        epilog='Report bugs to https://github.com/andreafrancia/trash-cli/issues')
+    parser.add_argument('--version', action='store_true', default=False,
+                        help="show program's version number and exit")
+    parser.add_argument('--trash-dir', action='append', default=[],
+                        metavar='TRASH_DIR',
+                        dest='user_specified_trash_dirs',
+                        help='specify the trash directory to use')
+    parser.add_argument('--print-time', action='store_true', dest='print_time',
+                        help=argparse.SUPPRESS)
+    parser.add_argument('--all-users', action='store_true', dest='all_users',
+                        help=argparse.SUPPRESS)
+    parser.add_argument('days', action='store', default=None, type=int,
+                        nargs='?')
+    return parser
