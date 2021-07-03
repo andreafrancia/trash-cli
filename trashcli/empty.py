@@ -1,8 +1,10 @@
+# Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 import argparse
 
 from .list import TrashDirsSelector
-from .trash import TopTrashDirRules, TrashDir, path_of_backup_copy, \
-    print_version, println, Clock, parse_deletion_date, trash_dir_found, UserInfoProvider, AllUsersInfoProvider
+from .trash import (TopTrashDirRules, TrashDirReader, path_of_backup_copy,
+                    print_version, println, Clock, parse_deletion_date,
+                    trash_dir_found, UserInfoProvider, AllUsersInfoProvider)
 from .trash import TrashDirsScanner
 from .trash import EX_OK
 import os
@@ -49,6 +51,21 @@ def description(program_name, printer):
     printer.bug_reporting()
 
 
+class MainLoop:
+    def __init__(self, trash_dir, trashcan):
+        self.trash_dir = trash_dir
+        self.trashcan = trashcan
+
+    def do_loop(self, trash_dirs, delete_mode):
+        for event, args in trash_dirs:
+            if event == trash_dir_found:
+                trash_dir_path, volume = args
+                for trashinfo_path in self.trash_dir.list_trashinfo(trash_dir_path):
+                    if delete_mode.ok_to_delete(trashinfo_path):
+                        self.trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
+                for orphan in self.trash_dir.list_orphans(trash_dir_path):
+                    self.trashcan.delete_orphan(orphan)
+
 class EmptyCmd:
     def __init__(self,
                  out,
@@ -68,7 +85,7 @@ class EmptyCmd:
         self.clock = Clock(now, environ)
         file_remover_with_error = FileRemoveWithErrorHandling(file_remover,
                                                               self.print_cannot_remove_error)
-        self.trashcan = CleanableTrashcan(file_remover_with_error)
+        trashcan = CleanableTrashcan(file_remover_with_error)
         user_info_provider = UserInfoProvider(environ, getuid)
         user_dir_scanner = TrashDirsScanner(user_info_provider,
                                             list_volumes,
@@ -79,6 +96,8 @@ class EmptyCmd:
                                              TopTrashDirRules(file_reader))
         self.selector = TrashDirsSelector(user_dir_scanner.scan_trash_dirs(),
                                           all_users_scanner.scan_trash_dirs())
+        trash_dir = TrashDirReader(self.file_reader)
+        self.main_loop = MainLoop(trash_dir, trashcan)
 
     def run(self, *argv):
         program_name = os.path.basename(argv[0])
@@ -102,17 +121,9 @@ class EmptyCmd:
                                                   self.errors)
             trash_dirs = self.selector.select(parsed.all_users,
                                               parsed.user_specified_trash_dirs)
-            for event, args in trash_dirs:
-                if event == trash_dir_found:
-                    trash_dir_path, volume = args
-                    trash_dir = TrashDir(self.file_reader)
-                    for trashinfo_path in trash_dir.list_trashinfo(trash_dir_path):
-                        if delete_mode.ok_to_delete(trashinfo_path):
-                            self.trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
-                    for orphan in trash_dir.list_orphans(trash_dir_path):
-                        self.trashcan.delete_orphan(orphan)
-
+            self.main_loop.do_loop(trash_dirs, delete_mode)
         return EX_OK
+
 
     def print_cannot_remove_error(self, path):
         self.errors.print_error("cannot remove %s" % path)

@@ -1,11 +1,14 @@
+# Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 import fnmatch
 import os, sys
 
-from trashcli.trash import (TrashDir, parse_path, ParseError, trash_dir_found,
-                            TrashDirsScanner, TopTrashDirRules, UserInfoProvider)
+from trashcli.trash import (TrashDirReader, parse_path, ParseError,
+                            TrashDirsScanner, TopTrashDirRules,
+                            UserInfoProvider, trash_dir_found)
 from trashcli.empty import CleanableTrashcan
 from trashcli.fs import FileSystemReader
 from trashcli.fs import FileRemover
+
 
 class RmCmd:
     def __init__(self,
@@ -90,7 +93,7 @@ class ListTrashinfos:
         self.file_reader = file_reader
 
     def list_from_volume_trashdir(self, trashdir_path, volume):
-        trashdir = TrashDir(self.file_reader)
+        trashdir = TrashDirReader(self.file_reader)
         for trashinfo_path in trashdir.list_trashinfo(trashdir_path):
             trashinfo = self.file_reader.contents_of(trashinfo_path)
             try:

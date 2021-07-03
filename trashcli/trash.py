@@ -180,7 +180,7 @@ class TopTrashDirRules:
             return top_trash_dir_valid
 
 
-class TrashDir:
+class TrashDirReader:
 
     def __init__(self, file_reader):
         self.file_reader = file_reader
@@ -199,6 +199,7 @@ class TrashDir:
         for entry in self.file_reader.entries_if_dir_exists(info_dir):
             if entry.endswith('.trashinfo'):
                 yield os.path.join(info_dir, entry)
+
 
 class ParseError(ValueError): pass
 

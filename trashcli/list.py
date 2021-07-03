@@ -1,9 +1,10 @@
+# Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 import argparse
 import os
 
 from .fs import FileSystemReader, file_size
 from .fstab import volume_of
-from .trash import (version, TrashDir, path_of_backup_copy, print_version,
+from .trash import (version, TrashDirReader, path_of_backup_copy, print_version,
                     maybe_parse_deletion_date, trash_dir_found,
                     trash_dir_skipped_because_parent_is_symlink,
                     trash_dir_skipped_because_parent_not_sticky, UserInfoProvider)
@@ -11,7 +12,6 @@ from .trash import TopTrashDirRules
 from .trash import TrashDirsScanner
 from .trash import ParseError
 from .trash import parse_path
-from .trash import unknown_date
 
 def main():
     import sys
@@ -24,6 +24,7 @@ def main():
         getuid       = os.getuid,
         list_volumes = os_mount_points,
     ).run(*sys.argv)
+
 
 class ListCmd:
     def __init__(self, out,
@@ -64,7 +65,7 @@ class ListCmd:
         for event, args in trash_dirs:
             if event == trash_dir_found:
                 path, volume = args
-                trash_dir = TrashDir(self.file_reader)
+                trash_dir = TrashDirReader(self.file_reader)
                 for trash_info in trash_dir.list_trashinfo(path):
                     self._print_trashinfo(volume, trash_info, extractor, show_files)
             elif event == trash_dir_skipped_because_parent_not_sticky:
