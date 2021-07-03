@@ -206,3 +206,13 @@ def make_parser():
     parser.add_argument('days', action='store', default=None, type=int,
                         nargs='?')
     return parser
+
+
+class Guard:
+    def __init__(self, emptier):
+        self.emptier = emptier
+
+    def ask_the_user(self, user, trash_dirs):
+        trash_dirs_list = list(trash_dirs)
+        if user.do_you_wanna_empty_trash_dirs(trash_dirs_list):
+            self.emptier(trash_dirs_list)
