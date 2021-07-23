@@ -1,6 +1,7 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 import argparse
 
+from .fstab import volume_of
 from .list import TrashDirsSelector
 from .trash import (TopTrashDirRules, TrashDirReader, path_of_backup_copy,
                     print_version, println, Clock, parse_deletion_date,
@@ -30,6 +31,7 @@ def main(argv=sys.argv,
         getuid=os.getuid,
         file_remover=FileRemover(),
         version=trash.version,
+        volume_of=volume_of
     ).run(*argv)
 
 
@@ -76,7 +78,8 @@ class EmptyCmd:
                  file_reader,
                  getuid,
                  file_remover,
-                 version):
+                 version,
+                 volume_of):
 
         self.out = out
         self.err = err
@@ -95,7 +98,8 @@ class EmptyCmd:
                                              list_volumes,
                                              TopTrashDirRules(file_reader))
         self.selector = TrashDirsSelector(user_dir_scanner.scan_trash_dirs(),
-                                          all_users_scanner.scan_trash_dirs())
+                                          all_users_scanner.scan_trash_dirs(),
+                                          volume_of)
         trash_dir = TrashDirReader(self.file_reader)
         self.main_loop = MainLoop(trash_dir, trashcan)
 

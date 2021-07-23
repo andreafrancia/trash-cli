@@ -45,16 +45,17 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
         self.temp_dir = MyPath.make_temp_dir()
         self.top_dir = self.temp_dir / 'topdir'
         require_empty_dir(self.top_dir)
-        self.empty=EmptyCmd(
-                out          = StringIO(),
-                err          = StringIO(),
-                environ      = {},
-                list_volumes = lambda: [self.top_dir],
-                now          = None,
-                file_reader  = FileSystemReader(),
-                getuid       = lambda: 123,
-                file_remover = FileRemover(),
-                version      = None,
+        self.empty = EmptyCmd(
+            out=StringIO(),
+            err=StringIO(),
+            environ={},
+            list_volumes=lambda: [self.top_dir],
+            now=None,
+            file_reader=FileSystemReader(),
+            getuid=lambda: 123,
+            file_remover=FileRemover(),
+            version=None,
+            volume_of=lambda x: "volume_of %s" % x
         )
 
     def test_it_removes_trashinfos_from_method_1_dir(self):

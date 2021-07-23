@@ -2,6 +2,7 @@
 import argparse
 import os
 
+from . import fstab
 from .fs import FileSystemReader, file_size
 from .fstab import volume_of
 from .trash import (version, TrashDirReader, path_of_backup_copy, print_version,
@@ -27,13 +28,15 @@ def main():
 
 
 class ListCmd:
-    def __init__(self, out,
-                       err,
-                       environ,
-                       list_volumes,
-                       getuid,
-                       file_reader = FileSystemReader(),
-                       version     = version):
+    def __init__(self,
+                 out,
+                 err,
+                 environ,
+                 list_volumes,
+                 getuid,
+                 file_reader=FileSystemReader(),
+                 version=version,
+                 volume_of=fstab.volume_of):
 
         self.out          = out
         self.output       = ListCmdOutput(out, err)
@@ -45,7 +48,8 @@ class ListCmd:
                                              list_volumes,
                                              TopTrashDirRules(file_reader))
         self.selector = TrashDirsSelector(trashdirs_scanner.scan_trash_dirs(),
-                                          [])
+                                          [],
+                                          volume_of)
 
     def run(self, *argv):
         parser = maker_parser(os.path.basename(argv[0]))
@@ -124,9 +128,10 @@ def description(program_name, printer):
 
 
 class TrashDirsSelector:
-    def __init__(self, current_user_dirs, all_users_dirs):
+    def __init__(self, current_user_dirs, all_users_dirs, volume_of):
         self.current_user_dirs = current_user_dirs
         self.all_users_dirs = all_users_dirs
+        self.volume_of = volume_of
 
     def select(self, all_users_flag, user_specified_dirs):
         if all_users_flag:
@@ -137,7 +142,7 @@ class TrashDirsSelector:
                 for dir in self.current_user_dirs:
                     yield dir
             for dir in user_specified_dirs:
-                yield trash_dir_found, (dir, volume_of(dir))
+                yield trash_dir_found, (dir, self.volume_of(dir))
 
 
 def maker_parser(prog):
