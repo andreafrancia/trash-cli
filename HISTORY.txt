@@ -1,3 +1,6 @@
+0.21.7.23:
+ - fix bug in tests (see https://github.com/andreafrancia/trash-cli/issues/210)
+
 0.21.6.30:
  - `trash-empty --help` now shows only the command basename and not the full
    path to the command.
