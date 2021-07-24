@@ -1,3 +1,6 @@
+0.21.7.24:
+ - fix bug in tests
+
 0.21.7.23:
  - fix bug in tests (see https://github.com/andreafrancia/trash-cli/issues/210)
 

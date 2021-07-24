@@ -19,7 +19,8 @@ class TrashPutFixture:
         self.temp_dir = MyPath.make_temp_dir()
 
     def run_trashput(self, *args):
-        self.environ = {'XDG_DATA_HOME': self.temp_dir / 'XDG_DATA_HOME' }
+        self.environ = {'XDG_DATA_HOME': self.temp_dir / 'XDG_DATA_HOME',
+                        'HOME': self.temp_dir / 'home'}
         result = run_command.run_command(self.temp_dir,
                                          "trash-put",
                                          list(args),
@@ -61,9 +62,9 @@ class Test_when_deleting_an_existing_file_in_verbose_mode(unittest.TestCase):
 
     def test_should_tell_where_a_file_is_trashed(self):
         output = self.fixture.stderr.splitlines()
-        assert (("trash-put: '%s' trashed in %s/XDG_DATA_HOME/Trash" %
-                 (self.foo_file, self.fixture.temp_dir)) in
-                  output)
+        expected_line = "trash-put: '%s' trashed in %s/XDG_DATA_HOME/Trash" % \
+                        (self.foo_file, self.fixture.temp_dir)
+        assert (expected_line in output)
 
     def test_should_be_succesfull(self):
         assert 0 == self.fixture.exit_code
