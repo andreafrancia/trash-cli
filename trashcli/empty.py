@@ -220,3 +220,7 @@ class Guard:
         trash_dirs_list = list(trash_dirs)
         if user.do_you_wanna_empty_trash_dirs(trash_dirs_list):
             self.emptier(trash_dirs_list)
+
+
+class User:
+    pass

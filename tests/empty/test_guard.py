@@ -3,6 +3,31 @@ import unittest
 from mock import Mock, call
 
 from trashcli.empty import Guard
+from trashcli.trash import trash_dir_found
+
+
+def prepare_output_message(trash_dirs):
+    result = []
+    result.append("Would empty trash dirs:")
+    for event, args in trash_dirs:
+        if event == trash_dir_found:
+            trash_dir, volume = args
+            result.append("    - %s" % trash_dir)
+    result.append("")
+    return "\n".join(result)
+
+
+class Test(unittest.TestCase):
+    def test_one_dir(self):
+        trash_dirs = [
+            (trash_dir_found, ('/Trash', '/')),
+                      ]
+        result = prepare_output_message(trash_dirs)
+
+        assert """\
+Would empty trash dirs:
+    - /Trash
+""" == result
 
 
 class TestGuard(unittest.TestCase):
