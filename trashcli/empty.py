@@ -5,7 +5,7 @@ from .fstab import volume_of
 from .list import TrashDirsSelector
 from .trash import (TopTrashDirRules, TrashDirReader, path_of_backup_copy,
                     print_version, println, Clock, parse_deletion_date,
-                    trash_dir_found, UserInfoProvider, AllUsersInfoProvider)
+                    trash_dir_found, UserInfoProvider, AllUsersInfoProvider, my_input)
 from .trash import TrashDirsScanner
 from .trash import EX_OK
 import os
@@ -128,12 +128,18 @@ class EmptyCmd:
             guard = Guard() if parsed.interactive else NoGuard()
             emptier = Emptier(self.main_loop, delete_mode)
 
+            user = User(prepare_output_message, my_input, parse_reply)
+            # guard.ask_the_user(user, trash_dirs, emptier)
             emptier.do_empty(trash_dirs)
         return EX_OK
 
-
     def print_cannot_remove_error(self, path):
         self.errors.print_error("cannot remove %s" % path)
+
+
+def parse_reply(reply):
+    return True
+
 
 class Emptier:
     def __init__(self, main_loop, delete_mode):
@@ -240,4 +246,25 @@ class NoGuard:
 
 
 class User:
-    pass
+    def __init__(self, prepare_output_message, input, parse_reply):
+        self.prepare_output_message = prepare_output_message
+        self.input = input
+        self.parse_reply = parse_reply
+
+    def do_you_wanna_empty_trash_dirs(self, trash_dirs):
+        reply = self.input(self.prepare_output_message(trash_dirs))
+        return self.parse_reply(reply)
+
+
+def prepare_output_message(trash_dirs):
+    result = []
+    if trash_dirs:
+        result.append("Would empty the following trash directories:")
+        for event, args in trash_dirs:
+            if event == trash_dir_found:
+                trash_dir, volume = args
+                result.append("    - %s" % trash_dir)
+        result.append("Proceed? (y/n) ")
+        return "\n".join(result)
+    else:
+        return 'No trash directories to empty.\n'
