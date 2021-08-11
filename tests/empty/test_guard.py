@@ -8,25 +8,50 @@ from trashcli.trash import trash_dir_found
 
 def prepare_output_message(trash_dirs):
     result = []
-    result.append("Would empty trash dirs:")
-    for event, args in trash_dirs:
-        if event == trash_dir_found:
-            trash_dir, volume = args
-            result.append("    - %s" % trash_dir)
-    result.append("")
-    return "\n".join(result)
+    if trash_dirs:
+        result.append("Would empty the following trash directories:")
+        for event, args in trash_dirs:
+            if event == trash_dir_found:
+                trash_dir, volume = args
+                result.append("    - %s" % trash_dir)
+        result.append("")
+        return "\n".join(result)
+    else:
+        return 'No trash directories to empty.\n'
 
 
 class Test(unittest.TestCase):
     def test_one_dir(self):
         trash_dirs = [
             (trash_dir_found, ('/Trash', '/')),
-                      ]
+        ]
         result = prepare_output_message(trash_dirs)
 
         assert """\
-Would empty trash dirs:
+Would empty the following trash directories:
     - /Trash
+""" == result
+
+    def test_multiple_dirs(self):
+        trash_dirs = [
+            (trash_dir_found, ('/Trash1', '/')),
+            (trash_dir_found, ('/Trash2', '/')),
+        ]
+        result = prepare_output_message(trash_dirs)
+
+        assert """\
+Would empty the following trash directories:
+    - /Trash1
+    - /Trash2
+""" == result
+
+    def test_no_dirs(self):
+        trash_dirs = []
+
+        result = prepare_output_message(trash_dirs)
+
+        assert """\
+No trash directories to empty.
 """ == result
 
 
