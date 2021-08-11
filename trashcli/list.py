@@ -4,7 +4,7 @@ import os
 
 from . import fstab
 from .fs import FileSystemReader, file_size
-from .fstab import volume_of
+from .fstab import volume_of, VolumesListing
 from .trash import (version, TrashDirReader, path_of_backup_copy, print_version,
                     maybe_parse_deletion_date, trash_dir_found,
                     trash_dir_skipped_because_parent_is_symlink,
@@ -19,11 +19,11 @@ def main():
     import os
     from trashcli.list_mount_points import os_mount_points
     ListCmd(
-        out          = sys.stdout,
-        err          = sys.stderr,
-        environ      = os.environ,
-        getuid       = os.getuid,
-        list_volumes = os_mount_points,
+        out=sys.stdout,
+        err=sys.stderr,
+        environ=os.environ,
+        getuid=os.getuid,
+        volumes_listing=VolumesListing(os_mount_points),
     ).run(*sys.argv)
 
 
@@ -32,7 +32,7 @@ class ListCmd:
                  out,
                  err,
                  environ,
-                 list_volumes,
+                 volumes_listing,
                  getuid,
                  file_reader=FileSystemReader(),
                  version=version,
@@ -45,9 +45,9 @@ class ListCmd:
         self.file_reader = file_reader
         user_info_provider = UserInfoProvider(environ, getuid)
         trashdirs_scanner = TrashDirsScanner(user_info_provider,
-                                             list_volumes,
+                                             volumes_listing,
                                              TopTrashDirRules(file_reader))
-        self.selector = TrashDirsSelector(trashdirs_scanner.scan_trash_dirs(),
+        self.selector = TrashDirsSelector(trashdirs_scanner.scan_trash_dirs(environ),
                                           [],
                                           volume_of)
 

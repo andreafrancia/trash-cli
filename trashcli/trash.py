@@ -94,16 +94,16 @@ class AllUsersInfoProvider:
 
 
 class TrashDirsScanner:
-    def __init__(self, user_info_provider, list_volumes, top_trash_dir_rules):
+    def __init__(self, user_info_provider, volumes_listing, top_trash_dir_rules):
         self.user_info_provider = user_info_provider
-        self.mount_points = list_volumes
+        self.volumes_listing = volumes_listing
         self.top_trash_dir_rules = top_trash_dir_rules
 
-    def scan_trash_dirs(self):
+    def scan_trash_dirs(self, environ):
         for user_info in self.user_info_provider.get_user_info():
             for path in user_info.home_trash_dir_paths:
                 yield trash_dir_found, (path, '/')
-            for volume in self.mount_points():
+            for volume in self.volumes_listing.list_volumes(environ):
                 top_trash_dir_path = os.path.join(volume, '.Trash', str(user_info.uid))
                 result = self.top_trash_dir_rules.valid_to_be_read(top_trash_dir_path)
                 if result == top_trash_dir_valid:

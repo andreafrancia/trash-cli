@@ -4,6 +4,7 @@ import pytest
 
 from six import StringIO
 
+from trashcli.fstab import VolumesListing
 from .support import MyPath
 from trashcli.rm import RmCmd, ListTrashinfos
 from .fake_trash_dir import FakeTrashDir
@@ -15,11 +16,11 @@ class TestTrashRm(unittest.TestCase):
     def setUp(self):
         self.xdg_data_home = MyPath.make_temp_dir()
         self.stderr = StringIO()
-        self.trash_rm = RmCmd(environ = {'XDG_DATA_HOME': self.xdg_data_home}
-                         , getuid = lambda: 123
-                         , list_volumes = lambda:[]
-                         , stderr = self.stderr
-                         , file_reader = FileSystemReader())
+        self.trash_rm = RmCmd(environ={'XDG_DATA_HOME': self.xdg_data_home}
+                              , getuid=lambda: 123
+                              , volumes_listing=VolumesListing(lambda: [])
+                              , stderr=self.stderr
+                              , file_reader=FileSystemReader())
         self.fake_trash_dir = FakeTrashDir(self.xdg_data_home / 'Trash')
 
     def test_issue69(self):

@@ -1,7 +1,7 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 import argparse
 
-from .fstab import volume_of
+from .fstab import volume_of, VolumesListing
 from .list import TrashDirsSelector
 from .trash import (TopTrashDirRules, TrashDirReader, path_of_backup_copy,
                     print_version, println, Clock, parse_deletion_date,
@@ -25,7 +25,7 @@ def main(argv=sys.argv,
         out=stdout,
         err=stderr,
         environ=environ,
-        list_volumes=os_mount_points,
+        volumes_listing=VolumesListing(os_mount_points),
         now=datetime.now,
         file_reader=FileSystemReader(),
         getuid=os.getuid,
@@ -73,7 +73,7 @@ class EmptyCmd:
                  out,
                  err,
                  environ,
-                 list_volumes,
+                 volumes_listing,
                  now,
                  file_reader,
                  getuid,
@@ -91,14 +91,14 @@ class EmptyCmd:
         trashcan = CleanableTrashcan(file_remover_with_error)
         user_info_provider = UserInfoProvider(environ, getuid)
         user_dir_scanner = TrashDirsScanner(user_info_provider,
-                                            list_volumes,
+                                            volumes_listing,
                                             TopTrashDirRules(file_reader))
         all_users_info_provider = AllUsersInfoProvider()
         all_users_scanner = TrashDirsScanner(all_users_info_provider,
-                                             list_volumes,
+                                             volumes_listing,
                                              TopTrashDirRules(file_reader))
-        self.selector = TrashDirsSelector(user_dir_scanner.scan_trash_dirs(),
-                                          all_users_scanner.scan_trash_dirs(),
+        self.selector = TrashDirsSelector(user_dir_scanner.scan_trash_dirs(environ),
+                                          all_users_scanner.scan_trash_dirs(environ),
                                           volume_of)
         trash_dir = TrashDirReader(self.file_reader)
         self.main_loop = MainLoop(trash_dir, trashcan)

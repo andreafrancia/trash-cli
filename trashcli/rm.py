@@ -14,14 +14,15 @@ class RmCmd:
     def __init__(self,
                  environ,
                  getuid,
-                 list_volumes,
+                 volumes_listing,
                  stderr,
                  file_reader):
-        self.environ      = environ
-        self.getuid       = getuid
-        self.list_volumes = list_volumes
-        self.stderr       = stderr
-        self.file_reader  = file_reader
+        self.environ = environ
+        self.getuid = getuid
+        self.volumes_listing = volumes_listing
+        self.stderr = stderr
+        self.file_reader = file_reader
+
     def run(self, argv):
         args = argv[1:]
         self.exit_code = 0
@@ -41,10 +42,10 @@ class RmCmd:
 
         user_info_provider = UserInfoProvider(self.environ, self.getuid)
         scanner = TrashDirsScanner(user_info_provider,
-                                   self.list_volumes,
+                                   self.volumes_listing,
                                    TopTrashDirRules(self.file_reader))
 
-        for event, args in scanner.scan_trash_dirs():
+        for event, args in scanner.scan_trash_dirs(self.environ):
             if event == trash_dir_found:
                 path, volume = args
                 for type, arg in listing.list_from_volume_trashdir(path, volume):
@@ -67,11 +68,13 @@ class RmCmd:
 
 def main():
     from trashcli.list_mount_points import os_mount_points
-    cmd = RmCmd(environ        = os.environ
-                , getuid       = os.getuid
-                , list_volumes = os_mount_points
-                , stderr       = sys.stderr
-                , file_reader  = FileSystemReader())
+    from trashcli.fstab import VolumesListing
+    volumes_listing = VolumesListing(os_mount_points)
+    cmd = RmCmd(environ=os.environ
+                , getuid=os.getuid
+                , volumes_listing=volumes_listing
+                , stderr=sys.stderr
+                , file_reader=FileSystemReader())
 
     cmd.run(sys.argv)
 

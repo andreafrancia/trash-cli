@@ -42,4 +42,17 @@ class Volumes:
             path = os.path.dirname(path)
         return path
 
+
 volumes = Volumes(RealIsMount(), os.path.abspath)
+
+
+class VolumesListing:
+    def __init__(self, os_mount_points):
+        self.os_mount_points = os_mount_points
+
+    def list_volumes(self, environ):
+        if 'TRASH_VOLUMES' in environ and environ['TRASH_VOLUMES']:
+            return [vol
+                    for vol in environ['TRASH_VOLUMES'].split(':')
+                    if vol != '']
+        return self.os_mount_points()

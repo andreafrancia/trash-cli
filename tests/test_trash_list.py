@@ -5,6 +5,8 @@ import os
 import pytest
 
 from trashcli import trash
+from trashcli.fstab import VolumesListing
+from mock import Mock
 
 from trashcli.list import ListCmd
 from .files import (require_empty_dir, make_sticky_dir, make_unsticky_dir)
@@ -230,13 +232,15 @@ class TrashListUser:
     def run(self,*argv):
         file_reader = FileSystemReader()
         file_reader.list_volumes = lambda: self.volumes
+        volumes_listing = Mock(spec=VolumesListing)
+        volumes_listing.list_volumes.return_value =  self.volumes
         ListCmd(
             out         = self.stdout,
             err         = self.stderr,
             environ     = self.environ,
             getuid      = self.fake_getuid,
             file_reader = file_reader,
-            list_volumes = lambda: self.volumes,
+            volumes_listing=volumes_listing,
         ).run(*argv)
     def set_fake_uid(self, uid):
         self.fake_getuid = lambda: uid

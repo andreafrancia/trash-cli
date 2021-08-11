@@ -20,14 +20,15 @@ class TestTrashRmCmdRun(unittest.TestCase):
 
     def test_without_pattern_argument(self):
         from trashcli.rm import RmCmd
-        cmd = RmCmd(None, None, None, None, None)
+        volumes_listing = Mock()
+        cmd = RmCmd(None, None, volumes_listing, None, None)
         cmd.stderr = StringIO()
         cmd.file_reader = Mock([])
         cmd.file_reader.exists = Mock([], return_value=None)
         cmd.file_reader.entries_if_dir_exists = Mock([], return_value=[])
         cmd.environ = {}
         cmd.getuid = lambda: '111'
-        cmd.list_volumes = lambda: ['/vol1']
+        volumes_listing.list_volumes.return_value = ['/vol1']
 
         cmd.run([None, None])
 
