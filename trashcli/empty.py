@@ -129,8 +129,7 @@ class EmptyCmd:
             emptier = Emptier(self.main_loop, delete_mode)
 
             user = User(prepare_output_message, my_input, parse_reply)
-            # guard.ask_the_user(user, trash_dirs, emptier)
-            emptier.do_empty(trash_dirs)
+            guard.ask_the_user(user, trash_dirs, emptier)
         return EX_OK
 
     def print_cannot_remove_error(self, path):

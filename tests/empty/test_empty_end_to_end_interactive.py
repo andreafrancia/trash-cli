@@ -13,13 +13,19 @@ class TestEmptyEndToEndInteractive(unittest.TestCase):
     def setUp(self):
         self.tmp_dir = MyPath.make_temp_dir()
         self.xdg_data_home = self.tmp_dir / 'XDG_DATA_HOME'
-        self.environ = {'XDG_DATA_HOME': self.xdg_data_home}
+        self.environ = {
+            'XDG_DATA_HOME': self.xdg_data_home,
+            'TRASH_VOLUMES': '/vol-1:/vol-2'
+        }
         self.trash_dir = self.xdg_data_home / 'Trash'
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
 
     def user_run_trash_empty(self, args):
-        return run_command.run_command(self.tmp_dir, "trash-empty",
-                                       args, env=self.environ)
+        return run_command.run_command(self.tmp_dir,
+                                       "trash-empty",
+                                       args,
+                                       env=self.environ,
+                                       input='y')
 
     def set_clock_at(self, yyyy_mm_dd):
         self.environ['TRASH_DATE'] = '%sT00:00:00' % yyyy_mm_dd
@@ -30,4 +36,9 @@ class TestEmptyEndToEndInteractive(unittest.TestCase):
 
         result = self.user_run_trash_empty(['-i'])
 
-        assert result.all == ['', '', 0]
+        assert result.all == [
+            'Would empty the following trash directories:\n'
+            '    - %s\n'
+            '    - /vol-1/.Trash-501\n'
+            '    - /vol-2/.Trash-501\n'
+            'Proceed? (y/n) ' % self.trash_dir, '', 0]
