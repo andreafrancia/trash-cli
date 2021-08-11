@@ -125,12 +125,23 @@ class EmptyCmd:
                                                   self.errors)
             trash_dirs = self.selector.select(parsed.all_users,
                                               parsed.user_specified_trash_dirs)
-            self.main_loop.do_loop(trash_dirs, delete_mode)
+            guard = Guard() if parsed.interactive else NoGuard()
+            emptier = Emptier(self.main_loop, delete_mode)
+
+            emptier.do_empty(trash_dirs)
         return EX_OK
 
 
     def print_cannot_remove_error(self, path):
         self.errors.print_error("cannot remove %s" % path)
+
+class Emptier:
+    def __init__(self, main_loop, delete_mode):
+        self.main_loop = main_loop
+        self.delete_mode = delete_mode
+
+    def do_empty(self, trash_dirs):
+        self.main_loop.do_loop(trash_dirs, self.delete_mode)
 
 
 class FileRemoveWithErrorHandling:
@@ -207,19 +218,25 @@ def make_parser():
                         help=argparse.SUPPRESS)
     parser.add_argument('--all-users', action='store_true', dest='all_users',
                         help=argparse.SUPPRESS)
+    parser.add_argument('-i', action='store_true', dest='interactive',
+                        help=argparse.SUPPRESS)
     parser.add_argument('days', action='store', default=None, type=int,
                         nargs='?')
     return parser
 
 
 class Guard:
-    def __init__(self, emptier):
-        self.emptier = emptier
 
-    def ask_the_user(self, user, trash_dirs):
+    def ask_the_user(self, user, trash_dirs, emptier):
         trash_dirs_list = list(trash_dirs)
         if user.do_you_wanna_empty_trash_dirs(trash_dirs_list):
-            self.emptier(trash_dirs_list)
+            emptier.do_empty(trash_dirs_list)
+
+
+class NoGuard:
+
+    def ask_the_user(self, _user, trash_dirs, emptier):
+        emptier.do_empty(trash_dirs)
 
 
 class User:

@@ -30,5 +30,4 @@ class TestEmptyEndToEndInteractive(unittest.TestCase):
 
         result = self.user_run_trash_empty(['-i'])
 
-        assert ['trash-empty: error: unrecognized arguments: -i',
-                2] == [result.stderr.splitlines()[-1], result.exit_code]
+        assert result.all == ['', '', 0]
