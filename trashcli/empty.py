@@ -106,8 +106,7 @@ class EmptyCmd:
     def run(self, *argv):
         program_name = os.path.basename(argv[0])
         self.errors = Errors(program_name, self.err)
-
-        parser = make_parser()
+        parser = make_parser(is_input_interactive())
         parsed = parser.parse_args(argv[1:])
 
         if parsed.version:
@@ -134,6 +133,10 @@ class EmptyCmd:
 
     def print_cannot_remove_error(self, path):
         self.errors.print_error("cannot remove %s" % path)
+
+
+def is_input_interactive():
+    return os.isatty(0)
 
 
 def parse_reply(reply):
@@ -209,7 +212,7 @@ class CleanableTrashcan:
         self._file_remover.remove_file(trashinfo_path)
 
 
-def make_parser():
+def make_parser(default_is_interactive):
     parser = argparse.ArgumentParser(
         description='Purge trashed files.',
         epilog='Report bugs to https://github.com/andreafrancia/trash-cli/issues')
@@ -223,8 +226,16 @@ def make_parser():
                         help=argparse.SUPPRESS)
     parser.add_argument('--all-users', action='store_true', dest='all_users',
                         help='empty all trashcan of all the users')
-    parser.add_argument('-i', '--interactive', action='store_true', dest='interactive',
-                        help='ask before emptying trash directories')
+    parser.add_argument('-i',
+                        '--interactive',
+                        action='store_true',
+                        dest='interactive',
+                        help='ask before emptying trash directories',
+                        default=default_is_interactive)
+    parser.add_argument('-f',
+                        action='store_false',
+                        help='don\'t ask before emptying trash directories',
+                        dest='interactive')
     parser.add_argument('days', action='store', default=None, type=int,
                         nargs='?')
     return parser

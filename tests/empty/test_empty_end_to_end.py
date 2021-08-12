@@ -17,6 +17,7 @@ class TestEmptyEndToEnd(unittest.TestCase):
                                          ['--help'])
         self.assertEqual(["""\
 usage: trash-empty [-h] [--version] [--trash-dir TRASH_DIR] [--all-users] [-i]
+                   [-f]
                    [days]
 
 Purge trashed files.
@@ -31,6 +32,7 @@ optional arguments:
                         specify the trash directory to use
   --all-users           empty all trashcan of all the users
   -i, --interactive     ask before emptying trash directories
+  -f                    don't ask before emptying trash directories
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues
 """, '', 0],
