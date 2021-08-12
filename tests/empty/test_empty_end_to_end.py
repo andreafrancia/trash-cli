@@ -16,7 +16,8 @@ class TestEmptyEndToEnd(unittest.TestCase):
         result = run_command.run_command(self.tmp_dir, "trash-empty",
                                          ['--help'])
         self.assertEqual(["""\
-usage: trash-empty [-h] [--version] [--trash-dir TRASH_DIR] [-i] [days]
+usage: trash-empty [-h] [--version] [--trash-dir TRASH_DIR] [--all-users] [-i]
+                   [days]
 
 Purge trashed files.
 
@@ -28,7 +29,8 @@ optional arguments:
   --version             show program's version number and exit
   --trash-dir TRASH_DIR
                         specify the trash directory to use
-  -i, --interactive     Ask before emptying trash directories
+  --all-users           empty all trashcan of all the users
+  -i, --interactive     ask before emptying trash directories
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues
 """, '', 0],
@@ -39,24 +41,8 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues
     def test_h(self):
         result = run_command.run_command(self.tmp_dir, "trash-empty",
                                          ['-h'])
-        self.assertEqual(["""\
-usage: trash-empty [-h] [--version] [--trash-dir TRASH_DIR] [-i] [days]
-
-Purge trashed files.
-
-positional arguments:
-  days
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --version             show program's version number and exit
-  --trash-dir TRASH_DIR
-                        specify the trash directory to use
-  -i, --interactive     Ask before emptying trash directories
-
-Report bugs to https://github.com/andreafrancia/trash-cli/issues
-""", '', 0],
-                         [result.stdout,
+        self.assertEqual(["usage:", '', 0],
+                         [result.stdout[0:6],
                           result.stderr,
                           result.exit_code])
 
@@ -73,10 +59,11 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues
                                          ['--wrong-option'])
 
         self.assertEqual(['',
-                          'usage: trash-empty [-h] [--version] [--trash-dir TRASH_DIR] [-i] [days]\n'
-                          'trash-empty: error: unrecognized arguments: --wrong-option\n',
+                          'trash-empty: error: unrecognized arguments: --wrong-option',
                           2],
-                         result.all)
+                         [result.stdout,
+                          result.stderr.splitlines()[-1],
+                          result.exit_code])
 
     def test_on_print_time(self):
         result = run_command.run_command(

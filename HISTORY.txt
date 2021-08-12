@@ -1,3 +1,7 @@
+master:
+ - trash-empty learnt the -i/--interactive option
+ - trash-empty option --all-users is no longer hidden
+
 0.21.7.24:
  - fix bug in tests
 

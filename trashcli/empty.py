@@ -222,9 +222,9 @@ def make_parser():
     parser.add_argument('--print-time', action='store_true', dest='print_time',
                         help=argparse.SUPPRESS)
     parser.add_argument('--all-users', action='store_true', dest='all_users',
-                        help=argparse.SUPPRESS)
+                        help='empty all trashcan of all the users')
     parser.add_argument('-i', '--interactive', action='store_true', dest='interactive',
-                        help='Ask before emptying trash directories')
+                        help='ask before emptying trash directories')
     parser.add_argument('days', action='store', default=None, type=int,
                         nargs='?')
     return parser
