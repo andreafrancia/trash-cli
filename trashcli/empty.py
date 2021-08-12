@@ -137,7 +137,7 @@ class EmptyCmd:
 
 
 def parse_reply(reply):
-    return True
+    return reply[0:1].lower() == 'y'
 
 
 class Emptier:
@@ -223,8 +223,8 @@ def make_parser():
                         help=argparse.SUPPRESS)
     parser.add_argument('--all-users', action='store_true', dest='all_users',
                         help=argparse.SUPPRESS)
-    parser.add_argument('-i', action='store_true', dest='interactive',
-                        help=argparse.SUPPRESS)
+    parser.add_argument('-i', '--interactive', action='store_true', dest='interactive',
+                        help='Ask before emptying trash directories')
     parser.add_argument('days', action='store', default=None, type=int,
                         nargs='?')
     return parser

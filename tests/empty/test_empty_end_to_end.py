@@ -16,7 +16,7 @@ class TestEmptyEndToEnd(unittest.TestCase):
         result = run_command.run_command(self.tmp_dir, "trash-empty",
                                          ['--help'])
         self.assertEqual(["""\
-usage: trash-empty [-h] [--version] [--trash-dir TRASH_DIR] [days]
+usage: trash-empty [-h] [--version] [--trash-dir TRASH_DIR] [-i] [days]
 
 Purge trashed files.
 
@@ -28,6 +28,7 @@ optional arguments:
   --version             show program's version number and exit
   --trash-dir TRASH_DIR
                         specify the trash directory to use
+  -i, --interactive     Ask before emptying trash directories
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues
 """, '', 0],
@@ -39,7 +40,7 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues
         result = run_command.run_command(self.tmp_dir, "trash-empty",
                                          ['-h'])
         self.assertEqual(["""\
-usage: trash-empty [-h] [--version] [--trash-dir TRASH_DIR] [days]
+usage: trash-empty [-h] [--version] [--trash-dir TRASH_DIR] [-i] [days]
 
 Purge trashed files.
 
@@ -51,6 +52,7 @@ optional arguments:
   --version             show program's version number and exit
   --trash-dir TRASH_DIR
                         specify the trash directory to use
+  -i, --interactive     Ask before emptying trash directories
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues
 """, '', 0],
@@ -71,7 +73,7 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues
                                          ['--wrong-option'])
 
         self.assertEqual(['',
-                          'usage: trash-empty [-h] [--version] [--trash-dir TRASH_DIR] [days]\n'
+                          'usage: trash-empty [-h] [--version] [--trash-dir TRASH_DIR] [-i] [days]\n'
                           'trash-empty: error: unrecognized arguments: --wrong-option\n',
                           2],
                          result.all)
