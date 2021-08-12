@@ -15,7 +15,7 @@ class TestEmptyEndToEndInteractive(unittest.TestCase):
         self.xdg_data_home = self.tmp_dir / 'XDG_DATA_HOME'
         self.environ = {
             'XDG_DATA_HOME': self.xdg_data_home,
-            'TRASH_VOLUMES': '/vol-1:/vol-2'
+            'TRASH_VOLUMES': ':'
         }
         self.trash_dir = self.xdg_data_home / 'Trash'
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
@@ -39,6 +39,4 @@ class TestEmptyEndToEndInteractive(unittest.TestCase):
         assert result.all == [
             'Would empty the following trash directories:\n'
             '    - %s\n'
-            '    - /vol-1/.Trash-501\n'
-            '    - /vol-2/.Trash-501\n'
             'Proceed? (y/n) ' % self.trash_dir, '', 0]
