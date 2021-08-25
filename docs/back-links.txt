@@ -1,7 +1,7 @@
-List of web pages that cite trash-cli, with the date when I discovered the 
+List of web pages that cite trash-cli, with the date when I discovered the
 page, sorted by discovery date (newest before):
 
- - 2012-07-19 
+ - 2012-07-19
    http://shuffleos.com/5835/trashcli-command-line-utility-access-trashcan-ubuntu-linux-terminal/
  - 2012-07-18 http://crunchbanglinux.org/forums/topic/20818/trashbin-cli/
  - 2012-07-02 http://www.hecticgeek.com/2012/06/access-trash-command-line-ubuntu-linux-trash-cli/
@@ -14,7 +14,7 @@ page, sorted by discovery date (newest before):
  - 2009-03-01 http://y_z.scripts.mit.edu/wp/2009/02/03/when-you-release-shift-too-early
  - 2009-03-01 http://sanelz.blogspot.com/2009/02/trashing-stuff.html
  - 2009-03-01 http://alltheshortnamesweretakenalready.blogspot.com/2009/01/bash-script-implementation-of-trashcan.html
- - 2008-12-25 (Blog about Ubuntu in some language that uses kanji)    http://ubulog.blogspot.com/2008/10/ubuntu.html 
+ - 2008-12-25 (Blog about Ubuntu in some language that uses kanji)    http://ubulog.blogspot.com/2008/10/ubuntu.html
  - 2008-12-24 https://www.ohloh.net/p/trash-cli
  - 2008-12-23 http://article.gmane.org/gmane.compw.window-managers.windowmaker.devel/1045
  - 2008-12-23 http://ubuntuforums.org/showthread.php?t=1003522

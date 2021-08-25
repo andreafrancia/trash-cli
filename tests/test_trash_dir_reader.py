@@ -23,5 +23,3 @@ class TestTrashDirReader(unittest.TestCase):
         result = list(self.trash_dir.list_orphans('/'))
 
         assert ['/files/foo'] == result
-
-

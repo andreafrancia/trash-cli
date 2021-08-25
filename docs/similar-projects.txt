@@ -1,7 +1,7 @@
 DELSAFE
 =======
 
-URL: http://homepage.esoterica.pt/~nx0yew/delsafe/ 
+URL: http://homepage.esoterica.pt/~nx0yew/delsafe/
 
 Use a different approach to the same problem.  While 'trash' provide a extra
 command that put files in the trash, 'delsafe' modifies the semantics of the
@@ -10,7 +10,7 @@ existing commands.
 Apparently 'delsafe' overrides the library calls of unlink, unlinkat, rename,
 open and fopen modifying the semantics of these functions.  A program that was
 designed to works with the original functions may not work well with the
-overridden functions. For example is the KDE filemanager which as two 
+overridden functions. For example is the KDE filemanager which as two
 commands:
  - delete file
  - trash file
@@ -67,7 +67,7 @@ Features:
   * trash files and directories: yes
   * listing trashed files: no
   * restoring trashed files: no
-  * emptying the trashcan: no 
+  * emptying the trashcan: no
  - Support of volumes trashcans: no
  - Can be used as alias='rm': no
 
@@ -85,7 +85,7 @@ License: GPLv3
 Reviewed on: 2008-06-29
 
 Features:
- - Tries to conform to the FreeDesktopTrashSpecification 
+ - Tries to conform to the FreeDesktopTrashSpecification
  - Works also with the older version of KDE and GNOME TrashCan implementation
  - Can be used as alias='rm': no
  - It has a manpage.
@@ -94,8 +94,8 @@ Trash Specification:
  - Operation supported:
   - trash files and directories: yes
   - listing trashed files: yes
-  - restoring trashed files: yes 
-  - emptying trashcan: yes 
+  - restoring trashed files: yes
+  - emptying trashcan: yes
  - Support of volumes trashcans: no
  - Can be used as alias='rm': no
 
@@ -113,8 +113,8 @@ Features:
  - Operation supported:
      - trash files and directories: yes
      - listing trashed files: yes
-     - restoring trashed files: yes 
-     - emptying trashcan: yes 
+     - restoring trashed files: yes
+     - emptying trashcan: yes
  - Support of volumes trashcans: ?
  - Can be used as alias='rm': no
 
@@ -135,7 +135,7 @@ Safe RM
 URL: https://launchpad.net/safe-rm
 
 Safe RM does not talk about Trash Cans. The program alert you whenewer you
-attempt to delete files known to be important.  
+attempt to delete files known to be important.
 
 rmtrash
 =======

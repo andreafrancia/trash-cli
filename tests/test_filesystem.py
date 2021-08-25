@@ -63,4 +63,3 @@ class Test_is_sticky_dir(unittest.TestCase):
         set_sticky_bit(self.temp_dir / 'dir')
 
         assert not is_sticky_dir(self.temp_dir / 'dir')
-

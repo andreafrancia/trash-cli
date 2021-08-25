@@ -11,7 +11,7 @@ DESCRIPTION
         -d, --deleted-on=DATE
                 Choose the trashed file with the specified original location
                 and with the specified deletion date.
-        
+
         --trash-id
                 The SOURCE param should be interpreted as trash ids.
 
@@ -21,14 +21,14 @@ DESCRIPTION
         --help
                 display this help and exit
 TRASH ID
-        A TrashId is a URL referring to a specific item in a specific trash 
+        A TrashId is a URL referring to a specific item in a specific trash
         directory. The URL has this form:
 
                 trash:TRASH_DIR/ID
-        
-        Where 
+
+        Where
                 'trash:'  is the scheme part.
-                TRASH_DIR is the Trash directory containing the item, can 
+                TRASH_DIR is the Trash directory containing the item, can
                           contains slashes '/'.
                 ID        is the Item part and can not contains slashes.
 
@@ -39,8 +39,8 @@ TRASH ID
 USE CASES
         Restore a trashed file in its original location:
           $ trash-restore /home/andrea/foobar
-        
-        Restore a trashed file in case of multiple entries matching the 
+
+        Restore a trashed file in case of multiple entries matching the
         original location specified:
           $ trash-restore /home/andrea/foo
           trash-restore: Cannot restore '/home/andrea/foo' multiple entries with
@@ -48,7 +48,7 @@ USE CASES
           2008-06-23T21:50:41 /home/andrea/foo
           2008-06-23T21:50:49 /home/andrea/foo
           $ trash-restore --last /home/andrea/foo
-        Or 
+        Or
           $ trash-restore --deletion-date=2008-06-23T21:50:49 /home/andrea/foo
 
         Restore a trashed file in a different location:
@@ -62,13 +62,11 @@ USE CASES
           $ trash-restore --trash-id trash:/home/andrea/.local/share/Trash/foo_2
 
 AUTHORS
-        
+
 REPORTING BUGS
 
 COPYRIGHT
 
 SEE ALSO
-        trash-cli(1), trash(1), trashinfo(5), trash-restore(1), 
+        trash-cli(1), trash(1), trashinfo(5), trash-restore(1),
         trash-empty(1).
-
-

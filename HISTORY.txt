@@ -100,8 +100,8 @@ master:
  - (Internal) Switched from realpath to abspath
 
 0.12.7:
- - fixed: trash-empty crashed with GetoptError in short_has_arg(): option -2 
-   not recognized (see 
+ - fixed: trash-empty crashed with GetoptError in short_has_arg(): option -2
+   not recognized (see
    https://bugs.launchpad.net/ubuntu/+source/trash-cli/+bug/1015877 )
  - fixed inclusion of README.rst when creating distribution package
 
@@ -109,8 +109,8 @@ master:
  - add Donate button on README
 
 0.12.4.24:
- - Fixes a packaging problem of the previous release which prevented the 
-   installation via easy_install and/or pip (see 
+ - Fixes a packaging problem of the previous release which prevented the
+   installation via easy_install and/or pip (see
    https://github.com/andreafrancia/trash-cli/issues/5)
  - Fixes the name of the man page for restore-trash.
 

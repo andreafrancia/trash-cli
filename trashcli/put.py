@@ -46,7 +46,7 @@ class TrashPutCmd:
         self.trasher = trasher
 
     def run(self, argv):
-        program_name  = os.path.basename(argv[0])
+        program_name = os.path.basename(argv[0])
         parser = get_option_parser(program_name, self.stdout, self.stderr)
         try:
             (options, args) = parser.parse_args(argv[1:])
@@ -651,4 +651,3 @@ class RealFs:
         self.isdir          = os.path.isdir
         self.islink         = os.path.islink
         self.has_sticky_bit = fs.has_sticky_bit
-

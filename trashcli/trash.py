@@ -145,8 +145,8 @@ def println(out, line):
 
 class PrintHelp:
     def __init__(self, description, out):
-        self.description  = description
-        self.printer      = HelpPrinter(out)
+        self.description = description
+        self.printer     = HelpPrinter(out)
 
     def my_print_help(self, program_name):
         self.description(program_name, self.printer)

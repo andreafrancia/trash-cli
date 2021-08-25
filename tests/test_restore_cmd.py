@@ -305,5 +305,3 @@ def remove_dir_if_exists(dir):
 def remove_file_if_exists(path):
     if os.path.lexists(path):
         os.unlink(path)
-
-

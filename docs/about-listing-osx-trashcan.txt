@@ -1,6 +1,6 @@
 In OS X the trash can directories are:
  - ~/.Trash
- - $topdr/.Trashes/$uid 
+ - $topdr/.Trashes/$uid
 
 Afert installing the `osx-trash` gem the behaviour can be described with:
  $ ls ~/.Trash
@@ -21,8 +21,8 @@ The deletion time is put before the last dot:
  $ touch foo.tar.gz; trash foo.tar.gz
  $ touch foo.tar.gz; trash foo.tar.gz
  $ ls ~/.Trash
- foo.tar 17-36-13.gz  
+ foo.tar 17-36-13.gz
  foo.tar.gz
 
-The original path is stored in the ~/.Trash/.DS_Store. More details in 
+The original path is stored in the ~/.Trash/.DS_Store. More details in
 http://superuser.com/questions/108301/deleting-a-single-file-from-the-trash-in-mac-os-x-snow-leopard

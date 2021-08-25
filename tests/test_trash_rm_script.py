@@ -33,5 +33,3 @@ class TestScriptsSmoke(unittest.TestCase):
         self.stderr = self.stderr.decode('utf-8')
         process.wait()
         self.returncode = process.returncode
-
-

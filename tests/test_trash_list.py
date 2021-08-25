@@ -233,7 +233,7 @@ class TrashListUser:
         file_reader = FileSystemReader()
         file_reader.list_volumes = lambda: self.volumes
         volumes_listing = Mock(spec=VolumesListing)
-        volumes_listing.list_volumes.return_value =  self.volumes
+        volumes_listing.list_volumes.return_value = self.volumes
         ListCmd(
             out         = self.stdout,
             err         = self.stderr,
@@ -250,4 +250,3 @@ class TrashListUser:
         return self.stderr.getvalue()
     def output(self):
         return self.stdout.getvalue()
-

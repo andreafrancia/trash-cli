@@ -170,7 +170,7 @@ class TestUnsecureTrashDirMessages(unittest.TestCase):
 
     def test_when_is_a_symlink(self):
         make_sticky_dir( self.fake_vol / 'link-destination')
-        os.symlink('link-destination',  self.fake_vol / '.Trash')
+        os.symlink('link-destination', self.fake_vol / '.Trash')
 
         self.fixture.run_trashput('--force-volume', self.fake_vol,
                                   '-v', self.fake_vol / 'foo')

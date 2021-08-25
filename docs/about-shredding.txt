@@ -11,43 +11,43 @@ flag (say, '-s') to provide for such functionality.
 Suggested Command Line
 ======================
 ::
- 
+
     empty-trash --shred
 
-This command would shred all the trashed files and the trashinfo files in all 
+This command would shred all the trashed files and the trashinfo files in all
 trash directories.
 
 Things to be defined:
- - How the secure shredding should be implemented? Calling an external command 
+ - How the secure shredding should be implemented? Calling an external command
    or using some python library?
-   - No extant Python shredding library. The only 
-     [http://reconstructor.aperantis.com/index.php?option=com_remository&Itemid=33&func=fileinfo&id=166 
+   - No extant Python shredding library. The only
+     [http://reconstructor.aperantis.com/index.php?option=com_remository&Itemid=33&func=fileinfo&id=166
      other implementation] I could find just calls wipe.
  - What to do if the existing command is not found?
-   - Take a command-line option to select a supported method, and perhaps a 
-     config-file option. Otherwise, look for one of the supported methods and 
+   - Take a command-line option to select a supported method, and perhaps a
+     config-file option. Otherwise, look for one of the supported methods and
      remember which one was available last time?
-     - I was talking about how the trash-empty should behave if the external 
-       is not available. In any case this would be defined clearly when we 
+     - I was talking about how the trash-empty should behave if the external
+       is not available. In any case this would be defined clearly when we
        wrote the use cases.
 
 Use cases
 =========
 
-User want to shred all trashed files of all trash directories. So he/she types 
+User want to shred all trashed files of all trash directories. So he/she types
 the command::
 
- $ trash-empty --shred 
+ $ trash-empty --shred
 
-The trash-empty command will silently shred all trashinfo and trashed files 
-from all trashed directory.  The wiping is implemented calling the `shred` 
+The trash-empty command will silently shred all trashinfo and trashed files
+from all trashed directory.  The wiping is implemented calling the `shred`
 command from the coreutils for each file to be wiped.
 
 Exceptions
 ----------
 
-Suppose that: 
- * `shred` is not available in $PATH. 
+Suppose that:
+ * `shred` is not available in $PATH.
  * the trashcan contains at least a trashed file.
 
 The behaviour should be
@@ -60,8 +60,8 @@ The behaviour should be
 Permission Denied
 -----------------
 
-Suppose that: 
- * `shred` is available in $PATH. 
+Suppose that:
+ * `shred` is available in $PATH.
  * `shred` permissions are `--x` (could not be read from the user)
  * the trashcan contains at least two trashed file.
 
@@ -72,36 +72,36 @@ The behaviour should be:
  $ echo $(($?==0))
  1
 
-The error message should be displayed once and the command should not attempt 
-to re-execute shred with others files (even if there are multiple files in 
+The error message should be displayed once and the command should not attempt
+to re-execute shred with others files (even if there are multiple files in
 trash directories).
 
 User shouldn't install additional software
 ------------------------------------------
 
-The shred operation would be implemented against the `shred` command line 
+The shred operation would be implemented against the `shred` command line
 utility.
-The `shred` was chosen because is part of the coreutils which is virtually 
+The `shred` was chosen because is part of the coreutils which is virtually
 installed in all major GNU/Linux distributions.
 
 User shouldn't configure the software
 -------------------------------------
 
-We don't add the support to multiple commands because this would increase the 
-complexity of the user interface of the `trash-empty` command and the other 
+We don't add the support to multiple commands because this would increase the
+complexity of the user interface of the `trash-empty` command and the other
 choices does not offer something very different from `shred`.
 
-If someone feel the urge of doing arbitrary command on all trashed files we 
-can always add a `for-each-trashed-files` command or use a combination of an 
+If someone feel the urge of doing arbitrary command on all trashed files we
+can always add a `for-each-trashed-files` command or use a combination of an
 hypothetic `list-all-trashed-files` and `xargs` command.
 
 Implementation details
 ======================
 
-Things to do: 
+Things to do:
  - create a TrashedFile.securepurge() method
  - implement command line options handling in empty-trash command
- - create a DeletionUtility abstraction, and implement methods for the three 
+ - create a DeletionUtility abstraction, and implement methods for the three
    utilities below?
 
 See also
@@ -115,8 +115,7 @@ Secure deleting is implemented in these shell utilities:
 Limitations
 ===========
 
-This features could be less useful that one can think. As stated in the 
-[http://www.gnu.org/software/coreutils/manual/html_node/shred-invocation.html 
-shred documentation] (in the "Please note") the shredding operation could not 
+This features could be less useful that one can think. As stated in the
+[http://www.gnu.org/software/coreutils/manual/html_node/shred-invocation.html
+shred documentation] (in the "Please note") the shredding operation could not
 be safe on many cases such as use of RAID, and the Ext3 in data=journal mode.
-

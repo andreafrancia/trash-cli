@@ -12,4 +12,3 @@ class OutputCollector:
         assert_equals_with_unidiff(expected, self.output())
     def output(self):
         return self.stream.getvalue()
-

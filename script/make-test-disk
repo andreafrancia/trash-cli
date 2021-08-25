@@ -19,7 +19,7 @@ clean-up() {
 }
 
 create-image() {
-    dd if=/dev/zero of="$device_image" bs=$((1024*1024)) count=1 
+    dd if=/dev/zero of="$device_image" bs=$((1024*1024)) count=1
     /sbin/mke2fs -F "$device_image"
 }
 

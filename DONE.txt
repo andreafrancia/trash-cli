@@ -3,7 +3,7 @@ trash-list
     - it reports when $topdir/.Trash is not sticky
  - it checks that the $topdir/.Trash is not a symbolic link
     - and it warns the user otherwise
- - it lists contents from both Home TrashDir and Volume TrashDirs (both 
+ - it lists contents from both Home TrashDir and Volume TrashDirs (both
    methods)
  - it warns when an empty .trashinfo is found
  - it warns when an unreadable .trashinfo is found

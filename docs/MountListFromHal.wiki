@@ -9,5 +9,4 @@ This [https://www.dfwpython.org/repo/Projects/DBUS/dtest.py python scripts] comm
 Using this method will add some dependencies:
  * hal ?
  * libhal1
- * dbus python module 
-
+ * dbus python module

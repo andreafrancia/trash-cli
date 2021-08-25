@@ -6,7 +6,7 @@ SYNOPSIS
 
 DESCRIPTION
         List files trashed from DIR (or the current directory by default).
-        
+
         -l
                 do not recurse subfolders
         -r, --recursive
@@ -47,12 +47,11 @@ EXAMPLES
           2008-06-23T21:50:49 /tmp/foobar2
 
 AUTHORS
-        
+
 REPORTING BUGS
 
 COPYRIGHT
 
 SEE ALSO
-        trash-cli(1), trash(1), trashinfo(5), trash-restore(1), 
+        trash-cli(1), trash(1), trashinfo(5), trash-restore(1),
         trash-empty(1).
-

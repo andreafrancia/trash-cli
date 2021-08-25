@@ -34,4 +34,3 @@ class TestTrashDirectoryName(unittest.TestCase):
     def assert_name_is(self, expected_name):
         shrinked = shrink_user(self.trash_dir, self.environ)
         assert expected_name == shrinked
-

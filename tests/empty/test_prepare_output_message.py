@@ -38,4 +38,3 @@ Proceed? (y/n) """ == result
         assert """\
 No trash directories to empty.
 """ == result
-

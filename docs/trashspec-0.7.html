@@ -29,13 +29,13 @@ implementation sends a file into the Trash can, another will be able
 to list it, undelete it, or clear it from the Trash.</P>
 <H2>Introduction</H2>
 <P>An ability to recover accidentally deleted files has become the de
-facto standard for today's desktop user experience. 
+facto standard for today's desktop user experience.
 </P>
 <P>Users do not expect that anything they delete is permanently gone.
 Instead, they are used to a &ldquo;Trash can&rdquo; metaphor. A
 deleted document ends up in a &ldquo;Trash can&rdquo;, and stays
 there at least for some time &mdash; until the can is manually or
-automatically cleaned. 
+automatically cleaned.
 </P>
 <P>This system has its own problems. Notably, cleaning disk space
 becomes a two-step operation &mdash; delete files and empty trash;
@@ -54,7 +54,7 @@ For example, both Gnome and KDE have their own trash mechanisms.</P>
 <P>This Specification is to provide a common way in which all Trash
 can implementations should store trashed files. By complying with
 this Specification, various Trash implementations will be able to
-work with the same devices and use the same Trash storage. 
+work with the same devices and use the same Trash storage.
 </P>
 <P>This is important, at least, for shared network resources,
 removable devices, and in cases when different implementations are
@@ -69,10 +69,10 @@ this specification. <A CLASS="sdfootnoteanc" NAME="sdfootnote1anc" HREF="#sdfoot
 <P>This Specification is geared towards the Unix file system tree
 approach. However, with slight modifications, it can easily be used
 with another kind of file system tree (for example, with drive
-letters). 
+letters).
 </P>
 <P>A multi-user environment, where users have specific numeric
-identifiers, is essential for this Specification. 
+identifiers, is essential for this Specification.
 </P>
 <P>File systems and logon systems can be
 case-sensitive or non-case-sensitive; therefore, systems should
@@ -92,7 +92,7 @@ the question of shredding is beyond the scope of this document].</P>
 <P>Original location &mdash; the name and location that a file
 (currently in the trash) had prior to getting trashed.</P>
 <P>Original filename &mdash; the name that a file (currently in the
-trash) had prior to getting trashed. 
+trash) had prior to getting trashed.
 </P>
 <P>Top directory , $topdir &mdash; the directory where a file system
 is mounted. &ldquo;/&rdquo; is the top directory for the root file
@@ -124,7 +124,7 @@ described below.</P>
 a &ldquo;home trash&rdquo; directory MUST be available<A CLASS="sdfootnoteanc" NAME="sdfootnote3anc" HREF="#sdfootnote3sym"><SUP>3</SUP></A>.
 Its name and location are $XDG_DATA_HOME/Trash ; $XDG_DATA_HOME is
 the base directory for user-specific data, as defined in the <A HREF="http://www.freedesktop.org/Standards/basedir-spec">Desktop
-Base Directory Specification</A> . 
+Base Directory Specification</A> .
 </P>
 <P>The &ldquo;home trash&rdquo; should function as the user's main
 trash directory. Files that the user trashes from the same file
@@ -150,12 +150,12 @@ these cases (notably on network resources and removable devices).
 This is what some well known operating systems do.</P>
 <P>It may also choose to provide trashing in the &ldquo;top
 directories&rdquo; of some or all mounted resources. This trashing is
-done in two ways, described below as (1) and (2). 
+done in two ways, described below as (1) and (2).
 </P>
 <P>(1) An administrator can create an $topdir/.Trash directory. The
 permissions on this directories should permit all users who can trash
 files at all to write in it.; and the &ldquo;sticky bit&rdquo; in the
-permissions must be set, if the file system supports it. 
+permissions must be set, if the file system supports it.
 </P>
 <P>When trashing a file from a non-home partition/device<A CLASS="sdfootnoteanc" NAME="sdfootnote4anc" HREF="#sdfootnote4sym"><SUP>4</SUP></A>
 , an implementation (if it supports trashing in top directories) MUST
@@ -169,7 +169,7 @@ administrator, <I>and only the administrator</I>, to disable this
 checking for a particular top directory, in order to support file
 systems that do not have the &ldquo;sticky bit&rdquo;).</P>
 <P>The implementation also MUST check that
-this directory is not a symbolic link. 
+this directory is not a symbolic link.
 </P>
 <P>If any of these checks fail, the
 implementation MUST NOT use this directory for either trashing or
@@ -203,7 +203,7 @@ delays for the user.</P>
 does not exist for the current user, the implementation MUST
 immediately create it, without any warnings or delays for the user.</P>
 <P><B>Notes.</B> If an implementation provides trashing in top
-directories at all, it MUST support both (1) and (2). 
+directories at all, it MUST support both (1) and (2).
 </P>
 <P>If an implementation does NOT provide such trashing, and does
 provide the user with some interface to view and/or undelete trashed
@@ -257,7 +257,7 @@ recover the original filename; use the info file (see below) for
 that. </B>(If an info file corresponding to a file/directory in
 $trash/files is not available, this is an emergency case, and MUST be
 clearly presented as such to the user or to the system
-administrator). 
+administrator).
 </P>
 <P>The <B>$trash/info </B>directory contains an &ldquo;information
 file&rdquo; for every file and directory in $trash/files. This file
@@ -266,7 +266,7 @@ $trash/files, plus the extension &ldquo;.trashinfo&rdquo;<A CLASS="sdfootnoteanc
 </P>
 <P>The format of this file is similar to the format of a desktop
 entry file, as described in the <A HREF="http://www.freedesktop.org/Standards/desktop-entry-spec">Desktop
-Entry Specification</A> . Its first line must be [Trash Info]. 
+Entry Specification</A> . Its first line must be [Trash Info].
 </P>
 <P>It also must have two lines that are
 key/value pairs as described in the Desktop Entry Specification:</P>
@@ -281,7 +281,7 @@ key/value pairs as described in the Desktop Entry Specification:</P>
 	directory, and for files not &ldquo;under&rdquo; that directory,
 	absolute pathnames must be used. The system SHOULD only support
 	absolute pathnames in the &ldquo;home trash&rdquo; directory, not in
-	the directories under $topdir. 
+	the directories under $topdir.
 	</P>
 	<P>The value type for this key is
 	&ldquo;string&rdquo;; it should store the file name as the
@@ -368,7 +368,7 @@ will serve as evidence of prior art for any patent filed after this
 date.</P>
 <H3>Copyright and License</H3>
 <P>Copyright (C) 2004 Mikhail Ramendik , <A HREF="mailto:mr@ramendik.ru">mr@ramendik.ru</A>
-. 
+.
 </P>
 <P>The originators of the ideas that are described here did not
 object to this copyright. The author is ready to transfer the
@@ -384,7 +384,7 @@ version.</P>
 . If this document gets hosted by FreeDesktop.org, a link to the page
 will still be available at this location.</P>
 <P><A HREF="http://www.ramendik.ru/docs/trashspec.0.7.html">http://www.ramendik.ru/docs/trashspec.0.5.html</A>
-is the permanent location of this version. 
+is the permanent location of this version.
 </P>
 <H3>Version history</H3>
 <P>0.1 &ldquo;First try&rdquo;, August 30, 2004. Initial draft.
@@ -403,7 +403,7 @@ fixed some typo's</P>
 <P>0.5 September 9, 2004. Changed [Trash info] to [Trash Info]</P>
 <P>0.6 October 8, 2004. Corrections by Alexander Larsson
 &lt;<A HREF="mailto:alexl@redhat.com">alexl@redhat.com</A>&gt; . Also
-added &ldquo;note on scope&rdquo;. Cleaned up HTML. Added a link to this 
+added &ldquo;note on scope&rdquo;. Cleaned up HTML. Added a link to this
 document on the freedesktop.org standards page</P>
 <P>0.7 April 12, 2005. Added URL-style encoding for the name of the deleted file,
 as implemented in KDE 3.4</P>
@@ -420,7 +420,7 @@ as implemented in KDE 3.4</P>
 	<P CLASS="sdfootnote" STYLE="margin-bottom: 0.5cm"><A CLASS="sdfootnotesym" NAME="sdfootnote2sym" HREF="#sdfootnote2anc">2</A>To
 	be more precise, for every user who can use the trash facility. In
 	general, all human users, and possibly some &ldquo;robotic&rdquo;
-	ones like ftp, should be able to use the trash facility. 
+	ones like ftp, should be able to use the trash facility.
 	</P>
 </DIV>
 <DIV ID="sdfootnote3">
@@ -431,7 +431,7 @@ as implemented in KDE 3.4</P>
 <DIV ID="sdfootnote4">
 	<P CLASS="sdfootnote" STYLE="margin-bottom: 0.5cm"><A CLASS="sdfootnotesym" NAME="sdfootnote4sym" HREF="#sdfootnote4anc">4</A>To
 	be more precise, from a partition/device different from the one on
-	which $XDG_DATA_HOME resides. 
+	which $XDG_DATA_HOME resides.
 	</P>
 </DIV>
 <DIV ID="sdfootnote5">

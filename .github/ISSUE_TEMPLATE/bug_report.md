@@ -16,7 +16,7 @@ Output of: trash-put --version
  - OS: [e.g. Debian, Ubuntu, Fedora, macOs, Cygwin]
 
 **To Reproduce**
-Copy and paste the commands (and their output) to execute in order to reproduce 
+Copy and paste the commands (and their output) to execute in order to reproduce
 the behavior:
 
 $ touch foo

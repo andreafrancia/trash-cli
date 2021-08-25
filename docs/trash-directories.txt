@@ -12,12 +12,12 @@ the file can be trashed in:
 
 With these rules:
  - Home Trash
-    1. when the file is in the same volume of the "home trash" should choose 
+    1. when the file is in the same volume of the "home trash" should choose
        "home trash"
     2. "home trash" should be available for each user
     3. "home trash" if not present should created with no delay
     4. "home trash" can be used as failsafe method, that means:
-         when the file is different volume but it fails to use both the top 
+         when the file is different volume but it fails to use both the top
          trash directories it chose "home trahs"
  - Primary Top Trash Dir
     1. in $topdir/.Trash can be created by an admin

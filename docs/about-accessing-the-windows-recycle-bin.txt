@@ -1,7 +1,7 @@
 Some references about accessing Recycle Bin of Windows
 ======================================================
 
-Seems that ReactOS projects has implemented a library for dealing with the 
+Seems that ReactOS projects has implemented a library for dealing with the
 Windows specific trashcan data structure:
 
     http://svn.reactos.org/svn/reactos/trunk/reactos/lib/recyclebin/
