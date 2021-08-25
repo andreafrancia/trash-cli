@@ -26,7 +26,7 @@ Thanks to
  - Ken VanDine: Helped choosing commands names
  - Christoph Bloch: Helped choosing commands names
  - Massimo "Submax82" Cavalleri: Packaged on Slackware
- - Steve Stalcup: for mantain the Debian and Ubuntu packages
+ - Steve Stalcup: for maintaining the Debian and Ubuntu packages
  - Lee Yeoh for donating to trash-cli
 
 If you think you should appear in this page please tell me.

@@ -32,7 +32,7 @@ TRASH ID
                           contains slashes '/'.
                 ID        is the Item part and can not contains slashes.
 
-        The TrashId refer to the trashed file whith
+        The TrashId refer to the trashed file with
                 TRASH_DIR/info/ID.trashinfo as .trashinfo file.
                 TRASH_DIR/files/ID as original file.
 

@@ -1,23 +1,23 @@
 How the command names changed?
 ==============================
 
-The earlier versions of trash-cli uses these commands names:
+The earlier versions of trash-cli used these command names:
  * trash
  * empty-trash
  * list-trash
  * restore-trash
 
-When the trash-cli project was proposed to Fedora the Red Hat peoples 
-complaint about the commmand name 'trash' to be too generic and they refused 
+When the trash-cli project was proposed to Fedora the Red Hat peoples
+complaint about the command name 'trash' to be too generic and they refused
 to include the package in Fedora.
 
 The discussion started on [1] and followed in [2].
 
-The the commands names where then renamed from *-trash to trash-* that will 
-exploit the shell TAB-completion. This change was suggested by Behdad Esfahbod 
-(see [3]) 
+The command names were then renamed from *-trash to trash-* that will
+exploit the shell TAB-completion. This change was suggested by Behdad Esfahbod
+(see [3])
 
-After those discussion on the upstream the names of the commands where changed 
+After those discussion on the upstream the names of the commands were changed
 to:
 
  * trash            # trashes files and directories.
@@ -27,7 +27,7 @@ to:
 
 A summary of all these discussion is available at [4].
 
-After that the packagers lose theirs interest and the trash-cli was not 
+After that the packagers lose their interest and the trash-cli was not
 packaged.
 
 [1] https://bugzilla.redhat.com/show_bug.cgi?id=448122

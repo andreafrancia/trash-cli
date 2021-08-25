@@ -104,7 +104,7 @@ class Test_when_fed_with_dot_arguments(unittest.TestCase):
         self.fixture.run_trashput("..")
 
         # the dot directory shouldn't be operated, but a diagnostic message
-        # shall be writtend on stderr
+        # shall be written on stderr
         self.assertEqual("trash-put: cannot trash directory '..'\n",
                          self.fixture.stderr)
 
@@ -114,7 +114,7 @@ class Test_when_fed_with_dot_arguments(unittest.TestCase):
         self.fixture.run_trashput("%s/." % sandbox)
 
         # the dot directory shouldn't be operated, but a diagnostic message
-        # shall be writtend on stderr
+        # shall be written on stderr
         self.assertEqual("trash-put: cannot trash '.' directory '%s/.'\n" %
                          sandbox,
                          self.fixture.stderr)
@@ -128,7 +128,7 @@ class Test_when_fed_with_dot_arguments(unittest.TestCase):
         self.fixture.run_trashput("%s/.." % sandbox)
 
         # the dot directory shouldn't be operated, but a diagnostic message
-        # shall be writtend on stderr
+        # shall be written on stderr
         self.assertEqual("trash-put: cannot trash '..' directory '%s/..'\n" %
                          sandbox,
                          self.fixture.stderr)
