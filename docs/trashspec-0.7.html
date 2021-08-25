@@ -302,7 +302,7 @@ DeletionDate=20040831T22:32:08</PRE><P>
 The implementation MUST ignore any other lines in this file, except
 the first line (must be [Trash Info]) and these two key/value pairs.
 If a string that starts with &ldquo;Path=&rdquo; or &ldquo;DeletionDate=&rdquo;
-occurs several times, the first occurence is to be used.<A CLASS="sdfootnoteanc" NAME="sdfootnote8anc" HREF="#sdfootnote8sym"><SUP>8</SUP></A></P>
+occurs several times, the first occurrence is to be used.<A CLASS="sdfootnoteanc" NAME="sdfootnote8anc" HREF="#sdfootnote8sym"><SUP>8</SUP></A></P>
 <P>Note that $trash/info has no subdirectories. For a directory in
 $trash/files, only an information file for its own name is needed.
 This is because, when a subdirectory gets trashed, it must be moved
@@ -312,7 +312,7 @@ implementation also SHOULD preserve the access and modification time
 for them.</P>
 <P>When trashing a file or directory, the implementation MUST create
 the corresponding file in $trash/info first. When trashing a file or
-directory, the implementation MUST create thecorresponding file in
+directory, the implementation MUST create the corresponding file in
 $trash/info first. Moreover, it MUST try to do this in an atomic
 fashion, so that if two processes try trash files with the same
 filename this will result in two different trash files. On Unix-line

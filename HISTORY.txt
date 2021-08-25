@@ -70,7 +70,7 @@ master:
 0.17.1.1:
  - Now trash-rm supports full path matching, using a pattern starting with slash '/' Fix #67
  - Fix typo in trash-rm(1) man page
- - Add a reference to trash-rm(1) to all man pges
+ - Add a reference to trash-rm(1) to all man pages
  - Fix inconsistent apostrophes
  - Add support for --trash-dir option to trash-empty
 
@@ -119,7 +119,7 @@ master:
  - Now trash-list checks for $topdir/.Trash having sticky bit and not being a
    symlink and warns when these requirements are not met.
  - Now trash-list handles empty, unreadable or malformed .trashinfo
- - Now `trash-emtpy <days>` skips .trashinfos with invalid DeletionDates
+ - Now `trash-empty <days>` skips .trashinfos with invalid DeletionDates
  - Removed Unipath dependency
  - Switched from googlecode to github
  - Removed tests written in Bash

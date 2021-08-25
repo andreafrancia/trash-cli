@@ -6,7 +6,7 @@ Which are the distributions packaged trash-cli?
    - Bug: https://bugs.launchpad.net/ubuntu/+bug/219601
    - Included in jaunty(universe) and intrepid(universe)
  - OpenSUSE: (seems not included) (2009-01-04)
-   - Added in the OpenSuse whishlist http://en.opensuse.org/Wishlist_Base#T (2009-01-04)
+   - Added in the OpenSuse wishlist http://en.opensuse.org/Wishlist_Base#T (2009-01-04)
  - Debian: 
    - Included in [http://packages.debian.org/unstable/utils/trash-cli sid] as of version 0.1.10.28-2 (2009-01-04)
    - Included in [http://packages.debian.org/lenny/trash-cli lenny] as of version 0.1.10.28-2 (2009-01-04)

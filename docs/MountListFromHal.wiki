@@ -5,7 +5,7 @@ This [http://davyd.livejournal.com/206645.html article] explain how to use HAL f
 
 This [https://www.dfwpython.org/repo/Projects/DBUS/dtest.py python scripts] communicates with HAL trouch DBUS and uses the 'org.freedesktop.Hal.Device.Volume' name.
 
-=Depedencies=
+=Dependencies=
 Using this method will add some dependencies:
  * hal ?
  * libhal1

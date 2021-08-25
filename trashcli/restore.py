@@ -378,7 +378,7 @@ class TrashedFile:
                        datetime)
      - info_file : the file that contains information (instance of Path)
      - original_file : the path where the trashed file has been placed after the
-                       trash opeartion (instance of Path)
+                       trash operation (instance of Path)
     """
     def __init__(self, original_location,
                        deletion_date,
