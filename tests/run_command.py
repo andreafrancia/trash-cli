@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 
 from trashcli import base_dir
 
@@ -17,7 +18,7 @@ def run_command(cwd, command, args=None, input='', env=None):
     if args == None:
         args = []
     command_full_path = os.path.join(base_dir, command)
-    process = subprocess.Popen(["python", command_full_path] + args,
+    process = subprocess.Popen([sys.executable, command_full_path] + args,
                                stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE,
