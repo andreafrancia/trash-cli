@@ -5,7 +5,7 @@ import os
 import datetime
 root = os.path.realpath(os.path.join(__file__, "..", ".."))
 sys.path.insert(0, root)
-import bump
+from tests import bump
 
 
 new_version = bump.version_from_date(datetime.date.today())

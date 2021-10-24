@@ -8,7 +8,7 @@ from trashcli.fs import read_file
 from trashcli import base_dir
 import sys
 sys.path.insert(0, os.path.join(base_dir, 'script'))
-import bump
+from . import bump
 
 
 class Test_version_from_date(unittest.TestCase):
