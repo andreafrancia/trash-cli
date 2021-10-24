@@ -1,7 +1,8 @@
 # Copyright (C) 2007-2021 Andrea Francia Trivolzio(PV) Italy
 
+import os
 from trashcli.fs import read_file, write_file, make_file_executable
-from trashcli import trash
+from trashcli import trash, base_dir
 from textwrap import dedent
 
 
@@ -43,6 +44,7 @@ class Scripts:
         self.created_scripts = []
 
     def add_script(self, name, module, main_function):
+        path = script_path_for(name)
         script_contents = dedent("""\
             #!/usr/bin/env python
             from __future__ import absolute_import
@@ -50,9 +52,13 @@ class Scripts:
             from %(module)s import %(main_function)s as main
             sys.exit(main())
             """) % locals()
-        self.write_file(name, script_contents)
-        self.make_file_executable(name)
-        self.created_scripts.append(name)
+        self.write_file(path, script_contents)
+        self.make_file_executable(path)
+        self.created_scripts.append(path)
+
+
+def script_path_for(name):
+    return os.path.join(base_dir, 'tests', 'cmds', name)
 
 
 if __name__ == '__main__':

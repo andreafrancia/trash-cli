@@ -1,7 +1,7 @@
 import os
 import subprocess
 import sys
-
+from setup import script_path_for
 from trashcli import base_dir
 
 
@@ -19,7 +19,8 @@ def run_command(cwd, command, args=None, input='', env=None):
         env = {}
     if args == None:
         args = []
-    command_full_path = os.path.join(base_dir, command)
+    command_full_path = script_path_for(command)
+    env['PYTHONPATH'] = base_dir
     process = subprocess.Popen([sys.executable, command_full_path] + args,
                                stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE,

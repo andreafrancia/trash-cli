@@ -2,7 +2,7 @@ import unittest
 from textwrap import dedent
 import mock
 from mock import Mock
-from setup import Scripts
+from setup import Scripts, script_path_for
 
 
 class TestMakeScript(unittest.TestCase):
@@ -20,10 +20,11 @@ class TestMakeScript(unittest.TestCase):
         bindir.add_script('trash-put', 'trashcli.cmds', 'put')
 
     def test_should_set_executable_permission(self):
-        self.make_file_executable.assert_called_with('trash-put')
+        self.make_file_executable.assert_called_with(script_path_for('trash-put'))
 
     def test_should_write_the_script(self):
-        self.write_file.assert_called_with( 'trash-put', mock.ANY)
+        self.write_file.assert_called_with(script_path_for('trash-put'),
+                                           mock.ANY)
 
     def test_the_script_should_call_the_right_function_from_the_right_module(self):
         args, kwargs = self.write_file.call_args
@@ -51,4 +52,4 @@ class TestListOfCreatedScripts(unittest.TestCase):
 
     def test_collect_added_script(self):
         self.bindir.add_script('foo-command', 'foo-module', 'main')
-        assert self.bindir.created_scripts == ['foo-command']
+        assert self.bindir.created_scripts == [script_path_for('foo-command')]
