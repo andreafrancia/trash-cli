@@ -54,11 +54,15 @@ class Scripts:
             """) % locals()
         self.write_file(path, script_contents)
         self.make_file_executable(path)
-        self.created_scripts.append(path)
+        self.created_scripts.append(script_path_without_base_dir_for(name))
 
 
 def script_path_for(name):
-    return os.path.join(base_dir, 'tests', 'cmds', name)
+    return os.path.join(base_dir, script_path_without_base_dir_for(name))
+
+
+def script_path_without_base_dir_for(name):
+    return os.path.join('tests', 'cmds', name)
 
 
 if __name__ == '__main__':

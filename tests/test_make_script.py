@@ -2,7 +2,7 @@ import unittest
 from textwrap import dedent
 import mock
 from mock import Mock
-from setup import Scripts, script_path_for
+from setup import Scripts, script_path_for, script_path_without_base_dir_for
 
 
 class TestMakeScript(unittest.TestCase):
@@ -52,4 +52,5 @@ class TestListOfCreatedScripts(unittest.TestCase):
 
     def test_collect_added_script(self):
         self.bindir.add_script('foo-command', 'foo-module', 'main')
-        assert self.bindir.created_scripts == [script_path_for('foo-command')]
+        assert self.bindir.created_scripts == [
+            script_path_without_base_dir_for('foo-command')]
