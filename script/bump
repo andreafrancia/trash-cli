@@ -7,9 +7,13 @@ root = os.path.realpath(os.path.join(__file__, "..", ".."))
 sys.path.insert(0, root)
 from tests import bump
 
+# https://unix.stackexchange.com/questions/155046/determine-if-git-working-directory-is-clean-from-a-script/394674#394674
+if os.system("git diff-index --quiet HEAD") != 0:
+    print("Dirty")
+    exit(1)
 
 new_version = bump.version_from_date(datetime.date.today())
 bump.save_new_version(new_version, os.path.join(root, 'trashcli', 'trash.py'))
 
 system = print if '--dry-run' in sys.argv else os.system
-system("git diff --quiet && git commit -m \"Bump version to '%s'\" -a" % new_version)
+system("git commit -m \"Bump version to '%s'\" -a" % new_version)
