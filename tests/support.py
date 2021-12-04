@@ -34,4 +34,4 @@ class MyPath(str):
 
     @classmethod
     def make_temp_dir(cls):
-        return cls(os.path.realpath(tempfile.mkdtemp()))
+        return cls(os.path.realpath(tempfile.mkdtemp(suffix="_trash_cli_test")))

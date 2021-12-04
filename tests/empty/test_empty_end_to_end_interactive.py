@@ -40,3 +40,6 @@ class TestEmptyEndToEndInteractive(unittest.TestCase):
             'Would empty the following trash directories:\n'
             '    - %s\n'
             'Proceed? (y/n) ' % self.trash_dir, '', 0]
+
+    def tearDown(self):
+        self.tmp_dir.clean_up()

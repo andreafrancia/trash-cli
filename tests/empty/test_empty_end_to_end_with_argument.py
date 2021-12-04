@@ -54,3 +54,6 @@ class TestEmptyEndToEndWithArgument(unittest.TestCase):
         self.user_run_trash_empty(['2'])
 
         assert list_trash_dir(self.trash_dir) == ['info/foo.trashinfo']
+
+    def tearDown(self):
+        self.tmp_dir.clean_up()

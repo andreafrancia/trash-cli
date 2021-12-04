@@ -29,6 +29,9 @@ class TrashPutFixture:
         self.stderr = result.stderr
         self.exit_code = result.exit_code
 
+    def __del__(self):
+        self.temp_dir.clean_up()
+
 
 @pytest.mark.slow
 class TestDeletingExistingFile(unittest.TestCase):

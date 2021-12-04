@@ -45,3 +45,4 @@ class Test_make_unreadable_dir(unittest.TestCase):
     def tearDown(self):
         make_readable(self.unreadable_dir)
         shutil.rmtree(self.unreadable_dir)
+        self.tmp_dir.clean_up()
