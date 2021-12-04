@@ -89,3 +89,6 @@ class TestEndToEndPut(unittest.TestCase):
                                          ['-f', 'this_file_does_not_exist', 'nor_does_this_file'])
 
         assert [result.stdout, result.stderr, result.exit_code] == ['', '', 0]
+
+    def tearDown(self):
+        self.tmp_dir.clean_up()

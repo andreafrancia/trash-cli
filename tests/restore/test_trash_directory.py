@@ -53,4 +53,5 @@ class TestTrashDirectory(unittest.TestCase):
     def list_trashinfos(self):
         return list(self.trash_dir.all_info_files(self.temp_dir / 'trash-dir'))
 
-
+    def tearDown(self):
+        self.temp_dir.clean_up()

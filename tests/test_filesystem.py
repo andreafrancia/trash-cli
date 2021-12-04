@@ -64,3 +64,5 @@ class Test_is_sticky_dir(unittest.TestCase):
 
         assert not is_sticky_dir(self.temp_dir / 'dir')
 
+    def tearDown(self):
+        self.temp_dir.clean_up()
