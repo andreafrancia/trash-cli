@@ -15,26 +15,35 @@ from .support import MyPath
 from trashcli.fs import FileSystemReader
 from trashcli.fs import FileRemover
 
-from trashcli.empty import main as empty
-
 
 @pytest.mark.slow
 class TestTrashEmptyCmd(unittest.TestCase):
     def setUp(self):
         self.tmp_dir = MyPath.make_temp_dir()
         self.unreadable_dir = self.tmp_dir / 'data/Trash/files/unreadable'
+        self.volumes_listing = Mock(spec=VolumesListing)
+        self.volumes_listing.list_volumes.return_value = [self.unreadable_dir]
+        self.err=StringIO()
+        self.empty = EmptyCmd(
+            out=StringIO(),
+            err=self.err,
+            environ={'XDG_DATA_HOME':self.tmp_dir / 'data'},
+            volumes_listing=self.volumes_listing,
+            now=None,
+            file_reader=FileSystemReader(),
+            getuid=lambda: 123,
+            file_remover=FileRemover(),
+            version=None,
+            volume_of=lambda x: "volume_of %s" % x
+        )
 
     def test_trash_empty_will_skip_unreadable_dir(self):
-        out = StringIO()
-        err = StringIO()
-
         make_unreadable_dir(self.unreadable_dir)
 
-        empty(['trash-empty'], stdout = out, stderr = err,
-                environ={'XDG_DATA_HOME':self.tmp_dir / 'data'})
+        self.empty.run('trash-empty')
 
         assert ("trash-empty: cannot remove %s\n"  % self.unreadable_dir ==
-                     err.getvalue())
+                     self.err.getvalue())
 
     def tearDown(self):
         make_readable(self.unreadable_dir)
