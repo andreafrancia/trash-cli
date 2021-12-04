@@ -4,7 +4,7 @@ import os
 
 from . import fstab
 from .fs import FileSystemReader, file_size
-from .fstab import volume_of, VolumesListing
+from .fstab import VolumesListing
 from .trash import (version, TrashDirReader, path_of_backup_copy, print_version,
                     maybe_parse_deletion_date, trash_dir_found,
                     trash_dir_skipped_because_parent_is_symlink,
