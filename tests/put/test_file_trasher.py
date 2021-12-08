@@ -3,7 +3,7 @@ import unittest
 from mock import Mock
 from datetime import datetime
 
-from trashcli.put import TrashResult, Trasher, FileTrasher
+from trashcli.put import TrashResult, FileTrasher
 import os
 
 

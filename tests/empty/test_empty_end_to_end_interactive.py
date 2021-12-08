@@ -4,7 +4,7 @@ import unittest
 import pytest
 
 from ..fake_trash_dir import FakeTrashDir
-from ..support import MyPath, list_trash_dir
+from ..support import MyPath
 from .. import run_command
 
 

@@ -3,7 +3,7 @@ import unittest
 from trashcli.list_mount_points import os_mount_points
 from trashcli.restore import RestoreCmd, make_trash_directories, \
     TrashDirectory, TrashedFiles, Command
-from .myStringIO import StringIO
+from six import StringIO
 from mock import call
 from trashcli import restore
 import datetime
