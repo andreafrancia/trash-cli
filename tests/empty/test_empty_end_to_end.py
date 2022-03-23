@@ -25,7 +25,7 @@ Purge trashed files.
 positional arguments:
   days
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
   --trash-dir TRASH_DIR

@@ -48,7 +48,7 @@ usage: trash-list [-h] [--version] [--trash-dir TRASH_DIRS]
 
 List trashed files
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
   --trash-dir TRASH_DIRS
