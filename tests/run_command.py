@@ -34,10 +34,15 @@ def run_command(cwd, command, args=None, input='', env=None):
                   process.returncode)
 
 
+def normalize_options(help_message):
+    return help_message.replace('optional arguments', 'options')
+
+
 def merge_dicts(x, y):
     z = x.copy()
     z.update(y)
     return z
+
 
 def last_line_of(stdout):
     if len(stdout.splitlines()) > 0:

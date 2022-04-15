@@ -5,6 +5,7 @@ import pytest
 
 from ..fake_trash_dir import FakeTrashDir
 from ..support import MyPath
+from ..run_command import normalize_options
 from .. import run_command
 
 
@@ -48,14 +49,14 @@ usage: trash-list [-h] [--version] [--trash-dir TRASH_DIRS]
 
 List trashed files
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
   --trash-dir TRASH_DIRS
                         specify the trash directory to use
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues
-""", result.stdout)
+""", normalize_options(result.stdout))
 
     def tearDown(self):
         self.tmp_dir.clean_up()

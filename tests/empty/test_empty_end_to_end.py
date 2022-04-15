@@ -3,6 +3,7 @@ import unittest
 
 from trashcli import trash
 from .. import run_command
+from ..run_command import normalize_options
 from ..fake_trash_dir import FakeTrashDir
 from ..files import make_file
 from ..support import MyPath, list_trash_dir
@@ -25,7 +26,7 @@ Purge trashed files.
 positional arguments:
   days
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
   --trash-dir TRASH_DIR
@@ -36,7 +37,7 @@ optional arguments:
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues
 """, '', 0],
-                         [result.stdout,
+                         [normalize_options(result.stdout),
                           result.stderr,
                           result.exit_code])
 
