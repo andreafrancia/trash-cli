@@ -6,9 +6,8 @@
 /build/
 /cover/
 /dist/
-/env/
-/env2/
-/venv/
+/env*/
+/venv*/
 /test-disk.img
 /test-disk.dmg
 /test-disk/
