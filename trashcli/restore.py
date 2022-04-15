@@ -191,6 +191,8 @@ class RestoreAskingTheUser(object):
             user_input = self.input("What file to restore [0..%d]: " % (len(trashed_files) - 1))
         except KeyboardInterrupt:
             return self.die("")
+        except EOFError:
+            return self.die("")
         if user_input == "":
             self.println("Exiting")
         else:
