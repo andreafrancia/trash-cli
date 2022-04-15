@@ -1,8 +1,6 @@
 import unittest
 
-import six
-
-from mock import Mock, call
+from mock import Mock
 
 from trashcli.rm import Filter
 from six import StringIO

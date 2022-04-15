@@ -54,18 +54,18 @@ def description(program_name, printer):
 
 
 class MainLoop:
-    def __init__(self, trash_dir, trashcan):
-        self.trash_dir = trash_dir
+    def __init__(self, trash_dir_reader, trashcan):
+        self.trash_dir_reader = trash_dir_reader
         self.trashcan = trashcan
 
     def do_loop(self, trash_dirs, delete_mode):
         for event, args in trash_dirs:
             if event == trash_dir_found:
                 trash_dir_path, volume = args
-                for trashinfo_path in self.trash_dir.list_trashinfo(trash_dir_path):
+                for trashinfo_path in self.trash_dir_reader.list_trashinfo(trash_dir_path):
                     if delete_mode.ok_to_delete(trashinfo_path):
                         self.trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
-                for orphan in self.trash_dir.list_orphans(trash_dir_path):
+                for orphan in self.trash_dir_reader.list_orphans(trash_dir_path):
                     self.trashcan.delete_orphan(orphan)
 
 class EmptyCmd:
@@ -100,8 +100,8 @@ class EmptyCmd:
         self.selector = TrashDirsSelector(user_dir_scanner.scan_trash_dirs(environ),
                                           all_users_scanner.scan_trash_dirs(environ),
                                           volume_of)
-        trash_dir = TrashDirReader(self.file_reader)
-        self.main_loop = MainLoop(trash_dir, trashcan)
+        trash_dir_reader = TrashDirReader(self.file_reader)
+        self.main_loop = MainLoop(trash_dir_reader, trashcan)
 
     def run(self, *argv):
         program_name = os.path.basename(argv[0])
