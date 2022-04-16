@@ -62,7 +62,7 @@ def script_path_for(name):
 
 
 def script_path_without_base_dir_for(name):
-    return os.path.join('tests', 'cmds', name)
+    return os.path.join(name)
 
 
 if __name__ == '__main__':
