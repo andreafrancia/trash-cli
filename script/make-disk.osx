@@ -1,5 +1,0 @@
-mkdir -p test-disk
-hdiutil detach ./test-disk || true
-rm -f test-disk.dmg
-hdiutil create -size 1M -fs HFS+ test-disk
-hdiutil attach test-disk.dmg -mountpoint test-disk

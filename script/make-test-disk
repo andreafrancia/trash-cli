@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (C) 2007-2009 Andrea Francia Trivolzio(PV) Italy
+# Copyright (C) 2007-2022 Andrea Francia Trivolzio(PV) Italy
 
 set -o errexit
 
@@ -14,7 +14,7 @@ main() {
 }
 
 clean-up() {
-    sudo umount "$mount_point" || true
+    umount "$mount_point" || true
     rm -fv "$device_image"
 }
 
@@ -25,8 +25,8 @@ create-image() {
 
 mount-the-image() {
     mkdir --parents "$mount_point"
-    sudo mount -t ext2 "$device_image" "$mount_point" -o loop
-    sudo chmod a+rwx "$mount_point"
+    mount -t ext2 "$device_image" "$mount_point" -o loop
+    chmod a+rwx "$mount_point"
 }
 
 main
