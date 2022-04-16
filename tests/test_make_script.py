@@ -17,7 +17,7 @@ class TestMakeScript(unittest.TestCase):
         bindir = Scripts(
                 make_file_executable = self.make_file_executable,
                 write_file           = self.write_file)
-        bindir.add_script('trash-put', 'trashcli.cmds', 'put')
+        bindir.add_script('trash-put', 'trashcli_module', 'put')
 
     def test_should_set_executable_permission(self):
         self.make_file_executable.assert_called_with(script_path_for('trash-put'))
@@ -33,7 +33,7 @@ class TestMakeScript(unittest.TestCase):
             #!/usr/bin/env python
             from __future__ import absolute_import
             import sys
-            from trashcli.cmds import put as main
+            from trashcli_module import put as main
             sys.exit(main())
             """)
         assert expected == contents, ("Expected:\n---\n%s---\n"
