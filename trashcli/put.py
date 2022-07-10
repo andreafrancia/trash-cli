@@ -218,6 +218,7 @@ class FileTrasher:
                 if self._file_could_be_trashed_in(volume_of_file_to_be_trashed,
                                                   volume_of_trash_dir):
                     try:
+                        self.fs.ensure_dir(path, 0o700)
                         self.fs.ensure_dir(os.path.join(path, 'files'), 0o700)
                         trash_dir.trash2(file, self.now)
                         reporter.file_has_been_trashed_in_as(
