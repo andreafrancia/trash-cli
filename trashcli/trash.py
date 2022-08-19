@@ -113,7 +113,8 @@ class TrashDirsScanner:
                 elif result == top_trash_dir_invalid_because_parent_is_symlink:
                     yield trash_dir_skipped_because_parent_is_symlink, (top_trash_dir_path,)
                 alt_top_trash_dir = os.path.join(volume, '.Trash-%s' % user_info.uid)
-                yield trash_dir_found, (alt_top_trash_dir, volume)
+                if os.path.isdir(alt_top_trash_dir):
+                    yield trash_dir_found, (alt_top_trash_dir, volume)
 
 
 class HelpPrinter:
