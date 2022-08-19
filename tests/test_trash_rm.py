@@ -13,8 +13,11 @@ class TestTrashRmCmdRun(unittest.TestCase):
         cmd.stderr = StringIO()
         cmd.run([None])
 
-        assert ('Usage:\n    trash-rm PATTERN\n\nPlease specify PATTERN\n' ==
-                cmd.stderr.getvalue())
+        self.assertStartsWith(cmd.stderr.getvalue(),
+                              'Usage:\n    trash-rm PATTERN\n\nPlease specify PATTERN.\n')
+
+    def assertStartsWith(self, actual, expected):
+        self.assertEqual(actual[:len(expected)], expected)
 
     def test_without_pattern_argument(self):
         from trashcli.rm import RmCmd

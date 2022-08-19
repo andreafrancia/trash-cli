@@ -31,7 +31,8 @@ class RmCmd:
             self.print_err('Usage:\n'
                            '    trash-rm PATTERN\n'
                            '\n'
-                           'Please specify PATTERN')
+                           'Please specify PATTERN.\n'
+                           'trash-rm uses fnmatch.fnmatchcase to match patterns, see https://docs.python.org/3/library/fnmatch.html for more details.')
             self.exit_code = 8
             return
 
