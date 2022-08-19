@@ -92,12 +92,21 @@ class AllUsersInfoProvider:
             yield UserInfo([home_trash_dir_path_from_home(user.pw_dir)],
                            user.pw_uid)
 
+class DirChecker:
+    def is_dir(self, path):
+        return os.path.isdir(path)
 
 class TrashDirsScanner:
-    def __init__(self, user_info_provider, volumes_listing, top_trash_dir_rules):
+    def __init__(self,
+                 user_info_provider,
+                 volumes_listing,
+                 top_trash_dir_rules,
+                 dir_checker):
         self.user_info_provider = user_info_provider
         self.volumes_listing = volumes_listing
         self.top_trash_dir_rules = top_trash_dir_rules
+        self.dir_checker = dir_checker
+
 
     def scan_trash_dirs(self, environ):
         for user_info in self.user_info_provider.get_user_info():
@@ -113,7 +122,7 @@ class TrashDirsScanner:
                 elif result == top_trash_dir_invalid_because_parent_is_symlink:
                     yield trash_dir_skipped_because_parent_is_symlink, (top_trash_dir_path,)
                 alt_top_trash_dir = os.path.join(volume, '.Trash-%s' % user_info.uid)
-                if os.path.isdir(alt_top_trash_dir):
+                if self.dir_checker.is_dir(alt_top_trash_dir):
                     yield trash_dir_found, (alt_top_trash_dir, volume)
 
 

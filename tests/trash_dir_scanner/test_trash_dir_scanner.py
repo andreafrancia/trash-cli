@@ -1,7 +1,7 @@
 import unittest
 
 from trashcli.fstab import VolumesListing
-from trashcli.trash import TrashDirsScanner, trash_dir_found, UserInfoProvider
+from trashcli.trash import TrashDirsScanner, trash_dir_found, UserInfoProvider, DirChecker
 from mock import Mock
 
 
@@ -10,12 +10,15 @@ class TestTrashDirScanner(unittest.TestCase):
         volumes_listing = Mock(spec=VolumesListing)
         environ = {'HOME': '/home/user'}
         user_info_provider = UserInfoProvider(environ, lambda: 123)
+        dir_checker = Mock(spec=DirChecker)
         scanner = TrashDirsScanner(
             user_info_provider,
             volumes_listing=volumes_listing,
             top_trash_dir_rules=Mock(),
+            dir_checker=dir_checker
         )
 
+        dir_checker.is_dir.return_value = True
         volumes_listing.list_volumes.return_value = ['/vol', '/vol2']
         result = list(scanner.scan_trash_dirs({}))
 

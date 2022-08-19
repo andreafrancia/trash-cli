@@ -4,7 +4,7 @@ import os, sys
 
 from trashcli.trash import (TrashDirReader, parse_path, ParseError,
                             TrashDirsScanner, TopTrashDirRules,
-                            UserInfoProvider, trash_dir_found)
+                            UserInfoProvider, trash_dir_found, DirChecker)
 from trashcli.empty import CleanableTrashcan
 from trashcli.fs import FileSystemReader
 from trashcli.fs import FileRemover
@@ -44,7 +44,8 @@ class RmCmd:
         user_info_provider = UserInfoProvider(self.environ, self.getuid)
         scanner = TrashDirsScanner(user_info_provider,
                                    self.volumes_listing,
-                                   TopTrashDirRules(self.file_reader))
+                                   TopTrashDirRules(self.file_reader),
+                                   DirChecker())
 
         for event, args in scanner.scan_trash_dirs(self.environ):
             if event == trash_dir_found:

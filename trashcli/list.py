@@ -8,7 +8,7 @@ from .fstab import VolumesListing
 from .trash import (version, TrashDirReader, path_of_backup_copy, print_version,
                     maybe_parse_deletion_date, trash_dir_found,
                     trash_dir_skipped_because_parent_is_symlink,
-                    trash_dir_skipped_because_parent_not_sticky, UserInfoProvider)
+                    trash_dir_skipped_because_parent_not_sticky, UserInfoProvider, DirChecker)
 from .trash import TopTrashDirRules
 from .trash import TrashDirsScanner
 from .trash import ParseError
@@ -46,7 +46,8 @@ class ListCmd:
         user_info_provider = UserInfoProvider(environ, getuid)
         trashdirs_scanner = TrashDirsScanner(user_info_provider,
                                              volumes_listing,
-                                             TopTrashDirRules(file_reader))
+                                             TopTrashDirRules(file_reader),
+                                             DirChecker())
         self.selector = TrashDirsSelector(trashdirs_scanner.scan_trash_dirs(environ),
                                           [],
                                           volume_of)

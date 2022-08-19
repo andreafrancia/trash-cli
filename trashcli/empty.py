@@ -5,7 +5,7 @@ from .fstab import volume_of, VolumesListing
 from .list import TrashDirsSelector
 from .trash import (TopTrashDirRules, TrashDirReader, path_of_backup_copy,
                     print_version, println, Clock, parse_deletion_date,
-                    trash_dir_found, UserInfoProvider, AllUsersInfoProvider, my_input)
+                    trash_dir_found, UserInfoProvider, AllUsersInfoProvider, my_input, DirChecker)
 from .trash import TrashDirsScanner
 from .trash import EX_OK
 import os
@@ -92,11 +92,13 @@ class EmptyCmd:
         user_info_provider = UserInfoProvider(environ, getuid)
         user_dir_scanner = TrashDirsScanner(user_info_provider,
                                             volumes_listing,
-                                            TopTrashDirRules(file_reader))
+                                            TopTrashDirRules(file_reader),
+                                            DirChecker())
         all_users_info_provider = AllUsersInfoProvider()
         all_users_scanner = TrashDirsScanner(all_users_info_provider,
                                              volumes_listing,
-                                             TopTrashDirRules(file_reader))
+                                             TopTrashDirRules(file_reader),
+                                             DirChecker())
         self.selector = TrashDirsSelector(user_dir_scanner.scan_trash_dirs(environ),
                                           all_users_scanner.scan_trash_dirs(environ),
                                           volume_of)
