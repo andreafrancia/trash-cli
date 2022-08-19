@@ -1,4 +1,21 @@
-master:
+ - fix a bug that made `trash-list --size` to crash if it found a broken link
+   in the trash directory files
+   pull request https://github.com/andreafrancia/trash-cli/pull/233
+   thanks to: https://github.com/jamescherti
+ - trash-empty do not list trahs directories that does not exist
+   pull request https://github.com/andreafrancia/trash-cli/pull/237
+   thanks to: https://github.com/jack1142
+ - Fix trash-empty not showing nfs mountpoints
+   pull request: https://github.com/andreafrancia/trash-cli/pull/230
+   thanks to https://github.com/masgouri
+ - Fix perms for user's trash folder
+   pull request: https://github.com/andreafrancia/trash-cli/pull/239
+   thanks to https://github.com/jack1142
+0.22.4.16:
+ - trash-restore exits gracefully if the user enters Ctrl+D,
+   thanks to https://github.com/mtoohey31
+0.21.10.24:
+ - trash-empty detect when input is interactive and asks before emptying trash
  - trash-empty learnt the -i/--interactive option
  - trash-empty option --all-users is no longer hidden
 
