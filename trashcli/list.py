@@ -115,7 +115,13 @@ class DeletionDateExtractor:
 class SizeExtractor:
     def extract_attribute(self, trashinfo_path, _contents):
         backup_copy = path_of_backup_copy(trashinfo_path)
-        return str(file_size(backup_copy))
+        try:
+            return str(file_size(backup_copy))
+        except FileNotFoundError:
+            if os.path.islink(backup_copy):
+                return 0
+            else:
+                raise
 
 
 def description(program_name, printer):
