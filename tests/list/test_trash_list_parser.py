@@ -3,7 +3,7 @@ import unittest
 import trashcli.list
 from trashcli.trash import PrintHelp
 from six import StringIO
-
+from trashcli.list import Action
 
 class TestTrashListParser(unittest.TestCase):
     def setUp(self):
@@ -12,7 +12,7 @@ class TestTrashListParser(unittest.TestCase):
     def test_version(self):
         parsed = self.parser.parse_list_args(['--version'])
 
-        assert True == parsed.version
+        assert Action.print_version == parsed.action
 
     def test_trash_dir_not_specified(self):
         parsed = self.parser.parse_list_args([])

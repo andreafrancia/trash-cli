@@ -1,6 +1,7 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 import argparse
 import os
+from pprint import pprint
 
 from . import fstab
 from .fs import FileSystemReader, file_size
@@ -13,6 +14,7 @@ from .trash import TopTrashDirRules
 from .trash import TrashDirsScanner
 from .trash import ParseError
 from .trash import parse_path
+
 
 def main():
     import sys
@@ -38,10 +40,10 @@ class ListCmd:
                  version=version,
                  volume_of=fstab.volume_of):
 
-        self.out          = out
-        self.output       = ListCmdOutput(out, err)
-        self.err          = self.output.err
-        self.version      = version
+        self.out = out
+        self.output = ListCmdOutput(out, err)
+        self.err = self.output.err
+        self.version = version
         self.file_reader = file_reader
         user_info_provider = UserInfoProvider(environ, getuid)
         trashdirs_scanner = TrashDirsScanner(user_info_provider,
@@ -55,18 +57,36 @@ class ListCmd:
     def run(self, *argv):
         parser = Parser(os.path.basename(argv[0]))
         parsed = parser.parse_list_args(argv[1:])
-        if parsed.version:
+        if parsed.action == Action.print_version:
             print_version(self.out, argv[0], self.version)
-        else:
+        elif parsed.action == Action.debug_volumes:
+            self.debug_volumes()
+        elif parsed.action == Action.list_trash:
             extractor = {
-                'deletion_date':DeletionDateExtractor(),
+                'deletion_date': DeletionDateExtractor(),
                 'size': SizeExtractor(),
             }[parsed.attribute_to_print]
             self.list_trash(parsed.trash_dirs, extractor, parsed.show_files)
+        else:
+            raise ValueError('Unknown action: ' + parsed.action)
+
+    def debug_volumes(self):
+        import psutil
+        import os
+        all = sorted([p for p in psutil.disk_partitions(all=True)],
+                     key=lambda p: p.device)
+        physical = sorted([p for p in psutil.disk_partitions()],key=lambda p: p.device)
+        virtual = [p for p in all if p not in physical]
+        print("physical ->")
+        pprint(physical)
+        print("virtual ->")
+        pprint(virtual)
+        os.system('df -P')
+
 
     def list_trash(self, user_specified_trash_dirs, extractor, show_files):
         trash_dirs = self.selector.select(False,
-                                     user_specified_trash_dirs)
+                                          user_specified_trash_dirs)
         for event, args in trash_dirs:
             if event == trash_dir_found:
                 path, volume = args
@@ -83,7 +103,7 @@ class ListCmd:
     def _print_trashinfo(self, volume, trashinfo_path, extractor, show_files):
         try:
             contents = self.file_reader.contents_of(trashinfo_path)
-        except IOError as e :
+        except IOError as e:
             self.output.print_read_error(e)
         else:
             try:
@@ -105,8 +125,10 @@ class ListCmd:
 def format_line(attribute, original_location):
     return "%s %s" % (attribute, original_location)
 
+
 def format_line2(attribute, original_location, original_file):
     return "%s %s -> %s" % (attribute, original_location, original_file)
+
 
 class DeletionDateExtractor:
     def extract_attribute(self, _trashinfo_path, contents):
@@ -129,8 +151,8 @@ def description(program_name, printer):
     printer.usage('Usage: %s [OPTIONS...]' % program_name)
     printer.summary('List trashed files')
     printer.options(
-       "  --version   show program's version number and exit",
-       "  -h, --help  show this help message and exit")
+        "  --version   show program's version number and exit",
+        "  -h, --help  show this help message and exit")
     printer.bug_reporting()
 
 
@@ -151,43 +173,77 @@ class TrashDirsSelector:
             for dir in user_specified_dirs:
                 yield trash_dir_found, (dir, self.volume_of(dir))
 
+class SuperEnum(object):
+    class __metaclass__(type):
+        def __iter__(self):
+            for item in self.__dict__:
+                if item == self.__dict__[item]:
+                    yield item
+class Action(SuperEnum):
+    debug_volumes = 'debug_volumes'
+    print_version = 'print_version'
+    list_trash = 'list_trash'
+
+
 class Parser:
     def __init__(self, prog):
         self.parser = argparse.ArgumentParser(prog=prog,
-                                         description='List trashed files',
-                                         epilog='Report bugs to https://github.com/andreafrancia/trash-cli/issues')
-        self.parser.add_argument('--version', action='store_true', default=False,
-                            help="show program's version number and exit")
-        self.parser.add_argument('--trash-dir', action='append', default=[],
-                            dest='trash_dirs',
-                            help='specify the trash directory to use')
-        self.parser.add_argument('--size', action='store_const', default='deletion_date',
-                            const='size',
-                            dest='attribute_to_print',
-                            help=argparse.SUPPRESS)
-        self.parser.add_argument('--files', action='store_true', default=False,
-                            dest='show_files',
-                            help=argparse.SUPPRESS)
+                                              description='List trashed files',
+                                              epilog='Report bugs to https://github.com/andreafrancia/trash-cli/issues')
+        self.parser.add_argument('--version',
+                                 dest='action',
+                                 action='store_const',
+                                 const=Action.print_version,
+                                 default=Action.list_trash,
+                                 help="show program's version number and exit")
+        self.parser.add_argument('--debug-volumes',
+                                 dest='action',
+                                 action='store_const',
+                                 const=Action.debug_volumes,
+                                 help=argparse.SUPPRESS)
+        self.parser.add_argument('--trash-dir',
+                                 action='append',
+                                 default=[],
+                                 dest='trash_dirs',
+                                 help='specify the trash directory to use')
+        self.parser.add_argument('--size',
+                                 action='store_const',
+                                 default='deletion_date',
+                                 const='size',
+                                 dest='attribute_to_print',
+                                 help=argparse.SUPPRESS)
+        self.parser.add_argument('--files',
+                                 action='store_true',
+                                 default=False,
+                                 dest='show_files',
+                                 help=argparse.SUPPRESS)
 
     def parse_list_args(self, args):
-        return self.parser.parse_args(args)
+        parsed = self.parser.parse_args(args)
+        return parsed
 
 
 class ListCmdOutput:
     def __init__(self, out, err):
         self.out = out
         self.err = err
+
     def println(self, line):
-        self.out.write(line+'\n')
+        self.out.write(line + '\n')
+
     def error(self, line):
-        self.err.write(line+'\n')
+        self.err.write(line + '\n')
+
     def print_read_error(self, error):
         self.error(str(error))
+
     def print_parse_path_error(self, offending_file):
         self.error("Parse Error: %s: Unable to parse Path." % (offending_file))
+
     def top_trashdir_skipped_because_parent_not_sticky(self, trashdir):
         self.error("TrashDir skipped because parent not sticky: %s"
-                % trashdir)
+                   % trashdir)
+
     def top_trashdir_skipped_because_parent_is_symlink(self, trashdir):
         self.error("TrashDir skipped because parent is symlink: %s"
-                % trashdir)
+                   % trashdir)
