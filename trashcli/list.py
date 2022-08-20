@@ -53,8 +53,8 @@ class ListCmd:
                                           volume_of)
 
     def run(self, *argv):
-        parser = maker_parser(os.path.basename(argv[0]))
-        parsed = parser.parse_args(argv[1:])
+        parser = Parser(os.path.basename(argv[0]))
+        parsed = parser.parse_list_args(argv[1:])
         if parsed.version:
             print_version(self.out, argv[0], self.version)
         else:
@@ -151,24 +151,26 @@ class TrashDirsSelector:
             for dir in user_specified_dirs:
                 yield trash_dir_found, (dir, self.volume_of(dir))
 
+class Parser:
+    def __init__(self, prog):
+        self.parser = argparse.ArgumentParser(prog=prog,
+                                         description='List trashed files',
+                                         epilog='Report bugs to https://github.com/andreafrancia/trash-cli/issues')
+        self.parser.add_argument('--version', action='store_true', default=False,
+                            help="show program's version number and exit")
+        self.parser.add_argument('--trash-dir', action='append', default=[],
+                            dest='trash_dirs',
+                            help='specify the trash directory to use')
+        self.parser.add_argument('--size', action='store_const', default='deletion_date',
+                            const='size',
+                            dest='attribute_to_print',
+                            help=argparse.SUPPRESS)
+        self.parser.add_argument('--files', action='store_true', default=False,
+                            dest='show_files',
+                            help=argparse.SUPPRESS)
 
-def maker_parser(prog):
-    parser = argparse.ArgumentParser(prog=prog,
-                                     description='List trashed files',
-                                     epilog='Report bugs to https://github.com/andreafrancia/trash-cli/issues')
-    parser.add_argument('--version', action='store_true', default=False,
-                        help="show program's version number and exit")
-    parser.add_argument('--trash-dir', action='append', default=[],
-                        dest='trash_dirs',
-                        help='specify the trash directory to use')
-    parser.add_argument('--size', action='store_const', default='deletion_date',
-                        const='size',
-                        dest='attribute_to_print',
-                        help=argparse.SUPPRESS)
-    parser.add_argument('--files', action='store_true', default=False,
-                        dest='show_files',
-                        help=argparse.SUPPRESS)
-    return parser
+    def parse_list_args(self, args):
+        return self.parser.parse_args(args)
 
 
 class ListCmdOutput:

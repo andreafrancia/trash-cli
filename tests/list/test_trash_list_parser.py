@@ -7,40 +7,40 @@ from six import StringIO
 
 class TestTrashListParser(unittest.TestCase):
     def setUp(self):
-        self.parser = trashcli.list.maker_parser("trash-list")
+        self.parser = trashcli.list.Parser("trash-list")
 
     def test_version(self):
-        parsed = self.parser.parse_args(['--version'])
+        parsed = self.parser.parse_list_args(['--version'])
 
         assert True == parsed.version
 
     def test_trash_dir_not_specified(self):
-        parsed = self.parser.parse_args([])
+        parsed = self.parser.parse_list_args([])
 
         assert [] == parsed.trash_dirs
 
     def test_trash_dir_specified(self):
-        parsed = self.parser.parse_args(['--trash-dir=foo'])
+        parsed = self.parser.parse_list_args(['--trash-dir=foo'])
 
         assert ['foo'] == parsed.trash_dirs
 
     def test_size_off(self):
-        parsed = self.parser.parse_args([])
+        parsed = self.parser.parse_list_args([])
 
         assert 'deletion_date' == parsed.attribute_to_print
 
     def test_size_on(self):
-        parsed = self.parser.parse_args(['--size'])
+        parsed = self.parser.parse_list_args(['--size'])
 
         assert 'size' == parsed.attribute_to_print
 
     def test_files_off(self):
-        parsed = self.parser.parse_args([])
+        parsed = self.parser.parse_list_args([])
 
         assert False == parsed.show_files
 
     def test_files_on(self):
-        parsed = self.parser.parse_args(['--files'])
+        parsed = self.parser.parse_list_args(['--files'])
 
         assert True == parsed.show_files
 
