@@ -90,7 +90,7 @@ class EmptyCmd:
         file_remover_with_error = FileRemoveWithErrorHandling(file_remover,
                                                               self.print_cannot_remove_error)
         trashcan = CleanableTrashcan(file_remover_with_error)
-        user_info_provider = UserInfoProvider(environ, getuid)
+        user_info_provider = UserInfoProvider()
         user_dir_scanner = TrashDirsScanner(user_info_provider,
                                             volumes_listing,
                                             TopTrashDirRules(file_reader),

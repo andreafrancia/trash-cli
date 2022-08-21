@@ -48,7 +48,7 @@ class ListCmd:
         self.environ = environ
         self.volume_listing = volumes_listing  # type: VolumesListing
         uid = getuid()
-        user_info_provider = UserInfoProvider(self.environ, getuid)
+        user_info_provider = UserInfoProvider()
         trashdirs_scanner = TrashDirsScanner(user_info_provider,
                                              self.volume_listing,
                                              TopTrashDirRules(file_reader),

@@ -41,7 +41,7 @@ class RmCmd:
 
         listing = ListTrashinfos(self.file_reader)
 
-        user_info_provider = UserInfoProvider(self.environ, self.getuid)
+        user_info_provider = UserInfoProvider()
         scanner = TrashDirsScanner(user_info_provider,
                                    self.volumes_listing,
                                    TopTrashDirRules(self.file_reader),

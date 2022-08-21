@@ -11,12 +11,12 @@ version = '0.22.8.21.16'
 import os
 import logging
 
-logger=logging.getLogger('trashcli.trash')
+logger = logging.getLogger('trashcli.trash')
 logger.setLevel(logging.WARNING)
 logger.addHandler(logging.StreamHandler())
 
 # Error codes (from os on *nix, hard coded for Windows):
-EX_OK    = getattr(os, 'EX_OK'   ,  0)
+EX_OK = getattr(os, 'EX_OK', 0)
 EX_USAGE = getattr(os, 'EX_USAGE', 64)
 EX_IOERR = getattr(os, 'EX_IOERR', 74)
 
@@ -79,24 +79,24 @@ class UserInfo:
 
 
 class UserInfoProvider:
-    def __init__(self, environ, getuid):
-        self.environ = environ
-        self.getuid = getuid
-
-    def get_user_info(self):
-        return [UserInfo(home_trash_dir_path_from_env(self.environ),
-                         self.getuid())]
+    @staticmethod
+    def get_user_info(environ, uid):
+        return [UserInfo(home_trash_dir_path_from_env(environ), uid)]
 
 
 class AllUsersInfoProvider:
-    def get_user_info(self):
+    @staticmethod
+    def get_user_info(self, _environ, _uid):
         for user in pwd.getpwall():
             yield UserInfo([home_trash_dir_path_from_home(user.pw_dir)],
                            user.pw_uid)
 
+
 class DirChecker:
-    def is_dir(self, path):
+    @staticmethod
+    def is_dir(path):
         return os.path.isdir(path)
+
 
 class TrashDirsScanner:
     def __init__(self,
@@ -105,13 +105,12 @@ class TrashDirsScanner:
                  top_trash_dir_rules,
                  dir_checker):
         self.user_info_provider = user_info_provider
-        self.volumes_listing = volumes_listing # type: VolumesListing
+        self.volumes_listing = volumes_listing  # type: VolumesListing
         self.top_trash_dir_rules = top_trash_dir_rules
         self.dir_checker = dir_checker
 
-
-    def scan_trash_dirs(self, environ, _uid):
-        for user_info in self.user_info_provider.get_user_info():
+    def scan_trash_dirs(self, environ, uid):
+        for user_info in self.user_info_provider.get_user_info(environ, uid):
             for path in user_info.home_trash_dir_paths:
                 yield trash_dir_found, (path, '/')
             for volume in self.volumes_listing.list_volumes(environ):
@@ -152,13 +151,15 @@ class HelpPrinter:
     def println(self, line):
         println(self.out, line)
 
+
 def println(out, line):
     out.write(line + '\n')
 
+
 class PrintHelp:
     def __init__(self, description, out):
-        self.description  = description
-        self.printer      = HelpPrinter(out)
+        self.description = description
+        self.printer = HelpPrinter(out)
 
     def my_print_help(self, program_name):
         self.description(program_name, self.printer)
@@ -219,8 +220,8 @@ class ParseError(ValueError): pass
 def maybe_parse_deletion_date(contents):
     result = Basket(unknown_date)
     parser = ParseTrashInfo(
-            on_deletion_date = lambda date: result.collect(date),
-            on_invalid_date = lambda: result.collect(unknown_date)
+        on_deletion_date=lambda date: result.collect(date),
+        on_invalid_date=lambda: result.collect(unknown_date)
     )
     parser.parse_trashinfo(contents)
     return result.collected
@@ -239,9 +240,9 @@ def do_nothing(*argv, **argvk): pass
 
 class ParseTrashInfo:
     def __init__(self,
-                 on_deletion_date = do_nothing,
-                 on_invalid_date = do_nothing,
-                 on_path = do_nothing):
+                 on_deletion_date=do_nothing,
+                 on_invalid_date=do_nothing,
+                 on_path=do_nothing):
         self.found_deletion_date = on_deletion_date
         self.found_invalid_date = on_invalid_date
         self.found_path = on_path
@@ -260,12 +261,14 @@ class ParseTrashInfo:
                     self.found_deletion_date(date)
 
             if line.startswith('Path='):
-                path=unquote(line[len('Path='):])
+                path = unquote(line[len('Path='):])
                 self.found_path(path)
 
+
 class Basket:
-    def __init__(self, initial_value = None):
+    def __init__(self, initial_value=None):
         self.collected = initial_value
+
     def collect(self, value):
         self.collected = value
 
