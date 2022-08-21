@@ -1,3 +1,7 @@
+ - trash-list --volumes to list all the recognized volumes
+ - trash-list --debug-volumes
+ - Fix links to trash specification David Auer
+0.22.8.21:
  - fix a bug that made `trash-list --size` to crash if it found a broken link
    in the trash directory files
    pull request https://github.com/andreafrancia/trash-cli/pull/233

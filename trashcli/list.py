@@ -45,20 +45,25 @@ class ListCmd:
         self.err = self.output.err
         self.version = version
         self.file_reader = file_reader
-        user_info_provider = UserInfoProvider(environ, getuid)
+        self.environ = environ
+        self.volume_listing = volumes_listing  # type: VolumesListing
+        user_info_provider = UserInfoProvider(self.environ, getuid)
         trashdirs_scanner = TrashDirsScanner(user_info_provider,
-                                             volumes_listing,
+                                             self.volume_listing,
                                              TopTrashDirRules(file_reader),
                                              DirChecker())
-        self.selector = TrashDirsSelector(trashdirs_scanner.scan_trash_dirs(environ),
-                                          [],
-                                          volume_of)
+        self.selector = TrashDirsSelector(
+            trashdirs_scanner.scan_trash_dirs(self.environ),
+            [],
+            volume_of)
 
     def run(self, *argv):
         parser = Parser(os.path.basename(argv[0]))
         parsed = parser.parse_list_args(argv[1:])
         if parsed.action == Action.print_version:
             print_version(self.out, argv[0], self.version)
+        elif parsed.action == Action.list_volumes:
+            self.print_volumes_list()
         elif parsed.action == Action.debug_volumes:
             self.debug_volumes()
         elif parsed.action == Action.list_trash:
@@ -75,14 +80,13 @@ class ListCmd:
         import os
         all = sorted([p for p in psutil.disk_partitions(all=True)],
                      key=lambda p: p.device)
-        physical = sorted([p for p in psutil.disk_partitions()],key=lambda p: p.device)
+        physical = sorted([p for p in psutil.disk_partitions()], key=lambda p: p.device)
         virtual = [p for p in all if p not in physical]
         print("physical ->")
         pprint(physical)
         print("virtual ->")
         pprint(virtual)
         os.system('df -P')
-
 
     def list_trash(self, user_specified_trash_dirs, extractor, show_files):
         trash_dirs = self.selector.select(False,
@@ -120,6 +124,10 @@ class ListCmd:
                 else:
                     line = format_line(attribute, original_location)
                 self.output.println(line)
+
+    def print_volumes_list(self):
+        for volume in self.volume_listing.list_volumes(self.environ):
+            print(volume)
 
 
 def format_line(attribute, original_location):
@@ -173,16 +181,20 @@ class TrashDirsSelector:
             for dir in user_specified_dirs:
                 yield trash_dir_found, (dir, self.volume_of(dir))
 
+
 class SuperEnum(object):
     class __metaclass__(type):
         def __iter__(self):
             for item in self.__dict__:
                 if item == self.__dict__[item]:
                     yield item
+
+
 class Action(SuperEnum):
     debug_volumes = 'debug_volumes'
     print_version = 'print_version'
     list_trash = 'list_trash'
+    list_volumes = 'list_volumes'
 
 
 class Parser:
@@ -201,6 +213,11 @@ class Parser:
                                  action='store_const',
                                  const=Action.debug_volumes,
                                  help=argparse.SUPPRESS)
+        self.parser.add_argument('--volumes',
+                                 dest='action',
+                                 action='store_const',
+                                 const=Action.list_volumes,
+                                 help="list volumes")
         self.parser.add_argument('--trash-dir',
                                  action='append',
                                  default=[],

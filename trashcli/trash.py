@@ -4,6 +4,8 @@ from __future__ import absolute_import
 import datetime
 import pwd
 
+from trashcli.fstab import VolumesListing
+
 version = '0.22.8.21'
 
 import os
@@ -103,7 +105,7 @@ class TrashDirsScanner:
                  top_trash_dir_rules,
                  dir_checker):
         self.user_info_provider = user_info_provider
-        self.volumes_listing = volumes_listing
+        self.volumes_listing = volumes_listing # type: VolumesListing
         self.top_trash_dir_rules = top_trash_dir_rules
         self.dir_checker = dir_checker
 

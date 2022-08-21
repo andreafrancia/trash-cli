@@ -45,13 +45,14 @@ class TestEndToEndList(unittest.TestCase):
         result = run_command.run_command(self.tmp_dir, "trash-list", ['--help'])
 
         self.assertEqual("""\
-usage: trash-list [-h] [--version] [--trash-dir TRASH_DIRS]
+usage: trash-list [-h] [--version] [--volumes] [--trash-dir TRASH_DIRS]
 
 List trashed files
 
 options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
+  --volumes             list volumes
   --trash-dir TRASH_DIRS
                         specify the trash directory to use
 
