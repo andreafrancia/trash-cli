@@ -10,7 +10,10 @@ def main():
 def os_mount_points():
     import psutil
     # List of accepted non-physical fstypes
-    fstypes = ['nfs']
+    fstypes = [
+        'nfs',
+        'p9', # file system used in WSL 2 (Windows Subsystem for Linux)
+    ]
 
     # Append fstypes of physicial devices to list
     fstypes += set([p.fstype for p in psutil.disk_partitions()])
