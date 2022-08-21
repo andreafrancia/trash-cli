@@ -23,7 +23,7 @@ class RmCmd:
         self.stderr = stderr
         self.file_reader = file_reader
 
-    def run(self, argv):
+    def run(self, argv, uid):
         args = argv[1:]
         self.exit_code = 0
 
@@ -47,7 +47,7 @@ class RmCmd:
                                    TopTrashDirRules(self.file_reader),
                                    DirChecker())
 
-        for event, args in scanner.scan_trash_dirs(self.environ):
+        for event, args in scanner.scan_trash_dirs(self.environ, uid):
             if event == trash_dir_found:
                 path, volume = args
                 for type, arg in listing.list_from_volume_trashdir(path, volume):
@@ -78,7 +78,7 @@ def main():
                 , stderr=sys.stderr
                 , file_reader=FileSystemReader())
 
-    cmd.run(sys.argv)
+    cmd.run(sys.argv, os.getuid())
 
     return cmd.exit_code
 

@@ -11,7 +11,7 @@ class TestTrashRmCmdRun(unittest.TestCase):
         from trashcli.rm import RmCmd
         cmd = RmCmd(None, None, None, None, None)
         cmd.stderr = StringIO()
-        cmd.run([None])
+        cmd.run([None], uid=None)
 
         self.assertStartsWith(cmd.stderr.getvalue(),
                               'Usage:\n    trash-rm PATTERN\n\nPlease specify PATTERN.\n')
@@ -31,7 +31,7 @@ class TestTrashRmCmdRun(unittest.TestCase):
         cmd.getuid = lambda: '111'
         volumes_listing.list_volumes.return_value = ['/vol1']
 
-        cmd.run([None, None])
+        cmd.run([None, None], uid=None)
 
         assert '' == cmd.stderr.getvalue()
 

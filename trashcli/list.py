@@ -47,13 +47,14 @@ class ListCmd:
         self.file_reader = file_reader
         self.environ = environ
         self.volume_listing = volumes_listing  # type: VolumesListing
+        uid = getuid()
         user_info_provider = UserInfoProvider(self.environ, getuid)
         trashdirs_scanner = TrashDirsScanner(user_info_provider,
                                              self.volume_listing,
                                              TopTrashDirRules(file_reader),
                                              DirChecker())
         self.selector = TrashDirsSelector(
-            trashdirs_scanner.scan_trash_dirs(self.environ),
+            trashdirs_scanner.scan_trash_dirs(self.environ, uid),
             [],
             volume_of)
 

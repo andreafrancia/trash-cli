@@ -86,6 +86,7 @@ class EmptyCmd:
         self.file_reader = file_reader
         self.version = version
         self.clock = Clock(now, environ)
+        uid = getuid()
         file_remover_with_error = FileRemoveWithErrorHandling(file_remover,
                                                               self.print_cannot_remove_error)
         trashcan = CleanableTrashcan(file_remover_with_error)
@@ -99,8 +100,8 @@ class EmptyCmd:
                                              volumes_listing,
                                              TopTrashDirRules(file_reader),
                                              DirChecker())
-        self.selector = TrashDirsSelector(user_dir_scanner.scan_trash_dirs(environ),
-                                          all_users_scanner.scan_trash_dirs(environ),
+        self.selector = TrashDirsSelector(user_dir_scanner.scan_trash_dirs(environ, uid),
+                                          all_users_scanner.scan_trash_dirs(environ, uid),
                                           volume_of)
         trash_dir_reader = TrashDirReader(self.file_reader)
         self.main_loop = MainLoop(trash_dir_reader, trashcan)

@@ -9,7 +9,8 @@ class TestTrashDirScanner(unittest.TestCase):
     def test_scan_trash_dirs(self):
         volumes_listing = Mock(spec=VolumesListing)
         environ = {'HOME': '/home/user'}
-        user_info_provider = UserInfoProvider(environ, lambda: 123)
+        uid = 123
+        user_info_provider = UserInfoProvider(environ, lambda: uid)
         dir_checker = Mock(spec=DirChecker)
         scanner = TrashDirsScanner(
             user_info_provider,
@@ -20,7 +21,7 @@ class TestTrashDirScanner(unittest.TestCase):
 
         dir_checker.is_dir.return_value = True
         volumes_listing.list_volumes.return_value = ['/vol', '/vol2']
-        result = list(scanner.scan_trash_dirs({}))
+        result = list(scanner.scan_trash_dirs({}, 123))
 
         self.assertEqual(
             [(trash_dir_found, ('/home/user/.local/share/Trash', '/')),

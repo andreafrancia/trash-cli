@@ -26,7 +26,7 @@ class TestTrashRm(unittest.TestCase):
     def test_issue69(self):
         self.fake_trash_dir.add_trashinfo_without_path('foo')
 
-        self.trash_rm.run(['trash-rm', 'ignored'])
+        self.trash_rm.run(['trash-rm', 'ignored'], uid=None)
 
         assert (self.stderr.getvalue() ==
                 "trash-rm: %s/Trash/info/foo.trashinfo: unable to parse 'Path'"
@@ -36,7 +36,7 @@ class TestTrashRm(unittest.TestCase):
         self.fake_trash_dir.add_trashinfo_basename_path("del", 'to/be/deleted')
         self.fake_trash_dir.add_trashinfo_basename_path("keep", 'to/be/kept')
 
-        self.trash_rm.run(['trash-rm', 'delete*'])
+        self.trash_rm.run(['trash-rm', 'delete*'], uid=None)
 
         assert self.fake_trash_dir.ls_info() == ['keep.trashinfo']
 

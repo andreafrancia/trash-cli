@@ -110,7 +110,7 @@ class TrashDirsScanner:
         self.dir_checker = dir_checker
 
 
-    def scan_trash_dirs(self, environ):
+    def scan_trash_dirs(self, environ, _uid):
         for user_info in self.user_info_provider.get_user_info():
             for path in user_info.home_trash_dir_paths:
                 yield trash_dir_found, (path, '/')
