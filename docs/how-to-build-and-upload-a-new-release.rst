@@ -19,11 +19,11 @@ Create the tarball::
 
 Upload to Test PyPI::
 
-    twine upload --repository testpypi dist/*-${version}*.tar.gz
+    twine upload --repository testpypi dist/trash-cli-${version}.tar.gz
 
 Remove previous installation::
 
-    python3 -m pip uninstall trash-cli
+    python3 -m pip uninstall --yes trash-cli
 
 Test the installation::
 
@@ -31,7 +31,7 @@ Test the installation::
 
 Register and upload::
 
-    twine upload dist/*-${version}*.tar.gz
+    twine upload dist/trash-cli-${version}.tar.gz
 
 Now you can tag the repo status::
 
