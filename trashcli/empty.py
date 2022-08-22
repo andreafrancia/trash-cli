@@ -87,7 +87,8 @@ class EmptyCmd:
         self.file_reader = file_reader
         self.version = version
         self.clock = Clock(now, environ)
-        uid = getuid()
+        self.uid = getuid()
+        self.environ = environ
         file_remover_with_error = FileRemoveWithErrorHandling(file_remover,
                                                               self.print_cannot_remove_error)
         trashcan = CleanableTrashcan(file_remover_with_error)
@@ -102,8 +103,8 @@ class EmptyCmd:
                                              TopTrashDirRules(file_reader),
                                              DirChecker())
         self.selector = TrashDirsSelector(
-            user_dir_scanner.scan_trash_dirs(environ, uid),
-            all_users_scanner.scan_trash_dirs(environ, uid),
+            user_dir_scanner.scan_trash_dirs(self.environ, self.uid),
+            all_users_scanner.scan_trash_dirs(self.environ, self.uid),
             volume_of)
         trash_dir_reader = TrashDirReader(self.file_reader)
         self.main_loop = MainLoop(trash_dir_reader, trashcan)
@@ -128,7 +129,9 @@ class EmptyCmd:
                                                   int(parsed.days),
                                                   self.errors)
             trash_dirs = self.selector.select(parsed.all_users,
-                                              parsed.user_specified_trash_dirs)
+                                              parsed.user_specified_trash_dirs,
+                                              self.environ,
+                                              self.uid)
             guard = Guard() if parsed.interactive else NoGuard()
             emptier = Emptier(self.main_loop, delete_mode)
 

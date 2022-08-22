@@ -47,7 +47,7 @@ class ListCmd:
         self.file_reader = file_reader
         self.environ = environ
         self.volume_listing = volumes_listing  # type: VolumesListing
-        uid = getuid()
+        self.uid = getuid()
         user_info_provider = UserInfoProvider()
         all_users_info_provider = AllUsersInfoProvider()
         all_users_scanner = TrashDirsScanner(all_users_info_provider,
@@ -59,8 +59,8 @@ class ListCmd:
                                             TopTrashDirRules(file_reader),
                                             DirChecker())
         self.selector = TrashDirsSelector(
-            user_dir_scanner.scan_trash_dirs(environ, uid),
-            all_users_scanner.scan_trash_dirs(environ, uid),
+            user_dir_scanner.scan_trash_dirs(environ, self.uid),
+            all_users_scanner.scan_trash_dirs(environ, self.uid),
             volume_of)
 
     def run(self, *argv):
@@ -80,7 +80,9 @@ class ListCmd:
             self.list_trash(parsed.trash_dirs,
                             extractor,
                             parsed.show_files,
-                            parsed.all_users)
+                            parsed.all_users,
+                            self.environ,
+                            self.uid)
         else:
             raise ValueError('Unknown action: ' + parsed.action)
 
@@ -101,9 +103,13 @@ class ListCmd:
                    user_specified_trash_dirs,
                    extractor,
                    show_files,
-                   all_users):
+                   all_users,
+                   environ,
+                   uid):
         trash_dirs = self.selector.select(all_users,
-                                          user_specified_trash_dirs)
+                                          user_specified_trash_dirs,
+                                          environ,
+                                          uid)
         for event, args in trash_dirs:
             if event == trash_dir_found:
                 path, volume = args
@@ -183,7 +189,11 @@ class TrashDirsSelector:
         self.all_users_dirs = all_users_dirs
         self.volume_of = volume_of
 
-    def select(self, all_users_flag, user_specified_dirs):
+    def select(self,
+               all_users_flag,
+               user_specified_dirs,
+               environ,
+               uid):
         if all_users_flag:
             for dir in self.all_users_dirs:
                 yield dir

@@ -46,6 +46,7 @@ class TestEndToEndList(unittest.TestCase):
 
         self.assertEqual("""\
 usage: trash-list [-h] [--version] [--volumes] [--trash-dir TRASH_DIRS]
+                  [--all-users]
 
 List trashed files
 
@@ -55,6 +56,7 @@ options:
   --volumes             list volumes
   --trash-dir TRASH_DIRS
                         specify the trash directory to use
+  --all-users           list trashcans of all the users
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues
 """, normalize_options(result.stdout))
