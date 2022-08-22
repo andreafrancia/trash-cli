@@ -102,10 +102,9 @@ class EmptyCmd:
                                              volumes_listing,
                                              TopTrashDirRules(file_reader),
                                              DirChecker())
-        self.selector = TrashDirsSelector(
-            user_dir_scanner.scan_trash_dirs(self.environ, self.uid),
-            all_users_scanner.scan_trash_dirs(self.environ, self.uid),
-            volume_of)
+        self.selector = TrashDirsSelector(user_dir_scanner,
+                                          all_users_scanner,
+                                          volume_of)
         trash_dir_reader = TrashDirReader(self.file_reader)
         self.main_loop = MainLoop(trash_dir_reader, trashcan)
 

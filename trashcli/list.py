@@ -58,10 +58,9 @@ class ListCmd:
                                             self.volume_listing,
                                             TopTrashDirRules(file_reader),
                                             DirChecker())
-        self.selector = TrashDirsSelector(
-            user_dir_scanner.scan_trash_dirs(environ, self.uid),
-            all_users_scanner.scan_trash_dirs(environ, self.uid),
-            volume_of)
+        self.selector = TrashDirsSelector(user_dir_scanner,
+                                          all_users_scanner,
+                                          volume_of)
 
     def run(self, *argv):
         parser = Parser(os.path.basename(argv[0]))
@@ -195,11 +194,11 @@ class TrashDirsSelector:
                environ,
                uid):
         if all_users_flag:
-            for dir in self.all_users_dirs:
+            for dir in self.all_users_dirs.scan_trash_dirs(environ, uid):
                 yield dir
         else:
             if not user_specified_dirs:
-                for dir in self.current_user_dirs:
+                for dir in self.current_user_dirs.scan_trash_dirs(environ, uid):
                     yield dir
             for dir in user_specified_dirs:
                 yield trash_dir_found, (dir, self.volume_of(dir))
