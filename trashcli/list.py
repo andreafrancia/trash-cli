@@ -46,21 +46,11 @@ class ListCmd:
         self.version = version
         self.file_reader = file_reader
         self.environ = environ
-        self.volume_listing = volumes_listing  # type: VolumesListing
         self.uid = getuid()
-        user_info_provider = UserInfoProvider()
-        all_users_info_provider = AllUsersInfoProvider()
-        all_users_scanner = TrashDirsScanner(all_users_info_provider,
-                                             self.volume_listing,
-                                             TopTrashDirRules(file_reader),
-                                             DirChecker())
-        user_dir_scanner = TrashDirsScanner(user_info_provider,
-                                            self.volume_listing,
-                                            TopTrashDirRules(file_reader),
-                                            DirChecker())
-        self.selector = TrashDirsSelector(user_dir_scanner,
-                                          all_users_scanner,
-                                          volume_of)
+        self.volumes_listing = volumes_listing
+        self.selector = TrashDirsSelector.make(volumes_listing,
+                                               file_reader,
+                                               volume_of)
 
     def run(self, *argv):
         parser = Parser(os.path.basename(argv[0]))
@@ -144,7 +134,7 @@ class ListCmd:
                 self.output.println(line)
 
     def print_volumes_list(self):
-        for volume in self.volume_listing.list_volumes(self.environ):
+        for volume in self.volumes_listing.list_volumes(self.environ):
             print(volume)
 
 
@@ -202,6 +192,22 @@ class TrashDirsSelector:
                     yield dir
             for dir in user_specified_dirs:
                 yield trash_dir_found, (dir, self.volume_of(dir))
+
+    @staticmethod
+    def make(volumes_listing, file_reader, volume_of):
+        user_info_provider = UserInfoProvider()
+        user_dir_scanner = TrashDirsScanner(user_info_provider,
+                                            volumes_listing,
+                                            TopTrashDirRules(file_reader),
+                                            DirChecker())
+        all_users_info_provider = AllUsersInfoProvider()
+        all_users_scanner = TrashDirsScanner(all_users_info_provider,
+                                             volumes_listing,
+                                             TopTrashDirRules(file_reader),
+                                             DirChecker())
+        return TrashDirsSelector(user_dir_scanner,
+                                 all_users_scanner,
+                                 volume_of)
 
 
 class SuperEnum(object):

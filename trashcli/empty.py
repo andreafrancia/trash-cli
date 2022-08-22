@@ -92,19 +92,8 @@ class EmptyCmd:
         file_remover_with_error = FileRemoveWithErrorHandling(file_remover,
                                                               self.print_cannot_remove_error)
         trashcan = CleanableTrashcan(file_remover_with_error)
-        user_info_provider = UserInfoProvider()
-        user_dir_scanner = TrashDirsScanner(user_info_provider,
-                                            volumes_listing,
-                                            TopTrashDirRules(file_reader),
-                                            DirChecker())
-        all_users_info_provider = AllUsersInfoProvider()
-        all_users_scanner = TrashDirsScanner(all_users_info_provider,
-                                             volumes_listing,
-                                             TopTrashDirRules(file_reader),
-                                             DirChecker())
-        self.selector = TrashDirsSelector(user_dir_scanner,
-                                          all_users_scanner,
-                                          volume_of)
+        self.selector = TrashDirsSelector.make(volumes_listing, file_reader,
+                                               volume_of)
         trash_dir_reader = TrashDirReader(self.file_reader)
         self.main_loop = MainLoop(trash_dir_reader, trashcan)
 
