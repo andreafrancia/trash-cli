@@ -59,7 +59,7 @@ class ListCmd:
                                             TopTrashDirRules(file_reader),
                                             DirChecker())
         self.selector = TrashDirsSelector(
-            user_dir_scanner.scan_trash_dirs(self.environ, uid),
+            user_dir_scanner.scan_trash_dirs(environ, uid),
             all_users_scanner.scan_trash_dirs(environ, uid),
             volume_of)
 
@@ -77,7 +77,10 @@ class ListCmd:
                 'deletion_date': DeletionDateExtractor(),
                 'size': SizeExtractor(),
             }[parsed.attribute_to_print]
-            self.list_trash(parsed.trash_dirs, extractor, parsed.show_files)
+            self.list_trash(parsed.trash_dirs,
+                            extractor,
+                            parsed.show_files,
+                            parsed.all_users)
         else:
             raise ValueError('Unknown action: ' + parsed.action)
 
@@ -94,8 +97,12 @@ class ListCmd:
         pprint(virtual)
         os.system('df -P')
 
-    def list_trash(self, user_specified_trash_dirs, extractor, show_files):
-        trash_dirs = self.selector.select(False,
+    def list_trash(self,
+                   user_specified_trash_dirs,
+                   extractor,
+                   show_files,
+                   all_users):
+        trash_dirs = self.selector.select(all_users,
                                           user_specified_trash_dirs)
         for event, args in trash_dirs:
             if event == trash_dir_found:
@@ -240,6 +247,10 @@ class Parser:
                                  default=False,
                                  dest='show_files',
                                  help=argparse.SUPPRESS)
+        self.parser.add_argument('--all-users',
+                                 action='store_true',
+                                 dest='all_users',
+                                 help='list trashcans of all the users')
 
     def parse_list_args(self, args):
         parsed = self.parser.parse_args(args)

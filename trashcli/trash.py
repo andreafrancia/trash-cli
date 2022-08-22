@@ -86,7 +86,7 @@ class UserInfoProvider:
 
 class AllUsersInfoProvider:
     @staticmethod
-    def get_user_info(self, _environ, _uid):
+    def get_user_info(_environ, _uid):
         for user in pwd.getpwall():
             yield UserInfo([home_trash_dir_path_from_home(user.pw_dir)],
                            user.pw_uid)
