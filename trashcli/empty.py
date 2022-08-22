@@ -48,8 +48,8 @@ def description(program_name, printer):
     printer.usage('Usage: %s [days]' % program_name)
     printer.summary('Purge trashed files.')
     printer.options(
-       "  --version   show program's version number and exit",
-       "  -h, --help  show this help message and exit")
+        "  --version   show program's version number and exit",
+        "  -h, --help  show this help message and exit")
     printer.bug_reporting()
 
 
@@ -67,6 +67,7 @@ class MainLoop:
                         self.trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
                 for orphan in self.trash_dir_reader.list_orphans(trash_dir_path):
                     self.trashcan.delete_orphan(orphan)
+
 
 class EmptyCmd:
     def __init__(self,
@@ -100,9 +101,10 @@ class EmptyCmd:
                                              volumes_listing,
                                              TopTrashDirRules(file_reader),
                                              DirChecker())
-        self.selector = TrashDirsSelector(user_dir_scanner.scan_trash_dirs(environ, uid),
-                                          all_users_scanner.scan_trash_dirs(environ, uid),
-                                          volume_of)
+        self.selector = TrashDirsSelector(
+            user_dir_scanner.scan_trash_dirs(environ, uid),
+            all_users_scanner.scan_trash_dirs(environ, uid),
+            volume_of)
         trash_dir_reader = TrashDirReader(self.file_reader)
         self.main_loop = MainLoop(trash_dir_reader, trashcan)
 
