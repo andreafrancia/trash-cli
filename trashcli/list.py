@@ -26,7 +26,7 @@ def main():
         environ=os.environ,
         getuid=os.getuid,
         volumes_listing=VolumesListing(os_mount_points),
-    ).run(*sys.argv)
+    ).run(sys.argv)
 
 
 class ListCmd:
@@ -52,7 +52,7 @@ class ListCmd:
                                                file_reader,
                                                volume_of)
 
-    def run(self, *argv):
+    def run(self, argv):
         parser = Parser(os.path.basename(argv[0]))
         parsed = parser.parse_list_args(argv[1:])
         if parsed.action == Action.print_version:

@@ -241,7 +241,7 @@ class TrashListUser:
             getuid      = self.fake_getuid,
             file_reader = file_reader,
             volumes_listing=volumes_listing,
-        ).run(*argv)
+        ).run(argv)
     def set_fake_uid(self, uid):
         self.fake_getuid = lambda: uid
     def add_volume(self, mount_point):
@@ -250,4 +250,3 @@ class TrashListUser:
         return self.stderr.getvalue()
     def output(self):
         return self.stdout.getvalue()
-
