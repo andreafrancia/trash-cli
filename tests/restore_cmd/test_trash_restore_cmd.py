@@ -1,6 +1,5 @@
 import unittest
 
-from trashcli.list_mount_points import os_mount_points
 from trashcli.restore import RestoreCmd, make_trash_directories, \
     TrashDirectory, TrashedFiles
 from six import StringIO
@@ -28,7 +27,7 @@ class TestTrashRestoreCmd(unittest.TestCase):
                               input=lambda x: self.user_reply,
                               version=None,
                               trashed_files=trashed_files,
-                              mount_points=os_mount_points,
+                              mount_points=lambda: [],
                               fs=self.fs)
 
     def capture_exit_status(self, exit_status):

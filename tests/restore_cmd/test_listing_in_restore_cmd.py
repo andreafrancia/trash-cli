@@ -4,7 +4,6 @@ from mock import Mock
 
 from trashcli import restore
 from trashcli.fs import contents_of
-from trashcli.list_mount_points import os_mount_points
 from trashcli.restore import RestoreCmd, make_trash_directories, \
     TrashedFiles
 
@@ -22,7 +21,7 @@ class TestListingInRestoreCmd(unittest.TestCase):
                               input=None,
                               curdir=lambda: "dir",
                               trashed_files=trashed_files,
-                              mount_points=os_mount_points,
+                              mount_points=lambda: [],
                               fs=restore.FileSystem())
         self.cmd.handle_trashed_files = self.capture_trashed_files
         self.trashed_files = Mock(spec=['all_trashed_files'])
