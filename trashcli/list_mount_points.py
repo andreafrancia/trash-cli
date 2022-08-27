@@ -17,14 +17,18 @@ def os_mount_points():
     partitions = Partitions(fstypes)
 
     for p in psutil.disk_partitions(all=True):
-        partitions.should_used_by_trashcli(p)
-        if os.path.isdir(p.mountpoint) and p.fstype in fstypes:
+        if os.path.isdir(p.mountpoint) and \
+                partitions.should_used_by_trashcli(p):
             yield p.mountpoint
 
 
 class Partitions:
-    def __init__(self, safe_list):
-        self.safe_list = safe_list
+    def __init__(self, physical_fstypes):
+        self.physical_fstypes = physical_fstypes
 
     def should_used_by_trashcli(self, partition):
-        return partition.fstype in self.safe_list
+        if ((partition.device, partition.mountpoint,
+             partition.fstype) ==
+                ('tmpfs', '/tmp', 'tmpfs')):
+            return True
+        return partition.fstype in self.physical_fstypes
