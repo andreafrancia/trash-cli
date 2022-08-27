@@ -9,6 +9,7 @@ def os_mount_points():
         'nfs',
         'nfs4',
         'p9', # file system used in WSL 2 (Windows Subsystem for Linux)
+        'btrfs',
     ]
 
     # Append fstypes of physical devices to list
