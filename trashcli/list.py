@@ -77,6 +77,8 @@ class ListCmd:
                             parsed.all_users,
                             self.environ,
                             self.uid)
+        elif parsed.action == Action.print_python_executable:
+            self.print_python_executable()
         else:
             raise ValueError('Unknown action: ' + parsed.action)
 
@@ -137,6 +139,10 @@ class ListCmd:
             elif event == trash_dir_skipped_because_parent_is_symlink:
                 path = args
                 print("parent_is_symlink: %s" % (path))
+
+    def print_python_executable(self):
+        import sys
+        print(sys.executable)
 
     def _print_trashinfo(self, volume, trashinfo_path, extractor, show_files):
         try:
@@ -250,6 +256,7 @@ class Action(SuperEnum):
     list_trash = 'list_trash'
     list_volumes = 'list_volumes'
     list_trash_dirs = 'list_trash_dirs'
+    print_python_executable = 'print_python_executable'
 
 
 class Parser:
@@ -298,6 +305,11 @@ class Parser:
                                  action='store_true',
                                  dest='all_users',
                                  help='list trashcans of all the users')
+        self.parser.add_argument('--python',
+                                 dest='action',
+                                 action='store_const',
+                                 const=Action.print_python_executable,
+                                 help=argparse.SUPPRESS)
 
     def parse_list_args(self, args):
         parsed = self.parser.parse_args(args)
