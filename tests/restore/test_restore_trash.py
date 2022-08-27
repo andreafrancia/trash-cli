@@ -5,14 +5,13 @@ import pytest
 from mock import Mock
 
 from trashcli.fstab import volume_of
-from trashcli.list_mount_points import os_mount_points
 from trashcli.restore import RestoreCmd, TrashDirectories, TrashDirectory, \
     TrashedFiles, TrashDirectories2
-from .support import MyPath
-from .files import require_empty_dir
+from ..support import MyPath
+from ..files import require_empty_dir
 from trashcli.fs import remove_file, contents_of
-from .fake_trash_dir import trashinfo_content_default_date
-from .files import make_file
+from ..fake_trash_dir import trashinfo_content_default_date
+from ..files import make_file
 from six import StringIO
 from trashcli import restore
 
