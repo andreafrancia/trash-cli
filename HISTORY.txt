@@ -1,3 +1,10 @@
+ - Add `trash-list --python` to print the python executable
+0.22.8.27:
+ - from now partitions with fs in ['nfs4','btrfs'] are considered physical volumes
+ - also partitions mounted on /tmp with tmpfs will be considered physical volumes
+ - `trash-list --all-users` to see trash from all users
+0.22.8.21.16:
+ - Now supports p9 (WSL 2 volumes) as loation fro trash dirs
  - trash-list --volumes to list all the recognized volumes
  - trash-list --debug-volumes
  - Fix links to trash specification David Auer
