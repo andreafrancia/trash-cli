@@ -1,0 +1,26 @@
+#!/bin/bash
+# Copyright (C) 2007-2022 Andrea Francia Trivolzio(PV) Italy
+
+set -o errexit
+
+main() {
+    make-new-disk "/tmp/test-disk1.img" "/media/test-disk1" /sbin/mkfs.ext2
+    make-new-disk "/tmp/test-disk2.img" "/media/test-disk2" /sbin/mkfs.ext2
+}
+
+make-new-disk() {
+    local device_image="$1"
+    local mount_point="$2"
+    local mkfs_command="$3"
+
+    umount "$mount_point" || true
+    rm -fv "$device_image"
+    dd if=/dev/zero of="$device_image" bs=$((1024*1024)) count=1
+    "$mkfs_command" -F "$device_image"
+    sudo mkdir --parents "$mount_point"
+    sudo mount -t ext2 "$device_image" "$mount_point" -o loop
+    sudo chmod a+rwx "$mount_point"
+    echo "test-volume mounted as '$mount_point'"
+}
+
+main
