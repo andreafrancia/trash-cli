@@ -115,14 +115,14 @@ class RestoreTrashUser:
                                      TrashDirectory(),
                                      contents_of)
         RestoreCmd(
-            stdout  = self.out,
-            stderr  = self.err,
-            exit    = [].append,
-            input   = lambda msg: with_user_typing,
-            curdir  = lambda: self.current_dir,
+            stdout=self.out,
+            stderr=self.err,
+            exit=[].append,
+            input=lambda msg: with_user_typing,
+            curdir=lambda: self.current_dir,
             trashed_files=trashed_files,
-            mount_points=os_mount_points,
-            fs = restore.FileSystem()
+            mount_points=lambda: [],
+            fs=restore.FileSystem()
         ).run([])
 
     def having_a_file_trashed_from_current_dir(self, filename):
