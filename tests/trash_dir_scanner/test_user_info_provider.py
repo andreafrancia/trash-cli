@@ -4,7 +4,7 @@ from trashcli.trash import UserInfoProvider
 
 
 class TestUserInfoProvider(unittest.TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         self.provider = UserInfoProvider()
 
     def test_getuid(self):
