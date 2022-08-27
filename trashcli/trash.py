@@ -6,7 +6,7 @@ import pwd
 
 from trashcli.fstab import VolumesListing
 
-version = '0.22.8.21.16'
+version = '0.22.8.27'
 
 import os
 import logging
