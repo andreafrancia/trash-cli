@@ -3,6 +3,11 @@ import shutil
 import tempfile
 
 
+def remove_dir_if_exists(dir):
+    if os.path.exists(dir):
+        os.rmdir(dir)
+
+
 def list_trash_dir(trash_dir_path):
     return (list_files_in_subdir(trash_dir_path, 'info') +
             list_files_in_subdir(trash_dir_path, 'files'))
