@@ -7,6 +7,7 @@ def os_mount_points():
     # List of accepted non-physical fstypes
     fstypes = [
         'nfs',
+        'nfs4',
         'p9', # file system used in WSL 2 (Windows Subsystem for Linux)
     ]
 
