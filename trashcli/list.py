@@ -61,6 +61,11 @@ class ListCmd:
             self.print_volumes_list()
         elif parsed.action == Action.debug_volumes:
             self.debug_volumes()
+        elif parsed.action == Action.list_trash_dirs:
+            self.list_trash_dirs(parsed.trash_dirs,
+                                 parsed.all_users,
+                                 self.environ,
+                                 self.uid)
         elif parsed.action == Action.list_trash:
             extractor = {
                 'deletion_date': DeletionDateExtractor(),
@@ -111,6 +116,27 @@ class ListCmd:
             elif event == trash_dir_skipped_because_parent_is_symlink:
                 path, = args
                 self.output.top_trashdir_skipped_because_parent_is_symlink(path)
+
+    def list_trash_dirs(self,
+                        user_specified_trash_dirs,
+                        all_users,
+                        environ,
+                        uid):
+        trash_dirs = self.selector.select(all_users,
+                                          user_specified_trash_dirs,
+                                          environ,
+                                          uid)
+        for event, args in trash_dirs:
+            pprint(args)
+            if event == trash_dir_found:
+                path, volume = args
+                print("%s, %s" % (path, volume))
+            elif event == trash_dir_skipped_because_parent_not_sticky:
+                path = args
+                print("parent_not_sticky: %s" % (path))
+            elif event == trash_dir_skipped_because_parent_is_symlink:
+                path = args
+                print("parent_is_symlink: %s" % (path))
 
     def _print_trashinfo(self, volume, trashinfo_path, extractor, show_files):
         try:
@@ -223,6 +249,7 @@ class Action(SuperEnum):
     print_version = 'print_version'
     list_trash = 'list_trash'
     list_volumes = 'list_volumes'
+    list_trash_dirs = 'list_trash_dirs'
 
 
 class Parser:
@@ -246,6 +273,11 @@ class Parser:
                                  action='store_const',
                                  const=Action.list_volumes,
                                  help="list volumes")
+        self.parser.add_argument('--trash-dirs',
+                                 dest='action',
+                                 action='store_const',
+                                 const=Action.list_trash_dirs,
+                                 help="list trash dirs")
         self.parser.add_argument('--trash-dir',
                                  action='append',
                                  default=[],
