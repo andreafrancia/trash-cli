@@ -1,30 +1,30 @@
-# Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
+# Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import argparse
 import os
+import sys
 from pprint import pprint
 
+from trashcli.list_mount_points import os_mount_points
 from . import fstab
 from .fs import FileSystemReader, file_size
 from .fstab import VolumesListing
+from .trash import ParseError
+from .trash import TopTrashDirRules
+from .trash import TrashDirsScanner
+from .trash import parse_path
 from .trash import (version, TrashDirReader, path_of_backup_copy, print_version,
                     maybe_parse_deletion_date, trash_dir_found,
                     trash_dir_skipped_because_parent_is_symlink,
-                    trash_dir_skipped_because_parent_not_sticky, UserInfoProvider, DirChecker, AllUsersInfoProvider)
-from .trash import TopTrashDirRules
-from .trash import TrashDirsScanner
-from .trash import ParseError
-from .trash import parse_path
+                    trash_dir_skipped_because_parent_not_sticky,
+                    UserInfoProvider, DirChecker, AllUsersInfoProvider)
 
 
 def main():
-    import sys
-    import os
-    from trashcli.list_mount_points import os_mount_points
     ListCmd(
         out=sys.stdout,
         err=sys.stderr,
         environ=os.environ,
-        getuid=os.getuid,
+        uid=os.getuid(),
         volumes_listing=VolumesListing(os_mount_points),
     ).run(sys.argv)
 
@@ -35,7 +35,7 @@ class ListCmd:
                  err,
                  environ,
                  volumes_listing,
-                 getuid,
+                 uid,
                  file_reader=FileSystemReader(),
                  version=version,
                  volume_of=fstab.volume_of):
@@ -46,7 +46,7 @@ class ListCmd:
         self.version = version
         self.file_reader = file_reader
         self.environ = environ
-        self.uid = getuid()
+        self.uid = uid
         self.volumes_listing = volumes_listing
         self.selector = TrashDirsSelector.make(volumes_listing,
                                                file_reader,
