@@ -1,0 +1,4 @@
+#!/bin/bash
+set -euo pipefail
+
+docker run --rm -it $(docker build -f scripts/Dockerfile.test-sdist-on-2.7 -q .)
