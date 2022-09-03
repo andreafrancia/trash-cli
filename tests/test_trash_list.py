@@ -50,12 +50,12 @@ class Test_describe_trash_list(Setup):
         assert_equals_with_unidiff('', self.user.output())
 
     def test_should_output_deletion_date_and_path(self):
-        self.user.home_trashdir.add_trashinfo2('/aboslute/path',
+        self.user.home_trashdir.add_trashinfo2('/absolute/path',
                                                datetime(2001, 2, 3, 23, 55, 59))
 
         self.user.run_trash_list()
 
-        assert_equals_with_unidiff("2001-02-03 23:55:59 /aboslute/path\n",
+        assert_equals_with_unidiff("2001-02-03 23:55:59 /absolute/path\n",
                                    self.user.output())
 
     def test_should_output_info_for_multiple_files(self):
