@@ -22,4 +22,4 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Test sdist
-      run: script/test-sdist
+      run: scripts/test-sdist
