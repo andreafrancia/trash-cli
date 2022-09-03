@@ -1,13 +1,10 @@
 # Copyright (C) 2007-2021 Andrea Francia Trivolzio(PV) Italy
 
-from trashcli import trash
 from trashcli.fs import read_file
 
 
 def main():
     setup(
-        name='trash-cli',
-        version=trash.version,
         author='Andrea Francia',
         author_email='andrea@andreafrancia.it',
         url='https://github.com/andreafrancia/trash-cli',
