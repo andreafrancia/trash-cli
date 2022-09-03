@@ -3,7 +3,7 @@ How to build a release
 
 Update the version number::
 
-    script/bump
+    scripts/bump
 
 Load the version in an environment variable::
 

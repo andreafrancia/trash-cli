@@ -5,7 +5,7 @@ import os
 import datetime
 root = os.path.realpath(os.path.join(__file__, "..", ".."))
 sys.path.insert(0, root)
-from tests import bump
+from scripts import bump
 
 # https://unix.stackexchange.com/questions/155046/determine-if-git-working-directory-is-clean-from-a-script/394674#394674
 if os.system("git diff-index --quiet HEAD") != 0:
