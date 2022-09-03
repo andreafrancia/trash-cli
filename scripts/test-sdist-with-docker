@@ -1,0 +1,26 @@
+#!/bin/bash
+set -euo pipefail
+
+usage="
+Usage:
+  $BASH_SOURCE PYTHON_VERSION
+Example:
+  $BASH_SOURCE 2.7
+
+Which values can I use for PYTHON_VERSION?
+All the supported tags you can find on the docker official image of Python:
+https://hub.docker.com/_/python
+"
+
+python_version=${1?"missing PYTHON_VERSION
+$usage
+"}
+
+docker run --rm -it "$(
+  cat << EOF | docker build -f- -q .
+FROM python:$python_version
+COPY . /app
+WORKDIR /app
+ENTRYPOINT scripts/test-sdist
+EOF
+  )"
