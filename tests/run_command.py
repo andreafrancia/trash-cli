@@ -1,7 +1,7 @@
 import os
 import subprocess
 import sys
-from setup import script_path_for
+from scripts.make_scripts import script_path_for
 from trashcli import base_dir
 
 
@@ -12,12 +12,13 @@ def run_command(cwd, command, args=None, input='', env=None):
             self.stderr = stderr
             self.exit_code = exit_code
             self.all = [stdout, stderr, exit_code]
+
         def __str__(self):
             return str(self.all)
 
-    if env == None:
+    if env is None:
         env = {}
-    if args == None:
+    if args is None:
         args = []
     command_full_path = script_path_for(command)
     env['PYTHONPATH'] = base_dir

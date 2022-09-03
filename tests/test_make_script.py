@@ -1,22 +1,26 @@
 import unittest
 from textwrap import dedent
+
 import mock
 from mock import Mock
-from setup import Scripts, script_path_for, script_path_without_base_dir_for
+
+from scripts.make_scripts import Scripts, script_path_for, script_path_without_base_dir_for
 
 
 class TestMakeScript(unittest.TestCase):
     def setUp(self):
         self.make_file_executable = Mock()
         self.write_file = Mock()
+
         def capture(name, contents):
             self.name = name
             self.contents = contents
+
         self.write_file.side_effect = capture
 
         bindir = Scripts(
-                make_file_executable = self.make_file_executable,
-                write_file           = self.write_file)
+            make_file_executable=self.make_file_executable,
+            write_file=self.write_file)
         bindir.add_script('trash-put', 'trashcli_module', 'put')
 
     def test_should_set_executable_permission(self):
@@ -44,8 +48,8 @@ class TestMakeScript(unittest.TestCase):
 class TestListOfCreatedScripts(unittest.TestCase):
     def setUp(self):
         self.bindir = Scripts(
-                make_file_executable = Mock(),
-                write_file           = Mock())
+            make_file_executable=Mock(),
+            write_file=Mock())
 
     def test_is_empty_on_start_up(self):
         assert self.bindir.created_scripts == []
