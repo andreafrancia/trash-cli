@@ -3,6 +3,7 @@ set -xe
 
 version="$(python -c 'import setuptools; setuptools.setup()' --version)"
 python -c 'import setuptools; setuptools.setup()' sdist
+pip install --upgrade pip
 pip install dist/trash-cli-"$version"*.tar.gz
 
 trash --version
