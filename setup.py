@@ -5,7 +5,6 @@ from trashcli.fs import read_file
 
 def main():
     setup(
-        packages=['trashcli'],
         data_files=[('share/man/man1', ['man/man1/trash-empty.1',
                                         'man/man1/trash-list.1',
                                         'man/man1/trash-restore.1',
