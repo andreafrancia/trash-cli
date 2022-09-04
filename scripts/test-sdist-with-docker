@@ -17,7 +17,7 @@ $usage
 "}
 
 docker run --rm -it "$(
-  cat << EOF | docker build -f- -q .
+  cat << EOF | docker build -t trash-cli-sdist -f- -q .
 FROM python:$python_version
 COPY . /app
 WORKDIR /app
