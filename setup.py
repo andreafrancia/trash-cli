@@ -11,9 +11,6 @@ def main():
                                         'man/man1/trash.1',
                                         'man/man1/trash-put.1',
                                         'man/man1/trash-rm.1'])],
-        install_requires=[
-            'psutil',
-        ],
     )
 
 
