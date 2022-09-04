@@ -1,4 +1,0 @@
-include requirements-dev.txt
-include ez_setup.py
-include README.rst
-graft man
