@@ -1,4 +1,4 @@
-name: python setup.py sdist test
+name: test create sdist
 
 on:
   push:

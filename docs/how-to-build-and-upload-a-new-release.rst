@@ -7,7 +7,7 @@ Update the version number::
 
 Load the version in an environment variable::
 
-    version="$(python setup.py --version)"
+    version="$(python -c 'import setuptools; setuptools.setup()' --version)"
 
 Run all tests::
 
@@ -15,7 +15,7 @@ Run all tests::
 
 Create the tarball::
 
-    python setup.py sdist
+    python -c 'import setuptools; setuptools.setup()' sdist
 
 Upload to Test PyPI::
 

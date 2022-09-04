@@ -1,8 +1,8 @@
 #!/bin/bash
 set -xe
 
-version="$(python setup.py --version)"
-python setup.py sdist
+version="$(python -c 'import setuptools; setuptools.setup()' --version)"
+python -c 'import setuptools; setuptools.setup()' sdist
 pip install dist/trash-cli-"$version"*.tar.gz
 
 trash --version
