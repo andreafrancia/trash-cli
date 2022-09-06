@@ -1,12 +1,12 @@
 import unittest
 
-from trashcli import empty
+import trashcli.empty.make_parser
 
 
 class TestMakeParser(unittest.TestCase):
     def setUp(self):
-        self.parser_interactive = empty.make_parser(True)
-        self.parser = empty.make_parser(False)
+        self.parser_interactive = trashcli.empty.make_parser.make_parser(True)
+        self.parser = trashcli.empty.make_parser.make_parser(False)
 
     def test(self):
         parsed = self.parser.parse_args(['--trash-dir=foo'])

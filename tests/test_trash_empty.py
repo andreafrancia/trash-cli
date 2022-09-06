@@ -6,7 +6,7 @@ import pytest
 from mock import Mock
 from six import StringIO
 
-from trashcli.empty import EmptyCmd
+from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.fs import FileRemover
 from trashcli.fs import FileSystemReader
 from trashcli.fstab import VolumesListing

@@ -1,7 +1,6 @@
 import unittest
 
-
-from trashcli.empty import prepare_output_message
+from trashcli.empty.prepare_output_message import prepare_output_message
 from trashcli.trash import trash_dir_found
 
 
@@ -38,4 +37,3 @@ Proceed? (y/n) """ == result
         assert """\
 No trash directories to empty.
 """ == result
-

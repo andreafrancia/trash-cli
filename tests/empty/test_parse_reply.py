@@ -1,6 +1,6 @@
 import unittest
 
-from trashcli.empty import parse_reply
+from trashcli.empty.parse_reply import parse_reply
 
 
 class TestParseReply(unittest.TestCase):

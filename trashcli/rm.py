@@ -5,7 +5,7 @@ import os, sys
 from trashcli.trash import (TrashDirReader, parse_path, ParseError,
                             TrashDirsScanner, TopTrashDirRules,
                             UserInfoProvider, trash_dir_found, DirChecker)
-from trashcli.empty import CleanableTrashcan
+from trashcli.empty.cleanable_trashcan import CleanableTrashcan
 from trashcli.fs import FileSystemReader
 from trashcli.fs import FileRemover
 

@@ -2,7 +2,8 @@ import unittest
 
 from mock import Mock, call
 
-from trashcli.empty import Guard, NoGuard
+from trashcli.empty.guard import Guard
+from trashcli.empty.no_guard import NoGuard
 
 
 class TestGuard(unittest.TestCase):
