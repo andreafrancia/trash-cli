@@ -1,38 +1,27 @@
-# Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
+# Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import argparse
-
-from .fstab import volume_of, VolumesListing
-from .list import TrashDirsSelector
-from .trash import (TopTrashDirRules, TrashDirReader, path_of_backup_copy,
-                    print_version, println, Clock, parse_deletion_date,
-                    trash_dir_found, UserInfoProvider, AllUsersInfoProvider, my_input, DirChecker)
-from .trash import TrashDirsScanner
-from .trash import EX_OK
 import os
 import sys
-from trashcli.list_mount_points import os_mount_points
 from datetime import datetime
-from trashcli.fs import FileSystemReader
-from trashcli.fs import FileRemover
+
 from trashcli import trash
+from trashcli.fs import FileRemover
+from trashcli.fs import FileSystemReader
+from trashcli.list_mount_points import os_mount_points
+from .fstab import volume_of, VolumesListing
+from .list import TrashDirsSelector
+from .trash import (TrashDirReader, path_of_backup_copy,
+                    print_version, println, Clock, parse_deletion_date,
+                    trash_dir_found, my_input, EX_OK)
 
 
-def main(argv=sys.argv,
-         stdout=sys.stdout,
-         stderr=sys.stderr,
-         environ=os.environ):
-    return EmptyCmd(
-        out=stdout,
-        err=stderr,
-        environ=environ,
-        volumes_listing=VolumesListing(os_mount_points),
-        now=datetime.now,
-        file_reader=FileSystemReader(),
-        getuid=os.getuid,
-        file_remover=FileRemover(),
-        version=trash.version,
-        volume_of=volume_of
-    ).run(*argv)
+def main():
+    empty_cmd = EmptyCmd(out=sys.stdout, err=sys.stderr, environ=os.environ,
+                         volumes_listing=VolumesListing(os_mount_points),
+                         now=datetime.now, file_reader=FileSystemReader(),
+                         getuid=os.getuid, file_remover=FileRemover(),
+                         version=trash.version, volume_of=volume_of)
+    return empty_cmd.run(sys.argv)
 
 
 class Errors:
@@ -62,10 +51,13 @@ class MainLoop:
         for event, args in trash_dirs:
             if event == trash_dir_found:
                 trash_dir_path, volume = args
-                for trashinfo_path in self.trash_dir_reader.list_trashinfo(trash_dir_path):
+                for trashinfo_path in self.trash_dir_reader.list_trashinfo(
+                        trash_dir_path):
                     if delete_mode.ok_to_delete(trashinfo_path):
-                        self.trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
-                for orphan in self.trash_dir_reader.list_orphans(trash_dir_path):
+                        self.trashcan.delete_trashinfo_and_backup_copy(
+                            trashinfo_path)
+                for orphan in self.trash_dir_reader.list_orphans(
+                        trash_dir_path):
                     self.trashcan.delete_orphan(orphan)
 
 
@@ -97,7 +89,7 @@ class EmptyCmd:
         trash_dir_reader = TrashDirReader(self.file_reader)
         self.main_loop = MainLoop(trash_dir_reader, trashcan)
 
-    def run(self, *argv):
+    def run(self, argv):
         program_name = os.path.basename(argv[0])
         self.errors = Errors(program_name, self.err)
         parser = make_parser(is_input_interactive())
