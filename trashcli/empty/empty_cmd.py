@@ -22,6 +22,7 @@ from trashcli.trash import Clock, TrashDirReader, print_version, println, \
 
 class EmptyCmd:
     def __init__(self,
+                 argv0,
                  out,
                  err,
                  environ,
@@ -39,23 +40,24 @@ class EmptyCmd:
         self.now = now
         self.uid = getuid()
         self.environ = environ
-        file_remover_with_error = FileRemoveWithErrorHandling(file_remover,
-                                                              self.print_cannot_remove_error)
+        file_remover_with_error = FileRemoveWithErrorHandling(
+            file_remover,
+            self.print_cannot_remove_error)
         trashcan = CleanableTrashcan(file_remover_with_error)
         self.selector = TrashDirsSelector.make(volumes_listing, file_reader,
                                                volume_of)
         trash_dir_reader = TrashDirReader(self.file_reader)
         self.main_loop = MainLoop(trash_dir_reader, trashcan)
+        self.program_name = os.path.basename(argv0)
+        self.errors = Errors(self.program_name, self.err)
 
-    def run(self, argv0, args, environ):
+    def run(self, args, environ):
         clock = Clock(self.now, environ)
-        program_name = os.path.basename(argv0)
-        self.errors = Errors(program_name, self.err)
         parser = make_parser(is_input_interactive())
         parsed = parser.parse_args(args)
 
         if parsed.version:
-            print_version(self.out, program_name, self.version)
+            print_version(self.out, self.program_name, self.version)
         elif parsed.print_time:
             now_value = clock.get_now_value(self.errors)
             println(self.out, now_value.replace(microsecond=0).isoformat())

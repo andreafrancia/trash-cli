@@ -25,6 +25,7 @@ class TestTrashEmptyCmd(unittest.TestCase):
         self.err = StringIO()
         self.environ = {'XDG_DATA_HOME': self.tmp_dir / 'data'}
         self.empty = EmptyCmd(
+            argv0='trash-empty',
             out=StringIO(),
             err=self.err,
             environ=self.environ,
@@ -40,7 +41,7 @@ class TestTrashEmptyCmd(unittest.TestCase):
     def test_trash_empty_will_skip_unreadable_dir(self):
         make_unreadable_dir(self.unreadable_dir)
 
-        self.empty.run('trash-empty', [], self.environ)
+        self.empty.run([], self.environ)
 
         assert ("trash-empty: cannot remove %s\n" % self.unreadable_dir ==
                 self.err.getvalue())
@@ -59,6 +60,7 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
         require_empty_dir(self.top_dir)
         self.environ = {}
         self.empty = EmptyCmd(
+            argv0='trash-empty',
             out=StringIO(),
             err=StringIO(),
             environ=self.environ,
@@ -75,7 +77,7 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
         self.make_proper_top_trash_dir(self.top_dir / '.Trash')
         make_empty_file(self.top_dir / '.Trash/123/info/foo.trashinfo')
 
-        self.empty.run('trash-empty', [], self.environ)
+        self.empty.run([], self.environ)
 
         assert not os.path.exists(
             self.top_dir / '.Trash/123/info/foo.trashinfo')
@@ -83,7 +85,7 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
     def test_it_removes_trashinfos_from_method_2_dir(self):
         make_empty_file(self.top_dir / '.Trash-123/info/foo.trashinfo')
 
-        self.empty.run('trash-empty', [], self.environ)
+        self.empty.run([], self.environ)
 
         assert not os.path.exists(
             self.top_dir / '.Trash-123/info/foo.trashinfo')
@@ -91,8 +93,7 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
     def test_it_removes_trashinfo_from_specified_trash_dir(self):
         make_empty_file(self.temp_dir / 'specified/info/foo.trashinfo')
 
-        self.empty.run('trash-empty',
-                       ['--trash-dir', self.temp_dir / 'specified'],
+        self.empty.run(['--trash-dir', self.temp_dir / 'specified'],
                        self.environ)
 
         assert not os.path.exists(
