@@ -32,12 +32,11 @@ class EmptyCmd:
                  file_remover,
                  version,
                  volume_of):
-
         self.out = out
         self.err = err
         self.file_reader = file_reader
         self.version = version
-        self.clock = Clock(now, environ)
+        self.now = now
         self.uid = getuid()
         self.environ = environ
         file_remover_with_error = FileRemoveWithErrorHandling(file_remover,
@@ -48,7 +47,8 @@ class EmptyCmd:
         trash_dir_reader = TrashDirReader(self.file_reader)
         self.main_loop = MainLoop(trash_dir_reader, trashcan)
 
-    def run(self, argv):
+    def run(self, argv, environ):
+        clock = Clock(self.now, environ)
         program_name = os.path.basename(argv[0])
         self.errors = Errors(program_name, self.err)
         parser = make_parser(is_input_interactive())
@@ -57,14 +57,14 @@ class EmptyCmd:
         if parsed.version:
             print_version(self.out, program_name, self.version)
         elif parsed.print_time:
-            now_value = self.clock.get_now_value(self.errors)
+            now_value = clock.get_now_value(self.errors)
             println(self.out, now_value.replace(microsecond=0).isoformat())
         else:
             if not parsed.days:
                 delete_mode = DeleteAnything()
             else:
                 delete_mode = DeleteAccordingDate(self.file_reader.contents_of,
-                                                  self.clock,
+                                                  clock,
                                                   int(parsed.days),
                                                   self.errors)
             trash_dirs = self.selector.select(parsed.all_users,

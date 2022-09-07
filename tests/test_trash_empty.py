@@ -23,10 +23,11 @@ class TestTrashEmptyCmd(unittest.TestCase):
         self.volumes_listing = Mock(spec=VolumesListing)
         self.volumes_listing.list_volumes.return_value = [self.unreadable_dir]
         self.err = StringIO()
+        self.environ = {'XDG_DATA_HOME': self.tmp_dir / 'data'}
         self.empty = EmptyCmd(
             out=StringIO(),
             err=self.err,
-            environ={'XDG_DATA_HOME': self.tmp_dir / 'data'},
+            environ=self.environ,
             volumes_listing=self.volumes_listing,
             now=None,
             file_reader=FileSystemReader(),
@@ -39,7 +40,7 @@ class TestTrashEmptyCmd(unittest.TestCase):
     def test_trash_empty_will_skip_unreadable_dir(self):
         make_unreadable_dir(self.unreadable_dir)
 
-        self.empty.run(['trash-empty'])
+        self.empty.run(['trash-empty'], self.environ)
 
         assert ("trash-empty: cannot remove %s\n" % self.unreadable_dir ==
                 self.err.getvalue())
@@ -56,10 +57,11 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
         self.volumes_listing = Mock(spec=VolumesListing)
         self.volumes_listing.list_volumes.return_value = [self.top_dir]
         require_empty_dir(self.top_dir)
+        self.environ = {}
         self.empty = EmptyCmd(
             out=StringIO(),
             err=StringIO(),
-            environ={},
+            environ=self.environ,
             volumes_listing=self.volumes_listing,
             now=None,
             file_reader=FileSystemReader(),
@@ -73,7 +75,7 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
         self.make_proper_top_trash_dir(self.top_dir / '.Trash')
         make_empty_file(self.top_dir / '.Trash/123/info/foo.trashinfo')
 
-        self.empty.run(['trash-empty'])
+        self.empty.run(['trash-empty'], self.environ)
 
         assert not os.path.exists(
             self.top_dir / '.Trash/123/info/foo.trashinfo')
@@ -81,7 +83,7 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
     def test_it_removes_trashinfos_from_method_2_dir(self):
         make_empty_file(self.top_dir / '.Trash-123/info/foo.trashinfo')
 
-        self.empty.run(['trash-empty'])
+        self.empty.run(['trash-empty'], self.environ)
 
         assert not os.path.exists(
             self.top_dir / '.Trash-123/info/foo.trashinfo')
@@ -90,7 +92,8 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
         make_empty_file(self.temp_dir / 'specified/info/foo.trashinfo')
 
         self.empty.run(['trash-empty', '--trash-dir',
-                        self.temp_dir / 'specified'])
+                        self.temp_dir / 'specified'],
+                       self.environ)
 
         assert not os.path.exists(
             self.temp_dir / 'specified/info/foo.trashinfo')

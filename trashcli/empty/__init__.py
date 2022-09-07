@@ -17,4 +17,4 @@ def main():
                          now=datetime.now, file_reader=FileSystemReader(),
                          getuid=os.getuid, file_remover=FileRemover(),
                          version=trash.version, volume_of=volume_of)
-    return empty_cmd.run(sys.argv)
+    return empty_cmd.run(sys.argv, os.environ)
