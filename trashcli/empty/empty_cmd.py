@@ -52,14 +52,14 @@ class EmptyCmd:
         self.errors = Errors(self.program_name, self.err)
 
     def run(self, args, environ):
-        clock = Clock(self.now, environ)
+        clock = Clock(self.now, environ, self.errors)
         parser = make_parser(is_input_interactive())
         parsed = parser.parse_args(args)
 
         if parsed.version:
             print_version(self.out, self.program_name, self.version)
         elif parsed.print_time:
-            now_value = clock.get_now_value(self.errors)
+            now_value = clock.get_now_value()
             println(self.out, now_value.replace(microsecond=0).isoformat())
         else:
             if not parsed.days:
@@ -67,8 +67,7 @@ class EmptyCmd:
             else:
                 delete_mode = DeleteAccordingDate(self.file_reader.contents_of,
                                                   clock,
-                                                  int(parsed.days),
-                                                  self.errors)
+                                                  int(parsed.days))
             trash_dirs = self.selector.select(parsed.all_users,
                                               parsed.user_specified_trash_dirs,
                                               self.environ,
