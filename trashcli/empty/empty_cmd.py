@@ -47,12 +47,12 @@ class EmptyCmd:
         trash_dir_reader = TrashDirReader(self.file_reader)
         self.main_loop = MainLoop(trash_dir_reader, trashcan)
 
-    def run(self, argv, environ):
+    def run(self, argv0, args, environ):
         clock = Clock(self.now, environ)
-        program_name = os.path.basename(argv[0])
+        program_name = os.path.basename(argv0)
         self.errors = Errors(program_name, self.err)
         parser = make_parser(is_input_interactive())
-        parsed = parser.parse_args(argv[1:])
+        parsed = parser.parse_args(args)
 
         if parsed.version:
             print_version(self.out, program_name, self.version)
