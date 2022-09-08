@@ -65,7 +65,7 @@ class EmptyCmd:
             if not parsed.days:
                 delete_mode = DeleteAnything()
             else:
-                delete_mode = DeleteAccordingDate(self.file_reader.contents_of,
+                delete_mode = DeleteAccordingDate(self.file_reader,
                                                   clock,
                                                   int(parsed.days))
             trash_dirs = self.selector.select(parsed.all_users,
