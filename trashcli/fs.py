@@ -27,6 +27,17 @@ class FileReader(TopTrashDirRules.Reader):
         return FileSystemReader.is_symlink(path)
 
 
+class TopTrashDirRulesFileSystemReader(TopTrashDirRules.Reader):
+    def exists(self, path):  # type: (str) -> bool
+        return FileSystemReader().exists(path)
+
+    def is_sticky_dir(self, path):  # type: (str) -> bool
+        return FileSystemReader().is_sticky_dir(path)
+
+    def is_symlink(self, path):  # type: (str) -> bool
+        return FileSystemReader().is_symlink(path)
+
+
 class FileSystemReader(FileSystemDirReader):
 
     @staticmethod

@@ -8,8 +8,7 @@ from six import StringIO
 
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.fs import FileRemover, FileSystemContentReader, \
-    FileSystemDirReader
-from trashcli.fs import FileSystemReader
+    FileSystemDirReader, TopTrashDirRulesFileSystemReader
 from trashcli.fstab import VolumesListing
 from .files import require_empty_dir, make_dirs, set_sticky_bit, \
     make_unreadable_dir, make_empty_file, make_readable
@@ -32,7 +31,7 @@ class TestTrashEmptyCmd(unittest.TestCase):
             environ=self.environ,
             volumes_listing=self.volumes_listing,
             now=None,
-            file_reader=FileSystemReader(),
+            file_reader=TopTrashDirRulesFileSystemReader(),
             getuid=lambda: 123,
             file_remover=FileRemover(),
             content_reader=FileSystemContentReader(),
@@ -69,7 +68,7 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
             environ=self.environ,
             volumes_listing=self.volumes_listing,
             now=None,
-            file_reader=FileSystemReader(),
+            file_reader=TopTrashDirRulesFileSystemReader(),
             getuid=lambda: 123,
             file_remover=FileRemover(),
             content_reader=FileSystemContentReader(),
@@ -104,7 +103,8 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
         assert not os.path.exists(
             self.temp_dir / 'specified/info/foo.trashinfo')
 
-    def make_proper_top_trash_dir(self, path):
+    @staticmethod
+    def make_proper_top_trash_dir(path):
         make_dirs(path)
         set_sticky_bit(path)
 

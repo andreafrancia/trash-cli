@@ -19,7 +19,7 @@ from trashcli.empty.user import User
 from trashcli.fstab import Volumes
 from trashcli.list import TrashDirsSelector
 from trashcli.trash import Clock, TrashDirReader, print_version, println, \
-    my_input, EX_OK, DirReader
+    my_input, EX_OK, DirReader, TopTrashDirRules
 
 
 class EmptyCmd:
@@ -30,7 +30,7 @@ class EmptyCmd:
                  environ,
                  volumes_listing,
                  now,
-                 file_reader,
+                 file_reader,  # type: TopTrashDirRules.Reader
                  dir_reader,  # type: DirReader
                  content_reader,  # type: ContentReader
                  getuid,
