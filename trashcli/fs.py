@@ -14,10 +14,10 @@ class FileSystemListing(DirReader):
         return os.path.exists(path)
 
 class FileSystemReader(FileSystemListing):
-    def is_sticky_dir(self, path):
+    def is_sticky_dir(self, path): # type: (str) -> bool
         import os
         return os.path.isdir(path) and has_sticky_bit(path)
-    def is_symlink(self, path):
+    def is_symlink(self, path): # type: (str) -> bool
         return os.path.islink(path)
     def contents_of(self, path):
         return read_file(path)

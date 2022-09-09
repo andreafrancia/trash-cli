@@ -146,7 +146,8 @@ class HelpPrinter:
         self.println('')
 
     def bug_reporting(self):
-        self.println("Report bugs to https://github.com/andreafrancia/trash-cli/issues")
+        self.println(
+            "Report bugs to https://github.com/andreafrancia/trash-cli/issues")
 
     def println(self, line):
         println(self.out, line)
@@ -177,17 +178,28 @@ top_trash_dir_invalid_because_parent_is_symlink = \
 top_trash_dir_valid = MyEnum('top_trash_dir_valid')
 
 
+class ReaderForTopTrashDirRules:
+    def exists(self, path):  # type: (str) -> bool
+        raise NotImplementedError()
+
+    def is_sticky_dir(self, path): # type: (str) -> bool
+        raise NotImplementedError()
+
+    def is_symlink(self, path): # type: (str) -> bool
+        raise NotImplementedError()
+
+
 class TopTrashDirRules:
-    def __init__(self, fs):
-        self.fs = fs
+    def __init__(self, reader):
+        self.reader = reader
 
     def valid_to_be_read(self, path):
         parent_trashdir = os.path.dirname(path)
-        if not self.fs.exists(path):
+        if not self.reader.exists(path):
             return top_trash_dir_does_not_exist
-        if not self.fs.is_sticky_dir(parent_trashdir):
+        if not self.reader.is_sticky_dir(parent_trashdir):
             return top_trash_dir_invalid_because_not_sticky
-        if self.fs.is_symlink(parent_trashdir):
+        if self.reader.is_symlink(parent_trashdir):
             return top_trash_dir_invalid_because_parent_is_symlink
         else:
             return top_trash_dir_valid
@@ -195,10 +207,10 @@ class TopTrashDirRules:
 
 class DirReader:
     def entries_if_dir_exists(self, path):  # type: (str) -> list[str]
-        pass
+        raise NotImplementedError()
 
-    def exists(self, path):
-        pass
+    def exists(self, path):  # type: (str) -> bool
+        raise NotImplementedError()
 
 
 class TrashDirReader:
