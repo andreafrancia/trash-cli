@@ -237,7 +237,7 @@ class TrashDirsSelector:
 
     @staticmethod
     def make(volumes_listing,
-             reader,
+             reader,  # type: TopTrashDirRules.Reader
              volumes  # type: Volumes
              ):
         user_info_provider = UserInfoProvider()
