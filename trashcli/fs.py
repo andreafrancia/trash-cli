@@ -3,7 +3,7 @@ import shutil
 import stat
 
 from trashcli.empty.delete_according_date import ContentReader
-from trashcli.trash import DirReader
+from trashcli.trash import DirReader, TopTrashDirRules
 
 
 class FileSystemDirReader(DirReader):
@@ -16,15 +16,30 @@ class FileSystemDirReader(DirReader):
         return os.path.exists(path)
 
 
-class FileSystemReader(FileSystemDirReader):
+class FileReader(TopTrashDirRules.Reader):
+    def exists(self, path):  # type: (str) -> bool
+        return os.path.exists(path)
+
     def is_sticky_dir(self, path):  # type: (str) -> bool
+        return FileSystemReader.is_sticky_dir(path)
+
+    def is_symlink(self, path):  # type: (str) -> bool
+        return FileSystemReader.is_symlink(path)
+
+
+class FileSystemReader(FileSystemDirReader):
+
+    @staticmethod
+    def is_sticky_dir(path):  # type: (str) -> bool
         import os
         return os.path.isdir(path) and has_sticky_bit(path)
 
-    def is_symlink(self, path):  # type: (str) -> bool
+    @staticmethod
+    def is_symlink(path):  # type: (str) -> bool
         return os.path.islink(path)
 
-    def contents_of(self, path):
+    @staticmethod
+    def contents_of(path):
         return read_file(path)
 
 
@@ -37,14 +52,16 @@ is_sticky_dir = FileSystemReader().is_sticky_dir
 
 
 class FileRemover:
-    def remove_file(self, path):
+    @staticmethod
+    def remove_file(path):
         try:
             return os.remove(path)
         except OSError:
             shutil.rmtree(path)
 
-    def remove_file_if_exists(self, path):
-        if os.path.exists(path): self.remove_file(path)
+    @classmethod
+    def remove_file_if_exists(cls, path):
+        if os.path.exists(path): cls.remove_file(path)
 
 
 def contents_of(path):  # TODO remove

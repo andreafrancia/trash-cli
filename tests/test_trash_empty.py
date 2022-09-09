@@ -7,7 +7,8 @@ from mock import Mock
 from six import StringIO
 
 from trashcli.empty.empty_cmd import EmptyCmd
-from trashcli.fs import FileRemover, FileSystemContentReader
+from trashcli.fs import FileRemover, FileSystemContentReader, \
+    FileSystemDirReader
 from trashcli.fs import FileSystemReader
 from trashcli.fstab import VolumesListing
 from .files import require_empty_dir, make_dirs, set_sticky_bit, \
@@ -35,6 +36,7 @@ class TestTrashEmptyCmd(unittest.TestCase):
             getuid=lambda: 123,
             file_remover=FileRemover(),
             content_reader=FileSystemContentReader(),
+            dir_reader=FileSystemDirReader(),
             version=None,
             volume_of=lambda x: "volume_of %s" % x
         )
@@ -71,6 +73,7 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
             getuid=lambda: 123,
             file_remover=FileRemover(),
             content_reader=FileSystemContentReader(),
+            dir_reader=FileSystemDirReader(),
             version=None,
             volume_of=lambda x: "volume_of %s" % x
         )

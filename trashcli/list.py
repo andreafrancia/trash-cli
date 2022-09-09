@@ -230,16 +230,16 @@ class TrashDirsSelector:
                 yield trash_dir_found, (dir, self.volume_of(dir))
 
     @staticmethod
-    def make(volumes_listing, file_reader, volume_of):
+    def make(volumes_listing, reader, volume_of):
         user_info_provider = UserInfoProvider()
         user_dir_scanner = TrashDirsScanner(user_info_provider,
                                             volumes_listing,
-                                            TopTrashDirRules(file_reader),
+                                            TopTrashDirRules(reader),
                                             DirChecker())
         all_users_info_provider = AllUsersInfoProvider()
         all_users_scanner = TrashDirsScanner(all_users_info_provider,
                                              volumes_listing,
-                                             TopTrashDirRules(file_reader),
+                                             TopTrashDirRules(reader),
                                              DirChecker())
         return TrashDirsSelector(user_dir_scanner,
                                  all_users_scanner,

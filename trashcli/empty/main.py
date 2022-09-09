@@ -4,7 +4,8 @@ import sys
 from datetime import datetime
 
 from trashcli import trash
-from trashcli.fs import FileRemover, FileSystemContentReader
+from trashcli.fs import FileRemover, FileSystemContentReader, \
+    FileSystemDirReader
 from trashcli.fs import FileSystemReader
 from trashcli.list_mount_points import os_mount_points
 from trashcli.empty.empty_cmd import EmptyCmd
@@ -18,5 +19,6 @@ def main():
                          now=datetime.now, file_reader=FileSystemReader(),
                          getuid=os.getuid, file_remover=FileRemover(),
                          content_reader=FileSystemContentReader(),
+                         dir_reader=FileSystemDirReader(),
                          version=trash.version, volume_of=volume_of)
     return empty_cmd.run(sys.argv[1:], os.environ)

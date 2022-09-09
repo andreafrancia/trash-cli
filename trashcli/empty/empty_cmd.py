@@ -18,7 +18,7 @@ from trashcli.empty.prepare_output_message import prepare_output_message
 from trashcli.empty.user import User
 from trashcli.list import TrashDirsSelector
 from trashcli.trash import Clock, TrashDirReader, print_version, println, \
-    my_input, EX_OK
+    my_input, EX_OK, DirReader
 
 
 class EmptyCmd:
@@ -30,6 +30,7 @@ class EmptyCmd:
                  volumes_listing,
                  now,
                  file_reader,
+                 dir_reader, # type: DirReader
                  content_reader, # type: ContentReader
                  getuid,
                  file_remover,
@@ -37,7 +38,6 @@ class EmptyCmd:
                  volume_of):
         self.out = out
         self.err = err
-        self.file_reader = file_reader
         self.version = version
         self.now = now
         self.uid = getuid()
@@ -48,7 +48,7 @@ class EmptyCmd:
         trashcan = CleanableTrashcan(file_remover_with_error)
         self.selector = TrashDirsSelector.make(volumes_listing, file_reader,
                                                volume_of)
-        trash_dir_reader = TrashDirReader(self.file_reader)
+        trash_dir_reader = TrashDirReader(dir_reader)
         self.main_loop = MainLoop(trash_dir_reader, trashcan)
         self.program_name = os.path.basename(argv0)
         self.errors = Errors(self.program_name, self.err)

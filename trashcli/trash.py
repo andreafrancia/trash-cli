@@ -122,10 +122,10 @@ class TrashDirsScanner:
                     yield trash_dir_found, (top_trash_dir_path, volume)
                 elif result == top_trash_dir_invalid_because_not_sticky:
                     yield trash_dir_skipped_because_parent_not_sticky, (
-                    top_trash_dir_path,)
+                        top_trash_dir_path,)
                 elif result == top_trash_dir_invalid_because_parent_is_symlink:
                     yield trash_dir_skipped_because_parent_is_symlink, (
-                    top_trash_dir_path,)
+                        top_trash_dir_path,)
                 alt_top_trash_dir = os.path.join(volume,
                                                  '.Trash-%s' % user_info.uid)
                 if self.dir_checker.is_dir(alt_top_trash_dir):
@@ -183,19 +183,18 @@ top_trash_dir_invalid_because_parent_is_symlink = \
 top_trash_dir_valid = MyEnum('top_trash_dir_valid')
 
 
-class ReaderForTopTrashDirRules:
-    def exists(self, path):  # type: (str) -> bool
-        raise NotImplementedError()
-
-    def is_sticky_dir(self, path):  # type: (str) -> bool
-        raise NotImplementedError()
-
-    def is_symlink(self, path):  # type: (str) -> bool
-        raise NotImplementedError()
-
-
 class TopTrashDirRules:
-    def __init__(self, reader):
+    class Reader:
+        def exists(self, path):  # type: (str) -> bool
+            raise NotImplementedError()
+
+        def is_sticky_dir(self, path):  # type: (str) -> bool
+            raise NotImplementedError()
+
+        def is_symlink(self, path):  # type: (str) -> bool
+            raise NotImplementedError()
+
+    def __init__(self, reader):  # type: (Reader) -> None
         self.reader = reader
 
     def valid_to_be_read(self, path):
@@ -220,21 +219,21 @@ class DirReader:
 
 class TrashDirReader:
 
-    def __init__(self, file_reader):  # type: (DirReader) -> None
-        self.file_reader = file_reader
+    def __init__(self, dir_reader):  # type: (DirReader) -> None
+        self.dir_reader = dir_reader
 
     def list_orphans(self, path):
         info_dir = os.path.join(path, 'info')
         files_dir = os.path.join(path, 'files')
-        for entry in self.file_reader.entries_if_dir_exists(files_dir):
+        for entry in self.dir_reader.entries_if_dir_exists(files_dir):
             trashinfo_path = os.path.join(info_dir, entry + '.trashinfo')
             file_path = os.path.join(files_dir, entry)
-            if not self.file_reader.exists(trashinfo_path):
+            if not self.dir_reader.exists(trashinfo_path):
                 yield file_path
 
     def list_trashinfo(self, path):
         info_dir = os.path.join(path, 'info')
-        for entry in self.file_reader.entries_if_dir_exists(info_dir):
+        for entry in self.dir_reader.entries_if_dir_exists(info_dir):
             if entry.endswith('.trashinfo'):
                 yield os.path.join(info_dir, entry)
 
