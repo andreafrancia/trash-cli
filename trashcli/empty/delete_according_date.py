@@ -2,14 +2,14 @@ from trashcli.empty.older_than import older_than
 from trashcli.trash import parse_deletion_date
 
 
-class FileContentsReader:
+class ContentReader:
     def contents_of(self, path):
         raise NotImplementedError
 
 
 class DeleteAccordingDate:
     def __init__(self,
-                 reader,  # type: FileContentsReader
+                 reader,  # type: ContentReader
                  clock,
                  max_age_in_days):
         self.reader = reader
