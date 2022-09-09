@@ -10,20 +10,24 @@ class FileSystemListing(DirReader):
         if os.path.exists(path):
             for entry in os.listdir(path):
                 yield entry
+
     def exists(self, path):
         return os.path.exists(path)
 
+
 class FileSystemReader(FileSystemListing):
-    def is_sticky_dir(self, path): # type: (str) -> bool
+    def is_sticky_dir(self, path):  # type: (str) -> bool
         import os
         return os.path.isdir(path) and has_sticky_bit(path)
-    def is_symlink(self, path): # type: (str) -> bool
+
+    def is_symlink(self, path):  # type: (str) -> bool
         return os.path.islink(path)
+
     def contents_of(self, path):
         return read_file(path)
 
 
-is_sticky_dir=FileSystemReader().is_sticky_dir
+is_sticky_dir = FileSystemReader().is_sticky_dir
 
 
 class FileRemover:
@@ -32,30 +36,38 @@ class FileRemover:
             return os.remove(path)
         except OSError:
             shutil.rmtree(path)
-    def remove_file_if_exists(self,path):
+
+    def remove_file_if_exists(self, path):
         if os.path.exists(path): self.remove_file(path)
 
-def contents_of(path): # TODO remove
+
+def contents_of(path):  # TODO remove
     return FileSystemReader().contents_of(path)
-def has_sticky_bit(path): # TODO move to FileSystemReader
+
+
+def has_sticky_bit(path):  # TODO move to FileSystemReader
     import os
     import stat
     return (os.stat(path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
 
+
 def remove_file(path):
-    if(os.path.lexists(path)):
+    if (os.path.lexists(path)):
         try:
             os.remove(path)
         except:
             return shutil.rmtree(path)
 
-def move(path, dest) :
+
+def move(path, dest):
     return shutil.move(path, str(dest))
+
 
 def list_files_in_dir(path):
     for entry in os.listdir(path):
         result = os.path.join(path, entry)
         yield result
+
 
 def mkdirs(path):
     if os.path.isdir(path):

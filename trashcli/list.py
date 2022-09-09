@@ -87,7 +87,8 @@ class ListCmd:
         import os
         all = sorted([p for p in psutil.disk_partitions(all=True)],
                      key=lambda p: p.device)
-        physical = sorted([p for p in psutil.disk_partitions()], key=lambda p: p.device)
+        physical = sorted([p for p in psutil.disk_partitions()],
+                          key=lambda p: p.device)
         virtual = [p for p in all if p not in physical]
         print("physical ->")
         pprint(physical)
@@ -111,7 +112,8 @@ class ListCmd:
                 path, volume = args
                 trash_dir = TrashDirReader(self.file_reader)
                 for trash_info in trash_dir.list_trashinfo(path):
-                    self._print_trashinfo(volume, trash_info, extractor, show_files)
+                    self._print_trashinfo(volume, trash_info, extractor,
+                                          show_files)
             elif event == trash_dir_skipped_because_parent_not_sticky:
                 path, = args
                 self.output.top_trashdir_skipped_because_parent_not_sticky(path)
@@ -155,12 +157,14 @@ class ListCmd:
             except ParseError:
                 self.output.print_parse_path_error(trashinfo_path)
             else:
-                attribute = extractor.extract_attribute(trashinfo_path, contents)
+                attribute = extractor.extract_attribute(trashinfo_path,
+                                                        contents)
                 original_location = os.path.join(volume, relative_location)
 
                 if show_files:
                     original_file = path_of_backup_copy(trashinfo_path)
-                    line = format_line2(attribute, original_location, original_file)
+                    line = format_line2(attribute, original_location,
+                                        original_file)
                 else:
                     line = format_line(attribute, original_location)
                 self.output.println(line)

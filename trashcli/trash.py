@@ -114,15 +114,20 @@ class TrashDirsScanner:
             for path in user_info.home_trash_dir_paths:
                 yield trash_dir_found, (path, '/')
             for volume in self.volumes_listing.list_volumes(environ):
-                top_trash_dir_path = os.path.join(volume, '.Trash', str(user_info.uid))
-                result = self.top_trash_dir_rules.valid_to_be_read(top_trash_dir_path)
+                top_trash_dir_path = os.path.join(volume, '.Trash',
+                                                  str(user_info.uid))
+                result = self.top_trash_dir_rules.valid_to_be_read(
+                    top_trash_dir_path)
                 if result == top_trash_dir_valid:
                     yield trash_dir_found, (top_trash_dir_path, volume)
                 elif result == top_trash_dir_invalid_because_not_sticky:
-                    yield trash_dir_skipped_because_parent_not_sticky, (top_trash_dir_path,)
+                    yield trash_dir_skipped_because_parent_not_sticky, (
+                    top_trash_dir_path,)
                 elif result == top_trash_dir_invalid_because_parent_is_symlink:
-                    yield trash_dir_skipped_because_parent_is_symlink, (top_trash_dir_path,)
-                alt_top_trash_dir = os.path.join(volume, '.Trash-%s' % user_info.uid)
+                    yield trash_dir_skipped_because_parent_is_symlink, (
+                    top_trash_dir_path,)
+                alt_top_trash_dir = os.path.join(volume,
+                                                 '.Trash-%s' % user_info.uid)
                 if self.dir_checker.is_dir(alt_top_trash_dir):
                     yield trash_dir_found, (alt_top_trash_dir, volume)
 
@@ -182,10 +187,10 @@ class ReaderForTopTrashDirRules:
     def exists(self, path):  # type: (str) -> bool
         raise NotImplementedError()
 
-    def is_sticky_dir(self, path): # type: (str) -> bool
+    def is_sticky_dir(self, path):  # type: (str) -> bool
         raise NotImplementedError()
 
-    def is_symlink(self, path): # type: (str) -> bool
+    def is_symlink(self, path):  # type: (str) -> bool
         raise NotImplementedError()
 
 
@@ -325,6 +330,6 @@ class Clock:
                                                   "%Y-%m-%dT%H:%M:%S")
             except ValueError:
                 self.errors.print_error('invalid TRASH_DATE: %s' %
-                                   self.environ['TRASH_DATE'])
+                                        self.environ['TRASH_DATE'])
                 return self.real_now()
         return self.real_now()

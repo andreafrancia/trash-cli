@@ -9,7 +9,7 @@ class FileContentsReader:
 
 class DeleteAccordingDate:
     def __init__(self,
-                 reader, # type: FileContentsReader
+                 reader,  # type: FileContentsReader
                  clock,
                  max_age_in_days):
         self.reader = reader
