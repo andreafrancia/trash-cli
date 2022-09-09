@@ -1,7 +1,8 @@
 import os
 
 from trashcli.empty.cleanable_trashcan import CleanableTrashcan
-from trashcli.empty.delete_according_date import DeleteAccordingDate
+from trashcli.empty.delete_according_date import DeleteAccordingDate, \
+    ContentReader
 from trashcli.empty.delete_anything import DeleteAnything
 from trashcli.empty.emptier import Emptier
 from trashcli.empty.errors import Errors
@@ -29,6 +30,7 @@ class EmptyCmd:
                  volumes_listing,
                  now,
                  file_reader,
+                 content_reader, # type: ContentReader
                  getuid,
                  file_remover,
                  version,
@@ -50,6 +52,7 @@ class EmptyCmd:
         self.main_loop = MainLoop(trash_dir_reader, trashcan)
         self.program_name = os.path.basename(argv0)
         self.errors = Errors(self.program_name, self.err)
+        self.content_reader = content_reader
 
     def run(self, args, environ):
         clock = Clock(self.now, environ, self.errors)
@@ -65,7 +68,7 @@ class EmptyCmd:
             if not parsed.days:
                 delete_mode = DeleteAnything()
             else:
-                delete_mode = DeleteAccordingDate(self.file_reader,
+                delete_mode = DeleteAccordingDate(self.content_reader,
                                                   clock,
                                                   int(parsed.days))
             trash_dirs = self.selector.select(parsed.all_users,

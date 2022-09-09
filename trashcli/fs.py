@@ -2,6 +2,7 @@ import os
 import shutil
 import stat
 
+from trashcli.empty.delete_according_date import ContentReader
 from trashcli.trash import DirReader
 
 
@@ -23,6 +24,11 @@ class FileSystemReader(FileSystemListing):
     def is_symlink(self, path):  # type: (str) -> bool
         return os.path.islink(path)
 
+    def contents_of(self, path):
+        return read_file(path)
+
+
+class FileSystemContentReader(ContentReader):
     def contents_of(self, path):
         return read_file(path)
 
