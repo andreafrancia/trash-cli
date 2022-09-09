@@ -2,8 +2,10 @@ import os
 import shutil
 import stat
 
+from trashcli.trash import DirReader
 
-class FileSystemListing:
+
+class FileSystemListing(DirReader):
     def entries_if_dir_exists(self, path):
         if os.path.exists(path):
             for entry in os.listdir(path):

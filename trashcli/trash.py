@@ -193,9 +193,17 @@ class TopTrashDirRules:
             return top_trash_dir_valid
 
 
+class DirReader:
+    def entries_if_dir_exists(self, path):  # type: (str) -> list[str]
+        pass
+
+    def exists(self, path):
+        pass
+
+
 class TrashDirReader:
 
-    def __init__(self, file_reader):
+    def __init__(self, file_reader):  # type: (DirReader) -> None
         self.file_reader = file_reader
 
     def list_orphans(self, path):
