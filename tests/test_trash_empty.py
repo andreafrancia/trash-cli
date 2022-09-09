@@ -13,7 +13,7 @@ from trashcli.fs import FileSystemReader
 from trashcli.fstab import VolumesListing
 from .files import require_empty_dir, make_dirs, set_sticky_bit, \
     make_unreadable_dir, make_empty_file, make_readable
-from .support import MyPath
+from .support import MyPath, volumes_mock
 
 
 @pytest.mark.slow
@@ -38,7 +38,7 @@ class TestTrashEmptyCmd(unittest.TestCase):
             content_reader=FileSystemContentReader(),
             dir_reader=FileSystemDirReader(),
             version=None,
-            volume_of=lambda x: "volume_of %s" % x
+            volumes=volumes_mock()
         )
 
     def test_trash_empty_will_skip_unreadable_dir(self):
@@ -75,7 +75,7 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
             content_reader=FileSystemContentReader(),
             dir_reader=FileSystemDirReader(),
             version=None,
-            volume_of=lambda x: "volume_of %s" % x
+            volumes=volumes_mock(),
         )
 
     def test_it_removes_trashinfos_from_method_1_dir(self):

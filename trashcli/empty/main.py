@@ -10,6 +10,7 @@ from trashcli.fs import FileSystemReader
 from trashcli.list_mount_points import os_mount_points
 from trashcli.empty.empty_cmd import EmptyCmd
 from ..fstab import volume_of, VolumesListing
+from .. import fstab
 
 
 def main():
@@ -20,5 +21,5 @@ def main():
                          getuid=os.getuid, file_remover=FileRemover(),
                          content_reader=FileSystemContentReader(),
                          dir_reader=FileSystemDirReader(),
-                         version=trash.version, volume_of=volume_of)
+                         version=trash.version, volumes=fstab.volumes)
     return empty_cmd.run(sys.argv[1:], os.environ)

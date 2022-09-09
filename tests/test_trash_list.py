@@ -10,7 +10,7 @@ from mock import Mock
 
 from trashcli.list import ListCmd
 from .files import (require_empty_dir, make_sticky_dir, make_unsticky_dir)
-from .support import MyPath
+from .support import MyPath, volumes_mock
 from .output_collector import OutputCollector
 from .fake_trash_dir import FakeTrashDir
 from trashcli.fs import FileSystemReader
@@ -243,6 +243,7 @@ class TrashListUser:
             uid=self.fake_uid,
             file_reader=file_reader,
             volumes_listing=volumes_listing,
+            volumes=volumes_mock()
         ).run(argv)
 
     def set_fake_uid(self, uid):
