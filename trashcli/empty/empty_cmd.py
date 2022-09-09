@@ -16,6 +16,7 @@ from trashcli.empty.no_guard import NoGuard
 from trashcli.empty.parse_reply import parse_reply
 from trashcli.empty.prepare_output_message import prepare_output_message
 from trashcli.empty.user import User
+from trashcli.fstab import Volumes
 from trashcli.list import TrashDirsSelector
 from trashcli.trash import Clock, TrashDirReader, print_version, println, \
     my_input, EX_OK, DirReader
@@ -30,12 +31,13 @@ class EmptyCmd:
                  volumes_listing,
                  now,
                  file_reader,
-                 dir_reader, # type: DirReader
-                 content_reader, # type: ContentReader
+                 dir_reader,  # type: DirReader
+                 content_reader,  # type: ContentReader
                  getuid,
                  file_remover,
                  version,
-                 volume_of):
+                 volumes,  # type: Volumes
+                 ):
         self.out = out
         self.err = err
         self.version = version
@@ -47,7 +49,7 @@ class EmptyCmd:
             self.print_cannot_remove_error)
         trashcan = CleanableTrashcan(file_remover_with_error)
         self.selector = TrashDirsSelector.make(volumes_listing, file_reader,
-                                               volume_of)
+                                               volumes)
         trash_dir_reader = TrashDirReader(dir_reader)
         self.main_loop = MainLoop(trash_dir_reader, trashcan)
         self.program_name = os.path.basename(argv0)

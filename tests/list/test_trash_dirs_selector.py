@@ -1,8 +1,10 @@
 import unittest
 
+from trashcli.fstab import Volumes
 from trashcli.list import TrashDirsSelector
 from trashcli.trash import trash_dir_found
 
+from mock import Mock
 
 class MockScanner:
     def __init__(self, name):
@@ -14,10 +16,11 @@ class MockScanner:
 
 class TestTrashDirsSelector(unittest.TestCase):
     def setUp(self):
-        self.volume_of = lambda x: "volume_of %s" % x
+        volumes = Mock(spec=Volumes)
+        volumes.volume_of = lambda x: "volume_of %s" % x
         self.selector = TrashDirsSelector(MockScanner("user"),
                                           MockScanner("all"),
-                                          self.volume_of)
+                                          volumes)
 
     def test_default(self):
         result = list(self.selector.select(False, [], 'environ', 'uid'))

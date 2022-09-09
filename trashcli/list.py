@@ -7,7 +7,7 @@ from pprint import pprint
 from trashcli.list_mount_points import os_mount_points
 from . import fstab
 from .fs import FileSystemReader, file_size
-from .fstab import VolumesListing
+from .fstab import VolumesListing, Volumes
 from .trash import ParseError
 from .trash import TopTrashDirRules
 from .trash import TrashDirsScanner
@@ -26,6 +26,7 @@ def main():
         environ=os.environ,
         uid=os.getuid(),
         volumes_listing=VolumesListing(os_mount_points),
+        volumes=fstab.volumes
     ).run(sys.argv)
 
 
@@ -36,9 +37,10 @@ class ListCmd:
                  environ,
                  volumes_listing,
                  uid,
+                 volumes,  # type: Volumes
                  file_reader=FileSystemReader(),
                  version=version,
-                 volume_of=fstab.volume_of):
+                 ):
 
         self.out = out
         self.output = ListCmdOutput(out, err)
@@ -50,7 +52,7 @@ class ListCmd:
         self.volumes_listing = volumes_listing
         self.selector = TrashDirsSelector.make(volumes_listing,
                                                file_reader,
-                                               volume_of)
+                                               volumes)
 
     def run(self, argv):
         parser = Parser(os.path.basename(argv[0]))
@@ -209,10 +211,14 @@ def description(program_name, printer):
 
 
 class TrashDirsSelector:
-    def __init__(self, current_user_dirs, all_users_dirs, volume_of):
+    def __init__(self,
+                 current_user_dirs,
+                 all_users_dirs,
+                 volumes  # type: Volumes
+                 ):
         self.current_user_dirs = current_user_dirs
         self.all_users_dirs = all_users_dirs
-        self.volume_of = volume_of
+        self.volumes = volumes
 
     def select(self,
                all_users_flag,
@@ -227,10 +233,13 @@ class TrashDirsSelector:
                 for dir in self.current_user_dirs.scan_trash_dirs(environ, uid):
                     yield dir
             for dir in user_specified_dirs:
-                yield trash_dir_found, (dir, self.volume_of(dir))
+                yield trash_dir_found, (dir, self.volumes.volume_of(dir))
 
     @staticmethod
-    def make(volumes_listing, reader, volume_of):
+    def make(volumes_listing,
+             reader,
+             volumes  # type: Volumes
+             ):
         user_info_provider = UserInfoProvider()
         user_dir_scanner = TrashDirsScanner(user_info_provider,
                                             volumes_listing,
@@ -243,7 +252,7 @@ class TrashDirsSelector:
                                              DirChecker())
         return TrashDirsSelector(user_dir_scanner,
                                  all_users_scanner,
-                                 volume_of)
+                                 volumes)
 
 
 class SuperEnum(object):
