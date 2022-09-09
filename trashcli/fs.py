@@ -6,7 +6,7 @@ from trashcli.empty.delete_according_date import ContentReader
 from trashcli.trash import DirReader
 
 
-class FileSystemListing(DirReader):
+class FileSystemDirReader(DirReader):
     def entries_if_dir_exists(self, path):
         if os.path.exists(path):
             for entry in os.listdir(path):
@@ -16,7 +16,7 @@ class FileSystemListing(DirReader):
         return os.path.exists(path)
 
 
-class FileSystemReader(FileSystemListing):
+class FileSystemReader(FileSystemDirReader):
     def is_sticky_dir(self, path):  # type: (str) -> bool
         import os
         return os.path.isdir(path) and has_sticky_bit(path)
