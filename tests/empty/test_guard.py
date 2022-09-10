@@ -2,45 +2,32 @@ import unittest
 
 from mock import Mock, call
 
-from trashcli.empty.guard import Guard
-from trashcli.empty.no_guard import NoGuard
+from trashcli.empty.guard import Guard, UserIntention
 
 
 class TestGuard(unittest.TestCase):
     def setUp(self):
         self.user = Mock(spec=['do_you_wanna_empty_trash_dirs'])
-        self.emptier = Mock(spec=['do_empty'])
-        self.guard = Guard()
+        self.guard = Guard(self.user)
 
     def test_user_says_yes(self):
         self.user.do_you_wanna_empty_trash_dirs.return_value = True
 
-        self.guard.ask_the_user(self.user, ['trash_dirs'], self.emptier)
+        result = self.guard.ask_the_user(True, ['trash_dirs'])
 
-        assert {'user': [call.do_you_wanna_empty_trash_dirs(['trash_dirs'])],
-                'emptier': [call.do_empty(['trash_dirs'])]} == \
-               {'user': self.user.mock_calls,
-                'emptier': self.emptier.mock_calls}
+        assert UserIntention(ok_to_empty=True,
+                             trash_dirs=['trash_dirs']) == result
 
     def test_user_says_no(self):
         self.user.do_you_wanna_empty_trash_dirs.return_value = False
 
-        self.guard.ask_the_user(self.user, ['trash_dirs'], self.emptier)
+        result = self.guard.ask_the_user(True, ['trash_dirs'])
 
-        assert {'user': [call.do_you_wanna_empty_trash_dirs(['trash_dirs'])],
-                'emptier': []} == \
-               {'user': self.user.mock_calls,
-                'emptier': self.emptier.mock_calls}
-
-
-class TestNoGuard(unittest.TestCase):
-    def setUp(self):
-        self.user = Mock(spec=[])
-        self.emptier = Mock(spec=['do_empty'])
-        self.guard = NoGuard()
+        assert UserIntention(ok_to_empty=False,
+                             trash_dirs=[]) == result
 
     def test_it_just_calls_the_emptier(self):
+        result = self.guard.ask_the_user(False, ['trash_dirs'])
 
-        self.guard.ask_the_user(self.user, ['trash_dirs'], self.emptier)
-
-        assert [call.do_empty(['trash_dirs'])] == self.emptier.mock_calls
+        assert UserIntention(ok_to_empty=True,
+                             trash_dirs=['trash_dirs']) == result

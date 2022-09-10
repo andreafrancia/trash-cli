@@ -3,5 +3,5 @@ class Emptier:
         self.main_loop = main_loop
         self.delete_mode = delete_mode
 
-    def do_empty(self, trash_dirs):
-        self.main_loop.do_loop(trash_dirs, self.delete_mode)
+    def do_empty(self, trash_dirs, environ, parsed_days):
+        self.main_loop.do_loop(trash_dirs, self.delete_mode, environ, parsed_days)

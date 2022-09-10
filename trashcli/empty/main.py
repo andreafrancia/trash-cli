@@ -14,12 +14,11 @@ from .. import fstab
 
 def main():
     empty_cmd = EmptyCmd(argv0=sys.argv[0], out=sys.stdout, err=sys.stderr,
-                         environ=os.environ,
                          volumes_listing=VolumesListing(os_mount_points),
                          now=datetime.now,
                          file_reader=TopTrashDirRulesFileSystemReader(),
-                         getuid=os.getuid, file_remover=FileRemover(),
+                         file_remover=FileRemover(),
                          content_reader=FileSystemContentReader(),
                          dir_reader=FileSystemDirReader(),
                          version=trash.version, volumes=fstab.volumes)
-    return empty_cmd.run(sys.argv[1:], os.environ)
+    return empty_cmd.run(sys.argv[1:], os.environ, os.getuid())

@@ -317,18 +317,17 @@ def parse_original_location(contents, volume_path):
 
 
 class Clock:
-    def __init__(self, real_now, environ, errors):
+    def __init__(self, real_now, errors):
         self.real_now = real_now
-        self.environ = environ
         self.errors = errors
 
-    def get_now_value(self):
-        if 'TRASH_DATE' in self.environ:
+    def get_now_value(self, environ):
+        if 'TRASH_DATE' in environ:
             try:
-                return datetime.datetime.strptime(self.environ['TRASH_DATE'],
+                return datetime.datetime.strptime(environ['TRASH_DATE'],
                                                   "%Y-%m-%dT%H:%M:%S")
             except ValueError:
                 self.errors.print_error('invalid TRASH_DATE: %s' %
-                                        self.environ['TRASH_DATE'])
+                                        environ['TRASH_DATE'])
                 return self.real_now()
         return self.real_now()

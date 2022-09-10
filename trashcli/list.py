@@ -4,6 +4,8 @@ import os
 import sys
 from pprint import pprint
 
+from trashcli.super_enum import SuperEnum
+
 from trashcli.list_mount_points import os_mount_points
 from . import fstab
 from .fs import FileSystemReader, file_size
@@ -253,14 +255,6 @@ class TrashDirsSelector:
         return TrashDirsSelector(user_dir_scanner,
                                  all_users_scanner,
                                  volumes)
-
-
-class SuperEnum(object):
-    class __metaclass__(type):
-        def __iter__(self):
-            for item in self.__dict__:
-                if item == self.__dict__[item]:
-                    yield item
 
 
 class Action(SuperEnum):
