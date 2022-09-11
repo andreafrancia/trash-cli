@@ -50,31 +50,28 @@ class EmptyCmd:
         self.version = version
         self.now = now
         self.content_reader = content_reader
-
-    def run(self, args, environ, uid):
-        program_name = os.path.basename(self.argv0)
-        errors = Errors(program_name, self.err)
+        self.parser = Parser()
+        self.program_name = os.path.basename(argv0)
+        errors = Errors(self.program_name, self.err)
         clock = Clock(self.now, errors)
-        parser = Parser()
-        parsed = parser.parse(is_input_interactive(), args)
 
-        if parsed.action == Action.print_version:
-            action = PrintVersionAction(self.out, self.version)
-            action.run(program_name, parsed, environ, uid)
-        elif parsed.action == Action.print_time:
-            action = PrintTimeAction(self.out, clock)
-            action.run(program_name, parsed, environ, uid)
-        else:
-            action = EmptyAction(clock,
-                                 self.file_remover,
-                                 self.volumes_listing,
-                                 self.file_reader,
-                                 self.volumes,
-                                 self.dir_reader,
-                                 self.content_reader,
-                                 errors)
-            action.run(program_name, parsed, environ, uid)
+        self.actions = {
+            Action.print_version: PrintVersionAction(self.out, self.version),
+            Action.print_time: PrintTimeAction(self.out, clock),
+            Action.empty: EmptyAction(clock,
+                                      self.file_remover,
+                                      self.volumes_listing,
+                                      self.file_reader,
+                                      self.volumes,
+                                      self.dir_reader,
+                                      self.content_reader,
+                                      errors),
+        }
 
+    def run_cmd(self, args, environ, uid):
+        parsed = self.parser.parse(is_input_interactive(), args)
+        self.actions[parsed.action].run_action(self.program_name, parsed,
+                                               environ, uid)
         return EX_OK
 
 
@@ -97,7 +94,7 @@ class EmptyAction:
         self.guard = Guard(user)
         self.errors = errors
 
-    def run(self, _program_name, parsed, environ, uid):
+    def run_action(self, parsed, environ, uid):
         trash_dirs = self.selector.select(parsed.all_users,
                                           parsed.user_specified_trash_dirs,
                                           environ,
@@ -117,7 +114,7 @@ class PrintTimeAction:
         self.out = out
         self.clock = clock
 
-    def run(self, _program_name, _parsed, environ, uid):
+    def run_action(self, _parsed, environ, _uid):
         now_value = self.clock.get_now_value(environ)
         println(self.out,
                 now_value.replace(microsecond=0).isoformat())
@@ -128,5 +125,5 @@ class PrintVersionAction:
         self.out = out
         self.version = version
 
-    def run(self, program_name, parsed, environ, uid):
+    def run_action(self, program_name, parsed, environ, uid):
         print_version(self.out, program_name, self.version)

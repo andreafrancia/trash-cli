@@ -21,4 +21,4 @@ def main():
                          content_reader=FileSystemContentReader(),
                          dir_reader=FileSystemDirReader(),
                          version=trash.version, volumes=fstab.volumes)
-    return empty_cmd.run(sys.argv[1:], os.environ, os.getuid())
+    return empty_cmd.run_cmd(sys.argv[1:], os.environ, os.getuid())
