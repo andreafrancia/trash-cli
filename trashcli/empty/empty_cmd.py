@@ -2,6 +2,8 @@ import os
 from datetime import datetime
 from typing.io import TextIO
 
+from trashcli.empty.actions import Action
+
 from trashcli.empty.parser import Parser
 
 from trashcli.empty.cleanable_trashcan import CleanableTrashcan
@@ -56,10 +58,10 @@ class EmptyCmd:
         parser = Parser()
         parsed = parser.parse(is_input_interactive(), args)
 
-        if parsed.version:
+        if parsed.action == Action.print_version:
             action = PrintVersionAction(self.out, self.version)
             action.run(program_name, parsed, environ, uid)
-        elif parsed.print_time:
+        elif parsed.action == Action.print_time:
             action = PrintTimeAction(self.out, clock)
             action.run(program_name, parsed, environ, uid)
         else:
