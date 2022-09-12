@@ -56,7 +56,9 @@ class EmptyCmd:
         clock = Clock(self.now, errors)
 
         self.actions = {
-            Action.print_version: PrintVersionAction(self.out, self.version),
+            Action.print_version: PrintVersionAction(self.out,
+                                                     self.version,
+                                                     self.program_name),
             Action.print_time: PrintTimeAction(self.out, clock),
             Action.empty: EmptyAction(clock,
                                       self.file_remover,
@@ -70,8 +72,7 @@ class EmptyCmd:
 
     def run_cmd(self, args, environ, uid):
         parsed = self.parser.parse(is_input_interactive(), args)
-        self.actions[parsed.action].run_action(self.program_name, parsed,
-                                               environ, uid)
+        self.actions[parsed.action].run_action(parsed, environ, uid)
         return EX_OK
 
 
@@ -121,9 +122,10 @@ class PrintTimeAction:
 
 
 class PrintVersionAction:
-    def __init__(self, out, version):
+    def __init__(self, out, version, program_name):
         self.out = out
         self.version = version
+        self.program_name = program_name
 
-    def run_action(self, program_name, parsed, environ, uid):
-        print_version(self.out, program_name, self.version)
+    def run_action(self, parsed, environ, uid):
+        print_version(self.out, self.program_name, self.version)
