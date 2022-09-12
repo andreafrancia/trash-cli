@@ -12,8 +12,8 @@ class Guard:
     def __init__(self, user):  # type: (User) -> None
         self.user = user
 
-    def ask_the_user(self, parsed_interactive,
-                     trash_dirs):  # type: (bool, Iterable[str]) -> UserIntention
+    def ask_the_user(self, parsed_interactive, trash_dirs
+                     ):  # type: (bool, Iterable[str]) -> UserIntention
         if parsed_interactive:
             trash_dirs_list = list(trash_dirs)
             ok_to_empty = \
