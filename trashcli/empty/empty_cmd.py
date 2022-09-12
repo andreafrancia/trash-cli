@@ -15,7 +15,6 @@ from trashcli.empty.file_remove_with_error_handling import \
     FileRemoveWithErrorHandling
 from trashcli.empty.guard import Guard
 from trashcli.empty.is_input_interactive import is_input_interactive
-from trashcli.empty.main_loop import MainLoop
 from trashcli.empty.parse_reply import parse_reply
 from trashcli.empty.prepare_output_message import prepare_output_message
 from trashcli.empty.user import User
@@ -87,11 +86,10 @@ class EmptyAction:
                                                file_reader,
                                                volumes)
         trash_dir_reader = TrashDirReader(dir_reader)
-        main_loop = MainLoop(trash_dir_reader, trashcan)
         delete_mode = DeleteAccordingDate(content_reader,
                                           clock)
         user = User(prepare_output_message, my_input, parse_reply)
-        self.emptier = Emptier(main_loop, delete_mode)
+        self.emptier = Emptier(delete_mode, trash_dir_reader, trashcan)
         self.guard = Guard(user)
         self.errors = errors
 
