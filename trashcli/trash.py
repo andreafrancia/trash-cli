@@ -2,14 +2,14 @@
 from __future__ import absolute_import
 
 import datetime
+import logging
+import operator
+import os
 import pwd
 
 from trashcli.fstab import VolumesListing
 
 version = '0.22.8.27'
-
-import os
-import logging
 
 logger = logging.getLogger('trashcli.trash')
 logger.setLevel(logging.WARNING)
@@ -98,6 +98,22 @@ class DirChecker:
         return os.path.isdir(path)
 
 
+class TrashDir(tuple):
+    @property
+    def path(self):
+        return self[0]
+
+    @property
+    def volume(self):
+        return self[1]
+
+    def __new__(cls, path, volume):
+        return tuple.__new__(TrashDir, (path, volume))
+
+    def __repr__(self):
+        return 'TrashDir(%r, %r)' % (self.path, self.volume)
+
+
 class TrashDirsScanner:
     def __init__(self,
                  user_info_provider,
@@ -112,14 +128,14 @@ class TrashDirsScanner:
     def scan_trash_dirs(self, environ, uid):
         for user_info in self.user_info_provider.get_user_info(environ, uid):
             for path in user_info.home_trash_dir_paths:
-                yield trash_dir_found, (path, '/')
+                yield trash_dir_found, TrashDir(path, '/')
             for volume in self.volumes_listing.list_volumes(environ):
                 top_trash_dir_path = os.path.join(volume, '.Trash',
                                                   str(user_info.uid))
                 result = self.top_trash_dir_rules.valid_to_be_read(
                     top_trash_dir_path)
                 if result == top_trash_dir_valid:
-                    yield trash_dir_found, (top_trash_dir_path, volume)
+                    yield trash_dir_found, TrashDir(top_trash_dir_path, volume)
                 elif result == top_trash_dir_invalid_because_not_sticky:
                     yield trash_dir_skipped_because_parent_not_sticky, (
                         top_trash_dir_path,)
