@@ -134,10 +134,9 @@ class ListCmd:
                                           environ,
                                           uid)
         for event, args in trash_dirs:
-            pprint(args)
             if event == trash_dir_found:
                 path, volume = args
-                print("%s, %s" % (path, volume))
+                print("%s" % path)
             elif event == trash_dir_skipped_because_parent_not_sticky:
                 path = args
                 print("parent_not_sticky: %s" % (path))

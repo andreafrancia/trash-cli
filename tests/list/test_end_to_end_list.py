@@ -17,8 +17,12 @@ class TestEndToEndList(unittest.TestCase):
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
 
     def test_list(self):
-        self.fake_trash_dir.add_trashinfo2("/file1", datetime.datetime(2000, 1, 1, 0, 0, 1))
-        self.fake_trash_dir.add_trashinfo2("/file2", datetime.datetime(2000, 1, 1, 0, 0, 1))
+        self.fake_trash_dir.add_trashinfo2("/file1",
+                                           datetime.datetime(2000, 1, 1, 0, 0,
+                                                             1))
+        self.fake_trash_dir.add_trashinfo2("/file2",
+                                           datetime.datetime(2000, 1, 1, 0, 0,
+                                                             1))
 
         result = run_command.run_command(self.tmp_dir, "trash-list",
                                          ['--trash-dir', self.trash_dir])
@@ -28,9 +32,23 @@ class TestEndToEndList(unittest.TestCase):
                    '2000-01-01 00:00:01 /file2',
                ] == sorted(result.stdout.splitlines())
 
+    def test_list_trash_dirs(self):
+        result = run_command.run_command(
+            self.tmp_dir, "trash-list",
+            ['--trash-dirs', '--trash-dir=/home/user/.local/share/Trash'])
+        assert (result.stderr,
+                sorted(result.stdout.splitlines()), result.exit_code) == (
+                   '', [
+                       '/home/user/.local/share/Trash'
+                   ], 0)
+
     def test_list_with_paths(self):
-        self.fake_trash_dir.add_trashinfo3("base1", "/file1", datetime.datetime(2000, 1, 1, 0, 0, 1))
-        self.fake_trash_dir.add_trashinfo3("base2", "/file2", datetime.datetime(2000, 1, 1, 0, 0, 1))
+        self.fake_trash_dir.add_trashinfo3("base1", "/file1",
+                                           datetime.datetime(2000, 1, 1, 0, 0,
+                                                             1))
+        self.fake_trash_dir.add_trashinfo3("base2", "/file2",
+                                           datetime.datetime(2000, 1, 1, 0, 0,
+                                                             1))
 
         result = run_command.run_command(self.tmp_dir, "trash-list",
                                          ['--trash-dir', self.trash_dir,
