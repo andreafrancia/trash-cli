@@ -1,7 +1,7 @@
 import errno
 import os
-import sys
 import random
+import sys
 from datetime import datetime
 
 from .fstab import volumes
@@ -46,7 +46,7 @@ class TrashPutCmd:
         self.trasher = trasher
 
     def run(self, argv):
-        program_name  = os.path.basename(argv[0])
+        program_name = os.path.basename(argv[0])
         parser = get_option_parser(program_name, self.stdout, self.stderr)
         try:
             (options, args) = parser.parse_args(argv[1:])
@@ -77,7 +77,7 @@ class TrashPutCmd:
                   forced_volume,
                   program_name):
         result = TrashResult(False)
-        for arg in args :
+        for arg in args:
             result = self.trasher.trash(arg,
                                         user_trash_dir,
                                         result,
@@ -99,8 +99,8 @@ class User:
 
     def ask_user_about_deleting_file(self, program_name, path):
         reply = self.my_input("%s: trash %s '%s'? " % (program_name,
-                                                        describe(path),
-                                                        path))
+                                                       describe(path),
+                                                       path))
         return parse_user_reply(reply)
 
 
@@ -127,7 +127,7 @@ class Trasher:
               mode,
               reporter,
               forced_volume,
-              program_name) :
+              program_name):
         """
         Trash a file in the appropriate trash directory.
         If the file belong to the same volume of the trash home directory it
@@ -187,7 +187,7 @@ class FileTrasher:
                    reporter):
         volume_of_file_to_be_trashed = forced_volume or \
                                        self.volume_of_parent(file)
-        candidates = self.trash_directories_finder.\
+        candidates = self.trash_directories_finder. \
             possible_trash_directories_for(volume_of_file_to_be_trashed,
                                            user_trash_dir)
         reporter.volume_of_file(volume_of_file_to_be_trashed)
@@ -197,9 +197,10 @@ class FileTrasher:
             info_dir_path = os.path.join(path, 'info')
             info_dir = InfoDir(info_dir_path, self.fs, logger, suffix)
             path_maker = {absolute_paths: AbsolutePaths(),
-                          relative_paths: TopDirRelativePaths(volume)}[path_maker]
-            checker = {top_trash_dir_rules:TopTrashDirRules(),
-                       all_is_ok_rules:AllIsOkRules()}[checker]
+                          relative_paths: TopDirRelativePaths(volume)}[
+                path_maker]
+            checker = {top_trash_dir_rules: TopTrashDirRules(),
+                       all_is_ok_rules: AllIsOkRules()}[checker]
             trash_dir = TrashDirectoryForPut(path,
                                              volume,
                                              self.fs,
@@ -212,7 +213,8 @@ class FileTrasher:
                 reporter.log_info(message)
 
             if trash_dir_is_secure:
-                volume_of_trash_dir = self.volumes.volume_of(self.realpath(trash_dir.path))
+                volume_of_trash_dir = self.volumes.volume_of(
+                    self.realpath(trash_dir.path))
                 reporter.trash_dir_with_volume(trash_dir.path,
                                                volume_of_trash_dir)
                 if self._file_could_be_trashed_in(volume_of_file_to_be_trashed,
@@ -237,7 +239,6 @@ class FileTrasher:
             reporter.unable_to_trash_file(file)
 
         return result
-
 
     def _file_could_be_trashed_in(self,
                                   volume_of_file_to_be_trashed,
@@ -298,11 +299,14 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                       dest="forced_volume",
                       help=SUPPRESS_HELP)
     original_print_help = parser.print_help
+
     def patched_print_help():
         original_print_help(stdout)
+
     def patched_error(msg):
         parser.print_usage(stderr)
         parser.exit(2, "%s: error: %s\n" % (program_name, msg))
+
     def patched_exit(status=0, msg=None):
         if msg: stderr.write(msg)
         import sys
@@ -328,10 +332,14 @@ class TrashDirectoriesFinder:
                                        volume,
                                        specific_trash_dir):
         trash_dirs = []
+
         def add_home_trash(path, volume):
             trash_dirs.append((path, volume, absolute_paths, all_is_ok_rules))
+
         def add_top_trash_dir(path, volume):
-            trash_dirs.append((path, volume, relative_paths, top_trash_dir_rules))
+            trash_dirs.append(
+                (path, volume, relative_paths, top_trash_dir_rules))
+
         def add_alt_top_trash_dir(path, volume):
             trash_dirs.append((path, volume, relative_paths, all_is_ok_rules))
 
@@ -391,26 +399,26 @@ def describe(path):
 class MyLogger:
     def __init__(self, stderr, program_name, verbose):
         self.program_name = program_name
-        self.stderr=stderr
+        self.stderr = stderr
         self.verbose = verbose
 
     def debug(self, message):
         if self.verbose > 1:
             self.stderr.write("%s: %s\n" % (self.program_name, message))
 
-    def info(self,message):
+    def info(self, message):
         if self.verbose > 0:
             self.stderr.write("%s: %s\n" % (self.program_name, message))
 
-    def warning2(self,message):
+    def warning2(self, message):
         self.stderr.write("%s: %s\n" % (self.program_name, message))
 
 
 from optparse import IndentedHelpFormatter, SUPPRESS_HELP
 
 
-class NoWrapFormatter(IndentedHelpFormatter) :
-    def _format_text(self, text) :
+class NoWrapFormatter(IndentedHelpFormatter):
+    def _format_text(self, text):
         "[Does not] format a text, return the text as it is."
         return text
 
@@ -429,15 +437,19 @@ class TrashResult:
     def __repr__(self):
         return 'TrashResult(%s)' % self.some_file_has_not_be_trashed
 
+
 class TrashPutReporter:
     def __init__(self, logger, environ):
         self.logger = logger
         self.no_argument_specified = False
         self.environ = environ
-    def unable_to_trash_dot_entries(self,file):
+
+    def unable_to_trash_dot_entries(self, file):
         self.logger.warning2("cannot trash %s '%s'" % (describe(file), file))
-    def unable_to_trash_file(self,f):
+
+    def unable_to_trash_file(self, f):
         self.logger.warning2("cannot trash %s '%s'" % (describe(f), f))
+
     def file_has_been_trashed_in_as(self, trashee, trash_directory):
         self.logger.info("'%s' trashed in %s" % (trashee,
                                                  shrink_user(trash_directory,
@@ -445,12 +457,14 @@ class TrashPutReporter:
 
     def log_info(self, message):
         self.logger.info(message)
+
     def unable_to_trash_file_in_because(self,
                                         file_to_be_trashed,
                                         trash_directory, error):
         self.logger.info("Failed to trash %s in %s, because: %s" % (
             file_to_be_trashed, shrink_user(trash_directory,
                                             self.environ), error))
+
     def trash_dir_with_volume(self, trash_dir_path, volume_path):
         self.logger.info("Trash-dir: %s from volume: %s" % (trash_dir_path,
                                                             volume_path))
@@ -461,8 +475,9 @@ class TrashPutReporter:
         else:
             return EX_IOERR
 
-    def volume_of_file(self,volume):
+    def volume_of_file(self, volume):
         self.logger.info("Volume of file: %s" % volume)
+
 
 def parent_realpath(path):
     parent = os.path.dirname(path)
@@ -530,7 +545,8 @@ class InfoDir:
             except OSError as e:
                 if e.errno == errno.ENAMETOOLONG:
                     name_too_long = True
-                self.logger.debug("Attempt for creating %s failed." % trashinfo_path)
+                self.logger.debug(
+                    "Attempt for creating %s failed." % trashinfo_path)
 
             index += 1
 
@@ -573,7 +589,7 @@ def format_original_location(original_location):
         from urllib import quote
     except ImportError:
         from urllib.parse import quote
-    return quote(original_location,'/')
+    return quote(original_location, '/')
 
 
 def shrink_user(path, environ):
@@ -584,7 +600,7 @@ def shrink_user(path, environ):
         home_dir = posixpath.normpath(home_dir)
         if home_dir != '':
             path = re.sub('^' + re.escape(home_dir + os.path.sep),
-                            '~' + os.path.sep, path)
+                          '~' + os.path.sep, path)
     except KeyError:
         pass
     return path
@@ -599,16 +615,20 @@ class TopTrashDirRules:
     def check_trash_dir_is_secure(self, trash_dir_path, fs):
         parent = os.path.dirname(trash_dir_path)
         if not fs.isdir(parent):
-            return False, ["found unusable .Trash dir (should be a dir): %s" % parent]
+            return False, [
+                "found unusable .Trash dir (should be a dir): %s" % parent]
         if fs.islink(parent):
-            return False, ["found unsecure .Trash dir (should not be a symlink): %s" % parent]
+            return False, [
+                "found unsecure .Trash dir (should not be a symlink): %s" % parent]
         if not fs.has_sticky_bit(parent):
-            return False, ["found unsecure .Trash dir (should be sticky): %s" % parent]
+            return False, [
+                "found unsecure .Trash dir (should be sticky): %s" % parent]
         return True, []
 
 
 top_trash_dir_rules = 'top_trash_dir_rules'
 all_is_ok_rules = 'all_is_ok_rules'
+
 
 class OriginalLocation:
     def __init__(self, parent_realpath, path_maker):
@@ -619,7 +639,7 @@ class OriginalLocation:
         self.normalized_path = os.path.normpath(path)
 
         basename = os.path.basename(self.normalized_path)
-        parent   = self.parent_realpath(self.normalized_path)
+        parent = self.parent_realpath(self.normalized_path)
 
         parent = self.path_maker.calc_parent_path(parent)
 
@@ -631,8 +651,9 @@ class TopDirRelativePaths:
         self.topdir = topdir
 
     def calc_parent_path(self, parent):
-        if (parent == self.topdir) or parent.startswith(self.topdir+os.path.sep) :
-            parent = parent[len(self.topdir+os.path.sep):]
+        if (parent == self.topdir) or parent.startswith(
+                self.topdir + os.path.sep):
+            parent = parent[len(self.topdir + os.path.sep):]
         return parent
 
 
@@ -641,15 +662,15 @@ class AbsolutePaths:
     def calc_parent_path(self, parent):
         return parent
 
+
 class RealFs:
     def __init__(self):
         import os
         from . import fs
-        self.move           = fs.move
-        self.atomic_write   = fs.atomic_write
-        self.remove_file    = fs.remove_file
-        self.ensure_dir     = fs.ensure_dir
-        self.isdir          = os.path.isdir
-        self.islink         = os.path.islink
+        self.move = fs.move
+        self.atomic_write = fs.atomic_write
+        self.remove_file = fs.remove_file
+        self.ensure_dir = fs.ensure_dir
+        self.isdir = os.path.isdir
+        self.islink = os.path.islink
         self.has_sticky_bit = fs.has_sticky_bit
-
