@@ -127,5 +127,5 @@ class PrintVersionAction:
         self.version = version
         self.program_name = program_name
 
-    def run_action(self, parsed, environ, uid):
+    def run_action(self, _parsed, _environ, _uid):
         print_version(self.out, self.program_name, self.version)
