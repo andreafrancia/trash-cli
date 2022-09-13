@@ -1,11 +1,9 @@
 import unittest
 
 from tests.support import volumes_mock
-from trashcli.fstab import Volumes
 from trashcli.list import TrashDirsSelector
-from trashcli.trash import trash_dir_found
+from trashcli.trash_dirs_scanner import trash_dir_found
 
-from mock import Mock
 
 class MockScanner:
     def __init__(self, name):
@@ -13,6 +11,7 @@ class MockScanner:
 
     def scan_trash_dirs(self, environ, uid):
         return [self.name, environ, uid]
+
 
 class TestTrashDirsSelector(unittest.TestCase):
     def setUp(self):

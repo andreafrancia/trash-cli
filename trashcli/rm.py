@@ -3,11 +3,12 @@ import fnmatch
 import os, sys
 
 from trashcli.trash import (TrashDirReader, parse_path, ParseError,
-                            TrashDirsScanner, TopTrashDirRules,
-                            UserInfoProvider, trash_dir_found, DirChecker)
+                            UserInfoProvider, DirChecker)
 from trashcli.empty.cleanable_trashcan import CleanableTrashcan
 from trashcli.fs import FileSystemReader
 from trashcli.fs import FileRemover
+from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
+    trash_dir_found
 
 
 class RmCmd:
@@ -50,7 +51,8 @@ class RmCmd:
         for event, args in scanner.scan_trash_dirs(self.environ, uid):
             if event == trash_dir_found:
                 path, volume = args
-                for type, arg in listing.list_from_volume_trashdir(path, volume):
+                for type, arg in listing.list_from_volume_trashdir(path,
+                                                                   volume):
                     if type == 'unable_to_parse_path':
                         self.unable_to_parse_path(arg)
                     elif type == 'trashed_file':

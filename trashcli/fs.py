@@ -3,7 +3,8 @@ import shutil
 import stat
 
 from trashcli.empty.delete_according_date import ContentReader
-from trashcli.trash import DirReader, TopTrashDirRules
+from trashcli.trash import DirReader
+from trashcli.trash_dirs_scanner import TopTrashDirRules
 
 
 class FileSystemDirReader(DirReader):

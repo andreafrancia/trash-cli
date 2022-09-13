@@ -1,4 +1,4 @@
-from trashcli.trash import trash_dir_found
+from trashcli.trash_dirs_scanner import trash_dir_found
 
 
 def prepare_output_message(trash_dirs):

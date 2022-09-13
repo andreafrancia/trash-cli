@@ -21,7 +21,8 @@ from trashcli.empty.user import User
 from trashcli.fstab import Volumes, VolumesListing
 from trashcli.list import TrashDirsSelector
 from trashcli.trash import Clock, TrashDirReader, print_version, println, \
-    my_input, EX_OK, DirReader, TopTrashDirRules
+    my_input, EX_OK, DirReader
+from trashcli.trash_dirs_scanner import TopTrashDirRules
 
 
 class EmptyCmd:

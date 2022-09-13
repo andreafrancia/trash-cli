@@ -1,5 +1,4 @@
-from trashcli.trash import trash_dir_found
-
+from trashcli.trash_dirs_scanner import trash_dir_found
 
 class Emptier:
     def __init__(self, delete_mode, trash_dir_reader, trashcan):

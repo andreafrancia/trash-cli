@@ -11,13 +11,12 @@ from . import fstab
 from .fs import FileSystemReader, file_size
 from .fstab import VolumesListing, Volumes
 from .trash import ParseError
-from .trash import TopTrashDirRules
-from .trash import TrashDirsScanner
+from .trash_dirs_scanner import TopTrashDirRules, TrashDirsScanner, \
+    trash_dir_found, trash_dir_skipped_because_parent_is_symlink, \
+    trash_dir_skipped_because_parent_not_sticky
 from .trash import parse_path
 from .trash import (version, TrashDirReader, path_of_backup_copy, print_version,
-                    maybe_parse_deletion_date, trash_dir_found,
-                    trash_dir_skipped_because_parent_is_symlink,
-                    trash_dir_skipped_because_parent_not_sticky,
+                    maybe_parse_deletion_date,
                     UserInfoProvider, DirChecker, AllUsersInfoProvider)
 
 

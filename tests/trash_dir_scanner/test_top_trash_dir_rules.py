@@ -2,10 +2,9 @@ import unittest
 
 from mock import Mock, call
 
-from trashcli.trash import (TopTrashDirRules, top_trash_dir_does_not_exist,
-                            top_trash_dir_invalid_because_not_sticky,
-                            top_trash_dir_invalid_because_parent_is_symlink,
-                            top_trash_dir_valid)
+from trashcli.trash_dirs_scanner import TopTrashDirRules, \
+    top_trash_dir_does_not_exist, top_trash_dir_invalid_because_not_sticky, \
+    top_trash_dir_invalid_because_parent_is_symlink, top_trash_dir_valid
 
 
 class TestTopTrashDirRules(unittest.TestCase):

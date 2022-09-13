@@ -1,7 +1,7 @@
 import unittest
 
 from trashcli.empty.prepare_output_message import prepare_output_message
-from trashcli.trash import trash_dir_found
+from trashcli.trash_dirs_scanner import trash_dir_found
 
 
 class TestPrepareOutputMessage(unittest.TestCase):
