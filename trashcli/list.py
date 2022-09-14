@@ -4,20 +4,19 @@ import os
 import sys
 from pprint import pprint
 
-from trashcli.super_enum import SuperEnum
-
 from trashcli.list_mount_points import os_mount_points
+from trashcli.super_enum import SuperEnum
 from . import fstab
 from .fs import FileSystemReader, file_size
 from .fstab import VolumesListing, Volumes
 from .trash import ParseError
-from .trash_dirs_scanner import TopTrashDirRules, TrashDirsScanner, \
-    trash_dir_found, trash_dir_skipped_because_parent_is_symlink, \
-    trash_dir_skipped_because_parent_not_sticky
 from .trash import parse_path
 from .trash import (version, TrashDirReader, path_of_backup_copy, print_version,
                     maybe_parse_deletion_date,
                     UserInfoProvider, DirChecker, AllUsersInfoProvider)
+from .trash_dirs_scanner import TopTrashDirRules, TrashDirsScanner, \
+    trash_dir_found, trash_dir_skipped_because_parent_is_symlink, \
+    trash_dir_skipped_because_parent_not_sticky, TrashDir
 
 
 def main():
@@ -233,7 +232,8 @@ class TrashDirsSelector:
                 for dir in self.current_user_dirs.scan_trash_dirs(environ, uid):
                     yield dir
             for dir in user_specified_dirs:
-                yield trash_dir_found, (dir, self.volumes.volume_of(dir))
+                yield trash_dir_found, (
+                    TrashDir(dir, self.volumes.volume_of(dir)))
 
     @staticmethod
     def make(volumes_listing,

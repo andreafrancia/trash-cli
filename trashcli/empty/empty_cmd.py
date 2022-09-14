@@ -1,11 +1,9 @@
 import os
 from datetime import datetime
+
 from typing.io import TextIO
 
 from trashcli.empty.actions import Action
-
-from trashcli.empty.parser import Parser
-
 from trashcli.empty.cleanable_trashcan import CleanableTrashcan
 from trashcli.empty.delete_according_date import DeleteAccordingDate, \
     ContentReader
@@ -16,6 +14,7 @@ from trashcli.empty.file_remove_with_error_handling import \
 from trashcli.empty.guard import Guard
 from trashcli.empty.is_input_interactive import is_input_interactive
 from trashcli.empty.parse_reply import parse_reply
+from trashcli.empty.parser import Parser
 from trashcli.empty.prepare_output_message import prepare_output_message
 from trashcli.empty.user import User
 from trashcli.fstab import Volumes, VolumesListing

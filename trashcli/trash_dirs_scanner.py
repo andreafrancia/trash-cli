@@ -95,4 +95,10 @@ class TrashDirsScanner:
                 alt_top_trash_dir = os.path.join(volume,
                                                  '.Trash-%s' % user_info.uid)
                 if self.dir_checker.is_dir(alt_top_trash_dir):
-                    yield trash_dir_found, (alt_top_trash_dir, volume)
+                    yield trash_dir_found, TrashDir(alt_top_trash_dir, volume)
+
+
+def only_found(events):
+    for event, args in events:
+        if event == trash_dir_found:
+            yield args
