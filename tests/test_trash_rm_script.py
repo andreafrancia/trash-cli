@@ -12,7 +12,7 @@ class TestScriptsSmoke(unittest.TestCase):
 
     def test_trash_put_works(self):
         result = run_command('.', 'trash-put')
-        assert ("Usage: trash-put [OPTION]... FILE..." in
+        assert ("usage: trash-put [OPTION]... FILE..." in
                 result.stderr.splitlines())
 
     def test_trash_put_touch_filesystem(self):
