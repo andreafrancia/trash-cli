@@ -22,7 +22,7 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
         self.volumes_listing.list_volumes.return_value = [self.top_dir]
         require_empty_dir(self.top_dir)
         self.environ = {}
-        self.empty = EmptyCmd(
+        self.empty_cmd = EmptyCmd(
             argv0='trash-empty',
             out=StringIO(),
             err=StringIO(),
@@ -40,7 +40,7 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
         self.make_proper_top_trash_dir(self.top_dir / '.Trash')
         make_empty_file(self.top_dir / '.Trash/123/info/foo.trashinfo')
 
-        self.empty.run_cmd([], self.environ, uid=123)
+        self.empty_cmd.run_cmd([], self.environ, uid=123)
 
         assert not os.path.exists(
             self.top_dir / '.Trash/123/info/foo.trashinfo')
@@ -48,7 +48,7 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
     def test_it_removes_trashinfos_from_method_2_dir(self):
         make_empty_file(self.top_dir / '.Trash-123/info/foo.trashinfo')
 
-        self.empty.run_cmd([], self.environ, uid=123)
+        self.empty_cmd.run_cmd([], self.environ, uid=123)
 
         assert not os.path.exists(
             self.top_dir / '.Trash-123/info/foo.trashinfo')
@@ -56,8 +56,8 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
     def test_it_removes_trashinfo_from_specified_trash_dir(self):
         make_empty_file(self.temp_dir / 'specified/info/foo.trashinfo')
 
-        self.empty.run_cmd(['--trash-dir', self.temp_dir / 'specified'],
-                       self.environ, uid=123)
+        self.empty_cmd.run_cmd(['--trash-dir', self.temp_dir / 'specified'],
+                               self.environ, uid=123)
 
         assert not os.path.exists(
             self.temp_dir / 'specified/info/foo.trashinfo')
