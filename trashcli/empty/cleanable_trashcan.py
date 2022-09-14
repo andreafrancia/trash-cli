@@ -8,7 +8,7 @@ class CleanableTrashcan:
     def delete_orphan(self, path_to_backup_copy):
         self._file_remover.remove_file(path_to_backup_copy)
 
-    def delete_trashinfo_and_backup_copy(self, trashinfo_path):
-        backup_copy = path_of_backup_copy(trashinfo_path)
+    def delete_trash_info_and_backup_copy(self, trash_info_path):
+        backup_copy = path_of_backup_copy(trash_info_path)
         self._file_remover.remove_file_if_exists(backup_copy)
-        self._file_remover.remove_file(trashinfo_path)
+        self._file_remover.remove_file(trash_info_path)

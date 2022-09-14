@@ -13,7 +13,7 @@ class Emptier:
                     trash_dir.path):
                 if self.delete_mode.ok_to_delete(trash_info_path, environ,
                                                  parsed_days):
-                    self.trashcan.delete_trashinfo_and_backup_copy(
+                    self.trashcan.delete_trash_info_and_backup_copy(
                         trash_info_path)
             for orphan in self.trash_dir_reader.list_orphans(
                     trash_dir.path):
