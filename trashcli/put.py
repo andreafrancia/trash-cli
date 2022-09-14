@@ -49,18 +49,17 @@ class TrashPutCmd:
 
     def run(self, argv):
         program_name = os.path.basename(argv[0])
-        parser = get_option_parser(program_name, self.stdout, self.stderr)
+        parser = make_parser(program_name, self.stdout, self.stderr)
         try:
-            (options, args) = parser.parse_args(argv[1:])
-
-            if len(args) <= 0:
+            options = parser.parse_args(argv[1:])
+            if len(options.files) <= 0:
                 parser.error("Please specify the files to trash.")
         except SystemExit as e:
             return e.code
         else:
             logger = MyLogger(self.stderr, program_name, options.verbose)
             reporter = TrashPutReporter(logger, self.environ)
-            result = self.trash_all(args,
+            result = self.trash_all(options.files,
                                     options.trashdir,
                                     logger,
                                     options.mode,
@@ -251,15 +250,14 @@ class FileTrasher:
         return self.volumes.volume_of(self.parent_path(file))
 
 
-def get_option_parser(program_name, stdout, stderr):
-    from optparse import OptionParser
+def make_parser(program_name, stdout, stderr):
+    from argparse import ArgumentParser, RawDescriptionHelpFormatter, SUPPRESS
 
-    parser = OptionParser(prog=program_name,
-                          usage="%prog [OPTION]... FILE...",
-                          description="Put files in trash",
-                          version="%%prog %s" % version,
-                          formatter=NoWrapFormatter(),
-                          epilog="""\
+    parser = ArgumentParser(prog=program_name,
+                            usage="%(prog)s [OPTION]... FILE...",
+                            description="Put files in trash",
+                            formatter_class=RawDescriptionHelpFormatter,
+                            epilog="""\
 To remove a file whose name starts with a '-', for example '-foo',
 use one of these commands:
 
@@ -269,37 +267,42 @@ use one of these commands:
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
 
-    parser.add_option("-d", "--directory",
-                      action="store_true",
-                      help="ignored (for GNU rm compatibility)")
-    parser.add_option("-f", "--force",
-                      action="store_const",
-                      dest="mode",
-                      const=mode_force,
-                      help="silently ignore nonexistent files")
-    parser.add_option("-i", "--interactive",
-                      action="store_const",
-                      dest="mode",
-                      const=mode_interactive,
-                      help="prompt before every removal")
-    parser.add_option("-r", "-R", "--recursive",
-                      action="store_true",
-                      help="ignored (for GNU rm compatibility)")
-    parser.add_option("--trash-dir",
-                      type='string',
-                      action="store", dest='trashdir',
-                      help='use TRASHDIR as trash folder')
-    parser.add_option("-v",
-                      "--verbose",
-                      default=0,
-                      action="count",
-                      dest="verbose",
-                      help="explain what is being done")
-    parser.add_option('--force-volume',
-                      default=None,
-                      action="store",
-                      dest="forced_volume",
-                      help=SUPPRESS_HELP)
+    parser.add_argument("-d", "--directory",
+                        action="store_true",
+                        help="ignored (for GNU rm compatibility)")
+    parser.add_argument("-f", "--force",
+                        action="store_const",
+                        dest="mode",
+                        const=mode_force,
+                        help="silently ignore nonexistent files")
+    parser.add_argument("-i", "--interactive",
+                        action="store_const",
+                        dest="mode",
+                        const=mode_interactive,
+                        help="prompt before every removal")
+    parser.add_argument("-r", "-R", "--recursive",
+                        action="store_true",
+                        help="ignored (for GNU rm compatibility)")
+    parser.add_argument("--trash-dir",
+                        type=str,
+                        action="store", dest='trashdir',
+                        help='use TRASHDIR as trash folder')
+    parser.add_argument("-v",
+                        "--verbose",
+                        default=0,
+                        action="count",
+                        dest="verbose",
+                        help="explain what is being done")
+    parser.add_argument('--force-volume',
+                        default=None,
+                        action="store",
+                        dest="forced_volume",
+                        help=SUPPRESS)
+    parser.add_argument("--version",
+                        action="version",
+                        version=version)
+    parser.add_argument('files',
+                        nargs='*')
     original_print_help = parser.print_help
 
     def patched_print_help():
@@ -309,8 +312,9 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
         parser.print_usage(stderr)
         parser.exit(2, "%s: error: %s\n" % (program_name, msg))
 
-    def patched_exit(status=0, msg=None):
-        if msg: stderr.write(msg)
+    def patched_exit(status=0, message=None):
+        if message:
+            stderr.write(message)
         import sys
         sys.exit(status)
 
@@ -419,15 +423,6 @@ class MyLogger:
 
     def warning2(self, message):
         self.stderr.write("%s: %s\n" % (self.program_name, message))
-
-
-from optparse import IndentedHelpFormatter, SUPPRESS_HELP
-
-
-class NoWrapFormatter(IndentedHelpFormatter):
-    def _format_text(self, text):
-        "[Does not] format a text, return the text as it is."
-        return text
 
 
 class TrashResult:
