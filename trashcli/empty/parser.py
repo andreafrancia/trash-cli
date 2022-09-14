@@ -2,6 +2,13 @@ import argparse
 from typing import NamedTuple, List
 
 from trashcli.empty.actions import Action
+from .. import TRASH_DIRS, PREAMBLE
+
+try:
+    import shtab
+except ImportError:
+    from .. import _shtab as shtab
+
 
 Parsed = NamedTuple('Parsed',
                     [('action', Action),
@@ -37,14 +44,17 @@ class Parser:
     @staticmethod
     def make_parser(default_is_interactive):
         parser = argparse.ArgumentParser(
+            'trash-empty',
             description='Purge trashed files.',
             epilog='Report bugs to https://github.com/andreafrancia/trash-cli/issues')
+        shtab.add_argument_to(parser, preamble=PREAMBLE)
         parser.add_argument('--version', action='store_true', default=False,
                             help="show program's version number and exit")
         parser.add_argument('--trash-dir', action='append', default=[],
                             metavar='TRASH_DIR',
                             dest='user_specified_trash_dirs',
-                            help='specify the trash directory to use')
+                            help='specify the trash directory to use'
+                            ).complete = TRASH_DIRS
         parser.add_argument('--print-time', action='store_true',
                             dest='print_time',
                             help=argparse.SUPPRESS)

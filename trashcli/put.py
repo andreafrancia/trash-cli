@@ -13,6 +13,12 @@ from .trash import EX_OK, EX_IOERR, home_trash_dir, volume_trash_dir1, \
     volume_trash_dir2, my_input
 from .trash import path_of_backup_copy
 from .trash import version
+from . import TRASH_DIRS, PREAMBLE
+
+try:
+    import shtab
+except ImportError:
+    from . import _shtab as shtab
 
 
 def main():
@@ -266,7 +272,7 @@ use one of these commands:
     trash ./-foo
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
-
+    shtab.add_argument_to(parser, preamble=PREAMBLE)
     parser.add_argument("-d", "--directory",
                         action="store_true",
                         help="ignored (for GNU rm compatibility)")
@@ -286,7 +292,8 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
     parser.add_argument("--trash-dir",
                         type=str,
                         action="store", dest='trashdir',
-                        help='use TRASHDIR as trash folder')
+                        help='use TRASHDIR as trash folder'
+                        ).complete = TRASH_DIRS
     parser.add_argument("-v",
                         "--verbose",
                         default=0,
@@ -302,8 +309,8 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                         action="version",
                         version=version)
     parser.add_argument('files',
-                        nargs='*')
-
+                        nargs='*'
+                        ).complete = {"zsh": "_trash_files"}
     return parser
 
 

@@ -7,7 +7,7 @@ from .trash import (version, home_trash_dir, volume_trash_dir1,
 from .fstab import volume_of
 from .fs import contents_of, list_files_in_dir
 from .trash import path_of_backup_copy
-from . import fs, trash
+from . import fs, trash, TRASH_DIRS, PREAMBLE
 
 try:
     my_range = xrange
@@ -117,13 +117,21 @@ class Command:
 
 def parse_args(sys_argv, curdir):
     import argparse
+    try:
+        import shtab
+    except ImportError:
+        from . import _shtab as shtab
+
     parser = argparse.ArgumentParser(
+        'trash-restore',
         description='Restores from trash chosen file',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    shtab.add_argument_to(parser, preamble=PREAMBLE)
     parser.add_argument('path',
                         default="", nargs='?',
                         help='Restore files from given path instead of current '
-                             'directory')
+                             'directory'
+                        ).complete = shtab.FILE
     parser.add_argument('--sort',
                         choices=['date', 'path', 'none'],
                         default='date',
@@ -131,7 +139,8 @@ def parse_args(sys_argv, curdir):
     parser.add_argument('--trash-dir',
                         action='store',
                         dest='trash_dir',
-                        help=argparse.SUPPRESS)
+                        help=argparse.SUPPRESS
+                        ).complete = TRASH_DIRS
     parser.add_argument('--version', action='store_true', default=False)
     parsed = parser.parse_args(sys_argv[1:])
 
