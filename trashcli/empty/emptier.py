@@ -1,8 +1,12 @@
+from trashcli.empty.cleanable_trashcan import CleanableTrashcan
+from trashcli.empty.delete_according_date import DeleteAccordingDate
+from trashcli.trash import TrashDirReader
 from trashcli.trash_dirs_scanner import only_found, TrashDir
 
 
 class Emptier:
-    def __init__(self, delete_mode, trash_dir_reader, trashcan):
+    def __init__(self, delete_mode, trash_dir_reader, trashcan
+                 ):  # type: (DeleteAccordingDate, TrashDirReader, CleanableTrashcan) -> None
         self.delete_mode = delete_mode
         self.trash_dir_reader = trash_dir_reader
         self.trashcan = trashcan

@@ -1,14 +1,25 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 import fnmatch
-import os, sys
+import os
+import sys
 
+from trashcli.fs import FileRemover
+from trashcli.fs import FileSystemReader
 from trashcli.trash import (TrashDirReader, parse_path, ParseError,
                             UserInfoProvider, DirChecker)
-from trashcli.empty.cleanable_trashcan import CleanableTrashcan
-from trashcli.fs import FileSystemReader
-from trashcli.fs import FileRemover
-from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
-    trash_dir_found
+from trashcli.trash import path_of_backup_copy
+from trashcli.trash_dirs_scanner import (TrashDirsScanner, TopTrashDirRules,
+                                         trash_dir_found)
+
+
+class CleanableTrashcan:
+    def __init__(self, file_remover): # type: (FileRemover) -> None
+        self._file_remover = file_remover
+
+    def delete_trash_info_and_backup_copy(self, trash_info_path):
+        backup_copy = path_of_backup_copy(trash_info_path)
+        self._file_remover.remove_file_if_exists(backup_copy)
+        self._file_remover.remove_file(trash_info_path)
 
 
 class RmCmd:
