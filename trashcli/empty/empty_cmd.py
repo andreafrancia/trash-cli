@@ -4,7 +4,7 @@ from datetime import datetime
 from typing.io import TextIO
 
 from trashcli.empty.actions import Action
-from trashcli.empty.cleanable_trashcan import CleanableTrashcan
+from trashcli.empty.console import Console
 from trashcli.empty.delete_according_date import DeleteAccordingDate, \
     ContentReader
 from trashcli.empty.emptier import Emptier
@@ -78,10 +78,6 @@ class EmptyCmd:
 class EmptyAction:
     def __init__(self, clock, file_remover, volumes_listing, file_reader,
                  volumes, dir_reader, content_reader, errors):
-        file_remover_with_error = FileRemoveWithErrorHandling(
-            file_remover,
-            self.print_cannot_remove_error)
-        trashcan = CleanableTrashcan(file_remover_with_error)
         self.selector = TrashDirsSelector.make(volumes_listing,
                                                file_reader,
                                                volumes)
@@ -89,9 +85,9 @@ class EmptyAction:
         delete_mode = DeleteAccordingDate(content_reader,
                                           clock)
         user = User(prepare_output_message, my_input, parse_reply)
-        self.emptier = Emptier(delete_mode, trash_dir_reader, trashcan)
+        self.emptier = Emptier(delete_mode, trash_dir_reader, file_remover,
+                               errors)
         self.guard = Guard(user)
-        self.errors = errors
 
     def run_action(self, parsed, environ, uid):
         trash_dirs = self.selector.select(parsed.all_users,
@@ -103,9 +99,6 @@ class EmptyAction:
         if delete_pass.ok_to_empty:
             self.emptier.do_empty(delete_pass.trash_dirs, environ,
                                   parsed.days)
-
-    def print_cannot_remove_error(self, path):
-        self.errors.print_error("cannot remove %s" % path)
 
 
 class PrintTimeAction:

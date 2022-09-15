@@ -1,15 +1,23 @@
 from trashcli.empty.cleanable_trashcan import CleanableTrashcan
+from trashcli.empty.console import Console
 from trashcli.empty.delete_according_date import DeleteAccordingDate
+from trashcli.empty.errors import Errors
+from trashcli.empty.file_remove_with_error_handling import \
+    FileRemoveWithErrorHandling
+from trashcli.fs import FileRemover
 from trashcli.trash import TrashDirReader
 from trashcli.trash_dirs_scanner import only_found, TrashDir
 
 
 class Emptier:
-    def __init__(self, delete_mode, trash_dir_reader, trashcan
-                 ):  # type: (DeleteAccordingDate, TrashDirReader, CleanableTrashcan) -> None
+    def __init__(self, delete_mode, trash_dir_reader, file_remover, errors
+                 ):  # type: (DeleteAccordingDate, TrashDirReader, FileRemover, Errors) -> None
+        console = Console(errors)
+        file_remover_with_error = FileRemoveWithErrorHandling(file_remover,
+                                                              console)
         self.delete_mode = delete_mode
         self.trash_dir_reader = trash_dir_reader
-        self.trashcan = trashcan
+        self.trashcan = CleanableTrashcan(file_remover_with_error)
 
     def do_empty(self, trash_dirs, environ, parsed_days):
         for trash_dir in only_found(trash_dirs):  # type: TrashDir

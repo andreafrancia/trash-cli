@@ -1,16 +1,21 @@
-class FileRemoveWithErrorHandling:
-    def __init__(self, file_remover, on_error):
-        self.file_remover = file_remover
-        self.on_error = on_error
+from trashcli.empty.console import Console
+from trashcli.fs import FileRemover
 
-    def remove_file(self, path):
+
+class FileRemoveWithErrorHandling:
+    def __init__(self, file_remover, console
+                 ):  # type: (FileRemover, Console) -> None
+        self.file_remover = file_remover
+        self.console = console
+
+    def remove_file2(self, path):
         try:
             return self.file_remover.remove_file(path)
         except OSError:
-            self.on_error(path)
+            self.console.print_cannot_remove_error(path)
 
-    def remove_file_if_exists(self, path):
+    def remove_file_if_exists2(self, path):
         try:
             return self.file_remover.remove_file_if_exists(path)
         except OSError:
-            self.on_error(path)
+            self.console.print_cannot_remove_error(path)
