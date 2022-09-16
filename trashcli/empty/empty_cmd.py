@@ -4,13 +4,11 @@ from datetime import datetime
 from typing.io import TextIO
 
 from trashcli.empty.actions import Action
-from trashcli.empty.console import Console
 from trashcli.empty.delete_according_date import DeleteAccordingDate, \
     ContentReader
 from trashcli.empty.emptier import Emptier
 from trashcli.empty.errors import Errors
-from trashcli.empty.file_remove_with_error_handling import \
-    FileRemoveWithErrorHandling
+from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.guard import Guard
 from trashcli.empty.is_input_interactive import is_input_interactive
 from trashcli.empty.parse_reply import parse_reply
@@ -34,7 +32,7 @@ class EmptyCmd:
                  file_reader,  # type: TopTrashDirRules.Reader
                  dir_reader,  # type: DirReader
                  content_reader,  # type: ContentReader
-                 file_remover,  # type: FileRemoveWithErrorHandling
+                 file_remover,  # type: ExistingFileRemover
                  version,  # type: str
                  volumes,  # type: Volumes
                  ):
@@ -77,7 +75,8 @@ class EmptyCmd:
 
 class EmptyAction:
     def __init__(self, clock, file_remover, volumes_listing, file_reader,
-                 volumes, dir_reader, content_reader, errors):
+                 volumes, dir_reader, content_reader,
+                 errors):  # type: (Clock, ExistingFileRemover, VolumesListing, TopTrashDirRules.Reader, Volumes, DirReader, ContentReader, Errors) -> None
         self.selector = TrashDirsSelector.make(volumes_listing,
                                                file_reader,
                                                volumes)

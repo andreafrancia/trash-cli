@@ -1,4 +1,4 @@
-# Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
+# Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import os
 import unittest
 
@@ -9,7 +9,8 @@ from tests.files import require_empty_dir, make_dirs, set_sticky_bit, \
     make_empty_file
 from tests.support import MyPath, volumes_mock
 from trashcli.empty.empty_cmd import EmptyCmd
-from trashcli.fs import FileRemover, FileSystemContentReader, \
+from trashcli.empty.existing_file_remover import ExistingFileRemover
+from trashcli.fs import FileSystemContentReader, \
     FileSystemDirReader, TopTrashDirRulesFileSystemReader
 from trashcli.fstab import VolumesListing
 
@@ -29,10 +30,10 @@ class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
             volumes_listing=self.volumes_listing,
             now=None,
             file_reader=TopTrashDirRulesFileSystemReader(),
-            file_remover=FileRemover(),
+            file_remover=ExistingFileRemover(),
             content_reader=FileSystemContentReader(),
             dir_reader=FileSystemDirReader(),
-            version=None,
+            version='unused',
             volumes=volumes_mock(),
         )
 

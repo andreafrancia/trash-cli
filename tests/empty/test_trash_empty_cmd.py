@@ -8,7 +8,8 @@ from six import StringIO
 from tests.files import make_unreadable_dir, make_readable
 from tests.support import MyPath, volumes_mock
 from trashcli.empty.empty_cmd import EmptyCmd
-from trashcli.fs import FileRemover, FileSystemContentReader, \
+from trashcli.empty.existing_file_remover import ExistingFileRemover
+from trashcli.fs import FileSystemContentReader, \
     FileSystemDirReader, TopTrashDirRulesFileSystemReader
 from trashcli.fstab import VolumesListing
 
@@ -29,10 +30,10 @@ class TestTrashEmptyCmd(unittest.TestCase):
             volumes_listing=self.volumes_listing,
             now=None,
             file_reader=TopTrashDirRulesFileSystemReader(),
-            file_remover=FileRemover(),
+            file_remover=ExistingFileRemover(),
             content_reader=FileSystemContentReader(),
             dir_reader=FileSystemDirReader(),
-            version=None,
+            version='unused',
             volumes=volumes_mock()
         )
 

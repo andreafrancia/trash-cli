@@ -4,12 +4,13 @@ import sys
 from datetime import datetime
 
 from trashcli import trash
-from trashcli.fs import FileRemover, FileSystemContentReader, \
+from trashcli.empty.empty_cmd import EmptyCmd
+from trashcli.fs import FileSystemContentReader, \
     FileSystemDirReader, TopTrashDirRulesFileSystemReader
 from trashcli.list_mount_points import os_mount_points
-from trashcli.empty.empty_cmd import EmptyCmd
-from ..fstab import volume_of, VolumesListing
+from .existing_file_remover import ExistingFileRemover
 from .. import fstab
+from ..fstab import VolumesListing
 
 
 def main():
@@ -17,7 +18,7 @@ def main():
                          volumes_listing=VolumesListing(os_mount_points),
                          now=datetime.now,
                          file_reader=TopTrashDirRulesFileSystemReader(),
-                         file_remover=FileRemover(),
+                         file_remover=ExistingFileRemover(),
                          content_reader=FileSystemContentReader(),
                          dir_reader=FileSystemDirReader(),
                          version=trash.version, volumes=fstab.volumes)
