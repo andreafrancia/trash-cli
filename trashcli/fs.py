@@ -73,7 +73,7 @@ class FileRemover:
 
     @classmethod
     def remove_file_if_exists(cls, path):
-        if os.path.exists(path): cls.remove_file(path)
+        if os.path.lexists(path): cls.remove_file(path)
 
 
 def contents_of(path):  # TODO remove
