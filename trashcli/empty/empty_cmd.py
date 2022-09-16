@@ -4,6 +4,7 @@ from datetime import datetime
 from typing.io import TextIO
 
 from trashcli.empty.actions import Action
+from trashcli.empty.console import Console
 from trashcli.empty.delete_according_date import DeleteAccordingDate, \
     ContentReader
 from trashcli.empty.emptier import Emptier
@@ -51,6 +52,7 @@ class EmptyCmd:
         self.program_name = os.path.basename(argv0)
         errors = Errors(self.program_name, self.err)
         clock = Clock(self.now, errors)
+        console = Console(self.program_name, self.out, self.err)
 
         self.actions = {
             Action.print_version: PrintVersionAction(self.out,
@@ -64,7 +66,7 @@ class EmptyCmd:
                                       self.volumes,
                                       self.dir_reader,
                                       self.content_reader,
-                                      errors),
+                                      console),
         }
 
     def run_cmd(self, args, environ, uid):
@@ -76,7 +78,7 @@ class EmptyCmd:
 class EmptyAction:
     def __init__(self, clock, file_remover, volumes_listing, file_reader,
                  volumes, dir_reader, content_reader,
-                 errors):  # type: (Clock, ExistingFileRemover, VolumesListing, TopTrashDirRules.Reader, Volumes, DirReader, ContentReader, Errors) -> None
+                 console):  # type: (Clock, ExistingFileRemover, VolumesListing, TopTrashDirRules.Reader, Volumes, DirReader, ContentReader, Console) -> None
         self.selector = TrashDirsSelector.make(volumes_listing,
                                                file_reader,
                                                volumes)
@@ -85,7 +87,7 @@ class EmptyAction:
                                           clock)
         user = User(prepare_output_message, my_input, parse_reply)
         self.emptier = Emptier(delete_mode, trash_dir_reader, file_remover,
-                               errors)
+                               console)
         self.guard = Guard(user)
 
     def run_action(self, parsed, environ, uid):

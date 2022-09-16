@@ -4,4 +4,8 @@ class Errors:
         self.err = err
 
     def print_error(self, msg):
-        self.err.write("%s: %s\n" % (self.program_name, msg))
+        self.err.write(format_error_msg(self.program_name, msg))
+
+
+def format_error_msg(program_name, msg):
+    return "%s: %s\n" % (program_name, msg)

@@ -3,16 +3,15 @@ from typing import Iterator
 
 from trashcli.empty.console import Console
 from trashcli.empty.delete_according_date import DeleteAccordingDate
-from trashcli.empty.errors import Errors
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.trash import TrashDirReader, path_of_backup_copy
 from trashcli.trash_dirs_scanner import only_found, TrashDir
 
 
 class Emptier:
-    def __init__(self, delete_mode, trash_dir_reader, file_remover, errors
-                 ):  # type: (DeleteAccordingDate, TrashDirReader, ExistingFileRemover, Errors) -> None
-        self.console = Console(errors)
+    def __init__(self, delete_mode, trash_dir_reader, file_remover, console
+                 ):  # type: (DeleteAccordingDate, TrashDirReader, ExistingFileRemover, Console) -> None
+        self.console = console
         self.file_remover = file_remover
         self.delete_mode = delete_mode
         self.trash_dir_reader = trash_dir_reader
