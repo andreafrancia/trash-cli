@@ -10,7 +10,7 @@ class FileRemoveWithErrorHandling:
 
     def remove_file2(self, path):
         try:
-            return self.file_remover.remove_file(path)
+            self.file_remover.remove_file(path)
         except OSError:
             self.console.print_cannot_remove_error(path)
 

@@ -67,7 +67,7 @@ class FileRemover:
     @staticmethod
     def remove_file(path):
         try:
-            return os.remove(path)
+            os.remove(path)
         except OSError:
             shutil.rmtree(path)
 
