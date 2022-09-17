@@ -15,7 +15,7 @@ from trashcli.fstab import VolumesListing
 
 
 @pytest.mark.slow
-class TestTrashEmptyCmd(unittest.TestCase):
+class TestTrashEmptyCmdFs(unittest.TestCase):
     def setUp(self):
         self.tmp_dir = MyPath.make_temp_dir()
         self.unreadable_dir = self.tmp_dir / 'data/Trash/files/unreadable'
