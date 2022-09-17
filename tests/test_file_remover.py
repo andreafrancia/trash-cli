@@ -3,9 +3,9 @@ import unittest
 from trashcli.fs import FileRemover
 
 try:
-    FileNotFoundError  # python 2
+    FileNotFoundError
 except NameError:
-    FileNotFoundError = IOError
+    FileNotFoundError = OSError  # python 2
 
 
 class TestFileRemover(unittest.TestCase):
