@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from io import TextIOWrapper
 
 from typing.io import TextIO
 
@@ -21,8 +22,8 @@ from trashcli.trash_dirs_scanner import TopTrashDirRules
 class EmptyCmd:
     def __init__(self,
                  argv0,  # type: str
-                 out,  # type: TextIO
-                 err,  # type: TextIO
+                 out,  # type: TextIOWrapper
+                 err,  # type: TextIOWrapper
                  volumes_listing,  # type: VolumesListing
                  now,  # type: () -> datetime
                  file_reader,  # type: TopTrashDirRules.Reader
