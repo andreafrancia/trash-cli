@@ -303,24 +303,7 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                         version=version)
     parser.add_argument('files',
                         nargs='*')
-    original_print_help = parser.print_help
 
-    def patched_print_help():
-        original_print_help(stdout)
-
-    def patched_error(msg):
-        parser.print_usage(stderr)
-        parser.exit(2, "%s: error: %s\n" % (program_name, msg))
-
-    def patched_exit(status=0, message=None):
-        if message:
-            stderr.write(message)
-        import sys
-        sys.exit(status)
-
-    parser.print_help = patched_print_help
-    parser.error = patched_error
-    parser.exit = patched_exit
     return parser
 
 
