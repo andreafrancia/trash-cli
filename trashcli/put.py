@@ -479,7 +479,7 @@ class TrashPutReporter:
         try:
             filename = error.filename
         except AttributeError:
-            return []
+            pass
         else:
             for path in [filename, os.path.dirname(filename)]:
                 info = cls.get_stats(path)
