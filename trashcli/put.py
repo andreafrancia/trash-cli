@@ -2,8 +2,10 @@ import errno
 import os
 import random
 import sys
+from argparse import ArgumentParser, RawDescriptionHelpFormatter, SUPPRESS
 from datetime import datetime
 from pwd import getpwuid
+
 from grp import getgrgid
 
 from .fstab import volumes
@@ -251,8 +253,6 @@ class FileTrasher:
 
 
 def make_parser(program_name, stdout, stderr):
-    from argparse import ArgumentParser, RawDescriptionHelpFormatter, SUPPRESS
-
     parser = ArgumentParser(prog=program_name,
                             usage="%(prog)s [OPTION]... FILE...",
                             description="Put files in trash",
