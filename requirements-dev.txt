@@ -4,3 +4,4 @@ six
 twine
 setuptools
 build
+flexmock

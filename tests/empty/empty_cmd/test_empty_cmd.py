@@ -2,7 +2,6 @@
 import unittest
 from typing import cast
 
-from mock import Mock
 from six import StringIO
 
 from tests.support import volumes_mock
@@ -12,6 +11,8 @@ from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.fstab import VolumesListing
 from trashcli.trash import DirReader
 from trashcli.trash_dirs_scanner import TopTrashDirRules
+
+from flexmock import flexmock
 
 
 class MockDirReader(DirReader):
@@ -25,27 +26,13 @@ class MockDirReader(DirReader):
         raise NotImplementedError()
 
 
-class MyMock:
-    def __init__(self, funcs, cls):
-        print(repr(dir(cls)))
-        self.funcs = funcs
-        self.cls = cls
-
-    def cast(self):
-        return cast(self.cls, self)
-
-
-
 class TestTrashEmptyCmdFs(unittest.TestCase):
     def setUp(self):
-        self.volumes_listing = MyMock(funcs=[], cls=VolumesListing)
-        self.file_reader = Mock(spec=TopTrashDirRules.Reader, spec_set=[])
-        self.file_remover = MyMock(funcs=[], cls=ExistingFileRemover)
-        self.content_reader = Mock(spec=ContentReader, spec_set=[])
-        self.dir_reader = MockDirReader({'/xdg/Trash/info': [
-            'pippo.trashinfo'
-        ],
-            '/xdg/Trash/files': []})
+        self.volumes_listing = flexmock(VolumesListing)
+        self.file_reader = flexmock(TopTrashDirRules.Reader)
+        self.file_remover = flexmock(ExistingFileRemover)
+        self.content_reader = flexmock(ContentReader)
+        self.dir_reader = flexmock(DirReader)
         self.err = StringIO()
         self.out = StringIO()
         self.environ = {'XDG_DATA_HOME': '/xdg'}
@@ -53,10 +40,10 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
             argv0='trash-empty',
             out=self.out,
             err=self.err,
-            volumes_listing=self.volumes_listing.cast(),
+            volumes_listing=cast(VolumesListing, self.volumes_listing),
             now=None,
             file_reader=cast(TopTrashDirRules.Reader, self.file_reader),
-            file_remover=self.file_remover.cast(),
+            file_remover=cast(ExistingFileRemover, self.file_remover),
             content_reader=cast(ContentReader, self.content_reader),
             dir_reader=cast(DirReader, self.dir_reader),
             version='unused',
@@ -64,4 +51,24 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
         )
 
     def test(self):
+        flexmock(self.file_remover). \
+            should_receive('remove_file_if_exists'). \
+            with_args('/xdg/Trash/info/pippo.trashinfo').once()
+        flexmock(self.file_remover). \
+            should_receive('remove_file_if_exists'). \
+            with_args("/xdg/Trash/files/pippo").once()
+        flexmock(self.volumes_listing). \
+            should_receive('list_volumes'). \
+            and_return([]).once()
+        flexmock(self.dir_reader).should_receive(
+            'entries_if_dir_exists').with_args('/xdg/Trash/info').and_return(
+            ['pippo.trashinfo']).once()
+        flexmock(self.dir_reader).should_receive(
+            'entries_if_dir_exists').with_args('/xdg/Trash/files').and_return(
+            []).once()
+
         self.empty.run_cmd([], self.environ, uid=123)
+
+        self.dir_reader = MockDirReader({
+            '/xdg/Trash/info': ['pippo.trashinfo'],
+            '/xdg/Trash/files': []})
