@@ -15,7 +15,7 @@ from trashcli.fs import FileSystemContentReader, \
 from trashcli.fstab import VolumesListing
 
 
-class TestEmptyCmdWithMultipleVolumes(unittest.TestCase):
+class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
     def setUp(self):
         self.temp_dir = MyPath.make_temp_dir()
         self.top_dir = self.temp_dir / 'topdir'
