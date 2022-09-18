@@ -16,8 +16,11 @@ from flexmock import flexmock
 
 
 class MockDirReader(DirReader):
-    def __init__(self, dirs):
-        self.dirs = dirs
+    def __init__(self, dirs=None):
+        self.dirs = dirs or {}
+
+    def add_dir(self, path, entries):
+        self.dirs[path] = entries
 
     def entries_if_dir_exists(self, path):  # type: (str) -> list[str]
         return self.dirs[path]
@@ -32,7 +35,7 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
         self.file_reader = flexmock(TopTrashDirRules.Reader)
         self.file_remover = flexmock(ExistingFileRemover)
         self.content_reader = flexmock(ContentReader)
-        self.dir_reader = flexmock(DirReader)
+        self.dir_reader = MockDirReader()
         self.err = StringIO()
         self.out = StringIO()
         self.environ = {'XDG_DATA_HOME': '/xdg'}
@@ -60,15 +63,7 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
         flexmock(self.volumes_listing). \
             should_receive('list_volumes'). \
             and_return([]).once()
-        flexmock(self.dir_reader).should_receive(
-            'entries_if_dir_exists').with_args('/xdg/Trash/info').and_return(
-            ['pippo.trashinfo']).once()
-        flexmock(self.dir_reader).should_receive(
-            'entries_if_dir_exists').with_args('/xdg/Trash/files').and_return(
-            []).once()
+        self.dir_reader.add_dir('/xdg/Trash/info', ['pippo.trashinfo'])
+        self.dir_reader.add_dir('/xdg/Trash/files', [])
 
         self.empty.run_cmd([], self.environ, uid=123)
-
-        self.dir_reader = MockDirReader({
-            '/xdg/Trash/info': ['pippo.trashinfo'],
-            '/xdg/Trash/files': []})
