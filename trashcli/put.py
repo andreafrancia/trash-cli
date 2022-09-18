@@ -3,6 +3,8 @@ import os
 import random
 import sys
 from datetime import datetime
+from pwd import getpwuid
+from grp import getgrgid
 
 from .fstab import volumes
 from .trash import EX_OK, EX_IOERR, home_trash_dir, volume_trash_dir1, \
@@ -71,7 +73,7 @@ class TrashPutCmd:
     def trash_all(self,
                   args,
                   user_trash_dir,
-                  logger,
+                  logger,  # type: MyLogger
                   mode,
                   reporter,
                   forced_volume,
@@ -123,7 +125,7 @@ class Trasher:
               file,
               user_trash_dir,
               result,
-              logger,
+              logger,  # type: MyLogger
               mode,
               reporter,
               forced_volume,
@@ -183,7 +185,7 @@ class FileTrasher:
                    forced_volume,
                    user_trash_dir,
                    result,
-                   logger,
+                   logger,  # type: MyLogger
                    reporter):
         volume_of_file_to_be_trashed = forced_volume or \
                                        self.volume_of_parent(file)
@@ -230,7 +232,7 @@ class FileTrasher:
 
                     except (IOError, OSError) as error:
                         reporter.unable_to_trash_file_in_because(
-                            file, trash_dir.path, str(error))
+                            file, trash_dir.path, error)
 
             if file_has_been_trashed: break
 
@@ -406,6 +408,11 @@ class MyLogger:
         if self.verbose > 1:
             self.stderr.write("%s: %s\n" % (self.program_name, message))
 
+    def debug_func_result(self, messages_func):
+        if self.verbose > 1:
+            for line in messages_func():
+                self.stderr.write("%s: %s\n" % (self.program_name, line))
+
     def info(self, message):
         if self.verbose > 0:
             self.stderr.write("%s: %s\n" % (self.program_name, message))
@@ -464,6 +471,30 @@ class TrashPutReporter:
         self.logger.info("Failed to trash %s in %s, because: %s" % (
             file_to_be_trashed, shrink_user(trash_directory,
                                             self.environ), error))
+        self.logger.debug_func_result(
+            lambda: self.log_data_for_debugging(error))
+
+    @classmethod
+    def log_data_for_debugging(cls, error):
+        try:
+            filename = error.filename
+        except AttributeError:
+            return []
+        else:
+            for path in [filename, os.path.dirname(filename)]:
+                info = cls.get_stats(path)
+                yield "stats for %s: %s" % (path, info)
+
+    @staticmethod
+    def get_stats(path):
+        try:
+            stats = os.stat(path, follow_symlinks=False)
+            user = getpwuid(stats.st_uid).pw_name
+            group = getgrgid(stats.st_gid).gr_name
+            perms = oct(stats.st_mode & 0o777).replace('0o', '')
+            return "%s %s %s" % (perms, user, group)
+        except OSError as e:
+            return str(e)
 
     def trash_dir_with_volume(self, trash_dir_path, volume_path):
         self.logger.info("Trash-dir: %s from volume: %s" % (trash_dir_path,
@@ -516,7 +547,8 @@ class TrashDirectoryForPut:
 
 
 class InfoDir:
-    def __init__(self, path, fs, logger, suffix):
+    def __init__(self, path, fs, logger,
+                 suffix):  # type: (str, RealFs, MyLogger, Suffix) -> None
         self.path = path
         self.fs = fs
         self.logger = logger
