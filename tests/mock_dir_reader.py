@@ -28,6 +28,7 @@ class MockDirReader(DirReader):
         components = dir.split('/')[1:]
         if components != ['']:
             for p in components:
-                print(f"{cwd}, {p}")
+                if p not in cwd:
+                    raise FileNotFoundError(f"no such file or directory: {dir}")
                 cwd = cwd[p]
         return cwd

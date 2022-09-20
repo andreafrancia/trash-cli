@@ -4,6 +4,7 @@ from typing import cast
 
 from six import StringIO
 
+from tests.mock_dir_reader import MockDirReader
 from tests.support import volumes_mock
 from trashcli.empty.delete_according_date import ContentReader
 from trashcli.empty.empty_cmd import EmptyCmd
@@ -13,20 +14,6 @@ from trashcli.trash import DirReader
 from trashcli.trash_dirs_scanner import TopTrashDirRules
 
 from flexmock import flexmock
-
-
-class MockDirReader(DirReader):
-    def __init__(self, dirs=None):
-        self.dirs = dirs or {}
-
-    def add_dir(self, path, entries):
-        self.dirs[path] = entries
-
-    def entries_if_dir_exists(self, path):  # type: (str) -> list[str]
-        return self.dirs[path]
-
-    def exists(self, path):  # type: (str) -> bool
-        raise NotImplementedError()
 
 
 class TestTrashEmptyCmdFs(unittest.TestCase):
@@ -63,7 +50,11 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
         flexmock(self.volumes_listing). \
             should_receive('list_volumes'). \
             and_return([]).once()
-        self.dir_reader.add_dir('/xdg/Trash/info', ['pippo.trashinfo'])
-        self.dir_reader.add_dir('/xdg/Trash/files', [])
+
+        self.dir_reader.mkdir('/xdg')
+        self.dir_reader.mkdir('/xdg/Trash')
+        self.dir_reader.mkdir('/xdg/Trash/info')
+        self.dir_reader.add_file('/xdg/Trash/info/pippo.trashinfo')
+        self.dir_reader.mkdir('/xdg/Trash/files')
 
         self.empty.run_cmd([], self.environ, uid=123)
