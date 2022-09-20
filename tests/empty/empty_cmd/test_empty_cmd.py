@@ -1,6 +1,7 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import unittest
 from typing import cast
+from unittest.mock import Mock, call
 
 from six import StringIO
 
@@ -18,9 +19,9 @@ from flexmock import flexmock
 
 class TestTrashEmptyCmdFs(unittest.TestCase):
     def setUp(self):
-        self.volumes_listing = flexmock(VolumesListing)
+        self.volumes_listing = Mock(spec=VolumesListing)
         self.file_reader = flexmock(TopTrashDirRules.Reader)
-        self.file_remover = flexmock(ExistingFileRemover)
+        self.file_remover = Mock(spec=ExistingFileRemover)
         self.content_reader = flexmock(ContentReader)
         self.dir_reader = MockDirReader()
         self.err = StringIO()
@@ -41,16 +42,7 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
         )
 
     def test(self):
-        flexmock(self.file_remover). \
-            should_receive('remove_file_if_exists'). \
-            with_args('/xdg/Trash/info/pippo.trashinfo').once()
-        flexmock(self.file_remover). \
-            should_receive('remove_file_if_exists'). \
-            with_args("/xdg/Trash/files/pippo").once()
-        flexmock(self.volumes_listing). \
-            should_receive('list_volumes'). \
-            and_return([]).once()
-
+        self.volumes_listing.list_volumes.return_value = []
         self.dir_reader.mkdir('/xdg')
         self.dir_reader.mkdir('/xdg/Trash')
         self.dir_reader.mkdir('/xdg/Trash/info')
@@ -58,3 +50,8 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
         self.dir_reader.mkdir('/xdg/Trash/files')
 
         self.empty.run_cmd([], self.environ, uid=123)
+
+        assert self.file_remover.mock_calls == [
+            call.remove_file_if_exists('/xdg/Trash/files/pippo'),
+            call.remove_file_if_exists('/xdg/Trash/info/pippo.trashinfo')
+        ]
