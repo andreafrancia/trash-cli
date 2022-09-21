@@ -10,6 +10,7 @@ def os_mount_points():
         'nfs4',
         'p9', # file system used in WSL 2 (Windows Subsystem for Linux)
         'btrfs',
+        'fuse', # https://github.com/andreafrancia/trash-cli/issues/250
     ]
 
     # Append fstypes of physical devices to list
