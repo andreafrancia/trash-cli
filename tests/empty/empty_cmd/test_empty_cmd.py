@@ -1,7 +1,7 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import unittest
 from typing import cast
-from unittest.mock import Mock, call
+from mock import Mock, call
 
 from six import StringIO
 

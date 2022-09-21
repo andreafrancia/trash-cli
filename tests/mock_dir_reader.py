@@ -29,6 +29,6 @@ class MockDirReader(DirReader):
         if components != ['']:
             for p in components:
                 if p not in cwd:
-                    raise FileNotFoundError(f"no such file or directory: {dir}")
+                    raise FileNotFoundError("no such file or directory: %s" % dir)
                 cwd = cwd[p]
         return cwd
