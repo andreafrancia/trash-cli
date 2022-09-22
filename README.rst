@@ -1,6 +1,8 @@
 trash-cli - Command Line Interface to FreeDesktop.org Trash.
 ============================================================
 
+|Downloads|
+
 |Donate|_
 
 `简体中文`_
@@ -225,6 +227,7 @@ Thanks to `project contributors`_.
 
 Thanks to `JetBrains`_ for their license for Open Source Development
 
+.. |Downloads| image:: https://img.shields.io/pypi/dm/trash-cli
 .. |Donate| image:: https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif
 .. _Donate: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=93L6PYT4WBN5A
 .. _简体中文: https://github.com/andreafrancia/trash-cli/blob/master/README_zh-CN.rst
