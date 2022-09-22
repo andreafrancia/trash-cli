@@ -6,7 +6,8 @@ from pprint import pprint
 
 from trashcli.list_mount_points import os_mount_points
 from trashcli.super_enum import SuperEnum
-from . import fstab, TRASH_DIRS, PREAMBLE
+from trashcli.shell_completion import add_argument_to, TRASH_DIRS
+from . import fstab
 from .fs import FileSystemReader, file_size
 from .fstab import VolumesListing, Volumes
 from .trash import ParseError
@@ -17,11 +18,6 @@ from .trash import (version, TrashDirReader, path_of_backup_copy, print_version,
 from .trash_dirs_scanner import TopTrashDirRules, TrashDirsScanner, \
     trash_dir_found, trash_dir_skipped_because_parent_is_symlink, \
     trash_dir_skipped_because_parent_not_sticky, TrashDir
-
-try:
-    import shtab
-except ImportError:
-    from . import _shtab as shtab
 
 
 def main():
@@ -274,7 +270,7 @@ class Parser:
         self.parser = argparse.ArgumentParser(prog=prog,
                                               description='List trashed files',
                                               epilog='Report bugs to https://github.com/andreafrancia/trash-cli/issues')
-        shtab.add_argument_to(self.parser, preamble=PREAMBLE)
+        add_argument_to(self.parser)
         self.parser.add_argument('--version',
                                  dest='action',
                                  action='store_const',
