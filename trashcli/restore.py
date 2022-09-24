@@ -3,7 +3,8 @@ import sys
 
 from .list_mount_points import os_mount_points
 from .trash import (version, home_trash_dir, volume_trash_dir1,
-                    volume_trash_dir2, my_input, print_version, parse_original_location)
+                    volume_trash_dir2, my_input, print_version,
+                    parse_original_location)
 from .fstab import volume_of
 from .fs import contents_of, list_files_in_dir
 from .trash import path_of_backup_copy
@@ -96,10 +97,10 @@ def main():
                                  TrashDirectory(),
                                  contents_of)
     RestoreCmd(
-        stdout  = sys.stdout,
-        stderr  = sys.stderr,
-        exit    = sys.exit,
-        input   = my_input,
+        stdout=sys.stdout,
+        stderr=sys.stderr,
+        exit=sys.exit,
+        input=my_input,
         trashed_files=trashed_files,
         mount_points=os_mount_points,
         fs=FileSystem()
@@ -188,7 +189,8 @@ class RestoreAskingTheUser(object):
 
     def restore_asking_the_user(self, trashed_files):
         try:
-            user_input = self.input("What file to restore [0..%d]: " % (len(trashed_files) - 1))
+            user_input = self.input(
+                "What file to restore [0..%d]: " % (len(trashed_files) - 1))
         except KeyboardInterrupt:
             return self.die("")
         except EOFError:
@@ -261,13 +263,13 @@ def original_location_matches_path(trashed_file_original_location, path):
 
 class RestoreCmd(object):
     def __init__(self, stdout, stderr, exit, input,
-                 curdir = getcwd_as_realpath, version = version,
+                 curdir=getcwd_as_realpath, version=version,
                  trashed_files=None, mount_points=None, fs=None):
-        self.out      = stdout
-        self.err      = stderr
-        self.exit     = exit
-        self.input    = input
-        self.curdir   = curdir
+        self.out = stdout
+        self.err = stderr
+        self.exit = exit
+        self.input = input
+        self.curdir = curdir
         self.version = version
         self.fs = fs
         self.trashed_files = trashed_files
@@ -284,20 +286,24 @@ class RestoreCmd(object):
             trashed_files = list(self.all_files_trashed_from_path(
                 args['path'], trash_dir_from_cli))
             if args['sort'] == 'path':
-                trashed_files = sorted(trashed_files, key=lambda x: x.original_location + str(x.deletion_date))
+                trashed_files = sorted(trashed_files,
+                                       key=lambda x: x.original_location + str(
+                                           x.deletion_date))
             elif args['sort'] == 'date':
-                trashed_files = sorted(trashed_files, key=lambda x: x.deletion_date)
+                trashed_files = sorted(trashed_files,
+                                       key=lambda x: x.deletion_date)
             self.handle_trashed_files(trashed_files)
 
-    def handle_trashed_files(self,trashed_files):
+    def handle_trashed_files(self, trashed_files):
         if not trashed_files:
             self.report_no_files_found()
-        else :
+        else:
             for i, trashedfile in enumerate(trashed_files):
                 self.println("%4d %s %s" % (i,
                                             trashedfile.deletion_date,
                                             trashedfile.original_location))
             self.restore_asking_the_user(trashed_files)
+
     def restore_asking_the_user(self, trashed_files):
         restore_asking_the_user = RestoreAskingTheUser(self.input,
                                                        self.println,
@@ -322,10 +328,13 @@ class RestoreCmd(object):
 
     def report_no_files_found(self):
         self.println("No files trashed from current dir ('%s')" % self.curdir())
+
     def println(self, line):
         self.out.write(line + '\n')
+
     def printerr(self, msg):
         self.err.write('%s\n' % msg)
+
 
 def parse_additional_volumes(volume_from_args):
     if not volume_from_args:
@@ -348,24 +357,25 @@ class TrashDirectories2:
 
 
 def make_trash_directories():
-    trash_directories = TrashDirectories(volume_of, os.getuid, os.environ)
+    trash_directories = TrashDirectories(volume_of, os.getuid(), os.environ)
     return TrashDirectories2(volume_of, trash_directories)
 
 
 class TrashDirectories:
-    def __init__(self, volume_of, getuid, environ):
-        self.volume_of    = volume_of
-        self.getuid       = getuid
-        self.environ      = environ
+    def __init__(self, volume_of, uid, environ):
+        self.volume_of = volume_of
+        self.uid = uid
+        self.environ = environ
 
     def all_trash_directories(self, volumes):
         for path1, volume1 in home_trash_dir(self.environ, self.volume_of):
             yield path1, volume1
         for volume in volumes:
-            for path1, volume1 in volume_trash_dir1(volume, self.getuid):
+            for path1, volume1 in volume_trash_dir1(volume, self.uid):
                 yield path1, volume1
-            for path1, volume1 in volume_trash_dir2(volume, self.getuid):
+            for path1, volume1 in volume_trash_dir2(volume, self.uid):
                 yield path1, volume1
+
 
 class TrashedFile:
     """
@@ -382,10 +392,11 @@ class TrashedFile:
      - original_file : the path where the trashed file has been placed after the
                        trash operation (instance of Path)
     """
+
     def __init__(self, original_location,
-                       deletion_date,
-                       info_file,
-                       original_file):
+                 deletion_date,
+                 info_file,
+                 original_file):
         self.original_location = original_location
         self.deletion_date = deletion_date
         self.info_file = info_file
@@ -394,7 +405,9 @@ class TrashedFile:
 
 def restore(trashed_file, fs):
     if fs.path_exists(trashed_file.original_location):
-        raise IOError('Refusing to overwrite existing file "%s".' % os.path.basename(trashed_file.original_location))
+        raise IOError(
+            'Refusing to overwrite existing file "%s".' % os.path.basename(
+                trashed_file.original_location))
     else:
         parent = os.path.dirname(trashed_file.original_location)
         fs.mkdirs(parent)
@@ -405,14 +418,14 @@ def restore(trashed_file, fs):
 
 class TrashDirectory:
 
-    def all_info_files(self, path) :
+    def all_info_files(self, path):
         norm_path = os.path.normpath(path)
         info_dir = os.path.join(norm_path, 'info')
-        try :
+        try:
             for info_file in list_files_in_dir(info_dir):
-                if not os.path.basename(info_file).endswith('.trashinfo') :
+                if not os.path.basename(info_file).endswith('.trashinfo'):
                     yield ('non_trashinfo', info_file)
-                else :
+                else:
                     yield ('trashinfo', info_file)
-        except OSError: # when directory does not exist
+        except OSError:  # when directory does not exist
             pass

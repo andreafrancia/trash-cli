@@ -47,13 +47,13 @@ def home_trash_dir(environ, volume_of):
         yield path, volume_of(path)
 
 
-def volume_trash_dir1(volume, getuid):
-    path = os.path.join(volume, '.Trash/%s' % getuid())
+def volume_trash_dir1(volume, uid):
+    path = os.path.join(volume, '.Trash/%s' % uid)
     yield path, volume
 
 
-def volume_trash_dir2(volume, getuid):
-    path = os.path.join(volume, ".Trash-%s" % getuid())
+def volume_trash_dir2(volume, uid):
+    path = os.path.join(volume, ".Trash-%s" % uid)
     yield path, volume
 
 

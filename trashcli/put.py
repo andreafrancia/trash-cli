@@ -2,22 +2,26 @@ import errno
 import os
 import random
 import sys
+from six import StringIO
 from argparse import ArgumentParser, RawDescriptionHelpFormatter, SUPPRESS
 from datetime import datetime
 from pwd import getpwuid
+from typing import Dict, Callable
 
 from grp import getgrgid
 
-from .fstab import volumes
+from .fstab import volumes, Volumes
 from .trash import EX_OK, EX_IOERR, home_trash_dir, volume_trash_dir1, \
     volume_trash_dir2, my_input
 from .trash import path_of_backup_copy
 from .trash import version
 
+from .py2compat import url_quote
+
 
 def main():
     trash_directories_finder = TrashDirectoriesFinder(os.environ,
-                                                      os.getuid,
+                                                      os.getuid(),
                                                       volumes)
     file_trasher = FileTrasher(RealFs(),
                                volumes,
@@ -38,8 +42,8 @@ def parent_path(path):
 
 class Access:
     @staticmethod
-    def is_accessible(file):
-        return os.access(file, os.F_OK)
+    def is_accessible(path):
+        return os.access(path, os.F_OK)
 
 
 class TrashPutCmd:
@@ -97,8 +101,8 @@ mode_interactive = 'interactive'
 
 
 class User:
-    def __init__(self, my_input):
-        self.my_input = my_input
+    def __init__(self, my_input_func):
+        self.my_input = my_input_func
 
     def ask_user_about_deleting_file(self, program_name, path):
         reply = self.my_input("%s: trash %s '%s'? " % (program_name,
@@ -123,9 +127,9 @@ class Trasher:
         self.access = access
 
     def trash(self,
-              file,
+              path,
               user_trash_dir,
-              result,
+              result,  # type: TrashResult
               logger,  # type: MyLogger
               mode,
               reporter,
@@ -146,19 +150,19 @@ class Trasher:
         then try to trash in the second trash directory.
         """
 
-        if self._should_skipped_by_specs(file):
-            reporter.unable_to_trash_dot_entries(file)
+        if self._should_skipped_by_specs(path):
+            reporter.unable_to_trash_dot_entries(path)
             return result
 
-        if mode == mode_force and not self.access.is_accessible(file):
+        if mode == mode_force and not self.access.is_accessible(path):
             return result
 
-        if mode == mode_interactive and self.access.is_accessible(file):
-            reply = self.user.ask_user_about_deleting_file(program_name, file)
+        if mode == mode_interactive and self.access.is_accessible(path):
+            reply = self.user.ask_user_about_deleting_file(program_name, path)
             if reply == user_replied_no:
                 return result
 
-        return self.file_trasher.trash_file(file,
+        return self.file_trasher.trash_file(path,
                                             forced_volume,
                                             user_trash_dir,
                                             result,
@@ -173,7 +177,7 @@ class Trasher:
 class FileTrasher:
 
     def __init__(self, fs, volumes, realpath, now, trash_directories_finder,
-                 parent_path):
+                 parent_path):  # type: (RealFs, Volumes, Callable[[str], str], Callable[[], datetime], TrashDirectoriesFinder, Callable[[str], str]) -> None
         self.fs = fs
         self.volumes = volumes
         self.realpath = realpath
@@ -182,12 +186,13 @@ class FileTrasher:
         self.parent_path = parent_path
 
     def trash_file(self,
-                   file,
+                   file,  # type: str
                    forced_volume,
                    user_trash_dir,
-                   result,
+                   result,  # type: TrashResult
                    logger,  # type: MyLogger
-                   reporter):
+                   reporter,  # type: TrashPutReporter
+                   ):
         volume_of_file_to_be_trashed = forced_volume or \
                                        self.volume_of_parent(file)
         candidates = self.trash_directories_finder. \
@@ -234,6 +239,8 @@ class FileTrasher:
                     except (IOError, OSError) as error:
                         reporter.unable_to_trash_file_in_because(
                             file, trash_dir.path, error)
+            else:
+                reporter.trash_dir_is_not_secure(trash_dir.path)
 
             if file_has_been_trashed: break
 
@@ -312,9 +319,12 @@ relative_paths = 'relative_paths'
 
 
 class TrashDirectoriesFinder:
-    def __init__(self, environ, getuid, volumes):
+    def __init__(self,
+                 environ,
+                 uid,
+                 volumes):  # type: (Dict[str, str], int, Volumes) -> None
         self.environ = environ
-        self.getuid = getuid
+        self.uid = uid
         self.volumes = volumes
 
     def possible_trash_directories_for(self,
@@ -340,9 +350,9 @@ class TrashDirectoriesFinder:
             for path, dir_volume in home_trash_dir(self.environ,
                                                    self.volumes.volume_of):
                 add_home_trash(path, dir_volume)
-            for path, dir_volume in volume_trash_dir1(volume, self.getuid):
+            for path, dir_volume in volume_trash_dir1(volume, self.uid):
                 add_top_trash_dir(path, dir_volume)
-            for path, dir_volume in volume_trash_dir2(volume, self.getuid):
+            for path, dir_volume in volume_trash_dir2(volume, self.uid):
                 add_alt_top_trash_dir(path, dir_volume)
         return trash_dirs
 
@@ -386,7 +396,11 @@ def describe(path):
 
 
 class MyLogger:
-    def __init__(self, stderr, program_name, verbose):
+    def __init__(self,
+                 stderr,  # type: StringIO
+                 program_name,  # type: str
+                 verbose,  # type: int
+                 ):
         self.program_name = program_name
         self.stderr = stderr
         self.verbose = verbose
@@ -424,7 +438,8 @@ class TrashResult:
 
 
 class TrashPutReporter:
-    def __init__(self, logger, environ):
+    def __init__(self, logger,
+                 environ):  # type: (MyLogger, Dict[str, str]) -> None
         self.logger = logger
         self.no_argument_specified = False
         self.environ = environ
@@ -439,6 +454,9 @@ class TrashPutReporter:
         self.logger.info("'%s' trashed in %s" % (trashee,
                                                  shrink_user(trash_directory,
                                                              self.environ)))
+
+    def trash_dir_is_not_secure(self, path):
+        self.logger.info("trash directory %s is not secure" % path)
 
     def log_info(self, message):
         self.logger.info(message)
@@ -595,11 +613,7 @@ def format_date(deletion_date):
 
 
 def format_original_location(original_location):
-    try:
-        from urllib import quote
-    except ImportError:
-        from urllib.parse import quote
-    return quote(original_location, '/')
+    return url_quote(original_location, '/')
 
 
 def shrink_user(path, environ):
@@ -669,7 +683,8 @@ class TopDirRelativePaths:
 
 class AbsolutePaths:
 
-    def calc_parent_path(self, parent):
+    @staticmethod
+    def calc_parent_path(parent):
         return parent
 
 

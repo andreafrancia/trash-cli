@@ -7,9 +7,8 @@ from trashcli.restore import TrashDirectories
 class TestTrashDirectories(unittest.TestCase):
     def setUp(self):
         volume_of = lambda x: "volume_of(%s)" % x
-        getuid = Mock(return_value=123)
         environ = {'HOME': '~'}
-        self.trash_directories = TrashDirectories(volume_of, getuid, environ)
+        self.trash_directories = TrashDirectories(volume_of, 123, environ)
 
     def test_list_all_directories(self):
         result = list(self.trash_directories.all_trash_directories(

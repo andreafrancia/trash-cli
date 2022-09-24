@@ -106,7 +106,7 @@ class RestoreTrashUser:
 
     def run_restore(self, with_user_typing=''):
         environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME}
-        trash_directories = TrashDirectories(volume_of, os.getuid, environ)
+        trash_directories = TrashDirectories(volume_of, os.getuid(), environ)
         trash_directories2 = TrashDirectories2(volume_of, trash_directories)
         logger = Mock(spec=[])
         trashed_files = TrashedFiles(logger,

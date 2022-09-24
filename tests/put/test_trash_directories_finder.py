@@ -9,7 +9,7 @@ class TestTrashDirectoriesFinder(unittest.TestCase):
         volumes = Mock(spec=[])
         volumes.volume_of = lambda x: 'volume_of(%s)' % x
         self.finder = TrashDirectoriesFinder({'HOME': "~"},
-                                             lambda: 123, volumes)
+                                             123, volumes)
 
     def test_no_specific_user_dir(self):
         result = self.finder.possible_trash_directories_for('/volume', None)

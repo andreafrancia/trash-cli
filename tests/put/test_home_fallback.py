@@ -15,7 +15,7 @@ class TestHomeFallback(unittest.TestCase):
         self.fs = Mock()
         volumes = create_fake_volume_of(mount_points)
         trash_directories_finder = TrashDirectoriesFinder({},
-                                                          lambda: 123,
+                                                          123,
                                                           volumes)
         self.file_trasher = FileTrasher(self.fs,
                                         volumes,
