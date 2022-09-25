@@ -2,8 +2,6 @@ import os
 from datetime import datetime
 from io import TextIOWrapper
 
-from typing.io import TextIO
-
 from trashcli.empty.actions import Action
 from trashcli.empty.console import Console
 from trashcli.empty.delete_according_date import ContentReader
@@ -51,10 +49,6 @@ class EmptyCmd:
         console = Console(self.program_name, self.out, self.err)
 
         self.actions = {
-            Action.print_version: PrintVersionAction(self.out,
-                                                     self.version,
-                                                     self.program_name),
-            Action.print_time: PrintTimeAction(self.out, clock),
             Action.empty: EmptyAction(clock,
                                       self.file_remover,
                                       self.volumes_listing,
@@ -63,6 +57,10 @@ class EmptyCmd:
                                       self.dir_reader,
                                       self.content_reader,
                                       console),
+            Action.print_version: PrintVersionAction(self.out,
+                                                     self.version,
+                                                     self.program_name),
+            Action.print_time: PrintTimeAction(self.out, clock),
         }
 
     def run_cmd(self, args, environ, uid):

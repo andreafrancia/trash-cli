@@ -223,7 +223,7 @@ class TrashDirsSelector:
                all_users_flag,
                user_specified_dirs,
                environ,
-               uid):
+               uid): # type (bool, List[str], Dict[str, str], int) -> Iterator[Tuple[str, TrashDir[str, str]]]
         if all_users_flag:
             for dir in self.all_users_dirs.scan_trash_dirs(environ, uid):
                 yield dir

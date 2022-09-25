@@ -30,3 +30,15 @@ class TestMakeParser(unittest.TestCase):
                                    args=['-f'])
 
         assert parsed.interactive == False
+
+    def test_dry_run(self):
+        parsed = self.parser.parse(default_is_interactive=True,
+                                   args=['--dry-run'])
+
+        assert parsed.dry_run == True
+
+    def test_dry_run_default(self):
+        parsed = self.parser.parse(default_is_interactive=True,
+                                   args=[])
+
+        assert parsed.dry_run == False

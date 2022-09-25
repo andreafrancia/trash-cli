@@ -12,7 +12,8 @@ class DeleteAccordingDate:
         self.reader = reader
         self.clock = clock
 
-    def ok_to_delete(self, trashinfo_path, environ, parsed_days):
+    def ok_to_delete(self, trashinfo_path, environ,
+                     parsed_days):  # type: (str, dict, int) -> bool
         if parsed_days is None:
             return True
         else:

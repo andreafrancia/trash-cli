@@ -1,3 +1,5 @@
+from typing import Dict
+
 from trashcli.empty.console import Console
 from trashcli.empty.delete_according_date import DeleteAccordingDate, \
     ContentReader
@@ -5,6 +7,7 @@ from trashcli.empty.emptier import Emptier
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.guard import Guard
 from trashcli.empty.parse_reply import parse_reply
+from trashcli.empty.parser import Parsed
 from trashcli.empty.prepare_output_message import prepare_output_message
 from trashcli.empty.user import User
 from trashcli.fstab import Volumes, VolumesListing
@@ -28,7 +31,8 @@ class EmptyAction:
                                console)
         self.guard = Guard(user)
 
-    def run_action(self, parsed, environ, uid):
+    def run_action(self, parsed, environ,
+                   uid):  # type: (Parsed, Dict[str, str], int) -> None
         trash_dirs = self.selector.select(parsed.all_users,
                                           parsed.user_specified_trash_dirs,
                                           environ,
@@ -37,4 +41,4 @@ class EmptyAction:
                                               trash_dirs)
         if delete_pass.ok_to_empty:
             self.emptier.do_empty(delete_pass.trash_dirs, environ,
-                                  parsed.days)
+                                  parsed.days, parsed.dry_run)

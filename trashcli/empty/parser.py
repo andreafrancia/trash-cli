@@ -9,6 +9,7 @@ Parsed = NamedTuple('Parsed',
                      ('all_users', bool),
                      ('interactive', bool),
                      ('days', int),
+                     ('dry_run', bool),
                      ])
 
 
@@ -23,6 +24,7 @@ class Parser:
             all_users=namespace.all_users,
             interactive=namespace.interactive,
             days=namespace.days,
+            dry_run=namespace.dry_run,
         )
 
     @staticmethod
@@ -61,6 +63,11 @@ class Parser:
                             action='store_false',
                             help='don\'t ask before emptying trash directories',
                             dest='interactive')
+        parser.add_argument('--dry-run',
+                            action='store_true',
+                            # help='show which files would have been removed',
+                            help=argparse.SUPPRESS,
+                            dest='dry_run')
         parser.add_argument('days', action='store', default=None, type=int,
                             nargs='?')
 
