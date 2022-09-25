@@ -15,3 +15,6 @@ class Console:
 
     def print_error(self, msg):
         self.err.write(format_error_msg(self.program_name, msg))
+
+    def print_dry_run(self, path):
+        self.out.write("would remove %s\n" % path)

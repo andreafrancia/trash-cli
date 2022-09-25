@@ -65,8 +65,7 @@ class Parser:
                             dest='interactive')
         parser.add_argument('--dry-run',
                             action='store_true',
-                            # help='show which files would have been removed',
-                            help=argparse.SUPPRESS,
+                            help='show which files would have been removed',
                             dest='dry_run')
         parser.add_argument('days', action='store', default=None, type=int,
                             nargs='?')

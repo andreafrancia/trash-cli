@@ -19,10 +19,13 @@ class Emptier:
     def do_empty(self, trash_dirs, environ, parsed_days,
                  dry_run):  # type: (Iterator[TrashDir], dict, int, bool) -> None
         for path in self.files_to_delete(trash_dirs, environ, parsed_days):
-            try:
-                self.file_remover.remove_file_if_exists(path)
-            except OSError:
-                self.console.print_cannot_remove_error(path)
+            if dry_run:
+                self.console.print_dry_run(path)
+            else:
+                try:
+                    self.file_remover.remove_file_if_exists(path)
+                except OSError:
+                    self.console.print_cannot_remove_error(path)
 
     def files_to_delete(self, trash_dirs, environ,
                         parsed_days):  # type: (Iterator[TrashDir], dict, int) -> Iterator[str]

@@ -55,3 +55,18 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
             call.remove_file_if_exists('/xdg/Trash/files/pippo'),
             call.remove_file_if_exists('/xdg/Trash/info/pippo.trashinfo')
         ]
+
+    def test_with_dry_run(self):
+        self.volumes_listing.list_volumes.return_value = []
+        self.dir_reader.mkdir('/xdg')
+        self.dir_reader.mkdir('/xdg/Trash')
+        self.dir_reader.mkdir('/xdg/Trash/info')
+        self.dir_reader.add_file('/xdg/Trash/info/pippo.trashinfo')
+        self.dir_reader.mkdir('/xdg/Trash/files')
+
+        self.empty.run_cmd(['--dry-run'], self.environ, uid=123)
+
+        assert self.file_remover.mock_calls == []
+        assert self.out.getvalue() == \
+               'would remove /xdg/Trash/files/pippo\n' \
+               'would remove /xdg/Trash/info/pippo.trashinfo\n'
