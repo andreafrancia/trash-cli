@@ -51,6 +51,8 @@ class TestEndToEndPut(unittest.TestCase):
 
                 options:
                   -h, --help            show this help message and exit
+                  --print-completion {bash,zsh,tcsh}
+                                        print shell completion script
                   -d, --directory       ignored (for GNU rm compatibility)
                   -f, --force           silently ignore nonexistent files
                   -i, --interactive     prompt before every removal

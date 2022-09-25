@@ -2,6 +2,8 @@ import argparse
 from typing import NamedTuple, List
 
 from trashcli.empty.actions import Action
+from trashcli.shell_completion import add_argument_to, TRASH_DIRS
+
 
 Parsed = NamedTuple('Parsed',
                     [('action', Action),
@@ -43,6 +45,7 @@ class Parser:
         parser = argparse.ArgumentParser(
             description='Purge trashed files.',
             epilog='Report bugs to https://github.com/andreafrancia/trash-cli/issues')
+        add_argument_to(parser)
         parser.add_argument('--version', action='store_true', default=False,
                             help="show program's version number and exit")
         parser.add_argument("-v",
@@ -56,7 +59,8 @@ class Parser:
         parser.add_argument('--trash-dir', action='append', default=[],
                             metavar='TRASH_DIR',
                             dest='user_specified_trash_dirs',
-                            help='specify the trash directory to use')
+                            help='specify the trash directory to use'
+                            ).complete = TRASH_DIRS
         parser.add_argument('--print-time', action='store_true',
                             dest='print_time',
                             help=argparse.SUPPRESS)

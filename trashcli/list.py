@@ -6,6 +6,7 @@ from pprint import pprint
 
 from trashcli.list_mount_points import os_mount_points
 from trashcli.super_enum import SuperEnum
+from trashcli.shell_completion import add_argument_to, TRASH_DIRS
 from . import fstab
 from .fs import FileSystemReader, file_size
 from .fstab import VolumesListing, Volumes
@@ -269,6 +270,7 @@ class Parser:
         self.parser = argparse.ArgumentParser(prog=prog,
                                               description='List trashed files',
                                               epilog='Report bugs to https://github.com/andreafrancia/trash-cli/issues')
+        add_argument_to(self.parser)
         self.parser.add_argument('--version',
                                  dest='action',
                                  action='store_const',
@@ -294,7 +296,8 @@ class Parser:
                                  action='append',
                                  default=[],
                                  dest='trash_dirs',
-                                 help='specify the trash directory to use')
+                                 help='specify the trash directory to use'
+                                 ).complete = TRASH_DIRS
         self.parser.add_argument('--size',
                                  action='store_const',
                                  default='deletion_date',
