@@ -18,3 +18,6 @@ class Console:
 
     def print_dry_run(self, path):
         self.out.write("would remove %s\n" % path)
+
+    def print_removing(self, path):
+        self.out.write("removing %s\n" % path)

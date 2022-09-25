@@ -10,6 +10,7 @@ Parsed = NamedTuple('Parsed',
                      ('interactive', bool),
                      ('days', int),
                      ('dry_run', bool),
+                     ('verbose', int),
                      ])
 
 
@@ -25,6 +26,7 @@ class Parser:
             interactive=namespace.interactive,
             days=namespace.days,
             dry_run=namespace.dry_run,
+            verbose=namespace.verbose,
         )
 
     @staticmethod
@@ -43,6 +45,14 @@ class Parser:
             epilog='Report bugs to https://github.com/andreafrancia/trash-cli/issues')
         parser.add_argument('--version', action='store_true', default=False,
                             help="show program's version number and exit")
+        parser.add_argument("-v",
+                            "--verbose",
+                            default=0,
+                            action="count",
+                            dest="verbose",
+                            # help="explain what is being done",
+                            help=argparse.SUPPRESS,
+                            )
         parser.add_argument('--trash-dir', action='append', default=[],
                             metavar='TRASH_DIR',
                             dest='user_specified_trash_dirs',

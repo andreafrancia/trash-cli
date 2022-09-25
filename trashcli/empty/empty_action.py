@@ -41,4 +41,4 @@ class EmptyAction:
                                               trash_dirs)
         if delete_pass.ok_to_empty:
             self.emptier.do_empty(delete_pass.trash_dirs, environ,
-                                  parsed.days, parsed.dry_run)
+                                  parsed.days, parsed.dry_run, parsed.verbose)
