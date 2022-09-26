@@ -151,13 +151,10 @@ The easy way
 ~~~~~~~~~~~~
 
 Requirements:
-
- - Python 3 (Python 2.7 may work)
- - pip (use `apt-get install python-pip` on Debian,
-   use `apt install python3-pip` on Ubuntu)
+ * Python 3 (Python 2.7 also work)
 
 Installation command::
- 
+
     pip install trash-cli
 
 Note: you may want add ~/.local/bin to the PATH::
@@ -165,28 +162,27 @@ Note: you may want add ~/.local/bin to the PATH::
     echo 'export PATH="$PATH":~/.local/bin' >> ~/.bashrc
     source ~/.bashrc # reload .bashrc
 
-From sources
-~~~~~~~~~~~~
-
-System-wide installation::
-
-    git clone https://github.com/andreafrancia/trash-cli.git
-    cd trash-cli
-    sudo pip install .
-
-User-only installation::
-
-    git clone https://github.com/andreafrancia/trash-cli.git
-    cd trash-cli
-    pip install .
-
-After the user installation you may want add this line to your .bashrc::
-
-    export PATH=~/.local/bin:"$PATH"
-
 For uninstalling use::
 
     pip uninstall trash-cli
+
+Bleeding Edge (from sources)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+First of all you need to uninstall any previous version of trash-cli::
+
+    $ [sudo] pip uninstall trash-cli # remove the previous version (with pip)
+    $ [sudo] apt-get remove trash-cli # remove the previous version (with apt)
+    $ [sudo] yum uninstall trash-cli # remove the previous version (with yum)
+    $ ... # refer to the package manager of your distribution
+
+Then install the latest version from git::
+
+    $ [sudo] pip install pip install git+https://github.com/andreafrancia/trash-cli
+
+After the user installation you may want add this line to your .bashrc/.zshrc::
+
+    export PATH=~/.local/bin:"$PATH"
 
 From package manager
 ~~~~~~~~~~~~~~~~~~~~
@@ -201,20 +197,6 @@ Bugs
 If you discover a bug please report it here:
 
     https://github.com/andreafrancia/trash-cli/issues
-
-Bleeding Edge
--------------
-
-First of all you need to uninstall any previous version of trash-cli::
-
-    $ [sudo] pip uninstall trash-cli # remove the previous version (with pip)
-    $ [sudo] apt-get remove trash-cli # remove the previous version (with apt)
-    $ [sudo] yum uninstall trash-cli # remove the previous version (with yum)
-    $ ... # refer to the package manager of your distribution
-
-Then install the latest version from git::
-
-    $ pip install pip install git+https://github.com/andreafrancia/trash-cli
 
 Feedback
 --------
