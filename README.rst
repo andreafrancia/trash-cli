@@ -195,14 +195,31 @@ Debian/Ubuntu (apt)::
 
     sudo apt install trash-cli
 
-Bugs and feedback
------------------
+Bugs
+----
 
 If you discover a bug please report it here:
 
     https://github.com/andreafrancia/trash-cli/issues
 
-You can also email me to andrea@andreafrancia.it. On Twitter I'm @andreafrancia.
+Bleeding Edge
+-------------
+
+First of all you need to uninstall any previous version of trash-cli::
+
+    $ [sudo] pip uninstall trash-cli # remove the previous version (with pip)
+    $ [sudo] apt-get remove trash-cli # remove the previous version (with apt)
+    $ [sudo] yum uninstall trash-cli # remove the previous version (with yum)
+    $ ... # refer to the package manager of your distribution
+
+Then install the latest version from git::
+
+    $ pip install pip install git+https://github.com/andreafrancia/trash-cli
+
+Feedback
+--------
+
+You can send me an email using andrea@andreafrancia.it.
 
 Development
 -----------
