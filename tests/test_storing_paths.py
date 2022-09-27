@@ -1,5 +1,5 @@
-from trashcli.put import TrashDirectoryForPut
-from trashcli.put import AbsolutePaths, TopDirRelativePaths
+from trashcli.put.file_trasher import TrashDirectoryForPut, \
+    TopDirRelativePaths, AbsolutePaths
 from mock import Mock
 
 

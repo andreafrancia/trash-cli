@@ -3,7 +3,7 @@ import unittest
 
 import pytest
 
-from trashcli.put import parent_path
+from trashcli.put.parent_path import parent_path
 
 from ..files import require_empty_dir, make_empty_file
 from ..support import MyPath

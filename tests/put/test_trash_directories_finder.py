@@ -1,7 +1,7 @@
 import unittest
 from mock import Mock
 
-from trashcli.put import TrashDirectoriesFinder
+from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 
 
 class TestTrashDirectoriesFinder(unittest.TestCase):

@@ -20,8 +20,8 @@ class TestGenerateScripts(unittest.TestCase):
     def test(self):
         scripts = make_scripts()
 
-        scripts.add_script('trash', 'trashcli.put', 'main')
-        scripts.add_script('trash-put', 'trashcli.put', 'main')
+        scripts.add_script('trash', 'trashcli.put.main', 'main')
+        scripts.add_script('trash-put', 'trashcli.put.main', 'main')
         scripts.add_script('trash-list', 'trashcli.list', 'main')
         scripts.add_script('trash-restore', 'trashcli.restore', 'main')
         scripts.add_script('trash-empty', 'trashcli.empty.main', 'main')

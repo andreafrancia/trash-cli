@@ -1,7 +1,8 @@
 import unittest
 from mock import Mock
 
-from trashcli.put import User, parse_user_reply, user_replied_yes, user_replied_no
+from trashcli.put.user import User, user_replied_no, user_replied_yes, \
+    parse_user_reply
 
 
 class TestUser(unittest.TestCase):

@@ -1,6 +1,6 @@
 import unittest
 
-from trashcli.put import Suffix
+from trashcli.put.file_trasher import Suffix
 
 
 class TestSuffix(unittest.TestCase):

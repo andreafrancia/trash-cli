@@ -6,7 +6,8 @@ import pytest
 
 from trashcli.fs import read_file
 from ..support import MyPath
-from trashcli.put import RealFs, InfoDir
+from trashcli.put.real_fs import RealFs
+from trashcli.put.file_trasher import InfoDir
 from mock import Mock
 
 

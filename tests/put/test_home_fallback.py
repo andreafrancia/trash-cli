@@ -3,7 +3,9 @@ import unittest
 from mock import Mock, call, ANY
 
 from trashcli.fstab import create_fake_volume_of
-from trashcli.put import TrashResult, TrashDirectoriesFinder, FileTrasher
+from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
+from trashcli.put.file_trasher import FileTrasher
+from trashcli.trash_put_cmd import TrashResult
 from datetime import datetime
 import os
 

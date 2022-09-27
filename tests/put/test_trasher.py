@@ -2,8 +2,9 @@ import unittest
 
 from mock import Mock, call
 
-from trashcli.put import Trasher, mode_interactive, mode_force, user_replied_no, \
-    user_replied_yes
+from trashcli.put.trasher import Trasher
+from trashcli.put.user import user_replied_no, user_replied_yes
+from trashcli.trash_put_cmd import mode_force, mode_interactive
 
 
 class TestTrasher(unittest.TestCase):

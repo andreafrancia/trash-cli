@@ -2,7 +2,7 @@ import unittest
 
 from mock import Mock, call
 
-from trashcli.put import TopTrashDirRules
+from trashcli.put.file_trasher import TopTrashDirRules
 
 
 class TestTopTrashDirRules(unittest.TestCase):
