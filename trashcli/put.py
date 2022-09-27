@@ -6,7 +6,7 @@ from six import StringIO
 from argparse import ArgumentParser, RawDescriptionHelpFormatter, SUPPRESS
 from datetime import datetime
 from pwd import getpwuid
-from typing import Dict, Callable
+from typing import Dict, Callable, List, Tuple
 
 from grp import getgrgid
 
@@ -21,9 +21,7 @@ from .py2compat import url_quote
 
 
 def main():
-    trash_directories_finder = TrashDirectoriesFinder(os.environ,
-                                                      os.getuid(),
-                                                      volumes)
+    trash_directories_finder = TrashDirectoriesFinder(os.getuid(), volumes)
     file_trasher = FileTrasher(RealFs(),
                                volumes,
                                os.path.realpath,
@@ -33,8 +31,8 @@ def main():
     access = Access()
     user = User(my_input)
     trasher = Trasher(file_trasher, user, access)
-    cmd = TrashPutCmd(sys.stdout, sys.stderr, os.environ, trasher)
-    return cmd.run(sys.argv)
+    cmd = TrashPutCmd(sys.stdout, sys.stderr, trasher)
+    return cmd.run(sys.argv, os.environ)
 
 
 def parent_path(path):
@@ -48,13 +46,12 @@ class Access:
 
 
 class TrashPutCmd:
-    def __init__(self, stdout, stderr, environ, trasher):
+    def __init__(self, stdout, stderr, trasher):
         self.stdout = stdout
         self.stderr = stderr
-        self.environ = environ
         self.trasher = trasher
 
-    def run(self, argv):
+    def run(self, argv, environ):
         program_name = os.path.basename(argv[0])
         parser = make_parser(program_name, self.stdout, self.stderr)
         try:
@@ -65,14 +62,15 @@ class TrashPutCmd:
             return e.code
         else:
             logger = MyLogger(self.stderr, program_name, options.verbose)
-            reporter = TrashPutReporter(logger, self.environ)
+            reporter = TrashPutReporter(logger, environ)
             result = self.trash_all(options.files,
                                     options.trashdir,
                                     logger,
                                     options.mode,
                                     reporter,
                                     options.forced_volume,
-                                    program_name)
+                                    program_name,
+                                    environ)
 
             return reporter.exit_code(result)
 
@@ -83,7 +81,8 @@ class TrashPutCmd:
                   mode,
                   reporter,
                   forced_volume,
-                  program_name):
+                  program_name,
+                  environ):
         result = TrashResult(False)
         for arg in args:
             result = self.trasher.trash(arg,
@@ -93,7 +92,8 @@ class TrashPutCmd:
                                         mode,
                                         reporter,
                                         forced_volume,
-                                        program_name)
+                                        program_name,
+                                        environ)
         return result
 
 
@@ -135,7 +135,9 @@ class Trasher:
               mode,
               reporter,
               forced_volume,
-              program_name):
+              program_name,
+              environ,  # type: Dict[str, str]
+              ):
         """
         Trash a file in the appropriate trash directory.
         If the file belong to the same volume of the trash home directory it
@@ -168,7 +170,8 @@ class Trasher:
                                             user_trash_dir,
                                             result,
                                             logger,
-                                            reporter)
+                                            reporter,
+                                            environ)
 
     def _should_skipped_by_specs(self, file):
         basename = os.path.basename(file)
@@ -193,12 +196,13 @@ class FileTrasher:
                    result,  # type: TrashResult
                    logger,  # type: MyLogger
                    reporter,  # type: TrashPutReporter
+                   environ,  # type: Dict[str, str]
                    ):
         volume_of_file_to_be_trashed = forced_volume or \
                                        self.volume_of_parent(file)
         candidates = self.trash_directories_finder. \
             possible_trash_directories_for(volume_of_file_to_be_trashed,
-                                           user_trash_dir)
+                                           user_trash_dir, environ)
         reporter.volume_of_file(volume_of_file_to_be_trashed)
         file_has_been_trashed = False
         for path, volume, path_maker, checker in candidates:
@@ -321,17 +325,14 @@ relative_paths = 'relative_paths'
 
 
 class TrashDirectoriesFinder:
-    def __init__(self,
-                 environ,
-                 uid,
-                 volumes):  # type: (Dict[str, str], int, Volumes) -> None
-        self.environ = environ
+    def __init__(self, uid, volumes):  # type: (int, Volumes) -> None
         self.uid = uid
         self.volumes = volumes
 
     def possible_trash_directories_for(self,
                                        volume,
-                                       specific_trash_dir):
+                                       specific_trash_dir,
+                                       environ):  # type: (str, str, Dict[str, str]) -> List[Tuple[str, str, str, str]]
         trash_dirs = []
 
         def add_home_trash(path, volume):
@@ -349,7 +350,7 @@ class TrashDirectoriesFinder:
             volume = self.volumes.volume_of(path)
             trash_dirs.append((path, volume, relative_paths, all_is_ok_rules))
         else:
-            for path, dir_volume in home_trash_dir(self.environ,
+            for path, dir_volume in home_trash_dir(environ,
                                                    self.volumes.volume_of):
                 add_home_trash(path, dir_volume)
             for path, dir_volume in volume_trash_dir1(volume, self.uid):

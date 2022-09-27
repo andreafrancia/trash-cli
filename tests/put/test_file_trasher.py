@@ -20,10 +20,8 @@ class TestFileTrasher(unittest.TestCase):
         trash_directories_finder = Mock(spec=['possible_trash_directories_for'])
         trash_directories_finder.possible_trash_directories_for.return_value = []
 
-        trash_directories_finder = TrashDirectoriesFinder(
-            {'XDG_DATA_HOME': '/xdh'},
-            1001,
-            self.volumes)
+        self.environ = {'XDG_DATA_HOME': '/xdh'}
+        trash_directories_finder = TrashDirectoriesFinder(1001, self.volumes)
         self.file_trasher = FileTrasher(self.fs,
                                         self.volumes,
                                         lambda x: x,
@@ -41,7 +39,8 @@ class TestFileTrasher(unittest.TestCase):
                                      None,
                                      result,
                                      self.logger,
-                                     cast(TrashPutReporter, self.reporter))
+                                     cast(TrashPutReporter, self.reporter),
+                                     {})
 
         self.reporter.volume_of_file.assert_called_with('/')
 
@@ -55,7 +54,8 @@ class TestFileTrasher(unittest.TestCase):
                                      None,
                                      result,
                                      self.logger,
-                                     cast(TrashPutReporter, self.reporter))
+                                     cast(TrashPutReporter, self.reporter),
+                                     {})
 
         self.reporter.unable_to_trash_file.assert_called_with('non-existent')
 
@@ -68,7 +68,7 @@ class TestFileTrasher(unittest.TestCase):
         result = TrashResult(False)
 
         self.file_trasher.trash_file("non-existent", None, None, result, logger,
-                                     reporter)
+                                     reporter, self.environ)
 
         assert stderr.getvalue().splitlines() == [
             'trash-put: Volume of file: /disk',
