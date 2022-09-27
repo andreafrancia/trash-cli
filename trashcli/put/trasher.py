@@ -2,7 +2,7 @@ import os
 from typing import Dict
 
 from trashcli.put.user import user_replied_no
-from trashcli.trash_put_cmd import mode_force, mode_interactive
+from trashcli.put.trash_put_cmd import mode_force, mode_interactive
 
 
 class Trasher:

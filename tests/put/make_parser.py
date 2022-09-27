@@ -1,6 +1,6 @@
 import unittest
 
-from trashcli.trash_put_cmd import make_parser
+from trashcli.put.trash_put_cmd import make_parser
 
 
 class Test_make_parser(unittest.TestCase):

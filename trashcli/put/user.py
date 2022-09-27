@@ -1,4 +1,4 @@
-from trashcli.trash_put_cmd import describe
+from trashcli.put.trash_put_cmd import describe
 
 
 class User:

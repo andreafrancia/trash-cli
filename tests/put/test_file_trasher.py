@@ -8,7 +8,7 @@ from datetime import datetime
 
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.file_trasher import FileTrasher
-from trashcli.trash_put_cmd import MyLogger, TrashResult, TrashPutReporter
+from trashcli.put.trash_put_cmd import MyLogger, TrashResult, TrashPutReporter
 import os
 
 

@@ -4,7 +4,7 @@ from mock import Mock, call
 
 from trashcli.put.trasher import Trasher
 from trashcli.put.user import user_replied_no, user_replied_yes
-from trashcli.trash_put_cmd import mode_force, mode_interactive
+from trashcli.put.trash_put_cmd import mode_force, mode_interactive
 
 
 class TestTrasher(unittest.TestCase):

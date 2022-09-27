@@ -11,7 +11,7 @@ from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trasher import Trasher
 from trashcli.put.user import User
 from trashcli.trash import my_input
-from trashcli.trash_put_cmd import TrashPutCmd
+from trashcli.put.trash_put_cmd import TrashPutCmd
 
 
 def main():

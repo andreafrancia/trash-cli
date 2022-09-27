@@ -1,7 +1,7 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 import pytest
 
-from trashcli.trash_put_cmd import describe
+from trashcli.put.trash_put_cmd import describe
 from .files import require_empty_dir, make_empty_file, make_file
 from .support import MyPath
 import os

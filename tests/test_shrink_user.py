@@ -1,6 +1,6 @@
 import unittest
 
-from trashcli.trash_put_cmd import shrink_user
+from trashcli.put.trash_put_cmd import shrink_user
 
 
 class TestTrashDirectoryName(unittest.TestCase):
