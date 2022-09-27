@@ -21,6 +21,7 @@ class Trasher:
               forced_volume,
               program_name,
               environ,  # type: Dict[str, str]
+              uid, # type: int
               ):
         """
         Trash a file in the appropriate trash directory.
@@ -55,7 +56,8 @@ class Trasher:
                                             result,
                                             logger,
                                             reporter,
-                                            environ)
+                                            environ,
+                                            uid)
 
     def _should_skipped_by_specs(self, file):
         basename = os.path.basename(file)

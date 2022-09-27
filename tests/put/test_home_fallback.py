@@ -16,8 +16,7 @@ class TestHomeFallback(unittest.TestCase):
         mount_points = ['/', 'sandbox/other_partition']
         self.fs = Mock()
         volumes = create_fake_volume_of(mount_points)
-        trash_directories_finder = TrashDirectoriesFinder(123,
-                                                          volumes)
+        trash_directories_finder = TrashDirectoriesFinder(volumes)
         self.file_trasher = FileTrasher(self.fs,
                                         volumes,
                                         lambda x: x,
@@ -41,7 +40,8 @@ class TestHomeFallback(unittest.TestCase):
                                      result,
                                      self.logger,
                                      self.reporter,
-                                     {})
+                                     {},
+                                     123)
 
         assert self.fs.mock_calls == [
             call.isdir('.Trash'),
@@ -69,7 +69,8 @@ class TestHomeFallback(unittest.TestCase):
                                      result,
                                      self.logger,
                                      self.reporter,
-                                     {})
+                                     {},
+                                     123)
 
         assert self.fs.mock_calls == [
             call.isdir('.Trash'),

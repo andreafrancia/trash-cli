@@ -15,7 +15,7 @@ class TrashPutCmd:
         self.stderr = stderr
         self.trasher = trasher
 
-    def run(self, argv, environ):
+    def run(self, argv, environ, uid):
         program_name = os.path.basename(argv[0])
         parser = make_parser(program_name, self.stdout, self.stderr)
         try:
@@ -34,7 +34,8 @@ class TrashPutCmd:
                                     reporter,
                                     options.forced_volume,
                                     program_name,
-                                    environ)
+                                    environ,
+                                    uid)
 
             return reporter.exit_code(result)
 
@@ -46,7 +47,8 @@ class TrashPutCmd:
                   reporter,
                   forced_volume,
                   program_name,
-                  environ):
+                  environ,
+                  uid):
         result = TrashResult(False)
         for arg in args:
             result = self.trasher.trash(arg,
@@ -57,7 +59,8 @@ class TrashPutCmd:
                                         reporter,
                                         forced_volume,
                                         program_name,
-                                        environ)
+                                        environ,
+                                        uid)
         return result
 
 

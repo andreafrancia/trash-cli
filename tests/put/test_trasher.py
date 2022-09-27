@@ -25,7 +25,8 @@ class TestTrasher(unittest.TestCase):
                                     'reporter',
                                     'forced_volume',
                                     'program_name',
-                                    {"env":"ironment"})
+                                    {"env":"ironment"},
+                                    123)
 
         assert [self.file_trasher.mock_calls,
                 result] == \
@@ -37,7 +38,8 @@ class TestTrasher(unittest.TestCase):
                        'result',
                        'logger',
                        'reporter',
-                       {"env": "ironment"}
+                       {"env": "ironment"},
+                       123,
                    )],
                    'file_trasher result'
                ]
@@ -53,7 +55,8 @@ class TestTrasher(unittest.TestCase):
                                     'reporter',
                                     'forced_volume',
                                     'program_name',
-                                    {"env":"ironment"})
+                                    {"env":"ironment"},
+                                    123)
 
         assert [self.user.mock_calls,
                 self.file_trasher.mock_calls,
@@ -67,7 +70,8 @@ class TestTrasher(unittest.TestCase):
                        'result',
                        'logger',
                        'reporter',
-                       {"env": "ironment"}
+                       {"env": "ironment"},
+                       123,
                    )],
                    'file_trasher result'
                ]
@@ -83,7 +87,8 @@ class TestTrasher(unittest.TestCase):
                                     'reporter',
                                     'forced_volume',
                                     'program_name',
-                                    {})
+                                    {},
+                                    123)
 
         assert [self.user.mock_calls,
                 self.file_trasher.mock_calls,
@@ -104,7 +109,8 @@ class TestTrasher(unittest.TestCase):
                            self.reporter,
                            'forced_volume',
                            'program_name',
-                           {})
+                           {},
+                                    123)
 
         assert self.reporter.mock_calls == \
                [call.unable_to_trash_dot_entries('.')]

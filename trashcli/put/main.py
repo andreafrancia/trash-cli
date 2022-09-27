@@ -15,7 +15,7 @@ from trashcli.put.trash_put_cmd import TrashPutCmd
 
 
 def main():
-    trash_directories_finder = TrashDirectoriesFinder(os.getuid(), volumes)
+    trash_directories_finder = TrashDirectoriesFinder(volumes)
     file_trasher = FileTrasher(RealFs(),
                                volumes,
                                os.path.realpath,
@@ -26,4 +26,4 @@ def main():
     user = User(my_input)
     trasher = Trasher(file_trasher, user, access)
     cmd = TrashPutCmd(sys.stdout, sys.stderr, trasher)
-    return cmd.run(sys.argv, os.environ)
+    return cmd.run(sys.argv, os.environ, os.getuid())

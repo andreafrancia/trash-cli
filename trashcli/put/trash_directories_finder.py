@@ -7,14 +7,12 @@ from trashcli.trash import home_trash_dir, volume_trash_dir1, volume_trash_dir2
 
 
 class TrashDirectoriesFinder:
-    def __init__(self, uid, volumes):  # type: (int, Volumes) -> None
-        self.uid = uid
+    def __init__(self, volumes):  # type: (Volumes) -> None
         self.volumes = volumes
 
-    def possible_trash_directories_for(self,
-                                       volume,
-                                       specific_trash_dir,
-                                       environ):  # type: (str, str, Dict[str, str]) -> List[Tuple[str, str, str, str]]
+    def possible_trash_directories_for(self, volume, specific_trash_dir,
+                                       environ,
+                                       uid):  # type: (str, str, Dict[str, str], int) -> List[Tuple[str, str, str, str]]
         trash_dirs = []
 
         def add_home_trash(path, volume):
@@ -35,8 +33,8 @@ class TrashDirectoriesFinder:
             for path, dir_volume in home_trash_dir(environ,
                                                    self.volumes.volume_of):
                 add_home_trash(path, dir_volume)
-            for path, dir_volume in volume_trash_dir1(volume, self.uid):
+            for path, dir_volume in volume_trash_dir1(volume, uid):
                 add_top_trash_dir(path, dir_volume)
-            for path, dir_volume in volume_trash_dir2(volume, self.uid):
+            for path, dir_volume in volume_trash_dir2(volume, uid):
                 add_alt_top_trash_dir(path, dir_volume)
         return trash_dirs

@@ -32,12 +32,13 @@ class FileTrasher:
                    logger,  # type: MyLogger
                    reporter,  # type: TrashPutReporter
                    environ,  # type: Dict[str, str]
+                   uid,  # type: int
                    ):
         volume_of_file_to_be_trashed = forced_volume or \
                                        self.volume_of_parent(file)
         candidates = self.trash_directories_finder. \
             possible_trash_directories_for(volume_of_file_to_be_trashed,
-                                           user_trash_dir, environ)
+                                           user_trash_dir, environ, uid)
         reporter.volume_of_file(volume_of_file_to_be_trashed)
         file_has_been_trashed = False
         for path, volume, path_maker, checker in candidates:

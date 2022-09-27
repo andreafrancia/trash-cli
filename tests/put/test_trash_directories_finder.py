@@ -9,11 +9,11 @@ class TestTrashDirectoriesFinder(unittest.TestCase):
         volumes = Mock(spec=[])
         volumes.volume_of = lambda x: 'volume_of(%s)' % x
         self.environ = {'HOME': "~"}
-        self.finder = TrashDirectoriesFinder(123, volumes)
+        self.finder = TrashDirectoriesFinder(volumes)
 
     def test_no_specific_user_dir(self):
         result = self.finder.possible_trash_directories_for('/volume', None,
-                                                            self.environ)
+                                                            self.environ, 123)
 
         assert result == [('~/.local/share/Trash',
                            'volume_of(~/.local/share/Trash)',
@@ -31,7 +31,8 @@ class TestTrashDirectoriesFinder(unittest.TestCase):
     def test_specific_user_dir(self):
         result = self.finder.possible_trash_directories_for('/volume',
                                                             'user_dir',
-                                                            self.environ)
+                                                            self.environ,
+                                                            123)
 
         assert result == [('user_dir',
                            'volume_of(user_dir)',
