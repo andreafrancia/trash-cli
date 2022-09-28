@@ -15,12 +15,11 @@ from trashcli.put.trash_put_cmd import TrashPutCmd
 
 
 def main():
-    trash_directories_finder = TrashDirectoriesFinder(volumes)
     file_trasher = FileTrasher(RealFs(),
                                volumes,
                                os.path.realpath,
                                datetime.now,
-                               trash_directories_finder,
+                               TrashDirectoriesFinder(volumes),
                                parent_path)
     access = Access()
     user = User(my_input)
