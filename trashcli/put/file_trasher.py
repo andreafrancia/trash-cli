@@ -31,10 +31,17 @@ class PossibleTrashDirectories:
                                            self.user_trash_dir, self.environ,
                                            self.uid)
 
+
 class FileTrasher:
 
-    def __init__(self, fs, volumes, realpath, now, trash_directories_finder,
-                 parent_path):  # type: (RealFs, Volumes, Callable[[str], str], Callable[[], datetime], TrashDirectoriesFinder, Callable[[str], str]) -> None
+    def __init__(self,
+                 fs,  # type: RealFs
+                 volumes,  # type: Volumes
+                 realpath,  # type: Callable[[str], str]
+                 now,  # type: Callable[[], datetime]
+                 trash_directories_finder,  # type: TrashDirectoriesFinder
+                 parent_path,  # type: Callable[[str], str]
+                 ):  # type: (...) -> None
         self.fs = fs
         self.volumes = volumes
         self.realpath = realpath
@@ -51,7 +58,8 @@ class FileTrasher:
                    reporter,  # type: TrashPutReporter
                    environ,  # type: Dict[str, str]
                    uid,  # type: int
-                   possible_trash_directories,  # type: Optional[PossibleTrashDirectories]
+                   possible_trash_directories,
+                   # type: Optional[PossibleTrashDirectories]
                    ):
         volume_of_file_to_be_trashed = forced_volume or \
                                        self.volume_of_parent(file)
@@ -65,47 +73,15 @@ class FileTrasher:
         reporter.volume_of_file(volume_of_file_to_be_trashed)
         file_has_been_trashed = False
         for path, volume, path_maker, checker in candidates:
-            suffix = Suffix(random.randint)
-            info_dir_path = os.path.join(path, 'info')
-            info_dir = InfoDir(info_dir_path, self.fs, logger, suffix)
-            path_maker = {absolute_paths: AbsolutePaths(),
-                          relative_paths: TopDirRelativePaths(volume)}[
-                path_maker]
-            checker = {top_trash_dir_rules: TopTrashDirRules(),
-                       all_is_ok_rules: AllIsOkRules()}[checker]
-            trash_dir = TrashDirectoryForPut(path,
-                                             volume,
-                                             self.fs,
-                                             path_maker,
-                                             info_dir)
-            trash_dir_is_secure, messages = checker.check_trash_dir_is_secure(
-                trash_dir.path,
-                self.fs)
-            for message in messages:
-                reporter.log_info(message)
-
-            if trash_dir_is_secure:
-                volume_of_trash_dir = self.volumes.volume_of(
-                    self.realpath(trash_dir.path))
-                reporter.trash_dir_with_volume(trash_dir.path,
-                                               volume_of_trash_dir)
-                if self._file_could_be_trashed_in(volume_of_file_to_be_trashed,
-                                                  volume_of_trash_dir):
-                    try:
-                        self.fs.ensure_dir(path, 0o700)
-                        self.fs.ensure_dir(os.path.join(path, 'files'), 0o700)
-                        trash_dir.trash2(file, self.now)
-                        reporter.file_has_been_trashed_in_as(
-                            file,
-                            trash_dir.path)
-                        file_has_been_trashed = True
-
-                    except (IOError, OSError) as error:
-                        reporter.unable_to_trash_file_in_because(
-                            file, trash_dir.path, error)
-            else:
-                reporter.trash_dir_is_not_secure(trash_dir.path)
-
+            trash_file_in = TrashFileIn(self.fs, self.realpath, self.volumes,
+                                        self.now, self.parent_path, logger,
+                                        reporter)
+            file_has_been_trashed = trash_file_in.trash_file_in(file,
+                                                                path, volume,
+                                                                path_maker,
+                                                                checker,
+                                                                file_has_been_trashed,
+                                                                volume_of_file_to_be_trashed)
             if file_has_been_trashed: break
 
         if not file_has_been_trashed:
@@ -114,13 +90,78 @@ class FileTrasher:
 
         return result
 
+    def volume_of_parent(self, file):
+        return self.volumes.volume_of(self.parent_path(file))
+
+
+class TrashFileIn:
+    def __init__(self, fs, realpath, volumes, now, parent_path,
+                 logger, reporter):
+        self.fs = fs
+        self.realpath = realpath
+        self.volumes = volumes
+        self.now = now
+        self.parent_path = parent_path
+        self.logger = logger
+        self.reporter = reporter
+
+    def trash_file_in(self,
+                      file,
+                      path,
+                      volume,
+                      path_maker,
+                      checker,
+                      file_has_been_trashed,
+                      volume_of_file_to_be_trashed):  # type: (...) -> bool
+        suffix = Suffix(random.randint)
+        info_dir_path = os.path.join(path, 'info')
+        info_dir = InfoDir(info_dir_path, self.fs, self.logger,
+                           suffix)
+        path_maker = {absolute_paths: AbsolutePaths(),
+                      relative_paths: TopDirRelativePaths(volume)}[
+            path_maker]
+        checker = {top_trash_dir_rules: TopTrashDirRules(),
+                   all_is_ok_rules: AllIsOkRules()}[checker]
+        trash_dir = TrashDirectoryForPut(path,
+                                         volume,
+                                         self.fs,
+                                         path_maker,
+                                         info_dir)
+        trash_dir_is_secure, messages = checker.check_trash_dir_is_secure(
+            trash_dir.path,
+            self.fs)
+        for message in messages:
+            self.reporter.log_info(message)
+
+        if trash_dir_is_secure:
+            volume_of_trash_dir = self.volumes.volume_of(
+                self.realpath(trash_dir.path))
+            self.reporter.trash_dir_with_volume(trash_dir.path,
+                                                volume_of_trash_dir)
+            if self._file_could_be_trashed_in(
+                    volume_of_file_to_be_trashed,
+                    volume_of_trash_dir):
+                try:
+                    self.fs.ensure_dir(path, 0o700)
+                    self.fs.ensure_dir(os.path.join(path, 'files'),
+                                       0o700)
+                    trash_dir.trash2(file, self.now)
+                    self.reporter.file_has_been_trashed_in_as(
+                        file,
+                        trash_dir.path)
+                    file_has_been_trashed = True
+
+                except (IOError, OSError) as error:
+                    self.reporter.unable_to_trash_file_in_because(
+                        file, trash_dir.path, error)
+        else:
+            self.reporter.trash_dir_is_not_secure(trash_dir.path)
+        return file_has_been_trashed
+
     def _file_could_be_trashed_in(self,
                                   volume_of_file_to_be_trashed,
                                   volume_of_trash_dir):
         return volume_of_trash_dir == volume_of_file_to_be_trashed
-
-    def volume_of_parent(self, file):
-        return self.volumes.volume_of(self.parent_path(file))
 
 
 class TopDirRelativePaths:
