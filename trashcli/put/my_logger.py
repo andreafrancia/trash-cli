@@ -6,12 +6,12 @@ class MyLogger:
                  stderr,  # type: StringIO
                  program_name,  # type: str
                  verbose,  # type: int
-                 ):
+                 ): # type: (...) -> None
         self.program_name = program_name
         self.stderr = stderr
         self.verbose = verbose
 
-    def debug(self, message):
+    def debug(self, message): # type: (str) -> None
         if self.verbose > 1:
             self.stderr.write("%s: %s\n" % (self.program_name, message))
 
