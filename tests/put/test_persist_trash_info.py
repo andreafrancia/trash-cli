@@ -26,7 +26,7 @@ class Test_persist_trash_info(unittest.TestCase):
 
     def test_persist_trash_info_first_time(self):
         trash_info_file = self.info_dir.persist_trash_info(
-            'dummy-path', b'content')
+            'dummy-path', b'content', 'trash-put')
 
         assert self.path / 'dummy-path.suffix-0.trashinfo' == trash_info_file
         assert 'content' == read_file(trash_info_file)
@@ -35,7 +35,7 @@ class Test_persist_trash_info(unittest.TestCase):
         self.test_persist_trash_info_first_time()
 
         trash_info_file = self.info_dir.persist_trash_info(
-            'dummy-path', b'content')
+            'dummy-path', b'content', 'trash-put')
 
         assert self.path / 'dummy-path.suffix-1.trashinfo' == trash_info_file
         assert 'content' == read_file(trash_info_file)

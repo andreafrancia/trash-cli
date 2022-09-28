@@ -16,31 +16,40 @@ class TrashPutReporter:
         self.no_argument_specified = False
         self.environ = environ
 
-    def unable_to_trash_dot_entries(self, file):
-        self.logger.warning2("cannot trash %s '%s'" % (describe(file), file))
+    def unable_to_trash_dot_entries(self, file, program_name):
+        self.logger.warning2("cannot trash %s '%s'" % (describe(file), file),
+                             program_name)
 
-    def unable_to_trash_file(self, f):
-        self.logger.warning2("cannot trash %s '%s'" % (describe(f), f))
+    def unable_to_trash_file(self, f, program_name):
+        self.logger.warning2("cannot trash %s '%s'" % (describe(f), f),
+                             program_name)
 
-    def file_has_been_trashed_in_as(self, trashee, trash_directory):
+    def file_has_been_trashed_in_as(self, trashee, trash_directory,
+                                    program_name):
         self.logger.info("'%s' trashed in %s" % (trashee,
                                                  shrink_user(trash_directory,
-                                                             self.environ)))
+                                                             self.environ)),
+                         program_name)
 
-    def trash_dir_is_not_secure(self, path):
-        self.logger.info("trash directory %s is not secure" % path)
+    def trash_dir_is_not_secure(self, path, program_name):
+        self.logger.info("trash directory %s is not secure" % path,
+                         program_name)
 
-    def log_info(self, message):
-        self.logger.info(message)
+    def log_info(self, message, program_name):
+        self.logger.info(message, program_name)
 
     def unable_to_trash_file_in_because(self,
                                         file_to_be_trashed,
-                                        trash_directory, error):
+                                        trash_directory,
+                                        error,
+                                        program_name):
         self.logger.info("Failed to trash %s in %s, because: %s" % (
             file_to_be_trashed, shrink_user(trash_directory,
-                                            self.environ), error))
+                                            self.environ), error),
+                         program_name)
         self.logger.debug_func_result(
-            lambda: self.log_data_for_debugging(error))
+            lambda: self.log_data_for_debugging(error),
+            program_name)
 
     @classmethod
     def log_data_for_debugging(cls, error):
@@ -64,9 +73,10 @@ class TrashPutReporter:
         except OSError as e:
             return str(e)
 
-    def trash_dir_with_volume(self, trash_dir_path, volume_path):
+    def trash_dir_with_volume(self, trash_dir_path, volume_path, program_name):
         self.logger.info("Trash-dir: %s from volume: %s" % (trash_dir_path,
-                                                            volume_path))
+                                                            volume_path),
+                         program_name)
 
     def exit_code(self, result):
         if not result.some_file_has_not_be_trashed:
@@ -74,8 +84,8 @@ class TrashPutReporter:
         else:
             return EX_IOERR
 
-    def volume_of_file(self, volume):
-        self.logger.info("Volume of file: %s" % volume)
+    def volume_of_file(self, volume, program_name):
+        self.logger.info("Volume of file: %s" % volume, program_name)
 
 
 def shrink_user(path, environ):

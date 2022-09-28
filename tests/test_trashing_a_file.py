@@ -21,19 +21,20 @@ class TestTrashing(unittest.TestCase):
 
     def test_the_file_should_be_moved_in_trash_dir(self):
 
-        self.trashdir.trash2('foo', self.now)
+        self.trashdir.trash2('foo', self.now, 'trash-put')
 
         assert self.fs.mock_calls == [call.move('foo', 'files/')]
         assert self.info_dir.mock_calls == [
             call.persist_trash_info(
                 'foo',
-                b'[Trash Info]\nPath=foo\nDeletionDate=1970-01-01T00:00:00\n')]
+                b'[Trash Info]\nPath=foo\nDeletionDate=1970-01-01T00:00:00\n',
+                'trash-put')]
 
     def test_should_rollback_trashinfo_creation_on_problems(self):
         self.fs.move.side_effect = IOError
 
         try:
-            self.trashdir.trash2('foo', self.now)
+            self.trashdir.trash2('foo', self.now, 'trash-put')
         except IOError:
             pass
 
@@ -42,4 +43,5 @@ class TestTrashing(unittest.TestCase):
         assert self.info_dir.mock_calls == [
             call.persist_trash_info(
                 'foo',
-                b'[Trash Info]\nPath=foo\nDeletionDate=1970-01-01T00:00:00\n')]
+                b'[Trash Info]\nPath=foo\nDeletionDate=1970-01-01T00:00:00\n',
+                'trash-put')]

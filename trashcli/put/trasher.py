@@ -43,7 +43,7 @@ class Trasher:
         """
 
         if self._should_skipped_by_specs(path):
-            reporter.unable_to_trash_dot_entries(path)
+            reporter.unable_to_trash_dot_entries(path, program_name)
             return result
 
         if mode == mode_force and not self.access.is_accessible(path):
@@ -62,7 +62,8 @@ class Trasher:
                                             reporter,
                                             environ,
                                             uid,
-                                            None)
+                                            None,
+                                            program_name)
 
     def _should_skipped_by_specs(self, file):
         basename = os.path.basename(file)

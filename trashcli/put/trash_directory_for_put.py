@@ -17,14 +17,14 @@ class TrashDirectoryForPut:
         self.path_maker = path_maker
         self.info_dir = info_dir
 
-    def trash2(self, path, now):
+    def trash2(self, path, now, program_name):
         path = os.path.normpath(path)
 
         original_location = self.path_for_trash_info_for_file(path)
 
         basename = os.path.basename(original_location)
         content = format_trashinfo(original_location, now())
-        trash_info_file = self.info_dir.persist_trash_info(basename, content)
+        trash_info_file = self.info_dir.persist_trash_info(basename, content, program_name)
 
         where_to_store_trashed_file = path_of_backup_copy(trash_info_file)
 

@@ -48,9 +48,10 @@ class TestFileTrasher(unittest.TestCase):
                                      cast(TrashPutReporter, self.reporter),
                                      {},
                                      1001,
-                                     self.possible_trash_directories)
+                                     self.possible_trash_directories,
+                                     'trash-put')
 
-        self.reporter.volume_of_file.assert_called_with('/')
+        self.reporter.volume_of_file.assert_called_with('/', 'trash-put')
 
     def test_should_report_when_trash_fail(self):
         self.volumes.volume_of.return_value = '/'
@@ -65,21 +66,24 @@ class TestFileTrasher(unittest.TestCase):
                                      cast(TrashPutReporter, self.reporter),
                                      {},
                                      1001,
-                                     self.possible_trash_directories)
+                                     self.possible_trash_directories,
+                                     'trash-put')
 
-        self.reporter.unable_to_trash_file.assert_called_with('non-existent')
+        self.reporter.unable_to_trash_file.assert_called_with('non-existent',
+                                                              'trash-put')
 
     def test_when_path_does_not_exists(self):
         self.volumes.volume_of.return_value = '/disk'
         stderr = StringIO()
         verbose_level = 2
-        logger = MyLogger(stderr, "trash-put", verbose_level)
+        logger = MyLogger(stderr, verbose_level)
         reporter = TrashPutReporter(logger, {})
         result = TrashResult(False)
 
         self.file_trasher.trash_file("non-existent", None, None, result, logger,
                                      reporter, self.environ, 1001,
-                                     self.possible_trash_directories)
+                                     self.possible_trash_directories,
+                                     'trash-put')
 
         assert stderr.getvalue().splitlines() == [
             'trash-put: Volume of file: /disk',
