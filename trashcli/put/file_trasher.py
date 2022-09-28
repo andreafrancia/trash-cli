@@ -87,7 +87,8 @@ class FileTrasher:
                                                                 file_has_been_trashed,
                                                                 volume_of_file_to_be_trashed,
                                                                 program_name,
-                                                                verbose)
+                                                                verbose,
+                                                                environ)
             if file_has_been_trashed: break
 
         if not file_has_been_trashed:
@@ -121,6 +122,7 @@ class TrashFileIn:
                       volume_of_file_to_be_trashed,
                       program_name,
                       verbose,
+                      environ,
                       ):  # type: (...) -> bool
         suffix = Suffix(random.randint)
         info_dir_path = os.path.join(trash_dir_path, 'info')
@@ -160,12 +162,13 @@ class TrashFileIn:
                         path,
                         trash_dir.path,
                         program_name,
-                        verbose)
+                        verbose,
+                        environ)
                     file_has_been_trashed = True
 
                 except (IOError, OSError) as error:
                     self.reporter.unable_to_trash_file_in_because(
-                        path, trash_dir.path, error, program_name, verbose)
+                        path, trash_dir.path, error, program_name, verbose, environ)
         else:
             self.reporter.trash_dir_is_not_secure(trash_dir.path, program_name,
                                                   verbose)

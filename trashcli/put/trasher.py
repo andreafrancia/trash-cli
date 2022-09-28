@@ -2,7 +2,6 @@ import os
 
 from typing import Dict
 
-from trashcli.put.file_trasher import PossibleTrashDirectories
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.trash_result import TrashResult
 from trashcli.put.user import user_replied_no

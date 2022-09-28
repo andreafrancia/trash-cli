@@ -10,11 +10,9 @@ from trashcli.trash import EX_OK, EX_IOERR
 
 
 class TrashPutReporter:
-    def __init__(self, logger,
-                 environ):  # type: (MyLogger, Dict[str, str]) -> None
+    def __init__(self, logger):  # type: (MyLogger) -> None
         self.logger = logger
         self.no_argument_specified = False
-        self.environ = environ
 
     def unable_to_trash_dot_entries(self, file, program_name):
         self.logger.warning2("cannot trash %s '%s'" % (describe(file), file),
@@ -25,10 +23,10 @@ class TrashPutReporter:
                              program_name)
 
     def file_has_been_trashed_in_as(self, trashee, trash_directory,
-                                    program_name, verbose):
+                                    program_name, verbose, environ):
         self.logger.info("'%s' trashed in %s" % (trashee,
                                                  shrink_user(trash_directory,
-                                                             self.environ)),
+                                                             environ)),
                          program_name, verbose)
 
     def trash_dir_is_not_secure(self, path, program_name, verbose):
@@ -42,10 +40,9 @@ class TrashPutReporter:
                                         file_to_be_trashed,
                                         trash_directory,
                                         error,
-                                        program_name, verbose):
+                                        program_name, verbose, environ):
         self.logger.info("Failed to trash %s in %s, because: %s" % (
-            file_to_be_trashed, shrink_user(trash_directory,
-                                            self.environ), error),
+            file_to_be_trashed, shrink_user(trash_directory, environ), error),
                          program_name, verbose)
         self.logger.debug_func_result(
             lambda: self.log_data_for_debugging(error),

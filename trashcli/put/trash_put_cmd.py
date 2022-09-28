@@ -7,9 +7,9 @@ from trashcli.put.reporter import TrashPutReporter
 
 
 class TrashPutCmd:
-    def __init__(self, stderr, trasher):
-        self.stderr = stderr
-        self.trasher = trasher
+    def __init__(self, trash_all, reporter):
+        self.trash_all = trash_all
+        self.reporter = reporter
 
     def run(self, argv, environ, uid):
         program_name = os.path.basename(argv[0])
@@ -21,16 +21,13 @@ class TrashPutCmd:
         except SystemExit as e:
             return e.code
         else:
-            logger = MyLogger(self.stderr)
-            reporter = TrashPutReporter(logger, environ)
-            trash_all = TrashAll(logger, self.trasher, reporter)
-            result = trash_all.trash_all(options.files,
-                                         options.trashdir,
-                                         options.mode,
-                                         options.forced_volume,
-                                         program_name,
-                                         options.verbose,
-                                         environ,
-                                         uid)
+            result = self.trash_all.trash_all(options.files,
+                                              options.trashdir,
+                                              options.mode,
+                                              options.forced_volume,
+                                              program_name,
+                                              options.verbose,
+                                              environ,
+                                              uid)
 
-            return reporter.exit_code(result)
+            return self.reporter.exit_code(result)

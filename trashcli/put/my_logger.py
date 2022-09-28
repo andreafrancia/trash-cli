@@ -1,13 +1,15 @@
 from io import StringIO
 
+from typing import IO
+
 
 class MyLogger:
     def __init__(self,
-                 stderr,  # type: StringIO
-                 ): # type: (...) -> None
+                 stderr,  # type: IO[str]
+                 ):  # type: (...) -> None
         self.stderr = stderr
 
-    def debug(self, message, program_name, verbose): # type: (str, str) -> None
+    def debug(self, message, program_name, verbose):  # type: (str, str) -> None
         if verbose > 1:
             self.stderr.write("%s: %s\n" % (program_name, message))
 

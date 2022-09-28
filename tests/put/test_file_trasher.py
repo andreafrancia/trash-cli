@@ -78,7 +78,7 @@ class TestFileTrasher(unittest.TestCase):
         self.volumes.volume_of.return_value = '/disk'
         stderr = StringIO()
         logger = MyLogger(stderr)
-        reporter = TrashPutReporter(logger, {})
+        reporter = TrashPutReporter(logger)
         result = TrashResult(False)
 
         self.file_trasher.trash_file("non-existent", None, None, result, logger,
