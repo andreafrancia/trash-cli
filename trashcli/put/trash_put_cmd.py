@@ -21,7 +21,7 @@ class TrashPutCmd:
         except SystemExit as e:
             return e.code
         else:
-            logger = MyLogger(self.stderr, options.verbose)
+            logger = MyLogger(self.stderr)
             reporter = TrashPutReporter(logger, environ)
             trash_all = TrashAll(logger, self.trasher, reporter)
             result = trash_all.trash_all(options.files,

@@ -14,7 +14,7 @@ class InfoDir:
         self.logger = logger
         self.suffix = suffix
 
-    def persist_trash_info(self, basename, content, program_name):
+    def persist_trash_info(self, basename, content, program_name, verbose):
         """
         Create a .trashinfo file in the $trash/info directory.
         returns the created TrashInfoFile.
@@ -33,14 +33,14 @@ class InfoDir:
             try:
                 self.fs.atomic_write(trashinfo_path, content)
                 self.logger.debug(".trashinfo created as %s." % trashinfo_path,
-                                  program_name)
+                                  program_name, verbose)
                 return trashinfo_path
             except OSError as e:
                 if e.errno == errno.ENAMETOOLONG:
                     name_too_long = True
                 self.logger.debug(
                     "Attempt for creating %s failed." % trashinfo_path,
-                    program_name)
+                    program_name, verbose)
 
             index += 1
 

@@ -72,7 +72,8 @@ class FileTrasher:
             environ, uid)
         candidates = possible_trash_directories.trash_directories_for(
             volume_of_file_to_be_trashed)
-        reporter.volume_of_file(volume_of_file_to_be_trashed, program_name)
+        reporter.volume_of_file(volume_of_file_to_be_trashed, program_name,
+                                verbose)
         file_has_been_trashed = False
         for trash_dir_path, volume, path_maker, checker in candidates:
             trash_file_in = TrashFileIn(self.fs, self.realpath, self.volumes,
@@ -85,7 +86,8 @@ class FileTrasher:
                                                                 checker,
                                                                 file_has_been_trashed,
                                                                 volume_of_file_to_be_trashed,
-                                                                program_name)
+                                                                program_name,
+                                                                verbose)
             if file_has_been_trashed: break
 
         if not file_has_been_trashed:
@@ -118,6 +120,7 @@ class TrashFileIn:
                       file_has_been_trashed,
                       volume_of_file_to_be_trashed,
                       program_name,
+                      verbose,
                       ):  # type: (...) -> bool
         suffix = Suffix(random.randint)
         info_dir_path = os.path.join(trash_dir_path, 'info')
@@ -137,14 +140,14 @@ class TrashFileIn:
             trash_dir.path,
             self.fs)
         for message in messages:
-            self.reporter.log_info(message, program_name)
+            self.reporter.log_info(message, program_name, verbose)
 
         if trash_dir_is_secure:
             volume_of_trash_dir = self.volumes.volume_of(
                 self.realpath(trash_dir.path))
             self.reporter.trash_dir_with_volume(trash_dir.path,
                                                 volume_of_trash_dir,
-                                                program_name)
+                                                program_name, verbose)
             if self._file_could_be_trashed_in(
                     volume_of_file_to_be_trashed,
                     volume_of_trash_dir):
@@ -152,18 +155,20 @@ class TrashFileIn:
                     self.fs.ensure_dir(trash_dir_path, 0o700)
                     self.fs.ensure_dir(os.path.join(trash_dir_path, 'files'),
                                        0o700)
-                    trash_dir.trash2(path, self.now, program_name)
+                    trash_dir.trash2(path, self.now, program_name, verbose)
                     self.reporter.file_has_been_trashed_in_as(
                         path,
                         trash_dir.path,
-                        program_name)
+                        program_name,
+                        verbose)
                     file_has_been_trashed = True
 
                 except (IOError, OSError) as error:
                     self.reporter.unable_to_trash_file_in_because(
-                        path, trash_dir.path, error, program_name)
+                        path, trash_dir.path, error, program_name, verbose)
         else:
-            self.reporter.trash_dir_is_not_secure(trash_dir.path, program_name)
+            self.reporter.trash_dir_is_not_secure(trash_dir.path, program_name,
+                                                  verbose)
         return file_has_been_trashed
 
     def _file_could_be_trashed_in(self,

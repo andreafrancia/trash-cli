@@ -52,7 +52,7 @@ class TestFileTrasher(unittest.TestCase):
                                      'trash-put',
                                      99)
 
-        self.reporter.volume_of_file.assert_called_with('/', 'trash-put')
+        self.reporter.volume_of_file.assert_called_with('/', 'trash-put', 99)
 
     def test_should_report_when_trash_fail(self):
         self.volumes.volume_of.return_value = '/'
@@ -77,8 +77,7 @@ class TestFileTrasher(unittest.TestCase):
     def test_when_path_does_not_exists(self):
         self.volumes.volume_of.return_value = '/disk'
         stderr = StringIO()
-        verbose_level = 2
-        logger = MyLogger(stderr, verbose_level)
+        logger = MyLogger(stderr)
         reporter = TrashPutReporter(logger, {})
         result = TrashResult(False)
 

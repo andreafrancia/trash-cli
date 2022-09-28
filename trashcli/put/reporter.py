@@ -25,31 +25,31 @@ class TrashPutReporter:
                              program_name)
 
     def file_has_been_trashed_in_as(self, trashee, trash_directory,
-                                    program_name):
+                                    program_name, verbose):
         self.logger.info("'%s' trashed in %s" % (trashee,
                                                  shrink_user(trash_directory,
                                                              self.environ)),
-                         program_name)
+                         program_name, verbose)
 
-    def trash_dir_is_not_secure(self, path, program_name):
+    def trash_dir_is_not_secure(self, path, program_name, verbose):
         self.logger.info("trash directory %s is not secure" % path,
-                         program_name)
+                         program_name, verbose)
 
-    def log_info(self, message, program_name):
-        self.logger.info(message, program_name)
+    def log_info(self, message, program_name, verbose):
+        self.logger.info(message, program_name, verbose)
 
     def unable_to_trash_file_in_because(self,
                                         file_to_be_trashed,
                                         trash_directory,
                                         error,
-                                        program_name):
+                                        program_name, verbose):
         self.logger.info("Failed to trash %s in %s, because: %s" % (
             file_to_be_trashed, shrink_user(trash_directory,
                                             self.environ), error),
-                         program_name)
+                         program_name, verbose)
         self.logger.debug_func_result(
             lambda: self.log_data_for_debugging(error),
-            program_name)
+            program_name, verbose)
 
     @classmethod
     def log_data_for_debugging(cls, error):
@@ -73,10 +73,11 @@ class TrashPutReporter:
         except OSError as e:
             return str(e)
 
-    def trash_dir_with_volume(self, trash_dir_path, volume_path, program_name):
+    def trash_dir_with_volume(self, trash_dir_path, volume_path, program_name,
+                              verbose):
         self.logger.info("Trash-dir: %s from volume: %s" % (trash_dir_path,
                                                             volume_path),
-                         program_name)
+                         program_name, verbose)
 
     def exit_code(self, result):
         if not result.some_file_has_not_be_trashed:
@@ -84,8 +85,8 @@ class TrashPutReporter:
         else:
             return EX_IOERR
 
-    def volume_of_file(self, volume, program_name):
-        self.logger.info("Volume of file: %s" % volume, program_name)
+    def volume_of_file(self, volume, program_name, verbose):
+        self.logger.info("Volume of file: %s" % volume, program_name, verbose)
 
 
 def shrink_user(path, environ):
