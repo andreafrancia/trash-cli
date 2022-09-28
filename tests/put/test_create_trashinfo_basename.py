@@ -1,6 +1,6 @@
 import unittest
 
-from trashcli.put.file_trasher import create_trashinfo_basename
+from trashcli.put.info_dir import create_trashinfo_basename
 
 
 class Test_create_trashinfo_basename(unittest.TestCase):

@@ -1,16 +1,20 @@
-import errno
 import os
 import random
 from datetime import datetime
 from typing import Callable, Dict
 
 from trashcli.fstab import Volumes
+from trashcli.put.info_dir import InfoDir
+from trashcli.put.my_logger import MyLogger
+from trashcli.put.reporter import TrashPutReporter
+from trashcli.put.rules import AllIsOkRules, TopTrashDirRules
+from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.real_fs import RealFs
+from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
+from trashcli.put.trash_result import TrashResult
 from trashcli.put.values import absolute_paths, relative_paths, \
     all_is_ok_rules, top_trash_dir_rules
-from trashcli.py2compat import url_quote
-from trashcli.trash import path_of_backup_copy
 
 
 class FileTrasher:
@@ -98,152 +102,6 @@ class FileTrasher:
 
     def volume_of_parent(self, file):
         return self.volumes.volume_of(self.parent_path(file))
-
-
-def parent_realpath(path):
-    parent = os.path.dirname(path)
-    return os.path.realpath(parent)
-
-
-class TrashDirectoryForPut:
-    def __init__(self, path, volume, fs, path_maker, info_dir):
-        self.path = os.path.normpath(path)
-        self.volume = volume
-        self.fs = fs
-        self.path_maker = path_maker
-        self.info_dir = info_dir
-
-    def trash2(self, path, now):
-        path = os.path.normpath(path)
-
-        original_location = self.path_for_trash_info_for_file(path)
-
-        basename = os.path.basename(original_location)
-        content = format_trashinfo(original_location, now())
-        trash_info_file = self.info_dir.persist_trash_info(basename, content)
-
-        where_to_store_trashed_file = path_of_backup_copy(trash_info_file)
-
-        try:
-            self.fs.move(path, where_to_store_trashed_file)
-        except IOError as e:
-            self.fs.remove_file(trash_info_file)
-            raise e
-
-    def path_for_trash_info_for_file(self, path):
-        path_for_trash_info = OriginalLocation(parent_realpath,
-                                               self.path_maker)
-        return path_for_trash_info.for_file(path)
-
-
-class InfoDir:
-    def __init__(self, path, fs, logger,
-                 suffix):  # type: (str, RealFs, MyLogger, Suffix) -> None
-        self.path = path
-        self.fs = fs
-        self.logger = logger
-        self.suffix = suffix
-
-    def persist_trash_info(self, basename, content):
-        """
-        Create a .trashinfo file in the $trash/info directory.
-        returns the created TrashInfoFile.
-        """
-
-        self.fs.ensure_dir(self.path, 0o700)
-
-        index = 0
-        name_too_long = False
-        while True:
-            suffix = self.suffix.suffix_for_index(index)
-            trashinfo_basename = create_trashinfo_basename(basename,
-                                                           suffix,
-                                                           name_too_long)
-            trashinfo_path = os.path.join(self.path, trashinfo_basename)
-            try:
-                self.fs.atomic_write(trashinfo_path, content)
-                self.logger.debug(".trashinfo created as %s." % trashinfo_path)
-                return trashinfo_path
-            except OSError as e:
-                if e.errno == errno.ENAMETOOLONG:
-                    name_too_long = True
-                self.logger.debug(
-                    "Attempt for creating %s failed." % trashinfo_path)
-
-            index += 1
-
-
-def create_trashinfo_basename(basename, suffix, name_too_long):
-    after_basename = suffix + ".trashinfo"
-    if name_too_long:
-        truncated_basename = basename[0:len(basename) - len(after_basename)]
-    else:
-        truncated_basename = basename
-    return truncated_basename + after_basename
-
-
-class Suffix:
-    def __init__(self, randint):
-        self.randint = randint
-
-    def suffix_for_index(self, index):
-        if index == 0:
-            return ""
-        elif index < 100:
-            return "_%s" % index
-        else:
-            return "_%s" % self.randint(0, 65535)
-
-
-def format_trashinfo(original_location, deletion_date):
-    content = ("[Trash Info]\n" +
-               "Path=%s\n" % format_original_location(original_location) +
-               "DeletionDate=%s\n" % format_date(deletion_date)).encode('utf-8')
-    return content
-
-
-def format_date(deletion_date):
-    return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
-
-
-def format_original_location(original_location):
-    return url_quote(original_location, '/')
-
-
-class AllIsOkRules:
-    def check_trash_dir_is_secure(self, trash_dir_path, fs):
-        return True, []
-
-
-class TopTrashDirRules:
-    def check_trash_dir_is_secure(self, trash_dir_path, fs):
-        parent = os.path.dirname(trash_dir_path)
-        if not fs.isdir(parent):
-            return False, [
-                "found unusable .Trash dir (should be a dir): %s" % parent]
-        if fs.islink(parent):
-            return False, [
-                "found unsecure .Trash dir (should not be a symlink): %s" % parent]
-        if not fs.has_sticky_bit(parent):
-            return False, [
-                "found unsecure .Trash dir (should be sticky): %s" % parent]
-        return True, []
-
-
-class OriginalLocation:
-    def __init__(self, parent_realpath, path_maker):
-        self.parent_realpath = parent_realpath
-        self.path_maker = path_maker
-
-    def for_file(self, path):
-        self.normalized_path = os.path.normpath(path)
-
-        basename = os.path.basename(self.normalized_path)
-        parent = self.parent_realpath(self.normalized_path)
-
-        parent = self.path_maker.calc_parent_path(parent)
-
-        return os.path.join(parent, basename)
 
 
 class TopDirRelativePaths:

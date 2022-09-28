@@ -1,8 +1,8 @@
 import datetime
 import unittest
 
-from trashcli.put.file_trasher import TrashDirectoryForPut, \
-    TopDirRelativePaths
+from trashcli.put.file_trasher import TopDirRelativePaths
+from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 from mock import Mock, call
 
 

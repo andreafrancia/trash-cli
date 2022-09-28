@@ -1,6 +1,9 @@
 import os
+
 from typing import Dict
 
+from trashcli.put.my_logger import MyLogger
+from trashcli.put.trash_result import TrashResult
 from trashcli.put.user import user_replied_no
 from trashcli.put.parser import mode_force, mode_interactive
 
