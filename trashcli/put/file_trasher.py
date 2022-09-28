@@ -61,6 +61,7 @@ class FileTrasher:
                    possible_trash_directories,
                    # type: Optional[PossibleTrashDirectories]
                    program_name,  # type: str
+                   verbose,  # type: int
                    ):
         volume_of_file_to_be_trashed = forced_volume or \
                                        self.volume_of_parent(path)

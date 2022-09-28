@@ -29,6 +29,7 @@ class TrashPutCmd:
                                          options.mode,
                                          options.forced_volume,
                                          program_name,
+                                         options.verbose,
                                          environ,
                                          uid)
 

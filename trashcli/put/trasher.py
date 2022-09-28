@@ -24,6 +24,7 @@ class Trasher:
               reporter,
               forced_volume,
               program_name,
+              verbose,
               environ,  # type: Dict[str, str]
               uid, # type: int
               ):
@@ -63,7 +64,9 @@ class Trasher:
                                             environ,
                                             uid,
                                             None,
-                                            program_name)
+                                            program_name,
+                                            verbose,
+                                            )
 
     def _should_skipped_by_specs(self, file):
         basename = os.path.basename(file)

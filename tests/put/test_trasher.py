@@ -25,6 +25,7 @@ class TestTrasher(unittest.TestCase):
                                     'reporter',
                                     'forced_volume',
                                     'program_name',
+                                     99,
                                     {"env": "ironment"},
                                     123)
 
@@ -42,6 +43,7 @@ class TestTrasher(unittest.TestCase):
                        123,
                        None,
                        'program_name',
+                       99,
                    )],
                    'file_trasher result'
                ]
@@ -57,6 +59,7 @@ class TestTrasher(unittest.TestCase):
                                     'reporter',
                                     'forced_volume',
                                     'program_name',
+                                    99,
                                     {"env": "ironment"},
                                     123)
 
@@ -76,6 +79,7 @@ class TestTrasher(unittest.TestCase):
                        123,
                        None,
                        'program_name',
+                       99,
                    )],
                    'file_trasher result'
                ]
@@ -92,7 +96,8 @@ class TestTrasher(unittest.TestCase):
                                     'forced_volume',
                                     'program_name',
                                     {},
-                                    123)
+                                    123,
+                                     99)
 
         assert [self.user.mock_calls,
                 self.file_trasher.mock_calls,
@@ -114,7 +119,8 @@ class TestTrasher(unittest.TestCase):
                            'forced_volume',
                            'program_name',
                            {},
-                           123)
+                           123,
+                                     99)
 
         assert self.reporter.mock_calls == \
                [call.unable_to_trash_dot_entries('.', 'program_name')]

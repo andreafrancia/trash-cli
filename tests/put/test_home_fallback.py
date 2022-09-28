@@ -48,7 +48,8 @@ class TestHomeFallback(unittest.TestCase):
                                      {},
                                      123,
                                      self.possible_trash_directories,
-                                     'trash-put')
+                                     'trash-put',
+                                     99)
 
         assert self.fs.mock_calls == [
             call.isdir('.Trash'),
@@ -79,7 +80,8 @@ class TestHomeFallback(unittest.TestCase):
                                      {},
                                      123,
                                      self.possible_trash_directories,
-                                     'trash-put')
+                                     'trash-put',
+                                     99)
 
         assert self.fs.mock_calls == [
             call.isdir('.Trash'),

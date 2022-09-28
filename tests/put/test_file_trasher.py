@@ -49,7 +49,8 @@ class TestFileTrasher(unittest.TestCase):
                                      {},
                                      1001,
                                      self.possible_trash_directories,
-                                     'trash-put')
+                                     'trash-put',
+                                     99)
 
         self.reporter.volume_of_file.assert_called_with('/', 'trash-put')
 
@@ -67,7 +68,8 @@ class TestFileTrasher(unittest.TestCase):
                                      {},
                                      1001,
                                      self.possible_trash_directories,
-                                     'trash-put')
+                                     'trash-put',
+                                     99)
 
         self.reporter.unable_to_trash_file.assert_called_with('non-existent',
                                                               'trash-put')
@@ -83,7 +85,8 @@ class TestFileTrasher(unittest.TestCase):
         self.file_trasher.trash_file("non-existent", None, None, result, logger,
                                      reporter, self.environ, 1001,
                                      self.possible_trash_directories,
-                                     'trash-put')
+                                     'trash-put',
+                                     99)
 
         assert stderr.getvalue().splitlines() == [
             'trash-put: Volume of file: /disk',

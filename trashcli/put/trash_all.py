@@ -20,6 +20,7 @@ class TrashAll:
                   mode,
                   forced_volume,
                   program_name,
+                  verbose,
                   environ,
                   uid):
         result = TrashResult(False)
@@ -32,6 +33,7 @@ class TrashAll:
                                         self.reporter,
                                         forced_volume,
                                         program_name,
+                                        verbose,
                                         environ,
                                         uid)
         return result
