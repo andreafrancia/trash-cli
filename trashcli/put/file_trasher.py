@@ -1,7 +1,7 @@
 import os
 import random
 from datetime import datetime
-from typing import Callable, Dict
+from typing import Callable, Dict, Optional
 
 from trashcli.fstab import Volumes
 from trashcli.put.info_dir import InfoDir
@@ -51,7 +51,7 @@ class FileTrasher:
                    reporter,  # type: TrashPutReporter
                    environ,  # type: Dict[str, str]
                    uid,  # type: int
-                   possible_trash_directories = None,
+                   possible_trash_directories,  # type: Optional[PossibleTrashDirectories]
                    ):
         volume_of_file_to_be_trashed = forced_volume or \
                                        self.volume_of_parent(file)

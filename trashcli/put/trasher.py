@@ -61,7 +61,8 @@ class Trasher:
                                             logger,
                                             reporter,
                                             environ,
-                                            uid)
+                                            uid,
+                                            None)
 
     def _should_skipped_by_specs(self, file):
         basename = os.path.basename(file)

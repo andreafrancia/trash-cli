@@ -40,6 +40,7 @@ class TestTrasher(unittest.TestCase):
                        'reporter',
                        {"env": "ironment"},
                        123,
+                       None,
                    )],
                    'file_trasher result'
                ]
@@ -72,6 +73,7 @@ class TestTrasher(unittest.TestCase):
                        'reporter',
                        {"env": "ironment"},
                        123,
+                       None,
                    )],
                    'file_trasher result'
                ]
