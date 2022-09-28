@@ -1,9 +1,9 @@
 import os
 
+from trashcli.put.trash_all import TrashAll
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.parser import make_parser
 from trashcli.put.reporter import TrashPutReporter
-from trashcli.put.trash_result import TrashResult
 
 
 class TrashPutCmd:
@@ -23,38 +23,13 @@ class TrashPutCmd:
         else:
             logger = MyLogger(self.stderr, program_name, options.verbose)
             reporter = TrashPutReporter(logger, environ)
-            result = self.trash_all(options.files,
-                                    options.trashdir,
-                                    logger,
-                                    options.mode,
-                                    reporter,
-                                    options.forced_volume,
-                                    program_name,
-                                    environ,
-                                    uid)
+            trash_all = TrashAll(logger, self.trasher, reporter)
+            result = trash_all.trash_all(options.files,
+                                         options.trashdir,
+                                         options.mode,
+                                         options.forced_volume,
+                                         program_name,
+                                         environ,
+                                         uid)
 
             return reporter.exit_code(result)
-
-    def trash_all(self,
-                  args,
-                  user_trash_dir,
-                  logger,  # type: MyLogger
-                  mode,
-                  reporter,
-                  forced_volume,
-                  program_name,
-                  environ,
-                  uid):
-        result = TrashResult(False)
-        for arg in args:
-            result = self.trasher.trash(arg,
-                                        user_trash_dir,
-                                        result,
-                                        logger,
-                                        mode,
-                                        reporter,
-                                        forced_volume,
-                                        program_name,
-                                        environ,
-                                        uid)
-        return result
