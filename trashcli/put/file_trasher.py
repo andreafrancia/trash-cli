@@ -17,6 +17,20 @@ from trashcli.put.values import absolute_paths, relative_paths, \
     all_is_ok_rules, top_trash_dir_rules
 
 
+class PossibleTrashDirectories:
+    def __init__(self, trash_directories_finder, user_trash_dir,
+                 environ, uid):
+        self.trash_directories_finder = trash_directories_finder
+        self.user_trash_dir = user_trash_dir
+        self.environ = environ
+        self.uid = uid
+
+    def trash_directories_for(self, volume_of_file_to_be_trashed):
+        return self.trash_directories_finder. \
+            possible_trash_directories_for(volume_of_file_to_be_trashed,
+                                           self.user_trash_dir, self.environ,
+                                           self.uid)
+
 class FileTrasher:
 
     def __init__(self, fs, volumes, realpath, now, trash_directories_finder,
@@ -40,9 +54,13 @@ class FileTrasher:
                    ):
         volume_of_file_to_be_trashed = forced_volume or \
                                        self.volume_of_parent(file)
-        candidates = self.trash_directories_finder. \
-            possible_trash_directories_for(volume_of_file_to_be_trashed,
-                                           user_trash_dir, environ, uid)
+
+        possible_trash_directories = PossibleTrashDirectories(
+            self.trash_directories_finder,
+            user_trash_dir,
+            environ, uid)
+        candidates = possible_trash_directories.trash_directories_for(
+            volume_of_file_to_be_trashed)
         reporter.volume_of_file(volume_of_file_to_be_trashed)
         file_has_been_trashed = False
         for path, volume, path_maker, checker in candidates:
