@@ -8,7 +8,7 @@ class Test_make_parser(unittest.TestCase):
         self.parser = make_parser("program-name")
 
     def test(self):
-        options = self.parser.parse_args()
+        options = self.parser.parse_args([])
 
         assert options.verbose == 0
 
@@ -23,7 +23,7 @@ class Test_make_parser(unittest.TestCase):
         assert options.verbose == 2
 
     def test_trash_dir_not_specified(self):
-        options = self.parser.parse_args()
+        options = self.parser.parse_args([])
 
         assert options.trashdir is None
 
@@ -33,7 +33,7 @@ class Test_make_parser(unittest.TestCase):
         assert options.trashdir == '/MyTrash'
 
     def test_force_volume_off(self):
-        options = self.parser.parse_args()
+        options = self.parser.parse_args([])
 
         assert options.forced_volume is None
 
@@ -43,7 +43,7 @@ class Test_make_parser(unittest.TestCase):
         assert options.forced_volume == '/fake-vol'
 
     def test_force_option_default(self):
-        options = self.parser.parse_args()
+        options = self.parser.parse_args([])
 
         assert options.mode is None
 
