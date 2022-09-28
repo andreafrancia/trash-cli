@@ -1,11 +1,11 @@
 import unittest
 
-from trashcli.put.trash_put_cmd import make_parser
+from trashcli.put.parser import make_parser
 
 
 class Test_make_parser(unittest.TestCase):
     def setUp(self):
-        self.parser = make_parser("program-name", 'stdout', 'stderr')
+        self.parser = make_parser("program-name")
 
     def test(self):
         options = self.parser.parse_args()

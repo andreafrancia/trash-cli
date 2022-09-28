@@ -2,7 +2,7 @@ import unittest
 
 from mock import Mock, call
 
-from trashcli.put.trash_put_cmd import TrashPutReporter
+from trashcli.put.reporter import TrashPutReporter
 
 
 class TestTrashPutReporter(unittest.TestCase):

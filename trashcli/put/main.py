@@ -24,5 +24,5 @@ def main():
     access = Access()
     user = User(my_input)
     trasher = Trasher(file_trasher, user, access)
-    cmd = TrashPutCmd(sys.stdout, sys.stderr, trasher)
+    cmd = TrashPutCmd(sys.stderr, trasher)
     return cmd.run(sys.argv, os.environ, os.getuid())
