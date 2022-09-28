@@ -23,6 +23,11 @@ class TestHomeFallback(unittest.TestCase):
                                         datetime.now,
                                         trash_directories_finder,
                                         os.path.dirname)
+        self.possible_trash_directories = Mock()
+        self.possible_trash_directories.trash_directories_for.return_value = \
+            [('.Trash/123', '', 'relative_paths', 'top_trash_dir_rules'),
+             ('.Trash-123', '', 'relative_paths', 'all_is_ok_rules')]
+        # self.possible_trash_directories = None
         self.logger = Mock()
 
     def test_use_of_top_trash_dir_when_sticky(self):
@@ -41,7 +46,8 @@ class TestHomeFallback(unittest.TestCase):
                                      self.logger,
                                      self.reporter,
                                      {},
-                                     123)
+                                     123,
+                                     self.possible_trash_directories)
 
         assert self.fs.mock_calls == [
             call.isdir('.Trash'),
@@ -70,7 +76,8 @@ class TestHomeFallback(unittest.TestCase):
                                      self.logger,
                                      self.reporter,
                                      {},
-                                     123)
+                                     123,
+                                     self.possible_trash_directories)
 
         assert self.fs.mock_calls == [
             call.isdir('.Trash'),

@@ -32,10 +32,13 @@ class TestFileTrasher(unittest.TestCase):
                                         trash_directories_finder,
                                         os.path.dirname)
         self.logger = cast(MyLogger, Mock())
+        self.possible_trash_directories = Mock()
+        self.possible_trash_directories.trash_directories_for.return_value = \
+            [('/.Trash/1001', '/', 'relative_paths', 'top_trash_dir_rules'),
+             ('/.Trash-1001', '/', 'relative_paths', 'all_is_ok_rules')]
 
     def test_log_volume(self):
         self.volumes.volume_of.return_value = '/'
-
         result = TrashResult(False)
         self.file_trasher.trash_file('a-dir/with-a-file',
                                      False,
@@ -44,7 +47,8 @@ class TestFileTrasher(unittest.TestCase):
                                      self.logger,
                                      cast(TrashPutReporter, self.reporter),
                                      {},
-                                     1001)
+                                     1001,
+                                     self.possible_trash_directories)
 
         self.reporter.volume_of_file.assert_called_with('/')
 
@@ -60,7 +64,8 @@ class TestFileTrasher(unittest.TestCase):
                                      self.logger,
                                      cast(TrashPutReporter, self.reporter),
                                      {},
-                                     1001)
+                                     1001,
+                                     self.possible_trash_directories)
 
         self.reporter.unable_to_trash_file.assert_called_with('non-existent')
 
@@ -73,10 +78,13 @@ class TestFileTrasher(unittest.TestCase):
         result = TrashResult(False)
 
         self.file_trasher.trash_file("non-existent", None, None, result, logger,
-                                     reporter, self.environ, 1001)
+                                     reporter, self.environ, 1001,
+                                     self.possible_trash_directories)
 
         assert stderr.getvalue().splitlines() == [
             'trash-put: Volume of file: /disk',
-            'trash-put: Trash-dir: /xdh/Trash from volume: /disk',
-            'trash-put: .trashinfo created as /xdh/Trash/info/non-existent.trashinfo.',
-            "trash-put: 'non-existent' trashed in /xdh/Trash"]
+            'trash-put: found unsecure .Trash dir (should not be a symlink): /.Trash',
+            'trash-put: trash directory /.Trash/1001 is not secure',
+            'trash-put: Trash-dir: /.Trash-1001 from volume: /disk',
+            'trash-put: .trashinfo created as /.Trash-1001/info/non-existent.trashinfo.',
+            "trash-put: 'non-existent' trashed in /.Trash-1001"]

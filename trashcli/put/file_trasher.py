@@ -51,11 +51,12 @@ class FileTrasher:
                    reporter,  # type: TrashPutReporter
                    environ,  # type: Dict[str, str]
                    uid,  # type: int
+                   possible_trash_directories = None,
                    ):
         volume_of_file_to_be_trashed = forced_volume or \
                                        self.volume_of_parent(file)
 
-        possible_trash_directories = PossibleTrashDirectories(
+        possible_trash_directories = possible_trash_directories or PossibleTrashDirectories(
             self.trash_directories_finder,
             user_trash_dir,
             environ, uid)
