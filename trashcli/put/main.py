@@ -19,17 +19,18 @@ from trashcli.put.trash_put_cmd import TrashPutCmd
 
 def main():
     logger = MyLogger(sys.stderr)
+    reporter = TrashPutReporter(logger)
     file_trasher = FileTrasher(RealFs(),
                                volumes,
                                os.path.realpath,
                                datetime.now,
                                TrashDirectoriesFinder(volumes),
                                parent_path,
-                               logger)
+                               logger,
+                               reporter)
     access = Access()
     user = User(my_input)
-    trasher = Trasher(file_trasher, user, access)
-    reporter = TrashPutReporter(logger)
-    trash_all = TrashAll(logger, trasher, reporter)
+    trasher = Trasher(file_trasher, user, access, reporter)
+    trash_all = TrashAll(logger, trasher)
     cmd = TrashPutCmd(trash_all, reporter)
     return cmd.run(sys.argv, os.environ, os.getuid())

@@ -34,7 +34,8 @@ class TestFileTrasher(unittest.TestCase):
                                         datetime.now,
                                         trash_directories_finder,
                                         os.path.dirname,
-                                        self.logger)
+                                        self.logger,
+                                        self.reporter)
         self.possible_trash_directories = Mock()
         self.possible_trash_directories.trash_directories_for.return_value = \
             [('/.Trash/1001', '/', 'relative_paths', 'top_trash_dir_rules'),
@@ -47,7 +48,6 @@ class TestFileTrasher(unittest.TestCase):
                                      False,
                                      None,
                                      result,
-                                     cast(TrashPutReporter, self.reporter),
                                      {},
                                      1001,
                                      self.possible_trash_directories,
@@ -66,26 +66,28 @@ class TestFileTrasher(unittest.TestCase):
                                      None,
                                      None,
                                      result,
-                                     cast(TrashPutReporter, self.reporter),
                                      {},
                                      1001,
                                      self.possible_trash_directories,
                                      'trash-put',
                                      99)
 
-        assert 'trash-put: Volume of file: /' in \
+        assert "trash-put: cannot trash non existent 'non-existent'" in \
                self.stderr.getvalue().splitlines()
-        # self.reporter.unable_to_trash_file.assert_called_with('non-existent',
-        #                                                       'trash-put')
 
     def test_when_path_does_not_exists(self):
         self.volumes.volume_of.return_value = '/disk'
         result = TrashResult(False)
 
-        self.file_trasher.trash_file("non-existent", None, None, result,
-                                     self.reporter, self.environ,
-                                     1001, self.possible_trash_directories,
-                                     'trash-put', 99)
+        self.file_trasher.trash_file("non-existent",
+                                     None,
+                                     None,
+                                     result,
+                                     self.environ,
+                                     1001,
+                                     self.possible_trash_directories,
+                                     'trash-put',
+                                     99)
 
         assert self.stderr.getvalue().splitlines() == [
             'trash-put: Volume of file: /disk',

@@ -8,11 +8,9 @@ class TrashAll:
     def __init__(self,
                  logger,  # type: MyLogger
                  trasher,  # type: Trasher
-                 reporter,  # type: TrashPutReporter
                  ):  # type: (...) -> None
         self.logger = logger
         self.trasher = trasher
-        self.reporter = reporter
 
     def trash_all(self,
                   args,
@@ -29,7 +27,6 @@ class TrashAll:
                                         user_trash_dir,
                                         result,
                                         mode,
-                                        self.reporter,
                                         forced_volume,
                                         program_name,
                                         verbose,

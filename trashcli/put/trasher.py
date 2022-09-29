@@ -5,7 +5,7 @@ from trashcli.put.access import Access
 from trashcli.put.file_trasher import FileTrasher
 from typing import Dict
 
-from trashcli.put.my_logger import MyLogger
+from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_result import TrashResult
 from trashcli.put.user import user_replied_no, User
 from trashcli.put.parser import mode_force, mode_interactive
@@ -16,17 +16,18 @@ class Trasher:
                  file_trasher, # type: FileTrasher
                  user, # type: User
                  access, # type: Access
+                 reporter, # type: TrashPutReporter
                  ):
         self.file_trasher = file_trasher
         self.user = user
         self.access = access
+        self.reporter = reporter
 
     def trash(self,
               path,
               user_trash_dir,
               result,  # type: TrashResult
               mode,
-              reporter,
               forced_volume,
               program_name,
               verbose,
@@ -49,7 +50,7 @@ class Trasher:
         """
 
         if self._should_skipped_by_specs(path):
-            reporter.unable_to_trash_dot_entries(path, program_name)
+            self.reporter.unable_to_trash_dot_entries(path, program_name)
             return result
 
         if mode == mode_force and not self.access.is_accessible(path):
@@ -64,7 +65,6 @@ class Trasher:
                                             forced_volume,
                                             user_trash_dir,
                                             result,
-                                            reporter,
                                             environ,
                                             uid,
                                             None,

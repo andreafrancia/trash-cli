@@ -3,6 +3,7 @@ import unittest
 from mock import Mock, call
 from typing import cast
 
+from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_result import TrashResult
 from trashcli.put.trasher import Trasher
 from trashcli.put.user import user_replied_no, user_replied_yes
@@ -15,7 +16,9 @@ class TestTrasher(unittest.TestCase):
         self.user = Mock()
         self.access = Mock(spec=['is_accessible'])
         self.access.is_accessible.return_value = True
-        self.trasher = Trasher(self.file_trasher, self.user, self.access)
+        self.reporter = Mock(spec=['unable_to_trash_dot_entries'])
+        self.trasher = Trasher(self.file_trasher, self.user, self.access,
+                               cast(TrashPutReporter, self.reporter))
         self.file_trasher.trash_file.return_value = 'file_trasher result'
 
     def test(self):
@@ -23,7 +26,6 @@ class TestTrasher(unittest.TestCase):
                                     'user-trash-dir',
                                     cast(TrashResult, 'result'),
                                     mode_force,
-                                    'reporter',
                                     'forced_volume',
                                     'program_name',
                                      99,
@@ -38,7 +40,6 @@ class TestTrasher(unittest.TestCase):
                        'forced_volume',
                        'user-trash-dir',
                        'result',
-                       'reporter',
                        {"env": "ironment"},
                        123,
                        None,
@@ -55,7 +56,6 @@ class TestTrasher(unittest.TestCase):
                                     'user-trash-dir',
                                     'result',
                                     mode_interactive,
-                                    'reporter',
                                     'forced_volume',
                                     'program_name',
                                     99,
@@ -72,7 +72,6 @@ class TestTrasher(unittest.TestCase):
                        'forced_volume',
                        'user-trash-dir',
                        'result',
-                       'reporter',
                        {"env": "ironment"},
                        123,
                        None,
@@ -89,7 +88,6 @@ class TestTrasher(unittest.TestCase):
                                     'user-trash-dir',
                                     'result',
                                     mode_interactive,
-                                    'reporter',
                                     'forced_volume',
                                     'program_name',
                                     {},
@@ -106,12 +104,10 @@ class TestTrasher(unittest.TestCase):
                ]
 
     def test_dot_entry(self):
-        self.reporter = Mock()
         self.trasher.trash('.',
                            'user-trash-dir',
                            'result',
                            False,
-                           self.reporter,
                            'forced_volume',
                            'program_name',
                            {},

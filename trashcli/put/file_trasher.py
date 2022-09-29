@@ -41,7 +41,8 @@ class FileTrasher:
                  now,  # type: Callable[[], datetime]
                  trash_directories_finder,  # type: TrashDirectoriesFinder
                  parent_path,  # type: Callable[[str], str]
-                 logger, # type: MyLogger
+                 logger,  # type: MyLogger
+                 reporter,  # type: TrashPutReporter
                  ):  # type: (...) -> None
         self.fs = fs
         self.volumes = volumes
@@ -50,13 +51,18 @@ class FileTrasher:
         self.trash_directories_finder = trash_directories_finder
         self.parent_path = parent_path
         self.logger = logger
+        self.reporter = reporter
+        self.trash_file_in = TrashFileIn(self.fs, self.realpath,
+                                         self.volumes,
+                                         self.now, self.parent_path,
+                                         self.logger,
+                                         self.reporter)
 
     def trash_file(self,
                    path,  # type: str
                    forced_volume,
                    user_trash_dir,
                    result,  # type: TrashResult
-                   reporter,  # type: TrashPutReporter
                    environ,  # type: Dict[str, str]
                    uid,  # type: int
                    possible_trash_directories,
@@ -73,28 +79,25 @@ class FileTrasher:
             environ, uid)
         candidates = possible_trash_directories.trash_directories_for(
             volume_of_file_to_be_trashed)
-        reporter.volume_of_file(volume_of_file_to_be_trashed, program_name,
-                                verbose)
+        self.reporter.volume_of_file(volume_of_file_to_be_trashed, program_name,
+                                     verbose)
         file_has_been_trashed = False
         for trash_dir_path, volume, path_maker, checker in candidates:
-            trash_file_in = TrashFileIn(self.fs, self.realpath, self.volumes,
-                                        self.now, self.parent_path, self.logger,
-                                        reporter)
-            file_has_been_trashed = trash_file_in.trash_file_in(path,
-                                                                trash_dir_path,
-                                                                volume,
-                                                                path_maker,
-                                                                checker,
-                                                                file_has_been_trashed,
-                                                                volume_of_file_to_be_trashed,
-                                                                program_name,
-                                                                verbose,
-                                                                environ)
+            file_has_been_trashed = self.trash_file_in.trash_file_in(path,
+                                                                     trash_dir_path,
+                                                                     volume,
+                                                                     path_maker,
+                                                                     checker,
+                                                                     file_has_been_trashed,
+                                                                     volume_of_file_to_be_trashed,
+                                                                     program_name,
+                                                                     verbose,
+                                                                     environ)
             if file_has_been_trashed: break
 
         if not file_has_been_trashed:
             result = result.mark_unable_to_trash_file()
-            reporter.unable_to_trash_file(path, program_name)
+            self.reporter.unable_to_trash_file(path, program_name)
 
         return result
 
@@ -169,7 +172,8 @@ class TrashFileIn:
 
                 except (IOError, OSError) as error:
                     self.reporter.unable_to_trash_file_in_because(
-                        path, trash_dir.path, error, program_name, verbose, environ)
+                        path, trash_dir.path, error, program_name, verbose,
+                        environ)
         else:
             self.reporter.trash_dir_is_not_secure(trash_dir.path, program_name,
                                                   verbose)

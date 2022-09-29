@@ -24,7 +24,8 @@ class TestHomeFallback(unittest.TestCase):
                                         datetime.now,
                                         trash_directories_finder,
                                         os.path.dirname,
-                                        self.logger)
+                                        self.logger,
+                                        self.reporter)
         self.possible_trash_directories = Mock()
         self.possible_trash_directories.trash_directories_for.return_value = \
             [('.Trash/123', '', 'relative_paths', 'top_trash_dir_rules'),
@@ -44,7 +45,6 @@ class TestHomeFallback(unittest.TestCase):
                                      None,
                                      None,
                                      result,
-                                     self.reporter,
                                      {},
                                      123,
                                      self.possible_trash_directories,
@@ -75,7 +75,6 @@ class TestHomeFallback(unittest.TestCase):
                                      None,
                                      None,
                                      result,
-                                     self.reporter,
                                      {},
                                      123,
                                      self.possible_trash_directories,
