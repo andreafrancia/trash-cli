@@ -4,7 +4,7 @@ from datetime import datetime
 
 from trashcli.fstab import volumes
 from trashcli.put.access import Access
-from trashcli.put.file_trasher import FileTrasher
+from trashcli.put.file_trasher import FileTrasher, TrashFileIn
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.parent_path import parent_path
 from trashcli.put.real_fs import RealFs
@@ -20,14 +20,23 @@ from trashcli.put.trash_put_cmd import TrashPutCmd
 def main():
     logger = MyLogger(sys.stderr)
     reporter = TrashPutReporter(logger)
-    file_trasher = FileTrasher(RealFs(),
+    fs = RealFs()
+    trash_file_in = TrashFileIn(fs,
+                                os.path.realpath,
+                                volumes,
+                                datetime.now,
+                                parent_path,
+                                logger,
+                                reporter)
+    file_trasher = FileTrasher(fs,
                                volumes,
                                os.path.realpath,
                                datetime.now,
                                TrashDirectoriesFinder(volumes),
                                parent_path,
                                logger,
-                               reporter)
+                               reporter,
+                               trash_file_in)
     access = Access()
     user = User(my_input)
     trasher = Trasher(file_trasher, user, access, reporter)

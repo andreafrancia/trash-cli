@@ -43,6 +43,7 @@ class FileTrasher:
                  parent_path,  # type: Callable[[str], str]
                  logger,  # type: MyLogger
                  reporter,  # type: TrashPutReporter
+                 trash_file_in=None,  # type: TrashFileIn
                  ):  # type: (...) -> None
         self.fs = fs
         self.volumes = volumes
@@ -52,11 +53,7 @@ class FileTrasher:
         self.parent_path = parent_path
         self.logger = logger
         self.reporter = reporter
-        self.trash_file_in = TrashFileIn(self.fs, self.realpath,
-                                         self.volumes,
-                                         self.now, self.parent_path,
-                                         self.logger,
-                                         self.reporter)
+        self.trash_file_in = trash_file_in
 
     def trash_file(self,
                    path,  # type: str

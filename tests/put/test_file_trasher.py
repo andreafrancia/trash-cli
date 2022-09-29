@@ -7,7 +7,7 @@ from mock import Mock
 from datetime import datetime
 
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
-from trashcli.put.file_trasher import FileTrasher
+from trashcli.put.file_trasher import FileTrasher, TrashFileIn
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_result import TrashResult
 from trashcli.put.my_logger import MyLogger
@@ -28,14 +28,24 @@ class TestFileTrasher(unittest.TestCase):
         self.stderr = StringIO()
         self.logger = MyLogger(self.stderr)
         self.reporter = TrashPutReporter(self.logger)
+        realpath = lambda x: x
+        parent_path = os.path.dirname
+        self.trash_file_in = TrashFileIn(self.fs,
+                                         realpath,
+                                         self.volumes,
+                                         datetime.now,
+                                         parent_path,
+                                         self.logger,
+                                         self.reporter)
         self.file_trasher = FileTrasher(self.fs,
                                         self.volumes,
-                                        lambda x: x,
+                                        realpath,
                                         datetime.now,
                                         trash_directories_finder,
-                                        os.path.dirname,
+                                        parent_path,
                                         self.logger,
-                                        self.reporter)
+                                        self.reporter,
+                                        self.trash_file_in)
         self.possible_trash_directories = Mock()
         self.possible_trash_directories.trash_directories_for.return_value = \
             [('/.Trash/1001', '/', 'relative_paths', 'top_trash_dir_rules'),
