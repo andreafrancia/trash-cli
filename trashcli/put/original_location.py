@@ -10,12 +10,12 @@ class OriginalLocation:
     def __init__(self, parent_realpath):
         self.parent_realpath = parent_realpath
 
-    def for_file(self, path, path_maker):
+    def for_file(self, path, path_maker, path_maker_type):
         self.normalized_path = os.path.normpath(path)
 
         basename = os.path.basename(self.normalized_path)
         parent = self.parent_realpath(self.normalized_path)
 
-        parent = path_maker.calc_parent_path(parent)
+        parent = path_maker.calc_parent_path(parent, path_maker_type)
 
         return os.path.join(parent, basename)

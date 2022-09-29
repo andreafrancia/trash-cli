@@ -5,6 +5,7 @@ from trashcli.put.parent_path import parent_path
 
 from trashcli.put.file_trasher import TopDirRelativePaths
 from trashcli.put.original_location import OriginalLocation
+from trashcli.put.path_maker import PathMakerType
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 from mock import Mock, call
 
@@ -24,7 +25,7 @@ class TestTrashing(unittest.TestCase):
 
     def test_the_file_should_be_moved_in_trash_dir(self):
 
-        self.trashdir.trash2('foo', self.now, 'trash-put', 99)
+        self.trashdir.trash2('foo', self.now, 'trash-put', 99, PathMakerType.absolute_paths)
 
         assert self.fs.mock_calls == [call.move('foo', 'files/')]
         assert self.info_dir.mock_calls == [
@@ -37,7 +38,7 @@ class TestTrashing(unittest.TestCase):
         self.fs.move.side_effect = IOError
 
         try:
-            self.trashdir.trash2('foo', self.now, 'trash-put', 99)
+            self.trashdir.trash2('foo', self.now, 'trash-put', 99, PathMakerType.absolute_paths)
         except IOError:
             pass
 
