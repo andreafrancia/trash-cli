@@ -1,4 +1,5 @@
 from trashcli.put.file_trasher import TopDirRelativePaths, AbsolutePaths
+from trashcli.put.original_location import OriginalLocation, parent_realpath
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 from mock import Mock
 
@@ -7,8 +8,9 @@ class TestHowOriginalLocationIsStored:
     def test_for_absolute_paths(self):
         fs = Mock()
         paths = AbsolutePaths()
+        original_location = OriginalLocation(parent_realpath)
         self.dir = TrashDirectoryForPut('/volume/.Trash', '/volume', fs,
-                                        paths, None)
+                                        paths, None, original_location)
 
         self.assert_path_for_trashinfo_is('/file', '/file')
         self.assert_path_for_trashinfo_is('/file', '/dir/../file')
@@ -18,8 +20,9 @@ class TestHowOriginalLocationIsStored:
 
     def test_for_relative_paths(self):
         paths = TopDirRelativePaths('/volume')
+        original_location = OriginalLocation(parent_realpath)
         self.dir = TrashDirectoryForPut('/volume/.Trash', '/volume', Mock(),
-                                        paths, None)
+                                        paths, None, original_location)
 
         self.assert_path_for_trashinfo_is('/file', '/file')
         self.assert_path_for_trashinfo_is('/file', '/dir/../file')

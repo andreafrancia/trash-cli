@@ -1,7 +1,10 @@
 import datetime
 import unittest
 
+from trashcli.put.parent_path import parent_path
+
 from trashcli.put.file_trasher import TopDirRelativePaths
+from trashcli.put.original_location import OriginalLocation
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 from mock import Mock, call
 
@@ -10,14 +13,14 @@ class TestTrashing(unittest.TestCase):
     def setUp(self):
         self.now = lambda: datetime.datetime(1970, 1, 1)
         self.fs = Mock()
-        path_maker = TopDirRelativePaths('/')
         self.info_dir = Mock(['persist_trash_info'])
         self.info_dir.persist_trash_info.return_value = 'info_file'
-        self.trashdir = TrashDirectoryForPut('~/.Trash', '/', self.fs,
-                                             path_maker, self.info_dir)
+        original_location = OriginalLocation(parent_path)
         path_maker = Mock()
+        self.trashdir = TrashDirectoryForPut('~/.Trash', '/', self.fs,
+                                             path_maker, self.info_dir,
+                                             original_location)
         path_maker.calc_parent_path.return_value = ''
-        self.trashdir.path_maker = path_maker
 
     def test_the_file_should_be_moved_in_trash_dir(self):
 

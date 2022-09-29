@@ -6,6 +6,7 @@ from typing import Callable, Dict, Optional
 from trashcli.fstab import Volumes
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import MyLogger
+from trashcli.put.original_location import OriginalLocation, parent_realpath
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.rules import AllIsOkRules, TopTrashDirRules
 from trashcli.put.suffix import Suffix
@@ -134,11 +135,13 @@ class TrashFileIn:
             path_maker]
         checker = {top_trash_dir_rules: TopTrashDirRules(),
                    all_is_ok_rules: AllIsOkRules()}[checker]
+        original_location = OriginalLocation(parent_realpath)
         trash_dir = TrashDirectoryForPut(trash_dir_path,
                                          volume,
                                          self.fs,
                                          path_maker,
-                                         info_dir)
+                                         info_dir,
+                                         original_location)
         trash_dir_is_secure, messages = checker.check_trash_dir_is_secure(
             trash_dir.path,
             self.fs)
