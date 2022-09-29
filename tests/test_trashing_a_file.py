@@ -3,7 +3,6 @@ import unittest
 
 from trashcli.put.parent_path import parent_path
 
-from trashcli.put.file_trasher import TopDirRelativePaths
 from trashcli.put.original_location import OriginalLocation
 from trashcli.put.path_maker import PathMakerType
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut

@@ -1,5 +1,6 @@
 import os
 
+from trashcli.put.path_maker import PathMaker
 from trashcli.py2compat import url_quote
 from trashcli.trash import path_of_backup_copy
 

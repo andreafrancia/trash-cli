@@ -15,7 +15,7 @@ from trashcli.put.real_fs import RealFs
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 from trashcli.put.trash_result import TrashResult
 from trashcli.put.values import all_is_ok_rules, top_trash_dir_rules
-from trashcli.put.path_maker import PathMakerType
+from trashcli.put.path_maker import PathMaker
 
 
 class PossibleTrashDirectories:
@@ -130,10 +130,7 @@ class TrashFileIn:
         info_dir_path = os.path.join(trash_dir_path, 'info')
         info_dir = InfoDir(info_dir_path, self.fs, self.logger,
                            suffix)
-        path_maker = {PathMakerType.absolute_paths: AbsolutePaths(),
-                      PathMakerType.relative_paths: TopDirRelativePaths(
-                          volume)}[
-            path_maker_type]
+        path_maker = PathMaker()
         checker = {top_trash_dir_rules: TopTrashDirRules(),
                    all_is_ok_rules: AllIsOkRules()}[checker]
         original_location = OriginalLocation(parent_realpath)
@@ -185,21 +182,3 @@ class TrashFileIn:
                                   volume_of_file_to_be_trashed,
                                   volume_of_trash_dir):
         return volume_of_trash_dir == volume_of_file_to_be_trashed
-
-
-class TopDirRelativePaths:
-    def __init__(self, volume_top_dir):
-        self.volume_top_dir = volume_top_dir
-
-    def calc_parent_path(self, parent, volume_top_dir, path_maker_type):
-        if (parent == self.volume_top_dir) or parent.startswith(
-                self.volume_top_dir + os.path.sep):
-            parent = parent[len(self.volume_top_dir + os.path.sep):]
-        return parent
-
-
-class AbsolutePaths:
-
-    @staticmethod
-    def calc_parent_path(parent, volume_top_dir, path_maker_type):
-        return parent

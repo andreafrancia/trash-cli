@@ -1,14 +1,12 @@
+import os
 import unittest
+from datetime import datetime
 
-from mock import Mock, call, ANY
+from mock import Mock
 
 from trashcli.fstab import create_fake_volume_of
-from trashcli.put.rules import AllIsOkRules
-from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
-from trashcli.put.file_trasher import FileTrasher, TrashFileIn, AbsolutePaths
-from trashcli.put.trash_result import TrashResult
-from datetime import datetime
-import os
+from trashcli.put.file_trasher import TrashFileIn
+from trashcli.put.path_maker import PathMaker
 
 
 class TestTrashFileIn(unittest.TestCase):
@@ -29,6 +27,6 @@ class TestTrashFileIn(unittest.TestCase):
                                          self.reporter)
 
     def test(self):
-        path_maker = AbsolutePaths()
+        path_maker = PathMaker()
         # self.trash_file_in.trash_file_in('path', 'trash_dir_path', 'volume',
         #                                  path_maker, AllIsOkRules(), )
