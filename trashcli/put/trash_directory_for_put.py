@@ -14,11 +14,13 @@ class TrashDirectoryForPut:
         self.info_dir = info_dir
         self.original_location = original_location
 
-    def trash2(self, path, now, program_name, verbose, path_maker_type):
+    def trash2(self, path, now, program_name, verbose, path_maker_type,
+               volume_top_dir):
         path = os.path.normpath(path)
 
         original_location = self.path_for_trash_info_for_file(path,
-                                                              path_maker_type)
+                                                              path_maker_type,
+                                                              volume_top_dir)
 
         basename = os.path.basename(original_location)
         content = format_trashinfo(original_location, now())
@@ -34,10 +36,12 @@ class TrashDirectoryForPut:
             self.fs.remove_file(trash_info_file)
             raise e
 
-    def path_for_trash_info_for_file(self, path, path_maker_type):
+    def path_for_trash_info_for_file(self, path, path_maker_type,
+                                     volume_top_dir):
         path_for_trash_info = self.original_location
         return path_for_trash_info.for_file(path, self.path_maker,
-                                            path_maker_type)
+                                            path_maker_type,
+                                            volume_top_dir)
 
 
 def format_trashinfo(original_location, deletion_date):

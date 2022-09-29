@@ -163,7 +163,7 @@ class TrashFileIn:
                     self.fs.ensure_dir(os.path.join(trash_dir_path, 'files'),
                                        0o700)
                     trash_dir.trash2(path, self.now, program_name, verbose,
-                                     path_maker_type)
+                                     path_maker_type, volume)
                     self.reporter.file_has_been_trashed_in_as(
                         path,
                         trash_dir.path,
@@ -188,18 +188,18 @@ class TrashFileIn:
 
 
 class TopDirRelativePaths:
-    def __init__(self, topdir):
-        self.topdir = topdir
+    def __init__(self, volume_top_dir):
+        self.volume_top_dir = volume_top_dir
 
-    def calc_parent_path(self, parent, path_maker_type):
-        if (parent == self.topdir) or parent.startswith(
-                self.topdir + os.path.sep):
-            parent = parent[len(self.topdir + os.path.sep):]
+    def calc_parent_path(self, parent, volume_top_dir, path_maker_type):
+        if (parent == self.volume_top_dir) or parent.startswith(
+                self.volume_top_dir + os.path.sep):
+            parent = parent[len(self.volume_top_dir + os.path.sep):]
         return parent
 
 
 class AbsolutePaths:
 
     @staticmethod
-    def calc_parent_path(parent, path_maker_type):
+    def calc_parent_path(parent, volume_top_dir, path_maker_type):
         return parent

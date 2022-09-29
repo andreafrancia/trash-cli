@@ -39,5 +39,6 @@ class TestHowOriginalLocationIsStored(unittest.TestCase):
 
     def assert_path_for_trashinfo_is(self, expected_value, file_to_be_trashed):
         result = self.dir.path_for_trash_info_for_file(file_to_be_trashed,
-                                                       self.path_maker_type)
+                                                       self.path_maker_type,
+                                                       '/volume')
         assert expected_value == result

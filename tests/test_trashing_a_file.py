@@ -25,7 +25,8 @@ class TestTrashing(unittest.TestCase):
 
     def test_the_file_should_be_moved_in_trash_dir(self):
 
-        self.trashdir.trash2('foo', self.now, 'trash-put', 99, PathMakerType.absolute_paths)
+        self.trashdir.trash2('foo', self.now, 'trash-put', 99,
+                             PathMakerType.absolute_paths, '/disk')
 
         assert self.fs.mock_calls == [call.move('foo', 'files/')]
         assert self.info_dir.mock_calls == [
@@ -38,7 +39,8 @@ class TestTrashing(unittest.TestCase):
         self.fs.move.side_effect = IOError
 
         try:
-            self.trashdir.trash2('foo', self.now, 'trash-put', 99, PathMakerType.absolute_paths)
+            self.trashdir.trash2('foo', self.now, 'trash-put', 99,
+                                 PathMakerType.absolute_paths, '/disk')
         except IOError:
             pass
 
