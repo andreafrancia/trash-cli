@@ -13,6 +13,8 @@ from trashcli.put.trash_result import TrashResult
 from trashcli.put.my_logger import MyLogger
 import os
 
+from trashcli.put.path_maker import PathMakerType
+
 
 class TestFileTrasher(unittest.TestCase):
     def setUp(self):
@@ -48,8 +50,8 @@ class TestFileTrasher(unittest.TestCase):
                                         self.trash_file_in)
         self.possible_trash_directories = Mock()
         self.possible_trash_directories.trash_directories_for.return_value = \
-            [('/.Trash/1001', '/', 'relative_paths', 'top_trash_dir_rules'),
-             ('/.Trash-1001', '/', 'relative_paths', 'all_is_ok_rules')]
+            [('/.Trash/1001', '/', PathMakerType.relative_paths, 'top_trash_dir_rules'),
+             ('/.Trash-1001', '/', PathMakerType.relative_paths, 'all_is_ok_rules')]
 
     def test_log_volume(self):
         self.volumes.volume_of.return_value = '/'

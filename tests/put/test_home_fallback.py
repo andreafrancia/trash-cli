@@ -9,6 +9,8 @@ from trashcli.put.trash_result import TrashResult
 from datetime import datetime
 import os
 
+from trashcli.put.path_maker import PathMakerType
+
 
 class TestHomeFallback(unittest.TestCase):
     def setUp(self):
@@ -38,8 +40,8 @@ class TestHomeFallback(unittest.TestCase):
                                         self.trash_file_in)
         self.possible_trash_directories = Mock()
         self.possible_trash_directories.trash_directories_for.return_value = \
-            [('.Trash/123', '', 'relative_paths', 'top_trash_dir_rules'),
-             ('.Trash-123', '', 'relative_paths', 'all_is_ok_rules')]
+            [('.Trash/123', '', PathMakerType.relative_paths, 'top_trash_dir_rules'),
+             ('.Trash-123', '', PathMakerType.relative_paths, 'all_is_ok_rules')]
         # self.possible_trash_directories = None
 
     def test_use_of_top_trash_dir_when_sticky(self):

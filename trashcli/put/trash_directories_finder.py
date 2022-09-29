@@ -1,8 +1,9 @@
 from typing import Dict, List, Tuple
 
 from trashcli.fstab import Volumes
-from trashcli.put.values import absolute_paths, relative_paths, \
-    all_is_ok_rules, top_trash_dir_rules
+from trashcli.put.values import all_is_ok_rules, \
+    top_trash_dir_rules
+from trashcli.put.path_maker import PathMakerType
 from trashcli.trash import home_trash_dir, volume_trash_dir1, volume_trash_dir2
 
 
@@ -16,19 +17,19 @@ class TrashDirectoriesFinder:
         trash_dirs = []
 
         def add_home_trash(path, volume):
-            trash_dirs.append((path, volume, absolute_paths, all_is_ok_rules))
+            trash_dirs.append((path, volume, PathMakerType.absolute_paths, all_is_ok_rules))
 
         def add_top_trash_dir(path, volume):
             trash_dirs.append(
-                (path, volume, relative_paths, top_trash_dir_rules))
+                (path, volume, PathMakerType.relative_paths, top_trash_dir_rules))
 
         def add_alt_top_trash_dir(path, volume):
-            trash_dirs.append((path, volume, relative_paths, all_is_ok_rules))
+            trash_dirs.append((path, volume, PathMakerType.relative_paths, all_is_ok_rules))
 
         if specific_trash_dir:
             path = specific_trash_dir
             volume = self.volumes.volume_of(path)
-            trash_dirs.append((path, volume, relative_paths, all_is_ok_rules))
+            trash_dirs.append((path, volume, PathMakerType.relative_paths, all_is_ok_rules))
         else:
             for path, dir_volume in home_trash_dir(environ,
                                                    self.volumes.volume_of):
