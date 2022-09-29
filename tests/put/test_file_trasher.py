@@ -25,13 +25,16 @@ class TestFileTrasher(unittest.TestCase):
 
         self.environ = {'XDG_DATA_HOME': '/xdh'}
         trash_directories_finder = TrashDirectoriesFinder(self.volumes)
+        self.stderr = StringIO()
+        self.logger = MyLogger(self.stderr)
+        self.reporter = TrashPutReporter(self.logger)
         self.file_trasher = FileTrasher(self.fs,
                                         self.volumes,
                                         lambda x: x,
                                         datetime.now,
                                         trash_directories_finder,
-                                        os.path.dirname)
-        self.logger = cast(MyLogger, Mock())
+                                        os.path.dirname,
+                                        self.logger)
         self.possible_trash_directories = Mock()
         self.possible_trash_directories.trash_directories_for.return_value = \
             [('/.Trash/1001', '/', 'relative_paths', 'top_trash_dir_rules'),
@@ -44,7 +47,6 @@ class TestFileTrasher(unittest.TestCase):
                                      False,
                                      None,
                                      result,
-                                     self.logger,
                                      cast(TrashPutReporter, self.reporter),
                                      {},
                                      1001,
@@ -52,7 +54,8 @@ class TestFileTrasher(unittest.TestCase):
                                      'trash-put',
                                      99)
 
-        self.reporter.volume_of_file.assert_called_with('/', 'trash-put', 99)
+        assert 'trash-put: Volume of file: /' in \
+               self.stderr.getvalue().splitlines()
 
     def test_should_report_when_trash_fail(self):
         self.volumes.volume_of.return_value = '/'
@@ -63,7 +66,6 @@ class TestFileTrasher(unittest.TestCase):
                                      None,
                                      None,
                                      result,
-                                     self.logger,
                                      cast(TrashPutReporter, self.reporter),
                                      {},
                                      1001,
@@ -71,23 +73,21 @@ class TestFileTrasher(unittest.TestCase):
                                      'trash-put',
                                      99)
 
-        self.reporter.unable_to_trash_file.assert_called_with('non-existent',
-                                                              'trash-put')
+        assert 'trash-put: Volume of file: /' in \
+               self.stderr.getvalue().splitlines()
+        # self.reporter.unable_to_trash_file.assert_called_with('non-existent',
+        #                                                       'trash-put')
 
     def test_when_path_does_not_exists(self):
         self.volumes.volume_of.return_value = '/disk'
-        stderr = StringIO()
-        logger = MyLogger(stderr)
-        reporter = TrashPutReporter(logger)
         result = TrashResult(False)
 
-        self.file_trasher.trash_file("non-existent", None, None, result, logger,
-                                     reporter, self.environ, 1001,
-                                     self.possible_trash_directories,
-                                     'trash-put',
-                                     99)
+        self.file_trasher.trash_file("non-existent", None, None, result,
+                                     self.reporter, self.environ,
+                                     1001, self.possible_trash_directories,
+                                     'trash-put', 99)
 
-        assert stderr.getvalue().splitlines() == [
+        assert self.stderr.getvalue().splitlines() == [
             'trash-put: Volume of file: /disk',
             'trash-put: found unsecure .Trash dir (should not be a symlink): /.Trash',
             'trash-put: trash directory /.Trash/1001 is not secure',

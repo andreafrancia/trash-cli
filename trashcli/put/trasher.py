@@ -1,15 +1,22 @@
 import os
 
+from trashcli.put.access import Access
+
+from trashcli.put.file_trasher import FileTrasher
 from typing import Dict
 
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.trash_result import TrashResult
-from trashcli.put.user import user_replied_no
+from trashcli.put.user import user_replied_no, User
 from trashcli.put.parser import mode_force, mode_interactive
 
 
 class Trasher:
-    def __init__(self, file_trasher, user, access):
+    def __init__(self,
+                 file_trasher, # type: FileTrasher
+                 user, # type: User
+                 access, # type: Access
+                 ):
         self.file_trasher = file_trasher
         self.user = user
         self.access = access
@@ -18,7 +25,6 @@ class Trasher:
               path,
               user_trash_dir,
               result,  # type: TrashResult
-              logger,  # type: MyLogger
               mode,
               reporter,
               forced_volume,
@@ -58,7 +64,6 @@ class Trasher:
                                             forced_volume,
                                             user_trash_dir,
                                             result,
-                                            logger,
                                             reporter,
                                             environ,
                                             uid,

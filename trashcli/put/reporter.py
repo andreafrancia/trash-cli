@@ -55,9 +55,10 @@ class TrashPutReporter:
         except AttributeError:
             pass
         else:
-            for path in [filename, os.path.dirname(filename)]:
-                info = cls.get_stats(path)
-                yield "stats for %s: %s" % (path, info)
+            if filename is not None:
+                for path in [filename, os.path.dirname(filename)]:
+                    info = cls.get_stats(path)
+                    yield "stats for %s: %s" % (path, info)
 
     @staticmethod
     def get_stats(path):

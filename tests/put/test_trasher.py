@@ -1,7 +1,9 @@
 import unittest
 
 from mock import Mock, call
+from typing import cast
 
+from trashcli.put.trash_result import TrashResult
 from trashcli.put.trasher import Trasher
 from trashcli.put.user import user_replied_no, user_replied_yes
 from trashcli.put.parser import mode_force, mode_interactive
@@ -19,8 +21,7 @@ class TestTrasher(unittest.TestCase):
     def test(self):
         result = self.trasher.trash('file',
                                     'user-trash-dir',
-                                    'result',
-                                    'logger',
+                                    cast(TrashResult, 'result'),
                                     mode_force,
                                     'reporter',
                                     'forced_volume',
@@ -37,7 +38,6 @@ class TestTrasher(unittest.TestCase):
                        'forced_volume',
                        'user-trash-dir',
                        'result',
-                       'logger',
                        'reporter',
                        {"env": "ironment"},
                        123,
@@ -54,7 +54,6 @@ class TestTrasher(unittest.TestCase):
         result = self.trasher.trash('file',
                                     'user-trash-dir',
                                     'result',
-                                    'logger',
                                     mode_interactive,
                                     'reporter',
                                     'forced_volume',
@@ -73,7 +72,6 @@ class TestTrasher(unittest.TestCase):
                        'forced_volume',
                        'user-trash-dir',
                        'result',
-                       'logger',
                        'reporter',
                        {"env": "ironment"},
                        123,
@@ -90,7 +88,6 @@ class TestTrasher(unittest.TestCase):
         result = self.trasher.trash('file',
                                     'user-trash-dir',
                                     'result',
-                                    'logger',
                                     mode_interactive,
                                     'reporter',
                                     'forced_volume',
@@ -113,7 +110,6 @@ class TestTrasher(unittest.TestCase):
         self.trasher.trash('.',
                            'user-trash-dir',
                            'result',
-                           'logger',
                            False,
                            self.reporter,
                            'forced_volume',

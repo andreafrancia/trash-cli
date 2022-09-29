@@ -28,7 +28,6 @@ class TrashAll:
             result = self.trasher.trash(arg,
                                         user_trash_dir,
                                         result,
-                                        self.logger,
                                         mode,
                                         self.reporter,
                                         forced_volume,

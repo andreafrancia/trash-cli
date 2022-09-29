@@ -17,18 +17,19 @@ class TestHomeFallback(unittest.TestCase):
         self.fs = Mock()
         volumes = create_fake_volume_of(mount_points)
         trash_directories_finder = TrashDirectoriesFinder(volumes)
+        self.logger = Mock()
         self.file_trasher = FileTrasher(self.fs,
                                         volumes,
                                         lambda x: x,
                                         datetime.now,
                                         trash_directories_finder,
-                                        os.path.dirname)
+                                        os.path.dirname,
+                                        self.logger)
         self.possible_trash_directories = Mock()
         self.possible_trash_directories.trash_directories_for.return_value = \
             [('.Trash/123', '', 'relative_paths', 'top_trash_dir_rules'),
              ('.Trash-123', '', 'relative_paths', 'all_is_ok_rules')]
         # self.possible_trash_directories = None
-        self.logger = Mock()
 
     def test_use_of_top_trash_dir_when_sticky(self):
         self.fs.mock_add_spec(['isdir', 'islink', 'has_sticky_bit',
@@ -43,7 +44,6 @@ class TestHomeFallback(unittest.TestCase):
                                      None,
                                      None,
                                      result,
-                                     self.logger,
                                      self.reporter,
                                      {},
                                      123,
@@ -75,7 +75,6 @@ class TestHomeFallback(unittest.TestCase):
                                      None,
                                      None,
                                      result,
-                                     self.logger,
                                      self.reporter,
                                      {},
                                      123,

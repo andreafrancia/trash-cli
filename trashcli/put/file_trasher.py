@@ -41,6 +41,7 @@ class FileTrasher:
                  now,  # type: Callable[[], datetime]
                  trash_directories_finder,  # type: TrashDirectoriesFinder
                  parent_path,  # type: Callable[[str], str]
+                 logger, # type: MyLogger
                  ):  # type: (...) -> None
         self.fs = fs
         self.volumes = volumes
@@ -48,13 +49,13 @@ class FileTrasher:
         self.now = now
         self.trash_directories_finder = trash_directories_finder
         self.parent_path = parent_path
+        self.logger = logger
 
     def trash_file(self,
                    path,  # type: str
                    forced_volume,
                    user_trash_dir,
                    result,  # type: TrashResult
-                   logger,  # type: MyLogger
                    reporter,  # type: TrashPutReporter
                    environ,  # type: Dict[str, str]
                    uid,  # type: int
@@ -77,7 +78,7 @@ class FileTrasher:
         file_has_been_trashed = False
         for trash_dir_path, volume, path_maker, checker in candidates:
             trash_file_in = TrashFileIn(self.fs, self.realpath, self.volumes,
-                                        self.now, self.parent_path, logger,
+                                        self.now, self.parent_path, self.logger,
                                         reporter)
             file_has_been_trashed = trash_file_in.trash_file_in(path,
                                                                 trash_dir_path,
