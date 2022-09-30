@@ -1,19 +1,16 @@
+import os
 import unittest
-from typing import cast
-
-from six import StringIO
-
-from mock import Mock
 from datetime import datetime
 
-from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
-from trashcli.put.file_trasher import FileTrasher, TrashFileIn
-from trashcli.put.reporter import TrashPutReporter
-from trashcli.put.trash_result import TrashResult
-from trashcli.put.my_logger import MyLogger
-import os
+from mock import Mock
+from six import StringIO
 
-from trashcli.put.path_maker import PathMakerType
+from trashcli.put.file_trasher import FileTrasher, TrashFileIn
+from trashcli.put.my_logger import MyLogger
+from trashcli.put.reporter import TrashPutReporter
+from trashcli.put.suffix import Suffix
+from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
+from trashcli.put.trash_result import TrashResult
 
 
 class TestFileTrasher(unittest.TestCase):
@@ -32,13 +29,16 @@ class TestFileTrasher(unittest.TestCase):
         self.reporter = TrashPutReporter(self.logger)
         realpath = lambda x: x
         parent_path = os.path.dirname
+        self.suffix = Mock(spec=Suffix)
+        self.suffix.suffix_for_index.return_value = '_suffix'
         self.trash_file_in = TrashFileIn(self.fs,
                                          realpath,
                                          self.volumes,
                                          datetime.now,
                                          parent_path,
                                          self.logger,
-                                         self.reporter)
+                                         self.reporter,
+                                         self.suffix)
         self.file_trasher = FileTrasher(self.fs,
                                         self.volumes,
                                         realpath,
@@ -97,5 +97,5 @@ class TestFileTrasher(unittest.TestCase):
         assert self.stderr.getvalue().splitlines() == [
             'trash-put: Volume of file: /disk',
             'trash-put: Trash-dir: /xdh/Trash from volume: /disk',
-            'trash-put: .trashinfo created as /xdh/Trash/info/non-existent.trashinfo.',
+            'trash-put: .trashinfo created as /xdh/Trash/info/non-existent_suffix.trashinfo.',
             "trash-put: 'non-existent' trashed in /xdh/Trash"]

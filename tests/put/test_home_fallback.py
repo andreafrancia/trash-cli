@@ -3,6 +3,7 @@ import unittest
 from mock import Mock, call, ANY
 
 from trashcli.fstab import create_fake_volume_of
+from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.file_trasher import FileTrasher, TrashFileIn
 from trashcli.put.trash_result import TrashResult
@@ -22,13 +23,16 @@ class TestHomeFallback(unittest.TestCase):
         self.logger = Mock()
         realpath = lambda x: x
         parent_path = os.path.dirname
+        self.suffix = Mock(spec=Suffix)
+        self.suffix.suffix_for_index.return_value = '_suffix'
         self.trash_file_in = TrashFileIn(self.fs,
                                          realpath,
                                          volumes,
                                          datetime.now,
                                          parent_path,
                                          self.logger,
-                                         self.reporter)
+                                         self.reporter,
+                                         self.suffix)
         self.file_trasher = FileTrasher(self.fs,
                                         volumes,
                                         realpath,
@@ -64,8 +68,8 @@ class TestHomeFallback(unittest.TestCase):
             call.ensure_dir('.Trash/123', 448),
             call.ensure_dir('.Trash/123/files', 448),
             call.ensure_dir('.Trash/123/info', 448),
-            call.atomic_write('.Trash/123/info/foo.trashinfo', ANY),
-            call.move('sandbox/foo', '.Trash/123/files/foo')
+            call.atomic_write('.Trash/123/info/foo_suffix.trashinfo', ANY),
+            call.move('sandbox/foo', '.Trash/123/files/foo_suffix')
         ]
 
     def test_bug_will_use_top_trashdir_even_with_not_sticky(self):
@@ -93,6 +97,6 @@ class TestHomeFallback(unittest.TestCase):
             call.ensure_dir('.Trash-123', 448),
             call.ensure_dir('.Trash-123/files', 448),
             call.ensure_dir('.Trash-123/info', 448),
-            call.atomic_write('.Trash-123/info/foo.trashinfo', ANY),
-            call.move('sandbox/foo', '.Trash-123/files/foo')
+            call.atomic_write('.Trash-123/info/foo_suffix.trashinfo', ANY),
+            call.move('sandbox/foo', '.Trash-123/files/foo_suffix')
         ]

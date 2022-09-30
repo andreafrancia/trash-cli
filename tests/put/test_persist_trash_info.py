@@ -19,14 +19,13 @@ class Test_persist_trash_info(unittest.TestCase):
         self.logger = Mock()
         self.suffix = Mock()
         self.suffix.suffix_for_index.side_effect = lambda i: '.suffix-%s' % i
-        self.info_dir = InfoDir(self.path,
-                                self.fs,
+        self.info_dir = InfoDir(self.fs,
                                 self.logger,
                                 self.suffix)
 
     def test_persist_trash_info_first_time(self):
         trash_info_file = self.info_dir.persist_trash_info(
-            'dummy-path', b'content', 'trash-put', 99)
+            'dummy-path', b'content', 'trash-put', 99, self.path)
 
         assert self.path / 'dummy-path.suffix-0.trashinfo' == trash_info_file
         assert 'content' == read_file(trash_info_file)
@@ -35,7 +34,7 @@ class Test_persist_trash_info(unittest.TestCase):
         self.test_persist_trash_info_first_time()
 
         trash_info_file = self.info_dir.persist_trash_info(
-            'dummy-path', b'content', 'trash-put', 99)
+            'dummy-path', b'content', 'trash-put', 99, self.path)
 
         assert self.path / 'dummy-path.suffix-1.trashinfo' == trash_info_file
         assert 'content' == read_file(trash_info_file)

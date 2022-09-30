@@ -1,6 +1,7 @@
 import os
 import sys
 from datetime import datetime
+import random
 
 from trashcli.fstab import volumes
 from trashcli.put.access import Access
@@ -9,6 +10,7 @@ from trashcli.put.my_logger import MyLogger
 from trashcli.put.parent_path import parent_path
 from trashcli.put.real_fs import RealFs
 from trashcli.put.reporter import TrashPutReporter
+from trashcli.put.suffix import Suffix
 from trashcli.put.trash_all import TrashAll
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trasher import Trasher
@@ -21,13 +23,15 @@ def main():
     logger = MyLogger(sys.stderr)
     reporter = TrashPutReporter(logger)
     fs = RealFs()
+    suffix = Suffix(random.randint)
     trash_file_in = TrashFileIn(fs,
                                 os.path.realpath,
                                 volumes,
                                 datetime.now,
                                 parent_path,
                                 logger,
-                                reporter)
+                                reporter,
+                                suffix)
     file_trasher = FileTrasher(fs,
                                volumes,
                                os.path.realpath,

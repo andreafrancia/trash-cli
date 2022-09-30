@@ -98,7 +98,7 @@ class FileTrasher:
 
 class TrashFileIn:
     def __init__(self, fs, realpath, volumes, now, parent_path,
-                 logger, reporter):
+                 logger, reporter, suffix):
         self.fs = fs
         self.realpath = realpath
         self.volumes = volumes
@@ -108,6 +108,7 @@ class TrashFileIn:
         self.reporter = reporter
         self.path_maker = PathMaker()
         self.security_check = SecurityCheck()
+        self.suffix = suffix
 
     def trash_file_in(self,
                       path,
@@ -121,10 +122,8 @@ class TrashFileIn:
                       verbose,
                       environ,
                       ):  # type: (...) -> bool
-        suffix = Suffix(random.randint)
         info_dir_path = os.path.join(trash_dir_path, 'info')
-        info_dir = InfoDir(info_dir_path, self.fs, self.logger,
-                           suffix)
+        info_dir = InfoDir(self.fs, self.logger, self.suffix)
         original_location = OriginalLocation(parent_realpath)
         trash_dir = TrashDirectoryForPut(trash_dir_path,
                                          volume,
@@ -153,7 +152,7 @@ class TrashFileIn:
                     self.fs.ensure_dir(os.path.join(trash_dir_path, 'files'),
                                        0o700)
                     trash_dir.trash2(path, self.now, program_name, verbose,
-                                     path_maker_type, volume)
+                                     path_maker_type, volume, info_dir_path)
                     self.reporter.file_has_been_trashed_in_as(
                         path,
                         trash_dir.path,
