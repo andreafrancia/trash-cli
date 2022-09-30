@@ -98,17 +98,16 @@ class FileTrasher:
 
 class TrashFileIn:
     def __init__(self, fs, realpath, volumes, now, parent_path,
-                 logger, reporter, suffix):
+                 reporter, info_dir):
         self.fs = fs
         self.realpath = realpath
         self.volumes = volumes
         self.now = now
         self.parent_path = parent_path
-        self.logger = logger
         self.reporter = reporter
         self.path_maker = PathMaker()
         self.security_check = SecurityCheck()
-        self.suffix = suffix
+        self.info_dir = info_dir
 
     def trash_file_in(self,
                       path,
@@ -123,16 +122,15 @@ class TrashFileIn:
                       environ,
                       ):  # type: (...) -> bool
         info_dir_path = os.path.join(trash_dir_path, 'info')
-        info_dir = InfoDir(self.fs, self.logger, self.suffix)
         original_location = OriginalLocation(parent_realpath)
-        trash_dir = TrashDirectoryForPut(trash_dir_path,
-                                         volume,
+        norm_trash_dir_path = os.path.normpath(trash_dir_path)
+        trash_dir = TrashDirectoryForPut(norm_trash_dir_path,
                                          self.fs,
                                          self.path_maker,
-                                         info_dir,
+                                         self.info_dir,
                                          original_location)
         trash_dir_is_secure, messages = self.security_check. \
-            check_trash_dir_is_secure(trash_dir.path,
+            check_trash_dir_is_secure(norm_trash_dir_path,
                                       self.fs,
                                       check_type)
         for message in messages:

@@ -17,7 +17,7 @@ class TestTrashing(unittest.TestCase):
         self.info_dir.persist_trash_info.return_value = 'info_file'
         original_location = OriginalLocation(parent_path)
         path_maker = Mock()
-        self.trashdir = TrashDirectoryForPut('~/.Trash', '/', self.fs,
+        self.trashdir = TrashDirectoryForPut('~/.Trash', self.fs,
                                              path_maker, self.info_dir,
                                              original_location)
         path_maker.calc_parent_path.return_value = ''

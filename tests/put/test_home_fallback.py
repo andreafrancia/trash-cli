@@ -3,6 +3,7 @@ import unittest
 from mock import Mock, call, ANY
 
 from trashcli.fstab import create_fake_volume_of
+from trashcli.put.info_dir import InfoDir
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.file_trasher import FileTrasher, TrashFileIn
@@ -25,14 +26,14 @@ class TestHomeFallback(unittest.TestCase):
         parent_path = os.path.dirname
         self.suffix = Mock(spec=Suffix)
         self.suffix.suffix_for_index.return_value = '_suffix'
+        info_dir = InfoDir(self.fs, self.logger, self.suffix)
         self.trash_file_in = TrashFileIn(self.fs,
                                          realpath,
                                          volumes,
                                          datetime.now,
                                          parent_path,
-                                         self.logger,
                                          self.reporter,
-                                         self.suffix)
+                                         info_dir)
         self.file_trasher = FileTrasher(self.fs,
                                         volumes,
                                         realpath,

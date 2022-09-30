@@ -13,7 +13,7 @@ class TestHowOriginalLocationIsStored(unittest.TestCase):
         paths = PathMaker()
         self.path_maker_type = PathMakerType.absolute_paths
         original_location = OriginalLocation(parent_realpath)
-        self.dir = TrashDirectoryForPut('/volume/.Trash', '/volume', fs,
+        self.dir = TrashDirectoryForPut('/volume/.Trash', fs,
                                         paths, None, original_location)
 
         self.assert_path_for_trashinfo_is('/file', '/file')
@@ -27,7 +27,7 @@ class TestHowOriginalLocationIsStored(unittest.TestCase):
         paths = PathMaker()
         self.path_maker_type = PathMakerType.relative_paths
         original_location = OriginalLocation(parent_realpath)
-        self.dir = TrashDirectoryForPut('/volume/.Trash', '/volume', Mock(),
+        self.dir = TrashDirectoryForPut('/volume/.Trash', Mock(),
                                         paths, None, original_location)
 
         self.assert_path_for_trashinfo_is('/file', '/file')

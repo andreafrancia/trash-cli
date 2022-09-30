@@ -6,10 +6,9 @@ from trashcli.trash import path_of_backup_copy
 
 
 class TrashDirectoryForPut:
-    def __init__(self, path, volume, fs, path_maker, info_dir,
+    def __init__(self, path, fs, path_maker, info_dir,
                  original_location):
         self.path = os.path.normpath(path)
-        self.volume = volume
         self.fs = fs
         self.path_maker = path_maker
         self.info_dir = info_dir

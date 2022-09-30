@@ -6,6 +6,7 @@ from mock import Mock
 from six import StringIO
 
 from trashcli.put.file_trasher import FileTrasher, TrashFileIn
+from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.suffix import Suffix
@@ -31,14 +32,14 @@ class TestFileTrasher(unittest.TestCase):
         parent_path = os.path.dirname
         self.suffix = Mock(spec=Suffix)
         self.suffix.suffix_for_index.return_value = '_suffix'
+        info_dir = InfoDir(self.fs, self.logger, self.suffix)
         self.trash_file_in = TrashFileIn(self.fs,
                                          realpath,
                                          self.volumes,
                                          datetime.now,
                                          parent_path,
-                                         self.logger,
                                          self.reporter,
-                                         self.suffix)
+                                         info_dir)
         self.file_trasher = FileTrasher(self.fs,
                                         self.volumes,
                                         realpath,

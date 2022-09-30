@@ -6,6 +6,7 @@ import random
 from trashcli.fstab import volumes
 from trashcli.put.access import Access
 from trashcli.put.file_trasher import FileTrasher, TrashFileIn
+from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.parent_path import parent_path
 from trashcli.put.real_fs import RealFs
@@ -24,14 +25,14 @@ def main():
     reporter = TrashPutReporter(logger)
     fs = RealFs()
     suffix = Suffix(random.randint)
+    info_dir = InfoDir(fs, logger, suffix)
     trash_file_in = TrashFileIn(fs,
                                 os.path.realpath,
                                 volumes,
                                 datetime.now,
                                 parent_path,
-                                logger,
                                 reporter,
-                                suffix)
+                                info_dir)
     file_trasher = FileTrasher(fs,
                                volumes,
                                os.path.realpath,
