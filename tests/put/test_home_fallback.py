@@ -38,11 +38,6 @@ class TestHomeFallback(unittest.TestCase):
                                         self.logger,
                                         self.reporter,
                                         self.trash_file_in)
-        self.possible_trash_directories = Mock()
-        self.possible_trash_directories.trash_directories_for.return_value = \
-            [('.Trash/123', '', PathMakerType.relative_paths, 'top_trash_dir_rules'),
-             ('.Trash-123', '', PathMakerType.relative_paths, 'all_is_ok_rules')]
-        # self.possible_trash_directories = None
 
     def test_use_of_top_trash_dir_when_sticky(self):
         self.fs.mock_add_spec(['isdir', 'islink', 'has_sticky_bit',
@@ -59,7 +54,6 @@ class TestHomeFallback(unittest.TestCase):
                                      result,
                                      {},
                                      123,
-                                     self.possible_trash_directories,
                                      'trash-put',
                                      99)
 
@@ -89,7 +83,6 @@ class TestHomeFallback(unittest.TestCase):
                                      result,
                                      {},
                                      123,
-                                     self.possible_trash_directories,
                                      'trash-put',
                                      99)
 

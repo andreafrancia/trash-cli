@@ -62,20 +62,14 @@ class FileTrasher:
                    result,  # type: TrashResult
                    environ,  # type: Dict[str, str]
                    uid,  # type: int
-                   possible_trash_directories,
-                   # type: Optional[PossibleTrashDirectories]
                    program_name,  # type: str
                    verbose,  # type: int
                    ):
         volume_of_file_to_be_trashed = forced_volume or \
                                        self.volume_of_parent(path)
-
-        possible_trash_directories = possible_trash_directories or PossibleTrashDirectories(
-            self.trash_directories_finder,
-            user_trash_dir,
-            environ, uid)
-        candidates = possible_trash_directories.trash_directories_for(
-            volume_of_file_to_be_trashed)
+        candidates = self.trash_directories_finder. \
+            possible_trash_directories_for(volume_of_file_to_be_trashed,
+                                           user_trash_dir, environ, uid)
         self.reporter.volume_of_file(volume_of_file_to_be_trashed, program_name,
                                      verbose)
         file_has_been_trashed = False

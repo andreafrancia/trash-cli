@@ -67,7 +67,6 @@ class Trasher:
                                             result,
                                             environ,
                                             uid,
-                                            None,
                                             program_name,
                                             verbose,
                                             )

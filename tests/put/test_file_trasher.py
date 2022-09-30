@@ -48,10 +48,6 @@ class TestFileTrasher(unittest.TestCase):
                                         self.logger,
                                         self.reporter,
                                         self.trash_file_in)
-        self.possible_trash_directories = Mock()
-        self.possible_trash_directories.trash_directories_for.return_value = \
-            [('/.Trash/1001', '/', PathMakerType.relative_paths, 'top_trash_dir_rules'),
-             ('/.Trash-1001', '/', PathMakerType.relative_paths, 'all_is_ok_rules')]
 
     def test_log_volume(self):
         self.volumes.volume_of.return_value = '/'
@@ -62,7 +58,6 @@ class TestFileTrasher(unittest.TestCase):
                                      result,
                                      {},
                                      1001,
-                                     self.possible_trash_directories,
                                      'trash-put',
                                      99)
 
@@ -80,7 +75,6 @@ class TestFileTrasher(unittest.TestCase):
                                      result,
                                      {},
                                      1001,
-                                     self.possible_trash_directories,
                                      'trash-put',
                                      99)
 
@@ -97,14 +91,11 @@ class TestFileTrasher(unittest.TestCase):
                                      result,
                                      self.environ,
                                      1001,
-                                     self.possible_trash_directories,
                                      'trash-put',
                                      99)
 
         assert self.stderr.getvalue().splitlines() == [
             'trash-put: Volume of file: /disk',
-            'trash-put: found unsecure .Trash dir (should not be a symlink): /.Trash',
-            'trash-put: trash directory /.Trash/1001 is not secure',
-            'trash-put: Trash-dir: /.Trash-1001 from volume: /disk',
-            'trash-put: .trashinfo created as /.Trash-1001/info/non-existent.trashinfo.',
-            "trash-put: 'non-existent' trashed in /.Trash-1001"]
+            'trash-put: Trash-dir: /xdh/Trash from volume: /disk',
+            'trash-put: .trashinfo created as /xdh/Trash/info/non-existent.trashinfo.',
+            "trash-put: 'non-existent' trashed in /xdh/Trash"]
