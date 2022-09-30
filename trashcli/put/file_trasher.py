@@ -8,13 +8,13 @@ from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.original_location import OriginalLocation, parent_realpath
 from trashcli.put.reporter import TrashPutReporter
-from trashcli.put.rules import AllIsOkRules, TopTrashDirRules
+from trashcli.put.security_check import AllIsOkRules, TopTrashDirRules, \
+    all_is_ok_rules, top_trash_dir_rules
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.real_fs import RealFs
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 from trashcli.put.trash_result import TrashResult
-from trashcli.put.values import all_is_ok_rules, top_trash_dir_rules
 from trashcli.put.path_maker import PathMaker
 
 
