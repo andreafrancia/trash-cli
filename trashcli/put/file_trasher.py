@@ -8,8 +8,7 @@ from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.original_location import OriginalLocation, parent_realpath
 from trashcli.put.reporter import TrashPutReporter
-from trashcli.put.security_check import AllIsOkRules, TopTrashDirRules, \
-    all_is_ok_rules, top_trash_dir_rules
+from trashcli.put.security_check import SecurityCheck
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.real_fs import RealFs
@@ -113,13 +112,15 @@ class TrashFileIn:
         self.parent_path = parent_path
         self.logger = logger
         self.reporter = reporter
+        self.path_maker = PathMaker()
+        self.security_check = SecurityCheck()
 
     def trash_file_in(self,
                       path,
                       trash_dir_path,
                       volume,
                       path_maker_type,
-                      checker,
+                      check_type,
                       file_has_been_trashed,
                       volume_of_file_to_be_trashed,
                       program_name,
@@ -130,19 +131,17 @@ class TrashFileIn:
         info_dir_path = os.path.join(trash_dir_path, 'info')
         info_dir = InfoDir(info_dir_path, self.fs, self.logger,
                            suffix)
-        path_maker = PathMaker()
-        checker = {top_trash_dir_rules: TopTrashDirRules(),
-                   all_is_ok_rules: AllIsOkRules()}[checker]
         original_location = OriginalLocation(parent_realpath)
         trash_dir = TrashDirectoryForPut(trash_dir_path,
                                          volume,
                                          self.fs,
-                                         path_maker,
+                                         self.path_maker,
                                          info_dir,
                                          original_location)
-        trash_dir_is_secure, messages = checker.check_trash_dir_is_secure(
-            trash_dir.path,
-            self.fs)
+        trash_dir_is_secure, messages = self.security_check. \
+            check_trash_dir_is_secure(trash_dir.path,
+                                      self.fs,
+                                      check_type)
         for message in messages:
             self.reporter.log_info(message, program_name, verbose)
 

@@ -2,20 +2,20 @@ import unittest
 
 from mock import Mock, call
 
-from trashcli.put.security_check import TopTrashDirRules
+from trashcli.put.security_check import top_trash_dir_rules, SecurityCheck
 
 
 class TestTopTrashDirRules(unittest.TestCase):
     def setUp(self):
         self.fs = Mock()
-        self.rules = TopTrashDirRules()
+        self.check = SecurityCheck()
 
     def test_not_valid_should_be_a_dir(self):
         fs = Mock(spec=['isdir'])
         fs.isdir.return_value = False
 
-        secure, messages = self.rules.check_trash_dir_is_secure(
-            '/parent/trash-dir', fs)
+        secure, messages = self.check.check_trash_dir_is_secure(
+            '/parent/trash-dir', fs, top_trash_dir_rules)
 
         assert [call.isdir('/parent')] == fs.mock_calls
         assert secure == False
@@ -26,8 +26,8 @@ class TestTopTrashDirRules(unittest.TestCase):
         fs.isdir.return_value = True
         fs.islink.return_value = True
 
-        secure, messages = self.rules.check_trash_dir_is_secure(
-            '/parent/trash-dir', fs)
+        secure, messages = self.check.check_trash_dir_is_secure(
+            '/parent/trash-dir', fs, top_trash_dir_rules)
 
         assert [call.isdir('/parent'),
                 call.islink('/parent')] == fs.mock_calls
@@ -40,8 +40,8 @@ class TestTopTrashDirRules(unittest.TestCase):
         fs.islink.return_value = False
         fs.has_sticky_bit.return_value = False
 
-        secure, messages = self.rules.check_trash_dir_is_secure(
-            '/parent/trash-dir', fs)
+        secure, messages = self.check.check_trash_dir_is_secure(
+            '/parent/trash-dir', fs, top_trash_dir_rules)
 
         assert [call.isdir('/parent'),
                 call.islink('/parent'),
@@ -55,8 +55,8 @@ class TestTopTrashDirRules(unittest.TestCase):
         fs.islink.return_value = False
         fs.has_sticky_bit.return_value = True
 
-        secure, messages = self.rules.check_trash_dir_is_secure(
-            '/parent/trash-dir', fs)
+        secure, messages = self.check.check_trash_dir_is_secure(
+            '/parent/trash-dir', fs, top_trash_dir_rules)
 
         assert [call.isdir('/parent'),
                 call.islink('/parent'),
