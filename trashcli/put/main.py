@@ -8,12 +8,15 @@ from trashcli.put.access import Access
 from trashcli.put.file_trasher import FileTrasher, TrashFileIn
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import MyLogger
+from trashcli.put.original_location import OriginalLocation, parent_realpath
 from trashcli.put.parent_path import parent_path
+from trashcli.put.path_maker import PathMaker
 from trashcli.put.real_fs import RealFs
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_all import TrashAll
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
+from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 from trashcli.put.trasher import Trasher
 from trashcli.put.user import User
 from trashcli.trash import my_input
@@ -26,13 +29,20 @@ def main():
     fs = RealFs()
     suffix = Suffix(random.randint)
     info_dir = InfoDir(fs, logger, suffix)
+    original_location = OriginalLocation(parent_realpath)
+    path_maker = PathMaker()
+    trash_dir = TrashDirectoryForPut(fs,
+                                     path_maker,
+                                     info_dir,
+                                     original_location)
     trash_file_in = TrashFileIn(fs,
                                 os.path.realpath,
                                 volumes,
                                 datetime.now,
                                 parent_path,
                                 reporter,
-                                info_dir)
+                                info_dir,
+                                trash_dir)
     file_trasher = FileTrasher(fs,
                                volumes,
                                os.path.realpath,
