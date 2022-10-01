@@ -29,10 +29,9 @@ def main():
     fs = RealFs()
     suffix = Suffix(random.randint)
     info_dir = InfoDir(fs, logger, suffix)
-    original_location = OriginalLocation(parent_realpath)
     path_maker = PathMaker()
+    original_location = OriginalLocation(parent_realpath, path_maker)
     trash_dir = TrashDirectoryForPut(fs,
-                                     path_maker,
                                      info_dir,
                                      original_location)
     trash_file_in = TrashFileIn(fs,

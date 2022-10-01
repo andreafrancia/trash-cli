@@ -36,9 +36,9 @@ class TestFileTrasher(unittest.TestCase):
         self.suffix = Mock(spec=Suffix)
         self.suffix.suffix_for_index.return_value = '_suffix'
         info_dir = InfoDir(self.fs, self.logger, self.suffix)
-        original_location = OriginalLocation(parent_realpath)
+        path_maker = PathMaker()
+        original_location = OriginalLocation(parent_realpath, path_maker)
         self.trash_dir = TrashDirectoryForPut(self.fs,
-                                              PathMaker(),
                                               info_dir,
                                               original_location)
         self.trash_file_in = TrashFileIn(self.fs,
