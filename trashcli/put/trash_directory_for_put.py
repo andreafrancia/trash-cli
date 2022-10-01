@@ -13,7 +13,7 @@ class TrashDirectoryForPut:
         self.original_location = original_location
 
     def trash2(self, path, now, program_name, verbose, path_maker_type,
-               volume_top_dir, info_dir):
+               volume_top_dir, info_dir_path):
         path = os.path.normpath(path)
 
         original_location = self.path_for_trash_info_for_file(path,
@@ -25,7 +25,7 @@ class TrashDirectoryForPut:
         trash_info_file = self.info_dir.persist_trash_info(basename, content,
                                                            program_name,
                                                            verbose,
-                                                           info_dir)
+                                                           info_dir_path)
 
         where_to_store_trashed_file = path_of_backup_copy(trash_info_file)
 
