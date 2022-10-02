@@ -1,21 +1,13 @@
-import datetime
 import unittest
 
-from mock import Mock
-from trashcli.put.clock import RealClock
 from trashcli.put.original_location import OriginalLocation, parent_realpath
 from trashcli.put.path_maker import PathMaker, PathMakerType
-from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 
 
-class TestHowOriginalLocationIsStored(unittest.TestCase):
+class TestOriginalLocation(unittest.TestCase):
 
     def setUp(self):
-        paths = PathMaker()
-        original_location = OriginalLocation(parent_realpath, paths)
-        fs = Mock()
-        self.dir = TrashDirectoryForPut(fs, None, original_location,
-                                        RealClock())
+        self.original_location = OriginalLocation(parent_realpath, PathMaker())
 
     def test_for_absolute_paths(self):
         self.path_maker_type = PathMakerType.absolute_paths
@@ -37,7 +29,7 @@ class TestHowOriginalLocationIsStored(unittest.TestCase):
         self.assert_path_for_trashinfo_is('dir/file', '/volume/dir/file')
 
     def assert_path_for_trashinfo_is(self, expected_value, file_to_be_trashed):
-        result = self.dir.original_location.for_file(file_to_be_trashed,
+        result = self.original_location.for_file(file_to_be_trashed,
                                                      self.path_maker_type,
                                                      '/volume')
         assert expected_value == result
