@@ -1,9 +1,9 @@
 import datetime
 import unittest
 
-from tests.put.support.dummy_clock import DummyClock
-
 from mock import Mock, call
+
+from tests.put.support.dummy_clock import DummyClock
 from trashcli.put.original_location import OriginalLocation
 from trashcli.put.parent_path import parent_path
 from trashcli.put.path_maker import PathMakerType
@@ -12,10 +12,8 @@ from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 
 class TestTrashing(unittest.TestCase):
     def setUp(self):
-        self.now = lambda: datetime.datetime(1970, 1, 1)
         self.fs = Mock()
         self.info_dir = Mock(['persist_trash_info'])
-        self.info_dir.persist_trash_info.return_value = 'info_file'
         path_maker = Mock()
         original_location = OriginalLocation(parent_path, path_maker)
         clock = DummyClock(datetime.datetime(1970, 1, 1))
@@ -25,6 +23,7 @@ class TestTrashing(unittest.TestCase):
         path_maker.calc_parent_path.return_value = ''
 
     def test_the_file_should_be_moved_in_trash_dir(self):
+        self.info_dir.persist_trash_info.return_value = 'info_file'
 
         self.trashdir.trash2('foo', 'trash-put', 99,
                              PathMakerType.absolute_paths, '/disk', '/info_dir')
@@ -37,6 +36,7 @@ class TestTrashing(unittest.TestCase):
                 'trash-put', 99, '/info_dir')]
 
     def test_should_rollback_trashinfo_creation_on_problems(self):
+        self.info_dir.persist_trash_info.return_value = 'info_file'
         self.fs.move.side_effect = IOError
 
         try:
