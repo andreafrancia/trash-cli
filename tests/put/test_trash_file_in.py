@@ -2,13 +2,12 @@ import os
 import unittest
 from datetime import datetime
 
+import flexmock
 from mock import Mock
 from trashcli.fstab import create_fake_volume_of
-from trashcli.put.clock import RealClock
+from trashcli.put.security_check import all_is_ok_rules
 from trashcli.put.trash_file_in import TrashFileIn
 from trashcli.put.info_dir import InfoDir
-from trashcli.put.original_location import OriginalLocation, parent_realpath
-from trashcli.put.path_maker import PathMaker
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 
@@ -25,12 +24,7 @@ class TestTrashFileIn(unittest.TestCase):
         self.suffix = Mock(spec=Suffix)
         self.suffix.suffix_for_index.return_value = '_suffix'
         info_dir = InfoDir(self.fs, self.logger, self.suffix)
-        path_maker = PathMaker()
-        original_location = OriginalLocation(parent_realpath, path_maker)
-        self.trash_dir = TrashDirectoryForPut(self.fs,
-                                              info_dir,
-                                              original_location,
-                                              RealClock())
+        self.trash_dir = flexmock.Mock(spec=TrashDirectoryForPut)
         self.trash_file_in = TrashFileIn(self.fs,
                                          realpath,
                                          volumes,
@@ -41,6 +35,10 @@ class TestTrashFileIn(unittest.TestCase):
                                          self.trash_dir)
 
     def test(self):
-        path_maker = PathMaker()
-        # self.trash_file_in.trash_file_in('path', 'trash_dir_path', 'volume',
-        #                                  path_maker, AllIsOkRules(), )
+        result = self.trash_file_in.trash_file_in('path', 'trash_dir_path',
+                                                  'volume',
+                                                  "path_maker-type",
+                                                  all_is_ok_rules, True,
+                                                  '/disk', 'program_name', 99,
+                                                  {})
+        assert result == True

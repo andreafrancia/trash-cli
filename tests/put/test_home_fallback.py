@@ -2,14 +2,12 @@ import os
 import unittest
 from datetime import datetime
 
+import flexmock
 from mock import ANY, Mock, call
 from trashcli.fstab import create_fake_volume_of
-from trashcli.put.clock import RealClock
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.trash_file_in import TrashFileIn
 from trashcli.put.info_dir import InfoDir
-from trashcli.put.original_location import OriginalLocation, parent_realpath
-from trashcli.put.path_maker import PathMaker, PathMakerType
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
@@ -29,12 +27,7 @@ class TestHomeFallback(unittest.TestCase):
         self.suffix = Mock(spec=Suffix)
         self.suffix.suffix_for_index.return_value = '_suffix'
         info_dir = InfoDir(self.fs, self.logger, self.suffix)
-        path_maker = PathMaker()
-        original_location = OriginalLocation(parent_realpath, path_maker)
-        self.trash_dir = TrashDirectoryForPut(self.fs,
-                                              info_dir,
-                                              original_location,
-                                              RealClock())
+        self.trash_dir = flexmock.Mock(spec=TrashDirectoryForPut)
         self.trash_file_in = TrashFileIn(self.fs,
                                          realpath,
                                          volumes,
@@ -60,6 +53,7 @@ class TestHomeFallback(unittest.TestCase):
         self.fs.isdir.return_value = True
         self.fs.islink.return_value = False
         self.fs.has_sticky_bit.return_value = True
+        flexmock.flexmock(self.trash_dir).should_receive('trash2')
 
         result = TrashResult(False)
         self.file_trasher.trash_file('sandbox/foo',
@@ -77,9 +71,6 @@ class TestHomeFallback(unittest.TestCase):
             call.has_sticky_bit('.Trash'),
             call.ensure_dir('.Trash/123', 448),
             call.ensure_dir('.Trash/123/files', 448),
-            call.ensure_dir('.Trash/123/info', 448),
-            call.atomic_write('.Trash/123/info/foo_suffix.trashinfo', ANY),
-            call.move('sandbox/foo', '.Trash/123/files/foo_suffix')
         ]
 
     def test_bug_will_use_top_trashdir_even_with_not_sticky(self):
@@ -89,6 +80,7 @@ class TestHomeFallback(unittest.TestCase):
         self.fs.isdir.return_value = True
         self.fs.islink.return_value = False
         self.fs.has_sticky_bit.return_value = False
+        flexmock.flexmock(self.trash_dir).should_receive('trash2')
 
         result = TrashResult(False)
         self.file_trasher.trash_file('sandbox/foo',
@@ -106,7 +98,4 @@ class TestHomeFallback(unittest.TestCase):
             call.has_sticky_bit('.Trash'),
             call.ensure_dir('.Trash-123', 448),
             call.ensure_dir('.Trash-123/files', 448),
-            call.ensure_dir('.Trash-123/info', 448),
-            call.atomic_write('.Trash-123/info/foo_suffix.trashinfo', ANY),
-            call.move('sandbox/foo', '.Trash-123/files/foo_suffix')
         ]
