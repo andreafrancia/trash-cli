@@ -6,7 +6,8 @@ from six import StringIO
 
 from mock import Mock
 from trashcli.put.clock import RealClock
-from trashcli.put.file_trasher import FileTrasher, TrashFileIn
+from trashcli.put.file_trasher import FileTrasher
+from trashcli.put.trash_file_in import TrashFileIn
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.original_location import OriginalLocation, parent_realpath

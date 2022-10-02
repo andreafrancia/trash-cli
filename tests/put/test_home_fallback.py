@@ -5,7 +5,8 @@ from datetime import datetime
 from mock import ANY, Mock, call
 from trashcli.fstab import create_fake_volume_of
 from trashcli.put.clock import RealClock
-from trashcli.put.file_trasher import FileTrasher, TrashFileIn
+from trashcli.put.file_trasher import FileTrasher
+from trashcli.put.trash_file_in import TrashFileIn
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.original_location import OriginalLocation, parent_realpath
 from trashcli.put.path_maker import PathMaker, PathMakerType
