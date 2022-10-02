@@ -1,7 +1,7 @@
 import unittest
 
-from trashcli.restore import Command
 from trashcli import restore
+from trashcli.restore import Command
 
 
 class Test_parse_args(unittest.TestCase):

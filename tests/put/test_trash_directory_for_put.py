@@ -1,9 +1,9 @@
 import datetime
 import unittest
 
-from flexmock import flexmock
-
 from tests.put.support.dummy_clock import DummyClock
+
+from flexmock import flexmock
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.original_location import OriginalLocation
 from trashcli.put.path_maker import PathMaker

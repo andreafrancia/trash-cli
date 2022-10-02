@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+
 from scripts.make_scripts import script_path_for
 from trashcli import base_dir
 

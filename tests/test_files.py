@@ -4,9 +4,9 @@ import shutil
 import unittest
 
 import pytest
+from trashcli.fs import FileRemover, read_file
 
-from .files import make_unreadable_file, make_unreadable_dir, make_readable
-from trashcli.fs import read_file, FileRemover
+from .files import make_readable, make_unreadable_dir, make_unreadable_file
 from .support import MyPath
 
 

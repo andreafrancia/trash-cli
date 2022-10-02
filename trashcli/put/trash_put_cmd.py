@@ -1,9 +1,9 @@
 import os
 
-from trashcli.put.trash_all import TrashAll
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.parser import make_parser
 from trashcli.put.reporter import TrashPutReporter
+from trashcli.put.trash_all import TrashAll
 
 
 class TrashPutCmd:

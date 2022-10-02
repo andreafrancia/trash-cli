@@ -3,7 +3,6 @@ import shutil
 import tempfile
 
 from mock import Mock
-
 from trashcli.fstab import Volumes
 
 

@@ -2,6 +2,7 @@ from typing import Iterable, NamedTuple
 
 from trashcli.empty.user import User
 
+
 UserIntention = NamedTuple('UserIntention',
                            [('ok_to_empty', bool),
                             ('trash_dirs', Iterable[str])])

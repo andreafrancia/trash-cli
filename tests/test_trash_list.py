@@ -1,21 +1,20 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
-from datetime import datetime
 import os
+import unittest
+from datetime import datetime
 
 import pytest
-
-from trashcli import trash
-from trashcli.fstab import VolumesListing
 from mock import Mock
-
-from trashcli.list import ListCmd
-from .files import (require_empty_dir, make_sticky_dir, make_unsticky_dir)
-from .support import MyPath, volumes_mock
-from .output_collector import OutputCollector
-from .fake_trash_dir import FakeTrashDir
+from trashcli import trash
 from trashcli.fs import FileSystemReader
+from trashcli.fstab import VolumesListing
+from trashcli.list import ListCmd
+
 from .asserts import assert_equals_with_unidiff
-import unittest
+from .fake_trash_dir import FakeTrashDir
+from .files import make_sticky_dir, make_unsticky_dir, require_empty_dir
+from .output_collector import OutputCollector
+from .support import MyPath, volumes_mock
 
 
 @pytest.mark.slow

@@ -2,7 +2,13 @@ import unittest
 
 import six
 
-from trashcli.restore import parse_indexes, InvalidEntry, Range, Single, Sequences
+from trashcli.restore import (
+    InvalidEntry,
+    Range,
+    Sequences,
+    Single,
+    parse_indexes,
+)
 
 
 class Test_parse_indexes(unittest.TestCase):

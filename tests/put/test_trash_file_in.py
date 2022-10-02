@@ -3,15 +3,14 @@ import unittest
 from datetime import datetime
 
 from mock import Mock
-
 from trashcli.fstab import create_fake_volume_of
+from trashcli.put.clock import RealClock
 from trashcli.put.file_trasher import TrashFileIn
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.original_location import OriginalLocation, parent_realpath
 from trashcli.put.path_maker import PathMaker
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
-from trashcli.put.clock import RealClock
 
 
 class TestTrashFileIn(unittest.TestCase):

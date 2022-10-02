@@ -1,11 +1,10 @@
 import datetime
 import unittest
 
-from mock import Mock
-from mock import call
-
+from mock import Mock, call
 from trashcli.restore import TrashedFiles
-from ..files import require_empty_dir, make_file
+
+from ..files import make_file, require_empty_dir
 
 
 class TestTrashedFiles(unittest.TestCase):

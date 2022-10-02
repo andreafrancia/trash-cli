@@ -1,16 +1,15 @@
 # Copyright (C) 2009-2020 Andrea Francia Trivolzio(PV) Italy
-import pytest
-
 import os
+import unittest
 from os.path import exists as file_exists
 
-from . import run_command
-from .files import make_empty_file, require_empty_dir
-from .support import MyPath
-from .files import make_sticky_dir
+import pytest
 from trashcli.fs import read_file
+
+from . import run_command
 from .asserts import assert_line_in_text
-import unittest
+from .files import make_empty_file, make_sticky_dir, require_empty_dir
+from .support import MyPath
 
 
 class TrashPutFixture:

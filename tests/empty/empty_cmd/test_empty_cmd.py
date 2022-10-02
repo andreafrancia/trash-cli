@@ -1,20 +1,19 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import unittest
-from typing import cast
-from mock import Mock, call
 
 from six import StringIO
-
 from tests.mock_dir_reader import MockDirReader
 from tests.support import volumes_mock
+from typing import cast
+
+from flexmock import flexmock
+from mock import Mock, call
 from trashcli.empty.delete_according_date import ContentReader
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.fstab import VolumesListing
 from trashcli.trash import DirReader
 from trashcli.trash_dirs_scanner import TopTrashDirRules
-
-from flexmock import flexmock
 
 
 class TestTrashEmptyCmdFs(unittest.TestCase):

@@ -1,8 +1,7 @@
 import unittest
 
 from mock import Mock, call
-
-from trashcli.put.security_check import top_trash_dir_rules, SecurityCheck
+from trashcli.put.security_check import SecurityCheck, top_trash_dir_rules
 
 
 class TestTopTrashDirRules(unittest.TestCase):

@@ -2,6 +2,7 @@
 import unittest
 
 from tests.fake_file_system import FakeFileSystem
+
 from trashcli.trash import TrashDirReader
 
 

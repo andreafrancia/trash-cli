@@ -1,13 +1,13 @@
 import unittest
 
-from mock import Mock, call
 from typing import cast
 
+from mock import Mock, call
+from trashcli.put.parser import mode_force, mode_interactive
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_result import TrashResult
 from trashcli.put.trasher import Trasher
 from trashcli.put.user import user_replied_no, user_replied_yes
-from trashcli.put.parser import mode_force, mode_interactive
 
 
 class TestTrasher(unittest.TestCase):

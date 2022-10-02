@@ -5,12 +5,16 @@ from datetime import datetime
 
 from trashcli import trash
 from trashcli.empty.empty_cmd import EmptyCmd
-from trashcli.fs import FileSystemContentReader, \
-    FileSystemDirReader, TopTrashDirRulesFileSystemReader
+from trashcli.fs import (
+    FileSystemContentReader,
+    FileSystemDirReader,
+    TopTrashDirRulesFileSystemReader,
+)
 from trashcli.list_mount_points import os_mount_points
-from .existing_file_remover import ExistingFileRemover
+
 from .. import fstab
 from ..fstab import VolumesListing
+from .existing_file_remover import ExistingFileRemover
 
 
 def main():

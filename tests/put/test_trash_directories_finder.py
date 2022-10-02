@@ -1,8 +1,8 @@
 import unittest
-from mock import Mock
 
-from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
+from mock import Mock
 from trashcli.put.path_maker import PathMakerType
+from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 
 
 class TestTrashDirectoriesFinder(unittest.TestCase):

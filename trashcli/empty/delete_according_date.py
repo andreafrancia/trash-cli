@@ -1,5 +1,5 @@
 from trashcli.empty.older_than import older_than
-from trashcli.trash import parse_deletion_date, Clock
+from trashcli.trash import Clock, parse_deletion_date
 
 
 class ContentReader:

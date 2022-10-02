@@ -2,16 +2,23 @@
 import os
 import unittest
 
-from mock import Mock
 from six import StringIO
-
-from tests.files import require_empty_dir, make_dirs, set_sticky_bit, \
-    make_empty_file
+from tests.files import (
+    make_dirs,
+    make_empty_file,
+    require_empty_dir,
+    set_sticky_bit,
+)
 from tests.support import MyPath, volumes_mock
+
+from mock import Mock
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
-from trashcli.fs import FileSystemContentReader, \
-    FileSystemDirReader, TopTrashDirRulesFileSystemReader
+from trashcli.fs import (
+    FileSystemContentReader,
+    FileSystemDirReader,
+    TopTrashDirRulesFileSystemReader,
+)
 from trashcli.fstab import VolumesListing
 
 

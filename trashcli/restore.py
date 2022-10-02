@@ -1,15 +1,24 @@
 import os
 import sys
 
-from .list_mount_points import os_mount_points
-from .trash import (version, home_trash_dir, volume_trash_dir1,
-                    volume_trash_dir2, my_input, print_version,
-                    parse_original_location)
-from .fstab import volume_of
-from .fs import contents_of, list_files_in_dir
-from .trash import path_of_backup_copy
+from trashcli.shell_completion import TRASH_DIRS, TRASH_FILES, add_argument_to
+
 from . import fs, trash
-from trashcli.shell_completion import add_argument_to, TRASH_DIRS, TRASH_FILES
+from .fs import contents_of, list_files_in_dir
+from .fstab import volume_of
+from .list_mount_points import os_mount_points
+from .trash import (
+    home_trash_dir,
+    my_input,
+    parse_deletion_date,
+    parse_original_location,
+    path_of_backup_copy,
+    print_version,
+    version,
+    volume_trash_dir1,
+    volume_trash_dir2,
+)
+
 
 try:
     my_range = xrange
@@ -347,7 +356,6 @@ def parse_additional_volumes(volume_from_args):
     return volume_from_args
 
 
-from .trash import parse_deletion_date
 
 
 class TrashDirectories2:

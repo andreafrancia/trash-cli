@@ -1,7 +1,8 @@
-from argparse import ArgumentParser, RawDescriptionHelpFormatter, SUPPRESS
+from argparse import SUPPRESS, ArgumentParser, RawDescriptionHelpFormatter
 
-from trashcli.shell_completion import add_argument_to, TRASH_DIRS, TRASH_FILES
+from trashcli.shell_completion import TRASH_DIRS, TRASH_FILES, add_argument_to
 from trashcli.trash import version
+
 
 mode_force = 'force'
 mode_interactive = 'interactive'

@@ -2,6 +2,7 @@ import unittest
 
 from trashcli.fs import FileRemover
 
+
 try:
     FileNotFoundError
 except NameError:

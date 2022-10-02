@@ -3,10 +3,10 @@ import unittest
 
 import pytest
 
-from ..fake_trash_dir import FakeTrashDir
-from ..support import MyPath
-from ..run_command import normalize_options
 from .. import run_command
+from ..fake_trash_dir import FakeTrashDir
+from ..run_command import normalize_options
+from ..support import MyPath
 
 
 @pytest.mark.slow

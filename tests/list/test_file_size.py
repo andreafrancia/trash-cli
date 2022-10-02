@@ -1,8 +1,9 @@
 import unittest
 
-from trashcli import fs
 from tests.files import make_file
 from tests.support import MyPath
+
+from trashcli import fs
 
 
 class Test_file_size(unittest.TestCase):

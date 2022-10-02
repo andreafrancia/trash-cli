@@ -2,7 +2,6 @@ import unittest
 
 import pytest
 from mock import Mock, call
-
 from trashcli.restore import TrashDirectories2
 
 

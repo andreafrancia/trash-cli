@@ -1,14 +1,13 @@
 import os
 
-from trashcli.put.access import Access
-
-from trashcli.put.file_trasher import FileTrasher
 from typing import Dict
 
+from trashcli.put.access import Access
+from trashcli.put.file_trasher import FileTrasher
+from trashcli.put.parser import mode_force, mode_interactive
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_result import TrashResult
-from trashcli.put.user import user_replied_no, User
-from trashcli.put.parser import mode_force, mode_interactive
+from trashcli.put.user import User, user_replied_no
 
 
 class Trasher:

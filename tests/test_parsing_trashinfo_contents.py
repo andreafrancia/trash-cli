@@ -1,16 +1,17 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 import unittest
-
 from datetime import datetime
+
 from mock import MagicMock
-
-from trashcli.trash import ParseTrashInfo, unknown_date
-from trashcli.trash import parse_deletion_date
-from trashcli.trash import parse_path
-from trashcli.trash import maybe_parse_deletion_date
-from trashcli.trash import parse_original_location
-from trashcli.trash import ParseError
-
+from trashcli.trash import (
+    ParseError,
+    ParseTrashInfo,
+    maybe_parse_deletion_date,
+    parse_deletion_date,
+    parse_original_location,
+    parse_path,
+    unknown_date,
+)
 
 
 class TestParseTrashInfo(unittest.TestCase):

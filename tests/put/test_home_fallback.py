@@ -1,20 +1,18 @@
+import os
 import unittest
+from datetime import datetime
 
-from mock import Mock, call, ANY
-
+from mock import ANY, Mock, call
 from trashcli.fstab import create_fake_volume_of
+from trashcli.put.clock import RealClock
+from trashcli.put.file_trasher import FileTrasher, TrashFileIn
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.original_location import OriginalLocation, parent_realpath
+from trashcli.put.path_maker import PathMaker, PathMakerType
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
-from trashcli.put.file_trasher import FileTrasher, TrashFileIn
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
-from trashcli.put.clock import RealClock
 from trashcli.put.trash_result import TrashResult
-from datetime import datetime
-import os
-
-from trashcli.put.path_maker import PathMakerType, PathMaker
 
 
 class TestHomeFallback(unittest.TestCase):

@@ -1,9 +1,11 @@
 import unittest
 
-import trashcli.list
-from trashcli.trash import PrintHelp
 from six import StringIO
+
+import trashcli.list
 from trashcli.list import Action
+from trashcli.trash import PrintHelp
+
 
 class TestTrashListParser(unittest.TestCase):
     def setUp(self):

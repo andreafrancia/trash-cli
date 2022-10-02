@@ -1,8 +1,9 @@
 import argparse
-from typing import NamedTuple, List
+
+from typing import List, NamedTuple
 
 from trashcli.empty.actions import Action
-from trashcli.shell_completion import add_argument_to, TRASH_DIRS
+from trashcli.shell_completion import TRASH_DIRS, add_argument_to
 
 
 Parsed = NamedTuple('Parsed',

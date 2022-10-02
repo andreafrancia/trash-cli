@@ -1,8 +1,10 @@
 from typing import Dict
 
 from trashcli.empty.console import Console
-from trashcli.empty.delete_according_date import DeleteAccordingDate, \
-    ContentReader
+from trashcli.empty.delete_according_date import (
+    ContentReader,
+    DeleteAccordingDate,
+)
 from trashcli.empty.emptier import Emptier
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.guard import Guard
@@ -12,7 +14,7 @@ from trashcli.empty.prepare_output_message import prepare_output_message
 from trashcli.empty.user import User
 from trashcli.fstab import Volumes, VolumesListing
 from trashcli.list import TrashDirsSelector
-from trashcli.trash import Clock, TrashDirReader, my_input, DirReader
+from trashcli.trash import Clock, DirReader, TrashDirReader, my_input
 from trashcli.trash_dirs_scanner import TopTrashDirRules
 
 

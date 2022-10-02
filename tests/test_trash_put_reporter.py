@@ -1,7 +1,6 @@
 import unittest
 
 from mock import Mock, call
-
 from trashcli.put.reporter import TrashPutReporter
 
 

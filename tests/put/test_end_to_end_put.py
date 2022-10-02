@@ -1,12 +1,12 @@
 # Copyright (C) 2021 Andrea Francia Bereguardo(PV) Italy
 import unittest
-
-import pytest
+from textwrap import dedent
 
 from tests import run_command
-from tests.run_command import last_line_of, first_line_of
+from tests.run_command import first_line_of, last_line_of
 from tests.support import MyPath
-from textwrap import dedent
+
+import pytest
 
 from ..run_command import normalize_options
 

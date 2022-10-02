@@ -2,6 +2,7 @@ import unittest
 
 from trashcli.fstab import FakeIsMount
 
+
 class TestOnDefault(unittest.TestCase):
     def setUp(self):
         self.ismount = FakeIsMount([])

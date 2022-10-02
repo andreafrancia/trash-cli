@@ -1,11 +1,12 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
-import pytest
-
-from trashcli.put.describe import describe
-from .files import require_empty_dir, make_empty_file, make_file
-from .support import MyPath
 import os
 import unittest
+
+import pytest
+from trashcli.put.describe import describe
+
+from .files import make_empty_file, make_file, require_empty_dir
+from .support import MyPath
 
 
 @pytest.mark.slow

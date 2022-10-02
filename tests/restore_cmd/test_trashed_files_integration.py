@@ -2,12 +2,11 @@ import datetime
 import unittest
 
 from mock import Mock
-
-from ..support import remove_dir_if_exists
-from trashcli.fs import contents_of
-from trashcli.fs import remove_file
+from trashcli.fs import contents_of, remove_file
 from trashcli.restore import TrashedFiles
-from ..files import require_empty_dir, make_file
+
+from ..files import make_file, require_empty_dir
+from ..support import remove_dir_if_exists
 
 
 class TestTrashedFilesIntegration(unittest.TestCase):

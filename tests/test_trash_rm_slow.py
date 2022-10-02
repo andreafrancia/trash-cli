@@ -1,14 +1,14 @@
 import unittest
 
-import pytest
-
 from six import StringIO
 
-from trashcli.fstab import VolumesListing
-from .support import MyPath
-from trashcli.rm import RmCmd, ListTrashinfos
-from .fake_trash_dir import FakeTrashDir
+import pytest
 from trashcli.fs import FileSystemReader
+from trashcli.fstab import VolumesListing
+from trashcli.rm import ListTrashinfos, RmCmd
+
+from .fake_trash_dir import FakeTrashDir
+from .support import MyPath
 
 
 @pytest.mark.slow

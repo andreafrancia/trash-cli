@@ -2,10 +2,9 @@ import os
 import unittest
 
 import pytest
-
 from trashcli.put.parent_path import parent_path
 
-from ..files import require_empty_dir, make_empty_file
+from ..files import make_empty_file, require_empty_dir
 from ..support import MyPath
 
 

@@ -1,11 +1,11 @@
 import datetime
 import unittest
 
-from trashcli.put.original_location import OriginalLocation, parent_realpath
-from trashcli.put.path_maker import PathMakerType, PathMaker
-from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
-from trashcli.put.clock import RealClock
 from mock import Mock
+from trashcli.put.clock import RealClock
+from trashcli.put.original_location import OriginalLocation, parent_realpath
+from trashcli.put.path_maker import PathMaker, PathMakerType
+from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 
 
 class TestHowOriginalLocationIsStored(unittest.TestCase):

@@ -2,7 +2,6 @@ import os
 import unittest
 
 import pytest
-
 from scripts.make_scripts import make_scripts
 from trashcli import base_dir
 

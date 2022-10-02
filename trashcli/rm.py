@@ -3,13 +3,20 @@ import fnmatch
 import os
 import sys
 
-from trashcli.fs import FileRemover
-from trashcli.fs import FileSystemReader
-from trashcli.trash import (TrashDirReader, parse_path, ParseError,
-                            UserInfoProvider, DirChecker)
-from trashcli.trash import path_of_backup_copy
-from trashcli.trash_dirs_scanner import (TrashDirsScanner, TopTrashDirRules,
-                                         trash_dir_found)
+from trashcli.fs import FileRemover, FileSystemReader
+from trashcli.trash import (
+    DirChecker,
+    ParseError,
+    TrashDirReader,
+    UserInfoProvider,
+    parse_path,
+    path_of_backup_copy,
+)
+from trashcli.trash_dirs_scanner import (
+    TopTrashDirRules,
+    TrashDirsScanner,
+    trash_dir_found,
+)
 
 
 class CleanableTrashcan:

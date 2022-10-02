@@ -2,12 +2,12 @@ import datetime
 import unittest
 
 from tests.put.support.dummy_clock import DummyClock
-from trashcli.put.parent_path import parent_path
 
+from mock import Mock, call
 from trashcli.put.original_location import OriginalLocation
+from trashcli.put.parent_path import parent_path
 from trashcli.put.path_maker import PathMakerType
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
-from mock import Mock, call
 
 
 class TestTrashing(unittest.TestCase):

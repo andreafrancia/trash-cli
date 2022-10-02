@@ -1,20 +1,21 @@
 import os
 import random
 from datetime import datetime
+
 from typing import Callable, Dict, Optional
 
 from trashcli.fstab import Volumes
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.original_location import OriginalLocation, parent_realpath
+from trashcli.put.path_maker import PathMaker
+from trashcli.put.real_fs import RealFs
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.security_check import SecurityCheck
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
-from trashcli.put.real_fs import RealFs
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 from trashcli.put.trash_result import TrashResult
-from trashcli.put.path_maker import PathMaker
 
 
 class PossibleTrashDirectories:

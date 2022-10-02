@@ -1,14 +1,13 @@
 import unittest
 
-import pytest
 import six
 
+import pytest
+from mock import Mock
 from trashcli.restore import TrashDirectory
 
-from ..files import require_empty_dir
+from ..files import make_file, require_empty_dir
 from ..support import MyPath
-from ..files import make_file
-from mock import Mock
 
 
 @pytest.mark.slow

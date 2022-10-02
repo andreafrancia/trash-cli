@@ -1,7 +1,9 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from trashcli.fs import has_sticky_bit, write_file, mkdirs
-import os, shutil
+import os
+import shutil
+
+from trashcli.fs import has_sticky_bit, mkdirs, write_file
 
 
 def make_empty_file(path):

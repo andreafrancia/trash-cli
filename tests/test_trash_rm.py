@@ -1,9 +1,9 @@
 import unittest
 
-from mock import Mock
-
-from trashcli.rm import Filter
 from six import StringIO
+
+from mock import Mock
+from trashcli.rm import Filter
 
 
 class TestTrashRmCmdRun(unittest.TestCase):

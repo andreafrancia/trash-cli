@@ -5,19 +5,32 @@ import sys
 from pprint import pprint
 
 from trashcli.list_mount_points import os_mount_points
+from trashcli.shell_completion import TRASH_DIRS, add_argument_to
 from trashcli.super_enum import SuperEnum
-from trashcli.shell_completion import add_argument_to, TRASH_DIRS
+
 from . import fstab
 from .fs import FileSystemReader, file_size
-from .fstab import VolumesListing, Volumes
-from .trash import ParseError
-from .trash import parse_path
-from .trash import (version, TrashDirReader, path_of_backup_copy, print_version,
-                    maybe_parse_deletion_date,
-                    UserInfoProvider, DirChecker, AllUsersInfoProvider)
-from .trash_dirs_scanner import TopTrashDirRules, TrashDirsScanner, \
-    trash_dir_found, trash_dir_skipped_because_parent_is_symlink, \
-    trash_dir_skipped_because_parent_not_sticky, TrashDir
+from .fstab import Volumes, VolumesListing
+from .trash import (
+    AllUsersInfoProvider,
+    DirChecker,
+    ParseError,
+    TrashDirReader,
+    UserInfoProvider,
+    maybe_parse_deletion_date,
+    parse_path,
+    path_of_backup_copy,
+    print_version,
+    version,
+)
+from .trash_dirs_scanner import (
+    TopTrashDirRules,
+    TrashDir,
+    TrashDirsScanner,
+    trash_dir_found,
+    trash_dir_skipped_because_parent_is_symlink,
+    trash_dir_skipped_because_parent_not_sticky,
+)
 
 
 def main():

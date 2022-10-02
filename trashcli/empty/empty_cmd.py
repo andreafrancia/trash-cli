@@ -13,7 +13,7 @@ from trashcli.empty.parser import Parser
 from trashcli.empty.print_time_action import PrintTimeAction
 from trashcli.empty.print_version_action import PrintVersionAction
 from trashcli.fstab import Volumes, VolumesListing
-from trashcli.trash import Clock, EX_OK, DirReader
+from trashcli.trash import EX_OK, Clock, DirReader
 from trashcli.trash_dirs_scanner import TopTrashDirRules
 
 

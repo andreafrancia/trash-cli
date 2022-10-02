@@ -4,10 +4,9 @@ import os
 import unittest
 
 import pytest
+from trashcli.fs import has_sticky_bit, is_sticky_dir, mkdirs
 
-from trashcli.fs import mkdirs, has_sticky_bit, is_sticky_dir
-
-from .files import (make_empty_file, set_sticky_bit, unset_sticky_bit)
+from .files import make_empty_file, set_sticky_bit, unset_sticky_bit
 from .support import MyPath
 
 

@@ -2,9 +2,10 @@ import os
 import unittest
 from datetime import datetime
 
-from mock import Mock
 from six import StringIO
 
+from mock import Mock
+from trashcli.put.clock import RealClock
 from trashcli.put.file_trasher import FileTrasher, TrashFileIn
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import MyLogger
@@ -14,7 +15,6 @@ from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
-from trashcli.put.clock import RealClock
 from trashcli.put.trash_result import TrashResult
 
 

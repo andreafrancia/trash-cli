@@ -1,11 +1,9 @@
 import unittest
 
 from mock import Mock
-
 from trashcli import restore
 from trashcli.fs import contents_of
-from trashcli.restore import RestoreCmd, make_trash_directories, \
-    TrashedFiles
+from trashcli.restore import RestoreCmd, TrashedFiles, make_trash_directories
 
 
 class TestListingInRestoreCmd(unittest.TestCase):

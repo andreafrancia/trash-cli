@@ -1,15 +1,14 @@
+import os
 import unittest
 from datetime import datetime
+from os.path import exists as file_exists, join as pj
 
 import pytest
-
-from ..fake_trash_dir import FakeTrashDir
 from trashcli.fs import read_file
-from ..support import MyPath
-import os
-from os.path import join as pj
-from os.path import exists as file_exists
+
 from .. import run_command
+from ..fake_trash_dir import FakeTrashDir
+from ..support import MyPath
 
 
 @pytest.mark.slow

@@ -1,7 +1,7 @@
 import unittest
 
-from trashcli.empty.user import User
 from mock import Mock, call
+from trashcli.empty.user import User
 
 
 class TestUser(unittest.TestCase):

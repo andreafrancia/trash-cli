@@ -1,10 +1,11 @@
 import os
+import random
 import sys
 from datetime import datetime
-import random
 
 from trashcli.fstab import volumes
 from trashcli.put.access import Access
+from trashcli.put.clock import RealClock
 from trashcli.put.file_trasher import FileTrasher, TrashFileIn
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import MyLogger
@@ -17,11 +18,10 @@ from trashcli.put.suffix import Suffix
 from trashcli.put.trash_all import TrashAll
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
-from trashcli.put.clock import RealClock
+from trashcli.put.trash_put_cmd import TrashPutCmd
 from trashcli.put.trasher import Trasher
 from trashcli.put.user import User
 from trashcli.trash import my_input
-from trashcli.put.trash_put_cmd import TrashPutCmd
 
 
 def main():

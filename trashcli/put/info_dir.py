@@ -1,9 +1,9 @@
 import errno
 import os
 
-from trashcli.put.suffix import Suffix
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.real_fs import RealFs
+from trashcli.put.suffix import Suffix
 
 
 class InfoDir:

@@ -1,19 +1,24 @@
 import os
 import unittest
 
+from six import StringIO
+
 import pytest
 from mock import Mock
-
-from trashcli.fstab import volume_of
-from trashcli.restore import RestoreCmd, TrashDirectories, TrashDirectory, \
-    TrashedFiles, TrashDirectories2
-from ..support import MyPath
-from ..files import require_empty_dir
-from trashcli.fs import remove_file, contents_of
-from ..fake_trash_dir import trashinfo_content_default_date
-from ..files import make_file
-from six import StringIO
 from trashcli import restore
+from trashcli.fs import contents_of, remove_file
+from trashcli.fstab import volume_of
+from trashcli.restore import (
+    RestoreCmd,
+    TrashDirectories,
+    TrashDirectories2,
+    TrashDirectory,
+    TrashedFiles,
+)
+
+from ..fake_trash_dir import trashinfo_content_default_date
+from ..files import make_file, require_empty_dir
+from ..support import MyPath
 
 
 @pytest.mark.slow

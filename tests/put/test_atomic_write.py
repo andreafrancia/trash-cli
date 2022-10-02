@@ -3,8 +3,12 @@ import os
 import unittest
 
 import pytest
+from trashcli.fs import (
+    atomic_write,
+    open_for_write_in_exclusive_and_create_mode,
+    read_file,
+)
 
-from trashcli.fs import atomic_write, read_file, open_for_write_in_exclusive_and_create_mode
 from ..support import MyPath
 
 

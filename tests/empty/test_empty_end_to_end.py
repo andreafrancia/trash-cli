@@ -1,6 +1,7 @@
 import unittest
 
 from trashcli import trash
+
 from .. import run_command
 from ..run_command import normalize_options
 from ..support import MyPath

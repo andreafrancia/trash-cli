@@ -6,7 +6,7 @@ from typing import Dict
 
 from trashcli.put.describe import describe
 from trashcli.put.my_logger import MyLogger
-from trashcli.trash import EX_OK, EX_IOERR
+from trashcli.trash import EX_IOERR, EX_OK
 
 
 class TrashPutReporter:

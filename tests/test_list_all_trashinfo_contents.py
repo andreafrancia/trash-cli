@@ -1,7 +1,9 @@
 import unittest
 
 import six
+
 from mock import Mock, call
+
 
 class TestListing(unittest.TestCase):
     def setUp(self):

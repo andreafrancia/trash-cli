@@ -3,9 +3,9 @@ import unittest
 
 import pytest
 
+from .. import run_command
 from ..fake_trash_dir import FakeTrashDir
 from ..support import MyPath
-from .. import run_command
 
 
 @pytest.mark.slow

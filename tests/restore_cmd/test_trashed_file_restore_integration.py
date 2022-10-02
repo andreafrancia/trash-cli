@@ -1,14 +1,18 @@
+import os
 import unittest
 
-from trashcli.restore import RestoreCmd, make_trash_directories, \
-    TrashDirectory, TrashedFiles
-from trashcli import restore
 from mock import Mock
-from ..files import make_empty_file
+from trashcli import restore
 from trashcli.fs import contents_of
-from trashcli.restore import TrashedFile
-import os
+from trashcli.restore import (
+    RestoreCmd,
+    TrashDirectory,
+    TrashedFile,
+    TrashedFiles,
+    make_trash_directories,
+)
 
+from ..files import make_empty_file
 from ..support import MyPath
 
 

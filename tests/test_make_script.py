@@ -3,8 +3,11 @@ from textwrap import dedent
 
 import mock
 from mock import Mock
-
-from scripts.make_scripts import Scripts, script_path_for, script_path_without_base_dir_for
+from scripts.make_scripts import (
+    Scripts,
+    script_path_for,
+    script_path_without_base_dir_for,
+)
 
 
 class TestMakeScript(unittest.TestCase):

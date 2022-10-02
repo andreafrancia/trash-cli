@@ -1,16 +1,19 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import unittest
 
+from six import StringIO
+from tests.files import make_readable, make_unreadable_dir
+from tests.support import MyPath, volumes_mock
+
 import pytest
 from mock import Mock
-from six import StringIO
-
-from tests.files import make_unreadable_dir, make_readable
-from tests.support import MyPath, volumes_mock
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
-from trashcli.fs import FileSystemContentReader, \
-    FileSystemDirReader, TopTrashDirRulesFileSystemReader
+from trashcli.fs import (
+    FileSystemContentReader,
+    FileSystemDirReader,
+    TopTrashDirRulesFileSystemReader,
+)
 from trashcli.fstab import VolumesListing
 
 
