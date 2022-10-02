@@ -6,7 +6,7 @@ import pytest
 from .. import run_command
 from ..fake_trash_dir import FakeTrashDir
 from ..run_command import normalize_options
-from ..support import MyPath
+from ..support.my_path import MyPath
 
 
 @pytest.mark.slow

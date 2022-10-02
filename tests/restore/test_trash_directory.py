@@ -7,7 +7,7 @@ from mock import Mock
 from trashcli.restore import TrashDirectory
 
 from ..files import make_file, require_empty_dir
-from ..support import MyPath
+from ..support.my_path import MyPath
 
 
 @pytest.mark.slow

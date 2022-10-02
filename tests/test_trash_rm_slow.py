@@ -8,7 +8,7 @@ from trashcli.fstab import VolumesListing
 from trashcli.rm import ListTrashinfos, RmCmd
 
 from .fake_trash_dir import FakeTrashDir
-from .support import MyPath
+from .support.my_path import MyPath
 
 
 @pytest.mark.slow

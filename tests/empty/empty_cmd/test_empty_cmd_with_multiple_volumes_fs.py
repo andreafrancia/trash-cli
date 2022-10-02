@@ -9,7 +9,8 @@ from tests.files import (
     require_empty_dir,
     set_sticky_bit,
 )
-from tests.support import MyPath, volumes_mock
+from tests.support.volumes_mock import volumes_mock
+from tests.support.my_path import MyPath
 
 from mock import Mock
 from trashcli.empty.empty_cmd import EmptyCmd

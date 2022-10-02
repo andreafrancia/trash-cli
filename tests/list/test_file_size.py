@@ -1,7 +1,7 @@
 import unittest
 
 from tests.files import make_file
-from tests.support import MyPath
+from tests.support.my_path import MyPath
 
 from trashcli import fs
 

@@ -3,7 +3,7 @@ import unittest
 
 from six import StringIO
 from tests.mock_dir_reader import MockDirReader
-from tests.support import volumes_mock
+from tests.support.volumes_mock import volumes_mock
 from typing import cast
 
 from flexmock import flexmock

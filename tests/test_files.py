@@ -7,7 +7,7 @@ import pytest
 from trashcli.fs import FileRemover, read_file
 
 from .files import make_readable, make_unreadable_dir, make_unreadable_file
-from .support import MyPath
+from .support.my_path import MyPath
 
 
 @pytest.mark.slow

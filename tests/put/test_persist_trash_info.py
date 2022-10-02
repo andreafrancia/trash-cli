@@ -8,7 +8,7 @@ from trashcli.fs import read_file
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.real_fs import RealFs
 
-from ..support import MyPath
+from ..support.my_path import MyPath
 
 
 @pytest.mark.slow

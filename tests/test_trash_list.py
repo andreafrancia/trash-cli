@@ -14,7 +14,8 @@ from .asserts import assert_equals_with_unidiff
 from .fake_trash_dir import FakeTrashDir
 from .files import make_sticky_dir, make_unsticky_dir, require_empty_dir
 from .output_collector import OutputCollector
-from .support import MyPath, volumes_mock
+from .support.volumes_mock import volumes_mock
+from .support.my_path import MyPath
 
 
 @pytest.mark.slow

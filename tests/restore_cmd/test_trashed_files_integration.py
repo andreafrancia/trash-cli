@@ -6,7 +6,7 @@ from trashcli.fs import contents_of, remove_file
 from trashcli.restore import TrashedFiles
 
 from ..files import make_file, require_empty_dir
-from ..support import remove_dir_if_exists
+from ..support.remove_dir_if_exists import remove_dir_if_exists
 
 
 class TestTrashedFilesIntegration(unittest.TestCase):

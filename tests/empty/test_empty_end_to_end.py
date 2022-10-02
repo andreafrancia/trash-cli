@@ -4,7 +4,7 @@ from trashcli import trash
 
 from .. import run_command
 from ..run_command import normalize_options
-from ..support import MyPath
+from ..support.my_path import MyPath
 
 
 class TestEmptyEndToEnd(unittest.TestCase):

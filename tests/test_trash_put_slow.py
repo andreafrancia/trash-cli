@@ -9,7 +9,7 @@ from trashcli.fs import read_file
 from . import run_command
 from .asserts import assert_line_in_text
 from .files import make_empty_file, make_sticky_dir, require_empty_dir
-from .support import MyPath
+from .support.my_path import MyPath
 
 
 class TrashPutFixture:

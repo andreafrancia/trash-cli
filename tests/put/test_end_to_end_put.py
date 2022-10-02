@@ -4,7 +4,7 @@ from textwrap import dedent
 
 from tests import run_command
 from tests.run_command import first_line_of, last_line_of
-from tests.support import MyPath
+from ..support.my_path import MyPath
 
 import pytest
 

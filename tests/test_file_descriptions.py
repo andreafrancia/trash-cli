@@ -6,7 +6,7 @@ import pytest
 from trashcli.put.describe import describe
 
 from .files import make_empty_file, make_file, require_empty_dir
-from .support import MyPath
+from .support.my_path import MyPath
 
 
 @pytest.mark.slow

@@ -4,7 +4,7 @@ import sys
 import unittest
 
 from tests.files import make_file
-from tests.support import MyPath
+from tests.support.my_path import MyPath
 
 from scripts import bump
 from trashcli import base_dir

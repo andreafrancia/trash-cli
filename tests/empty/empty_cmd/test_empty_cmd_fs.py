@@ -3,7 +3,8 @@ import unittest
 
 from six import StringIO
 from tests.files import make_readable, make_unreadable_dir
-from tests.support import MyPath, volumes_mock
+from tests.support.volumes_mock import volumes_mock
+from tests.support.my_path import MyPath
 
 import pytest
 from mock import Mock

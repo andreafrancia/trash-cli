@@ -4,7 +4,8 @@ import unittest
 from tests import run_command
 from tests.fake_trash_dir import FakeTrashDir
 from tests.files import make_file
-from tests.support import MyPath, list_trash_dir
+from tests.support.list_trash_dir import list_trash_dir
+from tests.support.my_path import MyPath
 
 
 class TestEmptyEndToEndWithTrashDir(unittest.TestCase):

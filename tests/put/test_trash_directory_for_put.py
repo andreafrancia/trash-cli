@@ -4,6 +4,8 @@ import unittest
 from tests.put.support.dummy_clock import DummyClock
 
 from flexmock import flexmock
+
+from tests.support.capture_error import capture_error
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.original_location import OriginalLocation
 from trashcli.put.path_maker import PathMaker
@@ -39,6 +41,29 @@ class TestTrashDirectoryForPut(unittest.TestCase):
                               'path_maker_type',
                               '/disk',
                               '/info/dir')
+
+    def test_when_io_erro(self):
+        self.mock_original_location('/disk/file-to-trash', 'path_maker_type',
+                                    '/disk').and_return('original_location')
+        self.mock_info_dir_persist_trash_info(
+            'original_location',
+            b"[Trash Info]\nPath=original_location\nDeletionDate=2014-01-01T00:00:00\n",
+            "program_name", 99, "/info/dir").and_return('trash_info_path')
+        self.mock_fs_move('/disk/file-to-trash', 'files/trash').and_raise(
+            IOError("No space left on device"))
+        flexmock(self.fs).should_receive('remove_file').with_args(
+            'trash_info_path')
+        self.clock.set_clock(datetime.datetime(2014, 1, 1, 0, 0, 0))
+
+        error = capture_error(lambda:
+                              self.trash_dir.trash2('/disk/file-to-trash',
+                                                    "program_name",
+                                                    99,
+                                                    'path_maker_type',
+                                                    '/disk',
+                                                    '/info/dir'))
+
+        self.assertEqual("No space left on device", str(error))
 
     def mock_original_location(self, path, path_maker_type, volume_top_dir):
         return flexmock(self.original_location).should_receive('for_file'). \

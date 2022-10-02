@@ -9,7 +9,7 @@ from trashcli.fs import (
     read_file,
 )
 
-from ..support import MyPath
+from ..support.my_path import MyPath
 
 
 @pytest.mark.slow

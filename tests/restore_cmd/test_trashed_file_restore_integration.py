@@ -13,7 +13,7 @@ from trashcli.restore import (
 )
 
 from ..files import make_empty_file
-from ..support import MyPath
+from ..support.my_path import MyPath
 
 
 class TestTrashedFileRestoreIntegration(unittest.TestCase):
