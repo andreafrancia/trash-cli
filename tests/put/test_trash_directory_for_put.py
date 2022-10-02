@@ -26,11 +26,10 @@ class TestTrashDirectoryForPut(unittest.TestCase):
     def test(self):
         self.mock_original_location('/disk/file-to-trash', 'path_maker_type',
                                     '/disk').and_return('original_location')
-        self.mock_info_dir_persist_trash_info('original_location', """\
-[Trash Info]
-Path=original_location
-DeletionDate=2014-01-01T00:00:00
-""", "program_name", 99, "/info/dir").and_return('trash_info_path')
+        self.mock_info_dir_persist_trash_info(
+            'original_location',
+            b"[Trash Info]\nPath=original_location\nDeletionDate=2014-01-01T00:00:00\n",
+            "program_name", 99, "/info/dir").and_return('trash_info_path')
         self.mock_fs_move('/disk/file-to-trash', 'files/trash')
         self.clock.set_clock(datetime.datetime(2014, 1, 1, 0, 0, 0))
 
