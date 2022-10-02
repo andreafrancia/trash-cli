@@ -1,23 +1,30 @@
 import os
 
-from trashcli.put.path_maker import PathMaker
+from trashcli.put.real_fs import RealFs
+
+from trashcli.put.info_dir import InfoDir
+from trashcli.put.original_location import OriginalLocation
 from trashcli.py2compat import url_quote
 from trashcli.trash import path_of_backup_copy
 
 
 class TrashDirectoryForPut:
-    def __init__(self, fs, info_dir, original_location):
+    def __init__(self,
+                 fs,  # type: RealFs
+                 info_dir,  # type: InfoDir
+                 original_location,  # type: OriginalLocation
+                 ):
         self.fs = fs
         self.info_dir = info_dir
         self.original_location = original_location
 
-    def trash2(self, path, now, program_name, verbose, path_maker_type,
-               volume_top_dir, info_dir_path):
+    def trash2(self, path, now, program_name, verbose, path_maker_type, volume,
+               info_dir_path):
         path = os.path.normpath(path)
 
-        original_location = self.path_for_trash_info_for_file(path,
-                                                              path_maker_type,
-                                                              volume_top_dir)
+        original_location = self.original_location.for_file(path,
+                                                            path_maker_type,
+                                                            volume)
 
         basename = os.path.basename(original_location)
         content = format_trashinfo(original_location, now())
@@ -33,13 +40,6 @@ class TrashDirectoryForPut:
         except IOError as e:
             self.fs.remove_file(trash_info_file)
             raise e
-
-    def path_for_trash_info_for_file(self, path, path_maker_type,
-                                     volume_top_dir):
-        path_for_trash_info = self.original_location
-        return path_for_trash_info.for_file(path,
-                                            path_maker_type,
-                                            volume_top_dir)
 
 
 def format_trashinfo(original_location, deletion_date):
