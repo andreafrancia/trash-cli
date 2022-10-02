@@ -17,6 +17,7 @@ from trashcli.put.suffix import Suffix
 from trashcli.put.trash_all import TrashAll
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
+from trashcli.put.clock import RealClock
 from trashcli.put.trasher import Trasher
 from trashcli.put.user import User
 from trashcli.trash import my_input
@@ -33,7 +34,8 @@ def main():
     original_location = OriginalLocation(parent_realpath, path_maker)
     trash_dir = TrashDirectoryForPut(fs,
                                      info_dir,
-                                     original_location)
+                                     original_location,
+                                     RealClock())
     trash_file_in = TrashFileIn(fs,
                                 os.path.realpath,
                                 volumes,

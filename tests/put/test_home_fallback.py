@@ -9,6 +9,7 @@ from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.file_trasher import FileTrasher, TrashFileIn
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
+from trashcli.put.clock import RealClock
 from trashcli.put.trash_result import TrashResult
 from datetime import datetime
 import os
@@ -33,7 +34,8 @@ class TestHomeFallback(unittest.TestCase):
         original_location = OriginalLocation(parent_realpath, path_maker)
         self.trash_dir = TrashDirectoryForPut(self.fs,
                                               info_dir,
-                                              original_location)
+                                              original_location,
+                                              RealClock())
         self.trash_file_in = TrashFileIn(self.fs,
                                          realpath,
                                          volumes,

@@ -144,7 +144,7 @@ class TrashFileIn:
                     self.fs.ensure_dir(trash_dir_path, 0o700)
                     self.fs.ensure_dir(os.path.join(trash_dir_path, 'files'),
                                        0o700)
-                    self.trash_dir.trash2(path, self.now, program_name, verbose,
+                    self.trash_dir.trash2(path, program_name, verbose,
                                           path_maker_type, volume,
                                           info_dir_path)
                     self.reporter.file_has_been_trashed_in_as(

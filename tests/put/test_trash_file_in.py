@@ -11,6 +11,7 @@ from trashcli.put.original_location import OriginalLocation, parent_realpath
 from trashcli.put.path_maker import PathMaker
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
+from trashcli.put.clock import RealClock
 
 
 class TestTrashFileIn(unittest.TestCase):
@@ -29,7 +30,8 @@ class TestTrashFileIn(unittest.TestCase):
         original_location = OriginalLocation(parent_realpath, path_maker)
         self.trash_dir = TrashDirectoryForPut(self.fs,
                                               info_dir,
-                                              original_location)
+                                              original_location,
+                                              RealClock())
         self.trash_file_in = TrashFileIn(self.fs,
                                          realpath,
                                          volumes,

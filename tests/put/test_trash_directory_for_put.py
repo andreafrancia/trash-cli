@@ -3,6 +3,7 @@ import unittest
 
 from flexmock import flexmock
 
+from tests.put.support.dummy_clock import DummyClock
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.original_location import OriginalLocation
 from trashcli.put.path_maker import PathMaker
@@ -16,9 +17,11 @@ class TestTrashDirectoryForPut(unittest.TestCase):
         self.path_maker = flexmock(PathMaker)
         self.info_dir = flexmock(InfoDir)
         self.original_location = flexmock(OriginalLocation)
+        self.clock = DummyClock()
         self.trash_dir = TrashDirectoryForPut(self.fs,
                                               self.info_dir,
-                                              self.original_location)
+                                              self.original_location,
+                                              self.clock)
 
     def test(self):
         self.mock_original_location('/disk/file-to-trash', 'path_maker_type',
@@ -29,9 +32,9 @@ Path=original_location
 DeletionDate=2014-01-01T00:00:00
 """, "program_name", 99, "/info/dir").and_return('trash_info_path')
         self.mock_fs_move('/disk/file-to-trash', 'files/trash')
+        self.clock.set_clock(datetime.datetime(2014, 1, 1, 0, 0, 0))
 
         self.trash_dir.trash2('/disk/file-to-trash',
-                              lambda: datetime.datetime(2014, 1, 1, 0, 0, 0),
                               "program_name",
                               99,
                               'path_maker_type',

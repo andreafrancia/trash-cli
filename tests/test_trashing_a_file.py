@@ -1,6 +1,7 @@
 import datetime
 import unittest
 
+from tests.put.support.dummy_clock import DummyClock
 from trashcli.put.parent_path import parent_path
 
 from trashcli.put.original_location import OriginalLocation
@@ -17,13 +18,15 @@ class TestTrashing(unittest.TestCase):
         self.info_dir.persist_trash_info.return_value = 'info_file'
         path_maker = Mock()
         original_location = OriginalLocation(parent_path, path_maker)
+        clock = DummyClock(datetime.datetime(1970, 1, 1))
         self.trashdir = TrashDirectoryForPut(self.fs, self.info_dir,
-                                             original_location)
+                                             original_location,
+                                             clock)
         path_maker.calc_parent_path.return_value = ''
 
     def test_the_file_should_be_moved_in_trash_dir(self):
 
-        self.trashdir.trash2('foo', self.now, 'trash-put', 99,
+        self.trashdir.trash2('foo', 'trash-put', 99,
                              PathMakerType.absolute_paths, '/disk', '/info_dir')
 
         assert self.fs.mock_calls == [call.move('foo', 'files/')]
@@ -37,7 +40,7 @@ class TestTrashing(unittest.TestCase):
         self.fs.move.side_effect = IOError
 
         try:
-            self.trashdir.trash2('foo', self.now, 'trash-put', 99,
+            self.trashdir.trash2('foo', 'trash-put', 99,
                                  PathMakerType.absolute_paths, '/disk',
                                  '/info_dir')
         except IOError:

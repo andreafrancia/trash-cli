@@ -1,5 +1,6 @@
 import os
 
+from trashcli.put.clock import PutClock
 from trashcli.put.real_fs import RealFs
 
 from trashcli.put.info_dir import InfoDir
@@ -13,12 +14,14 @@ class TrashDirectoryForPut:
                  fs,  # type: RealFs
                  info_dir,  # type: InfoDir
                  original_location,  # type: OriginalLocation
+                 clock, # type: PutClock
                  ):
         self.fs = fs
         self.info_dir = info_dir
         self.original_location = original_location
+        self.clock = clock
 
-    def trash2(self, path, now, program_name, verbose, path_maker_type, volume,
+    def trash2(self, path, program_name, verbose, path_maker_type, volume,
                info_dir_path):
         path = os.path.normpath(path)
 
@@ -27,7 +30,7 @@ class TrashDirectoryForPut:
                                                             volume)
 
         basename = os.path.basename(original_location)
-        content = format_trashinfo(original_location, now())
+        content = format_trashinfo(original_location, self.clock.now())
         trash_info_file = self.info_dir.persist_trash_info(basename, content,
                                                            program_name,
                                                            verbose,
