@@ -70,7 +70,7 @@ class TestFileTrasher(unittest.TestCase):
                                      'trash-put',
                                      99)
 
-        assert 'trash-put: Volume of file: /' in \
+        assert 'trash-put: volume of file: /' in \
                self.stderr.getvalue().splitlines()
 
     def test_should_report_when_trash_fail(self):
@@ -107,6 +107,6 @@ class TestFileTrasher(unittest.TestCase):
                                      99)
 
         assert self.stderr.getvalue().splitlines() == [
-            'trash-put: Volume of file: /disk',
-            'trash-put: Trash-dir: /xdh/Trash from volume: /disk',
+            'trash-put: volume of file: /disk',
+            'trash-put: trying trash dir: /xdh/Trash from volume: /disk',
             "trash-put: 'non-existent' trashed in /xdh/Trash"]

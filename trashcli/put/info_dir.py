@@ -42,7 +42,7 @@ class InfoDir:
                 if e.errno == errno.ENAMETOOLONG:
                     name_too_long = True
                 self.logger.debug(
-                    "Attempt for creating %s failed." % trashinfo_path,
+                    "attempt for creating %s failed." % trashinfo_path,
                     program_name, verbose)
 
             index += 1

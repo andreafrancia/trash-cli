@@ -36,6 +36,20 @@ class TrashPutReporter:
     def log_info(self, message, program_name, verbose):
         self.logger.info(message, program_name, verbose)
 
+    def wont_use_trash_dir_because_in_a_different_volume(
+            self,
+            path,
+            norm_trash_dir_path,
+            volume_of_file_to_be_trashed,
+            volume_of_trash_dir,
+            program_name, verbose,
+            environ):
+        self.logger.info(
+            "won't use trash dir %s because its volume (%s) in a different volume than %s (%s)"
+            % (shrink_user(norm_trash_dir_path, environ), volume_of_trash_dir,
+               path, volume_of_file_to_be_trashed),
+            program_name, verbose)
+
     def unable_to_trash_file_in_because(self,
                                         file_to_be_trashed,
                                         trash_directory,
@@ -73,9 +87,10 @@ class TrashPutReporter:
 
     def trash_dir_with_volume(self, trash_dir_path, volume_path, program_name,
                               verbose):
-        self.logger.info("Trash-dir: %s from volume: %s" % (trash_dir_path,
-                                                            volume_path),
-                         program_name, verbose)
+        self.logger.info(
+            "trying trash dir: %s from volume: %s" % (trash_dir_path,
+                                                      volume_path),
+            program_name, verbose)
 
     def exit_code(self, result):
         if not result.some_file_has_not_be_trashed:
@@ -84,7 +99,7 @@ class TrashPutReporter:
             return EX_IOERR
 
     def volume_of_file(self, volume, program_name, verbose):
-        self.logger.info("Volume of file: %s" % volume, program_name, verbose)
+        self.logger.info("volume of file: %s" % volume, program_name, verbose)
 
 
 def shrink_user(path, environ):

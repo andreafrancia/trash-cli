@@ -1,12 +1,25 @@
 import os
 
+from trashcli.fstab import Volumes
+from trashcli.put.info_dir import InfoDir
 from trashcli.put.path_maker import PathMaker
+from trashcli.put.real_fs import RealFs
+from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.security_check import SecurityCheck
+from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 
 
 class TrashFileIn:
-    def __init__(self, fs, realpath, volumes, now, parent_path,
-                 reporter, info_dir, trash_dir):
+    def __init__(self,
+                 fs,  # type: RealFs
+                 realpath,
+                 volumes,  # type: Volumes
+                 now,
+                 parent_path,
+                 reporter,  # type: TrashPutReporter
+                 info_dir,  # type: InfoDir
+                 trash_dir,  # type: TrashDirectoryForPut
+                 ):
         self.fs = fs
         self.realpath = realpath
         self.volumes = volumes
@@ -67,6 +80,10 @@ class TrashFileIn:
                     self.reporter.unable_to_trash_file_in_because(
                         path, norm_trash_dir_path, error, program_name, verbose,
                         environ)
+            else:
+                self.reporter.wont_use_trash_dir_because_in_a_different_volume(
+                    path, norm_trash_dir_path, volume_of_file_to_be_trashed,
+                    volume_of_trash_dir, program_name, verbose, environ)
         else:
             self.reporter.trash_dir_is_not_secure(norm_trash_dir_path,
                                                   program_name, verbose)
