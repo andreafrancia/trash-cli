@@ -55,7 +55,7 @@ class TrashPutReporter:
                                         trash_directory,
                                         error,
                                         program_name, verbose, environ):
-        self.logger.info("Failed to trash %s in %s, because: %s" % (
+        self.logger.info("failed to trash %s in %s, because: %s" % (
             file_to_be_trashed, shrink_user(trash_directory, environ), error),
                          program_name, verbose)
         self.logger.debug_func_result(
