@@ -6,7 +6,7 @@ import os
 import pwd
 
 
-version = '0.22.10.4'
+version = '0.22.10.4.1'
 
 logger = logging.getLogger('trashcli.trash')
 logger.setLevel(logging.WARNING)
