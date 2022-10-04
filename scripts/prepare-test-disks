@@ -23,4 +23,11 @@ make-new-disk() {
     echo "test-volume mounted as '$mount_point'"
 }
 
+# for macOS:
+# mkdir -p test-disk
+# hdiutil detach ./test-disk || true
+# rm -f test-disk.dmg
+# hdiutil create -size 1M -fs HFS+ test-disk
+# hdiutil attach test-disk.dmg -mountpoint test-disk
+
 main
