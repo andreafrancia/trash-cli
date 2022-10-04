@@ -27,7 +27,7 @@ Remove previous installation::
 
 Test the installation::
 
-    python3 -m pip install --index-url https://test.pypi.org/simple/ trash-cli
+    python3 -m pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple trash-cli
 
 Register and upload::
 
