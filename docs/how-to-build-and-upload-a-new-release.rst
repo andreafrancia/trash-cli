@@ -15,7 +15,7 @@ Run all tests::
 
 Create the tarball::
 
-    python -c 'import setuptools; setuptools.setup()' sdist
+    python -m build --sdist
 
 Upload to Test PyPI::
 
