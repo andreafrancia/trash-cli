@@ -1,3 +1,14 @@
+0.22.10.4.4:
+ - Revisited the trash-put log messages
+ - Add shell completions by shtab
+ - Feature: trash-empty learnt the --verbose option
+ - Feature: trash-empty learnt the --dry-run option
+ - Change: add six as a requirements
+ - Change: add 'fuse' to the list of "physical" file system types
+ - Change: now trash-put uses ArgumentParser instead of OptionParser
+ - Add more debugging messages to trash-put when it fails to trash a file.
+ - Change: trash-empty now uses lexists (instead of exists) to check if a file
+   is not existent before removal
  - Add `trash-list --python` to print the python executable
 0.22.8.27:
  - from now partitions with fs in ['nfs4','btrfs'] are considered physical volumes
