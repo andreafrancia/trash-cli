@@ -54,8 +54,7 @@ class Parser:
                             default=0,
                             action="count",
                             dest="verbose",
-                            # help="explain what is being done",
-                            help=argparse.SUPPRESS,
+                            help="list files that will be deleted",
                             )
         parser.add_argument('--trash-dir', action='append', default=[],
                             metavar='TRASH_DIR',

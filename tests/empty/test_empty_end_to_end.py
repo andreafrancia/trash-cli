@@ -15,7 +15,7 @@ class TestEmptyEndToEnd(unittest.TestCase):
         result = run_command.run_command(self.tmp_dir, "trash-empty",
                                          ['--help'])
         self.assertEqual(["""\
-usage: trash-empty [-h] [--print-completion {bash,zsh,tcsh}] [--version]
+usage: trash-empty [-h] [--print-completion {bash,zsh,tcsh}] [--version] [-v]
                    [--trash-dir TRASH_DIR] [--all-users] [-i] [-f] [--dry-run]
                    [days]
 
@@ -29,6 +29,7 @@ options:
   --print-completion {bash,zsh,tcsh}
                         print shell completion script
   --version             show program's version number and exit
+  -v, --verbose         list files that will be deleted
   --trash-dir TRASH_DIR
                         specify the trash directory to use
   --all-users           empty all trashcan of all the users
