@@ -48,7 +48,6 @@ class TestFileTrasher(unittest.TestCase):
                                          cast(TrashDirectoryForPut,self.trash_dir))
         self.file_trasher = FileTrasher(self.fs,
                                         self.volumes,
-                                        realpath,
                                         datetime.now,
                                         trash_directories_finder,
                                         parent_path,

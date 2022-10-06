@@ -47,7 +47,6 @@ def main():
                                 trash_dir)
     file_trasher = FileTrasher(fs,
                                volumes,
-                               os.path.realpath,
                                datetime.now,
                                TrashDirectoriesFinder(volumes),
                                parent_path,

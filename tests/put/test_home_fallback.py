@@ -4,6 +4,8 @@ from datetime import datetime
 
 import flexmock
 from mock import ANY, Mock, call
+from typing import cast
+
 from trashcli.fstab import create_fake_volume_of
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.trash_file_in import TrashFileIn
@@ -35,10 +37,10 @@ class TestHomeFallback(unittest.TestCase):
                                          parent_path,
                                          self.reporter,
                                          info_dir,
-                                         self.trash_dir)
+                                         cast(TrashDirectoryForPut,
+                                              self.trash_dir))
         self.file_trasher = FileTrasher(self.fs,
                                         volumes,
-                                        realpath,
                                         datetime.now,
                                         trash_directories_finder,
                                         parent_path,

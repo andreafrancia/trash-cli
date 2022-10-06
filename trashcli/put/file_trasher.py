@@ -16,7 +16,6 @@ class FileTrasher:
     def __init__(self,
                  fs,  # type: RealFs
                  volumes,  # type: Volumes
-                 realpath,  # type: Callable[[str], str]
                  now,  # type: Callable[[], datetime]
                  trash_directories_finder,  # type: TrashDirectoriesFinder
                  parent_path,  # type: Callable[[str], str]
@@ -26,7 +25,6 @@ class FileTrasher:
                  ):  # type: (...) -> None
         self.fs = fs
         self.volumes = volumes
-        self.realpath = realpath
         self.now = now
         self.trash_directories_finder = trash_directories_finder
         self.parent_path = parent_path
