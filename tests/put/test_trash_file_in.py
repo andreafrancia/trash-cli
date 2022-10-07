@@ -4,6 +4,8 @@ from datetime import datetime
 
 import flexmock
 from mock import Mock
+from typing import cast
+
 from trashcli.fstab import create_fake_volume_of
 from trashcli.put.security_check import all_is_ok_rules
 from trashcli.put.trash_file_in import TrashFileIn
@@ -32,7 +34,9 @@ class TestTrashFileIn(unittest.TestCase):
                                          parent_path,
                                          self.reporter,
                                          info_dir,
-                                         self.trash_dir)
+                                         cast(TrashDirectoryForPut,
+                                              self.trash_dir)
+                                         )
 
     def test(self):
         result = self.trash_file_in.trash_file_in('path', 'trash_dir_path',

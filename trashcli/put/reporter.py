@@ -33,6 +33,10 @@ class TrashPutReporter:
         self.logger.info("trash directory %s is not secure" % path,
                          program_name, verbose)
 
+    def log_info_messages(self, messages, program_name, verbose):
+        for message in messages:
+            self.logger.info(message, program_name, verbose)
+
     def log_info(self, message, program_name, verbose):
         self.logger.info(message, program_name, verbose)
 

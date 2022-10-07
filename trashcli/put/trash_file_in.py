@@ -49,8 +49,7 @@ class TrashFileIn:
             check_trash_dir_is_secure(norm_trash_dir_path,
                                       self.fs,
                                       check_type)
-        for message in messages:
-            self.reporter.log_info(message, program_name, verbose)
+        self.reporter.log_info_messages(messages, program_name, verbose)
 
         if trash_dir_is_secure:
             volume_of_trash_dir = self.volumes.volume_of(
