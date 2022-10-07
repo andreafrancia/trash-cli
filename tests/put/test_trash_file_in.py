@@ -4,6 +4,7 @@ from datetime import datetime
 
 import flexmock
 from mock import Mock
+from mock.mock import call
 from typing import cast
 
 from trashcli.fstab import create_fake_volume_of
@@ -17,9 +18,8 @@ from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 class TestTrashFileIn(unittest.TestCase):
     def setUp(self):
         self.reporter = Mock()
-        mount_points = ['/', 'sandbox/other_partition']
         self.fs = Mock()
-        volumes = create_fake_volume_of(mount_points)
+        volumes = create_fake_volume_of(['/disk1', '/disk2'])
         self.logger = Mock()
         realpath = lambda x: x
         parent_path = os.path.dirname
@@ -38,11 +38,43 @@ class TestTrashFileIn(unittest.TestCase):
                                               self.trash_dir)
                                          )
 
-    def test(self):
-        result = self.trash_file_in.trash_file_in('path', 'trash_dir_path',
+    def test_same_disk(self):
+        flexmock.flexmock(self.trash_dir). \
+            should_receive('trash2').and_return(True)
+
+        result = self.trash_file_in.trash_file_in('path',
+                                                  '/disk1/trash_dir_path',
                                                   'volume',
                                                   "path_maker-type",
                                                   all_is_ok_rules, True,
-                                                  '/disk', 'program_name', 99,
+                                                  '/disk1', 'program_name', 99,
                                                   {})
+
         assert result == True
+        assert self.reporter.mock_calls == [
+            call.log_info_messages([], 'program_name', 99),
+            call.trash_dir_with_volume('/disk1/trash_dir_path', '/disk1',
+                                       'program_name', 99),
+            call.file_has_been_trashed_in_as('path', '/disk1/trash_dir_path',
+                                             'program_name', 99, {})]
+
+    def test_different_disk(self):
+        result = self.trash_file_in.trash_file_in('path',
+                                                  '/disk1/trash_dir_path',
+                                                  'volume',
+                                                  "path_maker-type",
+                                                  all_is_ok_rules, True,
+                                                  '/disk2', 'program_name', 99,
+                                                  {})
+
+        assert result == True
+        assert self.reporter.mock_calls == [
+            call.log_info_messages([], 'program_name', 99),
+            call.trash_dir_with_volume('/disk1/trash_dir_path', '/disk1',
+                                       'program_name', 99),
+            call.wont_use_trash_dir_because_in_a_different_volume('path',
+                                                                  '/disk1/trash_dir_path',
+                                                                  '/disk2',
+                                                                  '/disk1',
+                                                                  'program_name',
+                                                                  99, {})]
