@@ -2,10 +2,13 @@ import os
 
 
 class SecurityCheck:
-    def check_trash_dir_is_secure(self, trash_dir_path, fs, check_type):
+    def __init__(self, fs):
+        self.fs = fs
+
+    def check_trash_dir_is_secure(self, trash_dir_path, check_type):
         checker = {top_trash_dir_rules: TopTrashDirRules(),
                    all_is_ok_rules: AllIsOkRules()}[check_type]
-        return checker.check_trash_dir_is_secure(trash_dir_path, fs,
+        return checker.check_trash_dir_is_secure(trash_dir_path, self.fs,
                                                  check_type)
 
 

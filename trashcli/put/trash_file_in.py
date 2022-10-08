@@ -27,7 +27,7 @@ class TrashFileIn:
         self.parent_path = parent_path
         self.reporter = reporter
         self.path_maker = PathMaker()
-        self.security_check = SecurityCheck()
+        self.security_check = SecurityCheck(fs)
         self.info_dir = info_dir
         self.trash_dir = trash_dir
 
@@ -47,7 +47,6 @@ class TrashFileIn:
         norm_trash_dir_path = os.path.normpath(trash_dir_path)
         trash_dir_is_secure, messages = self.security_check. \
             check_trash_dir_is_secure(norm_trash_dir_path,
-                                      self.fs,
                                       check_type)
         self.reporter.log_info_messages(messages, program_name, verbose)
 
