@@ -4,7 +4,6 @@ from typing import Callable, Dict
 
 from trashcli.fstab import Volumes
 from trashcli.put.my_logger import MyLogger
-from trashcli.put.real_fs import RealFs
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_file_in import TrashFileIn
@@ -14,7 +13,6 @@ from trashcli.put.trash_result import TrashResult
 class FileTrasher:
 
     def __init__(self,
-                 fs,  # type: RealFs
                  volumes,  # type: Volumes
                  now,  # type: Callable[[], datetime]
                  trash_directories_finder,  # type: TrashDirectoriesFinder
@@ -23,7 +21,6 @@ class FileTrasher:
                  reporter,  # type: TrashPutReporter
                  trash_file_in=None,  # type: TrashFileIn
                  ):  # type: (...) -> None
-        self.fs = fs
         self.volumes = volumes
         self.now = now
         self.trash_directories_finder = trash_directories_finder

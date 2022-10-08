@@ -36,8 +36,7 @@ class TestFileTrasher(unittest.TestCase):
         self.suffix.suffix_for_index.return_value = '_suffix'
         self.trash_dir = flexmock.Mock(spec=TrashDirectoryForPut)
         self.trash_file_in = flexmock.Mock(spec=TrashFileIn)
-        self.file_trasher = FileTrasher(self.fs,
-                                        self.volumes,
+        self.file_trasher = FileTrasher(self.volumes,
                                         datetime.now,
                                         trash_directories_finder,
                                         parent_path,

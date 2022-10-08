@@ -45,8 +45,7 @@ def main():
                                 reporter,
                                 info_dir,
                                 trash_dir)
-    file_trasher = FileTrasher(fs,
-                               volumes,
+    file_trasher = FileTrasher(volumes,
                                datetime.now,
                                TrashDirectoriesFinder(volumes),
                                parent_path,
