@@ -39,13 +39,14 @@ class TestTrashFileIn(unittest.TestCase):
                                          )
 
     def test_same_disk(self):
-        flexmock.flexmock(self.trash_dir). \
-            should_receive('trash2').and_return(True)
+        flexmock.flexmock(self.trash_dir).should_receive('trash2'). \
+            with_args('path', 'program_name', 99, 'path-maker-type',
+                      'volume', "/disk1/trash_dir_path/info").and_return(True)
 
         result = self.trash_file_in.trash_file_in('path',
                                                   '/disk1/trash_dir_path',
                                                   'volume',
-                                                  "path_maker-type",
+                                                  "path-maker-type",
                                                   all_is_ok_rules, True,
                                                   '/disk1', 'program_name', 99,
                                                   {})
@@ -78,3 +79,27 @@ class TestTrashFileIn(unittest.TestCase):
                                                                   '/disk1',
                                                                   'program_name',
                                                                   99, {})]
+
+    def test_error_while_trashing(self):
+        io_error = IOError('error')
+        flexmock.flexmock(self.trash_dir).should_receive('trash2'). \
+            and_raise(io_error)
+        result = self.trash_file_in.trash_file_in('path',
+                                                  '/disk1/trash_dir_path',
+                                                  'volume',
+                                                  "path-maker-type",
+                                                  all_is_ok_rules,
+                                                  False,
+                                                  '/disk1',
+                                                  'program_name',
+                                                  99,
+                                                  {})
+        assert result == False
+        assert self.reporter.mock_calls == [
+            call.log_info_messages([], 'program_name', 99),
+            call.trash_dir_with_volume('/disk1/trash_dir_path', '/disk1',
+                                       'program_name', 99),
+            call.unable_to_trash_file_in_because('path',
+                                                 '/disk1/trash_dir_path',
+                                                 io_error,
+                                                 'program_name', 99, {})]
