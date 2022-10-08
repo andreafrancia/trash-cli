@@ -26,14 +26,14 @@ class TestTrashing(unittest.TestCase):
         self.info_dir.persist_trash_info.return_value = 'info_file'
 
         self.trashdir.trash2('foo', 'trash-put', 99,
-                             PathMakerType.absolute_paths, '/disk', '/info_dir')
+                             PathMakerType.absolute_paths, '/disk', '/trash')
 
         assert self.fs.mock_calls == [call.move('foo', 'files/')]
         assert self.info_dir.mock_calls == [
             call.persist_trash_info(
                 'foo',
                 b'[Trash Info]\nPath=foo\nDeletionDate=1970-01-01T00:00:00\n',
-                'trash-put', 99, '/info_dir')]
+                'trash-put', 99, '/trash/info')]
 
     def test_should_rollback_trashinfo_creation_on_problems(self):
         self.info_dir.persist_trash_info.return_value = 'info_file'
@@ -42,7 +42,7 @@ class TestTrashing(unittest.TestCase):
         try:
             self.trashdir.trash2('foo', 'trash-put', 99,
                                  PathMakerType.absolute_paths, '/disk',
-                                 '/info_dir')
+                                 '/trash')
         except IOError:
             pass
 
@@ -52,4 +52,4 @@ class TestTrashing(unittest.TestCase):
             call.persist_trash_info(
                 'foo',
                 b'[Trash Info]\nPath=foo\nDeletionDate=1970-01-01T00:00:00\n',
-                'trash-put', 99, '/info_dir')]
+                'trash-put', 99, '/trash/info')]

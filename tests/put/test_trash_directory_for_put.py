@@ -31,7 +31,7 @@ class TestTrashDirectoryForPut(unittest.TestCase):
         self.mock_info_dir_persist_trash_info(
             'original_location',
             b"[Trash Info]\nPath=original_location\nDeletionDate=2014-01-01T00:00:00\n",
-            "program_name", 99, "/info/dir").and_return('trash_info_path')
+            "program_name", 99, "/trash/info").and_return('trash_info_path')
         self.mock_fs_move('/disk/file-to-trash', 'files/trash')
         self.clock.set_clock(datetime.datetime(2014, 1, 1, 0, 0, 0))
 
@@ -40,28 +40,31 @@ class TestTrashDirectoryForPut(unittest.TestCase):
                               99,
                               'path_maker_type',
                               '/disk',
-                              '/info/dir')
+                              '/trash')
 
     def test_when_io_erro(self):
         self.mock_original_location('/disk/file-to-trash', 'path_maker_type',
                                     '/disk').and_return('original_location')
         self.mock_info_dir_persist_trash_info(
             'original_location',
-            b"[Trash Info]\nPath=original_location\nDeletionDate=2014-01-01T00:00:00\n",
-            "program_name", 99, "/info/dir").and_return('trash_info_path')
-        self.mock_fs_move('/disk/file-to-trash', 'files/trash').and_raise(
-            IOError("No space left on device"))
-        flexmock(self.fs).should_receive('remove_file').with_args(
-            'trash_info_path')
+            b"[Trash Info]\n"
+            b"Path=original_location\n"
+            b"DeletionDate=2014-01-01T00:00:00\n",
+            "program_name", 99, "/trash/info"). \
+            and_return('/trash/info/foo.trashinfo')
+        self.mock_fs_move('/disk/file-to-trash', "/trash/files/foo"). \
+            and_raise(IOError("No space left on device"))
+        flexmock(self.fs).should_receive('remove_file').\
+            with_args('/trash/info/foo.trashinfo')
         self.clock.set_clock(datetime.datetime(2014, 1, 1, 0, 0, 0))
 
-        error = capture_error(lambda:
-                              self.trash_dir.trash2('/disk/file-to-trash',
-                                                    "program_name",
-                                                    99,
-                                                    'path_maker_type',
-                                                    '/disk',
-                                                    '/info/dir'))
+        error = capture_error(
+            lambda: self.trash_dir.trash2('/disk/file-to-trash',
+                                          "program_name",
+                                          99,
+                                          'path_maker_type',
+                                          '/disk',
+                                          '/trash'))
 
         self.assertEqual("No space left on device", str(error))
 

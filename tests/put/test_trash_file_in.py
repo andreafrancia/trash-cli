@@ -39,7 +39,7 @@ class TestTrashFileIn(unittest.TestCase):
     def test_same_disk(self):
         flexmock.flexmock(self.trash_dir).should_receive('trash2'). \
             with_args('path', 'program_name', 99, 'path-maker-type',
-                      'volume', "/disk1/trash_dir_path/info").and_return(True)
+                      'volume', "/disk1/trash_dir_path").and_return(True)
         flexmock.flexmock(self.trash_dir_volume). \
             should_receive('volume_of_trash_dir'). \
             with_args("/disk1/trash_dir_path").and_return('/disk1')

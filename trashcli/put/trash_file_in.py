@@ -42,7 +42,6 @@ class TrashFileIn:
                       verbose,
                       environ,
                       ):  # type: (...) -> bool
-        info_dir_path = os.path.join(trash_dir_path, 'info')
         norm_trash_dir_path = os.path.normpath(trash_dir_path)
         trash_dir_is_secure, messages = self.security_check. \
             check_trash_dir_is_secure(norm_trash_dir_path,
@@ -64,7 +63,7 @@ class TrashFileIn:
                                        0o700)
                     self.trash_dir.trash2(path, program_name, verbose,
                                           path_maker_type, volume,
-                                          info_dir_path)
+                                          trash_dir_path)
                     self.reporter.file_has_been_trashed_in_as(
                         path,
                         norm_trash_dir_path,

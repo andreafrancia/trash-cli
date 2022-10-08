@@ -21,7 +21,8 @@ class TrashDirectoryForPut:
         self.clock = clock
 
     def trash2(self, path, program_name, verbose, path_maker_type, volume,
-               info_dir_path):
+               trash_dir_path):
+        info_dir_path = os.path.join(trash_dir_path, 'info')
         path = os.path.normpath(path)
 
         original_location = self.original_location.for_file(path,
