@@ -3,13 +3,12 @@ import unittest
 from datetime import datetime
 
 import flexmock
-from mock import ANY, Mock, call
+from mock import Mock
 from typing import cast
 
 from trashcli.fstab import create_fake_volume_of
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.trash_file_in import TrashFileIn
-from trashcli.put.info_dir import InfoDir
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
