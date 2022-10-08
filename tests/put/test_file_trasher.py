@@ -9,7 +9,6 @@ from mock import Mock
 from trashcli.put.trash_file_in import TrashFileIn
 from typing import cast
 from trashcli.put.file_trasher import FileTrasher
-from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.suffix import Suffix
@@ -32,20 +31,11 @@ class TestFileTrasher(unittest.TestCase):
         self.stderr = StringIO()
         self.logger = MyLogger(self.stderr)
         self.reporter = TrashPutReporter(self.logger)
-        realpath = lambda x: x
         parent_path = os.path.dirname
         self.suffix = Mock(spec=Suffix)
         self.suffix.suffix_for_index.return_value = '_suffix'
-        info_dir = InfoDir(self.fs, self.logger, self.suffix)
         self.trash_dir = flexmock.Mock(spec=TrashDirectoryForPut)
-        self.trash_file_in = TrashFileIn(self.fs,
-                                         realpath,
-                                         self.volumes,
-                                         datetime.now,
-                                         parent_path,
-                                         self.reporter,
-                                         info_dir,
-                                         cast(TrashDirectoryForPut,self.trash_dir))
+        self.trash_file_in = flexmock.Mock(spec=TrashFileIn)
         self.file_trasher = FileTrasher(self.fs,
                                         self.volumes,
                                         datetime.now,
@@ -53,30 +43,13 @@ class TestFileTrasher(unittest.TestCase):
                                         parent_path,
                                         self.logger,
                                         self.reporter,
-                                        self.trash_file_in)
+                                        cast(TrashFileIn, self.trash_file_in))
 
-    def test_log_volume(self):
-        self.volumes.volume_of.return_value = '/'
-        result = TrashResult(False)
-        flexmock.flexmock(self.trash_dir).should_receive('trash2')
-
-        self.file_trasher.trash_file('a-dir/with-a-file',
-                                     False,
-                                     None,
-                                     result,
-                                     {},
-                                     1001,
-                                     'trash-put',
-                                     99)
-
-        assert 'trash-put: volume of file: /' in \
-               self.stderr.getvalue().splitlines()
 
     def test_should_report_when_trash_fail(self):
         self.volumes.volume_of.return_value = '/'
-        self.fs.move.side_effect = IOError
-        flexmock.flexmock(self.trash_dir).should_receive('trash2').\
-            and_raise(IOError)
+        flexmock.flexmock(self.trash_file_in).should_receive('trash_file_in'). \
+            and_return(False)
 
         result = TrashResult(False)
         self.file_trasher.trash_file('non-existent',
@@ -91,10 +64,11 @@ class TestFileTrasher(unittest.TestCase):
         assert "trash-put: cannot trash non existent 'non-existent'" in \
                self.stderr.getvalue().splitlines()
 
-    def test_when_path_does_not_exists(self):
+    def test_when_trash_file_in_fails(self):
         self.volumes.volume_of.return_value = '/disk'
         result = TrashResult(False)
-        flexmock.flexmock(self.trash_dir).should_receive('trash2')
+        flexmock.flexmock(self.trash_file_in).should_receive('trash_file_in'). \
+            and_return(False)
 
         self.file_trasher.trash_file("non-existent",
                                      None,
@@ -107,5 +81,4 @@ class TestFileTrasher(unittest.TestCase):
 
         assert self.stderr.getvalue().splitlines() == [
             'trash-put: volume of file: /disk',
-            'trash-put: trying trash dir: /xdh/Trash from volume: /disk',
-            "trash-put: 'non-existent' trashed in /xdh/Trash"]
+            "trash-put: cannot trash non existent 'non-existent'"]
