@@ -8,6 +8,7 @@ from trashcli.put.access import Access
 from trashcli.put.clock import RealClock
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.trash_file_in import TrashFileIn
+from trashcli.put.trash_dir_volume import TrashDirVolume
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.original_location import OriginalLocation, parent_realpath
@@ -37,6 +38,7 @@ def main():
                                      info_dir,
                                      original_location,
                                      RealClock())
+    trash_dir_volume = TrashDirVolume(volumes, os.path.realpath)
     trash_file_in = TrashFileIn(fs,
                                 os.path.realpath,
                                 volumes,
@@ -44,7 +46,8 @@ def main():
                                 parent_path,
                                 reporter,
                                 info_dir,
-                                trash_dir)
+                                trash_dir,
+                                trash_dir_volume)
     file_trasher = FileTrasher(volumes,
                                datetime.now,
                                TrashDirectoriesFinder(volumes),

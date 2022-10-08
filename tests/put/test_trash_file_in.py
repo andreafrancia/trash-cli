@@ -10,6 +10,7 @@ from typing import cast
 from trashcli.fstab import create_fake_volume_of
 from trashcli.put.security_check import all_is_ok_rules
 from trashcli.put.trash_file_in import TrashFileIn
+from trashcli.put.trash_dir_volume import TrashDirVolume
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
@@ -27,6 +28,7 @@ class TestTrashFileIn(unittest.TestCase):
         self.suffix.suffix_for_index.return_value = '_suffix'
         info_dir = InfoDir(self.fs, self.logger, self.suffix)
         self.trash_dir = flexmock.Mock(spec=TrashDirectoryForPut)
+        trash_dir_volume = TrashDirVolume(volumes, realpath)
         self.trash_file_in = TrashFileIn(self.fs,
                                          realpath,
                                          volumes,
@@ -35,7 +37,8 @@ class TestTrashFileIn(unittest.TestCase):
                                          self.reporter,
                                          info_dir,
                                          cast(TrashDirectoryForPut,
-                                              self.trash_dir)
+                                              self.trash_dir),
+                                         trash_dir_volume
                                          )
 
     def test_same_disk(self):
