@@ -7,7 +7,6 @@ from mock import Mock
 from mock.mock import call
 from typing import cast
 
-from trashcli.fstab import create_fake_volume_of
 from trashcli.put.security_check import all_is_ok_rules
 from trashcli.put.trash_file_in import TrashFileIn
 from trashcli.put.trash_dir_volume import TrashDirVolume
@@ -20,31 +19,30 @@ class TestTrashFileIn(unittest.TestCase):
     def setUp(self):
         self.reporter = Mock()
         self.fs = Mock()
-        volumes = create_fake_volume_of(['/disk1', '/disk2'])
         self.logger = Mock()
-        realpath = lambda x: x
         parent_path = os.path.dirname
         self.suffix = Mock(spec=Suffix)
         self.suffix.suffix_for_index.return_value = '_suffix'
         info_dir = InfoDir(self.fs, self.logger, self.suffix)
         self.trash_dir = flexmock.Mock(spec=TrashDirectoryForPut)
-        trash_dir_volume = TrashDirVolume(volumes, realpath)
-        self.trash_file_in = TrashFileIn(self.fs,
-                                         realpath,
-                                         volumes,
-                                         datetime.now,
-                                         parent_path,
-                                         self.reporter,
-                                         info_dir,
-                                         cast(TrashDirectoryForPut,
-                                              self.trash_dir),
-                                         trash_dir_volume
-                                         )
+        self.trash_dir_volume = flexmock.Mock(spec=TrashDirVolume)
+        self.trash_file_in = TrashFileIn(
+            self.fs,
+            datetime.now,
+            parent_path,
+            self.reporter,
+            info_dir,
+            cast(TrashDirectoryForPut, self.trash_dir),
+            cast(TrashDirVolume, self.trash_dir_volume)
+        )
 
     def test_same_disk(self):
         flexmock.flexmock(self.trash_dir).should_receive('trash2'). \
             with_args('path', 'program_name', 99, 'path-maker-type',
                       'volume', "/disk1/trash_dir_path/info").and_return(True)
+        flexmock.flexmock(self.trash_dir_volume). \
+            should_receive('volume_of_trash_dir'). \
+            with_args("/disk1/trash_dir_path").and_return('/disk1')
 
         result = self.trash_file_in.trash_file_in('path',
                                                   '/disk1/trash_dir_path',
@@ -63,6 +61,10 @@ class TestTrashFileIn(unittest.TestCase):
                                              'program_name', 99, {})]
 
     def test_different_disk(self):
+        flexmock.flexmock(self.trash_dir_volume). \
+            should_receive('volume_of_trash_dir'). \
+            with_args("/disk1/trash_dir_path").and_return('/disk1')
+
         result = self.trash_file_in.trash_file_in('path',
                                                   '/disk1/trash_dir_path',
                                                   'volume',
@@ -84,9 +86,13 @@ class TestTrashFileIn(unittest.TestCase):
                                                                   99, {})]
 
     def test_error_while_trashing(self):
+        flexmock.flexmock(self.trash_dir_volume). \
+            should_receive('volume_of_trash_dir'). \
+            with_args("/disk1/trash_dir_path").and_return('/disk1')
         io_error = IOError('error')
         flexmock.flexmock(self.trash_dir).should_receive('trash2'). \
             and_raise(io_error)
+
         result = self.trash_file_in.trash_file_in('path',
                                                   '/disk1/trash_dir_path',
                                                   'volume',

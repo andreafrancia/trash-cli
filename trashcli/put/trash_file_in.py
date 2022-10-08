@@ -13,8 +13,6 @@ from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 class TrashFileIn:
     def __init__(self,
                  fs,  # type: RealFs
-                 realpath,
-                 volumes,  # type: Volumes
                  now,
                  parent_path,
                  reporter,  # type: TrashPutReporter
@@ -23,7 +21,6 @@ class TrashFileIn:
                  trash_dir_volume,  # type: TrashDirVolume
                  ):
         self.fs = fs
-        self.volumes = volumes
         self.now = now
         self.parent_path = parent_path
         self.reporter = reporter
@@ -53,8 +50,8 @@ class TrashFileIn:
         self.reporter.log_info_messages(messages, program_name, verbose)
 
         if trash_dir_is_secure:
-            volume_of_trash_dir = self.trash_dir_volume.volume_of_trash_dir(
-                trash_dir_path)
+            volume_of_trash_dir = self.trash_dir_volume.\
+                volume_of_trash_dir(trash_dir_path)
             self.reporter.trash_dir_with_volume(norm_trash_dir_path,
                                                 volume_of_trash_dir,
                                                 program_name, verbose)

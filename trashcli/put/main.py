@@ -40,8 +40,6 @@ def main():
                                      RealClock())
     trash_dir_volume = TrashDirVolume(volumes, os.path.realpath)
     trash_file_in = TrashFileIn(fs,
-                                os.path.realpath,
-                                volumes,
                                 datetime.now,
                                 parent_path,
                                 reporter,
