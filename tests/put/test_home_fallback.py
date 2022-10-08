@@ -49,31 +49,20 @@ class TestHomeFallback(unittest.TestCase):
                                         self.trash_file_in)
 
     def test_use_of_top_trash_dir_when_sticky(self):
-        self.fs.mock_add_spec(['isdir', 'islink', 'has_sticky_bit',
-                               'move', 'atomic_write',
-                               'remove_file', 'ensure_dir'])
-        self.fs.isdir.return_value = True
-        self.fs.islink.return_value = False
-        self.fs.has_sticky_bit.return_value = True
-        flexmock.flexmock(self.trash_dir).should_receive('trash2')
-
-        result = TrashResult(False)
-        self.file_trasher.trash_file('sandbox/foo',
-                                     None,
-                                     None,
-                                     result,
-                                     {},
-                                     123,
-                                     'trash-put',
-                                     99)
-
-        assert self.fs.mock_calls == [
-            call.isdir('.Trash'),
-            call.islink('.Trash'),
-            call.has_sticky_bit('.Trash'),
-            call.ensure_dir('.Trash/123', 448),
-            call.ensure_dir('.Trash/123/files', 448),
-        ]
+        flexmock.flexmock(self.trash_file_in).should_receive(
+            'trash_file_in').with_args(
+            "sandbox/foo", ".Trash/123", "", "relative_paths",
+            "top_trash_dir_rules", False, "", "trash-put", 99, {},
+        ).and_return(True)
+        result = self.file_trasher.trash_file('sandbox/foo',
+                                              None,
+                                              None,
+                                              TrashResult(False),
+                                              {},
+                                              123,
+                                              'trash-put',
+                                              99)
+        assert result == TrashResult(False)
 
     def test_bug_will_use_top_trashdir_even_with_not_sticky(self):
         self.fs.mock_add_spec(['isdir', 'islink', 'has_sticky_bit',
