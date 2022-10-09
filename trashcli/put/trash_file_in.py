@@ -1,6 +1,5 @@
 import os
 
-from trashcli.fstab import Volumes
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.path_maker import PathMaker
 from trashcli.put.real_fs import RealFs
