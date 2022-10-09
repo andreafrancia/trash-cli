@@ -4,8 +4,6 @@ import unittest
 from mock import Mock, call
 from trashcli.restore import TrashedFiles
 
-from ..files import make_file, require_empty_dir
-
 
 class TestTrashedFiles(unittest.TestCase):
     def setUp(self):
