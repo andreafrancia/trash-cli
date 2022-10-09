@@ -2,6 +2,10 @@ import unittest
 
 from trashcli.put.original_location import OriginalLocation, parent_realpath
 from trashcli.put.path_maker import PathMaker, PathMakerType
+from parameterized import parameterized
+
+rel = PathMakerType.relative_paths
+abs = PathMakerType.absolute_paths
 
 
 class TestOriginalLocation(unittest.TestCase):
@@ -9,27 +13,22 @@ class TestOriginalLocation(unittest.TestCase):
     def setUp(self):
         self.original_location = OriginalLocation(parent_realpath, PathMaker())
 
-    def test_for_absolute_paths(self):
-        self.path_maker_type = PathMakerType.absolute_paths
-
-        self.assert_path_for_trashinfo_is('/file', '/file')
-        self.assert_path_for_trashinfo_is('/file', '/dir/../file')
-        self.assert_path_for_trashinfo_is('/outside/file', '/outside/file')
-        self.assert_path_for_trashinfo_is('/volume/file', '/volume/file')
-        self.assert_path_for_trashinfo_is('/volume/dir/file',
-                                          '/volume/dir/file')
-
-    def test_for_relative_paths(self):
-        self.path_maker_type = PathMakerType.relative_paths
-
-        self.assert_path_for_trashinfo_is('/file', '/file')
-        self.assert_path_for_trashinfo_is('/file', '/dir/../file')
-        self.assert_path_for_trashinfo_is('/outside/file', '/outside/file')
-        self.assert_path_for_trashinfo_is('file', '/volume/file')
-        self.assert_path_for_trashinfo_is('dir/file', '/volume/dir/file')
-
-    def assert_path_for_trashinfo_is(self, expected_value, file_to_be_trashed):
-        result = self.original_location.for_file(file_to_be_trashed,
-                                                     self.path_maker_type,
-                                                     '/volume')
-        assert expected_value == result
+    @parameterized.expand([
+        ('/volume', '/file', abs, '/file',),
+        ('/volume', '/file/././', abs, '/file',),
+        ('/volume', '/dir/../file', abs, '/file'),
+        ('/volume', '/dir/../././file', abs, '/file'),
+        ('/volume', '/outside/file', abs, '/outside/file'),
+        ('/volume', '/volume/file', abs, '/volume/file',),
+        ('/volume', '/volume/dir/file', abs, '/volume/dir/file'),
+        ('/volume', '/file', rel, '/file'),
+        ('/volume', '/dir/../file', rel, '/file'),
+        ('/volume', '/outside/file', rel, '/outside/file'),
+        ('/volume', '/volume/file', rel, 'file'),
+        ('/volume', '/volume/dir/file', rel, 'dir/file'),
+    ])
+    def test_original_location(self, volume, file_to_be_trashed, path_type,
+                               expected_result):
+        result = self.original_location.for_file(file_to_be_trashed, path_type,
+                                                 volume)
+        assert expected_result == result
