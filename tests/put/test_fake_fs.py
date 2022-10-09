@@ -63,14 +63,16 @@ class FakeFs():
         if path == '/':
             return self.root
         cur_dir = self.root
-        components = path.split('/')
-        for component in components[1:]:
+        for component in self.components_for(path):
             try:
                 cur_dir = cur_dir.get_file(component)
             except KeyError:
                 raise MyFileNotFoundError(
                     "no such file or directory: %s" % path)
         return cur_dir
+
+    def components_for(self, path):
+        return path.split('/')[1:]
 
     def atomic_write(self, path, content):
         self.make_file(path, content)
@@ -113,6 +115,15 @@ class FakeFs():
         dirname, basename = os.path.split(path)
         dir = self.find_dir_or_file(dirname)
         dir.remove(basename)
+
+    def makedirs(self, path):
+        cur_dir = self.root
+        for component in self.components_for(path):
+            try:
+                cur_dir = cur_dir.get_file(component)
+            except KeyError:
+                cur_dir.add_dir(component)
+                cur_dir = cur_dir.get_file(component)
 
 
 class TestFakeFs(unittest.TestCase):
@@ -179,3 +190,8 @@ class TestFakeFs(unittest.TestCase):
         self.fs.remove_file("/foo")
 
         assert self.fs.exists("/foo") == False
+
+    def test_makedirs(self):
+        self.fs.makedirs("/foo/bar/baz")
+
+        assert self.fs.isdir("/foo/bar/baz")
