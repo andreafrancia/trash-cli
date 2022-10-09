@@ -1,9 +1,8 @@
 import os
 import random
 import sys
-from datetime import datetime
 
-from trashcli.fstab import volumes
+import trashcli.fstab
 from trashcli.put.access import Access
 from trashcli.put.clock import RealClock
 from trashcli.put.file_trasher import FileTrasher
@@ -23,7 +22,7 @@ from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 from trashcli.put.trash_put_cmd import TrashPutCmd
 from trashcli.put.trasher import Trasher
 from trashcli.put.user import User
-from trashcli.trash import my_input
+import trashcli.trash
 
 
 def main():
@@ -32,7 +31,19 @@ def main():
     randint = random.randint
     realpath = os.path.realpath
     clock = RealClock()
+    volumes = trashcli.fstab.volumes
+    access = Access()
+    my_input = trashcli.trash.my_input
+    argv = sys.argv
+    environ = os.environ
+    uid = os.getuid()
 
+    return do_main(access, argv, clock, environ, fs, my_input, randint,
+                   realpath, stderr, uid, volumes)
+
+
+def do_main(access, argv, clock, environ, fs, my_input, randint, realpath,
+            stderr, uid, volumes):
     logger = MyLogger(stderr)
     reporter = TrashPutReporter(logger)
     suffix = Suffix(randint)
@@ -56,9 +67,8 @@ def main():
                                logger,
                                reporter,
                                trash_file_in)
-    access = Access()
     user = User(my_input)
     trasher = Trasher(file_trasher, user, access, reporter)
     trash_all = TrashAll(logger, trasher)
     cmd = TrashPutCmd(trash_all, reporter)
-    return cmd.run(sys.argv, os.environ, os.getuid())
+    return cmd.run(argv, environ, uid)
