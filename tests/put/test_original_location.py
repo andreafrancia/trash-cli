@@ -1,6 +1,8 @@
+import os.path
 import unittest
 
-from trashcli.put.original_location import OriginalLocation, parent_realpath
+from trashcli.put.original_location import OriginalLocation
+from trashcli.put.parent_realpath import ParentRealpath
 from trashcli.put.path_maker import PathMaker, PathMakerType
 from parameterized import parameterized
 
@@ -11,7 +13,8 @@ abs = PathMakerType.absolute_paths
 class TestOriginalLocation(unittest.TestCase):
 
     def setUp(self):
-        self.original_location = OriginalLocation(parent_realpath, PathMaker())
+        self.original_location = OriginalLocation(
+            ParentRealpath(os.path.realpath), PathMaker())
 
     @parameterized.expand([
         ('/volume', '/file', abs, '/file',),
