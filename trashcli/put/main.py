@@ -26,20 +26,11 @@ import trashcli.trash
 
 
 def main():
-    stderr = sys.stderr
-    fs = RealFs()
-    randint = random.randint
-    realpath = os.path.realpath
-    clock = RealClock()
-    volumes = trashcli.fstab.volumes
-    access = Access()
-    my_input = trashcli.trash.my_input
-    argv = sys.argv
-    environ = os.environ
-    uid = os.getuid()
-
-    return do_main(access, argv, clock, environ, fs, my_input, randint,
-                   realpath, stderr, uid, volumes)
+    return do_main(access=Access(), argv=sys.argv, clock=RealClock(),
+                   environ=os.environ, fs=RealFs(),
+                   my_input=trashcli.trash.my_input, randint=random.randint,
+                   realpath=os.path.realpath, stderr=sys.stderr,
+                   uid=os.getuid(), volumes=trashcli.fstab.volumes)
 
 
 def do_main(access, argv, clock, environ, fs, my_input, randint, realpath,

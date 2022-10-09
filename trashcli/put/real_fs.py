@@ -6,7 +6,8 @@ from trashcli import fs
 
 class RealFs:
 
-    def atomic_write(self, path, content):
+    @staticmethod
+    def atomic_write(path, content):
         fs.atomic_write(path, content)
 
     @staticmethod
