@@ -27,10 +27,13 @@ from trashcli.trash import my_input
 
 
 def main():
-    logger = MyLogger(sys.stderr)
-    reporter = TrashPutReporter(logger)
+    stderr = sys.stderr
     fs = RealFs()
-    suffix = Suffix(random.randint)
+    randint = random.randint
+
+    logger = MyLogger(stderr)
+    reporter = TrashPutReporter(logger)
+    suffix = Suffix(randint)
     info_dir = InfoDir(fs, logger, suffix)
     path_maker = PathMaker()
     original_location = OriginalLocation(parent_realpath, path_maker)
