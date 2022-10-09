@@ -1,5 +1,4 @@
 import unittest
-from datetime import datetime
 
 import flexmock
 from mock import Mock
@@ -29,7 +28,6 @@ class TestHomeFallback(unittest.TestCase):
         self.trash_dir = flexmock.Mock(spec=TrashDirectoryForPut)
         self.trash_file_in = flexmock.Mock(spec=TrashFileIn)
         self.file_trasher = FileTrasher(volumes,
-                                        datetime.now,
                                         trash_directories_finder,
                                         parent_realpath,
                                         self.logger,
