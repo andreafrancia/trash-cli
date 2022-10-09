@@ -1,4 +1,3 @@
-import os
 import unittest
 from datetime import datetime
 
@@ -8,6 +7,7 @@ from typing import cast
 
 from trashcli.fstab import create_fake_volume_of
 from trashcli.put.file_trasher import FileTrasher
+from trashcli.put.parent_realpath import ParentRealpath
 from trashcli.put.trash_file_in import TrashFileIn
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
@@ -23,7 +23,7 @@ class TestHomeFallback(unittest.TestCase):
         volumes = create_fake_volume_of(mount_points)
         trash_directories_finder = TrashDirectoriesFinder(volumes)
         self.logger = Mock()
-        parent_path = os.path.dirname
+        parent_realpath = ParentRealpath(lambda path: path)
         self.suffix = Mock(spec=Suffix)
         self.suffix.suffix_for_index.return_value = '_suffix'
         self.trash_dir = flexmock.Mock(spec=TrashDirectoryForPut)
@@ -31,7 +31,7 @@ class TestHomeFallback(unittest.TestCase):
         self.file_trasher = FileTrasher(volumes,
                                         datetime.now,
                                         trash_directories_finder,
-                                        parent_path,
+                                        parent_realpath,
                                         self.logger,
                                         self.reporter,
                                         cast(TrashFileIn, self.trash_file_in))

@@ -12,16 +12,12 @@ from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 class TrashFileIn:
     def __init__(self,
                  fs,  # type: RealFs
-                 now,
-                 parent_path,
                  reporter,  # type: TrashPutReporter
                  info_dir,  # type: InfoDir
                  trash_dir,  # type: TrashDirectoryForPut
                  trash_dir_volume,  # type: TrashDirVolume
                  ):
         self.fs = fs
-        self.now = now
-        self.parent_path = parent_path
         self.reporter = reporter
         self.path_maker = PathMaker()
         self.security_check = SecurityCheck(fs)

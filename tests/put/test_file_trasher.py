@@ -6,6 +6,8 @@ import flexmock
 from six import StringIO
 
 from mock import Mock
+
+from trashcli.put.parent_realpath import ParentRealpath
 from trashcli.put.trash_file_in import TrashFileIn
 from typing import cast
 from trashcli.put.file_trasher import FileTrasher
@@ -31,7 +33,7 @@ class TestFileTrasher(unittest.TestCase):
         self.stderr = StringIO()
         self.logger = MyLogger(self.stderr)
         self.reporter = TrashPutReporter(self.logger)
-        parent_path = os.path.dirname
+        parent_realpath = ParentRealpath(lambda path: path)
         self.suffix = Mock(spec=Suffix)
         self.suffix.suffix_for_index.return_value = '_suffix'
         self.trash_dir = flexmock.Mock(spec=TrashDirectoryForPut)
@@ -39,11 +41,10 @@ class TestFileTrasher(unittest.TestCase):
         self.file_trasher = FileTrasher(self.volumes,
                                         datetime.now,
                                         trash_directories_finder,
-                                        parent_path,
+                                        parent_realpath,
                                         self.logger,
                                         self.reporter,
                                         cast(TrashFileIn, self.trash_file_in))
-
 
     def test_should_report_when_trash_fail(self):
         self.volumes.volume_of.return_value = '/'

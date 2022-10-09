@@ -1,11 +1,12 @@
 import datetime
+import os.path
 import unittest
 
 from mock import Mock, call
 
 from tests.put.support.dummy_clock import DummyClock
 from trashcli.put.original_location import OriginalLocation
-from trashcli.put.parent_path import parent_path
+from trashcli.put.parent_realpath import ParentRealpath
 from trashcli.put.path_maker import PathMakerType
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 
@@ -15,7 +16,8 @@ class TestTrashing(unittest.TestCase):
         self.fs = Mock()
         self.info_dir = Mock(['persist_trash_info'])
         path_maker = Mock()
-        original_location = OriginalLocation(parent_path, path_maker)
+        parent_realpath = ParentRealpath(os.path.realpath)
+        original_location = OriginalLocation(parent_realpath, path_maker)
         clock = DummyClock(datetime.datetime(1970, 1, 1))
         self.trashdir = TrashDirectoryForPut(self.fs, self.info_dir,
                                              original_location,

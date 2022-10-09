@@ -1,6 +1,4 @@
-import os
 import unittest
-from datetime import datetime
 
 import flexmock
 from mock import Mock
@@ -20,7 +18,6 @@ class TestTrashFileIn(unittest.TestCase):
         self.reporter = Mock()
         self.fs = Mock()
         self.logger = Mock()
-        parent_path = os.path.dirname
         self.suffix = Mock(spec=Suffix)
         self.suffix.suffix_for_index.return_value = '_suffix'
         info_dir = InfoDir(self.fs, self.logger, self.suffix)
@@ -28,8 +25,6 @@ class TestTrashFileIn(unittest.TestCase):
         self.trash_dir_volume = flexmock.Mock(spec=TrashDirVolume)
         self.trash_file_in = TrashFileIn(
             self.fs,
-            datetime.now,
-            parent_path,
             self.reporter,
             info_dir,
             cast(TrashDirectoryForPut, self.trash_dir),

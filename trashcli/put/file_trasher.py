@@ -4,6 +4,7 @@ from typing import Callable, Dict
 
 from trashcli.fstab import Volumes
 from trashcli.put.my_logger import MyLogger
+from trashcli.put.parent_realpath import ParentRealpath
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_file_in import TrashFileIn
@@ -16,7 +17,7 @@ class FileTrasher:
                  volumes,  # type: Volumes
                  now,  # type: Callable[[], datetime]
                  trash_directories_finder,  # type: TrashDirectoriesFinder
-                 parent_path,  # type: Callable[[str], str]
+                 parent_realpath,  # type: ParentRealpath
                  logger,  # type: MyLogger
                  reporter,  # type: TrashPutReporter
                  trash_file_in=None,  # type: TrashFileIn
@@ -24,7 +25,7 @@ class FileTrasher:
         self.volumes = volumes
         self.now = now
         self.trash_directories_finder = trash_directories_finder
-        self.parent_path = parent_path
+        self.parent_realpath = parent_realpath
         self.logger = logger
         self.reporter = reporter
         self.trash_file_in = trash_file_in
@@ -67,4 +68,5 @@ class FileTrasher:
         return result
 
     def volume_of_parent(self, file):
-        return self.volumes.volume_of(self.parent_path(file))
+        return self.volumes.volume_of(
+            self.parent_realpath.parent_realpath(file))
