@@ -104,9 +104,7 @@ class FakeFs:
         return basename, entry
 
     def islink(self, path):
-        dirname, basename = os.path.split(path)
-        dir = self.find_dir_or_file(dirname)
-        entry = dir.get_entry(basename)
+        entry = self.find_entry(path)
         return isinstance(entry, SymLink)
 
     def make_link(self, src, dest):
@@ -115,3 +113,10 @@ class FakeFs:
             raise OSError("only absolute dests are supported, got %s" % dest)
         dir = self.find_dir_or_file(dirname)
         dir.add_link(basename, src)
+
+    def has_sticky_bit(self, path):
+        return self.find_entry(path).sticky
+
+    def set_sticky_bit(self, path):
+        entry = self.find_entry(path)
+        entry.sticky = True

@@ -16,13 +16,13 @@ class Directory:
         return self._entries.keys()
 
     def add_dir(self, basename):
-        self._entries[basename] = Entry(Directory(basename, self), 0o755)
+        self._entries[basename] = Entry(Directory(basename, self), 0o755, False)
 
     def get_file(self, basename):
         return self._entries[basename].file
 
     def add_file(self, basename, content):
-        self._entries[basename] = Entry(File(content), 0o644)
+        self._entries[basename] = Entry(File(content), 0o644, False)
 
     def add_entry(self, basename, entry):
         self._entries[basename] = entry
