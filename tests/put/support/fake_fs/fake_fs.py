@@ -1,6 +1,7 @@
 import os
 
 from tests.put.support.fake_fs.directory import Directory
+from tests.put.support.fake_fs.entry import SymLink
 from tests.put.support.fake_fs.file import File
 from tests.put.support.my_file_not_found_error import MyFileNotFoundError
 
@@ -101,3 +102,16 @@ class FakeFs:
         entry = dir.get_entry(basename)
         dir.remove(basename)
         return basename, entry
+
+    def islink(self, path):
+        dirname, basename = os.path.split(path)
+        dir = self.find_dir_or_file(dirname)
+        entry = dir.get_entry(basename)
+        return isinstance(entry, SymLink)
+
+    def make_link(self, src, dest):
+        dirname, basename = os.path.split(dest)
+        if dirname == '':
+            raise OSError("only absolute dests are supported, got %s" % dest)
+        dir = self.find_dir_or_file(dirname)
+        dir.add_link(basename, src)

@@ -47,26 +47,26 @@ class TestFakeFs(unittest.TestCase):
     def test_is_dir_when_file(self):
         self.fs.make_file("/foo")
 
-        assert self.fs.isdir("/foo") == False
+        assert self.fs.isdir("/foo") is False
 
     def test_is_dir_when_dir(self):
         self.fs.mkdir("/foo")
 
-        assert self.fs.isdir("/foo") == True
+        assert self.fs.isdir("/foo") is True
 
     def test_exists_false(self):
-        assert self.fs.exists("/foo") == False
+        assert self.fs.exists("/foo") is False
 
     def test_exists_true(self):
         self.fs.make_file("/foo")
 
-        assert self.fs.exists("/foo") == True
+        assert self.fs.exists("/foo") is True
 
     def test_remove_file(self):
         self.fs.make_file("/foo")
         self.fs.remove_file("/foo")
 
-        assert self.fs.exists("/foo") == False
+        assert self.fs.exists("/foo") is False
 
     def test_makedirs(self):
         self.fs.makedirs("/foo/bar/baz")
@@ -77,8 +77,8 @@ class TestFakeFs(unittest.TestCase):
         self.fs.make_file("/foo")
         self.fs.move("/foo", "/bar")
 
-        assert self.fs.exists("/foo") == False
-        assert self.fs.exists("/bar") == True
+        assert self.fs.exists("/foo") is False
+        assert self.fs.exists("/bar") is True
 
     def test_move_dir(self):
         self.fs.mkdir("/fruits")
@@ -86,3 +86,13 @@ class TestFakeFs(unittest.TestCase):
         self.fs.move("/apple", "/fruits")
 
         assert self.fs.ls('/fruits') == ['.', '..', 'apple']
+
+    def test_islink_on_a_file(self):
+        self.fs.make_file("/foo", "content")
+
+        assert self.fs.islink("/foo") is False
+
+    def test_islink_on_a_link(self):
+        self.fs.make_link("dest", "/foo")
+
+        assert self.fs.islink("/foo") is True

@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from tests.put.support.fake_fs.entry import Entry
+from tests.put.support.fake_fs.entry import Entry, SymLink
 from tests.put.support.fake_fs.file import File
 
 
@@ -26,6 +26,9 @@ class Directory:
 
     def add_entry(self, basename, entry):
         self._entries[basename] = entry
+
+    def add_link(self, basename, src):
+        self._entries[basename] = SymLink(src)
 
     def get_entry(self, basename):  # type: (str) -> Entry
         return self._entries[basename]
