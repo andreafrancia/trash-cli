@@ -72,3 +72,17 @@ class TestFakeFs(unittest.TestCase):
         self.fs.makedirs("/foo/bar/baz")
 
         assert self.fs.isdir("/foo/bar/baz")
+
+    def test_move(self):
+        self.fs.make_file("/foo")
+        self.fs.move("/foo", "/bar")
+
+        assert self.fs.exists("/foo") == False
+        assert self.fs.exists("/bar") == True
+
+    def test_move_dir(self):
+        self.fs.mkdir("/fruits")
+        self.fs.make_file("/apple")
+        self.fs.move("/apple", "/fruits")
+
+        assert self.fs.ls('/fruits') == ['.', '..', 'apple']

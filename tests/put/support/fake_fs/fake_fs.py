@@ -83,3 +83,21 @@ class FakeFs:
             except KeyError:
                 cur_dir.add_dir(component)
                 cur_dir = cur_dir.get_file(component)
+
+    def move(self, src, dest):
+        basename, entry = self.pop_entry_from_dir(src)
+
+        if self.exists(dest) and self.isdir(dest):
+            dest_dir = self.find_dir_or_file(dest)
+            dest_dir.add_entry(basename, entry)
+        else:
+            dest_dirname, dest_basename = os.path.split(dest)
+            dest_dir = self.find_dir_or_file(dest_dirname)
+            dest_dir.add_entry(dest_basename, entry)
+
+    def pop_entry_from_dir(self, path):
+        dirname, basename = os.path.split(path)
+        dir = self.find_dir_or_file(dirname)
+        entry = dir.get_entry(basename)
+        dir.remove(basename)
+        return basename, entry

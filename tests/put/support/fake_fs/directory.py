@@ -24,6 +24,9 @@ class Directory:
     def add_file(self, basename, content):
         self._entries[basename] = Entry(File(content), 0o644)
 
+    def add_entry(self, basename, entry):
+        self._entries[basename] = entry
+
     def get_entry(self, basename):  # type: (str) -> Entry
         return self._entries[basename]
 
