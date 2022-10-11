@@ -10,11 +10,22 @@ class RealFs:
     def atomic_write(path, content):
         fs.atomic_write(path, content)
 
-    @staticmethod
-    def ensure_dir(path, mode):
-        if os.path.isdir(path):
-            os.chmod(path, mode)
+    def ensure_dir(self, path, mode):
+        if self.isdir(path):
+            self.chmod(path, mode)
             return
+        self.makedirs(path, mode)
+
+    @staticmethod
+    def chmod(path, mode):
+        os.chmod(path, mode)
+
+    @staticmethod
+    def isdir(path):
+        return os.path.isdir(path)
+
+    @staticmethod
+    def makedirs(path, mode):
         os.makedirs(path, mode)
 
     @staticmethod
