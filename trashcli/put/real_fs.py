@@ -2,6 +2,7 @@ import os
 import stat
 
 from trashcli import fs
+from trashcli.put.ensure_dir import EnsureDir
 
 
 class RealFs:
@@ -9,12 +10,6 @@ class RealFs:
     @staticmethod
     def atomic_write(path, content):
         fs.atomic_write(path, content)
-
-    def ensure_dir(self, path, mode):
-        if self.isdir(path):
-            self.chmod(path, mode)
-            return
-        self.makedirs(path, mode)
 
     @staticmethod
     def chmod(path, mode):

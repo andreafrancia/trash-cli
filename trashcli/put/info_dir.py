@@ -1,6 +1,7 @@
 import errno
 import os
 
+from trashcli.put.ensure_dir import EnsureDir
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.real_fs import RealFs
 from trashcli.put.suffix import Suffix
@@ -15,6 +16,7 @@ class InfoDir:
         self.fs = fs
         self.logger = logger
         self.suffix = suffix
+        self.ensure_dir = EnsureDir(fs)
 
     def persist_trash_info(self, basename, content, program_name, verbose,
                            info_dir_path):
@@ -23,7 +25,7 @@ class InfoDir:
         returns the created TrashInfoFile.
         """
 
-        self.fs.ensure_dir(info_dir_path, 0o700)
+        self.ensure_dir.ensure_dir(info_dir_path, 0o700)
 
         index = 0
         name_too_long = False
