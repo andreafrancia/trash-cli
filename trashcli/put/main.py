@@ -5,6 +5,7 @@ import sys
 import trashcli.fstab
 from trashcli.put.access import Access
 from trashcli.put.clock import RealClock
+from trashcli.put.ensure_dir import EnsureDir
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.trash_file_in import TrashFileIn
 from trashcli.put.trash_dir_volume import TrashDirVolume
@@ -38,7 +39,8 @@ def do_main(access, argv, clock, environ, fs, my_input, randint, realpath,
     logger = MyLogger(stderr)
     reporter = TrashPutReporter(logger)
     suffix = Suffix(randint)
-    info_dir = InfoDir(fs, logger, suffix)
+    ensure_dir = EnsureDir(fs)
+    info_dir = InfoDir(fs, logger, suffix, ensure_dir)
     path_maker = PathMaker()
     parent_realpath = ParentRealpath(realpath)
     original_location = OriginalLocation(parent_realpath, path_maker)
@@ -51,7 +53,8 @@ def do_main(access, argv, clock, environ, fs, my_input, randint, realpath,
                                 reporter,
                                 info_dir,
                                 trash_dir,
-                                trash_dir_volume)
+                                trash_dir_volume,
+                                ensure_dir)
     file_trasher = FileTrasher(volumes,
                                TrashDirectoriesFinder(volumes),
                                parent_realpath,

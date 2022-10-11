@@ -5,6 +5,7 @@ from mock import Mock
 from mock.mock import call
 from typing import cast
 
+from trashcli.put.ensure_dir import EnsureDir
 from trashcli.put.security_check import all_is_ok_rules
 from trashcli.put.trash_file_in import TrashFileIn
 from trashcli.put.trash_dir_volume import TrashDirVolume
@@ -20,7 +21,8 @@ class TestTrashFileIn(unittest.TestCase):
         self.logger = Mock()
         self.suffix = Mock(spec=Suffix)
         self.suffix.suffix_for_index.return_value = '_suffix'
-        info_dir = InfoDir(self.fs, self.logger, self.suffix)
+        self.ensure_dir = cast(EnsureDir, flexmock.Mock(spec=EnsureDir))
+        info_dir = InfoDir(self.fs, self.logger, self.suffix, self.ensure_dir)
         self.trash_dir = flexmock.Mock(spec=TrashDirectoryForPut)
         self.trash_dir_volume = flexmock.Mock(spec=TrashDirVolume)
         self.trash_file_in = TrashFileIn(
@@ -28,7 +30,8 @@ class TestTrashFileIn(unittest.TestCase):
             self.reporter,
             info_dir,
             cast(TrashDirectoryForPut, self.trash_dir),
-            cast(TrashDirVolume, self.trash_dir_volume)
+            cast(TrashDirVolume, self.trash_dir_volume),
+            self.ensure_dir,
         )
 
     def test_same_disk(self):
@@ -38,6 +41,10 @@ class TestTrashFileIn(unittest.TestCase):
         flexmock.flexmock(self.trash_dir_volume). \
             should_receive('volume_of_trash_dir'). \
             with_args("/disk1/trash_dir_path").and_return('/disk1')
+        flexmock.flexmock(self.ensure_dir).should_receive('ensure_dir').\
+            with_args("/disk1/trash_dir_path/files", 0o700)
+        flexmock.flexmock(self.ensure_dir).should_receive('ensure_dir').\
+            with_args("/disk1/trash_dir_path", 0o700)
 
         result = self.trash_file_in.trash_file_in('path',
                                                   '/disk1/trash_dir_path',
@@ -87,6 +94,10 @@ class TestTrashFileIn(unittest.TestCase):
         io_error = IOError('error')
         flexmock.flexmock(self.trash_dir).should_receive('trash2'). \
             and_raise(io_error)
+        flexmock.flexmock(self.ensure_dir).should_receive('ensure_dir').\
+            with_args("/disk1/trash_dir_path", 0o700)
+        flexmock.flexmock(self.ensure_dir).should_receive('ensure_dir').\
+            with_args("/disk1/trash_dir_path/files", 0o700)
 
         result = self.trash_file_in.trash_file_in('path',
                                                   '/disk1/trash_dir_path',

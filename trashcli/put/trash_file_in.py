@@ -17,6 +17,7 @@ class TrashFileIn:
                  info_dir,  # type: InfoDir
                  trash_dir,  # type: TrashDirectoryForPut
                  trash_dir_volume,  # type: TrashDirVolume
+                 ensure_dir,  # type: EnsureDir
                  ):
         self.reporter = reporter
         self.path_maker = PathMaker()
@@ -24,7 +25,7 @@ class TrashFileIn:
         self.info_dir = info_dir
         self.trash_dir = trash_dir
         self.trash_dir_volume = trash_dir_volume
-        self.ensure_dir = EnsureDir(fs)
+        self.ensure_dir = ensure_dir
 
     def trash_file_in(self,
                       path,

@@ -12,11 +12,12 @@ class InfoDir:
                  fs,  # type: RealFs
                  logger,  # type: MyLogger
                  suffix,  # type: Suffix
+                 ensure_dir,  # type: EnsureDir
                  ):  # type: (...) -> None
         self.fs = fs
         self.logger = logger
         self.suffix = suffix
-        self.ensure_dir = EnsureDir(fs)
+        self.ensure_dir = ensure_dir
 
     def persist_trash_info(self, basename, content, program_name, verbose,
                            info_dir_path):
