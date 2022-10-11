@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 from tests.put.support.fake_fs.entry import Entry, SymLink
 from tests.put.support.fake_fs.file import File
+from tests.put.support.my_file_not_found_error import MyFileNotFoundError
 
 
 class Directory:
@@ -31,7 +32,10 @@ class Directory:
         self._entries[basename] = SymLink(src)
 
     def get_entry(self, basename):  # type: (str) -> Entry
-        return self._entries[basename]
+        try:
+            return self._entries[basename]
+        except KeyError:
+            raise MyFileNotFoundError("no such file or directory: %s" % basename)
 
     def remove(self, basename):
         self._entries.pop(basename)

@@ -104,8 +104,12 @@ class FakeFs:
         return basename, entry
 
     def islink(self, path):
-        entry = self.find_entry(path)
-        return isinstance(entry, SymLink)
+        try:
+            entry = self.find_entry(path)
+        except MyFileNotFoundError:
+            return False
+        else:
+            return isinstance(entry, SymLink)
 
     def make_link(self, src, dest):
         dirname, basename = os.path.split(dest)

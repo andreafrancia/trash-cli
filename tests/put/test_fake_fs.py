@@ -107,3 +107,9 @@ class TestFakeFs(unittest.TestCase):
         self.fs.set_sticky_bit("/foo")
 
         assert self.fs.has_sticky_bit("/foo") is True
+
+    def test_islink_when_not_found(self):
+        assert self.fs.islink("/foo") is False
+
+    def test_islink_when_directory_not_exisiting(self):
+        assert self.fs.islink("/foo/bar/baz") is False
