@@ -42,3 +42,7 @@ class RealFs:
     @staticmethod
     def has_sticky_bit(path):
         return (os.stat(path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
+
+    @staticmethod
+    def realpath(path):
+        return os.path.realpath(path)

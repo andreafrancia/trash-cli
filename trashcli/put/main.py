@@ -48,7 +48,7 @@ def do_main(access, argv, clock, environ, fs, my_input, randint, realpath,
                                      info_dir,
                                      original_location,
                                      clock)
-    trash_dir_volume = TrashDirVolume(volumes, realpath)
+    trash_dir_volume = TrashDirVolume(volumes, fs)
     trash_file_in = TrashFileIn(fs,
                                 reporter,
                                 info_dir,
