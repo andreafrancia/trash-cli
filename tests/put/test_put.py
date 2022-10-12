@@ -33,5 +33,10 @@ class TestPut(unittest.TestCase):
                              volumes=volumes)
         except IOError as e:
             err = e
-        assert stderr.getvalue().splitlines() == ['trash-put: volume of file: ']
-        assert str(err) == 'no such file or directory: .Trash'
+        assert [
+                   stderr.getvalue().splitlines(),
+                   str(err),
+               ] == [
+                   ['trash-put: volume of file: /'],
+                   'no such file or directory: /.Trash'
+               ]

@@ -127,4 +127,4 @@ class FakeFs:
 
     @staticmethod
     def realpath(path):
-        return path
+        return os.path.join("/", path)
