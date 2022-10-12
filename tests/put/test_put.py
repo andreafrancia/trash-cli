@@ -1,3 +1,4 @@
+import datetime
 import unittest
 
 from flexmock import Mock
@@ -13,7 +14,7 @@ from trashcli.put.main import do_main
 class TestPut(unittest.TestCase):
     def test_put(self):
         access = Mock(spec=Access)
-        clock = DummyClock()
+        clock = DummyClock(now_value=datetime.datetime(2014, 1, 1, 0, 0, 0))
         fs = FakeFs()
         my_input = lambda: "y"
         randint = lambda: 44
@@ -37,6 +38,12 @@ class TestPut(unittest.TestCase):
                    stderr.getvalue().splitlines(),
                    str(err),
                ] == [
-                   ['trash-put: volume of file: /'],
-                   'no such file or directory: /.Trash'
+                   ['trash-put: volume of file: /',
+                    'trash-put: found unusable .Trash dir (should be a dir): /.Trash',
+                    'trash-put: trash directory /.Trash/123 is not secure',
+                    'trash-put: trying trash dir: /.Trash-123 from volume: /',
+                    'trash-put: .trashinfo created as /.Trash-123/info/file.trashinfo.',
+                    'trash-put: failed to trash file in /.Trash-123, because: no such file or directory: file',
+                    "trash-put: cannot trash non existent 'file'"],
+                   'None',
                ]

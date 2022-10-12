@@ -16,8 +16,8 @@ class Directory:
     def entries(self):
         return self._entries.keys()
 
-    def add_dir(self, basename):
-        self._entries[basename] = Entry(Directory(basename, self), 0o755, False)
+    def add_dir(self, basename, mode):
+        self._entries[basename] = Entry(Directory(basename, self), mode, False)
 
     def get_file(self, basename):
         return self._entries[basename].file

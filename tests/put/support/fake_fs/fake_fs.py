@@ -17,7 +17,7 @@ class FakeFs:
     def mkdir(self, path):
         dirname, basename = os.path.split(path)
         dir = self.find_dir_or_file(dirname)
-        dir.add_dir(basename)
+        dir.add_dir(basename, 0o755)
 
     def find_dir_or_file(self, path):  # type: (str) -> Directory or File
         if path == '/':
@@ -61,7 +61,10 @@ class FakeFs:
         entry.mode = mode
 
     def isdir(self, path):
-        file = self.find_dir_or_file(path)
+        try:
+            file = self.find_dir_or_file(path)
+        except MyFileNotFoundError:
+            return False
         return isinstance(file, Directory)
 
     def exists(self, path):
@@ -76,13 +79,13 @@ class FakeFs:
         dir = self.find_dir_or_file(dirname)
         dir.remove(basename)
 
-    def makedirs(self, path):
+    def makedirs(self, path, mode):
         cur_dir = self.root
         for component in self.components_for(path):
             try:
                 cur_dir = cur_dir.get_file(component)
             except KeyError:
-                cur_dir.add_dir(component)
+                cur_dir.add_dir(component, mode)
                 cur_dir = cur_dir.get_file(component)
 
     def move(self, src, dest):
