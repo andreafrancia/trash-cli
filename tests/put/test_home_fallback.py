@@ -4,13 +4,14 @@ import flexmock
 from mock import Mock
 from typing import cast
 
+from tests.put.support.fake_fs_with_realpath import FakeFsWithRealpath
 from trashcli.fstab import create_fake_volume_of
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.parent_realpath import ParentRealpath
-from trashcli.put.trash_file_in import TrashFileIn
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
+from trashcli.put.trash_file_in import TrashFileIn
 from trashcli.put.trash_result import TrashResult
 
 
@@ -18,11 +19,11 @@ class TestHomeFallback(unittest.TestCase):
     def setUp(self):
         self.reporter = Mock()
         mount_points = ['/', 'sandbox/other_partition']
-        self.fs = Mock()
+        self.fs = FakeFsWithRealpath()
         volumes = create_fake_volume_of(mount_points)
         trash_directories_finder = TrashDirectoriesFinder(volumes)
         self.logger = Mock()
-        parent_realpath = ParentRealpath(lambda path: path)
+        parent_realpath = ParentRealpath(self.fs)
         self.suffix = Mock(spec=Suffix)
         self.suffix.suffix_for_index.return_value = '_suffix'
         self.trash_dir = flexmock.Mock(spec=TrashDirectoryForPut)

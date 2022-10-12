@@ -3,12 +3,11 @@ import random
 import sys
 
 import trashcli.fstab
+import trashcli.trash
 from trashcli.put.access import Access
 from trashcli.put.clock import RealClock
 from trashcli.put.ensure_dir import EnsureDir
 from trashcli.put.file_trasher import FileTrasher
-from trashcli.put.trash_file_in import TrashFileIn
-from trashcli.put.trash_dir_volume import TrashDirVolume
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.original_location import OriginalLocation
@@ -18,31 +17,32 @@ from trashcli.put.real_fs import RealFs
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_all import TrashAll
+from trashcli.put.trash_dir_volume import TrashDirVolume
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
+from trashcli.put.trash_file_in import TrashFileIn
 from trashcli.put.trash_put_cmd import TrashPutCmd
 from trashcli.put.trasher import Trasher
 from trashcli.put.user import User
-import trashcli.trash
 
 
 def main():
     return do_main(access=Access(), argv=sys.argv, clock=RealClock(),
                    environ=os.environ, fs=RealFs(),
                    my_input=trashcli.trash.my_input, randint=random.randint,
-                   realpath=os.path.realpath, stderr=sys.stderr,
-                   uid=os.getuid(), volumes=trashcli.fstab.volumes)
+                   stderr=sys.stderr, uid=os.getuid(),
+                   volumes=trashcli.fstab.volumes)
 
 
-def do_main(access, argv, clock, environ, fs, my_input, randint, realpath,
-            stderr, uid, volumes):
+def do_main(access, argv, clock, environ, fs, my_input, randint, stderr,
+            uid, volumes):
     logger = MyLogger(stderr)
     reporter = TrashPutReporter(logger)
     suffix = Suffix(randint)
     ensure_dir = EnsureDir(fs)
     info_dir = InfoDir(fs, logger, suffix, ensure_dir)
     path_maker = PathMaker()
-    parent_realpath = ParentRealpath(realpath)
+    parent_realpath = ParentRealpath(fs)
     original_location = OriginalLocation(parent_realpath, path_maker)
     trash_dir = TrashDirectoryForPut(fs,
                                      info_dir,

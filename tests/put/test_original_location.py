@@ -1,10 +1,11 @@
-import os.path
 import unittest
 
+from parameterized import parameterized
+
+from tests.put.support.fake_fs_with_realpath import FakeFsWithRealpath
 from trashcli.put.original_location import OriginalLocation
 from trashcli.put.parent_realpath import ParentRealpath
 from trashcli.put.path_maker import PathMaker, PathMakerType
-from parameterized import parameterized
 
 rel = PathMakerType.relative_paths
 abs = PathMakerType.absolute_paths
@@ -14,7 +15,7 @@ class TestOriginalLocation(unittest.TestCase):
 
     def setUp(self):
         self.original_location = OriginalLocation(
-            ParentRealpath(os.path.realpath), PathMaker())
+            ParentRealpath(FakeFsWithRealpath()), PathMaker())
 
     @parameterized.expand([
         ('/volume', '/file', abs, '/file',),

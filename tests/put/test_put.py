@@ -1,11 +1,11 @@
 import unittest
 
-from flexmock import flexmock, Mock
+from flexmock import Mock
 from six import StringIO
 
 from tests.put.support.dummy_clock import DummyClock
 from tests.put.support.fake_fs.fake_fs import FakeFs
-from trashcli.fstab import Volumes, create_fake_volume_of
+from trashcli.fstab import create_fake_volume_of
 from trashcli.put.access import Access
 from trashcli.put.main import do_main
 
@@ -29,7 +29,6 @@ class TestPut(unittest.TestCase):
                              fs=fs,
                              my_input=my_input,
                              randint=randint,
-                             realpath=realpath,
                              stderr=stderr,
                              uid=123,
                              volumes=volumes)

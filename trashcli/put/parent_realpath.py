@@ -2,9 +2,9 @@ import os
 
 
 class ParentRealpath:
-    def __init__(self, realpath):
-        self.realpath = realpath
+    def __init__(self, fs):
+        self.fs = fs
 
     def parent_realpath(self, path):
         parent = os.path.dirname(path)
-        return self.realpath(parent)
+        return self.fs.realpath(parent)

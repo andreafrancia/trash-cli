@@ -124,3 +124,7 @@ class FakeFs:
     def set_sticky_bit(self, path):
         entry = self.find_entry(path)
         entry.sticky = True
+
+    @staticmethod
+    def realpath(path):
+        return path

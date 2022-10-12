@@ -2,14 +2,15 @@ import os
 import unittest
 
 import pytest
-from trashcli.put.parent_realpath import ParentRealpath
 
+from trashcli.put.parent_realpath import ParentRealpath
+from trashcli.put.real_fs import RealFs
 from ..files import make_empty_file, require_empty_dir
 from ..support.my_path import MyPath
 
 
 def parent_path(path):
-    return ParentRealpath(os.path.realpath).parent_realpath(path)
+    return ParentRealpath(RealFs()).parent_realpath(path)
 
 @pytest.mark.slow
 class Test_parent_path(unittest.TestCase):
