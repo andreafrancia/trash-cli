@@ -17,7 +17,6 @@ class TestPut(unittest.TestCase):
         fs = FakeFs()
         my_input = lambda: "y"
         randint = lambda: 44
-        realpath = lambda path: path
         volumes = create_fake_volume_of(['/'])
         stderr = StringIO()
         err = None
