@@ -8,46 +8,46 @@ from tests.put.support.dummy_clock import DummyClock
 from tests.put.support.fake_fs.fake_fs import FakeFs
 from trashcli.fstab import create_fake_volume_of
 from trashcli.put.access import Access
-from trashcli.put.main import do_main
+from trashcli.put.main import make_cmd
 from trashcli.trash import EX_IOERR
 
 
 class TestPut(unittest.TestCase):
-    def test_put(self):
+    def setUp(self):
         access = Mock(spec=Access)
         clock = DummyClock(now_value=datetime.datetime(2014, 1, 1, 0, 0, 0))
         fs = FakeFs()
         my_input = lambda: "y"
         randint = lambda: 44
         volumes = create_fake_volume_of(['/'])
-        stderr = StringIO()
+        self.stderr = StringIO()
+        self.cmd = make_cmd(access=access, clock=clock, fs=fs,
+                            my_input=my_input,
+                            randint=randint, stderr=self.stderr,
+                            volumes=volumes)
+
+    def test_put(self):
+        result = self.run_cmd(['trash-put', '-vvv', 'file'], {}, 123)
+
+        assert result == [
+            ['trash-put: volume of file: /',
+             'trash-put: found unusable .Trash dir (should be a dir): /.Trash',
+             'trash-put: trash directory /.Trash/123 is not secure',
+             'trash-put: trying trash dir: /.Trash-123 from volume: /',
+             'trash-put: .trashinfo created as /.Trash-123/info/file.trashinfo.',
+             'trash-put: failed to trash file in /.Trash-123, because: no such file or directory: file',
+             "trash-put: cannot trash non existent 'file'"],
+            'None',
+            EX_IOERR
+        ]
+
+    def run_cmd(self, args, environ, uid):
         err = None
         exit_code = None
         try:
-            exit_code = do_main(access=access,
-                                argv=['trash-put', '-vvv', 'file'],
-                                clock=clock,
-                                environ={},
-                                fs=fs,
-                                my_input=my_input,
-                                randint=randint,
-                                stderr=stderr,
-                                uid=123,
-                                volumes=volumes)
+            exit_code = self.cmd.run(args, environ, uid)
         except IOError as e:
             err = e
-        assert [
-                   stderr.getvalue().splitlines(),
-                   str(err),
-                   exit_code,
-               ] == [
-                   ['trash-put: volume of file: /',
-                    'trash-put: found unusable .Trash dir (should be a dir): /.Trash',
-                    'trash-put: trash directory /.Trash/123 is not secure',
-                    'trash-put: trying trash dir: /.Trash-123 from volume: /',
-                    'trash-put: .trashinfo created as /.Trash-123/info/file.trashinfo.',
-                    'trash-put: failed to trash file in /.Trash-123, because: no such file or directory: file',
-                    "trash-put: cannot trash non existent 'file'"],
-                   'None',
-                   EX_IOERR
-               ]
+        stderr = self.stderr.getvalue().splitlines()
+
+        return [stderr, str(err), exit_code]

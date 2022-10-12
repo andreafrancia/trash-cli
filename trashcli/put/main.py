@@ -27,15 +27,13 @@ from trashcli.put.user import User
 
 
 def main():
-    return do_main(access=Access(), argv=sys.argv, clock=RealClock(),
-                   environ=os.environ, fs=RealFs(),
+    cmd = make_cmd(access=Access(), clock=RealClock(), fs=RealFs(),
                    my_input=trashcli.trash.my_input, randint=random.randint,
-                   stderr=sys.stderr, uid=os.getuid(),
-                   volumes=trashcli.fstab.volumes)
+                   stderr=sys.stderr, volumes=trashcli.fstab.volumes)
+    return cmd.run(sys.argv, os.environ, os.getuid())
 
 
-def do_main(access, argv, clock, environ, fs, my_input, randint, stderr,
-            uid, volumes):
+def make_cmd(access, clock, fs, my_input, randint, stderr, volumes):
     logger = MyLogger(stderr)
     reporter = TrashPutReporter(logger)
     suffix = Suffix(randint)
@@ -64,5 +62,4 @@ def do_main(access, argv, clock, environ, fs, my_input, randint, stderr,
     user = User(my_input)
     trasher = Trasher(file_trasher, user, access, reporter)
     trash_all = TrashAll(logger, trasher)
-    cmd = TrashPutCmd(trash_all, reporter)
-    return cmd.run(argv, environ, uid)
+    return TrashPutCmd(trash_all, reporter)
