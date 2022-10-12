@@ -63,6 +63,16 @@ class TestPut(unittest.TestCase):
             EX_IOERR
         ]
 
+    def test_when_file_does_not_exist(self):
+        result = self.run_cmd(['trash-put', 'non-existent'],
+                              {"HOME": "/home/user"}, 123)
+
+        assert result == [
+            ["trash-put: cannot trash non existent 'non-existent'"],
+            'None',
+            EX_IOERR
+        ]
+
     def run_cmd(self, args, environ, uid):
         err = None
         exit_code = None
