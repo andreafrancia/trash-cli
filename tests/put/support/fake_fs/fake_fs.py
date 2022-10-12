@@ -12,7 +12,7 @@ class FakeFs:
 
     def ls(self, path):
         dir = self.find_dir_or_file(path)
-        return dir.entries()
+        return list(dir.entries())
 
     def mkdir(self, path):
         dirname, basename = os.path.split(path)
