@@ -137,3 +137,9 @@ class FakeFs:
 
     def cd(self, path):
         self.cwd = path
+    def isfile(self, path):
+        try:
+            file = self.find_dir_or_file(path)
+        except MyFileNotFoundError:
+            return False
+        return isinstance(file, File)

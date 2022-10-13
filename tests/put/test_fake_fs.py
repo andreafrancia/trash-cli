@@ -135,3 +135,13 @@ class TestFakeFs(unittest.TestCase):
         self.fs.cd('/foo/bar')
 
         assert 'content' == self.fs.find_dir_or_file('baz').content
+
+    def test_isfile_with_file(self):
+        self.fs.make_file('/foo')
+
+        assert self.fs.isfile("/foo") is True
+
+    def test_isfile_with_dir(self):
+        self.fs.mkdir('/foo')
+
+        assert self.fs.isfile("/foo") is False
