@@ -191,6 +191,22 @@ Debian/Ubuntu (apt)::
 
     sudo apt install trash-cli
 
+Install shell completions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You need install by::
+
+    pip install trash-cli[completion]
+
+Then::
+
+    cmds=(trash-empty trash-list trash-restore trash-put trash)
+    for cmd in $cmds; do
+      $cmd --print-completion bash | sudo tee /usr/share/bash-completion/completions/$cmd
+      $cmd --print-completion zsh | sudo tee /usr/share/zsh/site-functions/_$cmd
+      $cmd --print-completion tcsh | sudo tee /etc/profile.d/$cmd.completion.csh
+    done
+
 Bugs
 ----
 
