@@ -9,7 +9,7 @@ from tests.put.support.my_file_not_found_error import MyFileNotFoundError
 class FakeFs:
     def __init__(self):
         inode = INode(0o755, sticky=False)
-        directory = Directory('/')
+        directory = Directory('/', inode, inode)
         inode.set_file_or_dir(directory)
         self.root = directory
 

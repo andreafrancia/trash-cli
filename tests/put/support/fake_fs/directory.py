@@ -6,21 +6,23 @@ from tests.put.support.my_file_not_found_error import MyFileNotFoundError
 
 
 class Directory:
-    def __init__(self, name, parent_dir=None):
+    def __init__(self, name, inode, parent_inode):
         self.name = name
-        parent_dir = parent_dir or self
         self._entries = OrderedDict()
-        self._entries['.'] = self
-        self._entries['..'] = parent_dir
+        self._entries['.'] = inode
+        self._entries['..'] = parent_inode
 
     def entries(self):
         return self._entries.keys()
 
     def add_dir(self, basename, mode):
         inode = INode(mode, sticky=False)
-        directory = Directory(basename, self)
+        directory = Directory(basename, inode, self._inode())
         inode.set_file_or_dir(directory)
         self._entries[basename] = inode
+
+    def _inode(self):  # type: ()->INode
+        return self._entries["."]
 
     def get_file(self, basename):
         return self._entries[basename].file_or_dir
@@ -41,7 +43,8 @@ class Directory:
         try:
             return self._entries[basename]
         except KeyError:
-            raise MyFileNotFoundError("no such file or directory: %s" % basename)
+            raise MyFileNotFoundError(
+                "no such file or directory: %s" % basename)
 
     def remove(self, basename):
         self._entries.pop(basename)
