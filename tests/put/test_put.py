@@ -9,19 +9,19 @@ from tests.put.support.fake_fs.fake_fs import FakeFs
 from trashcli.fstab import create_fake_volume_of
 from trashcli.put.access import Access
 from trashcli.put.main import make_cmd
-from trashcli.trash import EX_IOERR
+from trashcli.trash import EX_IOERR, EX_OK
 
 
 class TestPut(unittest.TestCase):
     def setUp(self):
         access = Mock(spec=Access)
         clock = DummyClock(now_value=datetime.datetime(2014, 1, 1, 0, 0, 0))
-        fs = FakeFs()
+        self.fs = FakeFs()
         my_input = lambda: "y"
         randint = lambda: 44
         volumes = create_fake_volume_of(['/'])
         self.stderr = StringIO()
-        self.cmd = make_cmd(access=access, clock=clock, fs=fs,
+        self.cmd = make_cmd(access=access, clock=clock, fs=self.fs,
                             my_input=my_input,
                             randint=randint, stderr=self.stderr,
                             volumes=volumes)
@@ -72,6 +72,20 @@ class TestPut(unittest.TestCase):
             'None',
             EX_IOERR
         ]
+
+    def test_when_file_exists(self):
+        self.fs.make_file("pippo")
+        assert True == self.fs.exists("pippo")
+
+        result = self.run_cmd(['trash-put', 'pippo'],
+                              {"HOME": "/home/user"}, 123)
+
+        assert False == self.fs.exists("pippo")
+        assert EX_OK == result[2]
+        assert ['pippo.trashinfo'] == self.fs.ls_aa(
+            '/home/user/.local/share/Trash/info')
+        assert ['pippo'] == self.fs.ls_aa(
+            '/home/user/.local/share/Trash/files')
 
     def run_cmd(self, args, environ, uid):
         err = None

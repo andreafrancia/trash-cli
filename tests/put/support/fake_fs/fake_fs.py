@@ -14,7 +14,13 @@ class FakeFs:
         self.root = directory
         self.cwd = cwd
 
-    def ls(self, path):
+    def ls_aa(self, path):
+        all_entries = self.ls_a(path)
+        all_entries.remove(".")
+        all_entries.remove("..")
+        return all_entries
+
+    def ls_a(self, path):
         dir = self.find_dir_or_file(path)
         return list(dir.entries())
 

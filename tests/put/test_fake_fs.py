@@ -8,12 +8,12 @@ class TestFakeFs(unittest.TestCase):
         self.fs = FakeFs('/')
 
     def test(self):
-        result = self.fs.ls("/")
+        result = self.fs.ls_a("/")
         assert result == [".", ".."]
 
     def test_create_dir(self):
         self.fs.mkdir("/foo")
-        result = self.fs.ls("/")
+        result = self.fs.ls_a("/")
         assert result == [".", "..", "foo"]
 
     def test_find_dir_root(self):
@@ -26,7 +26,7 @@ class TestFakeFs(unittest.TestCase):
     def test_create_dir_in_dir(self):
         self.fs.mkdir("/foo")
         self.fs.mkdir("/foo/bar")
-        result = self.fs.ls("/foo")
+        result = self.fs.ls_a("/foo")
         assert result == [".", "..", "bar"]
 
     def test_create_file(self):
@@ -91,7 +91,7 @@ class TestFakeFs(unittest.TestCase):
         self.fs.make_file("/apple")
         self.fs.move("/apple", "/fruits")
 
-        assert self.fs.ls('/fruits') == ['.', '..', 'apple']
+        assert self.fs.ls_a('/fruits') == ['.', '..', 'apple']
 
     def test_islink_on_a_file(self):
         self.fs.make_file("/foo", "content")
