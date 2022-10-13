@@ -17,13 +17,19 @@ class Directory:
         return self._entries.keys()
 
     def add_dir(self, basename, mode):
-        self._entries[basename] = INode(Directory(basename, self), mode, False)
+        inode = INode(mode, sticky=False)
+        directory = Directory(basename, self)
+        inode.set_file_or_dir(directory)
+        self._entries[basename] = inode
 
     def get_file(self, basename):
         return self._entries[basename].file_or_dir
 
     def add_file(self, basename, content):
-        self._entries[basename] = INode(File(content), 0o644, False)
+        inode = INode(0o644, sticky=False)
+        file = File(content)
+        inode.set_file_or_dir(file)
+        self._entries[basename] = inode
 
     def _add_entry(self, basename, entry):
         self._entries[basename] = entry

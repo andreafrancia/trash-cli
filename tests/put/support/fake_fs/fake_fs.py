@@ -1,14 +1,17 @@
 import os
 
 from tests.put.support.fake_fs.directory import Directory
-from tests.put.support.fake_fs.inode import SymLink
+from tests.put.support.fake_fs.inode import SymLink, INode
 from tests.put.support.fake_fs.file import File
 from tests.put.support.my_file_not_found_error import MyFileNotFoundError
 
 
 class FakeFs:
     def __init__(self):
-        self.root = Directory('/')
+        inode = INode(0o755, sticky=False)
+        directory = Directory('/')
+        inode.set_file_or_dir(directory)
+        self.root = directory
 
     def ls(self, path):
         dir = self.find_dir_or_file(path)
