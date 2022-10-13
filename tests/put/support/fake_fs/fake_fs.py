@@ -38,9 +38,7 @@ class FakeFs:
         self.make_file(path, content)
 
     def read(self, path):
-        dirname, basenane = os.path.split(path)
-        dir = self.find_dir_or_file(dirname)
-        return dir._get_entry(basenane).file_or_dir.content
+        return self.find_dir_or_file(path).content
 
     def make_file(self, path, content=''):
         dirname, basename = os.path.split(path)
