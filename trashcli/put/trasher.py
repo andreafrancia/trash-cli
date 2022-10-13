@@ -5,6 +5,7 @@ from typing import Dict
 from trashcli.put.access import Access
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.parser import mode_force, mode_interactive
+from trashcli.put.real_fs import RealFs
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_result import TrashResult
 from trashcli.put.user import User, user_replied_no
@@ -12,15 +13,17 @@ from trashcli.put.user import User, user_replied_no
 
 class Trasher:
     def __init__(self,
-                 file_trasher, # type: FileTrasher
-                 user, # type: User
-                 access, # type: Access
-                 reporter, # type: TrashPutReporter
+                 file_trasher,  # type: FileTrasher
+                 user,  # type: User
+                 access,  # type: Access
+                 reporter,  # type: TrashPutReporter
+                 fs,  # type: RealFs
                  ):
         self.file_trasher = file_trasher
         self.user = user
         self.access = access
         self.reporter = reporter
+        self.fs = fs
 
     def trash(self,
               path,
@@ -31,7 +34,7 @@ class Trasher:
               program_name,
               verbose,
               environ,  # type: Dict[str, str]
-              uid, # type: int
+              uid,  # type: int
               ):
         """
         Trash a file in the appropriate trash directory.

@@ -2,8 +2,10 @@ import unittest
 
 from typing import cast
 
+import flexmock
 from mock import Mock, call
 from trashcli.put.parser import mode_force, mode_interactive
+from trashcli.put.real_fs import RealFs
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_result import TrashResult
 from trashcli.put.trasher import Trasher
@@ -17,8 +19,10 @@ class TestTrasher(unittest.TestCase):
         self.access = Mock(spec=['is_accessible'])
         self.access.is_accessible.return_value = True
         self.reporter = Mock(spec=['unable_to_trash_dot_entries'])
+        self.fs = flexmock.Mock(spec=RealFs)
         self.trasher = Trasher(self.file_trasher, self.user, self.access,
-                               cast(TrashPutReporter, self.reporter))
+                               cast(TrashPutReporter, self.reporter),
+                               cast(RealFs, self.fs))
         self.file_trasher.trash_file.return_value = 'file_trasher result'
 
     def test(self):

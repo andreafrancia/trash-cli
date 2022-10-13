@@ -60,6 +60,6 @@ def make_cmd(access, clock, fs, my_input, randint, stderr, volumes):
                                reporter,
                                trash_file_in)
     user = User(my_input)
-    trasher = Trasher(file_trasher, user, access, reporter)
+    trasher = Trasher(file_trasher, user, access, reporter, fs)
     trash_all = TrashAll(logger, trasher)
     return TrashPutCmd(trash_all, reporter)
