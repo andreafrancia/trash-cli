@@ -36,7 +36,7 @@ def main():
 
 def make_cmd(access, clock, fs, my_input, randint, stderr, volumes):
     logger = MyLogger(stderr)
-    describer = Describer()
+    describer = Describer(fs)
     reporter = TrashPutReporter(logger, describer)
     suffix = Suffix(randint)
     ensure_dir = EnsureDir(fs)

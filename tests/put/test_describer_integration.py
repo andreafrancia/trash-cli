@@ -7,13 +7,14 @@ import pytest
 from tests.files import make_empty_file, make_file, require_empty_dir
 from tests.support.my_path import MyPath
 from trashcli.put.describer import Describer
+from trashcli.put.real_fs import RealFs
 
 
 @pytest.mark.slow
 class TestDescriber(unittest.TestCase):
     def setUp(self):
         self.temp_dir = MyPath.make_temp_dir()
-        self.describer = Describer()
+        self.describer = Describer(RealFs())
 
     def test_on_directories(self):
         require_empty_dir(self.temp_dir / 'a-dir')

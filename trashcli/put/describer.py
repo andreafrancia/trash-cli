@@ -4,8 +4,8 @@ from trashcli.put.real_fs import RealFs
 
 
 class Describer:
-    def __init__(self, fs=None):
-        self.fs = fs or RealFs()
+    def __init__(self, fs):
+        self.fs = fs
 
     def describe(self, path):
         """
