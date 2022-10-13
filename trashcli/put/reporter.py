@@ -2,24 +2,29 @@ import os
 from grp import getgrgid
 from pwd import getpwuid
 
-from typing import Dict
-
-from trashcli.put.describe import describe
+from trashcli.put.describe import Describer
 from trashcli.put.my_logger import MyLogger
 from trashcli.trash import EX_IOERR, EX_OK
 
 
 class TrashPutReporter:
-    def __init__(self, logger):  # type: (MyLogger) -> None
+    def __init__(self,
+                 logger,  # type: MyLogger
+                 describer,  # type: Describer
+                 ):
         self.logger = logger
-        self.no_argument_specified = False
+        self.describer = describer
+
+    def describe(self, path):
+        return self.describer.describe(path)
 
     def unable_to_trash_dot_entries(self, file, program_name):
-        self.logger.warning2("cannot trash %s '%s'" % (describe(file), file),
-                             program_name)
+        self.logger.warning2(
+            "cannot trash %s '%s'" % (self.describe(file), file),
+            program_name)
 
     def unable_to_trash_file(self, f, program_name):
-        self.logger.warning2("cannot trash %s '%s'" % (describe(f), f),
+        self.logger.warning2("cannot trash %s '%s'" % (self.describe(f), f),
                              program_name)
 
     def file_has_been_trashed_in_as(self, trashee, trash_directory,

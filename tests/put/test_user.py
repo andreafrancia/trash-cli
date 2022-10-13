@@ -1,6 +1,10 @@
 import unittest
+from typing import cast
 
-from mock import Mock
+import flexmock
+import mock
+
+from trashcli.put.describe import Describer
 from trashcli.put.user import (
     User,
     parse_user_reply,
@@ -11,9 +15,12 @@ from trashcli.put.user import (
 
 class TestUser(unittest.TestCase):
     def setUp(self):
-        self.my_input = Mock()
+        self.my_input = mock.Mock()
         self.my_input.return_value = "y"
-        self.user = User(self.my_input)
+        self.describer = flexmock.Mock(spec=Describer)
+        self.describer.should_receive('describe').and_return("description!")
+
+        self.user = User(self.my_input, cast(Describer, self.describer))
 
     def test_yes(self):
         result = self.user.ask_user_about_deleting_file('prg', "file")

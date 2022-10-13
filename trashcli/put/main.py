@@ -6,6 +6,7 @@ import trashcli.fstab
 import trashcli.trash
 from trashcli.put.access import Access
 from trashcli.put.clock import RealClock
+from trashcli.put.describe import Describer
 from trashcli.put.ensure_dir import EnsureDir
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.info_dir import InfoDir
@@ -35,7 +36,8 @@ def main():
 
 def make_cmd(access, clock, fs, my_input, randint, stderr, volumes):
     logger = MyLogger(stderr)
-    reporter = TrashPutReporter(logger)
+    describer = Describer()
+    reporter = TrashPutReporter(logger, describer)
     suffix = Suffix(randint)
     ensure_dir = EnsureDir(fs)
     info_dir = InfoDir(fs, logger, suffix, ensure_dir)
@@ -59,7 +61,7 @@ def make_cmd(access, clock, fs, my_input, randint, stderr, volumes):
                                logger,
                                reporter,
                                trash_file_in)
-    user = User(my_input)
+    user = User(my_input, describer)
     trasher = Trasher(file_trasher, user, access, reporter, fs)
     trash_all = TrashAll(logger, trasher)
     return TrashPutCmd(trash_all, reporter)
