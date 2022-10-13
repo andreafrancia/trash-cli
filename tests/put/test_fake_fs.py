@@ -99,7 +99,7 @@ class TestFakeFs(unittest.TestCase):
         assert self.fs.islink("/foo") is False
 
     def test_islink_on_a_link(self):
-        self.fs.make_link("dest", "/foo")
+        self.fs.symlink("dest", "/foo")
 
         assert self.fs.islink("/foo") is True
 

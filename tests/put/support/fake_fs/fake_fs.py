@@ -119,7 +119,7 @@ class FakeFs:
         else:
             return isinstance(entry, SymLink)
 
-    def make_link(self, src, dest):
+    def symlink(self, src, dest):
         dest = os.path.join(self.cwd, dest)
         dirname, basename = os.path.split(dest)
         if dirname == '':

@@ -45,7 +45,7 @@ class TestDescriber(unittest.TestCase):
         assert "regular empty file" == self.describer.describe("empty")
 
     def test_name_for_symbolic_links(self):
-        self.fs.make_link("nowhere", "/symlink")
+        self.fs.symlink("nowhere", "/symlink")
 
         assert "symbolic link" == self.describer.describe("symlink")
 
