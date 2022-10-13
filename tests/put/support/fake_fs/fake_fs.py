@@ -46,6 +46,7 @@ class FakeFs:
         return self.find_dir_or_file(path).content
 
     def make_file(self, path, content=''):
+        path = os.path.join(self.cwd, path)
         dirname, basename = os.path.split(path)
         dir = self.find_dir_or_file(dirname)
         dir.add_file(basename, content)
@@ -55,6 +56,7 @@ class FakeFs:
         return entry.mode
 
     def _find_entry(self, path):
+        path = os.path.join(self.cwd, path)
         dirname, basename = os.path.split(path)
         dir = self.find_dir_or_file(dirname)
         return dir._get_entry(basename)
@@ -118,6 +120,7 @@ class FakeFs:
             return isinstance(entry, SymLink)
 
     def make_link(self, src, dest):
+        dest = os.path.join(self.cwd, dest)
         dirname, basename = os.path.split(dest)
         if dirname == '':
             raise OSError("only absolute dests are supported, got %s" % dest)
@@ -137,6 +140,7 @@ class FakeFs:
 
     def cd(self, path):
         self.cwd = path
+
     def isfile(self, path):
         try:
             file = self.find_dir_or_file(path)

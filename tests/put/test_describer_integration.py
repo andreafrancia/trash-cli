@@ -3,10 +3,10 @@ import os
 import unittest
 
 import pytest
-from trashcli.put.describer import Describer
 
-from .files import make_empty_file, make_file, require_empty_dir
-from .support.my_path import MyPath
+from tests.files import make_empty_file, make_file, require_empty_dir
+from tests.support.my_path import MyPath
+from trashcli.put.describer import Describer
 
 
 @pytest.mark.slow
