@@ -28,7 +28,7 @@ class TestTrasher(unittest.TestCase):
                                     mode_force,
                                     'forced_volume',
                                     'program_name',
-                                     99,
+                                    99,
                                     {"env": "ironment"},
                                     123)
 
@@ -90,7 +90,7 @@ class TestTrasher(unittest.TestCase):
                                     'program_name',
                                     {},
                                     123,
-                                     99)
+                                    99)
 
         assert [self.user.mock_calls,
                 self.file_trasher.mock_calls,
@@ -110,7 +110,7 @@ class TestTrasher(unittest.TestCase):
                            'program_name',
                            {},
                            123,
-                                     99)
+                           99)
 
         assert self.reporter.mock_calls == \
                [call.unable_to_trash_dot_entries('.', 'program_name')]
