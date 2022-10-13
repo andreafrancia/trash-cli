@@ -1,7 +1,7 @@
 import os
 
 from tests.put.support.fake_fs.directory import Directory
-from tests.put.support.fake_fs.entry import SymLink
+from tests.put.support.fake_fs.inode import SymLink
 from tests.put.support.fake_fs.file import File
 from tests.put.support.my_file_not_found_error import MyFileNotFoundError
 
@@ -40,7 +40,7 @@ class FakeFs:
     def read(self, path):
         dirname, basenane = os.path.split(path)
         dir = self.find_dir_or_file(dirname)
-        return dir.get_entry(basenane).file.content
+        return dir._get_entry(basenane).file_or_dir.content
 
     def make_file(self, path, content=''):
         dirname, basename = os.path.split(path)
@@ -48,17 +48,17 @@ class FakeFs:
         dir.add_file(basename, content)
 
     def get_mod(self, path):
-        entry = self.find_entry(path)
+        entry = self._find_entry(path)
         return entry.mode
 
-    def find_entry(self, path):
+    def _find_entry(self, path):
         dirname, basename = os.path.split(path)
         dir = self.find_dir_or_file(dirname)
-        return dir.get_entry(basename)
+        return dir._get_entry(basename)
 
     def chmod(self, path, mode):
-        entry = self.find_entry(path)
-        entry.mode = mode
+        entry = self._find_entry(path)
+        entry.chmod(mode)
 
     def isdir(self, path):
         try:
@@ -89,26 +89,26 @@ class FakeFs:
                 cur_dir = cur_dir.get_file(component)
 
     def move(self, src, dest):
-        basename, entry = self.pop_entry_from_dir(src)
+        basename, entry = self._pop_entry_from_dir(src)
 
         if self.exists(dest) and self.isdir(dest):
             dest_dir = self.find_dir_or_file(dest)
-            dest_dir.add_entry(basename, entry)
+            dest_dir._add_entry(basename, entry)
         else:
             dest_dirname, dest_basename = os.path.split(dest)
             dest_dir = self.find_dir_or_file(dest_dirname)
-            dest_dir.add_entry(dest_basename, entry)
+            dest_dir._add_entry(dest_basename, entry)
 
-    def pop_entry_from_dir(self, path):
+    def _pop_entry_from_dir(self, path):
         dirname, basename = os.path.split(path)
         dir = self.find_dir_or_file(dirname)
-        entry = dir.get_entry(basename)
+        entry = dir._get_entry(basename)
         dir.remove(basename)
         return basename, entry
 
     def islink(self, path):
         try:
-            entry = self.find_entry(path)
+            entry = self._find_entry(path)
         except MyFileNotFoundError:
             return False
         else:
@@ -122,10 +122,10 @@ class FakeFs:
         dir.add_link(basename, src)
 
     def has_sticky_bit(self, path):
-        return self.find_entry(path).sticky
+        return self._find_entry(path).sticky
 
     def set_sticky_bit(self, path):
-        entry = self.find_entry(path)
+        entry = self._find_entry(path)
         entry.sticky = True
 
     @staticmethod
