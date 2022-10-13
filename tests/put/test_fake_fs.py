@@ -145,3 +145,18 @@ class TestFakeFs(unittest.TestCase):
         self.fs.mkdir('/foo')
 
         assert self.fs.isfile("/foo") is False
+
+    def test_getsize_with_empty_file(self):
+        self.fs.make_file("foo")
+
+        assert 0 == self.fs.getsize("foo")
+
+    def test_getsize_with_non_empty_file(self):
+        self.fs.make_file("foo", "1234")
+
+        assert 4 == self.fs.getsize("foo")
+
+    def test_getsize_with_dir(self):
+        self.fs.mkdir("foo")
+
+        self.assertRaises(NotImplementedError, lambda: self.fs.getsize("foo"))

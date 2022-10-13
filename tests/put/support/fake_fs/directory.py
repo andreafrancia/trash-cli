@@ -48,3 +48,6 @@ class Directory:
 
     def remove(self, basename):
         self._entries.pop(basename)
+
+    def getsize(self):
+        raise NotImplementedError

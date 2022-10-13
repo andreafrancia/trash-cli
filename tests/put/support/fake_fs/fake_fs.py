@@ -143,3 +143,7 @@ class FakeFs:
         except MyFileNotFoundError:
             return False
         return isinstance(file, File)
+
+    def getsize(self, path):
+        file = self.find_dir_or_file(path)
+        return file.getsize()
