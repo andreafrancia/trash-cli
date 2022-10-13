@@ -20,6 +20,18 @@ class RealFs:
         return os.path.isdir(path)
 
     @staticmethod
+    def isfile(path):
+        return os.path.isfile(path)
+
+    @staticmethod
+    def getsize(path):
+        return os.path.getsize(path)
+
+    @staticmethod
+    def exists(path):
+        return os.path.exists(path)
+
+    @staticmethod
     def makedirs(path, mode):
         os.makedirs(path, mode)
 

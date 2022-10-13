@@ -4,7 +4,7 @@ from typing import cast
 import flexmock
 import mock
 
-from trashcli.put.describe import Describer
+from trashcli.put.describer import Describer
 from trashcli.put.user import (
     User,
     parse_user_reply,

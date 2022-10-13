@@ -3,7 +3,7 @@ import os
 import unittest
 
 import pytest
-from trashcli.put.describe import Describer
+from trashcli.put.describer import Describer
 
 from .files import make_empty_file, make_file, require_empty_dir
 from .support.my_path import MyPath

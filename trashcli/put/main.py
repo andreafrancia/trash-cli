@@ -6,7 +6,7 @@ import trashcli.fstab
 import trashcli.trash
 from trashcli.put.access import Access
 from trashcli.put.clock import RealClock
-from trashcli.put.describe import Describer
+from trashcli.put.describer import Describer
 from trashcli.put.ensure_dir import EnsureDir
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.info_dir import InfoDir

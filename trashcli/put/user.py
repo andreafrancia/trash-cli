@@ -1,4 +1,4 @@
-from trashcli.put.describe import Describer
+from trashcli.put.describer import Describer
 
 
 class User:

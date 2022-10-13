@@ -1,9 +1,12 @@
 import os
 
+from trashcli.put.real_fs import RealFs
+
 
 class Describer:
     def __init__(self):
-        pass
+        self.fs = RealFs()
+
     def describe(self, path):
         """
         Return a textual description of the file pointed by this path.
@@ -17,9 +20,9 @@ class Describer:
          - "non existent"
          - "entry"
         """
-        if os.path.islink(path):
+        if self.fs.islink(path):
             return 'symbolic link'
-        elif os.path.isdir(path):
+        elif self.fs.isdir(path):
             if path == '.':
                 return 'directory'
             elif path == '..':
@@ -31,12 +34,12 @@ class Describer:
                     return "'..' directory"
                 else:
                     return 'directory'
-        elif os.path.isfile(path):
-            if os.path.getsize(path) == 0:
+        elif self.fs.isfile(path):
+            if self.fs.getsize(path) == 0:
                 return 'regular empty file'
             else:
                 return 'regular file'
-        elif not os.path.exists(path):
+        elif not self.fs.exists(path):
             return 'non existent'
         else:
             return 'entry'

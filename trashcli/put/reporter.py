@@ -2,7 +2,7 @@ import os
 from grp import getgrgid
 from pwd import getpwuid
 
-from trashcli.put.describe import Describer
+from trashcli.put.describer import Describer
 from trashcli.put.my_logger import MyLogger
 from trashcli.trash import EX_IOERR, EX_OK
 
