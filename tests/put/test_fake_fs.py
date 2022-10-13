@@ -5,7 +5,7 @@ from tests.put.support.fake_fs.fake_fs import FakeFs
 
 class TestFakeFs(unittest.TestCase):
     def setUp(self):
-        self.fs = FakeFs()
+        self.fs = FakeFs('/')
 
     def test(self):
         result = self.fs.ls("/")
@@ -75,9 +75,9 @@ class TestFakeFs(unittest.TestCase):
         self.fs.makedirs("/foo/bar/baz", 0o700)
 
         assert [
-            self.fs.isdir("/foo/bar/baz"),
-            self.fs.get_mod("/foo/bar/baz"),
-        ] == [True, 0o700]
+                   self.fs.isdir("/foo/bar/baz"),
+                   self.fs.get_mod("/foo/bar/baz"),
+               ] == [True, 0o700]
 
     def test_move(self):
         self.fs.make_file("/foo")
@@ -119,3 +119,19 @@ class TestFakeFs(unittest.TestCase):
 
     def test_islink_when_directory_not_exisiting(self):
         assert self.fs.islink("/foo/bar/baz") is False
+
+    def test_absolute_path(self):
+        self.fs.make_file('/foo')
+        assert '' == self.fs.find_dir_or_file('/foo').content
+
+    def test_relativae_path(self):
+        self.fs.make_file('/foo', 'content')
+
+        assert 'content' == self.fs.find_dir_or_file('foo').content
+
+    def test_relativae_path_with_cd(self):
+        self.fs.makedirs('/foo/bar', 0o755)
+        self.fs.make_file('/foo/bar/baz', 'content')
+        self.fs.cd('/foo/bar')
+
+        assert 'content' == self.fs.find_dir_or_file('baz').content

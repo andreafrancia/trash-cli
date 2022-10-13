@@ -7,11 +7,12 @@ from tests.put.support.my_file_not_found_error import MyFileNotFoundError
 
 
 class FakeFs:
-    def __init__(self):
+    def __init__(self, cwd='/'):
         inode = INode(0o755, sticky=False)
         directory = Directory('/', inode, inode)
         inode.set_file_or_dir(directory)
         self.root = directory
+        self.cwd = cwd
 
     def ls(self, path):
         dir = self.find_dir_or_file(path)
@@ -23,6 +24,7 @@ class FakeFs:
         dir.add_dir(basename, 0o755)
 
     def find_dir_or_file(self, path):  # type: (str) -> Directory or File
+        path = os.path.join(self.cwd, path)
         if path == '/':
             return self.root
         cur_dir = self.root
@@ -132,3 +134,6 @@ class FakeFs:
     @staticmethod
     def realpath(path):
         return os.path.join("/", path)
+
+    def cd(self, path):
+        self.cwd = path
