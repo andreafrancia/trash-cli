@@ -19,7 +19,7 @@ from trashcli.put.trash_file_in import TrashFileIn
 from trashcli.put.trash_result import TrashResult
 
 
-class TestHomeFallback(unittest.TestCase):
+class TestFileTrasher(unittest.TestCase):
     def setUp(self):
         self.reporter = flexmock.Mock(spec=TrashPutReporter)
         self.fs = FakeFsWithRealpath()
