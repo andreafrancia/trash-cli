@@ -4,7 +4,6 @@ import sys
 
 import trashcli.fstab
 import trashcli.trash
-from trashcli.put.access import Access
 from trashcli.put.clock import RealClock
 from trashcli.put.describer import Describer
 from trashcli.put.ensure_dir import EnsureDir
@@ -28,13 +27,13 @@ from trashcli.put.user import User
 
 
 def main():
-    cmd = make_cmd(access=Access(), clock=RealClock(), fs=RealFs(),
+    cmd = make_cmd(clock=RealClock(), fs=RealFs(),
                    my_input=trashcli.trash.my_input, randint=random.randint,
                    stderr=sys.stderr, volumes=trashcli.fstab.volumes)
     return cmd.run(sys.argv, os.environ, os.getuid())
 
 
-def make_cmd(access, clock, fs, my_input, randint, stderr, volumes):
+def make_cmd(clock, fs, my_input, randint, stderr, volumes):
     logger = MyLogger(stderr)
     describer = Describer(fs)
     reporter = TrashPutReporter(logger, describer)
@@ -62,6 +61,6 @@ def make_cmd(access, clock, fs, my_input, randint, stderr, volumes):
                                reporter,
                                trash_file_in)
     user = User(my_input, describer)
-    trasher = Trasher(file_trasher, user, access, reporter, fs)
+    trasher = Trasher(file_trasher, user, reporter, fs)
     trash_all = TrashAll(logger, trasher)
     return TrashPutCmd(trash_all, reporter)

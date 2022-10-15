@@ -16,11 +16,10 @@ class TestTrasher(unittest.TestCase):
     def setUp(self):
         self.file_trasher = Mock(spec=['trash_file'])
         self.user = Mock()
-        self.access = Mock(spec=['is_accessible'])
-        self.access.is_accessible.return_value = True
         self.reporter = Mock(spec=['unable_to_trash_dot_entries'])
         self.fs = flexmock.Mock(spec=RealFs)
-        self.trasher = Trasher(self.file_trasher, self.user, self.access,
+        self.fs.should_receive('is_accessible').and_return(True)
+        self.trasher = Trasher(self.file_trasher, self.user,
                                cast(TrashPutReporter, self.reporter),
                                cast(RealFs, self.fs))
         self.file_trasher.trash_file.return_value = 'file_trasher result'

@@ -1,12 +1,7 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
-import os
 import unittest
 
-import pytest
-
-from tests.files import make_empty_file, make_file, require_empty_dir
 from tests.put.support.fake_fs.fake_fs import FakeFs
-from tests.support.my_path import MyPath
 from trashcli.put.describer import Describer
 
 

@@ -7,23 +7,23 @@ from six import StringIO
 from tests.put.support.dummy_clock import DummyClock
 from tests.put.support.fake_fs.fake_fs import FakeFs
 from trashcli.fstab import create_fake_volume_of
-from trashcli.put.access import Access
 from trashcli.put.main import make_cmd
 from trashcli.trash import EX_IOERR, EX_OK
 
 
 class TestPut(unittest.TestCase):
     def setUp(self):
-        access = Mock(spec=Access)
         clock = DummyClock(now_value=datetime.datetime(2014, 1, 1, 0, 0, 0))
         self.fs = FakeFs()
         my_input = lambda: "y"
         randint = lambda: 44
         volumes = create_fake_volume_of(['/'])
         self.stderr = StringIO()
-        self.cmd = make_cmd(access=access, clock=clock, fs=self.fs,
+        self.cmd = make_cmd(clock=clock,
+                            fs=self.fs,
                             my_input=my_input,
-                            randint=randint, stderr=self.stderr,
+                            randint=randint,
+                            stderr=self.stderr,
                             volumes=volumes)
 
     def test_put(self):

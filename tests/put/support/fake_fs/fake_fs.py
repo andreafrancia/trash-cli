@@ -157,3 +157,6 @@ class FakeFs:
     def getsize(self, path):
         file = self.find_dir_or_file(path)
         return file.getsize()
+
+    def is_accessible(self, path):
+        return self.exists(path)

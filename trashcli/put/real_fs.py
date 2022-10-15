@@ -2,7 +2,6 @@ import os
 import stat
 
 from trashcli import fs
-from trashcli.put.ensure_dir import EnsureDir
 
 
 class RealFs:
@@ -58,3 +57,7 @@ class RealFs:
     @staticmethod
     def realpath(path):
         return os.path.realpath(path)
+
+    @staticmethod
+    def is_accessible(path):
+        return os.access(path, os.F_OK)

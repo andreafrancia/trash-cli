@@ -2,7 +2,6 @@ import os
 
 from typing import Dict
 
-from trashcli.put.access import Access
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.parser import mode_force, mode_interactive
 from trashcli.put.real_fs import RealFs
@@ -15,13 +14,11 @@ class Trasher:
     def __init__(self,
                  file_trasher,  # type: FileTrasher
                  user,  # type: User
-                 access,  # type: Access
                  reporter,  # type: TrashPutReporter
                  fs,  # type: RealFs
                  ):
         self.file_trasher = file_trasher
         self.user = user
-        self.access = access
         self.reporter = reporter
         self.fs = fs
 
@@ -55,10 +52,10 @@ class Trasher:
             self.reporter.unable_to_trash_dot_entries(path, program_name)
             return result
 
-        if mode == mode_force and not self.access.is_accessible(path):
+        if mode == mode_force and not self.fs.is_accessible(path):
             return result
 
-        if mode == mode_interactive and self.access.is_accessible(path):
+        if mode == mode_interactive and self.fs.is_accessible(path):
             reply = self.user.ask_user_about_deleting_file(program_name, path)
             if reply == user_replied_no:
                 return result
