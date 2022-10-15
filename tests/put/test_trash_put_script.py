@@ -2,14 +2,11 @@ import unittest
 
 import pytest
 
-from .run_command import run_command
+from tests.run_command import run_command
 
 
 @pytest.mark.slow
-class TestScriptsSmoke(unittest.TestCase):
-    def test_trash_rm_works(self):
-        result = run_command('.', 'trash-rm')
-        assert "Usage:" in result.stderr.splitlines()
+class TestPutScripts(unittest.TestCase):
 
     def test_trash_put_works(self):
         result = run_command('.', 'trash-put')

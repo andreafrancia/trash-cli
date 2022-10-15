@@ -6,10 +6,10 @@ from os.path import exists as file_exists
 import pytest
 from trashcli.fs import read_file
 
-from . import run_command
-from .asserts import assert_line_in_text
-from .files import make_empty_file, make_sticky_dir, require_empty_dir
-from .support.my_path import MyPath
+from tests import run_command
+from tests.asserts import assert_line_in_text
+from tests.files import make_empty_file, make_sticky_dir, require_empty_dir
+from tests.support.my_path import MyPath
 
 
 class TrashPutFixture:
