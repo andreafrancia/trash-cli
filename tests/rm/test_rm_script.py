@@ -2,7 +2,7 @@ import unittest
 
 import pytest
 
-from .run_command import run_command
+from tests.run_command import run_command
 
 
 @pytest.mark.slow
