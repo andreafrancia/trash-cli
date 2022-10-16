@@ -4,6 +4,7 @@ import sys
 
 import trashcli.fstab
 import trashcli.trash
+from trashcli.lib.my_input import my_input
 from trashcli.put.clock import RealClock
 from trashcli.put.describer import Describer
 from trashcli.put.ensure_dir import EnsureDir
@@ -28,7 +29,7 @@ from trashcli.put.user import User
 
 def main():
     cmd = make_cmd(clock=RealClock(), fs=RealFs(),
-                   my_input=trashcli.trash.my_input, randint=random.randint,
+                   my_input=my_input, randint=random.randint,
                    stderr=sys.stderr, volumes=trashcli.fstab.volumes)
     return cmd.run(sys.argv, os.environ, os.getuid())
 

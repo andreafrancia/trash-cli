@@ -6,10 +6,10 @@ from trashcli.shell_completion import TRASH_DIRS, TRASH_FILES, add_argument_to
 from . import fs, trash
 from .fs import contents_of, list_files_in_dir
 from .fstab import volume_of
+from .lib.my_input import my_input
 from .list_mount_points import os_mount_points
 from .trash import (
     home_trash_dir,
-    my_input,
     parse_deletion_date,
     parse_original_location,
     path_of_backup_copy,
