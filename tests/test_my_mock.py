@@ -1,6 +1,6 @@
 import unittest
 
-from tests.my_mock import MyMock
+from tests.support.my_mock import MyMock
 
 
 class TestMyMock(unittest.TestCase):

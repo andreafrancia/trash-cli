@@ -10,7 +10,7 @@ from trashcli.fs import FileSystemReader
 from trashcli.fstab import VolumesListing
 from trashcli.list import ListCmd
 
-from .asserts import assert_equals_with_unidiff
+from .support.asserts import assert_equals_with_unidiff
 from .fake_trash_dir import FakeTrashDir
 from .files import make_sticky_dir, make_unsticky_dir, require_empty_dir
 from .output_collector import OutputCollector

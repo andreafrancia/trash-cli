@@ -1,6 +1,6 @@
 from six import StringIO
 
-from .asserts import assert_equals_with_unidiff
+from .support.asserts import assert_equals_with_unidiff
 
 
 class OutputCollector:
@@ -13,4 +13,3 @@ class OutputCollector:
         assert_equals_with_unidiff(expected, self.output())
     def output(self):
         return self.stream.getvalue()
-

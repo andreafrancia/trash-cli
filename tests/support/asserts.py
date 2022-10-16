@@ -1,5 +1,3 @@
-# Copyright (C) 2009-2020 Andrea Francia Trivolzio(PV) Italy
-
 from textwrap import dedent
 
 
