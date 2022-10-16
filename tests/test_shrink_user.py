@@ -32,6 +32,10 @@ class TestTrashDirectoryName(unittest.TestCase):
         self.trash_dir = "/foo/Trash"
         self.assert_name_is('/foo/Trash')
 
+    def test_should_work_even_if_HOME_does_not_exists(self):
+        self.trash_dir = "/foo/Trash"
+        self.assert_name_is('/foo/Trash')
+
     def assert_name_is(self, expected_name):
         shrinked = shrink_user(self.trash_dir, self.environ)
         assert expected_name == shrinked

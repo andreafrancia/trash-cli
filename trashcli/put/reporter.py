@@ -115,7 +115,7 @@ def shrink_user(path, environ):
     import posixpath
     import re
     try:
-        home_dir = environ['HOME']
+        home_dir = environ.get('HOME', '')
         home_dir = posixpath.normpath(home_dir)
         if home_dir != '':
             path = re.sub('^' + re.escape(home_dir + os.path.sep),
