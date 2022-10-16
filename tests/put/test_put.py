@@ -26,43 +26,6 @@ class TestPut(unittest.TestCase):
                             stderr=self.stderr,
                             volumes=volumes)
 
-    def test_put(self):
-        result = self.run_cmd(['trash-put', '-vvv', 'file'], {}, 123)
-
-        assert result == [
-            ['trash-put: volume of file: /',
-             'trash-put: found unusable .Trash dir (should be a dir): /.Trash',
-             'trash-put: trash directory /.Trash/123 is not secure',
-             'trash-put: trying trash dir: /.Trash-123 from volume: /',
-             'trash-put: .trashinfo created as /.Trash-123/info/file.trashinfo.',
-             'trash-put: failed to trash file in /.Trash-123, because: no such file or directory: file',
-             "trash-put: cannot trash non existent 'file'"],
-            'None',
-            EX_IOERR
-        ]
-
-    def test_put_home(self):
-        result = self.run_cmd(['trash-put', '-vvv', 'file'],
-                              {"HOME": "/home/user"}, 123)
-
-        assert result == [
-            ['trash-put: volume of file: /',
-             'trash-put: trying trash dir: /home/user/.local/share/Trash from volume: /',
-             'trash-put: .trashinfo created as '
-             '/home/user/.local/share/Trash/info/file.trashinfo.',
-             'trash-put: failed to trash file in ~/.local/share/Trash, because: no such '
-             'file or directory: file',
-             'trash-put: found unusable .Trash dir (should be a dir): /.Trash',
-             'trash-put: trash directory /.Trash/123 is not secure',
-             'trash-put: trying trash dir: /.Trash-123 from volume: /',
-             'trash-put: .trashinfo created as /.Trash-123/info/file.trashinfo.',
-             'trash-put: failed to trash file in /.Trash-123, because: no such file or '
-             'directory: file',
-             "trash-put: cannot trash non existent 'file'"],
-            'None',
-            EX_IOERR
-        ]
-
     def test_when_file_does_not_exist(self):
         result = self.run_cmd(['trash-put', 'non-existent'],
                               {"HOME": "/home/user"}, 123)
@@ -72,6 +35,21 @@ class TestPut(unittest.TestCase):
             'None',
             EX_IOERR
         ]
+
+    def test_when_file_does_not_exist_with_force(self):
+        result = self.run_cmd(['trash-put', '-f', 'non-existent'],
+                              {"HOME": "/home/user"}, 123)
+
+        assert result == [[], 'None', 0]
+
+    def test_put_does_not_tries_to_trash_file_in_trash_dir_when_non_exisiting(
+            self):
+        result = self.run_cmd(['trash-put', '-vvv', 'non-existing'],
+                              {"HOME": "/home/user"}, 123)
+
+        assert result == \
+               [["trash-put: cannot trash non existent 'non-existing'"], 'None',
+                EX_IOERR]
 
     def test_when_file_exists(self):
         self.fs.make_file("pippo")

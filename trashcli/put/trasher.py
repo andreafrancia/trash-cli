@@ -52,8 +52,12 @@ class Trasher:
             self.reporter.unable_to_trash_dot_entries(path, program_name)
             return result
 
-        if mode == mode_force and not self.fs.is_accessible(path):
-            return result
+        if not self.fs.is_accessible(path):
+            if mode == mode_force:
+                return result
+            else:
+                self.reporter.unable_to_trash_file(path, program_name)
+                return result.mark_unable_to_trash_file()
 
         if mode == mode_interactive and self.fs.is_accessible(path):
             reply = self.user.ask_user_about_deleting_file(program_name, path)
