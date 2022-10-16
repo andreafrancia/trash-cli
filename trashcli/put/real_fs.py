@@ -43,10 +43,6 @@ class RealFs:
         fs.remove_file(path)
 
     @staticmethod
-    def isdir(path):
-        return os.path.isdir(path)
-
-    @staticmethod
     def islink(path):
         return os.path.islink(path)
 
