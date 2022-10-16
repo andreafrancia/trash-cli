@@ -1,7 +1,6 @@
 import datetime
 import unittest
 
-from flexmock import Mock
 from six import StringIO
 
 from tests.put.support.dummy_clock import DummyClock
