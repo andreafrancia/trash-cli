@@ -2,6 +2,7 @@ import os
 import stat
 
 from trashcli import fs
+from trashcli.fs import write_file
 
 
 class RealFs:
@@ -57,3 +58,7 @@ class RealFs:
     @staticmethod
     def is_accessible(path):
         return os.access(path, os.F_OK)
+
+    @staticmethod
+    def make_file(path, content):
+        write_file(path, content)
