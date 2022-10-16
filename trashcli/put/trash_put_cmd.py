@@ -7,7 +7,10 @@ from trashcli.put.trash_all import TrashAll
 
 
 class TrashPutCmd:
-    def __init__(self, trash_all, reporter):
+    def __init__(self,
+                 trash_all,  # type: TrashAll
+                 reporter,  # type: TrashPutReporter
+                 ):
         self.trash_all = trash_all
         self.reporter = reporter
 
