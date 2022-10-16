@@ -17,7 +17,7 @@ from trashcli.restore import (
 )
 
 from ..fake_trash_dir import trashinfo_content_default_date
-from ..files import make_file, require_empty_dir
+from ..support.files import make_file, require_empty_dir
 from ..support.my_path import MyPath
 
 

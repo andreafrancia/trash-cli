@@ -6,7 +6,7 @@ import pytest
 from mock import Mock
 from trashcli.restore import TrashDirectory
 
-from ..files import make_file, require_empty_dir
+from ..support.files import make_file, require_empty_dir
 from ..support.my_path import MyPath
 
 

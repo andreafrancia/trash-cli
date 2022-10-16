@@ -8,7 +8,8 @@ from trashcli.fs import read_file
 
 from tests import run_command
 from tests.support.asserts import assert_line_in_text
-from tests.files import make_empty_file, make_sticky_dir, require_empty_dir
+from tests.support.files import make_empty_file, require_empty_dir, \
+    make_sticky_dir
 from tests.support.my_path import MyPath
 
 

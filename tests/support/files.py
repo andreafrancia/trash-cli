@@ -1,9 +1,7 @@
-# Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
-
 import os
 import shutil
 
-from trashcli.fs import has_sticky_bit, mkdirs, write_file
+from trashcli.fs import write_file, has_sticky_bit, mkdirs
 
 
 def make_empty_file(path):
@@ -27,32 +25,40 @@ def make_dirs(path):
         os.makedirs(path)
     assert os.path.isdir(path)
 
+
 def make_parent_for(path):
     parent = os.path.dirname(os.path.realpath(path))
     make_dirs(parent)
+
 
 def make_sticky_dir(path):
     os.mkdir(path)
     set_sticky_bit(path)
 
+
 def make_unsticky_dir(path):
     os.mkdir(path)
     unset_sticky_bit(path)
+
 
 def make_dir_unsticky(path):
     assert_is_dir(path)
     unset_sticky_bit(path)
 
+
 def assert_is_dir(path):
     assert os.path.isdir(path)
+
 
 def set_sticky_bit(path):
     import stat
     os.chmod(path, os.stat(path).st_mode | stat.S_ISVTX)
 
+
 def unset_sticky_bit(path):
     import stat
     os.chmod(path, os.stat(path).st_mode & ~ stat.S_ISVTX)
+
 
 def ensure_non_sticky_dir(path):
     import os

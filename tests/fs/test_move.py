@@ -1,6 +1,6 @@
 import unittest
 
-from tests.files import make_empty_file, make_file
+from tests.support.files import make_empty_file, make_file
 from tests.support.my_path import MyPath
 from trashcli.fs import move, read_file
 

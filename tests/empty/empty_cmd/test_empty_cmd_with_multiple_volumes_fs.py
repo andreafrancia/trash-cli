@@ -3,12 +3,8 @@ import os
 import unittest
 
 from six import StringIO
-from tests.files import (
-    make_dirs,
-    make_empty_file,
-    require_empty_dir,
-    set_sticky_bit,
-)
+from tests.support.files import make_empty_file, require_empty_dir, make_dirs, \
+    set_sticky_bit
 from tests.support.volumes_mock import volumes_mock
 from tests.support.my_path import MyPath
 

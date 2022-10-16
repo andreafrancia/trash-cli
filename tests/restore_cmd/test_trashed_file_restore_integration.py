@@ -12,7 +12,7 @@ from trashcli.restore import (
     make_trash_directories,
 )
 
-from ..files import make_empty_file
+from ..support.files import make_empty_file
 from ..support.my_path import MyPath
 
 

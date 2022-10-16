@@ -3,7 +3,7 @@ import os
 import sys
 import unittest
 
-from tests.files import make_file
+from tests.support.files import make_file
 from tests.support.my_path import MyPath
 
 from scripts import bump

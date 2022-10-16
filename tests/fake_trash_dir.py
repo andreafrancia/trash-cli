@@ -4,7 +4,7 @@ import uuid
 
 from trashcli.put.trash_directory_for_put import format_original_location
 
-from .files import make_file, make_parent_for, make_unreadable_file
+from .support.files import make_file, make_parent_for, make_unreadable_file
 
 
 def a_default_datetime():

@@ -2,7 +2,7 @@
 import unittest
 
 from six import StringIO
-from tests.files import make_readable, make_unreadable_dir
+from tests.support.files import make_unreadable_dir, make_readable
 from tests.support.volumes_mock import volumes_mock
 from tests.support.my_path import MyPath
 
