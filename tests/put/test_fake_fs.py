@@ -1,6 +1,7 @@
 import unittest
 
 from tests.put.support.fake_fs.fake_fs import FakeFs
+from tests.support.capture_error import capture_error
 
 
 class TestFakeFs(unittest.TestCase):
@@ -160,3 +161,18 @@ class TestFakeFs(unittest.TestCase):
         self.fs.mkdir("foo")
 
         self.assertRaises(NotImplementedError, lambda: self.fs.getsize("foo"))
+
+    def test_mode_lets_create_a_file(self):
+        self.fs.makedirs("/foo/bar/baz", 0o755)
+
+        self.fs.make_file("/foo/bar/baz/1", "1")
+
+        assert self.fs.isfile("/foo/bar/baz/1") is True
+
+    def test_mode_does_not_let_create_a_file(self):
+        self.fs.makedirs("/foo/bar/baz", 0o000)
+
+        error = capture_error(
+            lambda: self.fs.make_file("/foo/bar/baz/1", "1"))
+
+        assert str(error) == "[Errno 13] Permission denied: '/foo/bar/baz/1'"

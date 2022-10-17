@@ -27,7 +27,10 @@ class Directory:
     def get_file(self, basename):
         return self._entries[basename].file_or_dir
 
-    def add_file(self, basename, content):
+    def add_file(self, basename, content, complete_path):
+        if self._inode().mode & 0o200 == 0:
+            raise PermissionError(
+                "[Errno 13] Permission denied: '%s'" % complete_path)
         inode = INode(0o644, sticky=False)
         file = File(content)
         inode.set_file_or_dir(file)

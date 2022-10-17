@@ -55,7 +55,7 @@ class FakeFs:
         path = os.path.join(self.cwd, path)
         dirname, basename = os.path.split(path)
         dir = self.find_dir_or_file(dirname)
-        dir.add_file(basename, content)
+        dir.add_file(basename, content, path)
 
     def get_mod(self, path):
         entry = self._find_entry(path)
