@@ -3,6 +3,7 @@ from collections import OrderedDict
 from tests.put.support.fake_fs.inode import INode, SymLink
 from tests.put.support.fake_fs.file import File
 from tests.put.support.my_file_not_found_error import MyFileNotFoundError
+from trashcli.lib.my_permission_error import MyPermissionError
 
 
 class Directory:
@@ -29,7 +30,7 @@ class Directory:
 
     def add_file(self, basename, content, complete_path):
         if self._inode().mode & 0o200 == 0:
-            raise PermissionError(
+            raise MyPermissionError(
                 "[Errno 13] Permission denied: '%s'" % complete_path)
         inode = INode(0o644, sticky=False)
         file = File(content)
