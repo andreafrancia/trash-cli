@@ -2,14 +2,14 @@ import errno
 import os
 
 from trashcli.put.ensure_dir import EnsureDir
+from trashcli.put.fs import Fs
 from trashcli.put.my_logger import MyLogger
-from trashcli.put.real_fs import RealFs
 from trashcli.put.suffix import Suffix
 
 
 class InfoDir:
     def __init__(self,
-                 fs,  # type: RealFs
+                 fs,  # type: Fs
                  logger,  # type: MyLogger
                  suffix,  # type: Suffix
                  ensure_dir,  # type: EnsureDir

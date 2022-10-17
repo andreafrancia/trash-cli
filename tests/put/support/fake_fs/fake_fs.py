@@ -4,9 +4,10 @@ from tests.put.support.fake_fs.directory import Directory
 from tests.put.support.fake_fs.inode import SymLink, INode
 from tests.put.support.fake_fs.file import File
 from tests.put.support.my_file_not_found_error import MyFileNotFoundError
+from trashcli.put.fs import Fs
 
 
-class FakeFs:
+class FakeFs(Fs):
     def __init__(self, cwd='/'):
         inode = INode(0o755, sticky=False)
         directory = Directory('/', inode, inode)

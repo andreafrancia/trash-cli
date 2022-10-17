@@ -3,9 +3,10 @@ import stat
 
 from trashcli import fs
 from trashcli.fs import write_file
+from trashcli.put.fs import Fs
 
 
-class RealFs:
+class RealFs(Fs):
 
     @staticmethod
     def atomic_write(path, content):

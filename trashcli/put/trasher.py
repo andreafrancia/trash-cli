@@ -3,6 +3,7 @@ import os
 from typing import Dict
 
 from trashcli.put.file_trasher import FileTrasher
+from trashcli.put.fs import Fs
 from trashcli.put.parser import mode_force, mode_interactive
 from trashcli.put.real_fs import RealFs
 from trashcli.put.reporter import TrashPutReporter
@@ -15,7 +16,7 @@ class Trasher:
                  file_trasher,  # type: FileTrasher
                  user,  # type: User
                  reporter,  # type: TrashPutReporter
-                 fs,  # type: RealFs
+                 fs,  # type: Fs
                  ):
         self.file_trasher = file_trasher
         self.user = user

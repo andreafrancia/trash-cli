@@ -1,9 +1,9 @@
 import os
 
 from trashcli.put.ensure_dir import EnsureDir
+from trashcli.put.fs import Fs
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.path_maker import PathMaker
-from trashcli.put.real_fs import RealFs
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.security_check import SecurityCheck
 from trashcli.put.trash_dir_volume import TrashDirVolume
@@ -12,7 +12,7 @@ from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 
 class TrashFileIn:
     def __init__(self,
-                 fs,  # type: RealFs
+                 fs,  # type: Fs
                  reporter,  # type: TrashPutReporter
                  info_dir,  # type: InfoDir
                  trash_dir,  # type: TrashDirectoryForPut

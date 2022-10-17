@@ -1,16 +1,16 @@
 import os
 
 from trashcli.put.clock import PutClock
+from trashcli.put.fs import Fs
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.original_location import OriginalLocation
-from trashcli.put.real_fs import RealFs
 from trashcli.py2compat import url_quote
 from trashcli.trash import path_of_backup_copy
 
 
 class TrashDirectoryForPut:
     def __init__(self,
-                 fs,  # type: RealFs
+                 fs,  # type: Fs
                  info_dir,  # type: InfoDir
                  original_location,  # type: OriginalLocation
                  clock, # type: PutClock
