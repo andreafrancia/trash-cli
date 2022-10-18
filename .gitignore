@@ -16,3 +16,4 @@
 /.vagrant/
 /ssh-config
 /.idea/
+/.tox/
