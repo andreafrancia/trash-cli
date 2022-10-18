@@ -16,10 +16,23 @@ class Directory:
     def entries(self):
         return self._entries.keys()
 
-    def add_dir(self, basename, mode):
+    def add_dir(self, basename, mode, complete_path):
+        if self._inode().mode & 0o200 == 0:
+            raise MyPermissionError(
+                "[Errno 13] Permission denied: '%s'" % complete_path)
         inode = INode(mode, sticky=False)
-        directory = Directory(basename, inode, self._inode())
-        inode.set_file_or_dir(directory)
+        file_or_dir = Directory(basename, inode, self._inode())
+        inode.set_file_or_dir(file_or_dir)
+        self._entries[basename] = inode
+
+    def add_file(self, basename, content, complete_path):
+        mode = 0o644
+        if self._inode().mode & 0o200 == 0:
+            raise MyPermissionError(
+                "[Errno 13] Permission denied: '%s'" % complete_path)
+        file_or_dir = File(content)
+        inode = INode(mode, sticky=False)
+        inode.set_file_or_dir(file_or_dir)
         self._entries[basename] = inode
 
     def _inode(self):  # type: ()->INode
@@ -28,14 +41,6 @@ class Directory:
     def get_file(self, basename):
         return self._entries[basename].file_or_dir
 
-    def add_file(self, basename, content, complete_path):
-        if self._inode().mode & 0o200 == 0:
-            raise MyPermissionError(
-                "[Errno 13] Permission denied: '%s'" % complete_path)
-        inode = INode(0o644, sticky=False)
-        file = File(content)
-        inode.set_file_or_dir(file)
-        self._entries[basename] = inode
 
     def _add_entry(self, basename, entry):
         self._entries[basename] = entry

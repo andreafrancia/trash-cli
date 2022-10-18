@@ -28,7 +28,7 @@ class FakeFs(Fs):
     def mkdir(self, path):
         dirname, basename = os.path.split(path)
         dir = self.find_dir_or_file(dirname)
-        dir.add_dir(basename, 0o755)
+        dir.add_dir(basename, 0o755, path)
 
     def find_dir_or_file(self, path):  # type: (str) -> Directory or File
         path = os.path.join(self.cwd, path)
@@ -97,7 +97,7 @@ class FakeFs(Fs):
             try:
                 cur_dir = cur_dir.get_file(component)
             except KeyError:
-                cur_dir.add_dir(component, mode)
+                cur_dir.add_dir(component, mode, path)
                 cur_dir = cur_dir.get_file(component)
 
     def move(self, src, dest):

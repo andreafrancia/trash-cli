@@ -9,6 +9,11 @@ class INode:
     def chmod(self, mode):
         self.mode = mode
 
+    @staticmethod
+    def make_inode_for_file(mode, file):
+        inode = INode(mode, sticky=False)
+        inode.set_file_or_dir(file)
+        return inode
 
 class SymLink:
     def __init__(self, dest):

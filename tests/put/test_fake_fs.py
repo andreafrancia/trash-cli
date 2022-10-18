@@ -170,9 +170,18 @@ class TestFakeFs(unittest.TestCase):
         assert self.fs.isfile("/foo/bar/baz/1") is True
 
     def test_mode_does_not_let_create_a_file(self):
-        self.fs.makedirs("/foo/bar/baz", 0o000)
+        self.fs.makedirs("/foo/bar/baz", 0o755)
+        self.fs.chmod("/foo/bar/baz", 0o055)
 
         error = capture_error(
             lambda: self.fs.make_file("/foo/bar/baz/1", "1"))
 
         assert str(error) == "[Errno 13] Permission denied: '/foo/bar/baz/1'"
+
+    def test_makedirs_honor_file_permissions(self):
+        self.fs.makedirs("/foo", 0o000)
+
+        error = capture_error(
+            lambda : self.fs.makedirs("/foo/bar", 0o755))
+
+        assert str(error) == "[Errno 13] Permission denied: '/foo/bar'"
