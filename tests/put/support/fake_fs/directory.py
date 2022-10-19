@@ -6,10 +6,19 @@ from tests.put.support.my_file_not_found_error import MyFileNotFoundError
 from trashcli.lib.my_permission_error import MyPermissionError
 
 
+def make_inode_for_dir(file_or_dir, mode, parent_inode=None):
+    inode = INode(mode, sticky=False)
+    file_or_dir.set_dot_entries(inode, parent_inode or inode)
+    inode.set_file_or_dir(file_or_dir)
+    return inode
+
+
 class Directory:
-    def __init__(self, name, inode, parent_inode):
+    def __init__(self, name):
         self.name = name
         self._entries = OrderedDict()
+
+    def set_dot_entries(self, inode, parent_inode):
         self._entries['.'] = inode
         self._entries['..'] = parent_inode
 
@@ -20,9 +29,8 @@ class Directory:
         if self._inode().mode & 0o200 == 0:
             raise MyPermissionError(
                 "[Errno 13] Permission denied: '%s'" % complete_path)
-        inode = INode(mode, sticky=False)
-        file_or_dir = Directory(basename, inode, self._inode())
-        inode.set_file_or_dir(file_or_dir)
+        file_or_dir = Directory(basename)
+        inode = make_inode_for_dir(file_or_dir, mode, self._inode())
         self._entries[basename] = inode
 
     def add_file(self, basename, content, complete_path):
@@ -40,7 +48,6 @@ class Directory:
 
     def get_file(self, basename):
         return self._entries[basename].file_or_dir
-
 
     def _add_entry(self, basename, entry):
         self._entries[basename] = entry
