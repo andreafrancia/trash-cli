@@ -1,8 +1,8 @@
 #!/bin/bash
 set -xe
 
-function _python() {
-    if which python
+function my_python() {
+    if which python >/dev/null
     then
         python "$@"
     else
@@ -13,8 +13,8 @@ function _python() {
 pip install --upgrade pip
 pip install --upgrade build
 pip install --upgrade setuptools
-version="$(_python -c 'import setuptools; setuptools.setup()' --version)"
-_python -m build --sdist
+version="$(my_python -c 'import setuptools; setuptools.setup()' --version)"
+my_python -m build --sdist
 
 pip install "dist/trash-cli-$version.tar.gz"
 
