@@ -1,3 +1,9 @@
+0.22.10.20:
+ - Made visible option -v/--verbose of trash-empty - Andrea Francia
+ - Documented how completion works in README - Wu Zhenyu
+ - Change: now if a file does not exists it does not tries to delete it using all available trash dirs - Andrea Francia
+ - Removed an errore that would occour on trash-put when HOME environment is not set - Andrea Francia
+ - Whitelisted fuse.glusterfs filesystem - Andrea Francia
 0.22.10.4.4:
  - Revisited the trash-put log messages
  - Add shell completions by shtab
