@@ -1,6 +1,7 @@
 import unittest
 
 from tests.test_put.support.fake_fs.fake_fs import FakeFs
+from tests.test_put.support.format_mode import format_mode
 from tests.support.capture_error import capture_error
 
 
@@ -189,9 +190,9 @@ class TestFakeFs(unittest.TestCase):
     def test_get_mod_s_1(self):
         self.fs.make_file("/foo", "content")
 
-        assert self.fs.get_mod_s("/foo") == '0o644'
+        assert format_mode(self.fs.get_mod("/foo")) == '0o644'
 
     def test_get_mod_s_2(self):
         self.fs.makedirs("/foo", 0o000)
 
-        assert self.fs.get_mod_s("/foo") == '0o000'
+        assert format_mode(self.fs.get_mod("/foo")) == '0o000'

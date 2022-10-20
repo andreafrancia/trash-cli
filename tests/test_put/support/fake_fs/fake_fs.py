@@ -1,8 +1,10 @@
 import os
 
-from tests.test_put.support.fake_fs.directory import Directory, make_inode_for_dir
+from tests.test_put.support.fake_fs.directory import Directory, \
+    make_inode_for_dir
 from tests.test_put.support.fake_fs.inode import SymLink
 from tests.test_put.support.fake_fs.file import File
+from tests.test_put.support.format_mode import format_mode
 from tests.test_put.support.my_file_not_found_error import MyFileNotFoundError
 from trashcli.put.fs import Fs
 
@@ -163,4 +165,4 @@ class FakeFs(Fs):
 
     def get_mod_s(self, path):
         mode = self.get_mod(path)
-        return "0o%03o" % mode
+        return format_mode(mode)
