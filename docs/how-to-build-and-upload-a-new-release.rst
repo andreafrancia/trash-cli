@@ -17,6 +17,10 @@ Create the tarball::
 
     python -m build --sdist
 
+Check test::
+
+    twine check "dist/trash-cli-${version}.tar.gz"
+
 Upload to Test PyPI::
 
     twine upload --repository testpypi "dist/trash-cli-${version}.tar.gz"
