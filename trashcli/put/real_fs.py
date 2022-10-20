@@ -63,3 +63,6 @@ class RealFs(Fs):
     @staticmethod
     def make_file(path, content):
         write_file(path, content)
+
+    def get_mod(self, path):
+        return stat.S_IMODE(os.lstat(path).st_mode)

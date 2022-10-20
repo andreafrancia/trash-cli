@@ -1,4 +1,7 @@
-class Fs:
+from abc import ABCMeta, abstractmethod
+
+
+class Fs(metaclass=ABCMeta):
 
     @staticmethod
     def atomic_write(path, content):
@@ -54,4 +57,8 @@ class Fs:
 
     @staticmethod
     def make_file(path, content):
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_mod(self, path):
         raise NotImplementedError
