@@ -182,6 +182,16 @@ class TestFakeFs(unittest.TestCase):
         self.fs.makedirs("/foo", 0o000)
 
         error = capture_error(
-            lambda : self.fs.makedirs("/foo/bar", 0o755))
+            lambda: self.fs.makedirs("/foo/bar", 0o755))
 
         assert str(error) == "[Errno 13] Permission denied: '/foo/bar'"
+
+    def test_get_mod_s_1(self):
+        self.fs.make_file("/foo", "content")
+
+        assert self.fs.get_mod_s("/foo") == '0o644'
+
+    def test_get_mod_s_2(self):
+        self.fs.makedirs("/foo", 0o000)
+
+        assert self.fs.get_mod_s("/foo") == '0o000'

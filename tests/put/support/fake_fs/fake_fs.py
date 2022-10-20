@@ -160,3 +160,7 @@ class FakeFs(Fs):
 
     def is_accessible(self, path):
         return self.exists(path)
+
+    def get_mod_s(self, path):
+        mode = self.get_mod(path)
+        return "0o%03o" % mode
