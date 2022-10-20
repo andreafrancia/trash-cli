@@ -12,8 +12,8 @@ from trashcli.restore import (
     make_trash_directories,
 )
 
-from ..support.files import make_empty_file
-from ..support.my_path import MyPath
+from tests.support.files import make_empty_file
+from tests.support.my_path import MyPath
 
 
 class TestTrashedFileRestoreIntegration(unittest.TestCase):

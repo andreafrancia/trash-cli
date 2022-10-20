@@ -3,8 +3,8 @@ import unittest
 
 from mock import Mock, call
 
-from tests.put.support.dummy_clock import DummyClock
-from tests.put.support.fake_fs_with_realpath import FakeFsWithRealpath
+from tests.test_put.support.dummy_clock import DummyClock
+from tests.test_put.support.fake_fs_with_realpath import FakeFsWithRealpath
 from trashcli.put.original_location import OriginalLocation
 from trashcli.put.parent_realpath import ParentRealpath
 from trashcli.put.path_maker import PathMakerType

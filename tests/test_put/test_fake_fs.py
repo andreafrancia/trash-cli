@@ -1,6 +1,6 @@
 import unittest
 
-from tests.put.support.fake_fs.fake_fs import FakeFs
+from tests.test_put.support.fake_fs.fake_fs import FakeFs
 from tests.support.capture_error import capture_error
 
 

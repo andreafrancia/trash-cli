@@ -1,9 +1,9 @@
 import os
 
-from tests.put.support.fake_fs.directory import Directory, make_inode_for_dir
-from tests.put.support.fake_fs.inode import SymLink
-from tests.put.support.fake_fs.file import File
-from tests.put.support.my_file_not_found_error import MyFileNotFoundError
+from tests.test_put.support.fake_fs.directory import Directory, make_inode_for_dir
+from tests.test_put.support.fake_fs.inode import SymLink
+from tests.test_put.support.fake_fs.file import File
+from tests.test_put.support.my_file_not_found_error import MyFileNotFoundError
 from trashcli.put.fs import Fs
 
 

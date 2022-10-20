@@ -1,7 +1,7 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import unittest
 
-from tests.put.support.fake_fs.fake_fs import FakeFs
+from tests.test_put.support.fake_fs.fake_fs import FakeFs
 from trashcli.put.describer import Describer
 
 

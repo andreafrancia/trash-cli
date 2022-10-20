@@ -1,8 +1,8 @@
 from collections import OrderedDict
 
-from tests.put.support.fake_fs.inode import INode, SymLink
-from tests.put.support.fake_fs.file import File
-from tests.put.support.my_file_not_found_error import MyFileNotFoundError
+from tests.test_put.support.fake_fs.inode import INode, SymLink
+from tests.test_put.support.fake_fs.file import File
+from tests.test_put.support.my_file_not_found_error import MyFileNotFoundError
 from trashcli.lib.my_permission_error import MyPermissionError
 
 

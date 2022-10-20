@@ -3,8 +3,8 @@ import unittest
 
 from six import StringIO
 
-from tests.put.support.dummy_clock import DummyClock
-from tests.put.support.fake_fs.fake_fs import FakeFs
+from tests.test_put.support.dummy_clock import DummyClock
+from tests.test_put.support.fake_fs.fake_fs import FakeFs
 from trashcli.fstab import create_fake_volume_of
 from trashcli.put.main import make_cmd
 from trashcli.trash import EX_IOERR, EX_OK

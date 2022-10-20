@@ -1,7 +1,7 @@
 import datetime
 import unittest
 
-from tests.put.support.dummy_clock import DummyClock
+from tests.test_put.support.dummy_clock import DummyClock
 
 from flexmock import flexmock
 
