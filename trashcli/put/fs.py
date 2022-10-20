@@ -1,7 +1,10 @@
 from abc import ABCMeta, abstractmethod
 
+import six
 
-class Fs(metaclass=ABCMeta):
+
+@six.add_metaclass(ABCMeta)
+class Fs:
 
     @staticmethod
     def atomic_write(path, content):

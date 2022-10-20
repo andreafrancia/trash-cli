@@ -13,7 +13,7 @@ class TestEnsureDir(unittest.TestCase):
         self.ensure_dir.ensure_dir('/foo', 0o755)
 
         assert [self.fs.isdir('/foo'),
-                oct(self.fs.get_mod('/foo'))] == [True, '0o755']
+                self.fs.get_mod_s('/foo')] == [True, '0o755']
 
     def test_makedirs_honor_permissions(self):
         self.fs.makedirs('/foo', 0o000)
