@@ -14,11 +14,12 @@
 </HEAD>
 <BODY LANG="en-US" DIR="LTR">
 <H1>The FreeDesktop.org Trash specification</H1>
-<H3>Written by Mikhail Ramendik &lt;<A HREF="mailto:mr@ramendik.ru">mr@ramendik.ru</A>&gt;</H3>
-<H3>Content by David Faure &lt;<A HREF="mailto:dfaure@trolltech.com">dfaure@trolltech.com</A>&gt;,
-Alexander Larsson &lt;<A HREF="mailto:alexl@redhat.com">alexl@redhat.com</A>&gt;
+<H3>Initial version written by Mikhail Ramendik &lt;<A HREF="mailto:mr@ramendik.ru">mr@ramendik.ru</A>&gt;</H3>
+<H3>Content by David Faure &lt;<A HREF="mailto:faure@kde.org">faure@kde.org</A>&gt;,
+Alexander Larsson &lt;<A HREF="mailto:alexl@redhat.com">alexl@redhat.com</A>&gt;,
+Ryan Lortie &lt;<A HREF="mailto:desrt@desrt.ca">desrt@desrt.ca</A>&gt;
 and others on the FreeDesktop.org mailing list</H3>
-<H3>Version 0.7</H3>
+<H3>Version 1.0</H3>
 <H2>Abstract</H2>
 <P>The purpose of this Specification is to provide a common way in
 which all &ldquo;Trash can&rdquo; implementations should store, list,
@@ -48,17 +49,17 @@ when it gets cleaned!</P>
 <P>However, the benefits of this system are so great, and the user
 expectation for it so high, that it definitely should be implemented
 on a free desktop system. And in fact, several implementations
-already exist &mdash; some as command line utilities, some as
+existed before this specification &mdash; some as command line utilities, some as
 preloaded libraries, and some as parts of major desktop environments.
-For example, both Gnome and KDE have their own trash mechanisms.</P>
+For example, both Gnome and KDE had their own trash mechanisms.</P>
 <P>This Specification is to provide a common way in which all Trash
-can implementations should store trashed files. By complying with
+can implementations must store trashed files. By complying with
 this Specification, various Trash implementations will be able to
 work with the same devices and use the same Trash storage. 
 </P>
-<P>This is important, at least, for shared network resources,
+<P>This ability is important, at least, for shared network resources,
 removable devices, and in cases when different implementations are
-used on the same machine at different moments (i.e. some users prefer
+used on the same machine at different moments (for example, some users prefer
 Gnome, others prefer KDE, and yet others are command-line fans).</P>
 <H2>Scope and limitations</H2>
 <P>This Specification only describes the Trash storage. It does <B>not</B>
@@ -97,7 +98,7 @@ trash) had prior to getting trashed.
 <P>Top directory , $topdir &mdash; the directory where a file system
 is mounted. &ldquo;/&rdquo; is the top directory for the root file
 system, but not for the other mounted file systems. For example,
-separate FSes can be mounted on &ldquo;/home&rdquo;, &ldquo;/mnt/flash&rdquo;,
+separate file systems might be mounted on &ldquo;/home&rdquo;, &ldquo;/media/flash&rdquo;,
 etc. In this text, the designation &ldquo;$topdir&rdquo; is used for
 &ldquo;any top directory&rdquo;.</P>
 <P>User identifier , $uid &mdash; the numeric user identifier for a
@@ -121,14 +122,14 @@ in this document are to be interpreted as described in <A HREF="http://www.faqs.
 any trash directory are to be compliant with the same standard,
 described below.</P>
 <P>For every user<A CLASS="sdfootnoteanc" NAME="sdfootnote2anc" HREF="#sdfootnote2sym"><SUP>2</SUP></A>
-a &ldquo;home trash&rdquo; directory MUST be available<A CLASS="sdfootnoteanc" NAME="sdfootnote3anc" HREF="#sdfootnote3sym"><SUP>3</SUP></A>.
-Its name and location are $XDG_DATA_HOME/Trash ; $XDG_DATA_HOME is
+a &ldquo;home trash&rdquo; directory MUST be available.
+Its name and location are $XDG_DATA_HOME/Trash <A CLASS="sdfootnoteanc" NAME="sdfootnote3anc" HREF="#sdfootnote3sym"><SUP>3</SUP></A>; $XDG_DATA_HOME is
 the base directory for user-specific data, as defined in the <A HREF="http://www.freedesktop.org/Standards/basedir-spec">Desktop
 Base Directory Specification</A> . 
 </P>
-<P>The &ldquo;home trash&rdquo; should function as the user's main
+<P>The &ldquo;home trash&rdquo; SHOULD function as the user's main
 trash directory. Files that the user trashes from the same file
-system (device/partition) should be stored here (see the next section
+system (device/partition) SHOULD be stored here (see the next section
 for the storage details). A &ldquo;home trash&rdquo; directory SHOULD
 be automatically created for any new user. If this directory is
 needed for a trashing operation but does not exist, the
@@ -145,10 +146,10 @@ security issues arise.</P>
 partitions, over the network, from a removable device, etc.) A delay
 instead of a quick &ldquo;delete&rdquo; operation can be unpleasant
 to users.</P>
-<P>An implementation may choose not to support trashing in some of
+<P>An implementation MAY choose not to support trashing in some of
 these cases (notably on network resources and removable devices).
 This is what some well known operating systems do.</P>
-<P>It may also choose to provide trashing in the &ldquo;top
+<P>It MAY also choose to provide trashing in the &ldquo;top
 directories&rdquo; of some or all mounted resources. This trashing is
 done in two ways, described below as (1) and (2). 
 </P>
@@ -160,7 +161,7 @@ permissions must be set, if the file system supports it.
 <P>When trashing a file from a non-home partition/device<A CLASS="sdfootnoteanc" NAME="sdfootnote4anc" HREF="#sdfootnote4sym"><SUP>4</SUP></A>
 , an implementation (if it supports trashing in top directories) MUST
 check for the presence of $topdir/.Trash.</P>
-<P>When preparing a list of all trashed files (i.e. to show to the
+<P>When preparing a list of all trashed files (for example, to show to the
 user), an implementation also MUST check for .Trash in all top
 directories that are known to it.</P>
 <P>If this directory is present, the implementation MUST, by default,
@@ -173,7 +174,7 @@ this directory is not a symbolic link.
 </P>
 <P>If any of these checks fail, the
 implementation MUST NOT use this directory for either trashing or
-undeleting files, even is an appropriate $uid directory (see below)
+undeleting files, even if an appropriate $uid directory (see below)
 already exists in it. Besides, the implementation SHOULD report the
 failed check to the administrator, and MAY also report it to the
 user.</P>
@@ -205,30 +206,30 @@ immediately create it, without any warnings or delays for the user.</P>
 <P><B>Notes.</B> If an implementation provides trashing in top
 directories at all, it MUST support both (1) and (2). 
 </P>
-<P>If an implementation does NOT provide such trashing, and does
+<P>If an implementation does NOT provide trashing in top directories, and does
 provide the user with some interface to view and/or undelete trashed
 files, it SHOULD make a &ldquo;best effort&rdquo; to show files
 trashed in top directories (by both methods) to the user, among other
 trashed files or in a clearly accessible separate way.</P>
 <P>When trashing a file, if the method (1) fails at any point &mdash;
-i.e. the $topdir/.Trash directory does not exist, or it fails the
+that is, the $topdir/.Trash directory does not exist, or it fails the
 checks, or the system refuses to create an $uid directory in it &mdash;
 the implementation MUST, by default, fall back to method (2),
 described below. Except for the case when $topdir/.Trash fails the
 checks, the fallback must be immediate, without any warnings or
-delays. The implementation MAY, however, a way for the administrator
+delays. The implementation MAY, however, provide a way for the administrator
 to disable (2) completely.</P>
-<P>If both (1) and (2) fail (i.e. no
+<P>If both (1) and (2) fail (that is, no
 $topdir/.Trash directory exists, and an attempt to create
 $topdir/.Trash-$uid fails), the implementation MUST either trash the
 file into the user's &ldquo;home trash&rdquo; or refuse to trash it.
 The choice between these options can be pre-determined, or it can
-depend on the particular situation (i.e. No trashing of very large
-files). However, if an implementation refuses to trash a file after a
+depend on the particular situation (for example, &ldquo;no trashing of very large
+files&rdquo;). However, if an implementation refuses to trash a file after a
 user action that generally causes trashing, it MUST clearly warn the
-user about this, and request confirmation for the action.</P>
+user that the trashing has failed. It MUST NOT erase the file without user confirmation.</P>
 <P>For showing trashed files, implementations SHOULD support (1) and
-(2) at the same time (i.e. if both $topdir/.Trash/$uid and
+(2) at the same time (that is, if both $topdir/.Trash/$uid and
 $topdir/.Trash-$uid are present, it should list trashed files from
 both of them).</P>
 <H2>Contents of a trash directory</H2>
@@ -236,7 +237,7 @@ both of them).</P>
 directories. This section concerns the contents of any trash
 directory (including the &ldquo;home trash&rdquo; directory). This
 trash directory will be named &ldquo;$trash&rdquo; here.</P>
-<P>A trash directory contains two subdirectories, named <B>info </B>and
+<P>A trash directory contains two subdirectories, named <B>info</B> and
 <B>files</B>.</P>
 <P>The <B>$trash/files</B> directory contains the files and
 directories that were trashed. When a file or directory is trashed,
@@ -276,15 +277,15 @@ key/value pairs as described in the Desktop Entry Specification:</P>
 	absolute pathname (starting with the slash character &ldquo;/&rdquo;)
 	or a relative pathname (starting with any other character). A
 	relative pathname is to be from the directory in which the trash
-	directory resides (i.e., from $XDG_DATA_HOME for the &ldquo;home
+	directory resides (for example, from $XDG_DATA_HOME for the &ldquo;home
 	trash&rdquo; directory); it MUST not include a &ldquo;..&rdquo;
 	directory, and for files not &ldquo;under&rdquo; that directory,
-	absolute pathnames must be used. The system SHOULD only support
-	absolute pathnames in the &ldquo;home trash&rdquo; directory, not in
+	absolute pathnames must be used. The system SHOULD support
+	absolute pathnames only in the &ldquo;home trash&rdquo; directory, not in
 	the directories under $topdir. 
 	</P>
 	<P>The value type for this key is
-	&ldquo;string&rdquo;; it should store the file name as the
+	&ldquo;string&rdquo;; it SHOULD store the file name as the
 	sequence of bytes produced by the file system, with characters escaped
         as in URLs (as defined by <A HREF="http://www.faqs.org/rfcs/rfc2396.html">RFC
 2396</A>, section 2).</P>
@@ -302,7 +303,7 @@ DeletionDate=20040831T22:32:08</PRE><P>
 The implementation MUST ignore any other lines in this file, except
 the first line (must be [Trash Info]) and these two key/value pairs.
 If a string that starts with &ldquo;Path=&rdquo; or &ldquo;DeletionDate=&rdquo;
-occurs several times, the first occurrence is to be used.<A CLASS="sdfootnoteanc" NAME="sdfootnote8anc" HREF="#sdfootnote8sym"><SUP>8</SUP></A></P>
+occurs several times, the first occurence is to be used.<A CLASS="sdfootnoteanc" NAME="sdfootnote8anc" HREF="#sdfootnote8sym"><SUP>8</SUP></A></P>
 <P>Note that $trash/info has no subdirectories. For a directory in
 $trash/files, only an information file for its own name is needed.
 This is because, when a subdirectory gets trashed, it must be moved
@@ -311,30 +312,87 @@ directories within the directory MUST NOT be altered; the
 implementation also SHOULD preserve the access and modification time
 for them.</P>
 <P>When trashing a file or directory, the implementation MUST create
-the corresponding file in $trash/info first. When trashing a file or
-directory, the implementation MUST create the corresponding file in
-$trash/info first. Moreover, it MUST try to do this in an atomic
-fashion, so that if two processes try trash files with the same
+the corresponding file in $trash/info first. Moreover, it MUST try to do this in an atomic
+fashion, so that if two processes try to trash files with the same
 filename this will result in two different trash files. On Unix-line
 systems this is done by generating a filename, and then opening with
 O_EXCL. If that succeeds the creation was atomic (at least on the
 same machine), if it fails you need to pick another filename.</P>
+<H2>Directory size cache</H2>
+<P>In order to speed up the calculation of the total size of a particular trash directory,
+implementations (since version 1.0 of this specification) SHOULD create or update the
+<B>$trash/directorysizes</B> file, which is a cache of the sizes of the directories
+that were trashed into this trash directory.
+Individual trashed files are not present in this cache, since their size can be determined
+with a call to stat().</P>
+<P>Each entry contains the name and size of the trashed directory, as well as the modification
+time of the corresponding <B>trashinfo file</B> (IMPORTANT: not the modification time of the directory itself)<A CLASS="sdfootnoteanc" NAME="sdfootnote9anc" HREF="#sdfootnote9sym"><SUP>9</SUP></A>.</P>
+<P>The size is calculated as the disk space used by the directory and its
+contents, that is, the size of the blocks, in bytes (in the same way as the `du -B1` command calculates).</P>
+<P>The modification time is stored as an integer, the number of seconds since Epoch. Implementations SHOULD use at least 64 bits for this number in memory.</P>
+<P>The &ldquo;directorysizes&rdquo; file has a simple text-based format, where each line is:</P>
+<PRE>
+[size] [mtime] [percent-encoded-directory-name]
+</PRE>
+<P>Example:</P>
+<PRE>
+16384 15803468 Documents
+8192 15803582 Another_Folder
+</PRE>
+<P>The last entry on each line is the name of the trashed directory, stored as the
+sequence of bytes produced by the file system, with characters escaped
+as in URLs (as defined by <A HREF="http://www.faqs.org/rfcs/rfc2396.html">RFC 2396</A>, section 2).
+Strictly speaking, percent-encoding is really only necessary for the newline character and for '%' itself.
+However, encoding all control characters or fully applying RFC 2396 for consistency with trashinfo files
+is perfectly valid, and even if an implementation does not use such encoding. it MUST be able to read names encoded with it.</P>
+<P>The character '/' is not allowed in the directory name (even as %2F), since all these
+directories must be direct children of the "files" directory. Absolute paths are not allowed for the same reason.</P>
+<P>To update the directorysizes file, implementations MUST use a temporary file followed by an atomic rename() operation, in order
+to avoid corruption due to two implementations writing to the file at the same time. The fact
+that the changes from one of the writers could get lost isn't an issue, as the cache can be updated again
+later on to add that entry.</P>
+
+<H2>Non-normative: suggested algorithm for calculating the size of a trash directory</H2>
+
+<PRE>
+load directorysizes file into memory as a hash directory_name -&gt; (size, mtime, seen=false)
+totalsize = 0
+list "files" directory, and for each item:
+    stat the item
+    if a file:
+        totalsize += file size
+    if a directory:
+        stat the trashinfo file to get its mtime
+        lookup entry in hash
+        if no entry found or entry's cached mtime != trashinfo's mtime:
+            calculate directory size (from disk)
+            totalsize += calculated size
+            add/update entry in hash (size of directory, trashinfo's mtime, seen=true)
+        else:
+            totalsize += entry's cached size
+            update entry in hash to set seen=true
+done
+remove entries from hash which have (seen == false)
+write out hash back to directorysizes file
+</PRE>
+
+
 <H2>Implementation notes</H2>
 <P>The names of the files/directories in $trash/info SHOULD be
 somehow related to original file names. This can help manual recovery
 in emergency cases (for example, if the corresponding info file is
 lost).</P>
-<P>When trashing a file or directory, the implementation should check
+<P>When trashing a file or directory, the implementation SHOULD check
 whether the user has the necessary permissions to delete it, before
 starting the trashing operation itself.</P>
-<P>When copying, rather than moving, a file into the trash (i.e. When
+<P>When copying, rather than moving, a file into the trash (when
 trashing to the &ldquo;home trash&rdquo; from a different partition),
 exact preservation of permissions might be impossible. Notably, a
-file.directory that was owned by another user will now be owned by
+file/directory that was owned by another user will now be owned by
 this user (changing owners is usually only available to root). This
-should not cause the trashing operation to fail.</P>
+SHOULD NOT cause the trashing operation to fail.</P>
 <P>In this same situation, setting the permissions should be done
-<I>after</I> writing the copied file, as they may make it
+<I>after</I> writing the copied file, as they might make it
 unwriteable..</P>
 <P>A trashing operation might be refused because of insufficient
 permissions, even when the user does have the right to delete a file
@@ -342,7 +400,9 @@ or directory. This may happen when the user has the right to delete a
 file/directory, but not to read it (or, in the case of a directory,
 to list it). In this case, the best solution is probably to warn the
 user, offering options to delete the file/directory or leave it
-alone.</P>
+alone. As noted earlier, when the user reasonably expects a file to be
+trashed, the implementation MUST NOT delete it without warning the user.
+</P>
 <P>Automatic trash cleaning may, and probably eventually should, be
 implemented. But the implementation should be somehow known to the
 user.</P>
@@ -358,16 +418,10 @@ sites and CIFS shares. In systems implementing this specification,
 trashing of files from such machines is to be done only to the user's
 home trash directory (if at all). A future version may address this
 limitation.</P>
+
 <H2>Administrativia</H2>
-<H3>Status of this document</H3>
-<P>This document is, at this moment, only a draft. It will hopefully
-become an official or semi-official FreeDesktop.org specification in
-the future.</P>
-<P>Date of first public distribution: August 30, 2004. This document
-will serve as evidence of prior art for any patent filed after this
-date.</P>
 <H3>Copyright and License</H3>
-<P>Copyright (C) 2004 Mikhail Ramendik , <A HREF="mailto:mr@ramendik.ru">mr@ramendik.ru</A>
+<P>Copyright (C) 2004-2014 Mikhail Ramendik , <A HREF="mailto:mr@ramendik.ru">mr@ramendik.ru</A>
 . 
 </P>
 <P>The originators of the ideas that are described here did not
@@ -380,12 +434,8 @@ and contributors somewhere, and (b) indicate that this is a modified
 version.</P>
 <P>Implementation under any license at all is explicitly allowed.</P>
 <H3>Location</H3>
-<P><A HREF="http://www.ramendik.ru/docs/trashspec.html">http://www.ramendik.ru/docs/trashspec.html</A>
-. If this document gets hosted by FreeDesktop.org, a link to the page
-will still be available at this location.</P>
-<P><A HREF="http://www.ramendik.ru/docs/trashspec.0.7.html">http://www.ramendik.ru/docs/trashspec.0.5.html</A>
-is the permanent location of this version. 
-</P>
+<P><A HREF="http://standards.freedesktop.org/trash-spec/trashspec-latest.html">http://standards.freedesktop.org/trash-spec/trashspec-latest.html</A>
+.</P>
 <H3>Version history</H3>
 <P>0.1 &ldquo;First try&rdquo;, August 30, 2004. Initial draft.
 &ldquo;Implementation notes&rdquo; not written as yet.</P>
@@ -407,6 +457,8 @@ added &ldquo;note on scope&rdquo;. Cleaned up HTML. Added a link to this
 document on the freedesktop.org standards page</P>
 <P>0.7 April 12, 2005. Added URL-style encoding for the name of the deleted file,
 as implemented in KDE 3.4</P>
+<P>0.8 March 14, 2012. Update David Faure's email address, fix permanent URL for this spec.</P>
+<P>1.0 January 2, 2014. Add directorysizes cache; style review.</p>
 <P><BR><BR>
 </P>
 <DIV ID="sdfootnote1">
@@ -424,9 +476,8 @@ as implemented in KDE 3.4</P>
 	</P>
 </DIV>
 <DIV ID="sdfootnote3">
-	<P CLASS="sdfootnote" STYLE="margin-bottom: 0.5cm"><A CLASS="sdfootnotesym" NAME="sdfootnote3sym" HREF="#sdfootnote3anc">3</A>Note
-	the dot in the beginning, and for case sensitive file systems, note
-	the case.</P>
+	<P CLASS="sdfootnote" STYLE="margin-bottom: 0.5cm"><A CLASS="sdfootnotesym" NAME="sdfootnote3sym" HREF="#sdfootnote3anc">3</A>For
+	case sensitive file systems, note the case.</P>
 </DIV>
 <DIV ID="sdfootnote4">
 	<P CLASS="sdfootnote" STYLE="margin-bottom: 0.5cm"><A CLASS="sdfootnotesym" NAME="sdfootnote4sym" HREF="#sdfootnote4anc">4</A>To
@@ -447,11 +498,17 @@ as implemented in KDE 3.4</P>
 <DIV ID="sdfootnote7">
 	<P CLASS="sdfootnote" STYLE="margin-bottom: 0.5cm"><A CLASS="sdfootnotesym" NAME="sdfootnote7sym" HREF="#sdfootnote7anc">7</A>For
 	example, if the file in $trash/files is named foo.bar , the
-	corresponding file in $trash/info must be named foo.bar.trashinfo</P>
+	corresponding file in $trash/info MUST be named foo.bar.trashinfo</P>
 </DIV>
 <DIV ID="sdfootnote8">
 	<P CLASS="sdfootnote" STYLE="margin-bottom: 0.5cm"><A CLASS="sdfootnotesym" NAME="sdfootnote8sym" HREF="#sdfootnote8anc">8</A>This
 	provides for future extension</P>
+</DIV>
+<DIV ID="sdfootnote9">
+  <P CLASS="sdfootnote" STYLE="margin-bottom: 0.5cm"><A CLASS="sdfootnotesym" NAME="sdfootnote9sym" HREF="#sdfootnote9anc">9</A>Rationale:
+  if an older trash implementation restores a trashed directory, adds files to a nested subdir and trashes it again,
+  the modification time of the directoy didn't change, so it is not a good indicator. However the modification time
+  of the trashinfo file will have changed, since it is always the time of the actual trashing operation.</P>
 </DIV>
 </BODY>
 </HTML>
