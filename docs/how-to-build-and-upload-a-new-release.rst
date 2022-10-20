@@ -19,7 +19,7 @@ Create the tarball::
 
 Upload to Test PyPI::
 
-    twine upload --repository testpypi dist/trash-cli-${version}.tar.gz
+    twine upload --repository testpypi "dist/trash-cli-${version}.tar.gz"
 
 Remove previous installation::
 
