@@ -1,11 +1,20 @@
 #!/bin/bash
 set -xe
 
+function _python() {
+    if which python
+    then
+        python "$@"
+    else
+        python3 "$@"
+    fi
+}
+
 pip install --upgrade pip
 pip install --upgrade build
 pip install --upgrade setuptools
-version="$(python -c 'import setuptools; setuptools.setup()' --version)"
-python -m build --sdist
+version="$(_python -c 'import setuptools; setuptools.setup()' --version)"
+_python -m build --sdist
 
 pip install "dist/trash-cli-$version.tar.gz"
 
