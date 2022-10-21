@@ -21,21 +21,15 @@ class TrashDirectoryForPut:
         self.clock = clock
 
     def trash2(self, path, program_name, verbose, path_maker_type, volume,
-               trash_dir_path):
-        info_dir_path = os.path.join(trash_dir_path, 'info')
-        path = os.path.normpath(path)
-
-        original_location = self.original_location.for_file(path,
-                                                            path_maker_type,
-                                                            volume)
-
+               info_dir_path):
+        original_location = self.original_location.for_file(
+            path, path_maker_type, volume)
         basename = os.path.basename(original_location)
         content = format_trashinfo(original_location, self.clock.now())
         trash_info_file = self.info_dir.persist_trash_info(basename, content,
                                                            program_name,
                                                            verbose,
                                                            info_dir_path)
-
         where_to_store_trashed_file = path_of_backup_copy(trash_info_file)
 
         try:

@@ -40,7 +40,7 @@ def make_cmd(clock, fs, my_input, randint, stderr, volumes):
     reporter = TrashPutReporter(logger, describer)
     suffix = Suffix(randint)
     ensure_dir = EnsureDir(fs)
-    info_dir = InfoDir(fs, logger, suffix, ensure_dir)
+    info_dir = InfoDir(fs, logger, suffix)
     path_maker = PathMaker()
     parent_realpath = ParentRealpath(fs)
     original_location = OriginalLocation(parent_realpath, path_maker)

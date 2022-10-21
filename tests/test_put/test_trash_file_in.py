@@ -22,7 +22,7 @@ class TestTrashFileIn(unittest.TestCase):
         self.suffix = Mock(spec=Suffix)
         self.suffix.suffix_for_index.return_value = '_suffix'
         self.ensure_dir = cast(EnsureDir, flexmock.Mock(spec=EnsureDir))
-        info_dir = InfoDir(self.fs, self.logger, self.suffix, self.ensure_dir)
+        info_dir = InfoDir(self.fs, self.logger, self.suffix)
         self.trash_dir = flexmock.Mock(spec=TrashDirectoryForPut)
         self.trash_dir_volume = flexmock.Mock(spec=TrashDirVolume)
         self.trash_file_in = TrashFileIn(
@@ -37,7 +37,7 @@ class TestTrashFileIn(unittest.TestCase):
     def test_same_disk(self):
         flexmock.flexmock(self.trash_dir).should_receive('trash2'). \
             with_args('path', 'program_name', 99, 'path-maker-type',
-                      'volume', "/disk1/trash_dir_path").and_return(True)
+                      'volume', "/disk1/trash_dir_path/info").and_return(True)
         flexmock.flexmock(self.trash_dir_volume). \
             should_receive('volume_of_trash_dir'). \
             with_args("/disk1/trash_dir_path").and_return('/disk1')
@@ -45,6 +45,8 @@ class TestTrashFileIn(unittest.TestCase):
             with_args("/disk1/trash_dir_path/files", 0o700)
         flexmock.flexmock(self.ensure_dir).should_receive('ensure_dir').\
             with_args("/disk1/trash_dir_path", 0o700)
+        flexmock.flexmock(self.ensure_dir).should_receive('ensure_dir').\
+            with_args("/disk1/trash_dir_path/info", 0o700)
 
         result = self.trash_file_in.trash_file_in('path',
                                                   '/disk1/trash_dir_path',
@@ -98,6 +100,8 @@ class TestTrashFileIn(unittest.TestCase):
             with_args("/disk1/trash_dir_path", 0o700)
         flexmock.flexmock(self.ensure_dir).should_receive('ensure_dir').\
             with_args("/disk1/trash_dir_path/files", 0o700)
+        flexmock.flexmock(self.ensure_dir).should_receive('ensure_dir').\
+            with_args("/disk1/trash_dir_path/info", 0o700)
 
         result = self.trash_file_in.trash_file_in('path',
                                                   '/disk1/trash_dir_path',

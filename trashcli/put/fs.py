@@ -6,62 +6,62 @@ import six
 @six.add_metaclass(ABCMeta)
 class Fs:
 
-    @staticmethod
-    def atomic_write(path, content):
-        raise NotImplementedError
+    @abstractmethod
+    def atomic_write(self, path, content):
+        pass
 
-    @staticmethod
-    def chmod(path, mode):
-        raise NotImplementedError
+    @abstractmethod
+    def chmod(self, path, mode):
+        pass
 
-    @staticmethod
-    def isdir(path):
-        raise NotImplementedError
+    @abstractmethod
+    def isdir(self, path):
+        pass
 
-    @staticmethod
-    def isfile(path):
-        raise NotImplementedError
+    @abstractmethod
+    def isfile(self, path):
+        pass
 
-    @staticmethod
-    def getsize(path):
-        raise NotImplementedError
+    @abstractmethod
+    def getsize(self, path):
+        pass
 
-    @staticmethod
-    def exists(path):
-        raise NotImplementedError
+    @abstractmethod
+    def exists(self, path):
+        pass
 
-    @staticmethod
-    def makedirs(path, mode):
-        raise NotImplementedError
+    @abstractmethod
+    def makedirs(self, path, mode):
+        pass
 
-    @staticmethod
-    def move(path, dest):
-        raise NotImplementedError
+    @abstractmethod
+    def move(self, path, dest):
+        pass
 
-    @staticmethod
-    def remove_file(path):
-        raise NotImplementedError
+    @abstractmethod
+    def remove_file(self, path):
+        pass
 
-    @staticmethod
-    def islink(path):
-        raise NotImplementedError
+    @abstractmethod
+    def islink(self, path):
+        pass
 
-    @staticmethod
-    def has_sticky_bit(path):
-        raise NotImplementedError
+    @abstractmethod
+    def has_sticky_bit(self, path):
+        pass
 
-    @staticmethod
-    def realpath(path):
-        raise NotImplementedError
+    @abstractmethod
+    def realpath(self, path):
+        pass
 
-    @staticmethod
-    def is_accessible(path):
-        raise NotImplementedError
+    @abstractmethod
+    def is_accessible(self, path):
+        pass
 
-    @staticmethod
-    def make_file(path, content):
-        raise NotImplementedError
+    @abstractmethod
+    def make_file(self, path, content):
+        pass
 
     @abstractmethod
     def get_mod(self, path):
-        raise NotImplementedError
+        pass

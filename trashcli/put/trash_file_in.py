@@ -55,13 +55,15 @@ class TrashFileIn:
                     volume_of_file_to_be_trashed,
                     volume_of_trash_dir):
                 try:
+                    info_dir_path = os.path.join(trash_dir_path, 'info')
+                    files_dir_path = os.path.join(trash_dir_path, 'files')
                     self.ensure_dir.ensure_dir(trash_dir_path, 0o700)
-                    self.ensure_dir.ensure_dir(
-                        os.path.join(trash_dir_path, 'files'),
-                        0o700)
+                    self.ensure_dir.ensure_dir(files_dir_path, 0o700)
+                    self.ensure_dir.ensure_dir(info_dir_path, 0o700)
+
                     self.trash_dir.trash2(path, program_name, verbose,
                                           path_maker_type, volume,
-                                          trash_dir_path)
+                                          info_dir_path)
                     self.reporter.file_has_been_trashed_in_as(
                         path,
                         norm_trash_dir_path,

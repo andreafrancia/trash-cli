@@ -40,7 +40,7 @@ class TestTrashDirectoryForPut(unittest.TestCase):
                               99,
                               'path_maker_type',
                               '/disk',
-                              '/trash')
+                              '/trash/info')
 
     def test_when_io_erro(self):
         self.mock_original_location('/disk/file-to-trash', 'path_maker_type',
@@ -54,7 +54,7 @@ class TestTrashDirectoryForPut(unittest.TestCase):
             and_return('/trash/info/foo.trashinfo')
         self.mock_fs_move('/disk/file-to-trash', "/trash/files/foo"). \
             and_raise(IOError("No space left on device"))
-        flexmock(self.fs).should_receive('remove_file').\
+        flexmock(self.fs).should_receive('remove_file'). \
             with_args('/trash/info/foo.trashinfo')
         self.clock.set_clock(datetime.datetime(2014, 1, 1, 0, 0, 0))
 
@@ -64,7 +64,7 @@ class TestTrashDirectoryForPut(unittest.TestCase):
                                           99,
                                           'path_maker_type',
                                           '/disk',
-                                          '/trash'))
+                                          '/trash/info'))
 
         self.assertEqual("No space left on device", str(error))
 

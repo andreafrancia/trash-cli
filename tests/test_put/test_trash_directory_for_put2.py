@@ -28,7 +28,8 @@ class TestTrashing(unittest.TestCase):
         self.info_dir.persist_trash_info.return_value = 'info_file'
 
         self.trashdir.trash2('foo', 'trash-put', 99,
-                             PathMakerType.absolute_paths, '/disk', '/trash')
+                             PathMakerType.absolute_paths, '/disk',
+                             '/trash/info')
 
         assert self.fs.mock_calls == [call.move('foo', 'files/')]
         assert self.info_dir.mock_calls == [
@@ -44,7 +45,7 @@ class TestTrashing(unittest.TestCase):
         try:
             self.trashdir.trash2('foo', 'trash-put', 99,
                                  PathMakerType.absolute_paths, '/disk',
-                                 '/trash')
+                                 '/trash/info')
         except IOError:
             pass
 

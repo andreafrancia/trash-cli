@@ -20,11 +20,9 @@ class Test_persist_trash_info(unittest.TestCase):
         self.logger = Mock()
         self.suffix = Mock()
         self.suffix.suffix_for_index.side_effect = lambda i: '.suffix-%s' % i
-        self.ensure_dir = EnsureDir(self.fs)
         self.info_dir = InfoDir(self.fs,
                                 self.logger,
-                                self.suffix,
-                                self.ensure_dir)
+                                self.suffix)
 
     def test_persist_trash_info_first_time(self):
         trash_info_file = self.info_dir.persist_trash_info(
