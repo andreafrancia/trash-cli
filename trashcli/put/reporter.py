@@ -1,4 +1,5 @@
 import os
+import re
 from grp import getgrgid
 from pwd import getpwuid
 
@@ -80,19 +81,8 @@ class TrashPutReporter:
         else:
             if filename is not None:
                 for path in [filename, os.path.dirname(filename)]:
-                    info = cls.get_stats(path)
+                    info = gentle_stat_read(path)
                     yield "stats for %s: %s" % (path, info)
-
-    @staticmethod
-    def get_stats(path):
-        try:
-            stats = os.stat(path, follow_symlinks=False)
-            user = getpwuid(stats.st_uid).pw_name
-            group = getgrgid(stats.st_gid).gr_name
-            perms = oct(stats.st_mode & 0o777).replace('0o', '')
-            return "%s %s %s" % (perms, user, group)
-        except OSError as e:
-            return str(e)
 
     def trash_dir_with_volume(self, trash_dir_path, volume_path, program_name,
                               verbose):
@@ -109,6 +99,23 @@ class TrashPutReporter:
 
     def volume_of_file(self, volume, program_name, verbose):
         self.logger.info("volume of file: %s" % volume, program_name, verbose)
+
+
+def gentle_stat_read(path):
+    try:
+        stats = os.lstat(path)
+        user = getpwuid(stats.st_uid).pw_name
+        group = getgrgid(stats.st_gid).gr_name
+        perms = remove_octal_prefix(oct(stats.st_mode & 0o777))
+        return "%s %s %s" % (perms, user, group)
+    except OSError as e:
+        return str(e)
+
+
+def remove_octal_prefix(s):
+    remove_new_octal_format = s.replace('0o', '')
+    remove_old_octal_format = re.sub(r"^0", '', remove_new_octal_format)
+    return remove_old_octal_format
 
 
 def shrink_user(path, environ):
