@@ -1,6 +1,6 @@
 import os
 
-from trashcli.put.ensure_dir import EnsureDir
+from trashcli.put.dir_maker import DirMaker
 from trashcli.put.fs import Fs
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.path_maker import PathMaker
@@ -17,7 +17,7 @@ class TrashFileIn:
                  info_dir,  # type: InfoDir
                  trash_dir,  # type: TrashDirectoryForPut
                  trash_dir_volume,  # type: TrashDirVolume
-                 ensure_dir,  # type: EnsureDir
+                 dir_maker,  # type: DirMaker
                  ):
         self.reporter = reporter
         self.path_maker = PathMaker()
@@ -25,7 +25,7 @@ class TrashFileIn:
         self.info_dir = info_dir
         self.trash_dir = trash_dir
         self.trash_dir_volume = trash_dir_volume
-        self.ensure_dir = ensure_dir
+        self.dir_maker = dir_maker
 
     def trash_file_in(self,
                       path,
@@ -57,9 +57,9 @@ class TrashFileIn:
                 try:
                     info_dir_path = os.path.join(trash_dir_path, 'info')
                     files_dir_path = os.path.join(trash_dir_path, 'files')
-                    self.ensure_dir.ensure_dir(trash_dir_path, 0o700)
-                    self.ensure_dir.ensure_dir(files_dir_path, 0o700)
-                    self.ensure_dir.ensure_dir(info_dir_path, 0o700)
+                    self.dir_maker.mkdir_p(trash_dir_path, 0o700)
+                    self.dir_maker.mkdir_p(files_dir_path, 0o700)
+                    self.dir_maker.mkdir_p(info_dir_path, 0o700)
 
                     self.trash_dir.trash2(path, program_name, verbose,
                                           path_maker_type, volume,

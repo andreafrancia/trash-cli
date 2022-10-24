@@ -7,7 +7,7 @@ import trashcli.trash
 from trashcli.lib.my_input import my_input
 from trashcli.put.clock import RealClock
 from trashcli.put.describer import Describer
-from trashcli.put.ensure_dir import EnsureDir
+from trashcli.put.dir_maker import DirMaker
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import MyLogger
@@ -39,7 +39,7 @@ def make_cmd(clock, fs, my_input, randint, stderr, volumes):
     describer = Describer(fs)
     reporter = TrashPutReporter(logger, describer)
     suffix = Suffix(randint)
-    ensure_dir = EnsureDir(fs)
+    dir_maker = DirMaker(fs)
     info_dir = InfoDir(fs, logger, suffix)
     path_maker = PathMaker()
     parent_realpath = ParentRealpath(fs)
@@ -54,7 +54,7 @@ def make_cmd(clock, fs, my_input, randint, stderr, volumes):
                                 info_dir,
                                 trash_dir,
                                 trash_dir_volume,
-                                ensure_dir)
+                                dir_maker)
     file_trasher = FileTrasher(volumes,
                                TrashDirectoriesFinder(volumes),
                                parent_realpath,
