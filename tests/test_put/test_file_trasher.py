@@ -5,7 +5,7 @@ from mock import Mock
 from typing import cast
 
 from tests.test_put.support.fake_fs_with_realpath import FakeFsWithRealpath
-from trashcli.fstab import create_fake_volume_of, Volumes
+from trashcli.fstab import Volumes
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.parent_realpath import ParentRealpath
