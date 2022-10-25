@@ -3,6 +3,8 @@ import os
 import pwd
 import unittest
 
+import six
+
 from tests.support.files import make_file
 from tests.support.my_path import MyPath
 from trashcli.put.reporter import gentle_stat_read
@@ -15,8 +17,8 @@ class TestGentleStatRead(unittest.TestCase):
     def test_file_non_found(self):
         result = gentle_stat_read(self.tmp_dir / 'not-existent')
 
-        self.assertRegexpMatches(
-            result,
+        six.assertRegex(
+            self, result,
             r"\[Errno 2\] No such file or directory: '/.*/not-existent'")
 
     def test_file(self):
