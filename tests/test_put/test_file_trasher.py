@@ -42,11 +42,10 @@ class TestFileTrasher(unittest.TestCase):
         self.parent_realpath.should_receive('parent_realpath').and_return('/')
 
     def set_trash_directory(self, trash_dir_path):
-        self.trash_directories_finder.\
-            should_receive('possible_trash_directories_for').\
+        self.trash_directories_finder. \
+            should_receive('possible_trash_directories_for'). \
             with_args("/", None, {}, 123).and_return([
-            (trash_dir_path, "/", PathMakerType.relative_paths,
-             top_trash_dir_rules)
+            "candidate1"
         ])
 
     def test(self):
@@ -56,13 +55,12 @@ class TestFileTrasher(unittest.TestCase):
             and_return('/')
         self.set_trash_directory('/trash-dir')
         self.trash_file_in.should_receive('trash_file_in').with_args(
-            "sandbox/foo", "/trash-dir", "/", "relative_paths",
-            top_trash_dir_rules, False, "/", "trash-put", 99, {},
+            "sandbox/foo", "candidate1", False, "/", "trash-put", 99, {},
         ).and_return(True)
 
         result = self.file_trasher.trash_file('sandbox/foo',
-                                              None, # forced_volume
-                                              None, # user_trash_dir
+                                              None,  # forced_volume
+                                              None,  # user_trash_dir
                                               TrashResult(False),
                                               {},
                                               123,
@@ -76,7 +74,7 @@ class TestFileTrasher(unittest.TestCase):
         result = TrashResult(False)
         self.set_trash_directory('/trash-dir')
         self.reporter.should_receive('volume_of_file')
-        self.reporter.should_receive('unable_to_trash_file').\
+        self.reporter.should_receive('unable_to_trash_file'). \
             with_args("non-existent", "trash-put")
 
         self.file_trasher.trash_file('non-existent',
@@ -94,7 +92,7 @@ class TestFileTrasher(unittest.TestCase):
         self.trash_file_in.should_receive('trash_file_in').and_return(False)
         self.set_trash_directory('/trash-dir')
         self.reporter.should_receive('volume_of_file')
-        self.reporter.should_receive('unable_to_trash_file').\
+        self.reporter.should_receive('unable_to_trash_file'). \
             with_args("non-existent", "trash-put")
 
         self.file_trasher.trash_file("non-existent",

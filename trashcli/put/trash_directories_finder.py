@@ -20,30 +20,34 @@ class TrashDirectoriesFinder:
         trash_dirs = []
 
         def add_home_trash(path, volume):
-            trash_dirs.append(Candidate(path=path,
-                                        volume=volume,
-                                        path_maker=PathMakerType.absolute_paths,
-                                        check_type=all_is_ok_rules))
+            trash_dirs.append(
+                Candidate(trash_dir_path=path,
+                          volume=volume,
+                          path_maker_type=PathMakerType.absolute_paths,
+                          check_type=all_is_ok_rules))
 
         def add_top_trash_dir(path, volume):
-            trash_dirs.append(Candidate(path=path,
-                                        volume=volume,
-                                        path_maker=PathMakerType.relative_paths,
-                                        check_type=top_trash_dir_rules))
+            trash_dirs.append(
+                Candidate(trash_dir_path=path,
+                          volume=volume,
+                          path_maker_type=PathMakerType.relative_paths,
+                          check_type=top_trash_dir_rules))
 
         def add_alt_top_trash_dir(path, volume):
-            trash_dirs.append(Candidate(path=path,
-                                        volume=volume,
-                                        path_maker=PathMakerType.relative_paths,
-                                        check_type=all_is_ok_rules))
+            trash_dirs.append(
+                Candidate(trash_dir_path=path,
+                          volume=volume,
+                          path_maker_type=PathMakerType.relative_paths,
+                          check_type=all_is_ok_rules))
 
         if specific_trash_dir:
             path = specific_trash_dir
             volume = self.volumes.volume_of(path)
-            trash_dirs.append(Candidate(path=path,
-                                        volume=volume,
-                                        path_maker=PathMakerType.relative_paths,
-                                        check_type=all_is_ok_rules))
+            trash_dirs.append(
+                Candidate(trash_dir_path=path,
+                          volume=volume,
+                          path_maker_type=PathMakerType.relative_paths,
+                          check_type=all_is_ok_rules))
         else:
             for path, dir_volume in home_trash_dir(environ,
                                                    self.volumes.volume_of):

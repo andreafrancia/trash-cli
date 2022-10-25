@@ -1,5 +1,6 @@
 import os
 
+from trashcli.put.candidate import Candidate
 from trashcli.put.dir_maker import DirMaker
 from trashcli.put.fs import Fs
 from trashcli.put.info_dir import InfoDir
@@ -29,20 +30,18 @@ class TrashFileIn:
 
     def trash_file_in(self,
                       path,
-                      trash_dir_path,
-                      volume,
-                      path_maker_type,
-                      check_type,
+                      candidate,  # type: Candidate
                       file_has_been_trashed,
                       volume_of_file_to_be_trashed,
                       program_name,
                       verbose,
                       environ,
                       ):  # type: (...) -> bool
+        trash_dir_path = candidate.trash_dir_path
         norm_trash_dir_path = os.path.normpath(trash_dir_path)
         trash_dir_is_secure, messages = self.security_check. \
             check_trash_dir_is_secure(norm_trash_dir_path,
-                                      check_type)
+                                      candidate.check_type)
         self.reporter.log_info_messages(messages, program_name, verbose)
 
         if trash_dir_is_secure:
@@ -61,8 +60,11 @@ class TrashFileIn:
                     self.dir_maker.mkdir_p(files_dir_path, 0o700)
                     self.dir_maker.mkdir_p(info_dir_path, 0o700)
 
-                    self.trash_dir.trash2(path, program_name, verbose,
-                                          path_maker_type, volume,
+                    self.trash_dir.trash2(path,
+                                          program_name,
+                                          verbose,
+                                          candidate.path_maker_type,
+                                          candidate.volume,
                                           info_dir_path)
                     self.reporter.file_has_been_trashed_in_as(
                         path,

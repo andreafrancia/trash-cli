@@ -46,17 +46,15 @@ class FileTrasher:
         self.reporter.volume_of_file(volume_of_file_to_be_trashed, program_name,
                                      verbose)
         file_has_been_trashed = False
-        for trash_dir_path, volume, path_maker, checker in candidates:
-            file_has_been_trashed = self.trash_file_in.trash_file_in(path,
-                                                                     trash_dir_path,
-                                                                     volume,
-                                                                     path_maker,
-                                                                     checker,
-                                                                     file_has_been_trashed,
-                                                                     volume_of_file_to_be_trashed,
-                                                                     program_name,
-                                                                     verbose,
-                                                                     environ)
+        for candidate in candidates:
+            file_has_been_trashed = \
+                self.trash_file_in.trash_file_in(path,
+                                                 candidate,
+                                                 file_has_been_trashed,
+                                                 volume_of_file_to_be_trashed,
+                                                 program_name,
+                                                 verbose,
+                                                 environ)
             if file_has_been_trashed: break
 
         if not file_has_been_trashed:

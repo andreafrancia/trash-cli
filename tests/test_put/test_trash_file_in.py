@@ -5,6 +5,7 @@ from mock import Mock
 from mock.mock import call
 from typing import cast
 
+from trashcli.put.candidate import Candidate
 from trashcli.put.dir_maker import DirMaker
 from trashcli.put.security_check import all_is_ok_rules
 from trashcli.put.trash_file_in import TrashFileIn
@@ -41,18 +42,20 @@ class TestTrashFileIn(unittest.TestCase):
         flexmock.flexmock(self.trash_dir_volume). \
             should_receive('volume_of_trash_dir'). \
             with_args("/disk1/trash_dir_path").and_return('/disk1')
-        flexmock.flexmock(self.dir_maker).should_receive('mkdir_p').\
+        flexmock.flexmock(self.dir_maker).should_receive('mkdir_p'). \
             with_args("/disk1/trash_dir_path/files", 0o700)
-        flexmock.flexmock(self.dir_maker).should_receive('mkdir_p').\
+        flexmock.flexmock(self.dir_maker).should_receive('mkdir_p'). \
             with_args("/disk1/trash_dir_path", 0o700)
-        flexmock.flexmock(self.dir_maker).should_receive('mkdir_p').\
+        flexmock.flexmock(self.dir_maker).should_receive('mkdir_p'). \
             with_args("/disk1/trash_dir_path/info", 0o700)
 
+        candidate = Candidate(trash_dir_path='/disk1/trash_dir_path',
+                              volume='volume',
+                              path_maker_type="path-maker-type",
+                              check_type=all_is_ok_rules)
         result = self.trash_file_in.trash_file_in('path',
-                                                  '/disk1/trash_dir_path',
-                                                  'volume',
-                                                  "path-maker-type",
-                                                  all_is_ok_rules, True,
+                                                  candidate,
+                                                  True,
                                                   '/disk1', 'program_name', 99,
                                                   {})
 
@@ -69,11 +72,13 @@ class TestTrashFileIn(unittest.TestCase):
             should_receive('volume_of_trash_dir'). \
             with_args("/disk1/trash_dir_path").and_return('/disk1')
 
+        candidate = Candidate(trash_dir_path='/disk1/trash_dir_path',
+                              volume='volume',
+                              path_maker_type="path_maker-type",
+                              check_type=all_is_ok_rules)
         result = self.trash_file_in.trash_file_in('path',
-                                                  '/disk1/trash_dir_path',
-                                                  'volume',
-                                                  "path_maker-type",
-                                                  all_is_ok_rules, True,
+                                                  candidate,
+                                                  True,
                                                   '/disk2', 'program_name', 99,
                                                   {})
 
@@ -96,18 +101,19 @@ class TestTrashFileIn(unittest.TestCase):
         io_error = IOError('error')
         flexmock.flexmock(self.trash_dir).should_receive('trash2'). \
             and_raise(io_error)
-        flexmock.flexmock(self.dir_maker).should_receive('mkdir_p').\
+        flexmock.flexmock(self.dir_maker).should_receive('mkdir_p'). \
             with_args("/disk1/trash_dir_path", 0o700)
-        flexmock.flexmock(self.dir_maker).should_receive('mkdir_p').\
+        flexmock.flexmock(self.dir_maker).should_receive('mkdir_p'). \
             with_args("/disk1/trash_dir_path/files", 0o700)
-        flexmock.flexmock(self.dir_maker).should_receive('mkdir_p').\
+        flexmock.flexmock(self.dir_maker).should_receive('mkdir_p'). \
             with_args("/disk1/trash_dir_path/info", 0o700)
 
+        candidate = Candidate(trash_dir_path='/disk1/trash_dir_path',
+                              volume='volume',
+                              path_maker_type="path_maker-type",
+                              check_type=all_is_ok_rules)
         result = self.trash_file_in.trash_file_in('path',
-                                                  '/disk1/trash_dir_path',
-                                                  'volume',
-                                                  "path-maker-type",
-                                                  all_is_ok_rules,
+                                                  candidate,
                                                   False,
                                                   '/disk1',
                                                   'program_name',
