@@ -31,18 +31,6 @@ class TestGentleStatRead(unittest.TestCase):
             self.current_user(), self.current_group()
         )
 
-    def test_link(self):
-        make_file(self.tmp_dir / 'dest')
-        os.chmod(self.tmp_dir / 'dest', 0o531)
-        os.symlink('dest', self.tmp_dir / 'link')
-        os.lchmod(self.tmp_dir / 'link', 0o123)
-
-        result = gentle_stat_read(self.tmp_dir / 'link')
-
-        assert result == '123 %s %s' % (
-            self.current_user(), self.current_group()
-        )
-
     def tearDown(self):
         self.tmp_dir.clean_up()
 
