@@ -50,6 +50,21 @@ class TestPut(unittest.TestCase):
                [["trash-put: cannot trash non existent 'non-existing'"], 'None',
                 EX_IOERR]
 
+    def test_when_there_is_no_working_trash_dir(self):
+        self.fs.make_file("pippo")
+        self.fs.makedirs('/.Trash-123', 0o000)
+
+        result = self.run_cmd(['trash-put', '-vvv', 'pippo'], {}, 123)
+
+        assert result[0] == [
+            'trash-put: volume of file: /',
+            'trash-put: found unusable .Trash dir (should be a dir): /.Trash',
+            'trash-put: trash directory is not secure: /.Trash/123',
+            'trash-put: trying trash dir: /.Trash-123 from volume: /',
+            "trash-put: failed to trash pippo in /.Trash-123, because: [Errno 13] Permission denied: '/.Trash-123/files'",
+            "trash-put: cannot trash regular empty file 'pippo'",
+        ]
+
     def test_when_file_exists(self):
         self.fs.make_file("pippo")
         assert True == self.fs.exists("pippo")
