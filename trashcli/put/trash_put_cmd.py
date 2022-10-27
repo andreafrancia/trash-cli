@@ -1,6 +1,6 @@
 import os
 
-from trashcli.put.my_logger import MyLogger
+from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.put.parser import make_parser
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_all import TrashAll
@@ -24,12 +24,13 @@ class TrashPutCmd:
         except SystemExit as e:
             return e.code
         else:
+            log_data = LogData(program_name, options.verbose)
             result = self.trash_all.trash_all(options.files,
                                               options.trashdir,
                                               options.mode,
                                               options.forced_volume,
                                               program_name,
-                                              options.verbose,
+                                              log_data,
                                               environ,
                                               uid)
 

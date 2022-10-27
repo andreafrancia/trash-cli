@@ -7,6 +7,7 @@ from typing import cast
 
 from trashcli.put.candidate import Candidate
 from trashcli.put.dir_maker import DirMaker
+from trashcli.put.my_logger import LogData
 from trashcli.put.security_check import all_is_ok_rules
 from trashcli.put.trash_file_in import TrashFileIn
 from trashcli.put.trash_dir_volume import TrashDirVolume
@@ -37,7 +38,7 @@ class TestTrashFileIn(unittest.TestCase):
 
     def test_same_disk(self):
         flexmock.flexmock(self.trash_dir).should_receive('trash2'). \
-            with_args('path', 'program_name', 99, 'path-maker-type',
+            with_args('path', 'log_data', 'path-maker-type',
                       'volume', "/disk1/trash_dir_path/info").and_return(True)
         flexmock.flexmock(self.trash_dir_volume). \
             should_receive('volume_of_trash_dir'). \
@@ -56,16 +57,17 @@ class TestTrashFileIn(unittest.TestCase):
         result = self.trash_file_in.trash_file_in('path',
                                                   candidate,
                                                   True,
-                                                  '/disk1', 'program_name', 99,
+                                                  '/disk1',
+                                                  cast(LogData, 'log_data'),
                                                   {})
 
         assert result == True
         assert self.reporter.mock_calls == [
-            call.log_info_messages([], 'program_name', 99),
+            call.log_info_messages([], 'log_data'),
             call.trash_dir_with_volume('/disk1/trash_dir_path', '/disk1',
-                                       'program_name', 99),
+                                       'log_data'),
             call.file_has_been_trashed_in_as('path', '/disk1/trash_dir_path',
-                                             'program_name', 99, {})]
+                                             'log_data', {})]
 
     def test_different_disk(self):
         flexmock.flexmock(self.trash_dir_volume). \
@@ -79,20 +81,21 @@ class TestTrashFileIn(unittest.TestCase):
         result = self.trash_file_in.trash_file_in('path',
                                                   candidate,
                                                   True,
-                                                  '/disk2', 'program_name', 99,
+                                                  '/disk2',
+                                                  cast(LogData, 'log_data'),
                                                   {})
 
         assert result == True
         assert self.reporter.mock_calls == [
-            call.log_info_messages([], 'program_name', 99),
+            call.log_info_messages([], 'log_data'),
             call.trash_dir_with_volume('/disk1/trash_dir_path', '/disk1',
-                                       'program_name', 99),
+                                       'log_data'),
             call.wont_use_trash_dir_because_in_a_different_volume('path',
                                                                   '/disk1/trash_dir_path',
                                                                   '/disk2',
                                                                   '/disk1',
-                                                                  'program_name',
-                                                                  99, {})]
+                                                                  'log_data',
+                                                                  {})]
 
     def test_error_while_trashing(self):
         flexmock.flexmock(self.trash_dir_volume). \
@@ -116,15 +119,14 @@ class TestTrashFileIn(unittest.TestCase):
                                                   candidate,
                                                   False,
                                                   '/disk1',
-                                                  'program_name',
-                                                  99,
+                                                  cast(LogData, 'log_data'),
                                                   {})
         assert result == False
         assert self.reporter.mock_calls == [
-            call.log_info_messages([], 'program_name', 99),
+            call.log_info_messages([], 'log_data'),
             call.trash_dir_with_volume('/disk1/trash_dir_path', '/disk1',
-                                       'program_name', 99),
+                                       'log_data'),
             call.unable_to_trash_file_in_because('path',
                                                  '/disk1/trash_dir_path',
                                                  io_error,
-                                                 'program_name', 99, {})]
+                                                 'log_data', {})]

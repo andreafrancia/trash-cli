@@ -4,6 +4,8 @@ from typing import cast
 
 import flexmock
 from mock import Mock, call
+
+from trashcli.put.my_logger import LogData
 from trashcli.put.parser import mode_force, mode_interactive
 from trashcli.put.real_fs import RealFs
 from trashcli.put.reporter import TrashPutReporter
@@ -31,7 +33,7 @@ class TestTrasher(unittest.TestCase):
                                     mode_force,
                                     'forced_volume',
                                     'program_name',
-                                    99,
+                                    cast(LogData,'log_data'),
                                     {"env": "ironment"},
                                     123)
 
@@ -45,8 +47,7 @@ class TestTrasher(unittest.TestCase):
                        'result',
                        {"env": "ironment"},
                        123,
-                       'program_name',
-                       99,
+                       'log_data',
                    )],
                    'file_trasher result'
                ]
@@ -60,7 +61,7 @@ class TestTrasher(unittest.TestCase):
                                     mode_interactive,
                                     'forced_volume',
                                     'program_name',
-                                    99,
+                                    cast(LogData, 'log_data'),
                                     {"env": "ironment"},
                                     123)
 
@@ -76,8 +77,7 @@ class TestTrasher(unittest.TestCase):
                        'result',
                        {"env": "ironment"},
                        123,
-                       'program_name',
-                       99,
+                       'log_data',
                    )],
                    'file_trasher result'
                ]

@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Callable, Dict
 
 from trashcli.fstab import Volumes
-from trashcli.put.my_logger import MyLogger
+from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.put.parent_realpath import ParentRealpath
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
@@ -35,16 +35,14 @@ class FileTrasher:
                    result,  # type: TrashResult
                    environ,  # type: Dict[str, str]
                    uid,  # type: int
-                   program_name,  # type: str
-                   verbose,  # type: int
+                   log_data,  # type: LogData
                    ):
         volume_of_file_to_be_trashed = forced_volume or \
                                        self.volume_of_parent(path)
         candidates = self.trash_directories_finder. \
             possible_trash_directories_for(volume_of_file_to_be_trashed,
                                            user_trash_dir, environ, uid)
-        self.reporter.volume_of_file(volume_of_file_to_be_trashed, program_name,
-                                     verbose)
+        self.reporter.volume_of_file(volume_of_file_to_be_trashed, log_data)
         file_has_been_trashed = False
         for candidate in candidates:
             file_has_been_trashed = \
@@ -52,14 +50,13 @@ class FileTrasher:
                                                  candidate,
                                                  file_has_been_trashed,
                                                  volume_of_file_to_be_trashed,
-                                                 program_name,
-                                                 verbose,
+                                                 log_data,
                                                  environ)
             if file_has_been_trashed: break
 
         if not file_has_been_trashed:
             result = result.mark_unable_to_trash_file()
-            self.reporter.unable_to_trash_file(path, program_name)
+            self.reporter.unable_to_trash_file(path, log_data)
 
         return result
 

@@ -4,6 +4,7 @@ from typing import Dict
 
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.fs import Fs
+from trashcli.put.my_logger import LogData
 from trashcli.put.parser import mode_force, mode_interactive
 from trashcli.put.real_fs import RealFs
 from trashcli.put.reporter import TrashPutReporter
@@ -30,7 +31,7 @@ class Trasher:
               mode,
               forced_volume,
               program_name,
-              verbose,
+              log_data,  # type: LogData
               environ,  # type: Dict[str, str]
               uid,  # type: int
               ):
@@ -57,7 +58,7 @@ class Trasher:
             if mode == mode_force:
                 return result
             else:
-                self.reporter.unable_to_trash_file(path, program_name)
+                self.reporter.unable_to_trash_file(path, log_data)
                 return result.mark_unable_to_trash_file()
 
         if mode == mode_interactive and self.fs.is_accessible(path):
@@ -71,8 +72,7 @@ class Trasher:
                                             result,
                                             environ,
                                             uid,
-                                            program_name,
-                                            verbose,
+                                            log_data,
                                             )
 
     def _should_skipped_by_specs(self, file):

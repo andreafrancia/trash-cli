@@ -2,9 +2,11 @@ import datetime
 import unittest
 
 from mock import Mock, call
+from typing import cast
 
 from tests.test_put.support.dummy_clock import DummyClock
 from tests.test_put.support.fake_fs_with_realpath import FakeFsWithRealpath
+from trashcli.put.my_logger import LogData
 from trashcli.put.original_location import OriginalLocation
 from trashcli.put.parent_realpath import ParentRealpath
 from trashcli.put.path_maker import PathMakerType
@@ -27,7 +29,8 @@ class TestTrashing(unittest.TestCase):
     def test_the_file_should_be_moved_in_trash_dir(self):
         self.info_dir.persist_trash_info.return_value = 'info_file'
 
-        self.trashdir.trash2('foo', 'trash-put', 99,
+        self.trashdir.trash2('foo',
+                             cast(LogData, 'log_data'),
                              PathMakerType.absolute_paths, '/disk',
                              '/trash/info')
 
@@ -36,14 +39,15 @@ class TestTrashing(unittest.TestCase):
             call.persist_trash_info(
                 'foo',
                 b'[Trash Info]\nPath=foo\nDeletionDate=1970-01-01T00:00:00\n',
-                'trash-put', 99, '/trash/info')]
+                "log_data", '/trash/info')]
 
     def test_should_rollback_trashinfo_creation_on_problems(self):
         self.info_dir.persist_trash_info.return_value = 'info_file'
         self.fs.move.side_effect = IOError
 
         try:
-            self.trashdir.trash2('foo', 'trash-put', 99,
+            self.trashdir.trash2('foo',
+                                 cast(LogData, 'log_data'),
                                  PathMakerType.absolute_paths, '/disk',
                                  '/trash/info')
         except IOError:
@@ -55,4 +59,4 @@ class TestTrashing(unittest.TestCase):
             call.persist_trash_info(
                 'foo',
                 b'[Trash Info]\nPath=foo\nDeletionDate=1970-01-01T00:00:00\n',
-                'trash-put', 99, '/trash/info')]
+                "log_data", '/trash/info')]

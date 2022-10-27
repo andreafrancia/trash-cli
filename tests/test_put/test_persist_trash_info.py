@@ -4,10 +4,12 @@ import unittest
 
 import pytest
 from mock import Mock
+from typing import cast
 
 from trashcli.fs import read_file
 from trashcli.put.dir_maker import DirMaker
 from trashcli.put.info_dir import InfoDir
+from trashcli.put.my_logger import LogData
 from trashcli.put.real_fs import RealFs
 from ..support.my_path import MyPath
 
@@ -24,7 +26,7 @@ class Test_persist_trash_info(unittest.TestCase):
 
     def test_persist_trash_info_first_time(self):
         trash_info_file = self.info_dir.persist_trash_info(
-            'dummy-path', b'content', 'trash-put', 99, self.path)
+            'dummy-path', b'content', cast(LogData,'log_data'), self.path)
 
         assert self.path / 'dummy-path.suffix-0.trashinfo' == trash_info_file
         assert 'content' == read_file(trash_info_file)
@@ -33,7 +35,7 @@ class Test_persist_trash_info(unittest.TestCase):
         self.test_persist_trash_info_first_time()
 
         trash_info_file = self.info_dir.persist_trash_info(
-            'dummy-path', b'content', 'trash-put', 99, self.path)
+            'dummy-path', b'content', cast(LogData,'log_data'), self.path)
 
         assert self.path / 'dummy-path.suffix-1.trashinfo' == trash_info_file
         assert 'content' == read_file(trash_info_file)

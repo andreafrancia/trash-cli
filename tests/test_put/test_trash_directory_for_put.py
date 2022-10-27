@@ -1,12 +1,15 @@
 import datetime
 import unittest
 
+from typing import cast
+
 from tests.test_put.support.dummy_clock import DummyClock
 
 from flexmock import flexmock
 
 from tests.support.capture_error import capture_error
 from trashcli.put.info_dir import InfoDir
+from trashcli.put.my_logger import LogData
 from trashcli.put.original_location import OriginalLocation
 from trashcli.put.path_maker import PathMaker
 from trashcli.put.real_fs import RealFs
@@ -31,13 +34,12 @@ class TestTrashDirectoryForPut(unittest.TestCase):
         self.mock_info_dir_persist_trash_info(
             'original_location',
             b"[Trash Info]\nPath=original_location\nDeletionDate=2014-01-01T00:00:00\n",
-            "program_name", 99, "/trash/info").and_return('trash_info_path')
+            "log_data", "/trash/info").and_return('trash_info_path')
         self.mock_fs_move('/disk/file-to-trash', 'files/trash')
         self.clock.set_clock(datetime.datetime(2014, 1, 1, 0, 0, 0))
 
         self.trash_dir.trash2('/disk/file-to-trash',
-                              "program_name",
-                              99,
+                              cast(LogData, 'log_data'),
                               'path_maker_type',
                               '/disk',
                               '/trash/info')
@@ -50,7 +52,7 @@ class TestTrashDirectoryForPut(unittest.TestCase):
             b"[Trash Info]\n"
             b"Path=original_location\n"
             b"DeletionDate=2014-01-01T00:00:00\n",
-            "program_name", 99, "/trash/info"). \
+            "log_data", "/trash/info"). \
             and_return('/trash/info/foo.trashinfo')
         self.mock_fs_move('/disk/file-to-trash', "/trash/files/foo"). \
             and_raise(IOError("No space left on device"))
@@ -60,8 +62,7 @@ class TestTrashDirectoryForPut(unittest.TestCase):
 
         error = capture_error(
             lambda: self.trash_dir.trash2('/disk/file-to-trash',
-                                          "program_name",
-                                          99,
+                                          cast(LogData, 'log_data'),
                                           'path_maker_type',
                                           '/disk',
                                           '/trash/info'))
@@ -72,10 +73,10 @@ class TestTrashDirectoryForPut(unittest.TestCase):
         return flexmock(self.original_location).should_receive('for_file'). \
             with_args(path, path_maker_type, volume_top_dir)
 
-    def mock_info_dir_persist_trash_info(self, basename, content, program_name,
-                                         verbose, info_dir_path):
+    def mock_info_dir_persist_trash_info(self, basename, content, log_data,
+                                         info_dir_path):
         return flexmock(self.info_dir).should_receive('persist_trash_info'). \
-            with_args(basename, content, program_name, verbose, info_dir_path)
+            with_args(basename, content, log_data, info_dir_path)
 
     def mock_fs_move(self, path, dest):
         return flexmock(self.fs).should_receive('move').with_args(path, dest)

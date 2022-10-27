@@ -1,4 +1,4 @@
-from trashcli.put.my_logger import MyLogger
+from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_result import TrashResult
 from trashcli.put.trasher import Trasher
@@ -18,7 +18,7 @@ class TrashAll:
                   mode,
                   forced_volume,
                   program_name,
-                  verbose,
+                  log_data,  # type: LogData
                   environ,
                   uid):
         result = TrashResult(False)
@@ -29,7 +29,7 @@ class TrashAll:
                                         mode,
                                         forced_volume,
                                         program_name,
-                                        verbose,
+                                        log_data,
                                         environ,
                                         uid)
         return result

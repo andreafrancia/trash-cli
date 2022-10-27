@@ -2,7 +2,7 @@ import errno
 import os
 
 from trashcli.put.fs import Fs
-from trashcli.put.my_logger import MyLogger
+from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.put.suffix import Suffix
 
 
@@ -16,8 +16,12 @@ class InfoDir:
         self.logger = logger
         self.suffix = suffix
 
-    def persist_trash_info(self, basename, content, program_name, verbose,
-                           info_dir_path):
+    def persist_trash_info(self,
+                           basename, #type: str
+                           content, #type: str
+                           log_data, #type: LogData
+                           info_dir_path, #type: str
+                           ):
         """
         Create a .trashinfo file in the $trash/info directory.
         returns the created TrashInfoFile.
@@ -34,14 +38,14 @@ class InfoDir:
             try:
                 self.fs.atomic_write(trashinfo_path, content)
                 self.logger.debug(".trashinfo created as %s." % trashinfo_path,
-                                  program_name, verbose)
+                                  log_data)
                 return trashinfo_path
             except OSError as e:
                 if e.errno == errno.ENAMETOOLONG:
                     name_too_long = True
                 self.logger.debug(
                     "attempt for creating %s failed." % trashinfo_path,
-                    program_name, verbose)
+                    log_data)
 
             index += 1
 
