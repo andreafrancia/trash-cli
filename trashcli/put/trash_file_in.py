@@ -55,10 +55,9 @@ class TrashFileIn:
                     volume_of_trash_dir):
                 try:
                     info_dir_path = os.path.join(trash_dir_path, 'info')
-                    files_dir_path = os.path.join(trash_dir_path, 'files')
                     self.dir_maker.mkdir_p(trash_dir_path, 0o700)
-                    self.dir_maker.mkdir_p(files_dir_path, 0o700)
-                    self.dir_maker.mkdir_p(info_dir_path, 0o700)
+                    self.dir_maker.mkdir_p(candidate.files_dir(), 0o700)
+                    self.dir_maker.mkdir_p(candidate.info_dir(), 0o700)
 
                     self.trash_dir.trash2(path,
                                           program_name,
