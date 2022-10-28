@@ -3,9 +3,11 @@ import re
 from grp import getgrgid
 from pwd import getpwuid
 
-from typing import List
+from typing import List, Dict
 
+from trashcli.put.candidate import Candidate
 from trashcli.put.describer import Describer
+from trashcli.put.file_to_be_trashed import FileToBeTrashed
 from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.trash import EX_IOERR, EX_OK
 
@@ -62,16 +64,17 @@ class TrashPutReporter:
 
     def wont_use_trash_dir_because_in_a_different_volume(
             self,
-            path,
-            norm_trash_dir_path,
-            volume_of_file_to_be_trashed,
-            volume_of_trash_dir,
+            file_to_be_trashed,  # type: FileToBeTrashed
             log_data,  # type: LogData
-            environ):
+            environ,  # type: Dict[str, str],
+            candidate,  # type: Candidate
+    ):
         self.logger.info(
             "won't use trash dir %s because its volume (%s) in a different volume than %s (%s)"
-            % (shrink_user(norm_trash_dir_path, environ), volume_of_trash_dir,
-               path, volume_of_file_to_be_trashed),
+            % (shrink_user(os.path.normpath(candidate.trash_dir_path),
+                           environ),
+               candidate.volume,
+               file_to_be_trashed.path, file_to_be_trashed.volume),
             log_data)
 
     def unable_to_trash_file_in_because(self,
@@ -99,7 +102,7 @@ class TrashPutReporter:
                     yield "stats for %s: %s" % (path, info)
 
     def trash_dir_with_volume(self, trash_dir_path, volume_path,
-                              log_data, # type: LogData
+                              log_data,  # type: LogData
                               ):
         self.logger.info(
             "trying trash dir: %s from volume: %s" % (trash_dir_path,

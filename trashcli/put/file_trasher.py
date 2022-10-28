@@ -5,7 +5,8 @@ from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.put.parent_realpath import ParentRealpath
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
-from trashcli.put.trash_file_in import TrashFileIn, FileToBeTrashed
+from trashcli.put.trash_file_in import TrashFileIn
+from trashcli.put.file_to_be_trashed import FileToBeTrashed
 from trashcli.put.trash_result import TrashResult
 from trashcli.put.volume_of_parent import VolumeOfParent
 

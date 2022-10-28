@@ -1,8 +1,8 @@
 import os
-from typing import NamedTuple
 
 from trashcli.put.candidate import Candidate
 from trashcli.put.dir_maker import DirMaker
+from trashcli.put.file_to_be_trashed import FileToBeTrashed
 from trashcli.put.fs import Fs
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import LogData
@@ -11,13 +11,6 @@ from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.security_check import SecurityCheck
 from trashcli.put.trash_dir_volume import TrashDirVolume
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
-
-
-class FileToBeTrashed(NamedTuple('FileToBeTrashed', [
-    ('path', str),
-    ('volume', str)
-])):
-    pass
 
 
 class TrashFileIn:
@@ -41,7 +34,7 @@ class TrashFileIn:
                       candidate,  # type: Candidate
                       log_data,  # type: LogData
                       environ,
-                      file_to_be_trashed=None,  # type: FileToBeTrashed
+                      file_to_be_trashed,  # type: FileToBeTrashed
                       ):  # type: (...) -> bool
         file_has_been_trashed = False
         path = file_to_be_trashed.path
@@ -85,8 +78,7 @@ class TrashFileIn:
                         environ)
             else:
                 self.reporter.wont_use_trash_dir_because_in_a_different_volume(
-                    path, norm_trash_dir_path, file_to_be_trashed.volume,
-                    volume_of_trash_dir, log_data, environ)
+                    file_to_be_trashed, log_data, environ, candidate)
         else:
             self.reporter.trash_dir_is_not_secure(norm_trash_dir_path, log_data)
         return file_has_been_trashed
