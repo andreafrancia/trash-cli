@@ -33,13 +33,12 @@ class TrashPutReporter:
                              log_data.program_name)
 
     def file_has_been_trashed_in_as(self,
-                                    trashee,
-                                    trash_directory,
+                                    trashed_file,
+                                    trash_dir,  # type: Candidate
                                     log_data,  # type: LogData
                                     environ):
-        self.logger.info("'%s' trashed in %s" % (trashee,
-                                                 shrink_user(trash_directory,
-                                                             environ)),
+        trash_dir_path = shrink_user(trash_dir.norm_path(), environ)
+        self.logger.info("'%s' trashed in %s" % (trashed_file, trash_dir_path),
                          log_data)
 
     def trash_dir_is_not_secure(self,
@@ -101,12 +100,14 @@ class TrashPutReporter:
                     info = gentle_stat_read(path)
                     yield "stats for %s: %s" % (path, info)
 
-    def trash_dir_with_volume(self, trash_dir_path, volume_path,
+    def trash_dir_with_volume(self,
+                              candidate,  # type: Candidate
                               log_data,  # type: LogData
                               ):
+        # type: (...) -> None
         self.logger.info(
-            "trying trash dir: %s from volume: %s" % (trash_dir_path,
-                                                      volume_path),
+            "trying trash dir: %s from volume: %s" % (candidate.norm_path(),
+                                                      candidate.volume),
             log_data)
 
     def exit_code(self, result):

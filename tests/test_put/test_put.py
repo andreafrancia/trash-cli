@@ -1,6 +1,7 @@
 import datetime
 import unittest
 
+import flexmock
 from six import StringIO
 
 from tests.test_put.support.dummy_clock import DummyClock
@@ -65,9 +66,62 @@ class TestPut(unittest.TestCase):
             "trash-put: cannot trash regular empty file 'pippo'",
         ]
 
-    def test_when_file_exists(self):
-        self.fs.make_file("pippo")
+    def test_make_file(self):
+        self.fs.make_file("pippo", 'content')
         assert True == self.fs.exists("pippo")
+
+    def test_when_file_exists(self):
+        self.fs.make_file("pippo", 'content')
+
+        result = self.run_cmd(['trash-put', 'pippo'],
+                              {"HOME": "/home/user"}, 123)
+
+        actual = {
+            'file_pippo_exists': self.fs.exists("pippo"),
+            'exit_code': result[2],
+            'files_in_info_dir': self.fs.ls_aa(
+                '/home/user/.local/share/Trash/info'),
+            "content_of_trashinfo": self.fs.read(
+                '/home/user/.local/share/Trash/info/pippo.trashinfo'),
+            'files_in_files_dir': self.fs.ls_aa(
+                '/home/user/.local/share/Trash/files'),
+            "content_of_trashed_file": self.fs.read(
+                '/home/user/.local/share/Trash/files/pippo'),
+        }
+        assert actual == {'content_of_trashed_file': 'content',
+                          'content_of_trashinfo': '[Trash Info]\nPath=/pippo\nDeletionDate=2014-01-01T00:00:00\n',
+                          'exit_code': 0,
+                          'file_pippo_exists': False,
+                          'files_in_files_dir': ['pippo'],
+                          'files_in_info_dir': ['pippo.trashinfo']}
+
+    def test_when_file_move_fails(self):
+        flexmock.flexmock(self.fs).should_receive('move').\
+            and_raise(IOError, 'No space left on device')
+        self.fs.make_file("pippo", 'content')
+
+        result = self.run_cmd(['trash-put', 'pippo'],
+                              {"HOME": "/home/user"}, 123)
+
+        actual = {
+            'file_pippo_exists': self.fs.exists("pippo"),
+            'exit_code': result[2],
+            'stderr': result[0],
+            'files_in_info_dir': self.fs.ls_aa('/home/user/.local/share/Trash/info'),
+            "content_of_trashinfo": self.fs.read_null('/home/user/.local/share/Trash/info/pippo.trashinfo'),
+            'files_in_files_dir': self.fs.ls_aa('/home/user/.local/share/Trash/files'),
+            "content_of_trashed_file": self.fs.read_null('/home/user/.local/share/Trash/files/pippo'),
+        }
+        assert actual == {'content_of_trashed_file': None,
+                          'content_of_trashinfo': None,
+                          'exit_code': EX_IOERR,
+                          'stderr': ["trash-put: cannot trash regular file 'pippo'"],
+                          'file_pippo_exists': True,
+                          'files_in_files_dir': [],
+                          'files_in_info_dir': []}
+
+    def test_when_a_error_during_move(self):
+        self.fs.make_file("pippo", 'content')
 
         result = self.run_cmd(['trash-put', 'pippo'],
                               {"HOME": "/home/user"}, 123)
@@ -76,8 +130,13 @@ class TestPut(unittest.TestCase):
         assert EX_OK == result[2]
         assert ['pippo.trashinfo'] == self.fs.ls_aa(
             '/home/user/.local/share/Trash/info')
+        assert self.fs.read(
+            '/home/user/.local/share/Trash/info/pippo.trashinfo'
+        ) == '[Trash Info]\nPath=/pippo\nDeletionDate=2014-01-01T00:00:00\n'
         assert ['pippo'] == self.fs.ls_aa(
             '/home/user/.local/share/Trash/files')
+        assert self.fs.read('/home/user/.local/share/Trash/files/pippo') \
+               == 'content'
 
     def run_cmd(self, args, environ, uid):
         err = None

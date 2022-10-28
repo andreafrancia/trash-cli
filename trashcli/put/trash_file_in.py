@@ -48,9 +48,7 @@ class TrashFileIn:
         if trash_dir_is_secure:
             volume_of_trash_dir = self.trash_dir_volume. \
                 volume_of_trash_dir(trash_dir_path)
-            self.reporter.trash_dir_with_volume(norm_trash_dir_path,
-                                                volume_of_trash_dir,
-                                                log_data)
+            self.reporter.trash_dir_with_volume(candidate, log_data)
             if self._file_could_be_trashed_in(
                     file_to_be_trashed.volume,
                     volume_of_trash_dir):
@@ -65,11 +63,10 @@ class TrashFileIn:
                                           candidate.path_maker_type,
                                           candidate.volume,
                                           info_dir_path)
-                    self.reporter.file_has_been_trashed_in_as(
-                        path,
-                        norm_trash_dir_path,
-                        log_data,
-                        environ)
+                    self.reporter.file_has_been_trashed_in_as(path,
+                                                              candidate,
+                                                              log_data,
+                                                              environ)
                     file_has_been_trashed = True
 
                 except (IOError, OSError) as error:

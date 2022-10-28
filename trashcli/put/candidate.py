@@ -14,3 +14,6 @@ class Candidate(NamedTuple('Candidate', [
 
     def files_dir(self):
         return os.path.join(self.trash_dir_path, 'files')
+
+    def norm_path(self):
+        return os.path.normpath(self.trash_dir_path)

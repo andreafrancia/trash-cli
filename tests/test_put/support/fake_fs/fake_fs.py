@@ -53,6 +53,12 @@ class FakeFs(Fs):
     def read(self, path):
         return self.find_dir_or_file(path).content
 
+    def read_null(self, path):
+        try:
+            return self.find_dir_or_file(path).content
+        except MyFileNotFoundError:
+            return None
+
     def make_file(self, path, content=''):
         path = os.path.join(self.cwd, path)
         dirname, basename = os.path.split(path)

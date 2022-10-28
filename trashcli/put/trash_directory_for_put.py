@@ -1,11 +1,11 @@
 import os
 
 from trashcli.put.clock import PutClock
+from trashcli.put.forma_trash_info import format_trashinfo
 from trashcli.put.fs import Fs
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import LogData
 from trashcli.put.original_location import OriginalLocation
-from trashcli.py2compat import url_quote
 from trashcli.trash import path_of_backup_copy
 
 
@@ -41,18 +41,3 @@ class TrashDirectoryForPut:
         except IOError as e:
             self.fs.remove_file(trash_info_file)
             raise e
-
-
-def format_trashinfo(original_location, deletion_date):
-    content = ("[Trash Info]\n" +
-               "Path=%s\n" % format_original_location(original_location) +
-               "DeletionDate=%s\n" % format_date(deletion_date)).encode('utf-8')
-    return content
-
-
-def format_date(deletion_date):
-    return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
-
-
-def format_original_location(original_location):
-    return url_quote(original_location, '/')
