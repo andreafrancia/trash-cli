@@ -9,14 +9,13 @@ from trashcli.fstab import Volumes
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.put.parent_realpath import ParentRealpath
-from trashcli.put.path_maker import PathMakerType
 from trashcli.put.reporter import TrashPutReporter
-from trashcli.put.security_check import top_trash_dir_rules
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 from trashcli.put.trash_file_in import TrashFileIn
 from trashcli.put.trash_result import TrashResult
+from trashcli.put.volume_of_parent import VolumeOfParent
 
 
 class TestFileTrasher(unittest.TestCase):
@@ -32,13 +31,16 @@ class TestFileTrasher(unittest.TestCase):
         self.suffix.suffix_for_index.return_value = '_suffix'
         self.trash_dir = flexmock.Mock(spec=TrashDirectoryForPut)
         self.trash_file_in = flexmock.Mock(spec=TrashFileIn)
+        self.volume_of_parent = flexmock.Mock(spec=VolumeOfParent)
         self.file_trasher = FileTrasher(
             cast(Volumes, self.volumes),
             cast(TrashDirectoriesFinder, self.trash_directories_finder),
             cast(ParentRealpath, self.parent_realpath),
             cast(MyLogger, self.logger),
             cast(TrashPutReporter, self.reporter),
-            cast(TrashFileIn, self.trash_file_in))
+            cast(TrashFileIn, self.trash_file_in),
+            cast(VolumeOfParent, self.volume_of_parent),
+        )
         self.parent_realpath.should_receive('parent_realpath').and_return('/')
 
     def set_trash_directory(self, trash_dir_path):
@@ -57,6 +59,8 @@ class TestFileTrasher(unittest.TestCase):
         self.trash_file_in.should_receive('trash_file_in').with_args(
             "sandbox/foo", "candidate1", False, "/", 'log_data', {},
         ).and_return(True)
+        self.volume_of_parent.should_receive('volume_of_parent'). \
+            with_args("sandbox/foo").and_return('/')
 
         result = self.file_trasher.trash_file('sandbox/foo',
                                               None,  # forced_volume
@@ -75,6 +79,9 @@ class TestFileTrasher(unittest.TestCase):
         self.reporter.should_receive('volume_of_file')
         self.reporter.should_receive('unable_to_trash_file'). \
             with_args("non-existent", "log_data")
+        self.volume_of_parent.should_receive('volume_of_parent'). \
+            with_args("non-existent"). \
+            and_return('/')
 
         self.file_trasher.trash_file('non-existent',
                                      None,
@@ -92,6 +99,8 @@ class TestFileTrasher(unittest.TestCase):
         self.reporter.should_receive('volume_of_file')
         self.reporter.should_receive('unable_to_trash_file'). \
             with_args("non-existent", "log_data")
+        self.volume_of_parent.should_receive('volume_of_parent').with_args(
+            "non-existent").and_return('/')
 
         self.file_trasher.trash_file("non-existent",
                                      None,
