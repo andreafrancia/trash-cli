@@ -1,4 +1,5 @@
 import os
+from typing import NamedTuple
 
 from trashcli.put.candidate import Candidate
 from trashcli.put.dir_maker import DirMaker
@@ -10,6 +11,13 @@ from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.security_check import SecurityCheck
 from trashcli.put.trash_dir_volume import TrashDirVolume
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
+
+
+class FileToBeTrashed(NamedTuple('FileToBeTrashed', [
+    ('path', str),
+    ('volume', str)
+])):
+    pass
 
 
 class TrashFileIn:
@@ -30,13 +38,13 @@ class TrashFileIn:
         self.dir_maker = dir_maker
 
     def trash_file_in(self,
-                      path,
                       candidate,  # type: Candidate
-                      file_has_been_trashed,
-                      volume_of_file_to_be_trashed,
                       log_data,  # type: LogData
                       environ,
+                      file_to_be_trashed=None,  # type: FileToBeTrashed
                       ):  # type: (...) -> bool
+        file_has_been_trashed = False
+        path = file_to_be_trashed.path
         trash_dir_path = candidate.trash_dir_path
         norm_trash_dir_path = os.path.normpath(trash_dir_path)
         trash_dir_is_secure, messages = self.security_check. \
@@ -51,7 +59,7 @@ class TrashFileIn:
                                                 volume_of_trash_dir,
                                                 log_data)
             if self._file_could_be_trashed_in(
-                    volume_of_file_to_be_trashed,
+                    file_to_be_trashed.volume,
                     volume_of_trash_dir):
                 try:
                     info_dir_path = os.path.join(trash_dir_path, 'info')
@@ -77,7 +85,7 @@ class TrashFileIn:
                         environ)
             else:
                 self.reporter.wont_use_trash_dir_because_in_a_different_volume(
-                    path, norm_trash_dir_path, volume_of_file_to_be_trashed,
+                    path, norm_trash_dir_path, file_to_be_trashed.volume,
                     volume_of_trash_dir, log_data, environ)
         else:
             self.reporter.trash_dir_is_not_secure(norm_trash_dir_path, log_data)

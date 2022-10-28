@@ -5,16 +5,9 @@ from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.put.parent_realpath import ParentRealpath
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
-from trashcli.put.trash_file_in import TrashFileIn
+from trashcli.put.trash_file_in import TrashFileIn, FileToBeTrashed
 from trashcli.put.trash_result import TrashResult
 from trashcli.put.volume_of_parent import VolumeOfParent
-
-
-class FileToBeTrashed(NamedTuple('FileToBeTrashed', [
-    ('path', str),
-    ('volume', str)
-])):
-    pass
 
 
 class FileTrasher:
@@ -55,13 +48,11 @@ class FileTrasher:
         self.reporter.volume_of_file(volume_of_file_to_be_trashed, log_data)
         file_has_been_trashed = False
         for candidate in candidates:
-            file_has_been_trashed = \
-                self.trash_file_in.trash_file_in(path,
-                                                 candidate,
-                                                 file_has_been_trashed,
-                                                 volume_of_file_to_be_trashed,
+            file_has_been_trashed = file_has_been_trashed or \
+                self.trash_file_in.trash_file_in(candidate,
                                                  log_data,
-                                                 environ)
+                                                 environ,
+                                                 file_be_trashed)
             if file_has_been_trashed: break
 
         if not file_has_been_trashed:
