@@ -1,5 +1,6 @@
 import os
 
+from trashcli.put.candidate import Candidate
 from trashcli.put.clock import PutClock
 from trashcli.put.forma_trash_info import format_trashinfo
 from trashcli.put.fs import Fs
@@ -23,17 +24,16 @@ class TrashDirectoryForPut:
 
     def trash2(self,
                path,
+               candidate,  # type: Candidate
                log_data,  # type: LogData
-               path_maker_type,
-               volume,
-               info_dir_path):
+               ):
         original_location = self.original_location.for_file(
-            path, path_maker_type, volume)
+            path, candidate.path_maker_type, candidate.volume)
         basename = os.path.basename(original_location)
         content = format_trashinfo(original_location, self.clock.now())
         trash_info_file = self.info_dir.persist_trash_info(basename, content,
                                                            log_data,
-                                                           info_dir_path)
+                                                           candidate.info_dir())
         where_to_store_trashed_file = path_of_backup_copy(trash_info_file)
 
         try:

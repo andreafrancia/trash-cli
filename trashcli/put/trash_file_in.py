@@ -52,16 +52,11 @@ class TrashFileIn:
                     trashee.volume,
                     volume_of_trash_dir):
                 try:
-                    info_dir_path = os.path.join(trash_dir_path, 'info')
                     self.dir_maker.mkdir_p(trash_dir_path, 0o700)
                     self.dir_maker.mkdir_p(candidate.files_dir(), 0o700)
                     self.dir_maker.mkdir_p(candidate.info_dir(), 0o700)
 
-                    self.trash_dir.trash2(trashee.path,
-                                          log_data,
-                                          candidate.path_maker_type,
-                                          candidate.volume,
-                                          info_dir_path)
+                    self.trash_dir.trash2(trashee.path, candidate, log_data)
                     self.reporter.file_has_been_trashed_in_as(trashee.path,
                                                               candidate,
                                                               log_data,
