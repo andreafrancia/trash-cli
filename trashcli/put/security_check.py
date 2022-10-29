@@ -1,15 +1,20 @@
 import os
+from typing import NamedTuple
+
+SecurityCheckCandidate = NamedTuple('TrashDir', [('trash_dir_path', str),
+                                                 ('check_type', str)])
 
 
 class SecurityCheck:
+
     def __init__(self, fs):
         self.fs = fs
 
-    def check_trash_dir_is_secure(self, trash_dir_path, check_type):
-        if check_type == all_is_ok_rules:
+    def check_trash_dir_is_secure(self, candidate):
+        if candidate.check_type == all_is_ok_rules:
             return True, []
-        if check_type == top_trash_dir_rules:
-            parent = os.path.dirname(trash_dir_path)
+        if candidate.check_type == top_trash_dir_rules:
+            parent = os.path.dirname(candidate.trash_dir_path)
             if not self.fs.isdir(parent):
                 return False, [
                     "found unusable .Trash dir (should be a dir): %s" % parent]
@@ -20,7 +25,7 @@ class SecurityCheck:
                 return False, [
                     "found unsecure .Trash dir (should be sticky): %s" % parent]
             return True, []
-        raise Exception("Unknown check type: %s" % check_type)
+        raise Exception("Unknown check type: %s" % candidate.check_type)
 
 
 all_is_ok_rules = 'all_is_ok_rules'

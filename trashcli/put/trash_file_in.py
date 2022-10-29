@@ -13,6 +13,20 @@ from trashcli.put.trash_dir_volume import TrashDirVolume
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 
 
+class TrashingChecker:
+    def __init__(self, trash_dir_volume):
+        self.trash_dir_volume = trash_dir_volume
+
+    def file_could_be_trashed_in(self,
+                                 trashee,  # type: Trashee
+                                 candidate,  # type: Candidate,
+                                 ):
+        volume_of_trash_dir = self.trash_dir_volume. \
+            volume_of_trash_dir(candidate.trash_dir_path)
+
+        return volume_of_trash_dir == trashee.volume
+
+
 class TrashFileIn:
     def __init__(self,
                  fs,  # type: Fs
@@ -29,6 +43,7 @@ class TrashFileIn:
         self.trash_dir = trash_dir
         self.trash_dir_volume = trash_dir_volume
         self.dir_maker = dir_maker
+        self.trashing_checker = TrashingChecker(trash_dir_volume)
 
     def trash_file_in(self,
                       candidate,  # type: Candidate
@@ -38,17 +53,13 @@ class TrashFileIn:
                       ):  # type: (...) -> bool
         file_has_been_trashed = False
         trash_dir_is_secure, messages = self.security_check. \
-            check_trash_dir_is_secure(candidate.norm_path(),
-                                      candidate.check_type)
+            check_trash_dir_is_secure(candidate)
         self.reporter.log_info_messages(messages, log_data)
 
         if trash_dir_is_secure:
-            volume_of_trash_dir = self.trash_dir_volume. \
-                volume_of_trash_dir(candidate.trash_dir_path)
             self.reporter.trash_dir_with_volume(candidate, log_data)
-            if self._file_could_be_trashed_in(
-                    trashee.volume,
-                    volume_of_trash_dir):
+            if self.trashing_checker.file_could_be_trashed_in(trashee,
+                                                              candidate):
                 try:
                     self.dir_maker.mkdir_p(candidate.trash_dir_path, 0o700)
                     self.dir_maker.mkdir_p(candidate.files_dir(), 0o700)
@@ -69,10 +80,6 @@ class TrashFileIn:
                 self.reporter.wont_use_trash_dir_because_in_a_different_volume(
                     trashee, log_data, environ, candidate)
         else:
-            self.reporter.trash_dir_is_not_secure(candidate.norm_path(), log_data)
+            self.reporter.trash_dir_is_not_secure(candidate.norm_path(),
+                                                  log_data)
         return file_has_been_trashed
-
-    def _file_could_be_trashed_in(self,
-                                  volume_of_file_to_be_trashed,
-                                  volume_of_trash_dir):
-        return volume_of_trash_dir == volume_of_file_to_be_trashed

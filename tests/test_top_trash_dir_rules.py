@@ -1,7 +1,8 @@
 import unittest
 
 from mock import Mock, call
-from trashcli.put.security_check import SecurityCheck, top_trash_dir_rules
+from trashcli.put.security_check import SecurityCheck, top_trash_dir_rules, \
+    SecurityCheckCandidate
 
 
 class TestTopTrashDirRules(unittest.TestCase):
@@ -13,23 +14,25 @@ class TestTopTrashDirRules(unittest.TestCase):
         self.fs.isdir.return_value = False
 
         secure, messages = self.check.check_trash_dir_is_secure(
-            '/parent/trash-dir', top_trash_dir_rules)
+            SecurityCheckCandidate('/parent/trash-dir', top_trash_dir_rules))
 
         assert [call.isdir('/parent')] == self.fs.mock_calls
         assert secure == False
-        assert messages == ['found unusable .Trash dir (should be a dir): /parent']
+        assert messages == [
+            'found unusable .Trash dir (should be a dir): /parent']
 
     def test_not_valid_parent_should_not_be_a_symlink(self):
         self.fs.isdir.return_value = True
         self.fs.islink.return_value = True
 
         secure, messages = self.check.check_trash_dir_is_secure(
-            '/parent/trash-dir', top_trash_dir_rules)
+            SecurityCheckCandidate('/parent/trash-dir', top_trash_dir_rules))
 
         assert [call.isdir('/parent'),
                 call.islink('/parent')] == self.fs.mock_calls
         assert secure == False
-        assert messages == ['found unsecure .Trash dir (should not be a symlink): /parent']
+        assert messages == [
+            'found unsecure .Trash dir (should not be a symlink): /parent']
 
     def test_not_valid_parent_should_be_sticky(self):
         self.fs.isdir.return_value = True
@@ -37,13 +40,14 @@ class TestTopTrashDirRules(unittest.TestCase):
         self.fs.has_sticky_bit.return_value = False
 
         secure, messages = self.check.check_trash_dir_is_secure(
-            '/parent/trash-dir', top_trash_dir_rules)
+            SecurityCheckCandidate('/parent/trash-dir', top_trash_dir_rules))
 
         assert [call.isdir('/parent'),
                 call.islink('/parent'),
                 call.has_sticky_bit('/parent')] == self.fs.mock_calls
         assert False == secure
-        assert messages == ['found unsecure .Trash dir (should be sticky): /parent']
+        assert messages == [
+            'found unsecure .Trash dir (should be sticky): /parent']
 
     def test_is_valid(self):
         self.fs.isdir.return_value = True
@@ -51,7 +55,7 @@ class TestTopTrashDirRules(unittest.TestCase):
         self.fs.has_sticky_bit.return_value = True
 
         secure, messages = self.check.check_trash_dir_is_secure(
-            '/parent/trash-dir', top_trash_dir_rules)
+            SecurityCheckCandidate('/parent/trash-dir', top_trash_dir_rules))
 
         assert [call.isdir('/parent'),
                 call.islink('/parent'),
