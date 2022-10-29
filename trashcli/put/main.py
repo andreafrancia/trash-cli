@@ -22,6 +22,7 @@ from trashcli.put.trash_dir_volume import TrashDirVolume
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 from trashcli.put.trash_file_in import TrashFileIn
+from trashcli.put.trashing_checker import TrashingChecker
 from trashcli.put.trash_put_cmd import TrashPutCmd
 from trashcli.put.trasher import Trasher
 from trashcli.put.user import User
@@ -50,11 +51,11 @@ def make_cmd(clock, fs, my_input, randint, stderr, volumes):
                                      original_location,
                                      clock)
     trash_dir_volume = TrashDirVolume(volumes, fs)
+    trashing_checker = TrashingChecker(trash_dir_volume)
     trash_file_in = TrashFileIn(fs,
                                 reporter,
-                                info_dir,
                                 trash_dir,
-                                trash_dir_volume,
+                                trashing_checker,
                                 dir_maker)
     volume_of_parent = VolumeOfParent(volumes, parent_realpath)
     file_trasher = FileTrasher(volumes,
