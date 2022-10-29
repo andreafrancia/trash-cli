@@ -37,22 +37,20 @@ class TrashFileIn:
                       trashee,  # type: Trashee
                       ):  # type: (...) -> bool
         file_has_been_trashed = False
-        trash_dir_path = candidate.trash_dir_path
-        norm_trash_dir_path = os.path.normpath(trash_dir_path)
         trash_dir_is_secure, messages = self.security_check. \
-            check_trash_dir_is_secure(norm_trash_dir_path,
+            check_trash_dir_is_secure(candidate.norm_path(),
                                       candidate.check_type)
         self.reporter.log_info_messages(messages, log_data)
 
         if trash_dir_is_secure:
             volume_of_trash_dir = self.trash_dir_volume. \
-                volume_of_trash_dir(trash_dir_path)
+                volume_of_trash_dir(candidate.trash_dir_path)
             self.reporter.trash_dir_with_volume(candidate, log_data)
             if self._file_could_be_trashed_in(
                     trashee.volume,
                     volume_of_trash_dir):
                 try:
-                    self.dir_maker.mkdir_p(trash_dir_path, 0o700)
+                    self.dir_maker.mkdir_p(candidate.trash_dir_path, 0o700)
                     self.dir_maker.mkdir_p(candidate.files_dir(), 0o700)
                     self.dir_maker.mkdir_p(candidate.info_dir(), 0o700)
 
@@ -65,13 +63,13 @@ class TrashFileIn:
 
                 except (IOError, OSError) as error:
                     self.reporter.unable_to_trash_file_in_because(
-                        trashee.path, norm_trash_dir_path, error, log_data,
+                        trashee.path, candidate.norm_path(), error, log_data,
                         environ)
             else:
                 self.reporter.wont_use_trash_dir_because_in_a_different_volume(
                     trashee, log_data, environ, candidate)
         else:
-            self.reporter.trash_dir_is_not_secure(norm_trash_dir_path, log_data)
+            self.reporter.trash_dir_is_not_secure(candidate.norm_path(), log_data)
         return file_has_been_trashed
 
     def _file_could_be_trashed_in(self,
