@@ -31,7 +31,6 @@ class TrashFileIn:
                       environ,  # type: Dict[str, str]
                       trashee,  # type: Trashee
                       ):  # type: (...) -> bool
-        file_has_been_trashed = False
         trash_dir_is_secure, messages = self.security_check. \
             check_trash_dir_is_secure(candidate)
         self.reporter.log_info_messages(messages, log_data)
