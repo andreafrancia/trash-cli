@@ -1,7 +1,7 @@
 from typing import NamedTuple
 
 
-class FileToBeTrashed(NamedTuple('FileToBeTrashed', [
+class Trashee(NamedTuple('FileToBeTrashed', [
     ('path', str),
     ('volume', str)
 ])):

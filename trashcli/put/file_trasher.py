@@ -6,7 +6,7 @@ from trashcli.put.parent_realpath import ParentRealpath
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_file_in import TrashFileIn
-from trashcli.put.file_to_be_trashed import FileToBeTrashed
+from trashcli.put.trashee import Trashee
 from trashcli.put.trash_result import TrashResult
 from trashcli.put.volume_of_parent import VolumeOfParent
 
@@ -42,7 +42,7 @@ class FileTrasher:
         volume_of_file_to_be_trashed = forced_volume or \
                                        self.volume_of_parent.volume_of_parent(
                                            path)
-        file_be_trashed = FileToBeTrashed(path, volume_of_file_to_be_trashed)
+        file_be_trashed = Trashee(path, volume_of_file_to_be_trashed)
         candidates = self.trash_directories_finder. \
             possible_trash_directories_for(volume_of_file_to_be_trashed,
                                            user_trash_dir, environ, uid)

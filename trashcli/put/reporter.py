@@ -7,7 +7,7 @@ from typing import List, Dict
 
 from trashcli.put.candidate import Candidate
 from trashcli.put.describer import Describer
-from trashcli.put.file_to_be_trashed import FileToBeTrashed
+from trashcli.put.trashee import Trashee
 from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.trash import EX_IOERR, EX_OK
 
@@ -63,7 +63,7 @@ class TrashPutReporter:
 
     def wont_use_trash_dir_because_in_a_different_volume(
             self,
-            file_to_be_trashed,  # type: FileToBeTrashed
+            file_to_be_trashed,  # type: Trashee
             log_data,  # type: LogData
             environ,  # type: Dict[str, str],
             candidate,  # type: Candidate
