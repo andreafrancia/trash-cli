@@ -2,6 +2,7 @@ import unittest
 
 from mock import Mock
 from trashcli.put.path_maker import PathMakerType
+from trashcli.put.same_volume_gate import SameVolumeGate
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 
 
@@ -19,15 +20,18 @@ class TestTrashDirectoriesFinder(unittest.TestCase):
         assert result == [('~/.local/share/Trash',
                            'volume_of(~/.local/share/Trash)',
                            PathMakerType.absolute_paths,
-                           'all_is_ok_rules'),
+                           'all_is_ok_rules',
+                           SameVolumeGate()),
                           ('/volume/.Trash/123',
                            '/volume',
                            PathMakerType.relative_paths,
-                           'top_trash_dir_rules'),
+                           'top_trash_dir_rules',
+                           SameVolumeGate()),
                           ('/volume/.Trash-123',
                            '/volume',
                            PathMakerType.relative_paths,
-                           'all_is_ok_rules')]
+                           'all_is_ok_rules',
+                           SameVolumeGate())]
 
     def test_specific_user_dir(self):
         result = self.finder.possible_trash_directories_for('/volume',
@@ -38,4 +42,5 @@ class TestTrashDirectoriesFinder(unittest.TestCase):
         assert result == [('user_dir',
                            'volume_of(user_dir)',
                            PathMakerType.relative_paths,
-                           'all_is_ok_rules')]
+                           'all_is_ok_rules',
+                           SameVolumeGate())]

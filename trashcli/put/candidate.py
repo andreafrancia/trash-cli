@@ -2,12 +2,15 @@ import os
 
 from typing import NamedTuple
 
+from trashcli.put.gate import Gate
+
 
 class Candidate(NamedTuple('Candidate', [
     ('trash_dir_path', str),
     ('volume', str),
     ('path_maker_type', str),
     ('check_type', str),
+    ('gate', Gate),
 ])):
     def info_dir(self):
         return os.path.join(self.trash_dir_path, 'info')

@@ -3,6 +3,7 @@ from typing import Dict, List, Tuple
 from trashcli.fstab import Volumes
 from trashcli.put.candidate import Candidate
 from trashcli.put.path_maker import PathMakerType
+from trashcli.put.same_volume_gate import SameVolumeGate
 from trashcli.put.security_check import all_is_ok_rules, top_trash_dir_rules
 from trashcli.trash import home_trash_dir, volume_trash_dir1, volume_trash_dir2
 
@@ -24,21 +25,24 @@ class TrashDirectoriesFinder:
                 Candidate(trash_dir_path=path,
                           volume=volume,
                           path_maker_type=PathMakerType.absolute_paths,
-                          check_type=all_is_ok_rules))
+                          check_type=all_is_ok_rules,
+                          gate=SameVolumeGate()))
 
         def add_top_trash_dir(path, volume):
             trash_dirs.append(
                 Candidate(trash_dir_path=path,
                           volume=volume,
                           path_maker_type=PathMakerType.relative_paths,
-                          check_type=top_trash_dir_rules))
+                          check_type=top_trash_dir_rules,
+                          gate=SameVolumeGate()))
 
         def add_alt_top_trash_dir(path, volume):
             trash_dirs.append(
                 Candidate(trash_dir_path=path,
                           volume=volume,
                           path_maker_type=PathMakerType.relative_paths,
-                          check_type=all_is_ok_rules))
+                          check_type=all_is_ok_rules,
+                          gate=SameVolumeGate()))
 
         if specific_trash_dir:
             path = specific_trash_dir
@@ -47,7 +51,8 @@ class TrashDirectoriesFinder:
                 Candidate(trash_dir_path=path,
                           volume=volume,
                           path_maker_type=PathMakerType.relative_paths,
-                          check_type=all_is_ok_rules))
+                          check_type=all_is_ok_rules,
+                          gate=SameVolumeGate()))
         else:
             for path, dir_volume in home_trash_dir(environ,
                                                    self.volumes.volume_of):

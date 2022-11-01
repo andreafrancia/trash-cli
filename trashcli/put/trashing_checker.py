@@ -1,4 +1,5 @@
 from trashcli.put.candidate import Candidate
+from trashcli.put.same_volume_gate import SameVolumeGate
 from trashcli.put.trashee import Trashee
 
 
@@ -10,7 +11,4 @@ class TrashingChecker:
                                  trashee,  # type: Trashee
                                  candidate,  # type: Candidate,
                                  ):
-        volume_of_trash_dir = self.trash_dir_volume. \
-            volume_of_trash_dir(candidate.trash_dir_path)
-
-        return volume_of_trash_dir == trashee.volume
+        return candidate.gate.can_trash_in(trashee, candidate, self.trash_dir_volume)
