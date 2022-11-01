@@ -26,7 +26,7 @@ class TrashDirectoriesFinder:
                           volume=volume,
                           path_maker_type=PathMakerType.absolute_paths,
                           check_type=all_is_ok_rules,
-                          gate=SameVolumeGate()))
+                          gate=SameVolumeGate))
 
         def add_top_trash_dir(path, volume):
             trash_dirs.append(
@@ -34,7 +34,7 @@ class TrashDirectoriesFinder:
                           volume=volume,
                           path_maker_type=PathMakerType.relative_paths,
                           check_type=top_trash_dir_rules,
-                          gate=SameVolumeGate()))
+                          gate=SameVolumeGate))
 
         def add_alt_top_trash_dir(path, volume):
             trash_dirs.append(
@@ -42,7 +42,7 @@ class TrashDirectoriesFinder:
                           volume=volume,
                           path_maker_type=PathMakerType.relative_paths,
                           check_type=all_is_ok_rules,
-                          gate=SameVolumeGate()))
+                          gate=SameVolumeGate))
 
         if specific_trash_dir:
             path = specific_trash_dir
@@ -52,7 +52,7 @@ class TrashDirectoriesFinder:
                           volume=volume,
                           path_maker_type=PathMakerType.relative_paths,
                           check_type=all_is_ok_rules,
-                          gate=SameVolumeGate()))
+                          gate=SameVolumeGate))
         else:
             for path, dir_volume in home_trash_dir(environ,
                                                    self.volumes.volume_of):

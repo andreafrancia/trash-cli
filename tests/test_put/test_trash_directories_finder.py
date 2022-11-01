@@ -21,17 +21,17 @@ class TestTrashDirectoriesFinder(unittest.TestCase):
                            'volume_of(~/.local/share/Trash)',
                            PathMakerType.absolute_paths,
                            'all_is_ok_rules',
-                           SameVolumeGate()),
+                           SameVolumeGate),
                           ('/volume/.Trash/123',
                            '/volume',
                            PathMakerType.relative_paths,
                            'top_trash_dir_rules',
-                           SameVolumeGate()),
+                           SameVolumeGate),
                           ('/volume/.Trash-123',
                            '/volume',
                            PathMakerType.relative_paths,
                            'all_is_ok_rules',
-                           SameVolumeGate())]
+                           SameVolumeGate)]
 
     def test_specific_user_dir(self):
         result = self.finder.possible_trash_directories_for('/volume',
@@ -43,4 +43,4 @@ class TestTrashDirectoriesFinder(unittest.TestCase):
                            'volume_of(user_dir)',
                            PathMakerType.relative_paths,
                            'all_is_ok_rules',
-                           SameVolumeGate())]
+                           SameVolumeGate)]
