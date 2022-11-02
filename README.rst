@@ -50,6 +50,19 @@ Restore a trashed file::
     What file to restore [0..4]: 4
     $ ls foo
     foo
+    
+Restore a trashed file while overwriting existing files::
+    
+    $ echo "original">foo
+    $ ls
+    foo
+    $ trash foo
+    $ echo "new">foo
+    $ trash-restore --overwrite
+    0 2022-11-01 22:15:00 /home/andrea/foo
+    What file to restore [0..0]: 0
+    $ cat foo
+    original
 
 Restore multiple trashed files separated by ',', also support range::
 
