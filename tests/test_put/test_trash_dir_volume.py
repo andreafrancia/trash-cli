@@ -3,7 +3,7 @@ import unittest
 from mock import Mock
 
 from trashcli.fstab import create_fake_volume_of
-from trashcli.put.trash_dir_volume import TrashDirVolume
+from trashcli.put.trash_dir_volume_reader import TrashDirVolumeReader
 
 
 class TestTrashDirVolume(unittest.TestCase):
@@ -11,7 +11,7 @@ class TestTrashDirVolume(unittest.TestCase):
         volumes = create_fake_volume_of(['/disk1', '/disk2'])
         fs = Mock()
         fs.realpath = lambda path: path
-        self.trash_dir_volume = TrashDirVolume(volumes, fs)
+        self.trash_dir_volume = TrashDirVolumeReader(volumes, fs)
 
     def test(self):
         result = self.trash_dir_volume.volume_of_trash_dir('/disk1/trash_dir_path')

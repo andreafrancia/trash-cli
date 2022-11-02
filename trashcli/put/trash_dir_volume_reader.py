@@ -1,7 +1,7 @@
 import os
 
 
-class TrashDirVolume:
+class TrashDirVolumeReader:
     def __init__(self, volumes, fs):
         self.volumes = volumes
         self.fs = fs

@@ -5,7 +5,7 @@ from typing import cast
 
 from trashcli.put.candidate import Candidate
 from trashcli.put.same_volume_gate import SameVolumeGate
-from trashcli.put.trash_dir_volume import TrashDirVolume
+from trashcli.put.trash_dir_volume_reader import TrashDirVolumeReader
 from trashcli.put.trashee import Trashee
 from trashcli.put.trashing_checker import TrashingChecker
 
@@ -23,7 +23,7 @@ class TestTrashingChecker(unittest.TestCase):
     def setUp(self):
         self.trash_dir_volume = flexmock.Mock()
         self.checker = TrashingChecker(
-            cast(TrashDirVolume, self.trash_dir_volume))
+            cast(TrashDirVolumeReader, self.trash_dir_volume))
 
     def test_trashing_checker_same(self):
         self.trash_dir_volume.should_receive('volume_of_trash_dir')\
