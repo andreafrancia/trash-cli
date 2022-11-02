@@ -149,7 +149,10 @@ def parse_args(sys_argv, curdir):
                         ).complete = TRASH_DIRS
     parser.add_argument('--version', action='store_true', default=False)
 
-    parser.add_argument('--overwrite', action='store_true', default=False)
+    parser.add_argument('--overwrite',
+                        action='store_true',
+                        default=False,
+                        help='Overwrite existing files with files coming out of the trash')
 
     parsed = parser.parse_args(sys_argv[1:])
 
