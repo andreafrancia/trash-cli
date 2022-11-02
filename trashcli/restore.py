@@ -148,6 +148,9 @@ def parse_args(sys_argv, curdir):
                         help=argparse.SUPPRESS
                         ).complete = TRASH_DIRS
     parser.add_argument('--version', action='store_true', default=False)
+
+    parser.add_argument('--overwrite', action='store_true', default=False)
+
     parsed = parser.parse_args(sys_argv[1:])
 
     if parsed.version:
@@ -156,7 +159,8 @@ def parse_args(sys_argv, curdir):
         path = os.path.normpath(os.path.join(curdir, parsed.path))
         return Command.RunRestore, {'path': path,
                                     'sort': parsed.sort,
-                                    'trash_dir': parsed.trash_dir}
+                                    'trash_dir': parsed.trash_dir,
+                                    'overwrite': parsed.overwrite}
 
 
 class TrashedFiles:
@@ -201,7 +205,7 @@ class RestoreAskingTheUser(object):
         self.restore = restore
         self.die = die
 
-    def restore_asking_the_user(self, trashed_files):
+    def restore_asking_the_user(self, trashed_files, overwrite=False):
         try:
             user_input = self.input(
                 "What file to restore [0..%d]: " % (len(trashed_files) - 1))
@@ -220,7 +224,7 @@ class RestoreAskingTheUser(object):
                 try:
                     for index in sequences.all_indexes():
                         trashed_file = trashed_files[index]
-                        self.restore(trashed_file)
+                        self.restore(trashed_file, overwrite)
                 except IOError as e:
                     self.die(e)
 
@@ -263,8 +267,11 @@ class Restorer(object):
     def __init__(self, fs):
         self.fs = fs
 
-    def restore_trashed_file(self, trashed_file):
-        restore(trashed_file, self.fs)
+    def restore_trashed_file(self, trashed_file, overwrite=False):
+        """
+        If overwrite is enabled, then the restore functionality will overwrite an existing file
+        """
+        restore(trashed_file, self.fs, overwrite)
 
 
 def original_location_matches_path(trashed_file_original_location, path):
@@ -306,9 +313,10 @@ class RestoreCmd(object):
             elif args['sort'] == 'date':
                 trashed_files = sorted(trashed_files,
                                        key=lambda x: x.deletion_date)
-            self.handle_trashed_files(trashed_files)
 
-    def handle_trashed_files(self, trashed_files):
+            self.handle_trashed_files(trashed_files, args['overwrite'])
+
+    def handle_trashed_files(self, trashed_files, overwrite=False):
         if not trashed_files:
             self.report_no_files_found()
         else:
@@ -316,22 +324,22 @@ class RestoreCmd(object):
                 self.println("%4d %s %s" % (i,
                                             trashedfile.deletion_date,
                                             trashedfile.original_location))
-            self.restore_asking_the_user(trashed_files)
+            self.restore_asking_the_user(trashed_files, overwrite)
 
-    def restore_asking_the_user(self, trashed_files):
+    def restore_asking_the_user(self, trashed_files, overwrite=False):
         restore_asking_the_user = RestoreAskingTheUser(self.input,
                                                        self.println,
                                                        self.restore,
                                                        self.die)
-        restore_asking_the_user.restore_asking_the_user(trashed_files)
+        restore_asking_the_user.restore_asking_the_user(trashed_files, overwrite)
 
     def die(self, error):
         self.printerr(error)
         self.exit(1)
 
-    def restore(self, trashed_file):
+    def restore(self, trashed_file, overwrite=False):
         restorer = Restorer(self.fs)
-        restorer.restore_trashed_file(trashed_file)
+        restorer.restore_trashed_file(trashed_file, overwrite)
 
     def all_files_trashed_from_path(self, path, trash_dir_from_cli):
         for trashed_file in self.trashed_files.all_trashed_files(
@@ -416,8 +424,8 @@ class TrashedFile:
         self.original_file = original_file
 
 
-def restore(trashed_file, fs):
-    if fs.path_exists(trashed_file.original_location):
+def restore(trashed_file, fs, overwrite=False):
+    if not overwrite and fs.path_exists(trashed_file.original_location):
         raise IOError(
             'Refusing to overwrite existing file "%s".' % os.path.basename(
                 trashed_file.original_location))
