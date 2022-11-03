@@ -1,5 +1,4 @@
 from trashcli.put.candidate import Candidate
-from trashcli.put.same_volume_gate import SameVolumeGate
 from trashcli.put.trashee import Trashee
 
 

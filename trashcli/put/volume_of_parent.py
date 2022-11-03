@@ -11,5 +11,5 @@ class VolumeOfParent:
         self.parent_realpath = parent_realpath
 
     def volume_of_parent(self, path):
-        return self.volumes.volume_of(
-            self.parent_realpath.parent_realpath(path))
+        parent_realpath = self.parent_realpath.parent_realpath(path)
+        return self.volumes.volume_of(parent_realpath)
