@@ -24,7 +24,7 @@ class TestRestoreAskingTheUser(unittest.TestCase):
         self.assertEqual([call('What file to restore [0..1]: ')],
                          self.input.mock_calls)
         self.assertEqual([], self.println.mock_calls)
-        self.assertEqual([call('trashed_file1')] ,
+        self.assertEqual([call('trashed_file1', False)] ,
                          self.restore.mock_calls)
         self.assertEqual([], self.die.mock_calls)
 

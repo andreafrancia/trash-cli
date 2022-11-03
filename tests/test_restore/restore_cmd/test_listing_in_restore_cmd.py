@@ -60,7 +60,7 @@ class TestListingInRestoreCmd(unittest.TestCase):
 
         assert self.original_locations == ['/prefix']
 
-    def capture_trashed_files(self, arg):
+    def capture_trashed_files(self, arg, overwrite=False):
         self.original_locations = []
         for trashed_file in arg:
             self.original_locations.append(trashed_file.original_location)
