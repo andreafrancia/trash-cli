@@ -30,6 +30,7 @@ class Trasher:
               result,  # type: TrashResult
               mode,
               forced_volume,
+              home_fallback,
               program_name,
               log_data,  # type: LogData
               environ,  # type: Dict[str, str]
@@ -69,6 +70,7 @@ class Trasher:
         return self.file_trasher.trash_file(path,
                                             forced_volume,
                                             user_trash_dir,
+                                            home_fallback,
                                             result,
                                             environ,
                                             uid,

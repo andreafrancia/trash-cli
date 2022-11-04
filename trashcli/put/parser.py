@@ -1,11 +1,52 @@
+import os
 from argparse import SUPPRESS, ArgumentParser, RawDescriptionHelpFormatter
+from typing import NamedTuple, Any, Union, List, Optional
 
 from trashcli.shell_completion import TRASH_DIRS, TRASH_FILES, add_argument_to
 from trashcli.trash import version
 
-
 mode_force = 'force'
 mode_interactive = 'interactive'
+
+ExitWithCode = NamedTuple('ExitWithCode', [
+    ('type', type),
+    ('exit_code', int),
+])
+
+Trash = NamedTuple('Trash', [
+    ('type', type),
+    ('program_name', str),
+    ('options', Any),
+    ('files', List[str]),
+    ('trash_dir', Optional[str]),
+    ('mode', str),
+    ('forced_volume', Optional[str]),
+    ('verbose', int),
+    ('home_fallback', bool),
+])
+
+
+class Parser:
+
+    def parse_args(self, argv):  # type: (list) -> Union[ExitWithCode, Trash]
+        program_name = os.path.basename(argv[0])
+        arg_parser = make_parser(program_name)
+        try:
+            options = arg_parser.parse_args(argv[1:])
+            if len(options.files) <= 0:
+                arg_parser.error("Please specify the files to trash.")
+        except SystemExit as e:
+            return ExitWithCode(type=ExitWithCode, exit_code=e.code)
+
+        return Trash(type=Trash,
+                     program_name=program_name,
+                     options=options,
+                     files=options.files,
+                     trash_dir=options.trashdir,
+                     mode=options.mode,
+                     forced_volume=options.forced_volume,
+                     verbose=options.verbose,
+                     home_fallback=options.home_fallback)
 
 
 def make_parser(program_name):

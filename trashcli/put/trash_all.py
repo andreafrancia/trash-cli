@@ -17,6 +17,7 @@ class TrashAll:
                   user_trash_dir,
                   mode,
                   forced_volume,
+                  home_fallback,
                   program_name,
                   log_data,  # type: LogData
                   environ,
@@ -28,6 +29,7 @@ class TrashAll:
                                         result,
                                         mode,
                                         forced_volume,
+                                        home_fallback,
                                         program_name,
                                         log_data,
                                         environ,

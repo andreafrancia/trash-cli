@@ -34,6 +34,7 @@ class FileTrasher:
                    path,  # type: str
                    forced_volume,
                    user_trash_dir,
+                   home_fallback,
                    result,  # type: TrashResult
                    environ,  # type: Dict[str, str]
                    uid,  # type: int
