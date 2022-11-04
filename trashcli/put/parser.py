@@ -55,6 +55,11 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                         action="store",
                         dest="forced_volume",
                         help=SUPPRESS)
+    parser.add_argument('--home-fallback',
+                        default=False,
+                        action="store_true",
+                        dest="home_fallback",
+                        help=SUPPRESS)
     parser.add_argument("--version",
                         action="version",
                         version=version)
