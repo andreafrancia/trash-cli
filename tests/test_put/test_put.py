@@ -74,7 +74,8 @@ class TestPut(unittest.TestCase):
         self.fs.make_file("/disk1/pippo")
         self.is_mount.add_mount_point('/disk1')
 
-        result = self.run_cmd(['trash-put', '-vvv', '/disk1/pippo'],
+        result = self.run_cmd(['trash-put', '-vvv', '--home-fallback',
+                               '/disk1/pippo'],
                               {'HOME': '/home/user'}, 123)
 
         assert result[0] == ['trash-put: volume of file: /disk1',
@@ -84,6 +85,8 @@ class TestPut(unittest.TestCase):
                              'trash-put: trash directory is not secure: /disk1/.Trash/123',
                              'trash-put: trying trash dir: /disk1/.Trash-123 from volume: /disk1',
                              "trash-put: failed to trash /disk1/pippo in /disk1/.Trash-123, because: [Errno 13] Permission denied: '/disk1/.Trash-123/files'",
+                             'trash-put: trying trash dir: /home/user/.local/share/Trash from volume: /',
+                             "trash-put: won't use trash dir ~/.local/share/Trash because its volume (/) in a different volume than /disk1/pippo (/disk1)",
                              "trash-put: cannot trash regular empty file '/disk1/pippo'"]
 
     def test_make_file(self):

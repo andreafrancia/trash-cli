@@ -46,7 +46,8 @@ class FileTrasher:
         file_be_trashed = Trashee(path, volume_of_file_to_be_trashed)
         candidates = self.trash_directories_finder. \
             possible_trash_directories_for(volume_of_file_to_be_trashed,
-                                           user_trash_dir, environ, uid, False)
+                                           user_trash_dir, environ, uid,
+                                           home_fallback)
         self.reporter.volume_of_file(volume_of_file_to_be_trashed, log_data)
         file_has_been_trashed = False
         for candidate in candidates:
