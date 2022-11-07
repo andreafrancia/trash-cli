@@ -86,7 +86,7 @@ class TestPut(unittest.TestCase):
                              'trash-put: trying trash dir: /disk1/.Trash-123 from volume: /disk1',
                              "trash-put: failed to trash /disk1/pippo in /disk1/.Trash-123, because: [Errno 13] Permission denied: '/disk1/.Trash-123/files'",
                              'trash-put: trying trash dir: /home/user/.local/share/Trash from volume: /',
-                             "trash-put: won't use trash dir ~/.local/share/Trash because its volume (/) in a different volume than /disk1/pippo (/disk1)",
+                             "trash-put: trash dir not enabled: /home/user/.local/share/Trash",
                              "trash-put: cannot trash regular empty file '/disk1/pippo'"]
 
     def test_make_file(self):

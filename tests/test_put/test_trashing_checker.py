@@ -35,7 +35,7 @@ class TestTrashingChecker(unittest.TestCase):
                        gate=SameVolumeGate, volume='/disk1'),
             {})
 
-        assert result is True
+        assert result.ok is True
 
     def test_trashing_checker_different(self):
         self.trash_dir_volume.should_receive('volume_of_trash_dir')\
@@ -47,4 +47,5 @@ class TestTrashingChecker(unittest.TestCase):
                        gate=SameVolumeGate, volume='/disk1'),
             {})
 
-        assert result is False
+        assert result.ok is False
+        assert result.reason == "won't use trash dir trash-dir-path because its volume (/disk1) in a different volume than /path1 (/volume1)"

@@ -45,10 +45,8 @@ class TrashFileIn:
 
         could_be_trashed_in = self.trashing_checker.file_could_be_trashed_in(
             trashee, candidate, environ)
-        if not could_be_trashed_in:
-            msg_formatter = VolumeMessageFormatter(DirFormatter(environ))
-            message = msg_formatter.format_msg(trashee, candidate)
-            self.reporter.log_info(message, log_data)
+        if not could_be_trashed_in.ok:
+            self.reporter.log_info(could_be_trashed_in.reason, log_data)
             return False
 
         error = self.try_trash(candidate, log_data, environ, trashee)
