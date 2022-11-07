@@ -7,9 +7,31 @@ from typing import List, Dict
 
 from trashcli.put.candidate import Candidate
 from trashcli.put.describer import Describer
+from trashcli.put.dir_formatter import DirFormatter
 from trashcli.put.trashee import Trashee
 from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.trash import EX_IOERR, EX_OK
+
+
+class VolumeMessageFormatter:
+    def __init__(self,
+                 dir_formatter,  # type: DirFormatter
+                 ):
+        self.dir_formatter = dir_formatter
+
+    def format_msg(self,
+                   file_to_be_trashed,  # type: Trashee
+                   candidate,  # type: Candidate
+                   ):
+        formatted_dir = self.dir_formatter.shrink_user(
+            os.path.normpath(candidate.trash_dir_path))
+
+        return (
+                "won't use trash dir %s because its volume (%s) in a different volume than %s (%s)"
+                % (formatted_dir,
+                   candidate.volume,
+                   file_to_be_trashed.path,
+                   file_to_be_trashed.volume))
 
 
 class TrashPutReporter:
@@ -68,18 +90,10 @@ class TrashPutReporter:
             environ,  # type: Dict[str, str],
             candidate,  # type: Candidate
     ):
-        class FormatVolumeMessage:
-            def format_msg(self):
-                return (
-                        "won't use trash dir %s because its volume (%s) in a different volume than %s (%s)"
-                        % (shrink_user(
-                    os.path.normpath(candidate.trash_dir_path),
-                    environ),
-                           candidate.volume,
-                           file_to_be_trashed.path,
-                           file_to_be_trashed.volume))
 
-        self.logger.info(FormatVolumeMessage().format_msg(), log_data)
+        msg_formatter = VolumeMessageFormatter(DirFormatter(environ))
+        message = msg_formatter.format_msg(file_to_be_trashed, candidate)
+        self.logger.info(message, log_data)
 
     def unable_to_trash_file_in_because(self,
                                         file_to_be_trashed,
@@ -143,14 +157,4 @@ def remove_octal_prefix(s):
 
 
 def shrink_user(path, environ):
-    import posixpath
-    import re
-    try:
-        home_dir = environ.get('HOME', '')
-        home_dir = posixpath.normpath(home_dir)
-        if home_dir != '':
-            path = re.sub('^' + re.escape(home_dir + os.path.sep),
-                          '~' + os.path.sep, path)
-    except KeyError:
-        pass
-    return path
+    return DirFormatter(environ).shrink_user(path)

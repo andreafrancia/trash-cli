@@ -1,9 +1,9 @@
 import unittest
 
-from trashcli.put.reporter import shrink_user
+from trashcli.put.dir_formatter import DirFormatter
 
 
-class TestTrashDirectoryName(unittest.TestCase):
+class TestDirFormatter(unittest.TestCase):
     def setUp(self):
         self.environ = {}
 
@@ -37,5 +37,6 @@ class TestTrashDirectoryName(unittest.TestCase):
         self.assert_name_is('/foo/Trash')
 
     def assert_name_is(self, expected_name):
-        shrinked = shrink_user(self.trash_dir, self.environ)
+        dir_formatter = DirFormatter(self.environ)
+        shrinked = dir_formatter.shrink_user(self.trash_dir)
         assert expected_name == shrinked
