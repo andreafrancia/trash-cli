@@ -12,7 +12,7 @@ class VolumeMessageFormatter:
         self.dir_formatter = dir_formatter
 
     def format_msg(self,
-                   file_to_be_trashed,  # type: Trashee
+                   trashee,  # type: Trashee
                    candidate,  # type: Candidate
                    ):
         formatted_dir = self.dir_formatter.shrink_user(
@@ -20,7 +20,5 @@ class VolumeMessageFormatter:
 
         return (
                 "won't use trash dir %s because its volume (%s) in a different volume than %s (%s)"
-                % (formatted_dir,
-                   candidate.volume,
-                   file_to_be_trashed.path,
-                   file_to_be_trashed.volume))
+                % (formatted_dir, candidate.volume, trashee.path,
+                   trashee.volume))

@@ -30,8 +30,10 @@ class TestTrashingChecker(unittest.TestCase):
             .with_args('trash-dir-path').and_return('/volume1')
 
         result = self.checker.file_could_be_trashed_in(
-            mock_value(Trashee, volume='/volume1'),
-            mock_value(Candidate, trash_dir_path='trash-dir-path', gate=SameVolumeGate))
+            mock_value(Trashee, volume='/volume1', path='/path1'),
+            mock_value(Candidate, trash_dir_path='trash-dir-path',
+                       gate=SameVolumeGate, volume='/disk1'),
+            {})
 
         assert result is True
 
@@ -40,7 +42,9 @@ class TestTrashingChecker(unittest.TestCase):
             .with_args('trash-dir-path').and_return('/volume2')
 
         result = self.checker.file_could_be_trashed_in(
-            mock_value(Trashee, volume='/volume1'),
-            mock_value(Candidate, trash_dir_path='trash-dir-path', gate=SameVolumeGate))
+            mock_value(Trashee, volume='/volume1', path='/path1'),
+            mock_value(Candidate, trash_dir_path='trash-dir-path',
+                       gate=SameVolumeGate, volume='/disk1'),
+            {})
 
         assert result is False

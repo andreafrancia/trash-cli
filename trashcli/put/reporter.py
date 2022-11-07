@@ -63,18 +63,6 @@ class TrashPutReporter:
                  ):
         self.logger.info(message, log_data)
 
-    def wont_use_trash_dir_because_in_a_different_volume(
-            self,
-            file_to_be_trashed,  # type: Trashee
-            log_data,  # type: LogData
-            environ,  # type: Dict[str, str],
-            candidate,  # type: Candidate
-    ):
-
-        msg_formatter = VolumeMessageFormatter(DirFormatter(environ))
-        message = msg_formatter.format_msg(file_to_be_trashed, candidate)
-        self.logger.info(message, log_data)
-
     def unable_to_trash_file_in_because(self,
                                         file_to_be_trashed,
                                         trash_directory,

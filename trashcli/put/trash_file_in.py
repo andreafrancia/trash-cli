@@ -1,6 +1,7 @@
 from typing import Dict
 
 from trashcli.put.candidate import Candidate
+from trashcli.put.dir_formatter import DirFormatter
 from trashcli.put.dir_maker import DirMaker
 from trashcli.put.fs import Fs
 from trashcli.put.my_logger import LogData
@@ -9,6 +10,7 @@ from trashcli.put.security_check import SecurityCheck
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 from trashcli.put.trashee import Trashee
 from trashcli.put.trashing_checker import TrashingChecker
+from trashcli.put.volume_message_formatter import VolumeMessageFormatter
 
 
 class TrashFileIn:
@@ -42,10 +44,11 @@ class TrashFileIn:
         self.reporter.trash_dir_with_volume(candidate, log_data)
 
         could_be_trashed_in = self.trashing_checker.file_could_be_trashed_in(
-            trashee, candidate)
+            trashee, candidate, environ)
         if not could_be_trashed_in:
-            self.reporter.wont_use_trash_dir_because_in_a_different_volume(
-                trashee, log_data, environ, candidate)
+            msg_formatter = VolumeMessageFormatter(DirFormatter(environ))
+            message = msg_formatter.format_msg(trashee, candidate)
+            self.reporter.log_info(message, log_data)
             return False
 
         error = self.try_trash(candidate, log_data, environ, trashee)
