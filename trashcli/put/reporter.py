@@ -68,13 +68,18 @@ class TrashPutReporter:
             environ,  # type: Dict[str, str],
             candidate,  # type: Candidate
     ):
-        self.logger.info(
-            "won't use trash dir %s because its volume (%s) in a different volume than %s (%s)"
-            % (shrink_user(os.path.normpath(candidate.trash_dir_path),
-                           environ),
-               candidate.volume,
-               file_to_be_trashed.path, file_to_be_trashed.volume),
-            log_data)
+        class FormatVolumeMessage:
+            def format_msg(self):
+                return (
+                        "won't use trash dir %s because its volume (%s) in a different volume than %s (%s)"
+                        % (shrink_user(
+                    os.path.normpath(candidate.trash_dir_path),
+                    environ),
+                           candidate.volume,
+                           file_to_be_trashed.path,
+                           file_to_be_trashed.volume))
+
+        self.logger.info(FormatVolumeMessage().format_msg(), log_data)
 
     def unable_to_trash_file_in_because(self,
                                         file_to_be_trashed,
