@@ -1,7 +1,6 @@
 from typing import Dict
 
 from trashcli.put.candidate import Candidate
-from trashcli.put.dir_formatter import DirFormatter
 from trashcli.put.dir_maker import DirMaker
 from trashcli.put.fs import Fs
 from trashcli.put.my_logger import LogData
@@ -10,7 +9,6 @@ from trashcli.put.security_check import SecurityCheck
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 from trashcli.put.trashee import Trashee
 from trashcli.put.trashing_checker import TrashingChecker
-from trashcli.put.volume_message_formatter import VolumeMessageFormatter
 
 
 class TrashFileIn:
@@ -52,7 +50,7 @@ class TrashFileIn:
         error = self.try_trash(candidate, log_data, environ, trashee)
         if error:
             self.reporter.unable_to_trash_file_in_because(
-                trashee.path, candidate.norm_path(), error, log_data,
+                trashee.path, candidate, error, log_data,
                 environ)
             return False
 

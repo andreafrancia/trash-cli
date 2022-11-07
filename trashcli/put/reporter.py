@@ -1,17 +1,14 @@
 import os
 import re
-from grp import getgrgid
 from pwd import getpwuid
 
-from typing import List, Dict
+from grp import getgrgid
+from typing import List
 
 from trashcli.put.candidate import Candidate
 from trashcli.put.describer import Describer
-from trashcli.put.dir_formatter import DirFormatter
-from trashcli.put.trashee import Trashee
 from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.trash import EX_IOERR, EX_OK
-from volume_message_formatter import VolumeMessageFormatter
 
 
 class TrashPutReporter:
@@ -39,7 +36,7 @@ class TrashPutReporter:
                                     trash_dir,  # type: Candidate
                                     log_data,  # type: LogData
                                     environ):
-        trash_dir_path = shrink_user(trash_dir.norm_path(), environ)
+        trash_dir_path = trash_dir.shrink_user(environ)
         self.logger.info("'%s' trashed in %s" % (trashed_file, trash_dir_path),
                          log_data)
 
@@ -65,12 +62,12 @@ class TrashPutReporter:
 
     def unable_to_trash_file_in_because(self,
                                         file_to_be_trashed,
-                                        trash_directory,
+                                        trash_dir,  # type: Candidate
                                         error,
                                         log_data,  # type: LogData
                                         environ):
         self.logger.info("failed to trash %s in %s, because: %s" % (
-            file_to_be_trashed, shrink_user(trash_directory, environ), error),
+            file_to_be_trashed, trash_dir.shrink_user(environ), error),
                          log_data)
         self.logger.debug_func_result(
             lambda: self.log_data_for_debugging(error), log_data)
@@ -122,7 +119,3 @@ def remove_octal_prefix(s):
     remove_new_octal_format = s.replace('0o', '')
     remove_old_octal_format = re.sub(r"^0", '', remove_new_octal_format)
     return remove_old_octal_format
-
-
-def shrink_user(path, environ):
-    return DirFormatter(environ).shrink_user(path)

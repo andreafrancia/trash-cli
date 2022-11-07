@@ -1,22 +1,16 @@
-import os
+from typing import Dict
 
 from trashcli.put.candidate import Candidate
-from trashcli.put.dir_formatter import DirFormatter
 from trashcli.put.trashee import Trashee
 
 
 class VolumeMessageFormatter:
-    def __init__(self,
-                 dir_formatter,  # type: DirFormatter
-                 ):
-        self.dir_formatter = dir_formatter
-
     def format_msg(self,
                    trashee,  # type: Trashee
                    candidate,  # type: Candidate
+                   environ, # type: Dict[str, str]
                    ):
-        formatted_dir = self.dir_formatter.shrink_user(
-            os.path.normpath(candidate.trash_dir_path))
+        formatted_dir = candidate.shrink_user(environ)
 
         return (
                 "won't use trash dir %s because its volume (%s) in a different volume than %s (%s)"

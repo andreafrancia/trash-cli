@@ -1,4 +1,6 @@
 import os
+import posixpath
+import re
 
 from typing import NamedTuple, Type
 
@@ -20,3 +22,12 @@ class Candidate(NamedTuple('Candidate', [
 
     def norm_path(self):
         return os.path.normpath(self.trash_dir_path)
+
+    def shrink_user(self, environ):
+        path = self.norm_path()
+        home_dir = environ.get('HOME', '')
+        home_dir = posixpath.normpath(home_dir)
+        if home_dir != '':
+            path = re.sub('^' + re.escape(home_dir + os.path.sep),
+                          '~' + os.path.sep, path)
+        return path
