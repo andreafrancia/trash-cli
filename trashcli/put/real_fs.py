@@ -6,6 +6,13 @@ from trashcli.fs import write_file
 from trashcli.put.fs import Fs
 
 
+class DirScanner:
+    def fallback_scandir(self, path):
+        for path, dirs, files in os.walk(path):
+            for f in files:
+                yield os.path.join(path, f)
+
+
 class RealFs(Fs):
 
     @staticmethod
@@ -24,9 +31,22 @@ class RealFs(Fs):
     def isfile(path):
         return os.path.isfile(path)
 
-    @staticmethod
-    def getsize(path):
+    def getsize(self, path):
         return os.path.getsize(path)
+
+    def get_size_recursive(self, path):
+        if os.path.isfile(path):
+            return os.path.getsize(path)
+
+        size = 0
+        for f in self.scandir(path):
+            size += os.path.getsize(f)
+
+        return size
+
+    def scandir(self, path):
+        for f in DirScanner().fallback_scandir(path):
+            yield f
 
     @staticmethod
     def exists(path):
