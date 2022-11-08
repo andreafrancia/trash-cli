@@ -4,7 +4,7 @@ from mock import Mock
 
 from trashcli.put.candidate import Candidate
 from trashcli.put.path_maker import PathMakerType
-from trashcli.put.same_volume_gate import SameVolumeGate, ClosedGate
+from trashcli.put.gate import SameVolumeGate, ClosedGate
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 
 

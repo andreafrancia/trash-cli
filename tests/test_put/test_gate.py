@@ -1,4 +1,4 @@
-from trashcli.put.same_volume_gate import SameVolumeGate
+from trashcli.put.gate import SameVolumeGate
 
 
 class TestGate:

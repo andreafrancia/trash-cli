@@ -4,7 +4,7 @@ import flexmock
 from typing import cast
 
 from trashcli.put.candidate import Candidate
-from trashcli.put.same_volume_gate import SameVolumeGate
+from trashcli.put.gate import SameVolumeGate
 from trashcli.put.trash_dir_volume_reader import TrashDirVolumeReader
 from trashcli.put.trashee import Trashee
 from trashcli.put.trashing_checker import TrashingChecker

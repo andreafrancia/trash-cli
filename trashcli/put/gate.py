@@ -1,22 +1,16 @@
-class GateCheckResult:
-    def __init__(self, ok, reason):
-        self.ok = ok
-        self.reason = reason
-
-    @staticmethod
-    def ok():
-        return GateCheckResult(True, None)
-
-    @staticmethod
-    def error(reason):
-        return GateCheckResult(False, reason)
+import six
+from trashcli.put.class_name_meta import ClassNameMeta
 
 
 class Gate(object):
-    @staticmethod
-    def can_trash_in(trashee,
-                     candidate,
-                     trash_dir_volume,
-                     environ,
-                     ):  # type (...) -> bool
-        pass
+    pass
+
+
+@six.add_metaclass(ClassNameMeta)
+class ClosedGate(Gate):
+    pass
+
+
+@six.add_metaclass(ClassNameMeta)
+class SameVolumeGate(Gate):
+    pass

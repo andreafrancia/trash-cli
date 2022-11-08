@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple
 from trashcli.fstab import Volumes
 from trashcli.put.candidate import Candidate
 from trashcli.put.path_maker import PathMakerType
-from trashcli.put.same_volume_gate import SameVolumeGate, ClosedGate
+from trashcli.put.gate import SameVolumeGate, ClosedGate
 from trashcli.put.security_check import all_is_ok_rules, top_trash_dir_rules
 from trashcli.trash import home_trash_dir, volume_trash_dir1, volume_trash_dir2
 
