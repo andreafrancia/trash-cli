@@ -7,7 +7,7 @@ from mock import Mock, call
 
 from trashcli.put.my_logger import LogData
 from trashcli.put.parser import mode_force, mode_interactive
-from trashcli.put.real_fs import RealFs
+from trashcli.put.fs.real_fs import RealFs
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_result import TrashResult
 from trashcli.put.trasher import Trasher

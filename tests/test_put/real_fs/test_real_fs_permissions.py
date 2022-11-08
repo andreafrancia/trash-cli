@@ -2,7 +2,7 @@ import unittest
 
 from tests.support.capture_error import capture_error
 from tests.support.my_path import MyPath
-from trashcli.put.real_fs import RealFs
+from trashcli.put.fs.real_fs import RealFs
 
 
 class TestRealFsPermissions(unittest.TestCase):

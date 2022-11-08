@@ -1,5 +1,5 @@
 from trashcli.fstab import Volumes
-from trashcli.put.parent_realpath import ParentRealpath
+from trashcli.put.fs.parent_realpath import ParentRealpath
 
 
 class VolumeOfParent:

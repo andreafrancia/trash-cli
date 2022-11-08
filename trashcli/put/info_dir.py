@@ -1,7 +1,7 @@
 import errno
 import os
 
-from trashcli.put.fs import Fs
+from trashcli.put.fs.fs import Fs
 from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.put.suffix import Suffix
 

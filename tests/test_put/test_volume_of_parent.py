@@ -5,8 +5,8 @@ from typing import cast
 
 from tests.support.volumes_mock import volumes_mock
 from trashcli.fstab import Volumes
-from trashcli.put.parent_realpath import ParentRealpath
-from trashcli.put.volume_of_parent import VolumeOfParent
+from trashcli.put.fs.parent_realpath import ParentRealpath
+from trashcli.put.fs.volume_of_parent import VolumeOfParent
 
 
 class TestVolumeOfParent(unittest.TestCase):

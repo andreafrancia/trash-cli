@@ -2,7 +2,7 @@ import datetime
 import os
 import uuid
 
-from trashcli.put.forma_trash_info import format_original_location
+from trashcli.put.format_trash_info import format_original_location
 
 from .support.files import make_file, make_parent_for, make_unreadable_file
 

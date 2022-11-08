@@ -2,8 +2,8 @@ import os
 
 from trashcli.put.candidate import Candidate
 from trashcli.put.clock import PutClock
-from trashcli.put.forma_trash_info import format_trashinfo
-from trashcli.put.fs import Fs
+from trashcli.put.format_trash_info import format_trashinfo
+from trashcli.put.fs.fs import Fs
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import LogData
 from trashcli.put.original_location import OriginalLocation

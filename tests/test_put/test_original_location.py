@@ -4,7 +4,7 @@ from parameterized import parameterized
 
 from tests.test_put.support.fake_fs_with_realpath import FakeFsWithRealpath
 from trashcli.put.original_location import OriginalLocation
-from trashcli.put.parent_realpath import ParentRealpath
+from trashcli.put.fs.parent_realpath import ParentRealpath
 from trashcli.put.path_maker import PathMaker, PathMakerType
 
 rel = PathMakerType.relative_paths

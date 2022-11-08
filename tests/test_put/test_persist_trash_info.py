@@ -10,7 +10,7 @@ from trashcli.fs import read_file
 from trashcli.put.dir_maker import DirMaker
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import LogData
-from trashcli.put.real_fs import RealFs
+from trashcli.put.fs.real_fs import RealFs
 from ..support.my_path import MyPath
 
 

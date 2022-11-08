@@ -12,9 +12,9 @@ from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.original_location import OriginalLocation
-from trashcli.put.parent_realpath import ParentRealpath
+from trashcli.put.fs.parent_realpath import ParentRealpath
 from trashcli.put.path_maker import PathMaker
-from trashcli.put.real_fs import RealFs
+from trashcli.put.fs.real_fs import RealFs
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_all import TrashAll
@@ -26,7 +26,7 @@ from trashcli.put.trashing_checker import TrashingChecker
 from trashcli.put.trash_put_cmd import TrashPutCmd
 from trashcli.put.trasher import Trasher
 from trashcli.put.user import User
-from trashcli.put.volume_of_parent import VolumeOfParent
+from trashcli.put.fs.volume_of_parent import VolumeOfParent
 
 
 def main():

@@ -1,6 +1,6 @@
 import os
 
-from trashcli.put.parent_realpath import ParentRealpath
+from trashcli.put.fs.parent_realpath import ParentRealpath
 from trashcli.put.path_maker import PathMaker
 
 

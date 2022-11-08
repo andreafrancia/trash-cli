@@ -1,4 +1,4 @@
-from trashcli.put.fs import Fs
+from trashcli.put.fs.fs import Fs
 
 
 class DirMaker:

@@ -1,6 +1,6 @@
 import os
 
-from trashcli.put.real_fs import RealFs
+from trashcli.put.fs.real_fs import RealFs
 
 
 class Describer:

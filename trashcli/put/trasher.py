@@ -3,10 +3,10 @@ import os
 from typing import Dict
 
 from trashcli.put.file_trasher import FileTrasher
-from trashcli.put.fs import Fs
+from trashcli.put.fs.fs import Fs
+from trashcli.put.fs.real_fs import RealFs
 from trashcli.put.my_logger import LogData
 from trashcli.put.parser import mode_force, mode_interactive
-from trashcli.put.real_fs import RealFs
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_result import TrashResult
 from trashcli.put.user import User, user_replied_no

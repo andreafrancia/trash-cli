@@ -6,7 +6,7 @@ from tests.test_put.support.fake_fs.inode import SymLink
 from tests.test_put.support.fake_fs.file import File
 from tests.test_put.support.format_mode import format_mode
 from tests.test_put.support.my_file_not_found_error import MyFileNotFoundError
-from trashcli.put.fs import Fs
+from trashcli.put.fs.fs import Fs
 
 
 class FakeFs(Fs):

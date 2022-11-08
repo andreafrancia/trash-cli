@@ -2,7 +2,7 @@ from typing import Dict
 
 from trashcli.put.candidate import Candidate
 from trashcli.put.dir_maker import DirMaker
-from trashcli.put.fs import Fs
+from trashcli.put.fs.fs import Fs
 from trashcli.put.my_logger import LogData
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.security_check import SecurityCheck
