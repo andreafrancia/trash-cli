@@ -8,7 +8,7 @@ from trashcli.put.fs.real_fs import RealFs
 
 
 @pytest.mark.slow
-class TestRealFsGetSize(unittest.TestCase):
+class TestSizeCounterOnRealFs(unittest.TestCase):
     def setUp(self):
         self.fs = RealFs()
         self.counter = SizeCounter(self.fs)
