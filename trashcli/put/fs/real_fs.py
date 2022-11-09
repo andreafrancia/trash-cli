@@ -3,9 +3,9 @@ import stat
 
 from trashcli import fs
 from trashcli.fs import write_file
-from trashcli.put.fs.dir_scanner import DirScanner
+from trashcli.put.fs.size_counter import SizeCounter
 from trashcli.put.fs.fs import Fs
-from six.moves import map as imap
+
 
 class RealFs(Fs):
 
@@ -24,13 +24,14 @@ class RealFs(Fs):
     def getsize(self, path):
         return os.path.getsize(path)
 
-    def get_size_recursive(self, path):
-        if os.path.isfile(path):
-            return os.path.getsize(path)
+    def walk_no_follow(self, path):
+        try:
+            import scandir
+            walk = scandir.walk
+        except ImportError:
+            walk = os.walk
 
-        files = DirScanner().list_all_files(path)
-        files_sizes = imap(os.path.getsize, files)
-        return sum(files_sizes, 0)
+        return walk(path, followlinks=False)
 
     def exists(self, path):
         return os.path.exists(path)
