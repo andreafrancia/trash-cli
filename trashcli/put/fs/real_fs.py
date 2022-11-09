@@ -28,7 +28,7 @@ class RealFs(Fs):
         if os.path.isfile(path):
             return os.path.getsize(path)
 
-        files = DirScanner().scandir(path)
+        files = DirScanner().list_all_files(path)
         files_sizes = imap(os.path.getsize, files)
         return sum(files_sizes, 0)
 

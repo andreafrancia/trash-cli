@@ -2,9 +2,6 @@ import os
 
 
 class DirScanner:
-    def scandir(self, path):
-        for f in DirScanner().list_all_files(path):
-            yield f
 
     def list_all_files(self, path):
         try:
