@@ -16,6 +16,9 @@ class FakeFs(Fs):
         self.root = directory
         self.cwd = cwd
 
+    def listdir(self, path):
+        return self.ls_aa(path)
+
     def ls_aa(self, path):
         all_entries = self.ls_a(path)
         all_entries.remove(".")
@@ -172,3 +175,20 @@ class FakeFs(Fs):
     def get_mod_s(self, path):
         mode = self.get_mod(path)
         return format_mode(mode)
+
+    def walk_no_follow(self, top):
+        names = self.listdir(top)
+
+        dirs, nondirs = [], []
+        for name in names:
+            if self.isdir(os.path.join(top, name)):
+                dirs.append(name)
+            else:
+                nondirs.append(name)
+
+        yield top, dirs, nondirs
+        for name in dirs:
+            new_path = os.path.join(top, name)
+            if not self.islink(new_path):
+                for x in self.walk_no_follow(new_path):
+                    yield x

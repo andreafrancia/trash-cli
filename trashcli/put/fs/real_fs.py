@@ -62,3 +62,6 @@ class RealFs(Fs):
 
     def get_mod(self, path):
         return stat.S_IMODE(os.lstat(path).st_mode)
+
+    def listdir(self, path):
+        return os.listdir(path)

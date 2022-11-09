@@ -16,7 +16,7 @@ class SizeCounter:
             return self.fs.getsize(path)
 
         files = self.list_all_files(path)
-        files_sizes = imap(os.path.getsize, files)
+        files_sizes = imap(self.fs.getsize, files)
         return sum(files_sizes, 0)
 
     def list_all_files(self,
