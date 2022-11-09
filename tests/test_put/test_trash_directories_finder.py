@@ -4,7 +4,7 @@ from mock import Mock
 
 from trashcli.put.candidate import Candidate
 from trashcli.put.path_maker import PathMakerType
-from trashcli.put.gate import SameVolumeGate, ClosedGate
+from trashcli.put.gate import SameVolumeGate, ClosedGate, HomeFallbackGate
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 
 
@@ -34,7 +34,7 @@ class TestTrashDirectoriesFinder(unittest.TestCase):
             Candidate(trash_dir_path='~/.local/share/Trash',
                       volume='volume_of(~/.local/share/Trash)',
                       path_maker_type='absolute_paths',
-                      check_type='all_is_ok_rules', gate=ClosedGate),
+                      check_type='all_is_ok_rules', gate=HomeFallbackGate),
         ]
 
     def test_specific_user_dir(self):

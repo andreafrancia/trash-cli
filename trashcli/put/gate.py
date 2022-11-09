@@ -12,5 +12,10 @@ class ClosedGate(Gate):
 
 
 @six.add_metaclass(ClassNameMeta)
+class HomeFallbackGate(Gate):
+    pass
+
+
+@six.add_metaclass(ClassNameMeta)
 class SameVolumeGate(Gate):
     pass

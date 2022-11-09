@@ -40,6 +40,17 @@ class ClosedGateImpl(GateImpl):
                                      candidate.shrink_user(environ))
 
 
+class HomeFallbackGateImpl(GateImpl):
+
+    def can_trash_in(self,
+                     trashee,  # type: Trashee
+                     candidate,  # type: Candidate
+                     environ,  # type: Dict[str, str]
+                     ):
+        return GateCheckResult.error("trash dir not enabled: %s" %
+                                     candidate.shrink_user(environ))
+
+
 class SameVolumeGateImpl(GateImpl):
     def __init__(self,
                  trash_dir_volume,  # type: TrashDirVolumeReader

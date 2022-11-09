@@ -1,5 +1,6 @@
-from trashcli.put.gate import ClosedGate, SameVolumeGate
-from trashcli.put.gate_impl import ClosedGateImpl, SameVolumeGateImpl
+from trashcli.put.gate import ClosedGate, SameVolumeGate, HomeFallbackGate
+from trashcli.put.gate_impl import ClosedGateImpl, SameVolumeGateImpl, \
+    HomeFallbackGateImpl
 from typing import Dict
 
 from trashcli.put.candidate import Candidate
@@ -18,6 +19,7 @@ class TrashingChecker:
                                  ):  # type: (...) -> GateCheckResult
         gates = {
             ClosedGate: ClosedGateImpl(),
+            HomeFallbackGate: HomeFallbackGateImpl(),
             SameVolumeGate: SameVolumeGateImpl(self.trash_dir_volume),
         }
         gate = gates[candidate.gate]
