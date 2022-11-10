@@ -3,13 +3,9 @@ import unittest
 from parameterized import parameterized
 
 from tests.test_put.support.fake_fs_with_realpath import FakeFsWithRealpath
-from trashcli.put.original_location import OriginalLocation
 from trashcli.put.fs.parent_realpath import ParentRealpath
-from trashcli.put.path_maker import PathMaker, PathMakerType
-
-rel = PathMakerType.relative_paths
-abs = PathMakerType.absolute_paths
-
+from trashcli.put.original_location import OriginalLocation
+from trashcli.put.path_maker import PathMaker, AbsolutePaths, RelativePaths
 
 class TestOriginalLocation(unittest.TestCase):
 
@@ -18,18 +14,18 @@ class TestOriginalLocation(unittest.TestCase):
             ParentRealpath(FakeFsWithRealpath()), PathMaker())
 
     @parameterized.expand([
-        ('/volume', '/file', abs, '/file',),
-        ('/volume', '/file/././', abs, '/file',),
-        ('/volume', '/dir/../file', abs, '/file'),
-        ('/volume', '/dir/../././file', abs, '/file'),
-        ('/volume', '/outside/file', abs, '/outside/file'),
-        ('/volume', '/volume/file', abs, '/volume/file',),
-        ('/volume', '/volume/dir/file', abs, '/volume/dir/file'),
-        ('/volume', '/file', rel, '/file'),
-        ('/volume', '/dir/../file', rel, '/file'),
-        ('/volume', '/outside/file', rel, '/outside/file'),
-        ('/volume', '/volume/file', rel, 'file'),
-        ('/volume', '/volume/dir/file', rel, 'dir/file'),
+        ('/volume', '/file', AbsolutePaths, '/file',),
+        ('/volume', '/file/././', AbsolutePaths, '/file',),
+        ('/volume', '/dir/../file', AbsolutePaths, '/file'),
+        ('/volume', '/dir/../././file', AbsolutePaths, '/file'),
+        ('/volume', '/outside/file', AbsolutePaths, '/outside/file'),
+        ('/volume', '/volume/file', AbsolutePaths, '/volume/file',),
+        ('/volume', '/volume/dir/file', AbsolutePaths, '/volume/dir/file'),
+        ('/volume', '/file', RelativePaths, '/file'),
+        ('/volume', '/dir/../file', RelativePaths, '/file'),
+        ('/volume', '/outside/file', RelativePaths, '/outside/file'),
+        ('/volume', '/volume/file', RelativePaths, 'file'),
+        ('/volume', '/volume/dir/file', RelativePaths, 'dir/file'),
     ])
     def test_original_location(self, volume, file_to_be_trashed, path_type,
                                expected_result):

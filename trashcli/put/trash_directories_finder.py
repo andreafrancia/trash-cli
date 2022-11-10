@@ -1,9 +1,9 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 from trashcli.fstab import Volumes
 from trashcli.put.candidate import Candidate
-from trashcli.put.path_maker import PathMakerType
-from trashcli.put.gate import SameVolumeGate, ClosedGate, HomeFallbackGate
+from trashcli.put.gate import SameVolumeGate, HomeFallbackGate
+from trashcli.put.path_maker import AbsolutePaths, RelativePaths
 from trashcli.put.security_check import all_is_ok_rules, top_trash_dir_rules
 from trashcli.trash import home_trash_dir, volume_trash_dir1, volume_trash_dir2
 
@@ -25,7 +25,7 @@ class TrashDirectoriesFinder:
             trash_dirs.append(
                 Candidate(trash_dir_path=path,
                           volume=volume,
-                          path_maker_type=PathMakerType.absolute_paths,
+                          path_maker_type=AbsolutePaths,
                           check_type=all_is_ok_rules,
                           gate=gate))
 
@@ -33,7 +33,7 @@ class TrashDirectoriesFinder:
             trash_dirs.append(
                 Candidate(trash_dir_path=path,
                           volume=volume,
-                          path_maker_type=PathMakerType.relative_paths,
+                          path_maker_type=RelativePaths,
                           check_type=top_trash_dir_rules,
                           gate=SameVolumeGate))
 
@@ -41,7 +41,7 @@ class TrashDirectoriesFinder:
             trash_dirs.append(
                 Candidate(trash_dir_path=path,
                           volume=volume,
-                          path_maker_type=PathMakerType.relative_paths,
+                          path_maker_type=RelativePaths,
                           check_type=all_is_ok_rules,
                           gate=SameVolumeGate))
 
@@ -51,7 +51,7 @@ class TrashDirectoriesFinder:
             trash_dirs.append(
                 Candidate(trash_dir_path=path,
                           volume=volume,
-                          path_maker_type=PathMakerType.relative_paths,
+                          path_maker_type=RelativePaths,
                           check_type=all_is_ok_rules,
                           gate=SameVolumeGate))
         else:

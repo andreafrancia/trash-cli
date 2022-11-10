@@ -3,8 +3,8 @@ import unittest
 from mock import Mock
 
 from trashcli.put.candidate import Candidate
-from trashcli.put.path_maker import PathMakerType
-from trashcli.put.gate import SameVolumeGate, ClosedGate, HomeFallbackGate
+from trashcli.put.gate import SameVolumeGate, HomeFallbackGate
+from trashcli.put.path_maker import AbsolutePaths, RelativePaths
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 
 
@@ -23,17 +23,17 @@ class TestTrashDirectoriesFinder(unittest.TestCase):
         assert result == [
             Candidate(trash_dir_path='~/.local/share/Trash',
                       volume='volume_of(~/.local/share/Trash)',
-                      path_maker_type='absolute_paths',
+                      path_maker_type=AbsolutePaths,
                       check_type='all_is_ok_rules', gate=SameVolumeGate),
             Candidate(trash_dir_path='/volume/.Trash/123', volume='/volume',
-                      path_maker_type='relative_paths',
+                      path_maker_type=RelativePaths,
                       check_type='top_trash_dir_rules', gate=SameVolumeGate),
             Candidate(trash_dir_path='/volume/.Trash-123', volume='/volume',
-                      path_maker_type='relative_paths',
+                      path_maker_type=RelativePaths,
                       check_type='all_is_ok_rules', gate=SameVolumeGate),
             Candidate(trash_dir_path='~/.local/share/Trash',
                       volume='volume_of(~/.local/share/Trash)',
-                      path_maker_type='absolute_paths',
+                      path_maker_type=AbsolutePaths,
                       check_type='all_is_ok_rules', gate=HomeFallbackGate),
         ]
 
@@ -46,6 +46,6 @@ class TestTrashDirectoriesFinder(unittest.TestCase):
 
         assert result == [('user_dir',
                            'volume_of(user_dir)',
-                           PathMakerType.relative_paths,
+                           RelativePaths,
                            'all_is_ok_rules',
                            SameVolumeGate)]

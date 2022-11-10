@@ -1,7 +1,7 @@
 import os
 
 from trashcli.put.fs.parent_realpath import ParentRealpath
-from trashcli.put.path_maker import PathMaker
+from trashcli.put.path_maker import PathMaker, PathMakerType
 
 
 class OriginalLocation:
@@ -12,7 +12,11 @@ class OriginalLocation:
         self.parent_realpath = parent_realpath
         self.path_maker = path_maker
 
-    def for_file(self, path, path_maker_type, volume_top_dir):
+    def for_file(self,
+                 path,
+                 path_maker_type, # type: PathMakerType
+                 volume_top_dir,
+                 ):
         normalized_path = os.path.normpath(path)
         basename = os.path.basename(normalized_path)
         parent = self.parent_realpath.parent_realpath(normalized_path)
