@@ -1,8 +1,4 @@
 import os
-from typing import NamedTuple
-
-SecurityCheckCandidate = NamedTuple('TrashDir', [('trash_dir_path', str),
-                                                 ('check_type', str)])
 
 
 class SecurityCheck:
