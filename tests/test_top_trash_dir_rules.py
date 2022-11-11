@@ -3,7 +3,7 @@ import unittest
 from mock import Mock, call
 from trashcli.put.candidate import Candidate
 
-from trashcli.put.security_check import SecurityCheck, top_trash_dir_rules
+from trashcli.put.security_check import SecurityCheck, TopTrashDirCheck
 
 
 class TestTopTrashDirRules(unittest.TestCase):
@@ -15,7 +15,7 @@ class TestTopTrashDirRules(unittest.TestCase):
         self.fs.isdir.return_value = False
 
         secure, messages = self.check.check_trash_dir_is_secure(
-            make_candidate('/parent/trash-dir', top_trash_dir_rules))
+            make_candidate('/parent/trash-dir', TopTrashDirCheck))
 
         assert [call.isdir('/parent')] == self.fs.mock_calls
         assert secure == False
@@ -27,7 +27,7 @@ class TestTopTrashDirRules(unittest.TestCase):
         self.fs.islink.return_value = True
 
         secure, messages = self.check.check_trash_dir_is_secure(
-            make_candidate('/parent/trash-dir', top_trash_dir_rules))
+            make_candidate('/parent/trash-dir', TopTrashDirCheck))
 
         assert [call.isdir('/parent'),
                 call.islink('/parent')] == self.fs.mock_calls
@@ -41,7 +41,7 @@ class TestTopTrashDirRules(unittest.TestCase):
         self.fs.has_sticky_bit.return_value = False
 
         secure, messages = self.check.check_trash_dir_is_secure(
-            make_candidate('/parent/trash-dir', top_trash_dir_rules))
+            make_candidate('/parent/trash-dir', TopTrashDirCheck))
 
         assert [call.isdir('/parent'),
                 call.islink('/parent'),
@@ -56,7 +56,7 @@ class TestTopTrashDirRules(unittest.TestCase):
         self.fs.has_sticky_bit.return_value = True
 
         secure, messages = self.check.check_trash_dir_is_secure(
-            make_candidate('/parent/trash-dir', top_trash_dir_rules))
+            make_candidate('/parent/trash-dir', TopTrashDirCheck))
 
         assert [call.isdir('/parent'),
                 call.islink('/parent'),

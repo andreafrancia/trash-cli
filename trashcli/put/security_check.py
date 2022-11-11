@@ -1,5 +1,22 @@
 import os
 
+import six
+
+from trashcli.put.class_name_meta import ClassNameMeta
+
+
+@six.add_metaclass(ClassNameMeta)
+class CheckType:
+    pass
+
+
+class NoCheck(CheckType):
+    pass
+
+
+class TopTrashDirCheck(CheckType):
+    pass
+
 
 class SecurityCheck:
 
@@ -7,9 +24,9 @@ class SecurityCheck:
         self.fs = fs
 
     def check_trash_dir_is_secure(self, candidate):
-        if candidate.check_type == all_is_ok_rules:
+        if candidate.check_type == NoCheck:
             return True, []
-        if candidate.check_type == top_trash_dir_rules:
+        if candidate.check_type == TopTrashDirCheck:
             parent = os.path.dirname(candidate.trash_dir_path)
             if not self.fs.isdir(parent):
                 return False, [
@@ -22,7 +39,3 @@ class SecurityCheck:
                     "found unsecure .Trash dir (should be sticky): %s" % parent]
             return True, []
         raise Exception("Unknown check type: %s" % candidate.check_type)
-
-
-all_is_ok_rules = 'all_is_ok_rules'
-top_trash_dir_rules = 'top_trash_dir_rules'

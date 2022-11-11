@@ -4,7 +4,7 @@ from trashcli.fstab import Volumes
 from trashcli.put.candidate import Candidate
 from trashcli.put.gate import SameVolumeGate, HomeFallbackGate
 from trashcli.put.path_maker import AbsolutePaths, RelativePaths
-from trashcli.put.security_check import all_is_ok_rules, top_trash_dir_rules
+from trashcli.put.security_check import NoCheck, TopTrashDirCheck
 from trashcli.trash import home_trash_dir, volume_trash_dir1, volume_trash_dir2
 
 
@@ -26,7 +26,7 @@ class TrashDirectoriesFinder:
                 Candidate(trash_dir_path=path,
                           volume=volume,
                           path_maker_type=AbsolutePaths,
-                          check_type=all_is_ok_rules,
+                          check_type=NoCheck,
                           gate=gate))
 
         def add_top_trash_dir(path, volume):
@@ -34,7 +34,7 @@ class TrashDirectoriesFinder:
                 Candidate(trash_dir_path=path,
                           volume=volume,
                           path_maker_type=RelativePaths,
-                          check_type=top_trash_dir_rules,
+                          check_type=TopTrashDirCheck,
                           gate=SameVolumeGate))
 
         def add_alt_top_trash_dir(path, volume):
@@ -42,7 +42,7 @@ class TrashDirectoriesFinder:
                 Candidate(trash_dir_path=path,
                           volume=volume,
                           path_maker_type=RelativePaths,
-                          check_type=all_is_ok_rules,
+                          check_type=NoCheck,
                           gate=SameVolumeGate))
 
         if specific_trash_dir:
@@ -52,7 +52,7 @@ class TrashDirectoriesFinder:
                 Candidate(trash_dir_path=path,
                           volume=volume,
                           path_maker_type=RelativePaths,
-                          check_type=all_is_ok_rules,
+                          check_type=NoCheck,
                           gate=SameVolumeGate))
         else:
             for path, dir_volume in home_trash_dir(environ,

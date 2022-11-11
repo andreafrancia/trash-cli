@@ -5,6 +5,7 @@ from mock import Mock
 from trashcli.put.candidate import Candidate
 from trashcli.put.gate import SameVolumeGate, HomeFallbackGate
 from trashcli.put.path_maker import AbsolutePaths, RelativePaths
+from trashcli.put.security_check import NoCheck, TopTrashDirCheck
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 
 
@@ -24,17 +25,17 @@ class TestTrashDirectoriesFinder(unittest.TestCase):
             Candidate(trash_dir_path='~/.local/share/Trash',
                       volume='volume_of(~/.local/share/Trash)',
                       path_maker_type=AbsolutePaths,
-                      check_type='all_is_ok_rules', gate=SameVolumeGate),
+                      check_type=NoCheck, gate=SameVolumeGate),
             Candidate(trash_dir_path='/volume/.Trash/123', volume='/volume',
                       path_maker_type=RelativePaths,
-                      check_type='top_trash_dir_rules', gate=SameVolumeGate),
+                      check_type=TopTrashDirCheck, gate=SameVolumeGate),
             Candidate(trash_dir_path='/volume/.Trash-123', volume='/volume',
                       path_maker_type=RelativePaths,
-                      check_type='all_is_ok_rules', gate=SameVolumeGate),
+                      check_type=NoCheck, gate=SameVolumeGate),
             Candidate(trash_dir_path='~/.local/share/Trash',
                       volume='volume_of(~/.local/share/Trash)',
                       path_maker_type=AbsolutePaths,
-                      check_type='all_is_ok_rules', gate=HomeFallbackGate),
+                      check_type=NoCheck, gate=HomeFallbackGate),
         ]
 
     def test_specific_user_dir(self):
@@ -47,5 +48,5 @@ class TestTrashDirectoriesFinder(unittest.TestCase):
         assert result == [('user_dir',
                            'volume_of(user_dir)',
                            RelativePaths,
-                           'all_is_ok_rules',
+                           NoCheck,
                            SameVolumeGate)]
