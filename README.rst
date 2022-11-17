@@ -209,7 +209,7 @@ Install shell completions
 
 You need install by::
 
-    pip install trash-cli[completion]
+    pip install 'trash-cli[completion]'
 
 Then::
 
