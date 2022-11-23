@@ -191,7 +191,7 @@ First of all you need to uninstall any previous version of trash-cli::
 
 Then install the latest version from git::
 
-    $ [sudo] pip install pip install git+https://github.com/andreafrancia/trash-cli
+    $ [sudo] pip install git+https://github.com/andreafrancia/trash-cli
 
 After the user installation you may want add this line to your .bashrc/.zshrc::
 
