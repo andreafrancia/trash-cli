@@ -9,6 +9,9 @@ from trashcli.put.clock import RealClock
 from trashcli.put.describer import Describer
 from trashcli.put.dir_maker import DirMaker
 from trashcli.put.file_trasher import FileTrasher
+from trashcli.put.gate import ClosedGate, HomeFallbackGate, SameVolumeGate
+from trashcli.put.gate_impl import ClosedGateImpl, HomeFallbackGateImpl, \
+    SameVolumeGateImpl
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.original_location import OriginalLocation
@@ -51,7 +54,11 @@ def make_cmd(clock, fs, my_input, randint, stderr, volumes):
                                      original_location,
                                      clock)
     trash_dir_volume = TrashDirVolumeReader(volumes, fs)
-    trashing_checker = TrashingChecker(trash_dir_volume)
+    trashing_checker = TrashingChecker({
+        ClosedGate: ClosedGateImpl(),
+        HomeFallbackGate: HomeFallbackGateImpl(),
+        SameVolumeGate: SameVolumeGateImpl(trash_dir_volume),
+    })
     trash_file_in = TrashFileIn(fs,
                                 reporter,
                                 trash_dir,

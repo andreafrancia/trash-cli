@@ -4,7 +4,9 @@ import flexmock
 from typing import cast
 
 from trashcli.put.candidate import Candidate
-from trashcli.put.gate import SameVolumeGate
+from trashcli.put.gate import SameVolumeGate, ClosedGate, HomeFallbackGate
+from trashcli.put.gate_impl import ClosedGateImpl, HomeFallbackGateImpl, \
+    SameVolumeGateImpl
 from trashcli.put.trash_dir_volume_reader import TrashDirVolumeReader
 from trashcli.put.trashee import Trashee
 from trashcli.put.trashing_checker import TrashingChecker
@@ -23,7 +25,12 @@ class TestTrashingChecker(unittest.TestCase):
     def setUp(self):
         self.trash_dir_volume = flexmock.Mock()
         self.checker = TrashingChecker(
-            cast(TrashDirVolumeReader, self.trash_dir_volume))
+            {
+                ClosedGate: ClosedGateImpl(),
+                HomeFallbackGate: HomeFallbackGateImpl(),
+                SameVolumeGate: SameVolumeGateImpl(
+                    cast(TrashDirVolumeReader, self.trash_dir_volume)),
+            })
 
     def test_trashing_checker_same(self):
         self.trash_dir_volume.should_receive('volume_of_trash_dir') \
@@ -35,6 +42,14 @@ class TestTrashingChecker(unittest.TestCase):
             {})
 
         assert result.ok is True
+
+    def test_home_in_same_volume(self):
+        result = self.checker.file_could_be_trashed_in(
+            Trashee('/path1', '/volume1'),
+            make_candidate('trash-dir-path', HomeFallbackGate, '/disk1'),
+            {})
+
+        assert result.ok is False
 
     def test_trashing_checker_different(self):
         self.trash_dir_volume.should_receive('volume_of_trash_dir') \
