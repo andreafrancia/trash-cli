@@ -1,5 +1,7 @@
+from copy import copy
+
 try:
-    from shtab import add_argument_to
+    from shtab import add_argument_to, FILE, DIR
 
     defaults = list(add_argument_to.__defaults__)
     defaults[-1] = {
@@ -13,8 +15,12 @@ _trash_files() {
 """,
     }
     add_argument_to.__defaults__ = tuple(defaults)
+    TRASH_FILES = copy(FILE)
+    TRASH_DIRS = copy(DIR)
 except ImportError:
     from argparse import Action
+
+    TRASH_FILES = TRASH_DIRS = {}
 
     class PrintCompletionAction(Action):
         def __call__(self, parser, namespace, values, option_string=None):
@@ -33,5 +39,5 @@ except ImportError:
         return parser
 
 
-TRASH_FILES = {"zsh": "_trash_files"}
-TRASH_DIRS = {"zsh": "(${$(trash-list --trash-dirs)#parent_*:})"}
+TRASH_FILES.update({"zsh": "_trash_files"})
+TRASH_DIRS.update({"zsh": "(${$(trash-list --trash-dirs)#parent_*:})"})
