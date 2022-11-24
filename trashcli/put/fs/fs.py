@@ -65,3 +65,7 @@ class Fs:
     @abstractmethod
     def get_mod(self, path):
         pass
+
+    @abstractmethod
+    def lexists(self, path):
+        pass

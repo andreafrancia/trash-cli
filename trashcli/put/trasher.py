@@ -55,7 +55,7 @@ class Trasher:
             self.reporter.unable_to_trash_dot_entries(path, program_name)
             return result
 
-        if not self.fs.is_accessible(path):
+        if not self.fs.lexists(path):
             if mode == mode_force:
                 return result
             else:

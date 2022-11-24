@@ -151,8 +151,7 @@ class FakeFs(Fs):
         entry = self._find_entry(path)
         entry.sticky = True
 
-    @staticmethod
-    def realpath(path):
+    def realpath(self, path):
         return os.path.join("/", path)
 
     def cd(self, path):
@@ -192,3 +191,7 @@ class FakeFs(Fs):
             if not self.islink(new_path):
                 for x in self.walk_no_follow(new_path):
                     yield x
+
+    def lexists(self, path):
+        # TODO: consider links
+        return self.exists(path)

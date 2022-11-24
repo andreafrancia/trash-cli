@@ -65,3 +65,6 @@ class RealFs(Fs):
 
     def listdir(self, path):
         return os.listdir(path)
+
+    def lexists(self, path):
+        return os.path.lexists(path)

@@ -23,26 +23,36 @@ class TestPutScripts(unittest.TestCase):
         assert (result.stderr ==
                 "trash-put: cannot trash non existent 'non-existent'\n")
 
-    def test_trashing_danglig_symlink_bug(self):
-        os.symlink('non-existent', self.tmp_dir / 'dangling-link')
+    def test_trashes_dangling_symlink(self):
+        self.make_dangling_link(self.tmp_dir / 'link')
 
-        result = run_command(self.tmp_dir, 'trash-put', ['dangling-link'])
+        result = run_command(self.tmp_dir, 'trash-put', [
+            'link',
+            '--trash-dir', self.tmp_dir / 'trash-dir',
+        ])
 
-        assert (result.stderr ==
-                "trash-put: cannot trash symbolic link 'dangling-link'\n")
-        assert os.path.lexists(self.tmp_dir / 'dangling-link')
+        assert (result.stdout, result.stderr == "", "")
+        assert not os.path.lexists(self.tmp_dir / 'link')
+        assert os.path.lexists(self.tmp_dir / 'trash-dir' / 'files' / 'link')
 
-    def test_trashing_normal_symlink(self):
+    def test_trashes_connected_symlink(self):
+        self.make_connected_link(self.tmp_dir / 'link')
+
+        result = run_command(self.tmp_dir, 'trash-put', [
+            'link',
+            '--trash-dir', self.tmp_dir / 'trash-dir',
+        ])
+
+        assert (result.stdout, result.stderr == "", "")
+        assert not os.path.lexists(self.tmp_dir / 'link')
+        assert os.path.lexists(self.tmp_dir / 'trash-dir' / 'files' / 'link')
+
+    def make_connected_link(self, path):
         make_file(self.tmp_dir / 'link-target')
-        os.symlink('link-target', self.tmp_dir / 'normal-link')
+        os.symlink('link-target', path)
 
-        result = run_command(self.tmp_dir, 'trash-put',
-                             ['-v',
-                              'normal-link',
-                              '--trash-dir', self.tmp_dir / 'trash-dir',
-                              ])
+    def make_dangling_link(self, path):
+        os.symlink('non-existent', self.tmp_dir / 'link')
 
-        assert ("trash-put: 'normal-link' trashed in %s" % (self.tmp_dir / 'trash-dir')
-                in result.stderr.splitlines())
-        assert (result.stdout.splitlines() == [])
-        assert not os.path.lexists(self.tmp_dir / 'normal-link')
+    def tearDown(self):
+        self.tmp_dir.clean_up()

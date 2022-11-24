@@ -21,6 +21,7 @@ class TestTrasher(unittest.TestCase):
         self.reporter = Mock(spec=['unable_to_trash_dot_entries'])
         self.fs = flexmock.Mock(spec=RealFs)
         self.fs.should_receive('is_accessible').and_return(True)
+        self.fs.should_receive('lexists').and_return(True)
         self.trasher = Trasher(self.file_trasher, self.user,
                                cast(TrashPutReporter, self.reporter),
                                cast(RealFs, self.fs))
