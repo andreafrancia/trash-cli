@@ -27,11 +27,14 @@ class TestPutScripts(unittest.TestCase):
         self.make_dangling_link(self.tmp_dir / 'link')
 
         result = run_command(self.tmp_dir, 'trash-put', [
-            'link',
+            '-v',
             '--trash-dir', self.tmp_dir / 'trash-dir',
+            'link',
         ])
 
-        assert (result.stdout, result.stderr == "", "")
+        self.assertEqual([
+            "trash-put: 'link' trashed in %s" % (self.tmp_dir / 'trash-dir'),
+        ], self.read_trashed_in_message(result), result.stderr)
         assert not os.path.lexists(self.tmp_dir / 'link')
         assert os.path.lexists(self.tmp_dir / 'trash-dir' / 'files' / 'link')
 
@@ -39,13 +42,21 @@ class TestPutScripts(unittest.TestCase):
         self.make_connected_link(self.tmp_dir / 'link')
 
         result = run_command(self.tmp_dir, 'trash-put', [
-            'link',
+            '-v',
             '--trash-dir', self.tmp_dir / 'trash-dir',
+            'link',
         ])
 
-        assert (result.stdout, result.stderr == "", "")
+        self.assertEqual([
+            "trash-put: 'link' trashed in %s" % (self.tmp_dir / 'trash-dir'),
+        ], self.read_trashed_in_message(result), result.stderr)
+        assert result.stdout == ''
         assert not os.path.lexists(self.tmp_dir / 'link')
         assert os.path.lexists(self.tmp_dir / 'trash-dir' / 'files' / 'link')
+
+    def read_trashed_in_message(self, result):
+        return list(filter(lambda line: "trashed in" in line,
+                           result.stderr.splitlines()))
 
     def make_connected_link(self, path):
         make_file(self.tmp_dir / 'link-target')
