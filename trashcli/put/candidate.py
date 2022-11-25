@@ -27,6 +27,8 @@ class Candidate(NamedTuple('Candidate', [
 
     def shrink_user(self, environ):
         path = self.norm_path()
+        if environ.get('TRASH_PUT_DISABLE_SHRINK', '') == '1':
+            return path
         home_dir = environ.get('HOME', '')
         home_dir = posixpath.normpath(home_dir)
         if home_dir != '':
