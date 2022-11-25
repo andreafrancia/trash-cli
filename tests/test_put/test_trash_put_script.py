@@ -30,7 +30,7 @@ class TestPutScripts(unittest.TestCase):
             '-v',
             '--trash-dir', self.tmp_dir / 'trash-dir',
             'link',
-        ])
+        ], env={"TRASH_PUT_DISABLE_SHRINK": "1"})
 
         self.assertEqual([
             "trash-put: 'link' trashed in %s" % (self.tmp_dir / 'trash-dir'),
@@ -45,7 +45,7 @@ class TestPutScripts(unittest.TestCase):
             '-v',
             '--trash-dir', self.tmp_dir / 'trash-dir',
             'link',
-        ])
+        ], env={"TRASH_PUT_DISABLE_SHRINK": "1"})
 
         self.assertEqual([
             "trash-put: 'link' trashed in %s" % (self.tmp_dir / 'trash-dir'),
