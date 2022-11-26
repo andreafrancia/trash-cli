@@ -127,9 +127,13 @@ class ListCmd:
             if event == trash_dir_found:
                 path, volume = args
                 trash_dir = TrashDirReader(self.file_reader)
-                for trash_info in trash_dir.list_trashinfo(path):
-                    self._print_trashinfo(volume, trash_info, extractor,
-                                          show_files)
+                # List items to print with deletion date attached
+                formated = (self._format_trashinfo(volume,
+                                trashinfo,extractor,show_files)
+                            for trashinfo in trash_dir.list_trashinfo(path))
+                valid = filter(lambda x: x is not None, formated)
+                for _, line in sorted(valid):
+                    self.output.println(line)
             elif event == trash_dir_skipped_because_parent_not_sticky:
                 path, = args
                 self.output.top_trashdir_skipped_because_parent_not_sticky(path)
@@ -161,7 +165,7 @@ class ListCmd:
         import sys
         print(sys.executable)
 
-    def _print_trashinfo(self, volume, trashinfo_path, extractor, show_files):
+    def _format_trashinfo(self, volume, trashinfo_path, extractor, show_files):
         try:
             contents = self.file_reader.contents_of(trashinfo_path)
         except IOError as e:
@@ -182,7 +186,8 @@ class ListCmd:
                                         original_file)
                 else:
                     line = format_line(attribute, original_location)
-                self.output.println(line)
+                # Return date and line to print, to sort by deletion date
+                return attribute, line
 
     def print_volumes_list(self):
         for volume in self.volumes_listing.list_volumes(self.environ):
