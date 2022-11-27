@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, NamedTuple, Optional
 
 from trashcli.put.candidate import Candidate
 from trashcli.put.trash_dir_volume_reader import TrashDirVolumeReader
@@ -6,10 +6,10 @@ from trashcli.put.trashee import Trashee
 from trashcli.put.volume_message_formatter import VolumeMessageFormatter
 
 
-class GateCheckResult:
-    def __init__(self, ok, reason):
-        self.ok = ok
-        self.reason = reason
+class GateCheckResult(NamedTuple('GateCheckResult', [
+    ('ok', bool),
+    ('reason', Optional[str]),
+])):
 
     @staticmethod
     def make_ok():
