@@ -12,11 +12,11 @@ class GateCheckResult:
         self.reason = reason
 
     @staticmethod
-    def ok():
+    def make_ok():
         return GateCheckResult(True, None)
 
     @staticmethod
-    def error(reason):
+    def make_error(reason):
         return GateCheckResult(False, reason)
 
     def __repr__(self):
@@ -25,6 +25,7 @@ class GateCheckResult:
         if not self.ok and self.reason is not None:
             return 'GateCheckResult.error(%r)' % self.reason
         return 'GateCheckResult(%s, %r)' % (self.ok, self.reason)
+
 
 class GateImpl(object):
     @staticmethod
@@ -42,8 +43,8 @@ class ClosedGateImpl(GateImpl):
                      candidate,  # type: Candidate
                      environ,  # type: Dict[str, str]
                      ):
-        return GateCheckResult.error("trash dir not enabled: %s" %
-                                     candidate.shrink_user(environ))
+        return GateCheckResult.make_error("trash dir not enabled: %s" %
+                                          candidate.shrink_user(environ))
 
 
 class HomeFallbackGateImpl(GateImpl):
@@ -53,8 +54,8 @@ class HomeFallbackGateImpl(GateImpl):
                      candidate,  # type: Candidate
                      environ,  # type: Dict[str, str]
                      ):
-        return GateCheckResult.error("trash dir not enabled: %s" %
-                                     candidate.shrink_user(environ))
+        return GateCheckResult.make_error("trash dir not enabled: %s" %
+                                          candidate.shrink_user(environ))
 
 
 class SameVolumeGateImpl(GateImpl):
@@ -74,6 +75,6 @@ class SameVolumeGateImpl(GateImpl):
         if not same_volume:
             msg_formatter = VolumeMessageFormatter()
             message = msg_formatter.format_msg(trashee, candidate, environ)
-            return GateCheckResult.error(message)
+            return GateCheckResult.make_error(message)
 
-        return GateCheckResult.ok()
+        return GateCheckResult.make_ok()

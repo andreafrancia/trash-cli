@@ -1,5 +1,6 @@
 import os
 import sys
+from logging import Logger
 
 from trashcli.shell_completion import TRASH_DIRS, TRASH_FILES, add_argument_to
 
@@ -18,7 +19,6 @@ from .trash import (
     volume_trash_dir1,
     volume_trash_dir2,
 )
-
 
 try:
     my_range = xrange
@@ -167,7 +167,11 @@ def parse_args(sys_argv, curdir):
 
 
 class TrashedFiles:
-    def __init__(self, logger, trash_directories, trash_directory, contents_of):
+    def __init__(self,
+                 logger,  # type: Logger
+                 trash_directories,
+                 trash_directory,
+                 contents_of):
         self.logger = logger
         self.trash_directories = trash_directories
         self.trash_directory = trash_directory
@@ -334,7 +338,8 @@ class RestoreCmd(object):
                                                        self.println,
                                                        self.restore,
                                                        self.die)
-        restore_asking_the_user.restore_asking_the_user(trashed_files, overwrite)
+        restore_asking_the_user.restore_asking_the_user(trashed_files,
+                                                        overwrite)
 
     def die(self, error):
         self.printerr(error)
@@ -365,8 +370,6 @@ def parse_additional_volumes(volume_from_args):
     if not volume_from_args:
         return []
     return volume_from_args
-
-
 
 
 class TrashDirectories2:
