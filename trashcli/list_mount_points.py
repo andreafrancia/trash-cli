@@ -12,6 +12,7 @@ def os_mount_points():
         'btrfs',
         'fuse', # https://github.com/andreafrancia/trash-cli/issues/250
         'fuse.glusterfs', #https://github.com/andreafrancia/trash-cli/issues/255
+        'fuse.mergerfs',
     ]
 
     # Append fstypes of physical devices to list
