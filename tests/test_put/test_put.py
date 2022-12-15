@@ -44,8 +44,7 @@ class TestPut(unittest.TestCase):
 
         assert result == [[], 'None', 0]
 
-    def test_put_does_not_tries_to_trash_file_in_trash_dir_when_non_exisiting(
-            self):
+    def test_put_does_not_try_to_trash_non_existing_file(self):
         result = self.run_cmd(['trash-put', '-vvv', 'non-existing'],
                               {"HOME": "/home/user"}, 123)
 
