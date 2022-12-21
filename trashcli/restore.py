@@ -185,16 +185,7 @@ class TrashedFiles:
                     self.logger.warning("Non .trashinfo file in info dir")
                 elif type == 'trashinfo':
                     try:
-                        contents = self.contents_of(info_file)
-                        original_location = parse_original_location(contents,
-                                                                    volume)
-                        deletion_date = parse_deletion_date(contents)
-                        backup_file_path = path_of_backup_copy(info_file)
-                        trashedfile = TrashedFile(original_location,
-                                                  deletion_date,
-                                                  info_file,
-                                                  backup_file_path)
-                        yield trashedfile
+                        yield TrashedFile(info_file, volume, self.contents_of)
                     except ValueError:
                         self.logger.warning("Non parsable trashinfo file: %s" %
                                             info_file)
@@ -404,7 +395,7 @@ class TrashDirectories:
                 yield path1, volume1
 
 
-class TrashedFile:
+class TrashedFile(object):
     """
     Represent a trashed file.
     Each trashed file is persisted in two files:
@@ -412,7 +403,7 @@ class TrashedFile:
      - $trash_dir/files/$id
 
     Properties:
-     - path : the original path from where the file has been trashed
+     - original_location : the original path from where the file has been trashed
      - deletion_date : the time when the file has been trashed (instance of
                        datetime)
      - info_file : the file that contains information (instance of Path)
@@ -420,14 +411,12 @@ class TrashedFile:
                        trash operation (instance of Path)
     """
 
-    def __init__(self, original_location,
-                 deletion_date,
-                 info_file,
-                 original_file):
-        self.original_location = original_location
-        self.deletion_date = deletion_date
+    def __init__(self, info_file, volume, contents_of):
+        self.contents = contents_of(info_file)
         self.info_file = info_file
-        self.original_file = original_file
+        self.original_location = parse_original_location(self.contents, volume)
+        self.deletion_date = parse_deletion_date(self.contents)
+        self.original_file = path_of_backup_copy(info_file)
 
 
 def restore(trashed_file, fs, overwrite=False):

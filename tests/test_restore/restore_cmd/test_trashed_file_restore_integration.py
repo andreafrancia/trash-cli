@@ -34,10 +34,12 @@ class TestTrashedFileRestoreIntegration(unittest.TestCase):
                               fs=restore.FileSystem())
 
     def test_restore(self):
-        trashed_file = TrashedFile(self.temp_dir / 'parent/path',
-                                   None,
-                                   self.temp_dir / 'info_file',
-                                   self.temp_dir / 'orig')
+        trashed_file = Mock(sepc=TrashedFile)
+        trashed_file.info_file = self.temp_dir / 'info_file'
+        trashed_file.original_location = self.temp_dir / 'parent/path'
+        trashed_file.deletion_date = None
+        trashed_file.original_file = self.temp_dir / 'orig'
+
         make_empty_file(self.temp_dir / 'orig')
         make_empty_file(self.temp_dir / 'info_file')
 
@@ -48,7 +50,8 @@ class TestTrashedFileRestoreIntegration(unittest.TestCase):
         assert not os.path.exists(self.temp_dir / 'orig')
 
     def test_restore_over_existing_file(self):
-        trashed_file = TrashedFile(self.temp_dir / 'path', None, None, None)
+        trashed_file = Mock(sepc=TrashedFile)
+        trashed_file.original_location = self.temp_dir / 'path'
         make_empty_file(self.temp_dir / 'path')
 
         self.assertRaises(IOError, lambda: self.cmd.restore(trashed_file))

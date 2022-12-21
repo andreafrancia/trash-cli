@@ -11,6 +11,7 @@ from trashcli.super_enum import SuperEnum
 from . import fstab
 from .fs import FileSystemReader, file_size
 from .fstab import Volumes, VolumesListing
+from .restore import TrashedFile
 from .trash import (
     AllUsersInfoProvider,
     DirChecker,
@@ -92,7 +93,8 @@ class ListCmd:
                             parsed.show_files,
                             parsed.all_users,
                             self.environ,
-                            self.uid)
+                            self.uid,
+                            parsed.sort)
         elif parsed.action == Action.print_python_executable:
             self.print_python_executable()
         else:
@@ -118,7 +120,8 @@ class ListCmd:
                    show_files,
                    all_users,
                    environ,
-                   uid):
+                   uid,
+                   sort='date'):
         trash_dirs = self.selector.select(all_users,
                                           user_specified_trash_dirs,
                                           environ,
@@ -127,9 +130,18 @@ class ListCmd:
             if event == trash_dir_found:
                 path, volume = args
                 trash_dir = TrashDirReader(self.file_reader)
-                for trash_info in trash_dir.list_trashinfo(path):
-                    self._print_trashinfo(volume, trash_info, extractor,
-                                          show_files)
+
+                trashed_files = list(self._get_all_trashed_files(trash_dir.list_trashinfo(path), volume))
+                if sort == 'path':
+                    trashed_files = sorted(trashed_files,
+                                        key=lambda x: x.original_location + str(
+                                            x.deletion_date))
+                elif sort == 'date':
+                    trashed_files = sorted(trashed_files,
+                                        key=lambda x: x.deletion_date)
+
+                for trashed_file in trashed_files:
+                    self._print_trashinfo(trashed_file, extractor, show_files)
             elif event == trash_dir_skipped_because_parent_not_sticky:
                 path, = args
                 self.output.top_trashdir_skipped_because_parent_not_sticky(path)
@@ -161,28 +173,26 @@ class ListCmd:
         import sys
         print(sys.executable)
 
-    def _print_trashinfo(self, volume, trashinfo_path, extractor, show_files):
-        try:
-            contents = self.file_reader.contents_of(trashinfo_path)
-        except IOError as e:
-            self.output.print_read_error(e)
-        else:
-            try:
-                relative_location = parse_path(contents)
-            except ParseError:
-                self.output.print_parse_path_error(trashinfo_path)
-            else:
-                attribute = extractor.extract_attribute(trashinfo_path,
-                                                        contents)
-                original_location = os.path.join(volume, relative_location)
 
-                if show_files:
-                    original_file = path_of_backup_copy(trashinfo_path)
-                    line = format_line2(attribute, original_location,
-                                        original_file)
-                else:
-                    line = format_line(attribute, original_location)
-                self.output.println(line)
+    def _get_all_trashed_files(self, trash_infos, volume):
+        for trash_info in trash_infos:
+            try:
+                yield TrashedFile(trash_info, volume, self.file_reader.contents_of)
+            except IOError as e:
+                self.output.print_read_error(e)
+            except ParseError:
+                self.output.print_parse_path_error(trash_info)
+
+
+    def _print_trashinfo(self, trashed_file, extractor, show_files):
+        attribute = extractor.extract_attribute(trashed_file.info_file, trashed_file.contents)
+        if show_files:
+            line = format_line2(attribute, trashed_file.original_location,
+                                trashed_file.original_file)
+        else:
+            line = format_line(attribute, trashed_file.original_location)
+        self.output.println(line)
+
 
     def print_volumes_list(self):
         for volume in self.volumes_listing.list_volumes(self.environ):
@@ -331,6 +341,10 @@ class Parser:
                                  action='store_const',
                                  const=Action.print_python_executable,
                                  help=argparse.SUPPRESS)
+        self.parser.add_argument('--sort',
+                                 choices=['date', 'path', 'none'],
+                                 default='date',
+                                 help='Sort list of restore candidates by given field')
 
     def parse_list_args(self, args):
         parsed = self.parser.parse_args(args)

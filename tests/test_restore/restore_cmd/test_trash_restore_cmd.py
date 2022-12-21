@@ -53,11 +53,11 @@ class TestTrashRestoreCmd(unittest.TestCase):
 
     def test_until_the_restore_unit(self):
         self.fs.path_exists.return_value = False
-        trashed_file = TrashedFile(
-            'parent/path',
-            None,
-            'info_file',
-            'orig_file')
+        trashed_file = Mock(sepc=TrashedFile)
+        trashed_file.info_file = 'info_file'
+        trashed_file.original_location = 'parent/path'
+        trashed_file.deletion_date = None
+        trashed_file.original_file = 'orig_file'
 
         self.user_reply = '0'
         self.cmd.restore_asking_the_user([trashed_file])
