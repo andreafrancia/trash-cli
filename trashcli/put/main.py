@@ -56,7 +56,7 @@ def make_cmd(clock, fs, my_input, randint, stderr, volumes):
     trash_dir_volume = TrashDirVolumeReader(volumes, fs)
     trashing_checker = TrashingChecker({
         ClosedGate: ClosedGateImpl(),
-        HomeFallbackGate: HomeFallbackGateImpl(),
+        HomeFallbackGate: HomeFallbackGateImpl(fs),
         SameVolumeGate: SameVolumeGateImpl(trash_dir_volume),
     })
     trash_file_in = TrashFileIn(fs,

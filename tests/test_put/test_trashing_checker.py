@@ -3,6 +3,7 @@ import unittest
 import flexmock
 from typing import cast
 
+from .support.fake_fs.fake_fs import FakeFs
 from trashcli.put.candidate import Candidate
 from trashcli.put.gate import SameVolumeGate, ClosedGate, HomeFallbackGate
 from trashcli.put.gate_impl import ClosedGateImpl, HomeFallbackGateImpl, \
@@ -23,11 +24,12 @@ def mock_value(type, **kwargs):
 
 class TestTrashingChecker(unittest.TestCase):
     def setUp(self):
+        self.fs = FakeFs()
         self.trash_dir_volume = flexmock.Mock()
         self.checker = TrashingChecker(
             {
                 ClosedGate: ClosedGateImpl(),
-                HomeFallbackGate: HomeFallbackGateImpl(),
+                HomeFallbackGate: HomeFallbackGateImpl(self.fs),
                 SameVolumeGate: SameVolumeGateImpl(
                     cast(TrashDirVolumeReader, self.trash_dir_volume)),
             })

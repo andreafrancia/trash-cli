@@ -1,6 +1,7 @@
 from typing import Dict, NamedTuple, Optional
 
 from trashcli.put.candidate import Candidate
+from trashcli.put.fs.fs import Fs
 from trashcli.put.trash_dir_volume_reader import TrashDirVolumeReader
 from trashcli.put.trashee import Trashee
 from trashcli.put.volume_message_formatter import VolumeMessageFormatter
@@ -48,12 +49,18 @@ class ClosedGateImpl(GateImpl):
 
 
 class HomeFallbackGateImpl(GateImpl):
+    def __init__(self,
+                 fs, # type: Fs
+                 ):
+        self.fs = fs
 
     def can_trash_in(self,
                      trashee,  # type: Trashee
                      candidate,  # type: Candidate
                      environ,  # type: Dict[str, str]
                      ):
+        if environ.get('TRASH_ENABLE_HOME_FALLBACK', None) == "1":
+            return GateCheckResult.make_ok()
         return GateCheckResult.make_error("trash dir not enabled: %s" %
                                           candidate.shrink_user(environ))
 
