@@ -3,16 +3,16 @@ import unittest
 from six import StringIO
 
 from mock import Mock, call
-from trashcli import restore
+
 from trashcli.fs import contents_of
 from trashcli.restore import (
     RestoreCmd,
     TrashDirectory,
-    TrashedFile,
     TrashedFiles,
     make_trash_directories,
 )
-
+from trashcli.restore.trashed_file import TrashedFile
+from trashcli.restore.file_system import RestoreFileSystem
 
 class TestTrashRestoreCmd(unittest.TestCase):
     def setUp(self):
@@ -24,7 +24,8 @@ class TestTrashRestoreCmd(unittest.TestCase):
                                      trash_directories,
                                      TrashDirectory(),
                                      contents_of)
-        self.fs = Mock(spec=restore.FileSystem)
+        self.fs = Mock(spec=RestoreFileSystem)
+        self.fs.getcwd_as_realpath = lambda: "cwd"
         self.cmd = RestoreCmd(stdout=self.stdout,
                               stderr=self.stderr,
                               exit=self.capture_exit_status,

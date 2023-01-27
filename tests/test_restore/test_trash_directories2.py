@@ -2,7 +2,7 @@ import unittest
 
 import pytest
 from mock import Mock, call
-from trashcli.restore import TrashDirectories2
+from trashcli.restore.trash_directories import TrashDirectories2
 
 
 @pytest.mark.slow

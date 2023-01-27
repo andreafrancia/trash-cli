@@ -1,7 +1,7 @@
 import unittest
 
 from mock import Mock, call
-from trashcli.restore import RestoreAskingTheUser
+from trashcli.restore.restore_asking_the_user import RestoreAskingTheUser
 
 
 class TestRestoreAskingTheUser(unittest.TestCase):

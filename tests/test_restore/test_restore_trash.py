@@ -5,20 +5,21 @@ from six import StringIO
 
 import pytest
 from mock import Mock
-from trashcli import restore
+
 from trashcli.fs import contents_of, remove_file
 from trashcli.fstab import volume_of
 from trashcli.restore import (
     RestoreCmd,
-    TrashDirectories,
-    TrashDirectories2,
     TrashDirectory,
     TrashedFiles,
 )
+from trashcli.restore.trash_directories import TrashDirectories2, \
+    TrashDirectories
 
 from ..fake_trash_dir import trashinfo_content_default_date
 from ..support.files import make_file, require_empty_dir
 from ..support.my_path import MyPath
+from trashcli.restore.file_system import FakeRestoreFileSystem
 
 
 @pytest.mark.slow
@@ -105,9 +106,11 @@ class RestoreTrashUser:
         self.out = StringIO()
         self.err = StringIO()
         self.cwd = cwd
+        self.fs = FakeRestoreFileSystem()
 
     def chdir(self, dir):
         self.current_dir = dir
+        self.fs.chdir(dir)
 
     def run_restore(self, with_user_typing=''):
         environ = {'XDG_DATA_HOME': self.XDG_DATA_HOME}
@@ -123,10 +126,9 @@ class RestoreTrashUser:
             stderr=self.err,
             exit=[].append,
             input=lambda msg: with_user_typing,
-            curdir=lambda: self.current_dir,
             trashed_files=trashed_files,
             mount_points=lambda: [],
-            fs=restore.FileSystem()
+            fs=self.fs,
         ).run([])
 
     def having_a_file_trashed_from_current_dir(self, filename):

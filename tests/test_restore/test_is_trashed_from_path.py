@@ -1,6 +1,6 @@
 import unittest
 
-from trashcli.restore import original_location_matches_path
+from trashcli.restore.restore_cmd import original_location_matches_path
 
 
 class Test_original_location_matches_path(unittest.TestCase):

@@ -1,7 +1,7 @@
 import unittest
 
 from mock import Mock
-from trashcli.restore import TrashDirectories
+from trashcli.restore.trash_directories import TrashDirectories
 
 
 class TestTrashDirectories(unittest.TestCase):

@@ -1,7 +1,8 @@
 import unittest
 
 from mock import Mock
-from trashcli import restore
+
+from trashcli.restore.file_system import FakeRestoreFileSystem
 from trashcli.fs import contents_of
 from trashcli.restore import RestoreCmd, TrashedFiles, make_trash_directories
 
@@ -17,10 +18,9 @@ class TestListingInRestoreCmd(unittest.TestCase):
         self.cmd = RestoreCmd(None, None,
                               exit=None,
                               input=None,
-                              curdir=lambda: "dir",
                               trashed_files=trashed_files,
                               mount_points=lambda: [],
-                              fs=restore.FileSystem())
+                              fs=FakeRestoreFileSystem("dir"))
         self.cmd.handle_trashed_files = self.capture_trashed_files
         self.trashed_files = Mock(spec=['all_trashed_files'])
         self.cmd.trashed_files = self.trashed_files

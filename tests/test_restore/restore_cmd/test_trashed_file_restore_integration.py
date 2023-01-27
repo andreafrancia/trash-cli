@@ -2,15 +2,16 @@ import os
 import unittest
 
 from mock import Mock
-from trashcli import restore
+
+from trashcli.restore.file_system import FakeRestoreFileSystem
 from trashcli.fs import contents_of
 from trashcli.restore import (
     RestoreCmd,
     TrashDirectory,
-    TrashedFile,
     TrashedFiles,
     make_trash_directories,
 )
+from trashcli.restore.trashed_file import TrashedFile
 
 from tests.support.files import make_empty_file
 from tests.support.my_path import MyPath
@@ -31,7 +32,7 @@ class TestTrashedFileRestoreIntegration(unittest.TestCase):
                               input=None,
                               trashed_files=trashed_files,
                               mount_points=lambda: [],
-                              fs=restore.FileSystem())
+                              fs=FakeRestoreFileSystem())
 
     def test_restore(self):
         trashed_file = TrashedFile(self.temp_dir / 'parent/path',
