@@ -204,6 +204,10 @@ Debian/Ubuntu (apt)::
 
     sudo apt install trash-cli
 
+Arch Linux (pacman)::
+
+    sudo pacman -S trash-cli
+
 Install shell completions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
