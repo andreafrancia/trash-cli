@@ -5,6 +5,10 @@ Update the version number::
 
     scripts/bump
 
+Launch GitHub Actions to check the release::
+
+    git push origin master
+
 Load the version in an environment variable::
 
     version="$(python -c 'import setuptools; setuptools.setup()' --version)"
