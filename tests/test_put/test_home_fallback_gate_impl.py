@@ -32,12 +32,12 @@ class TestHomeFallbackGateImpl(unittest.TestCase):
         assert [result] == [
             GateCheckResult.make_ok()]
 
-    def test(self):
-        result = os.statvfs('/Users/andrea/trash-cli')
-        print("")
-        pprint(result.f_bavail / 1024 / 1024)
-        pprint(result.f_bfree / 1024 / 1024)
-        # pprint(psutil.disk_usage('/'))
+    # def test(self):
+    #     result = os.statvfs('/Users/andrea/trash-cli')
+    #     print("")
+    #     pprint(result.f_bavail / 1024 / 1024)
+    #     pprint(result.f_bfree / 1024 / 1024)
+    #     # pprint(psutil.disk_usage('/'))
 
 
 def make_candidate(path):
