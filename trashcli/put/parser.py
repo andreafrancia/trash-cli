@@ -105,6 +105,6 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
                         action="version",
                         version=version)
     parser.add_argument('files',
-                        nargs='...'
+                        nargs='*'
                         ).complete = TRASH_FILES
     return parser
