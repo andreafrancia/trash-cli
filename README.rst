@@ -208,6 +208,10 @@ Arch Linux (pacman)::
 
     sudo pacman -S trash-cli
 
+Fedora (dnf)::
+
+    sudo dnf install trash-cli
+
 Install shell completions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
