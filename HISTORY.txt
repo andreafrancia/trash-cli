@@ -2,7 +2,7 @@
  - Made visible option -v/--verbose of trash-empty - Andrea Francia
  - Documented how completion works in README - Wu Zhenyu
  - Change: now if a file does not exists it does not tries to delete it using all available trash dirs - Andrea Francia
- - Removed an errore that would occour on trash-put when HOME environment is not set - Andrea Francia
+ - Removed an error that would occur on trash-put when HOME environment is not set - Andrea Francia
  - Whitelisted fuse.glusterfs filesystem - Andrea Francia
 0.22.10.4.4:
  - Revisited the trash-put log messages
@@ -21,7 +21,7 @@
  - also partitions mounted on /tmp with tmpfs will be considered physical volumes
  - `trash-list --all-users` to see trash from all users
 0.22.8.21.16:
- - Now supports p9 (WSL 2 volumes) as loation fro trash dirs
+ - Now supports p9 (WSL 2 volumes) as location for trash dirs
  - trash-list --volumes to list all the recognized volumes
  - trash-list --debug-volumes
  - Fix links to trash specification David Auer
@@ -30,7 +30,7 @@
    in the trash directory files
    pull request https://github.com/andreafrancia/trash-cli/pull/233
    thanks to: https://github.com/jamescherti
- - trash-empty do not list trahs directories that does not exist
+ - trash-empty do not list trash directories that does not exist
    pull request https://github.com/andreafrancia/trash-cli/pull/237
    thanks to: https://github.com/jack1142
  - Fix trash-empty not showing nfs mountpoints
