@@ -158,11 +158,14 @@ trash-cli 提供以下命令：
 
    -  Python 3 (Python 2.7 也可以)
    -  pip (在 Debian 上用 `apt-get install python-pip` 来安装 pip)
+   -  pipx_ (可选，推荐，安装在虚拟环境中以保护系统环境)
 
 安装命令:
 
 ::
 
+   pipx install trash-cli
+   # 或者
    pip install trash-cli
 
 源码安装
@@ -194,6 +197,8 @@ trash-cli 提供以下命令：
 
 ::
 
+   pipx uninstall trash-cli
+   # 或者
    pip uninstall trash-cli
 
 用包管理器安装
@@ -235,3 +240,4 @@ Debian/Ubuntu (apt)::
 .. |Donate| image:: https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif
 .. _Donate: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=93L6PYT4WBN5A
 .. _English: https://github.com/andreafrancia/trash-cli/blob/master/README.rst
+.. _pipx: https://pypa.github.io/pipx

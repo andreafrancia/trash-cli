@@ -165,8 +165,13 @@ The easy way
 
 Requirements:
  * Python 3 (Python 2.7 also work)
+ * pipx_ (optional, to install in a clean environment)
 
-Installation command::
+If pipx is available::
+
+    pipx install trash-cli
+
+Alternatively, install with vanilla pip::
 
     pip install trash-cli
 
@@ -176,6 +181,10 @@ Note: you may want add ~/.local/bin to the PATH::
     source ~/.bashrc # reload .bashrc
 
 For uninstalling use::
+
+    pipx uninstall trash-cli
+
+or::
 
     pip uninstall trash-cli
 
@@ -216,6 +225,10 @@ Install shell completions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You need install by::
+
+    pipx install 'trash-cli[completion]'
+
+or::
 
     pip install 'trash-cli[completion]'
 
@@ -269,3 +282,4 @@ Thanks to `JetBrains`_ for their license for Open Source Development
 .. _简体中文: https://github.com/andreafrancia/trash-cli/blob/master/README_zh-CN.rst
 .. _project contributors: https://github.com/andreafrancia/trash-cli/graphs/contributors
 .. _JetBrains: https://jb.gg/OpenSource
+.. _pipx: https://pypa.github.io/pipx/
