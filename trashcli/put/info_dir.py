@@ -4,6 +4,7 @@ import os
 from trashcli.put.fs.fs import Fs
 from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.put.suffix import Suffix
+from trashcli.trash import path_of_backup_copy
 
 
 class InfoDir:
@@ -27,14 +28,18 @@ class InfoDir:
         returns the created TrashInfoFile.
         """
 
-        index = 0
+        index = -1
         name_too_long = False
         while True:
+            index += 1
+
             suffix = self.suffix.suffix_for_index(index)
             trashinfo_basename = create_trashinfo_basename(basename,
                                                            suffix,
                                                            name_too_long)
             trashinfo_path = os.path.join(info_dir_path, trashinfo_basename)
+            if os.path.exists(path_of_backup_copy(trashinfo_path)):
+                continue
             try:
                 self.fs.atomic_write(trashinfo_path, content)
                 self.logger.debug(".trashinfo created as %s." % trashinfo_path,
@@ -47,7 +52,6 @@ class InfoDir:
                     "attempt for creating %s failed." % trashinfo_path,
                     log_data)
 
-            index += 1
 
 
 def create_trashinfo_basename(basename, suffix, name_too_long):
