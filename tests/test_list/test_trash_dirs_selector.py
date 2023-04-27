@@ -2,7 +2,7 @@ import unittest
 
 from tests.support.volumes_mock import volumes_mock
 
-from trashcli.list.main import TrashDirsSelector
+from trashcli.list.trash_dir_selector import TrashDirsSelector
 from trashcli.trash_dirs_scanner import trash_dir_found
 
 

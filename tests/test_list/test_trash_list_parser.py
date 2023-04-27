@@ -3,14 +3,16 @@ import unittest
 from six import StringIO
 
 import trashcli.list
+import trashcli.list.list_cmd
 import trashcli.list.main
-from trashcli.list.main import Action
+import trashcli.list.parser
+from trashcli.list.actions import Action
 from trashcli.trash import PrintHelp
 
 
 class TestTrashListParser(unittest.TestCase):
     def setUp(self):
-        self.parser = trashcli.list.main.Parser("trash-list")
+        self.parser = trashcli.list.parser.Parser("trash-list")
 
     def test_version(self):
         parsed = self.parser.parse_list_args(['--version'])
