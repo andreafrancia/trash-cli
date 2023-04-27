@@ -1,5 +1,4 @@
 import os
-from pprint import pprint
 
 from trashcli.fs import FileSystemReader
 from trashcli.fstab import Volumes
@@ -7,6 +6,8 @@ from trashcli.list.actions import Action
 from trashcli.list.cmd_output import ListCmdOutput
 from trashcli.list.extractors import DeletionDateExtractor, SizeExtractor
 from trashcli.list.parser import Parser
+from trashcli.list.subcmds.debug_volumes import DebugVolumesSubCmd
+from trashcli.list.subcmds.list_volumes import PrintVolumesList
 from trashcli.list.trash_dir_selector import TrashDirsSelector
 from trashcli.trash import version, print_version, TrashDirReader, parse_path, \
     ParseError, path_of_backup_copy
@@ -45,55 +46,45 @@ class ListCmd:
         if parsed.action == Action.print_version:
             print_version(self.out, argv[0], self.version)
         elif parsed.action == Action.list_volumes:
-            self.print_volumes_list()
+            PrintVolumesList(self.environ, self.volumes_listing).exectute()
         elif parsed.action == Action.debug_volumes:
-            self.debug_volumes()
+            DebugVolumesSubCmd().execute()
         elif parsed.action == Action.list_trash_dirs:
             self.list_trash_dirs(parsed.trash_dirs,
                                  parsed.all_users,
                                  self.environ,
                                  self.uid)
         elif parsed.action == Action.list_trash:
-            extractor = {
-                'deletion_date': DeletionDateExtractor(),
-                'size': SizeExtractor(),
-            }[parsed.attribute_to_print]
-            self.list_trash(parsed.trash_dirs,
-                            extractor,
-                            parsed.show_files,
-                            parsed.all_users,
-                            self.environ,
-                            self.uid)
+            self.list_trash(parsed)
         elif parsed.action == Action.print_python_executable:
             self.print_python_executable()
         else:
             raise ValueError('Unknown action: ' + parsed.action)
 
-    def debug_volumes(self):
-        import psutil
-        import os
-        all = sorted([p for p in psutil.disk_partitions(all=True)],
-                     key=lambda p: p.device)
-        physical = sorted([p for p in psutil.disk_partitions()],
-                          key=lambda p: p.device)
-        virtual = [p for p in all if p not in physical]
-        print("physical ->")
-        pprint(physical)
-        print("virtual ->")
-        pprint(virtual)
-        os.system('df -P')
+    class ListTrashSubCmd:
+        def __init__(self, environ, uid, selector):
+            self.environ = environ
+            self.uid = uid
+            self.selector = selector
 
-    def list_trash(self,
-                   user_specified_trash_dirs,
-                   extractor,
-                   show_files,
-                   all_users,
-                   environ,
-                   uid):
+        def execute(self, parsed):
+            pass
+
+    def list_trash(self, parsed):
+        cmd = self.ListTrashSubCmd(self.environ, self.uid, self.selector)
+        cmd.execute(parsed)
+        extractors = {
+            'deletion_date': DeletionDateExtractor(),
+            'size': SizeExtractor(),
+        }
+        user_specified_trash_dirs = parsed.trash_dirs
+        extractor = extractors[parsed.attribute_to_print]
+        show_files = parsed.show_files
+        all_users = parsed.all_users
         trash_dirs = self.selector.select(all_users,
                                           user_specified_trash_dirs,
-                                          environ,
-                                          uid)
+                                          self.environ,
+                                          self.uid)
         for event, args in trash_dirs:
             if event == trash_dir_found:
                 path, volume = args
@@ -154,10 +145,6 @@ class ListCmd:
                 else:
                     line = format_line(attribute, original_location)
                 self.output.println(line)
-
-    def print_volumes_list(self):
-        for volume in self.volumes_listing.list_volumes(self.environ):
-            print(volume)
 
 
 def format_line(attribute, original_location):
