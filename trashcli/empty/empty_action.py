@@ -14,7 +14,7 @@ from trashcli.empty.prepare_output_message import prepare_output_message
 from trashcli.empty.user import User
 from trashcli.fstab import Volumes, VolumesListing
 from trashcli.lib.my_input import my_input
-from trashcli.list import TrashDirsSelector
+from trashcli.list.main import TrashDirsSelector
 from trashcli.trash import Clock, DirReader, TrashDirReader
 from trashcli.trash_dirs_scanner import TopTrashDirRules
 

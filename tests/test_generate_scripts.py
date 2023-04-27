@@ -21,7 +21,7 @@ class TestGenerateScripts(unittest.TestCase):
 
         scripts.add_script('trash', 'trashcli.put.main', 'main')
         scripts.add_script('trash-put', 'trashcli.put.main', 'main')
-        scripts.add_script('trash-list', 'trashcli.list', 'main')
+        scripts.add_script('trash-list', 'trashcli.list.main', 'main')
         scripts.add_script('trash-restore', 'trashcli.restore', 'main')
         scripts.add_script('trash-empty', 'trashcli.empty.main', 'main')
         scripts.add_script('trash-rm', 'trashcli.rm', 'main')

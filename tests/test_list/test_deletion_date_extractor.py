@@ -1,7 +1,7 @@
 import datetime
 import unittest
 
-from trashcli.list import DeletionDateExtractor
+from trashcli.list.main import DeletionDateExtractor
 
 
 class TestDeletionDateExtractor(unittest.TestCase):

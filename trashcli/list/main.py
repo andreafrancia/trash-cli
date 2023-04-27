@@ -4,33 +4,19 @@ import os
 import sys
 from pprint import pprint
 
+from trashcli import fstab
+from trashcli.fs import FileSystemReader, file_size
+from trashcli.fstab import VolumesListing, Volumes
 from trashcli.list_mount_points import os_mount_points
-from trashcli.shell_completion import TRASH_DIRS, add_argument_to
+from trashcli.shell_completion import add_argument_to, TRASH_DIRS
 from trashcli.super_enum import SuperEnum
-
-from . import fstab
-from .fs import FileSystemReader, file_size
-from .fstab import Volumes, VolumesListing
-from .trash import (
-    AllUsersInfoProvider,
-    DirChecker,
-    ParseError,
-    TrashDirReader,
-    UserInfoProvider,
-    maybe_parse_deletion_date,
-    parse_path,
-    path_of_backup_copy,
-    print_version,
-    version,
-)
-from .trash_dirs_scanner import (
-    TopTrashDirRules,
-    TrashDir,
-    TrashDirsScanner,
-    trash_dir_found,
-    trash_dir_skipped_because_parent_is_symlink,
-    trash_dir_skipped_because_parent_not_sticky,
-)
+from trashcli.trash import version, print_version, TrashDirReader, parse_path, \
+    ParseError, path_of_backup_copy, maybe_parse_deletion_date, \
+    UserInfoProvider, DirChecker, AllUsersInfoProvider
+from trashcli.trash_dirs_scanner import trash_dir_found, \
+    trash_dir_skipped_because_parent_not_sticky, \
+    trash_dir_skipped_because_parent_is_symlink, TrashDir, TopTrashDirRules, \
+    TrashDirsScanner
 
 
 def main():
@@ -214,15 +200,6 @@ class SizeExtractor:
                 raise
 
 
-def description(program_name, printer):
-    printer.usage('Usage: %s [OPTIONS...]' % program_name)
-    printer.summary('List trashed files')
-    printer.options(
-        "  --version   show program's version number and exit",
-        "  -h, --help  show this help message and exit")
-    printer.bug_reporting()
-
-
 class TrashDirsSelector:
     def __init__(self,
                  current_user_dirs,
@@ -361,3 +338,12 @@ class ListCmdOutput:
     def top_trashdir_skipped_because_parent_is_symlink(self, trashdir):
         self.error("TrashDir skipped because parent is symlink: %s"
                    % trashdir)
+
+
+def description(program_name, printer):
+    printer.usage('Usage: %s [OPTIONS...]' % program_name)
+    printer.summary('List trashed files')
+    printer.options(
+        "  --version   show program's version number and exit",
+        "  -h, --help  show this help message and exit")
+    printer.bug_reporting()

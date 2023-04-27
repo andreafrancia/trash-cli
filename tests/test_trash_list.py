@@ -8,7 +8,7 @@ from mock import Mock
 from trashcli import trash
 from trashcli.fs import FileSystemReader
 from trashcli.fstab import VolumesListing
-from trashcli.list import ListCmd
+from trashcli.list.main import ListCmd
 
 from .support.asserts import assert_equals_with_unidiff
 from .fake_trash_dir import FakeTrashDir

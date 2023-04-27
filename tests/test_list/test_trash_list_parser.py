@@ -3,13 +3,14 @@ import unittest
 from six import StringIO
 
 import trashcli.list
-from trashcli.list import Action
+import trashcli.list.main
+from trashcli.list.main import Action
 from trashcli.trash import PrintHelp
 
 
 class TestTrashListParser(unittest.TestCase):
     def setUp(self):
-        self.parser = trashcli.list.Parser("trash-list")
+        self.parser = trashcli.list.main.Parser("trash-list")
 
     def test_version(self):
         parsed = self.parser.parse_list_args(['--version'])
@@ -50,7 +51,7 @@ class TestTrashListParser(unittest.TestCase):
 class TestPrintHelp(unittest.TestCase):
     def test(self):
         out = StringIO()
-        help_printer = PrintHelp(trashcli.list.description, out)
+        help_printer = PrintHelp(trashcli.list.main.description, out)
         help_printer.my_print_help('trash-list')
         assert out.getvalue() == ('Usage: trash-list [OPTIONS...]\n'
                                   '\n'
