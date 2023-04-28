@@ -2,7 +2,8 @@ import datetime
 import unittest
 
 from mock import Mock, call
-from trashcli.restore import TrashedFiles
+
+from trashcli.restore.trashed_file import TrashedFiles
 
 
 class TestTrashedFiles(unittest.TestCase):

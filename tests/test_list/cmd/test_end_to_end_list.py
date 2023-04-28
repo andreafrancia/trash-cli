@@ -3,17 +3,17 @@ import unittest
 
 import pytest
 
-from .. import run_command
-from ..fake_trash_dir import FakeTrashDir
-from ..run_command import normalize_options
-from ..support.my_path import MyPath
+from tests import run_command
+from tests.fake_trash_dir import FakeTrashDir
+from tests.run_command import normalize_options
+from tests.support.my_path import MyPath
 
 
 @pytest.mark.slow
 class TestEndToEndList(unittest.TestCase):
     def setUp(self):
-        self.tmp_dir = MyPath.make_temp_dir()
-        self.trash_dir = self.tmp_dir / 'trash-dir'
+        self.temp_dir = MyPath.make_temp_dir()
+        self.trash_dir = self.temp_dir / 'trash-dir'
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
 
     def test_list(self):
@@ -24,7 +24,7 @@ class TestEndToEndList(unittest.TestCase):
                                            datetime.datetime(2000, 1, 1, 0, 0,
                                                              1))
 
-        result = run_command.run_command(self.tmp_dir, "trash-list",
+        result = run_command.run_command(self.temp_dir, "trash-list",
                                          ['--trash-dir', self.trash_dir])
 
         assert [
@@ -34,7 +34,7 @@ class TestEndToEndList(unittest.TestCase):
 
     def test_list_trash_dirs(self):
         result = run_command.run_command(
-            self.tmp_dir, "trash-list",
+            self.temp_dir, "trash-list",
             ['--trash-dirs', '--trash-dir=/home/user/.local/share/Trash'])
         assert (result.stderr,
                 sorted(result.stdout.splitlines()), result.exit_code) == (
@@ -50,7 +50,7 @@ class TestEndToEndList(unittest.TestCase):
                                            datetime.datetime(2000, 1, 1, 0, 0,
                                                              1))
 
-        result = run_command.run_command(self.tmp_dir, "trash-list",
+        result = run_command.run_command(self.temp_dir, "trash-list",
                                          ['--trash-dir', self.trash_dir,
                                           '--files'])
 
@@ -60,7 +60,7 @@ class TestEndToEndList(unittest.TestCase):
         ]) == (result.stderr, sorted(result.stdout.splitlines()))
 
     def test_help(self):
-        result = run_command.run_command(self.tmp_dir, "trash-list", ['--help'])
+        result = run_command.run_command(self.temp_dir, "trash-list", ['--help'])
 
         self.assertEqual("""\
 usage: trash-list [-h] [--print-completion {bash,zsh,tcsh}] [--version]
@@ -84,4 +84,4 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues
 """, normalize_options(result.stdout))
 
     def tearDown(self):
-        self.tmp_dir.clean_up()
+        self.temp_dir.clean_up()

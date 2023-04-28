@@ -1,7 +1,11 @@
+import datetime
 from logging import Logger
+from typing import NamedTuple, Optional
 
-from trashcli.trash import parse_original_location, parse_deletion_date, \
-    path_of_backup_copy
+from trashcli.lib.path_of_backup_copy import path_of_backup_copy
+from trashcli.parse_trashinfo.parse_original_location import \
+    parse_original_location
+from trashcli.parse_trashinfo.parse_deletion_date import parse_deletion_date
 
 
 class TrashedFiles:
@@ -43,7 +47,7 @@ class TrashedFiles:
                                       type, info_file)
 
 
-class TrashedFile:
+class TrashedFile(NamedTuple):
     """
     Represent a trashed file.
     Each trashed file is persisted in two files:
@@ -58,12 +62,7 @@ class TrashedFile:
      - original_file : the path where the trashed file has been placed after the
                        trash operation (instance of Path)
     """
-
-    def __init__(self, original_location,
-                 deletion_date,
-                 info_file,
-                 original_file):
-        self.original_location = original_location
-        self.deletion_date = deletion_date
-        self.info_file = info_file
-        self.original_file = original_file
+    original_location: str
+    deletion_date: Optional[datetime.datetime]
+    info_file: str
+    original_file: str

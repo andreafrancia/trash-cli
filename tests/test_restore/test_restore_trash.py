@@ -8,13 +8,10 @@ from mock import Mock
 
 from trashcli.fs import contents_of, remove_file
 from trashcli.fstab import volume_of
-from trashcli.restore import (
-    RestoreCmd,
-    TrashDirectory,
-    TrashedFiles,
-)
+from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.trash_directories import TrashDirectories2, \
-    TrashDirectories
+    TrashDirectories, TrashDirectory
+from trashcli.restore.trashed_file import TrashedFiles
 
 from ..fake_trash_dir import trashinfo_content_default_date
 from ..support.files import make_file, require_empty_dir
@@ -121,11 +118,12 @@ class RestoreTrashUser:
                                      trash_directories2,
                                      TrashDirectory(),
                                      contents_of)
-        RestoreCmd(
+        RestoreCmd.make(
             stdout=self.out,
             stderr=self.err,
             exit=[].append,
             input=lambda msg: with_user_typing,
+            version='0.0.0',
             trashed_files=trashed_files,
             mount_points=lambda: [],
             fs=self.fs,

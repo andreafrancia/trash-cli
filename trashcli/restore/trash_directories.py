@@ -1,8 +1,10 @@
+# Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 import os
 
 from trashcli.fs import list_files_in_dir
 from trashcli.fstab import volume_of
-from trashcli.trash import home_trash_dir, volume_trash_dir1, volume_trash_dir2
+from trashcli.lib.trash_dirs import (
+    volume_trash_dir1, volume_trash_dir2, home_trash_dir)
 
 
 class TrashDirectories2:

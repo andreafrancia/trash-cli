@@ -1,45 +1,45 @@
 import argparse
 
-from typing import List, NamedTuple
+from typing import List, NamedTuple, Dict
 
 from trashcli.empty.actions import Action
+from trashcli.empty.empty_action import Parsed, EmptyActionArgs
+from trashcli.empty.print_time_action import PrintTimeArgs
+from trashcli.lib.print_version import PrintVersionArgs
 from trashcli.shell_completion import TRASH_DIRS, add_argument_to
 
 
-Parsed = NamedTuple('Parsed',
-                    [('action', Action),
-                     ('user_specified_trash_dirs', List[str]),
-                     ('all_users', bool),
-                     ('interactive', bool),
-                     ('days', int),
-                     ('dry_run', bool),
-                     ('verbose', int),
-                     ])
-
-
 class Parser:
-    def parse(self, default_is_interactive, args):
+    def parse(self,
+              default_is_interactive,  # type: bool
+              environ,  # type: Dict[str, str]
+              args,  # type: List[str]
+              uid,  # type: int
+              argv0,  # type: str
+              ):
         parser = self.make_parser(default_is_interactive)
         namespace = parser.parse_args(args)
 
-        return Parsed(
-            action=self.action_from_params(namespace),
-            user_specified_trash_dirs=namespace.user_specified_trash_dirs,
-            all_users=namespace.all_users,
-            interactive=namespace.interactive,
-            days=namespace.days,
-            dry_run=namespace.dry_run,
-            verbose=namespace.verbose,
-        )
-
-    @staticmethod
-    def action_from_params(params):
-        if params.version:
-            return Action.print_version
-        elif params.print_time:
-            return Action.print_time
+        if namespace.version:
+            return PrintVersionArgs(
+                action=Action.print_version,
+                argv0=argv0,
+            )
+        elif namespace.print_time:
+            return PrintTimeArgs(environ=environ,
+                                 action=Action.print_time)
         else:
-            return Action.empty
+            return EmptyActionArgs(
+                action=Action.empty,
+                user_specified_trash_dirs=namespace.user_specified_trash_dirs,
+                all_users=namespace.all_users,
+                interactive=namespace.interactive,
+                days=namespace.days,
+                dry_run=namespace.dry_run,
+                verbose=namespace.verbose,
+                environ=environ,
+                uid=uid,
+            )
 
     @staticmethod
     def make_parser(default_is_interactive):

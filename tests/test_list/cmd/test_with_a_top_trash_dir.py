@@ -3,7 +3,7 @@
 import os
 from datetime import datetime
 
-from tests.test_list.with_disk.setup import Setup
+from tests.test_list.cmd.setup import Setup
 
 from tests.support.asserts import assert_equals_with_unidiff
 from tests.fake_trash_dir import FakeTrashDir

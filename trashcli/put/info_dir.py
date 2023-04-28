@@ -4,7 +4,7 @@ import os
 from trashcli.put.fs.fs import Fs
 from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.put.suffix import Suffix
-from trashcli.trash import path_of_backup_copy
+from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 
 
 class InfoDir:

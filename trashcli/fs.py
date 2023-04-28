@@ -2,9 +2,6 @@ import os
 import shutil
 import stat
 
-from trashcli.empty.delete_according_date import ContentReader
-from trashcli.list.fs import FileSystemReaderForListCmd
-
 
 class FsMethods:
     def entries_if_dir_exists(self, path):
@@ -17,13 +14,13 @@ class FsMethods:
 
     def is_sticky_dir(self, path):  # type: (str) -> bool
         import os
-        return os.path.isdir(path) and has_sticky_bit(path)
+        return os.path.isdir(path) and self.has_sticky_bit(path)
 
     def is_symlink(self, path):  # type: (str) -> bool
         return os.path.islink(path)
 
     def contents_of(self, path):
-        return read_file(path)
+        return self.read_file(path)
 
     def has_sticky_bit(self, path):
         import os
@@ -60,7 +57,7 @@ class FsMethods:
         os.makedirs(path)
 
     def atomic_write(self, path, content):
-        file_handle = open_for_write_in_exclusive_and_create_mode(path)
+        file_handle = self.open_for_write_in_exclusive_and_create_mode(path)
         os.write(file_handle, content)
         os.close(file_handle)
 
@@ -82,19 +79,6 @@ class FsMethods:
         return os.stat(path).st_size
 
 
-class FileSystemReader(FileSystemReaderForListCmd):
-    is_sticky_dir = FsMethods().is_sticky_dir
-    is_symlink = FsMethods().is_symlink
-    contents_of = FsMethods().contents_of
-    entries_if_dir_exists = FsMethods().entries_if_dir_exists
-    exists = FsMethods().exists
-
-
-class FileSystemContentReader(ContentReader):
-    contents_of = FsMethods.contents_of
-
-
-is_sticky_dir = FileSystemReader().is_sticky_dir
 has_sticky_bit = FsMethods().has_sticky_bit
 contents_of = FsMethods().contents_of
 remove_file = FsMethods().remove_file

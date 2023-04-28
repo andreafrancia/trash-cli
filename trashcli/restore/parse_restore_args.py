@@ -1,14 +1,24 @@
 import os
+from typing import NamedTuple, List, Union, Optional
 
+from trashcli.lib.print_version import PrintVersionArgs
 from trashcli.shell_completion import add_argument_to, TRASH_FILES, TRASH_DIRS
 
 
-class Command:
-    PrintVersion = "Command.PrintVersion"
-    RunRestore = "Command.RunRestore"
+
+class RunRestoreArgs(NamedTuple):
+    path: str
+    sort: str
+    trash_dir: Optional[str]
+    overwrite: bool
 
 
-def parse_restore_args(sys_argv, curdir):
+Command = Union[PrintVersionArgs, RunRestoreArgs]
+
+
+def parse_restore_args(sys_argv,  # type: List[str]
+                       curdir,  # type: str
+                       ):  # type: (...) -> Command
     import argparse
 
     parser = argparse.ArgumentParser(
@@ -39,10 +49,11 @@ def parse_restore_args(sys_argv, curdir):
     parsed = parser.parse_args(sys_argv[1:])
 
     if parsed.version:
-        return Command.PrintVersion, None
+        return PrintVersionArgs(action="TODO",
+                                argv0=sys_argv[0])
     else:
         path = os.path.normpath(os.path.join(curdir + os.path.sep, parsed.path))
-        return Command.RunRestore, {'path': path,
-                                    'sort': parsed.sort,
-                                    'trash_dir': parsed.trash_dir,
-                                    'overwrite': parsed.overwrite}
+        return RunRestoreArgs(path=path,
+                              sort=parsed.sort,
+                              trash_dir=parsed.trash_dir,
+                              overwrite=parsed.overwrite)

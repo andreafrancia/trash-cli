@@ -5,9 +5,8 @@ from datetime import datetime
 
 from trashcli import trash
 from trashcli.empty.empty_cmd import EmptyCmd
-from trashcli.fs import (
-    FileSystemContentReader,
-)
+from trashcli.fs import FsMethods
+from .delete_according_date import ContentReader
 from .top_trash_dir_rules_file_system_reader import \
     TopTrashDirRulesFileSystemReader
 from trashcli.list_mount_points import os_mount_points
@@ -19,7 +18,9 @@ from .existing_file_remover import ExistingFileRemover
 
 
 def main():
-    empty_cmd = EmptyCmd(argv0=sys.argv[0], out=sys.stdout, err=sys.stderr,
+    empty_cmd = EmptyCmd(argv0=sys.argv[0],
+                         out=sys.stdout,
+                         err=sys.stderr,
                          volumes_listing=VolumesListing(os_mount_points),
                          now=datetime.now,
                          file_reader=TopTrashDirRulesFileSystemReader(),
@@ -28,3 +29,7 @@ def main():
                          dir_reader=FileSystemDirReader(),
                          version=trash.version, volumes=fstab.volumes)
     return empty_cmd.run_cmd(sys.argv[1:], os.environ, os.getuid())
+
+
+class FileSystemContentReader(ContentReader):
+    contents_of = FsMethods().contents_of

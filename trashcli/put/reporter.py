@@ -1,3 +1,4 @@
+# Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 import os
 import re
 from pwd import getpwuid
@@ -8,7 +9,7 @@ from typing import List
 from trashcli.put.candidate import Candidate
 from trashcli.put.describer import Describer
 from trashcli.put.my_logger import MyLogger, LogData
-from trashcli.trash import EX_IOERR, EX_OK
+from trashcli.lib.exit_codes import EX_OK, EX_IOERR
 
 
 class TrashPutReporter:

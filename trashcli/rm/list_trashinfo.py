@@ -4,7 +4,8 @@ import abc
 
 import six
 
-from trashcli.trash import parse_path, ParseError
+from trashcli.parse_trashinfo.parser_error import ParseError
+from trashcli.parse_trashinfo.parse_path import parse_path
 from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.lib.dir_reader import DirReader
 

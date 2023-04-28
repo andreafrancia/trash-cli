@@ -3,18 +3,12 @@
 from datetime import datetime
 
 from tests.support.sort_lines import sort_lines
-from tests.test_list.with_disk.setup import Setup
-from trashcli import trash
+from tests.test_list.cmd.setup import Setup
 
 from tests.support.asserts import assert_equals_with_unidiff
 
 
 class TestTrashList(Setup):
-    def test_should_output_the_version(self):
-        self.user.run_trash_list('--version')
-
-        assert_equals_with_unidiff('trash-list %s\n' % trash.version,
-                                   self.user.output())
 
     def test_should_output_nothing_when_trashcan_is_empty(self):
         self.user.run_trash_list()

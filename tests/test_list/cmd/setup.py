@@ -3,7 +3,7 @@ import unittest
 
 import pytest
 
-from tests.test_list.support import TrashListUser
+from tests.test_list.cmd.support import TrashListUser
 
 from tests.support.files import require_empty_dir
 from tests.support.my_path import MyPath

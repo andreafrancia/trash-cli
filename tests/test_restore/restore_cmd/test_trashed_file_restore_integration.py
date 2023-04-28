@@ -2,16 +2,14 @@ import os
 import unittest
 
 from mock import Mock
+from six import StringIO
 
 from trashcli.restore.file_system import FakeRestoreFileSystem
 from trashcli.fs import contents_of
-from trashcli.restore import (
-    RestoreCmd,
-    TrashDirectory,
-    TrashedFiles,
-    make_trash_directories,
-)
-from trashcli.restore.trashed_file import TrashedFile
+from trashcli.restore.restore_cmd import RestoreCmd
+from trashcli.restore.trash_directories import make_trash_directories, \
+    TrashDirectory
+from trashcli.restore.trashed_file import TrashedFile, TrashedFiles
 
 from tests.support.files import make_empty_file
 from tests.support.my_path import MyPath
@@ -19,20 +17,27 @@ from tests.support.my_path import MyPath
 
 class TestTrashedFileRestoreIntegration(unittest.TestCase):
     def setUp(self):
+        self.stdout = StringIO()
+        self.stderr = StringIO()
+        self.input_value = None
+        self.input = lambda _: self.input_value
         self.temp_dir = MyPath.make_temp_dir()
+        cwd = self.temp_dir
         trash_directories = make_trash_directories()
         self.logger = Mock(spec=[])
-        trashed_files = TrashedFiles(self.logger,
-                                     trash_directories,
-                                     TrashDirectory(),
-                                     contents_of)
-        self.cmd = RestoreCmd(None,
-                              None,
-                              exit=None,
-                              input=None,
-                              trashed_files=trashed_files,
-                              mount_points=lambda: [],
-                              fs=FakeRestoreFileSystem())
+        self.trashed_files = TrashedFiles(self.logger,
+                                          trash_directories,
+                                          TrashDirectory(),
+                                          contents_of)
+        self.trashed_files.all_trashed_files = Mock()
+        self.cmd = RestoreCmd.make(stdout=self.stdout,
+                                   stderr=self.stderr,
+                                   exit=lambda _: None,
+                                   input=self.input,
+                                   version="0.0.0",
+                                   trashed_files=self.trashed_files,
+                                   mount_points=lambda: [],
+                                   fs=FakeRestoreFileSystem(cwd))
 
     def test_restore(self):
         trashed_file = TrashedFile(self.temp_dir / 'parent/path',
@@ -41,8 +46,10 @@ class TestTrashedFileRestoreIntegration(unittest.TestCase):
                                    self.temp_dir / 'orig')
         make_empty_file(self.temp_dir / 'orig')
         make_empty_file(self.temp_dir / 'info_file')
+        self.input_value = '0'
 
-        self.cmd.restore(trashed_file)
+        self.trashed_files.all_trashed_files.return_value = [trashed_file]
+        self.cmd.run(['trash-restore'])
 
         assert os.path.exists(self.temp_dir / 'parent/path')
         assert not os.path.exists(self.temp_dir / 'info_file')
@@ -51,8 +58,12 @@ class TestTrashedFileRestoreIntegration(unittest.TestCase):
     def test_restore_over_existing_file(self):
         trashed_file = TrashedFile(self.temp_dir / 'path', None, None, None)
         make_empty_file(self.temp_dir / 'path')
+        self.input_value = '0'
 
-        self.assertRaises(IOError, lambda: self.cmd.restore(trashed_file))
+        self.trashed_files.all_trashed_files.return_value = [trashed_file]
+        self.cmd.run(['trash-restore'])
+
+        assert self.stderr.getvalue() == 'Refusing to overwrite existing file "path".\n'
 
     def tearDown(self):
         self.temp_dir.clean_up()

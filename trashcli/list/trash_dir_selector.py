@@ -1,5 +1,7 @@
+# Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 from trashcli.fstab import Volumes
-from trashcli.trash import UserInfoProvider, DirChecker, AllUsersInfoProvider
+from trashcli.lib.user_info import UserInfoProvider, AllUsersInfoProvider
+from trashcli.lib.dir_checker import DirChecker
 from trashcli.trash_dirs_scanner import trash_dir_found, TrashDir, \
     TopTrashDirRules, TrashDirsScanner
 

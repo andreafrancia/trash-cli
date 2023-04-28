@@ -2,7 +2,7 @@ import os
 from mock import Mock
 
 from tests.fake_trash_dir import FakeTrashDir
-from trashcli.fs import FileSystemReader
+from trashcli.file_system_reader import FileSystemReader
 from trashcli.fstab import VolumesListing
 from trashcli.list.main import ListCmd
 from tests.output_collector import OutputCollector
@@ -18,6 +18,7 @@ class TrashListUser:
         self.volumes = []
         trash_dir = os.path.join(xdg_data_home, "Trash")
         self.home_trashdir = FakeTrashDir(trash_dir)
+        self.version = None
 
     def run_trash_list(self, *args):
         self.run('trash-list', *args)
@@ -31,10 +32,11 @@ class TrashListUser:
             out=self.stdout,
             err=self.stderr,
             environ=self.environ,
-            uid=self.fake_uid,
-            file_reader=file_reader,
             volumes_listing=volumes_listing,
-            volumes=volumes_mock()
+            uid=self.fake_uid,
+            volumes=volumes_mock(),
+            file_reader=file_reader,
+            version=self.version
         ).run(argv)
 
     def set_fake_uid(self, uid):
@@ -48,3 +50,6 @@ class TrashListUser:
 
     def output(self):
         return self.stdout.getvalue()
+
+    def set_version(self, version):
+        self.version = version

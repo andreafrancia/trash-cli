@@ -1,4 +1,5 @@
-from typing import Dict, NamedTuple
+# Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
+from typing import Dict
 
 from trashcli.fstab import Volumes
 from trashcli.put.my_logger import MyLogger, LogData

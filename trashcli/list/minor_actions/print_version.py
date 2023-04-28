@@ -1,4 +1,5 @@
-from trashcli.trash import print_version
+# Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
+from trashcli.lib.print_version import print_version
 
 
 class PrintVersion:

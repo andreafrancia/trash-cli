@@ -1,4 +1,15 @@
-from trashcli.trash import println
+# Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
+from typing import NamedTuple, Dict, Any
+
+from trashcli.empty.actions import Action
+
+
+class PrintTimeArgs(
+    NamedTuple('PrintTimeArgs', [
+        ('environ', Dict[str, str]),
+        ('action', Action)
+    ])):
+    pass
 
 
 class PrintTimeAction:
@@ -6,7 +17,8 @@ class PrintTimeAction:
         self.out = out
         self.clock = clock
 
-    def run_action(self, _parsed, environ, _uid):
-        now_value = self.clock.get_now_value(environ)
-        println(self.out,
-                now_value.replace(microsecond=0).isoformat())
+    def run_action(self,
+                   parsed,  # type: PrintTimeArgs
+                   ):
+        now_value = self.clock.get_now_value(parsed.environ)
+        print(now_value.replace(microsecond=0).isoformat(), file=self.out)

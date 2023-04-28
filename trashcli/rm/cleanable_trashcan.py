@@ -1,6 +1,6 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 from trashcli.rm.file_remover import FileRemover
-from trashcli.trash import path_of_backup_copy
+from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 
 
 class CleanableTrashcan:

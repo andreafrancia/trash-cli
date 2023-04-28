@@ -3,7 +3,8 @@ from trashcli.rm.file_remover import FileRemover
 from trashcli.rm.filter import Filter
 from trashcli.rm.list_trashinfo import ListTrashinfos, FileContentReader
 from trashcli.rm.cleanable_trashcan import CleanableTrashcan
-from trashcli.trash import UserInfoProvider, DirChecker
+from trashcli.lib.user_info import UserInfoProvider
+from trashcli.lib.dir_checker import DirChecker
 from trashcli.lib.dir_reader import DirReader
 from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
     trash_dir_found

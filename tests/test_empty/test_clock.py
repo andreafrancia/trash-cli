@@ -2,7 +2,7 @@ import datetime
 import unittest
 
 from mock import Mock, call
-from trashcli.trash import Clock
+from trashcli.empty.clock import Clock
 
 
 class TestClock(unittest.TestCase):

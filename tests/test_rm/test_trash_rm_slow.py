@@ -3,8 +3,8 @@ import unittest
 from six import StringIO
 
 import pytest
-from trashcli.fs import FileSystemReader
 from trashcli.fstab import VolumesListing
+from trashcli.rm.main import RealRmFileSystemReader
 from trashcli.rm.rm_cmd import RmCmd
 
 from tests.fake_trash_dir import FakeTrashDir
@@ -20,7 +20,7 @@ class TestTrashRm(unittest.TestCase):
                               , getuid=lambda: 123
                               , volumes_listing=VolumesListing(lambda: [])
                               , stderr=self.stderr
-                              , file_reader=FileSystemReader())
+                              , file_reader=RealRmFileSystemReader())
         self.fake_trash_dir = FakeTrashDir(self.xdg_data_home / 'Trash')
 
     def test_issue69(self):

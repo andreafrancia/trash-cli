@@ -1,3 +1,4 @@
+# Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 from typing import Dict, List
 
 from trashcli.fstab import Volumes
@@ -5,7 +6,8 @@ from trashcli.put.candidate import Candidate
 from trashcli.put.gate import SameVolumeGate, HomeFallbackGate
 from trashcli.put.path_maker import AbsolutePaths, RelativePaths
 from trashcli.put.security_check import NoCheck, TopTrashDirCheck
-from trashcli.trash import home_trash_dir, volume_trash_dir1, volume_trash_dir2
+from trashcli.lib.trash_dirs import (
+    volume_trash_dir1, volume_trash_dir2, home_trash_dir)
 
 
 class TrashDirectoriesFinder:

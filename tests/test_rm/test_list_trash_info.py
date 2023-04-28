@@ -4,7 +4,7 @@ import pytest
 
 from tests.fake_trash_dir import FakeTrashDir
 from tests.support.my_path import MyPath
-from trashcli.fs import FileSystemReader
+from trashcli.file_system_reader import FileSystemReader
 from trashcli.rm.list_trashinfo import ListTrashinfos
 
 

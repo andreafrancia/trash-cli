@@ -1,5 +1,6 @@
 from trashcli.empty.older_than import older_than
-from trashcli.trash import Clock, parse_deletion_date
+from trashcli.parse_trashinfo.parse_deletion_date import parse_deletion_date
+from trashcli.empty.clock import Clock
 
 
 class ContentReader:
@@ -8,7 +9,10 @@ class ContentReader:
 
 
 class DeleteAccordingDate:
-    def __init__(self, reader, clock):  # type: (ContentReader, Clock) -> None
+    def __init__(self,
+                 reader,  # type: ContentReader
+                 clock,  # type: Clock
+                 ):
         self.reader = reader
         self.clock = clock
 

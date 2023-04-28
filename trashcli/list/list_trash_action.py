@@ -1,20 +1,58 @@
-from trashcli.list.extractors import DeletionDateExtractor, SizeExtractor
+import os
+
 from trashcli.lib.trash_dir_reader import TrashDirReader
+from trashcli.list.extractors import DeletionDateExtractor, SizeExtractor
+from trashcli.parse_trashinfo.parse_path import parse_path
+from trashcli.parse_trashinfo.parser_error import ParseError
+from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.trash_dirs_scanner import trash_dir_found, \
     trash_dir_skipped_because_parent_not_sticky, \
     trash_dir_skipped_because_parent_is_symlink
 
 
-class ListTrash:
-    def __init__(self, environ, uid, selector, output, printer, file_reader):
+class ListTrashAction:
+    def __init__(self,
+                 environ,
+                 uid,
+                 selector,
+                 out,
+                 err,
+                 file_reader,
+                 ):
         self.environ = environ
         self.uid = uid
         self.selector = selector
-        self.output = output
-        self.printer = printer
+        self.out = out
+        self.err = err
         self.file_reader = file_reader
 
     def execute(self, parsed):
+        for message in ListTrash(self.environ,
+                                 self.uid,
+                                 self.selector,
+                                 self.file_reader).list_all_trash(parsed):
+            self.print_event(message)
+
+    def print_event(self, event):
+        if isinstance(event, Error):
+            print(event.error, file=self.err)
+        elif isinstance(event, Output):
+            print(event.message, file=self.out)
+
+
+class ListTrash:
+    def __init__(self,
+                 environ,
+                 uid,
+                 selector,
+                 file_reader,
+                 ):
+        self.environ = environ
+        self.uid = uid
+        self.selector = selector
+        self.file_reader = file_reader
+
+    def list_all_trash(self, parsed):
         extractors = {
             'deletion_date': DeletionDateExtractor(),
             'size': SizeExtractor(),
@@ -32,14 +70,74 @@ class ListTrash:
                 path, volume = args
                 trash_dir = TrashDirReader(self.file_reader)
                 for trash_info in trash_dir.list_trashinfo(path):
-                    self.printer.print_trashinfo(volume, trash_info,
-                                                 extractor,
-                                                 show_files)
+                    for msg in self.print_trashinfo(volume, trash_info,
+                                                    extractor, show_files):
+                        yield msg
             elif event == trash_dir_skipped_because_parent_not_sticky:
                 path, = args
-                self.output.top_trashdir_skipped_because_parent_not_sticky(
-                    path)
+                msg = Error(
+                    self.top_trashdir_skipped_because_parent_not_sticky(path))
+                yield msg
             elif event == trash_dir_skipped_because_parent_is_symlink:
                 path, = args
-                self.output.top_trashdir_skipped_because_parent_is_symlink(
-                    path)
+                msg = Error(
+                    self.top_trashdir_skipped_because_parent_is_symlink(path))
+                yield msg
+
+    def print_trashinfo(self,
+                        volume,
+                        trashinfo_path,
+                        extractor,
+                        show_files):
+        try:
+            contents = self.file_reader.contents_of(trashinfo_path)
+        except IOError as e:
+            yield Error(str(e))
+        else:
+            try:
+                relative_location = parse_path(contents)
+            except ParseError:
+                yield Error(self.print_parse_path_error(trashinfo_path))
+            else:
+                attribute = extractor.extract_attribute(trashinfo_path,
+                                                        contents)
+                original_location = os.path.join(volume, relative_location)
+
+                if show_files:
+                    original_file = path_of_backup_copy(trashinfo_path)
+                    line = format_line2(attribute, original_location,
+                                        original_file)
+                else:
+                    line = format_line(attribute, original_location)
+                yield Output(line)
+
+    def top_trashdir_skipped_because_parent_is_symlink(self, trashdir):
+        return "TrashDir skipped because parent is symlink: %s" % trashdir
+
+    def top_trashdir_skipped_because_parent_not_sticky(self, trashdir):
+        return "TrashDir skipped because parent not sticky: %s" % trashdir
+
+    def print_parse_path_error(self, offending_file):
+        return "Parse Error: %s: Unable to parse Path." % offending_file
+
+
+class Event:
+    pass
+
+
+class Error(Event):
+    def __init__(self, error):
+        self.error = error
+
+
+class Output(Event):
+    def __init__(self, message):
+        self.message = message
+
+
+def format_line(attribute, original_location):
+    return "%s %s" % (attribute, original_location)
+
+
+def format_line2(attribute, original_location, original_file):
+    return "%s %s -> %s" % (attribute, original_location, original_file)

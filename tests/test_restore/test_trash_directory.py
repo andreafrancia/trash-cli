@@ -1,11 +1,10 @@
 import unittest
 
-import six
-
 import pytest
+import six
 from mock import Mock
-from trashcli.restore import TrashDirectory
 
+from trashcli.restore.trash_directories import TrashDirectory
 from ..support.files import make_file, require_empty_dir
 from ..support.my_path import MyPath
 

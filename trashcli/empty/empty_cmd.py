@@ -2,18 +2,18 @@ import os
 from datetime import datetime
 from io import TextIOWrapper
 
-from trashcli.empty.actions import Action
 from trashcli.empty.console import Console
 from trashcli.empty.delete_according_date import ContentReader
-from trashcli.empty.empty_action import EmptyAction
+from trashcli.empty.empty_action import EmptyAction, EmptyActionArgs
 from trashcli.empty.errors import Errors
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.is_input_interactive import is_input_interactive
 from trashcli.empty.parser import Parser
-from trashcli.empty.print_time_action import PrintTimeAction
-from trashcli.empty.print_version_action import PrintVersionAction
+from trashcli.empty.print_time_action import PrintTimeAction, PrintTimeArgs
+from trashcli.lib.print_version import PrintVersionAction, PrintVersionArgs
 from trashcli.fstab import Volumes, VolumesListing
-from trashcli.trash import EX_OK, Clock
+from trashcli.lib.exit_codes import EX_OK
+from trashcli.empty.clock import Clock
 from trashcli.lib.dir_reader import DirReader
 from trashcli.trash_dirs_scanner import TopTrashDirRules
 
@@ -50,21 +50,25 @@ class EmptyCmd:
         console = Console(self.program_name, self.out, self.err)
 
         self.actions = {
-            Action.empty: EmptyAction(clock,
-                                      self.file_remover,
-                                      self.volumes_listing,
-                                      self.file_reader,
-                                      self.volumes,
-                                      self.dir_reader,
-                                      self.content_reader,
-                                      console),
-            Action.print_version: PrintVersionAction(self.out,
-                                                     self.version,
-                                                     self.program_name),
-            Action.print_time: PrintTimeAction(self.out, clock),
+            EmptyActionArgs: EmptyAction(clock,
+                                         self.file_remover,
+                                         self.volumes_listing,
+                                         self.file_reader,
+                                         self.volumes,
+                                         self.dir_reader,
+                                         self.content_reader,
+                                         console),
+            PrintVersionArgs: PrintVersionAction(self.out,
+                                                 self.version),
+            PrintTimeArgs: PrintTimeAction(self.out, clock),
         }
 
     def run_cmd(self, args, environ, uid):
-        parsed = self.parser.parse(is_input_interactive(), args)
-        self.actions[parsed.action].run_action(parsed, environ, uid)
+        parsed = self.parser.parse(
+            default_is_interactive=is_input_interactive(),
+            args=args,
+            argv0=self.argv0,
+            environ=environ,
+            uid=uid)
+        self.actions[type(parsed)].run_action(parsed)
         return EX_OK

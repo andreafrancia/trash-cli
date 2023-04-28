@@ -3,7 +3,7 @@ import unittest
 
 from mock import Mock
 from trashcli.fs import contents_of, remove_file
-from trashcli.restore import TrashedFiles
+from trashcli.restore.trashed_file import TrashedFiles
 
 from tests.support.files import make_file, require_empty_dir
 from tests.support.remove_dir_if_exists import remove_dir_if_exists
