@@ -24,3 +24,9 @@ trash-list --version
 trash-rm --version
 trash-restore --version
 trash-empty --version
+
+touch foo bar
+trash-put foo bar
+trash-list
+trash-rm bar
+echo | trash-empty
