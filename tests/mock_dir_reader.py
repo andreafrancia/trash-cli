@@ -1,6 +1,6 @@
 import os
 
-from trashcli.trash import DirReader
+from trashcli.lib.dir_reader import DirReader
 
 
 class MockDirReader(DirReader):

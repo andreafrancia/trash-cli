@@ -3,11 +3,10 @@ import shutil
 import stat
 
 from trashcli.empty.delete_according_date import ContentReader
-from trashcli.trash import DirReader
-from trashcli.trash_dirs_scanner import TopTrashDirRules
+from trashcli.list.fs import FileSystemReaderForListCmd
 
 
-class FileSystemDirReader(DirReader):
+class FsMethods:
     def entries_if_dir_exists(self, path):
         if os.path.exists(path):
             for entry in os.listdir(path):
@@ -16,123 +15,96 @@ class FileSystemDirReader(DirReader):
     def exists(self, path):
         return os.path.exists(path)
 
-
-class FileReader(TopTrashDirRules.Reader):
-    def exists(self, path):  # type: (str) -> bool
-        return os.path.exists(path)
-
     def is_sticky_dir(self, path):  # type: (str) -> bool
-        return FileSystemReader.is_sticky_dir(path)
-
-    def is_symlink(self, path):  # type: (str) -> bool
-        return FileSystemReader.is_symlink(path)
-
-
-class TopTrashDirRulesFileSystemReader(TopTrashDirRules.Reader):
-    def exists(self, path):  # type: (str) -> bool
-        return FileSystemReader().exists(path)
-
-    def is_sticky_dir(self, path):  # type: (str) -> bool
-        return FileSystemReader().is_sticky_dir(path)
-
-    def is_symlink(self, path):  # type: (str) -> bool
-        return FileSystemReader().is_symlink(path)
-
-
-class FileSystemReader(FileSystemDirReader):
-
-    @staticmethod
-    def is_sticky_dir(path):  # type: (str) -> bool
         import os
         return os.path.isdir(path) and has_sticky_bit(path)
 
-    @staticmethod
-    def is_symlink(path):  # type: (str) -> bool
+    def is_symlink(self, path):  # type: (str) -> bool
         return os.path.islink(path)
 
-    @staticmethod
-    def contents_of(path):
-        return read_file(path)
-
-
-class FileSystemContentReader(ContentReader):
     def contents_of(self, path):
         return read_file(path)
 
+    def has_sticky_bit(self, path):
+        import os
+        import stat
+        return (os.stat(path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
 
-is_sticky_dir = FileSystemReader().is_sticky_dir
+    def remove_file(self, path):
+        if (os.path.lexists(path)):
+            try:
+                os.remove(path)
+            except:
+                return shutil.rmtree(path)
 
-
-class FileRemover:
-    @staticmethod
-    def remove_file(path):
+    def remove_file2(self, path):
         try:
             os.remove(path)
         except OSError:
             shutil.rmtree(path)
 
-    @classmethod
-    def remove_file_if_exists(cls, path):
-        if os.path.lexists(path): cls.remove_file(path)
+    def remove_file_if_exists(self, path):
+        if os.path.lexists(path): self.remove_file2(path)
+
+    def move(self, path, dest):
+        return shutil.move(path, str(dest))
+
+    def list_files_in_dir(self, path):
+        for entry in os.listdir(path):
+            result = os.path.join(path, entry)
+            yield result
+
+    def mkdirs(self, path):
+        if os.path.isdir(path):
+            return
+        os.makedirs(path)
+
+    def atomic_write(self, path, content):
+        file_handle = open_for_write_in_exclusive_and_create_mode(path)
+        os.write(file_handle, content)
+        os.close(file_handle)
+
+    def open_for_write_in_exclusive_and_create_mode(self, path):
+        return os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+
+    def read_file(self, path):
+        with open(path) as f:
+            return f.read()
+
+    def write_file(self, name, contents):
+        with open(name, 'w') as f:
+            f.write(contents)
+
+    def make_file_executable(self, path):
+        os.chmod(path, os.stat(path).st_mode | stat.S_IXUSR)
+
+    def file_size(self, path):
+        return os.stat(path).st_size
 
 
-def contents_of(path):  # TODO remove
-    return FileSystemReader().contents_of(path)
+class FileSystemReader(FileSystemReaderForListCmd):
+    is_sticky_dir = FsMethods().is_sticky_dir
+    is_symlink = FsMethods().is_symlink
+    contents_of = FsMethods().contents_of
+    entries_if_dir_exists = FsMethods().entries_if_dir_exists
+    exists = FsMethods().exists
 
 
-def has_sticky_bit(path):
-    import os
-    import stat
-    return (os.stat(path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
+class FileSystemContentReader(ContentReader):
+    contents_of = FsMethods.contents_of
 
 
-def remove_file(path):
-    if (os.path.lexists(path)):
-        try:
-            os.remove(path)
-        except:
-            return shutil.rmtree(path)
-
-
-def move(path, dest):
-    return shutil.move(path, str(dest))
-
-
-def list_files_in_dir(path):
-    for entry in os.listdir(path):
-        result = os.path.join(path, entry)
-        yield result
-
-
-def mkdirs(path):
-    if os.path.isdir(path):
-        return
-    os.makedirs(path)
-
-
-def atomic_write(path, content):
-    file_handle = open_for_write_in_exclusive_and_create_mode(path)
-    os.write(file_handle, content)
-    os.close(file_handle)
-
-
-def open_for_write_in_exclusive_and_create_mode(path):
-    return os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-
-
-def read_file(path):
-    with open(path) as f:
-        return f.read()
-
-
-def write_file(name, contents):
-    with open(name, 'w') as f:
-        f.write(contents)
-
-
-def make_file_executable(path):
-    os.chmod(path, os.stat(path).st_mode | stat.S_IXUSR)
-
-
-def file_size(path):
-    return os.stat(path).st_size
+is_sticky_dir = FileSystemReader().is_sticky_dir
+has_sticky_bit = FsMethods().has_sticky_bit
+contents_of = FsMethods().contents_of
+remove_file = FsMethods().remove_file
+move = FsMethods().move
+list_files_in_dir = FsMethods().list_files_in_dir
+mkdirs = FsMethods().mkdirs
+atomic_write = FsMethods().atomic_write
+open_for_write_in_exclusive_and_create_mode = FsMethods().open_for_write_in_exclusive_and_create_mode
+read_file = FsMethods().read_file
+write_file = FsMethods().write_file
+make_file_executable = FsMethods().make_file_executable
+file_size = FsMethods().file_size
+remove_file2 = FsMethods().remove_file2

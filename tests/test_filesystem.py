@@ -4,10 +4,12 @@ import os
 import unittest
 
 import pytest
-from trashcli.fs import has_sticky_bit, is_sticky_dir, mkdirs
+from trashcli.fs import has_sticky_bit, mkdirs, FsMethods
 
 from .support.files import make_empty_file, set_sticky_bit, unset_sticky_bit
 from .support.my_path import MyPath
+
+is_sticky_dir = FsMethods().is_sticky_dir
 
 
 @pytest.mark.slow
@@ -17,20 +19,17 @@ class TestWithInSandbox(unittest.TestCase):
         self.temp_dir = MyPath.make_temp_dir()
 
     def test_mkdirs_with_default_mode(self):
-
         mkdirs(self.temp_dir / "test-dir/sub-dir")
 
         assert os.path.isdir(self.temp_dir / "test-dir/sub-dir")
 
     def test_has_sticky_bit_returns_true(self):
-
         make_empty_file(self.temp_dir / "sticky")
         set_sticky_bit(self.temp_dir / "sticky")
 
         assert has_sticky_bit(self.temp_dir / 'sticky')
 
     def test_has_sticky_bit_returns_false(self):
-
         make_empty_file(self.temp_dir / "non-sticky")
         set_sticky_bit(self.temp_dir / "non-sticky")
         unset_sticky_bit(self.temp_dir / "non-sticky")

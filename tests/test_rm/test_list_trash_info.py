@@ -2,10 +2,10 @@ import unittest
 
 import pytest
 
+from tests.fake_trash_dir import FakeTrashDir
+from tests.support.my_path import MyPath
 from trashcli.fs import FileSystemReader
-from trashcli.rm import ListTrashinfos
-from .fake_trash_dir import FakeTrashDir
-from .support.my_path import MyPath
+from trashcli.rm.list_trashinfo import ListTrashinfos
 
 
 @pytest.mark.slow
@@ -14,7 +14,7 @@ class TestListTrashinfos(unittest.TestCase):
         self.tmp_dir = MyPath.make_temp_dir()
         self.trash_dir = self.tmp_dir / 'Trash'
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
-        self.listing = ListTrashinfos(FileSystemReader())
+        self.listing = ListTrashinfos.make(FileSystemReader(), FileSystemReader())
 
     def test_absolute_path(self):
         self.fake_trash_dir.add_trashinfo_basename_path('a', '/foo')

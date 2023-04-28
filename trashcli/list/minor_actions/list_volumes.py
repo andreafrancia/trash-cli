@@ -3,6 +3,6 @@ class PrintVolumesList:
         self.environ = environ
         self.volumes_listing = volumes_listing
 
-    def exectute(self):
+    def exectute(self, _parsed):
         for volume in self.volumes_listing.list_volumes(self.environ):
             print(volume)

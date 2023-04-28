@@ -4,7 +4,8 @@ from typing import Iterator
 from trashcli.empty.console import Console
 from trashcli.empty.delete_according_date import DeleteAccordingDate
 from trashcli.empty.existing_file_remover import ExistingFileRemover
-from trashcli.trash import TrashDirReader, path_of_backup_copy
+from trashcli.trash import path_of_backup_copy
+from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.trash_dirs_scanner import TrashDir, only_found
 
 

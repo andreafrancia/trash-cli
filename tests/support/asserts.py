@@ -1,4 +1,5 @@
 from textwrap import dedent
+import unittest
 
 
 def assert_line_in_text(line, text):
@@ -30,3 +31,7 @@ def assert_equals_with_unidiff(expected, actual):
                                 "Expected:%s\n" % repr(expected) +
                                 "  Actual:%s\n" % repr(actual) +
                                 unidiff(expected, actual))
+
+
+def assert_starts_with(actual, expected):
+    unittest.TestCase().assertEqual(actual[:len(expected)], expected)

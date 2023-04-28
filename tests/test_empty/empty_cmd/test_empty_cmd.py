@@ -12,7 +12,7 @@ from trashcli.empty.delete_according_date import ContentReader
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.fstab import VolumesListing
-from trashcli.trash import DirReader
+from trashcli.lib.dir_reader import DirReader
 from trashcli.trash_dirs_scanner import TopTrashDirRules
 
 

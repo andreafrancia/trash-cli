@@ -15,7 +15,9 @@ from trashcli.empty.user import User
 from trashcli.fstab import Volumes, VolumesListing
 from trashcli.lib.my_input import my_input
 from trashcli.list.trash_dir_selector import TrashDirsSelector
-from trashcli.trash import Clock, DirReader, TrashDirReader
+from trashcli.trash import Clock
+from trashcli.lib.trash_dir_reader import TrashDirReader
+from trashcli.lib.dir_reader import DirReader
 from trashcli.trash_dirs_scanner import TopTrashDirRules
 
 

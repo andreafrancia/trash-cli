@@ -1,13 +1,9 @@
 import unittest
 
-from six import StringIO
-
 import trashcli.list
-import trashcli.list.list_cmd
 import trashcli.list.main
 import trashcli.list.parser
 from trashcli.list.actions import Action
-from trashcli.trash import PrintHelp
 
 
 class TestTrashListParser(unittest.TestCase):
@@ -48,19 +44,3 @@ class TestTrashListParser(unittest.TestCase):
         parsed = self.parser.parse_list_args(['--files'])
 
         assert True == parsed.show_files
-
-
-class TestPrintHelp(unittest.TestCase):
-    def test(self):
-        out = StringIO()
-        help_printer = PrintHelp(trashcli.list.main.description, out)
-        help_printer.my_print_help('trash-list')
-        assert out.getvalue() == ('Usage: trash-list [OPTIONS...]\n'
-                                  '\n'
-                                  'List trashed files\n'
-                                  '\n'
-                                  'Options:\n'
-                                  "  --version   show program's version number and exit\n"
-                                  '  -h, --help  show this help message and exit\n'
-                                  '\n'
-                                  'Report bugs to https://github.com/andreafrancia/trash-cli/issues\n')

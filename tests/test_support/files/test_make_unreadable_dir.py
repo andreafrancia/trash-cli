@@ -3,27 +3,11 @@ import os
 import shutil
 import unittest
 
-import pytest
-from trashcli.fs import FileRemover, read_file
+from trashcli.fs import remove_file2
 
-from .support.files import make_unreadable_file, make_unreadable_dir, \
+from ...support.files import make_unreadable_dir, \
     make_readable
-from .support.my_path import MyPath
-
-
-@pytest.mark.slow
-class Test_make_unreadable_file(unittest.TestCase):
-    def setUp(self):
-        self.tmp_dir = MyPath.make_temp_dir()
-
-    def test(self):
-        path = self.tmp_dir / "unreadable"
-        make_unreadable_file(self.tmp_dir / "unreadable")
-        with self.assertRaises(IOError):
-            read_file(path)
-
-    def tearDown(self):
-        self.tmp_dir.clean_up()
+from ...support.my_path import MyPath
 
 
 class Test_make_unreadable_dir(unittest.TestCase):
@@ -38,7 +22,7 @@ class Test_make_unreadable_dir(unittest.TestCase):
 
     def test_and_can_not_be_removed(self):
         try:
-            FileRemover().remove_file(self.unreadable_dir)
+            remove_file2(self.unreadable_dir)
             self.fail()
         except OSError as e:
             self.assertEqual(errno.errorcode[e.errno], 'EACCES')

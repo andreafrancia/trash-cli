@@ -7,10 +7,11 @@ from trashcli import trash
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.fs import (
     FileSystemContentReader,
-    FileSystemDirReader,
-    TopTrashDirRulesFileSystemReader,
 )
+from .top_trash_dir_rules_file_system_reader import \
+    TopTrashDirRulesFileSystemReader
 from trashcli.list_mount_points import os_mount_points
+from .file_system_dir_reader import FileSystemDirReader
 
 from .. import fstab
 from ..fstab import VolumesListing

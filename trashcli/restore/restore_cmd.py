@@ -1,12 +1,15 @@
 import os
 
+from trashcli.restore import RestoreFileSystem
 from trashcli.restore.restore_asking_the_user import RestoreAskingTheUser
 from trashcli.restore.parse_restore_args import Command, parse_restore_args
 from trashcli.trash import version, print_version
 
 
 class Restorer(object):
-    def __init__(self, fs):
+    def __init__(self,
+                 fs, # type: RestoreFileSystem
+                 ):
         self.fs = fs
 
     def restore_trashed_file(self, trashed_file, overwrite=False):
@@ -25,8 +28,16 @@ def original_location_matches_path(trashed_file_original_location, path):
 
 
 class RestoreCmd(object):
-    def __init__(self, stdout, stderr, exit, input, version=version,
-                 trashed_files=None, mount_points=None, fs=None):
+    def __init__(self,
+                 stdout,
+                 stderr,
+                 exit,
+                 input,
+                 version=version,
+                 trashed_files=None,
+                 mount_points=None,
+                 fs=None, # type: RestoreFileSystem
+                 ):
         self.out = stdout
         self.err = stderr
         self.exit = exit
@@ -99,7 +110,10 @@ class RestoreCmd(object):
         self.err.write('%s\n' % msg)
 
 
-def restore(trashed_file, fs, overwrite=False):
+def restore(trashed_file,
+            fs, # type: RestoreFileSystem
+            overwrite=False,
+            ):
     if not overwrite and fs.path_exists(trashed_file.original_location):
         raise IOError(
             'Refusing to overwrite existing file "%s".' % os.path.basename(

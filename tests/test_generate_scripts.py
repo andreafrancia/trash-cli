@@ -24,7 +24,7 @@ class TestGenerateScripts(unittest.TestCase):
         scripts.add_script('trash-list', 'trashcli.list.main', 'main')
         scripts.add_script('trash-restore', 'trashcli.restore', 'main')
         scripts.add_script('trash-empty', 'trashcli.empty.main', 'main')
-        scripts.add_script('trash-rm', 'trashcli.rm', 'main')
+        scripts.add_script('trash-rm', 'trashcli.rm.main', 'main')
 
         self.assertEqual(['trash',
                           'trash-put',

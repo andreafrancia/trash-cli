@@ -3,7 +3,7 @@ import unittest
 
 from tests.fake_file_system import FakeFileSystem
 
-from trashcli.trash import TrashDirReader
+from trashcli.lib.trash_dir_reader import TrashDirReader
 
 
 class TestTrashDirReader(unittest.TestCase):
@@ -24,5 +24,3 @@ class TestTrashDirReader(unittest.TestCase):
         result = list(self.trash_dir.list_orphans('/'))
 
         assert ['/files/foo'] == result
-
-
