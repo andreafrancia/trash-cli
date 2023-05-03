@@ -2,33 +2,32 @@ import datetime
 import unittest
 
 from mock import Mock
-from trashcli.fs import contents_of, remove_file
-from trashcli.restore.trashed_file import TrashedFiles
 
 from tests.support.files import make_file, require_empty_dir
 from tests.support.remove_dir_if_exists import remove_dir_if_exists
+from trashcli.fs import remove_file
+from trashcli.restore.file_system import RealFileReader
+from trashcli.restore.info_dir_searcher import InfoDirSearcher, FileFound
+from trashcli.restore.trashed_file import TrashedFiles
 
 
 class TestTrashedFilesIntegration(unittest.TestCase):
     def setUp(self):
-        self.trash_directories = Mock(spec=['trash_directories_or_user'])
-        self.trash_directory = Mock(spec=['all_info_files'])
         self.logger = Mock(spec=[])
+        self.searcher = Mock(spec=InfoDirSearcher)
         self.trashed_files = TrashedFiles(self.logger,
-                                          self.trash_directories,
-                                          self.trash_directory,
-                                          contents_of)
+                                          RealFileReader(),
+                                          self.searcher)
 
-    def test_something(self):
+    def test(self):
         require_empty_dir('info')
-        self.trash_directories.trash_directories_or_user.return_value = \
-            [("path", "/volume")]
+        self.searcher.all_file_in_info_dir.return_value = [
+            FileFound('trashinfo', 'info/info_path.trashinfo', '/volume')
+        ]
         make_file('info/info_path.trashinfo',
                   'Path=name\nDeletionDate=2001-01-01T10:10:10')
-        self.trash_directory.all_info_files = Mock([], return_value=[
-            ('trashinfo', 'info/info_path.trashinfo')])
 
-        trashed_files = list(self.trashed_files.all_trashed_files([], None))
+        trashed_files = list(self.trashed_files.all_trashed_files(None))
 
         trashed_file = trashed_files[0]
         assert '/volume/name' == trashed_file.original_location

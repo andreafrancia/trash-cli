@@ -4,15 +4,12 @@ import unittest
 from mock import Mock
 from six import StringIO
 
-from trashcli.restore.file_system import FakeRestoreFileSystem
-from trashcli.fs import contents_of
-from trashcli.restore.restore_cmd import RestoreCmd
-from trashcli.restore.trash_directories import make_trash_directories, \
-    TrashDirectory
-from trashcli.restore.trashed_file import TrashedFile, TrashedFiles
-
 from tests.support.files import make_empty_file
 from tests.support.my_path import MyPath
+from trashcli.restore.file_system import RealRestoreWriteFileSystem, \
+    FakeReadCwd, RealRestoreReadFileSystem
+from trashcli.restore.restore_cmd import RestoreCmd
+from trashcli.restore.trashed_file import TrashedFile, TrashedFiles
 
 
 class TestTrashedFileRestoreIntegration(unittest.TestCase):
@@ -23,21 +20,17 @@ class TestTrashedFileRestoreIntegration(unittest.TestCase):
         self.input = lambda _: self.input_value
         self.temp_dir = MyPath.make_temp_dir()
         cwd = self.temp_dir
-        trash_directories = make_trash_directories()
         self.logger = Mock(spec=[])
-        self.trashed_files = TrashedFiles(self.logger,
-                                          trash_directories,
-                                          TrashDirectory(),
-                                          contents_of)
-        self.trashed_files.all_trashed_files = Mock()
+        self.trashed_files = Mock(spec=TrashedFiles)
         self.cmd = RestoreCmd.make(stdout=self.stdout,
                                    stderr=self.stderr,
                                    exit=lambda _: None,
                                    input=self.input,
                                    version="0.0.0",
                                    trashed_files=self.trashed_files,
-                                   mount_points=lambda: [],
-                                   fs=FakeRestoreFileSystem(cwd))
+                                   read_fs=RealRestoreReadFileSystem(),
+                                   write_fs=RealRestoreWriteFileSystem(),
+                                   read_cwd=FakeReadCwd(cwd))
 
     def test_restore(self):
         trashed_file = TrashedFile(self.temp_dir / 'parent/path',

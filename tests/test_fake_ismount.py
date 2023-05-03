@@ -1,6 +1,6 @@
 import unittest
 
-from trashcli.fstab import FakeIsMount
+from tests.support.fake_is_mount import FakeIsMount
 
 
 class TestOnDefault(unittest.TestCase):

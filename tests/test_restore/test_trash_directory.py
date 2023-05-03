@@ -2,9 +2,9 @@ import unittest
 
 import pytest
 import six
-from mock import Mock
 
-from trashcli.restore.trash_directories import TrashDirectory
+from trashcli.restore.file_system import ListingFileSystem
+from trashcli.restore.info_files import InfoFiles
 from ..support.files import make_file, require_empty_dir
 from ..support.my_path import MyPath
 
@@ -14,9 +14,7 @@ class TestTrashDirectory(unittest.TestCase):
     def setUp(self):
         self.temp_dir = MyPath.make_temp_dir()
         require_empty_dir(self.temp_dir / 'trash-dir')
-        self.trash_dir = TrashDirectory()
-        self.logger = Mock()
-        self.trash_dir.logger = self.logger
+        self.info_files = InfoFiles(ListingFileSystem())
 
     def test_should_list_a_trashinfo(self):
         make_file(self.temp_dir / 'trash-dir/info/foo.trashinfo')
@@ -49,7 +47,7 @@ class TestTrashDirectory(unittest.TestCase):
                              result)
 
     def list_trashinfos(self):
-        return list(self.trash_dir.all_info_files(self.temp_dir / 'trash-dir'))
+        return list(self.info_files.all_info_files(self.temp_dir / 'trash-dir'))
 
     def tearDown(self):
         self.temp_dir.clean_up()

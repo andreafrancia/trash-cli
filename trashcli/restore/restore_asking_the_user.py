@@ -1,3 +1,5 @@
+from typing import Callable
+
 from trashcli.restore.range import Range
 from trashcli.restore.single import Single
 from trashcli.restore.sequences import Sequences
@@ -5,10 +7,15 @@ from trashcli.restore.my_range import my_range
 
 
 class RestoreAskingTheUser(object):
-    def __init__(self, input, println, restore, die):
+    def __init__(self,
+                 input, # type: Callable[[str], str]
+                 println,  # type: Callable[[str], None]
+                 restorer,
+                 die, # type: Callable[[str], None]
+                 ):
         self.input = input
         self.println = println
-        self.restore = restore
+        self.restorer = restorer
         self.die = die
 
     def restore_asking_the_user(self, trashed_files, overwrite=False):
@@ -30,7 +37,7 @@ class RestoreAskingTheUser(object):
                 try:
                     for index in sequences.all_indexes():
                         trashed_file = trashed_files[index]
-                        self.restore(trashed_file, overwrite)
+                        self.restorer.restore_trashed_file(trashed_file, overwrite)
                 except IOError as e:
                     self.die(e)
 

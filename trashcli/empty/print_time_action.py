@@ -19,7 +19,7 @@ class PrintTimeAction:
         self.clock = clock
 
     def run_action(self,
-                   parsed,  # type: PrintTimeArgs
+                   args,  # type: PrintTimeArgs
                    ):
-        now_value = self.clock.get_now_value(parsed.environ)
+        now_value = self.clock.get_now_value(args.environ)
         print(now_value.replace(microsecond=0).isoformat(), file=self.out)

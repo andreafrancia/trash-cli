@@ -2,6 +2,8 @@ import unittest
 
 import pytest
 from mock import Mock, call
+
+from tests.support.fake_volumes import volumes_fake
 from trashcli.restore.trash_directories import TrashDirectories2
 
 
@@ -9,18 +11,19 @@ from trashcli.restore.trash_directories import TrashDirectories2
 class TestTrashDirectories2(unittest.TestCase):
     def setUp(self):
         self.trash_directories = Mock(spec=['all_trash_directories'])
-        self.volume_of = lambda x: "volume_of(%s)" % x
-        self.trash_directories2 = TrashDirectories2(self.volume_of,
-                                                    self.trash_directories)
+        self.volumes = volumes_fake(lambda x: "volume_of(%s)" % x)
+        self.trash_directories2 = TrashDirectories2(
+            self.volumes,
+            self.trash_directories,
+        )
 
     def test_when_user_dir_is_none(self):
         self.trash_directories.all_trash_directories.return_value = \
             "os-trash-directories"
 
-        result = self.trash_directories2.trash_directories_or_user('volumes',
-                                                                   None)
+        result = self.trash_directories2.trash_directories_or_user(None)
 
-        self.assertEqual([call.all_trash_directories('volumes')],
+        self.assertEqual([call.all_trash_directories()],
                          self.trash_directories.mock_calls)
         self.assertEqual('os-trash-directories', result)
 
@@ -29,7 +32,7 @@ class TestTrashDirectories2(unittest.TestCase):
             "os-trash-directories"
 
         result = self.trash_directories2.trash_directories_or_user(
-            'volumes', 'user-trash_dir')
+            'user-trash_dir')
 
         self.assertEqual([], self.trash_directories.mock_calls)
         self.assertEqual([('user-trash_dir', 'volume_of(user-trash_dir)')],

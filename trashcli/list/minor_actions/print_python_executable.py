@@ -1,4 +1,10 @@
+class PrintPythonExecutableArgs:
+    pass
+
+
 class PrintPythonExecutable:
-    def execute(self, parsed):
+    def run_action(self,
+                   _args,  # type: PrintPythonExecutableArgs
+                   ):
         import sys
         print(sys.executable)

@@ -1,7 +1,9 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
-from trashcli.fstab import Volumes
-from trashcli.lib.user_info import UserInfoProvider, AllUsersInfoProvider
+from typing import List, Dict
+
+from trashcli.fstab.volumes import Volumes
 from trashcli.lib.dir_checker import DirChecker
+from trashcli.lib.user_info import UserInfoProvider, AllUsersInfoProvider
 from trashcli.trash_dirs_scanner import trash_dir_found, TrashDir, \
     TopTrashDirRules, TrashDirsScanner
 
@@ -17,10 +19,11 @@ class TrashDirsSelector:
         self.volumes = volumes
 
     def select(self,
-               all_users_flag,
-               user_specified_dirs,
-               environ,
-               uid): # type (bool, List[str], Dict[str, str], int) -> Iterator[Tuple[str, TrashDir[str, str]]]
+               all_users_flag, # type: bool
+               user_specified_dirs, # type: List[str]
+               environ, # type: Dict[str, str]
+               uid, # type: int
+               ): # type (...) -> Iterator[Tuple[str, TrashDir[str, str]]]
         if all_users_flag:
             for dir in self.all_users_dirs.scan_trash_dirs(environ, uid):
                 yield dir

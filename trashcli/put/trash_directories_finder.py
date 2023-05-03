@@ -1,17 +1,19 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 from typing import Dict, List
 
-from trashcli.fstab import Volumes
+from trashcli.fstab.volumes import Volumes
+from trashcli.lib.trash_dirs import (
+    volume_trash_dir1, volume_trash_dir2, home_trash_dir)
 from trashcli.put.candidate import Candidate
 from trashcli.put.gate import SameVolumeGate, HomeFallbackGate
 from trashcli.put.path_maker import AbsolutePaths, RelativePaths
 from trashcli.put.security_check import NoCheck, TopTrashDirCheck
-from trashcli.lib.trash_dirs import (
-    volume_trash_dir1, volume_trash_dir2, home_trash_dir)
 
 
 class TrashDirectoriesFinder:
-    def __init__(self, volumes):  # type: (Volumes) -> None
+    def __init__(self,
+                 volumes,  # type: Volumes
+                 ):
         self.volumes = volumes
 
     def possible_trash_directories_for(self,
@@ -58,7 +60,7 @@ class TrashDirectoriesFinder:
                           gate=SameVolumeGate))
         else:
             for path, dir_volume in home_trash_dir(environ,
-                                                   self.volumes.volume_of):
+                                                   self.volumes):
                 add_home_trash(path, dir_volume, SameVolumeGate)
             for path, dir_volume in volume_trash_dir1(volume, uid):
                 add_top_trash_dir(path, dir_volume)
@@ -66,6 +68,6 @@ class TrashDirectoriesFinder:
                 add_alt_top_trash_dir(path, dir_volume)
             if home_fallback:
                 for path, dir_volume in home_trash_dir(environ,
-                                                       self.volumes.volume_of):
+                                                       self.volumes):
                     add_home_trash(path, dir_volume, HomeFallbackGate)
         return trash_dirs

@@ -1,4 +1,4 @@
-from trashcli.fstab import Volumes
+from trashcli.fstab.volumes import Volumes
 from trashcli.put.fs.parent_realpath import ParentRealpath
 
 

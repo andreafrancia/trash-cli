@@ -1,7 +1,5 @@
 import os
-from typing import Callable, List
 
-from trashcli.restore.parse_restore_args import RunRestoreArgs
 from trashcli.restore.trashed_file import TrashedFiles
 
 
@@ -9,17 +7,14 @@ class RunRestoreAction:
     def __init__(self,
                  handler,  # type: 'Handler'
                  trashed_files,  # type: TrashedFiles
-                 mount_points,  # type: Callable[[], List[str]]
                  ):
         self.handler = handler
         self.trashed_files = trashed_files
-        self.mount_points = mount_points
 
     def run_action(self, args,  # type RunRestoreArgs
                    ): # type: (...) -> None
-        trash_dir_from_cli = args.trash_dir
         trashed_files = list(self.all_files_trashed_from_path(
-            args.path, trash_dir_from_cli))
+            args.path, args.trash_dir))
         if args.sort == 'path':
             trashed_files = sorted(trashed_files,
                                    key=lambda
@@ -32,12 +27,12 @@ class RunRestoreAction:
         self.handler.handle_trashed_files(trashed_files,
                                           args.overwrite)
 
-    def all_files_trashed_from_path(self, path, trash_dir_from_cli):
-        for trashed_file in self.trashed_files.all_trashed_files(
-                self.mount_points(), trash_dir_from_cli):
-            if original_location_matches_path(
-                    trashed_file.original_location,
-                    path):
+    def all_files_trashed_from_path(self,
+                                    path, # type: str
+                                    trash_dir_from_cli, # type: str
+                                    ):
+        for trashed_file in self.trashed_files.all_trashed_files(trash_dir_from_cli):
+            if trashed_file.original_location_matches_path(path):
                 yield trashed_file
 
 

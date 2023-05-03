@@ -1,15 +1,26 @@
+from typing import TextIO, Callable
+
+from trashcli.restore.file_system import ReadCwd
 from trashcli.restore.restore_asking_the_user import RestoreAskingTheUser
-from trashcli.restore.run_restore_action import Handler
 from trashcli.restore.restorer import Restorer
+from trashcli.restore.run_restore_action import Handler
 
 
 class HandlerImpl(Handler):
-    def __init__(self, stdout, stderr, exit, input, fs):
+    def __init__(self,
+                 stdout,  # type: TextIO
+                 stderr,  # type: TextIO
+                 exit,  # type: Callable[[int], None]
+                 input,  # type: Callable[[str], str]
+                 cwd,  # type: ReadCwd
+                 restorer,  # type: Restorer
+                 ):
         self.stdout = stdout
         self.stderr = stderr
         self.exit = exit
         self.input = input
-        self.fs = fs
+        self.cwd = cwd
+        self.restorer = restorer
 
     def handle_trashed_files(self,
                              trashed_files,
@@ -27,7 +38,7 @@ class HandlerImpl(Handler):
     def restore_asking_the_user(self, trashed_files, overwrite=False):
         restore_asking_the_user = RestoreAskingTheUser(self.input,
                                                        self.println,
-                                                       self.restore,
+                                                       self.restorer,
                                                        self.die)
         restore_asking_the_user.restore_asking_the_user(trashed_files,
                                                         overwrite)
@@ -36,13 +47,9 @@ class HandlerImpl(Handler):
         self.printerr(error)
         self.exit(1)
 
-    def restore(self, trashed_file, overwrite=False):
-        restorer = Restorer(self.fs)
-        restorer.restore_trashed_file(trashed_file, overwrite)
-
     def report_no_files_found(self):
         self.println(
-            "No files trashed from current dir ('%s')" % self.fs.getcwd_as_realpath())
+            "No files trashed from current dir ('%s')" % self.cwd.getcwd_as_realpath())
 
     def println(self, line):
         self.stdout.write(line + '\n')

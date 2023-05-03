@@ -1,8 +1,12 @@
 from pprint import pprint
 
+class DebugVolumesArgs:
+    pass
 
 class DebugVolumes:
-    def execute(self, _parsed):
+    def run_action(self,
+                   _args, # type: DebugVolumesArgs
+                   ):
         import psutil
         import os
         all = sorted([p for p in psutil.disk_partitions(all=True)],

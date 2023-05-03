@@ -3,18 +3,17 @@ import os
 import sys
 
 from trashcli.fs import FsMethods
+from trashcli.fstab.volume_listing import RealVolumesListing
 from trashcli.rm.rm_cmd import RmCmd, RmFileSystemReader
 
 
 def main():
-    from trashcli.list_mount_points import os_mount_points
-    from trashcli.fstab import VolumesListing
-    volumes_listing = VolumesListing(os_mount_points)
-    cmd = RmCmd(environ=os.environ
-                , getuid=os.getuid
-                , volumes_listing=volumes_listing
-                , stderr=sys.stderr
-                , file_reader=RealRmFileSystemReader())
+    volumes_listing = RealVolumesListing()
+    cmd = RmCmd(environ=os.environ,
+                getuid=os.getuid,
+                volumes_listing=volumes_listing,
+                stderr=sys.stderr,
+                file_reader=RealRmFileSystemReader())
 
     cmd.run(sys.argv, os.getuid())
 

@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import os
+from typing import NamedTuple, List
 
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.lib.trash_dir_reader import TrashDirReader
@@ -10,6 +11,16 @@ from trashcli.parse_trashinfo.parser_error import ParseError
 from trashcli.trash_dirs_scanner import trash_dir_found, \
     trash_dir_skipped_because_parent_not_sticky, \
     trash_dir_skipped_because_parent_is_symlink
+
+
+class ListTrashArgs(
+    NamedTuple('ListTrashArgs', [
+        ('trash_dirs', List[str]),
+        ('attribute_to_print', str),
+        ('show_files', bool),
+        ('all_users', bool),
+    ])):
+    pass
 
 
 class ListTrashAction:
@@ -28,11 +39,13 @@ class ListTrashAction:
         self.err = err
         self.file_reader = file_reader
 
-    def execute(self, parsed):
+    def run_action(self,
+                   args, # type: ListTrashArgs
+                   ):
         for message in ListTrash(self.environ,
                                  self.uid,
                                  self.selector,
-                                 self.file_reader).list_all_trash(parsed):
+                                 self.file_reader).list_all_trash(args):
             self.print_event(message)
 
     def print_event(self, event):
@@ -54,34 +67,36 @@ class ListTrash:
         self.selector = selector
         self.file_reader = file_reader
 
-    def list_all_trash(self, parsed):
+    def list_all_trash(self,
+                       args,  # type: ListTrashArgs
+                       ):
         extractors = {
             'deletion_date': DeletionDateExtractor(),
             'size': SizeExtractor(),
         }
-        user_specified_trash_dirs = parsed.trash_dirs
-        extractor = extractors[parsed.attribute_to_print]
-        show_files = parsed.show_files
-        all_users = parsed.all_users
+        user_specified_trash_dirs = args.trash_dirs
+        extractor = extractors[args.attribute_to_print]
+        show_files = args.show_files
+        all_users = args.all_users
         trash_dirs = self.selector.select(all_users,
                                           user_specified_trash_dirs,
                                           self.environ,
                                           self.uid)
-        for event, args in trash_dirs:
+        for event, event_args in trash_dirs:
             if event == trash_dir_found:
-                path, volume = args
+                path, volume = event_args
                 trash_dir = TrashDirReader(self.file_reader)
                 for trash_info in trash_dir.list_trashinfo(path):
                     for msg in self.print_trashinfo(volume, trash_info,
                                                     extractor, show_files):
                         yield msg
             elif event == trash_dir_skipped_because_parent_not_sticky:
-                path, = args
+                path, = event_args
                 msg = Error(
                     self.top_trashdir_skipped_because_parent_not_sticky(path))
                 yield msg
             elif event == trash_dir_skipped_because_parent_is_symlink:
-                path, = args
+                path, = event_args
                 msg = Error(
                     self.top_trashdir_skipped_because_parent_is_symlink(path))
                 yield msg

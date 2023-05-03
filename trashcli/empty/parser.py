@@ -1,9 +1,9 @@
 import argparse
 
-from typing import List, NamedTuple, Dict
+from typing import List, Dict
 
 from trashcli.empty.actions import Action
-from trashcli.empty.empty_action import Parsed, EmptyActionArgs
+from trashcli.empty.empty_action import EmptyActionArgs
 from trashcli.empty.print_time_action import PrintTimeArgs
 from trashcli.lib.print_version import PrintVersionArgs
 from trashcli.shell_completion import TRASH_DIRS, add_argument_to

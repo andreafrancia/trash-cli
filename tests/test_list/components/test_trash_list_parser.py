@@ -3,7 +3,7 @@ import unittest
 import trashcli.list
 import trashcli.list.main
 import trashcli.list.parser
-from trashcli.list.actions import Action
+from trashcli.lib.print_version import PrintVersionArgs
 
 
 class TestTrashListParser(unittest.TestCase):
@@ -11,36 +11,39 @@ class TestTrashListParser(unittest.TestCase):
         self.parser = trashcli.list.parser.Parser("trash-list")
 
     def test_version(self):
-        parsed = self.parser.parse_list_args(['--version'])
+        args = self.parse(['--version'])
 
-        assert Action.print_version == parsed.action
+        assert PrintVersionArgs == type(args)
 
     def test_trash_dir_not_specified(self):
-        parsed = self.parser.parse_list_args([])
+        args = self.parse([])
 
-        assert [] == parsed.trash_dirs
+        assert [] == args.trash_dirs
 
     def test_trash_dir_specified(self):
-        parsed = self.parser.parse_list_args(['--trash-dir=foo'])
+        args = self.parse(['--trash-dir=foo'])
 
-        assert ['foo'] == parsed.trash_dirs
+        assert ['foo'] == args.trash_dirs
 
     def test_size_off(self):
-        parsed = self.parser.parse_list_args([])
+        args = self.parse([])
 
-        assert 'deletion_date' == parsed.attribute_to_print
+        assert 'deletion_date' == args.attribute_to_print
 
     def test_size_on(self):
-        parsed = self.parser.parse_list_args(['--size'])
+        args = self.parse(['--size'])
 
-        assert 'size' == parsed.attribute_to_print
+        assert 'size' == args.attribute_to_print
 
     def test_files_off(self):
-        parsed = self.parser.parse_list_args([])
+        args = self.parse([])
 
-        assert False == parsed.show_files
+        assert False == args.show_files
 
     def test_files_on(self):
-        parsed = self.parser.parse_list_args(['--files'])
+        args = self.parse(['--files'])
 
-        assert True == parsed.show_files
+        assert True == args.show_files
+
+    def parse(self, args):
+        return self.parser.parse_list_args(args, 'trash-list')

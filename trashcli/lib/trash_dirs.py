@@ -3,6 +3,8 @@ from __future__ import absolute_import
 
 import os
 
+from trashcli.fstab.volumes import Volumes
+
 
 def home_trash_dir_path_from_env(environ):
     if 'XDG_DATA_HOME' in environ:
@@ -16,10 +18,12 @@ def home_trash_dir_path_from_home(home_dir):
     return '%s/.local/share/Trash' % home_dir
 
 
-def home_trash_dir(environ, volume_of):
+def home_trash_dir(environ,
+                   volumes, # type: Volumes
+                   ):
     paths = home_trash_dir_path_from_env(environ)
     for path in paths:
-        yield path, volume_of(path)
+        yield path, volumes.volume_of(path)
 
 
 def volume_trash_dir1(volume, uid):

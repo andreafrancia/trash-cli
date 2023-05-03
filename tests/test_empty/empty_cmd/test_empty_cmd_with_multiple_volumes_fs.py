@@ -2,20 +2,20 @@
 import os
 import unittest
 
+from mock import Mock
 from six import StringIO
+
+from tests.support.fake_volumes import volumes_fake
 from tests.support.files import make_empty_file, require_empty_dir, make_dirs, \
     set_sticky_bit
-from tests.support.volumes_mock import volumes_mock
 from tests.support.my_path import MyPath
-
-from mock import Mock
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.empty.main import FileSystemContentReader
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     TopTrashDirRulesFileSystemReader
-from trashcli.fstab import VolumesListing
+from trashcli.fstab.volume_listing import VolumesListing
 
 
 class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
@@ -37,7 +37,7 @@ class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
             content_reader=FileSystemContentReader(),
             dir_reader=FileSystemDirReader(),
             version='unused',
-            volumes=volumes_mock(),
+            volumes=volumes_fake(),
         )
 
     def test_it_removes_trashinfos_from_method_1_dir(self):

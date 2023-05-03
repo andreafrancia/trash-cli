@@ -1,20 +1,20 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import unittest
 
-from six import StringIO
-from tests.support.files import make_unreadable_dir, make_readable
-from tests.support.volumes_mock import volumes_mock
-from tests.support.my_path import MyPath
-
 import pytest
 from mock import Mock
+from six import StringIO
+
+from tests.support.fake_volumes import volumes_fake
+from tests.support.files import make_unreadable_dir, make_readable
+from tests.support.my_path import MyPath
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.empty.main import FileSystemContentReader
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     TopTrashDirRulesFileSystemReader
-from trashcli.fstab import VolumesListing
+from trashcli.fstab.volume_listing import VolumesListing
 
 
 @pytest.mark.slow
@@ -37,7 +37,7 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
             content_reader=FileSystemContentReader(),
             dir_reader=FileSystemDirReader(),
             version='unused',
-            volumes=volumes_mock()
+            volumes=volumes_fake()
         )
 
     def test_trash_empty_will_skip_unreadable_dir(self):

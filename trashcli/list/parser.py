@@ -1,7 +1,15 @@
 import argparse
+from typing import List
 
-from trashcli.list.actions import Action
+from trashcli.lib.print_version import PrintVersionArgs
+from trashcli.list.list_trash_action import ListTrashArgs
+from trashcli.list.minor_actions.debug_volumes import DebugVolumesArgs
+from trashcli.list.minor_actions.list_trash_dirs import ListTrashDirsArgs
+from trashcli.list.minor_actions.list_volumes import PrintVolumesArgs
+from trashcli.list.minor_actions.print_python_executable import \
+    PrintPythonExecutableArgs
 from trashcli.shell_completion import add_argument_to, TRASH_DIRS
+from trashcli.super_enum import SuperEnum
 
 
 class Parser:
@@ -58,6 +66,41 @@ class Parser:
                                  const=Action.print_python_executable,
                                  help=argparse.SUPPRESS)
 
-    def parse_list_args(self, args):
+    def parse_list_args(self,
+                        args,  # type: List[str]
+                        argv0,  # type: str
+                        ):
         parsed = self.parser.parse_args(args)
-        return parsed
+        args = None
+        if parsed.action == Action.print_version:
+            args = PrintVersionArgs(action="TODO",
+                                    argv0=argv0)
+        if parsed.action == Action.list_volumes:
+            args = PrintVolumesArgs()
+        if parsed.action == Action.debug_volumes:
+            args = DebugVolumesArgs()
+        if parsed.action == Action.list_trash_dirs:
+            args = ListTrashDirsArgs(
+                trash_dirs=parsed.trash_dirs,
+                all_users=parsed.all_users
+            )
+        if parsed.action == Action.list_trash:
+            args = ListTrashArgs(
+                trash_dirs=parsed.trash_dirs,
+                attribute_to_print=parsed.attribute_to_print,
+                show_files=parsed.show_files,
+                all_users=parsed.all_users
+            )
+        if parsed.action == Action.print_python_executable:
+            args = PrintPythonExecutableArgs()
+
+        return args
+
+
+class Action(SuperEnum):
+    debug_volumes = 'debug_volumes'
+    print_version = 'print_version'
+    list_trash = 'list_trash'
+    list_volumes = 'list_volumes'
+    list_trash_dirs = 'list_trash_dirs'
+    print_python_executable = 'print_python_executable'

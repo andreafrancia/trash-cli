@@ -5,11 +5,12 @@ import unittest
 import flexmock
 from six import StringIO
 
+from tests.support.fake_is_mount import FakeIsMount
 from tests.test_put.support.dummy_clock import DummyClock
 from tests.test_put.support.fake_fs.fake_fs import FakeFs
-from trashcli.fstab import Volumes, FakeIsMount
-from trashcli.put.main import make_cmd
+from trashcli.fstab.volumes import VolumesImpl
 from trashcli.lib.exit_codes import EX_OK, EX_IOERR
+from trashcli.put.main import make_cmd
 
 
 class TestPut(unittest.TestCase):
@@ -19,7 +20,7 @@ class TestPut(unittest.TestCase):
         my_input = lambda: "y"
         randint = lambda: 44
         self.is_mount = FakeIsMount(['/'])
-        volumes = Volumes(self.is_mount, os.path.normpath)
+        volumes = VolumesImpl(self.is_mount, os.path.normpath)
         self.stderr = StringIO()
         self.cmd = make_cmd(clock=clock,
                             fs=self.fs,

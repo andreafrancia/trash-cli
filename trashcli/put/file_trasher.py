@@ -1,15 +1,15 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 from typing import Dict
 
-from trashcli.fstab import Volumes
-from trashcli.put.my_logger import MyLogger, LogData
+from trashcli.fstab.volumes import Volumes
 from trashcli.put.fs.parent_realpath import ParentRealpath
+from trashcli.put.fs.volume_of_parent import VolumeOfParent
+from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_file_in import TrashFileIn
-from trashcli.put.trashee import Trashee
 from trashcli.put.trash_result import TrashResult
-from trashcli.put.fs.volume_of_parent import VolumeOfParent
+from trashcli.put.trashee import Trashee
 
 
 class FileTrasher:

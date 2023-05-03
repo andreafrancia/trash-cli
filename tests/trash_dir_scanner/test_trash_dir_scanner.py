@@ -1,9 +1,10 @@
 import unittest
 
 from mock import Mock
-from trashcli.fstab import VolumesListing
-from trashcli.lib.user_info import UserInfoProvider
+
+from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.lib.dir_checker import DirChecker
+from trashcli.lib.user_info import UserInfoProvider
 from trashcli.trash_dirs_scanner import TrashDirsScanner, trash_dir_found
 
 

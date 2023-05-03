@@ -1,17 +1,17 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import unittest
-
-from six import StringIO
-from tests.mock_dir_reader import MockDirReader
-from tests.support.volumes_mock import volumes_mock
 from typing import cast
 
 from flexmock import flexmock
 from mock import Mock, call
+from six import StringIO
+
+from tests.mock_dir_reader import MockDirReader
+from tests.support.fake_volumes import volumes_fake
 from trashcli.empty.delete_according_date import ContentReader
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
-from trashcli.fstab import VolumesListing
+from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.lib.dir_reader import DirReader
 from trashcli.trash_dirs_scanner import TopTrashDirRules
 
@@ -37,7 +37,7 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
             content_reader=cast(ContentReader, self.content_reader),
             dir_reader=cast(DirReader, self.dir_reader),
             version='unused',
-            volumes=volumes_mock()
+            volumes=volumes_fake()
         )
 
     def test(self):

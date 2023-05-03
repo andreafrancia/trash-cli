@@ -1,6 +1,6 @@
 import os
 
-from trashcli.fstab import VolumesListing
+from trashcli.fstab.volume_listing import VolumesListing
 
 
 class MyEnum(str):

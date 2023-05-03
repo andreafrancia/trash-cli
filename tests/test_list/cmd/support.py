@@ -1,12 +1,13 @@
 import os
+
 from mock import Mock
 
 from tests.fake_trash_dir import FakeTrashDir
-from trashcli.file_system_reader import FileSystemReader
-from trashcli.fstab import VolumesListing
-from trashcli.list.main import ListCmd
 from tests.output_collector import OutputCollector
-from tests.support.volumes_mock import volumes_mock
+from tests.support.fake_volumes import volumes_fake
+from trashcli.file_system_reader import FileSystemReader
+from trashcli.fstab.volume_listing import VolumesListing
+from trashcli.list.main import ListCmd
 
 
 class TrashListUser:
@@ -34,7 +35,7 @@ class TrashListUser:
             environ=self.environ,
             volumes_listing=volumes_listing,
             uid=self.fake_uid,
-            volumes=volumes_mock(),
+            volumes=volumes_fake(),
             file_reader=file_reader,
             version=self.version
         ).run(argv)

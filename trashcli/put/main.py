@@ -3,21 +3,23 @@ import random
 import sys
 
 import trashcli.fstab
+import trashcli.fstab.volumes
 import trashcli.trash
 from trashcli.lib.my_input import my_input
 from trashcli.put.clock import RealClock
 from trashcli.put.describer import Describer
 from trashcli.put.dir_maker import DirMaker
 from trashcli.put.file_trasher import FileTrasher
+from trashcli.put.fs.parent_realpath import ParentRealpath
+from trashcli.put.fs.real_fs import RealFs
+from trashcli.put.fs.volume_of_parent import VolumeOfParent
 from trashcli.put.gate import ClosedGate, HomeFallbackGate, SameVolumeGate
 from trashcli.put.gate_impl import ClosedGateImpl, HomeFallbackGateImpl, \
     SameVolumeGateImpl
 from trashcli.put.info_dir import InfoDir
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.original_location import OriginalLocation
-from trashcli.put.fs.parent_realpath import ParentRealpath
 from trashcli.put.path_maker import PathMaker
-from trashcli.put.fs.real_fs import RealFs
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_all import TrashAll
@@ -25,17 +27,16 @@ from trashcli.put.trash_dir_volume_reader import TrashDirVolumeReader
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 from trashcli.put.trash_file_in import TrashFileIn
-from trashcli.put.trashing_checker import TrashingChecker
 from trashcli.put.trash_put_cmd import TrashPutCmd
 from trashcli.put.trasher import Trasher
+from trashcli.put.trashing_checker import TrashingChecker
 from trashcli.put.user import User
-from trashcli.put.fs.volume_of_parent import VolumeOfParent
 
 
 def main():
     cmd = make_cmd(clock=RealClock(), fs=RealFs(),
                    my_input=my_input, randint=random.randint,
-                   stderr=sys.stderr, volumes=trashcli.fstab.volumes)
+                   stderr=sys.stderr, volumes=trashcli.fstab.volumes.RealVolumes())
     return cmd.run(sys.argv, os.environ, os.getuid())
 
 

@@ -1,7 +1,6 @@
 import unittest
 
-from tests.support.volumes_mock import volumes_mock
-
+from tests.support.fake_volumes import volumes_fake
 from trashcli.list.trash_dir_selector import TrashDirsSelector
 from trashcli.trash_dirs_scanner import trash_dir_found
 
@@ -16,7 +15,7 @@ class MockScanner:
 
 class TestTrashDirsSelector(unittest.TestCase):
     def setUp(self):
-        volumes = volumes_mock(lambda x: "volume_of %s" % x)
+        volumes = volumes_fake(lambda x: "volume_of %s" % x)
         self.selector = TrashDirsSelector(MockScanner("user"),
                                           MockScanner("all"),
                                           volumes)
