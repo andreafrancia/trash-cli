@@ -1,4 +1,5 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
+from __future__ import print_function
 from typing import NamedTuple, Dict, Any
 
 from trashcli.empty.actions import Action

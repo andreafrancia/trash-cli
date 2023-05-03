@@ -47,7 +47,13 @@ class TrashedFiles:
                                       type, info_file)
 
 
-class TrashedFile(NamedTuple):
+class TrashedFile(
+    NamedTuple('TrashedFile', [
+        ('original_location', str),
+        ('deletion_date', Optional[datetime.datetime]),
+        ('info_file', str),
+        ('original_file', str),
+    ])):
     """
     Represent a trashed file.
     Each trashed file is persisted in two files:
@@ -62,7 +68,3 @@ class TrashedFile(NamedTuple):
      - original_file : the path where the trashed file has been placed after the
                        trash operation (instance of Path)
     """
-    original_location: str
-    deletion_date: Optional[datetime.datetime]
-    info_file: str
-    original_file: str

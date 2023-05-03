@@ -6,11 +6,14 @@ from trashcli.shell_completion import add_argument_to, TRASH_FILES, TRASH_DIRS
 
 
 
-class RunRestoreArgs(NamedTuple):
-    path: str
-    sort: str
-    trash_dir: Optional[str]
-    overwrite: bool
+class RunRestoreArgs(
+    NamedTuple('RunRestoreArgs', [
+        ('path', str),
+        ('sort', str),
+        ('trash_dir', Optional[str]),
+        ('overwrite', bool),
+    ])):
+    pass
 
 
 Command = Union[PrintVersionArgs, RunRestoreArgs]

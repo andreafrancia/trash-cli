@@ -15,7 +15,8 @@ class RunRestoreAction:
         self.trashed_files = trashed_files
         self.mount_points = mount_points
 
-    def run_action(self, args: RunRestoreArgs):
+    def run_action(self, args,  # type RunRestoreArgs
+                   ): # type: (...) -> None
         trash_dir_from_cli = args.trash_dir
         trashed_files = list(self.all_files_trashed_from_path(
             args.path, trash_dir_from_cli))

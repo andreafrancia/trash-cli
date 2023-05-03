@@ -1,6 +1,7 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 
 from __future__ import absolute_import
+from __future__ import print_function
 
 import os
 from typing import NamedTuple

@@ -34,4 +34,9 @@ def assert_equals_with_unidiff(expected, actual):
 
 
 def assert_starts_with(actual, expected):
-    unittest.TestCase().assertEqual(actual[:len(expected)], expected)
+    class Dummy(unittest.TestCase):
+        def nop(self):
+            pass
+
+    _t = Dummy('nop')
+    _t.assertEqual(actual[:len(expected)], expected)

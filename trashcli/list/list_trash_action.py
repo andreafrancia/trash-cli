@@ -1,10 +1,12 @@
+from __future__ import print_function
+
 import os
 
+from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.list.extractors import DeletionDateExtractor, SizeExtractor
 from trashcli.parse_trashinfo.parse_path import parse_path
 from trashcli.parse_trashinfo.parser_error import ParseError
-from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.trash_dirs_scanner import trash_dir_found, \
     trash_dir_skipped_because_parent_not_sticky, \
     trash_dir_skipped_because_parent_is_symlink
