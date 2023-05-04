@@ -16,7 +16,7 @@ class OriginalLocation:
                  path,
                  path_maker_type, # type: PathMakerType
                  volume_top_dir,
-                 ):
+                 ): # type: (...) -> str
         normalized_path = os.path.normpath(path)
         basename = os.path.basename(normalized_path)
         parent = self.parent_realpath.parent_realpath(normalized_path)

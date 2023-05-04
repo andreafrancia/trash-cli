@@ -22,14 +22,14 @@ class TrashedFiles:
         self.searcher = searcher
 
     def all_trashed_files(self,
-                          trash_dir_from_cli,  # type: str
+                          trash_dir_from_cli,  # type: Optional[str]
                           ):  # type: (...) -> Iterable[TrashedFile]
         for event in self.all_trashed_files_internal(trash_dir_from_cli):
             if type(event) is NonTrashinfoFileFound:
                 self.logger.warning("Non .trashinfo file in info dir")
             elif type(event) is NonParsableTrashInfo:
-                self.logger.warning("Non parsable trashinfo file: %s" %
-                                    event.path)
+                self.logger.warning("Non parsable trashinfo file: %s, because %s" %
+                                    event.path, event.reason)
             elif type(event) is IOErrorReadingTrashInfo:
                 self.logger.warning(str(event))
             elif type(event) is TrashedFileFound:
@@ -55,8 +55,8 @@ class TrashedFiles:
                                               info_file.path,
                                               backup_file_path)
                     yield TrashedFileFound(trashedfile)
-                except ValueError:
-                    yield NonParsableTrashInfo(info_file.path)
+                except ValueError as e:
+                    yield NonParsableTrashInfo(info_file.path, e)
                 except IOError as e:
                     yield IOErrorReadingTrashInfo(info_file.path, str(e))
             else:
@@ -109,6 +109,7 @@ class TrashedFileFound(
 class NonParsableTrashInfo(
     NamedTuple('NonParsableTrashInfo', [
         ('path', str),
+        ('reason', Exception),
     ])): pass
 
 

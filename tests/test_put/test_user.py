@@ -2,8 +2,8 @@ import unittest
 from typing import cast
 
 import flexmock
-import mock
 
+from trashcli.lib.my_input import HardCodedInput
 from trashcli.put.describer import Describer
 from trashcli.put.user import (
     User,
@@ -15,8 +15,7 @@ from trashcli.put.user import (
 
 class TestUser(unittest.TestCase):
     def setUp(self):
-        self.my_input = mock.Mock()
-        self.my_input.return_value = "y"
+        self.my_input = HardCodedInput("y")
         self.describer = flexmock.Mock(spec=Describer)
         self.describer.should_receive('describe').and_return("description!")
 

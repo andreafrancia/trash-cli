@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from typing import TextIO, Callable
 
+from trashcli.lib.my_input import Input
 from trashcli.restore.file_system import ReadCwd
 from trashcli.restore.restore_asking_the_user import RestoreAskingTheUser
 from trashcli.restore.restorer import Restorer
@@ -14,7 +15,7 @@ class HandlerImpl(Handler):
                  stdout,  # type: TextIO
                  stderr,  # type: TextIO
                  exit,  # type: Callable[[int], None]
-                 input,  # type: Callable[[str], str]
+                 input,  # type: Input
                  cwd,  # type: ReadCwd
                  restorer,  # type: Restorer
                  ):

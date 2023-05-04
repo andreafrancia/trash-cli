@@ -1,7 +1,7 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 from typing import List, Dict
 
-from trashcli.fstab.volumes import Volumes
+from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.dir_checker import DirChecker
 from trashcli.lib.user_info import UserInfoProvider, AllUsersInfoProvider
 from trashcli.trash_dirs_scanner import trash_dir_found, TrashDir, \
@@ -12,7 +12,7 @@ class TrashDirsSelector:
     def __init__(self,
                  current_user_dirs,
                  all_users_dirs,
-                 volumes  # type: Volumes
+                 volumes  # type: VolumeOf
                  ):
         self.current_user_dirs = current_user_dirs
         self.all_users_dirs = all_users_dirs
@@ -38,7 +38,7 @@ class TrashDirsSelector:
     @staticmethod
     def make(volumes_listing,
              reader,  # type: TopTrashDirRules.Reader
-             volumes  # type: Volumes
+             volumes  # type: VolumeOf
              ):
         user_info_provider = UserInfoProvider()
         user_dir_scanner = TrashDirsScanner(user_info_provider,

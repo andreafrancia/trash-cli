@@ -6,6 +6,7 @@ from six import StringIO
 
 from tests.support.files import make_empty_file
 from tests.support.my_path import MyPath
+from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.file_system import RealRestoreWriteFileSystem, \
     FakeReadCwd, RealRestoreReadFileSystem
 from trashcli.restore.restore_cmd import RestoreCmd
@@ -16,8 +17,7 @@ class TestTrashedFileRestoreIntegration(unittest.TestCase):
     def setUp(self):
         self.stdout = StringIO()
         self.stderr = StringIO()
-        self.input_value = None
-        self.input = lambda _: self.input_value
+        self.input = HardCodedInput()
         self.temp_dir = MyPath.make_temp_dir()
         cwd = self.temp_dir
         self.logger = Mock(spec=[])
@@ -39,7 +39,7 @@ class TestTrashedFileRestoreIntegration(unittest.TestCase):
                                    self.temp_dir / 'orig')
         make_empty_file(self.temp_dir / 'orig')
         make_empty_file(self.temp_dir / 'info_file')
-        self.input_value = '0'
+        self.input.set_reply('0')
 
         self.trashed_files.all_trashed_files.return_value = [trashed_file]
         self.cmd.run(['trash-restore'])
@@ -51,7 +51,7 @@ class TestTrashedFileRestoreIntegration(unittest.TestCase):
     def test_restore_over_existing_file(self):
         trashed_file = TrashedFile(self.temp_dir / 'path', None, None, None)
         make_empty_file(self.temp_dir / 'path')
-        self.input_value = '0'
+        self.input.set_reply('0')
 
         self.trashed_files.all_trashed_files.return_value = [trashed_file]
         self.cmd.run(['trash-restore'])

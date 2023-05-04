@@ -1,7 +1,7 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 from typing import Dict
 
-from trashcli.fstab.volumes import Volumes
+from trashcli.fstab.volume_of import VolumeOf
 from trashcli.put.fs.parent_realpath import ParentRealpath
 from trashcli.put.fs.volume_of_parent import VolumeOfParent
 from trashcli.put.my_logger import MyLogger, LogData
@@ -15,7 +15,7 @@ from trashcli.put.trashee import Trashee
 class FileTrasher:
 
     def __init__(self,
-                 volumes,  # type: Volumes
+                 volumes,  # type: VolumeOf
                  trash_directories_finder,  # type: TrashDirectoriesFinder
                  parent_realpath,  # type: ParentRealpath
                  logger,  # type: MyLogger

@@ -12,7 +12,7 @@ from trashcli.empty.is_input_interactive import is_input_interactive
 from trashcli.empty.parser import Parser
 from trashcli.empty.print_time_action import PrintTimeAction, PrintTimeArgs
 from trashcli.fstab.volume_listing import VolumesListing
-from trashcli.fstab.volumes import Volumes
+from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.dir_reader import DirReader
 from trashcli.lib.exit_codes import EX_OK
 from trashcli.lib.print_version import PrintVersionAction, PrintVersionArgs
@@ -31,7 +31,7 @@ class EmptyCmd:
                  content_reader,  # type: ContentReader
                  file_remover,  # type: ExistingFileRemover
                  version,  # type: str
-                 volumes,  # type: Volumes
+                 volumes,  # type: VolumeOf
                  ):
         self.volumes = volumes
         self.file_remover = file_remover

@@ -5,8 +5,8 @@ import sys
 import trashcli.trash
 from trashcli.file_system_reader import FileSystemReader
 from trashcli.fstab.volume_listing import RealVolumesListing
-from trashcli.fstab.volumes import RealVolumes
-from trashcli.fstab.volumes import Volumes
+from trashcli.fstab.volume_of import RealVolumeOf
+from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.print_version import PrintVersionArgs, \
     PrintVersionAction
 from trashcli.list.list_trash_action import ListTrashAction, ListTrashArgs
@@ -29,7 +29,7 @@ def main():
         environ=os.environ,
         volumes_listing=RealVolumesListing(),
         uid=os.getuid(),
-        volumes=RealVolumes(),
+        volumes=RealVolumeOf(),
         file_reader=FileSystemReader(),
         version=trashcli.trash.version
     ).run(sys.argv)
@@ -42,7 +42,7 @@ class ListCmd:
                  environ,
                  volumes_listing,
                  uid,
-                 volumes,  # type: Volumes
+                 volumes,  # type: VolumeOf
                  file_reader,
                  version,
                  ):

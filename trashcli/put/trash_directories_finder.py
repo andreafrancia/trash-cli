@@ -1,7 +1,7 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 from typing import Dict, List
 
-from trashcli.fstab.volumes import Volumes
+from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.trash_dirs import (
     volume_trash_dir1, volume_trash_dir2, home_trash_dir)
 from trashcli.put.candidate import Candidate
@@ -12,7 +12,7 @@ from trashcli.put.security_check import NoCheck, TopTrashDirCheck
 
 class TrashDirectoriesFinder:
     def __init__(self,
-                 volumes,  # type: Volumes
+                 volumes,  # type: VolumeOf
                  ):
         self.volumes = volumes
 

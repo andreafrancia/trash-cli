@@ -1,14 +1,15 @@
 from typing import Callable
 
-from trashcli.restore.range import Range
-from trashcli.restore.single import Single
-from trashcli.restore.sequences import Sequences
+from trashcli.lib.my_input import Input
 from trashcli.restore.my_range import my_range
+from trashcli.restore.range import Range
+from trashcli.restore.sequences import Sequences
+from trashcli.restore.single import Single
 
 
 class RestoreAskingTheUser(object):
     def __init__(self,
-                 input, # type: Callable[[str], str]
+                 input, # type: Input
                  println,  # type: Callable[[str], None]
                  restorer,
                  die, # type: Callable[[str], None]
@@ -20,7 +21,7 @@ class RestoreAskingTheUser(object):
 
     def restore_asking_the_user(self, trashed_files, overwrite=False):
         try:
-            user_input = self.input(
+            user_input = self.input.read_input(
                 "What file to restore [0..%d]: " % (len(trashed_files) - 1))
         except KeyboardInterrupt:
             return self.die("")

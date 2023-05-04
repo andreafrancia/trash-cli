@@ -1,5 +1,6 @@
 import os
 from abc import ABCMeta, abstractmethod
+from typing import Iterable
 
 import six
 
@@ -20,7 +21,7 @@ class RealFileReader(FileReader):
 
 
 class FakeFileReader(FileReader):
-    def __init__(self, contents = None):
+    def __init__(self, contents=None):
         self.contents = contents
 
     def set_content(self, contents):
@@ -91,5 +92,12 @@ class FakeReadCwd(ReadCwd):
         return self.default_cur_dir
 
 
+@six.add_metaclass(ABCMeta)
 class ListingFileSystem:
+    @abstractmethod
+    def list_files_in_dir(self, path): # type: (str) -> Iterable[str]
+        pass
+
+
+class RealListingFileSystem(ListingFileSystem):
     list_files_in_dir = FsMethods().list_files_in_dir

@@ -1,6 +1,7 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 from typing import TextIO, Callable
 
+from trashcli.lib.my_input import Input
 from trashcli.lib.print_version import PrintVersionAction
 from trashcli.restore.file_system import RestoreReadFileSystem, \
     RestoreWriteFileSystem, ReadCwd
@@ -17,7 +18,7 @@ class RestoreCmd(object):
     def make(stdout,  # type: TextIO
              stderr,  # type: TextIO
              exit,  # type: Callable[[int], None]
-             input,  # type: Callable[[str], str]
+             input,  # type: Input
              version,  # type: str
              trashed_files,  # type: TrashedFiles
              read_fs,  # type: RestoreReadFileSystem

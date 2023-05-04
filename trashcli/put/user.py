@@ -1,16 +1,17 @@
+from trashcli.lib.my_input import MyInput
 from trashcli.put.describer import Describer
 
 
 class User:
     def __init__(self,
-                 my_input_func,
+                 my_input,  # type: MyInput
                  describer,  # type: Describer
                  ):
-        self.my_input = my_input_func
+        self.my_input = my_input
         self.describer = describer
 
     def ask_user_about_deleting_file(self, program_name, path):
-        reply = self.my_input(
+        reply = self.my_input.read_input(
             "%s: trash %s '%s'? " % (program_name,
                                      self.describer.describe(path), path))
         return parse_user_reply(reply)

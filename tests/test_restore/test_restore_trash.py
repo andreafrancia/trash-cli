@@ -3,9 +3,15 @@ import unittest
 
 import pytest
 
-from .support.restore_trash_user import RestoreTrashUser
-
-from ..support.files import make_file, require_empty_dir
+from trashcli.fs import FsMethods
+from trashcli.fstab.volumes import FakeVolumes
+from trashcli.restore.file_system import RealFileReader, \
+    RealRestoreReadFileSystem, RealRestoreWriteFileSystem, RealListingFileSystem
+from .support.a_trashed_file import ATrashedFile
+from .support.has_been_restored_matcher import has_been_restored
+from .support.restore_file_fixture import RestoreFileFixture
+from .support.restore_user import RestoreUser
+from ..support.asserts.assert_that import assert_that
 from ..support.my_path import MyPath
 
 
@@ -13,75 +19,99 @@ from ..support.my_path import MyPath
 class TestRestoreTrash(unittest.TestCase):
     def setUp(self):
         self.tmp_dir = MyPath.make_temp_dir()
-        require_empty_dir(self.tmp_dir / 'XDG_DATA_HOME')
+        self.fixture = RestoreFileFixture(self.tmp_dir / 'XDG_DATA_HOME')
+        self.fs = FsMethods()
         self.cwd = self.tmp_dir / "cwd"
-        self.user = RestoreTrashUser(self.tmp_dir / 'XDG_DATA_HOME', self.cwd)
+        XDG_DATA_HOME = self.tmp_dir / 'XDG_DATA_HOME'
+        self.trash_dir = XDG_DATA_HOME / 'Trash'
+        self.user = RestoreUser(environ={'XDG_DATA_HOME': XDG_DATA_HOME},
+                                uid=os.getuid(),
+                                file_reader=RealFileReader(),
+                                read_fs=RealRestoreReadFileSystem(),
+                                write_fs=RealRestoreWriteFileSystem(),
+                                listing_file_system=RealListingFileSystem(),
+                                version='0.0.0',
+                                volumes=FakeVolumes([]))
 
     def test_it_does_nothing_when_no_file_have_been_found_in_current_dir(self):
-        self.user.chdir('/')
-
-        self.user.run_restore()
+        res = self.user.run_restore(from_dir='/')
 
         self.assertEqual("No files trashed from current dir ('/')\n",
-                         self.user.stdout())
+                         res.output())
 
     def test_gives_an_error_on_not_a_number_input(self):
-        self.user.having_a_trashed_file('/foo/bar')
-        self.user.chdir('/foo')
+        self.fixture.having_a_trashed_file('/foo/bar')
 
-        self.user.run_restore(with_user_typing='+@notanumber')
+        res = self.user.run_restore(reply='+@notanumber', from_dir='/foo')
 
         self.assertEqual('Invalid entry: not an index: +@notanumber\n',
-                         self.user.stderr())
+                         res.stderr)
 
     def test_it_gives_error_when_user_input_is_too_small(self):
-        self.user.having_a_trashed_file('/foo/bar')
-        self.user.chdir('/foo')
+        self.fixture.having_a_trashed_file('/foo/bar')
 
-        self.user.run_restore(with_user_typing='1')
+        res = self.user.run_restore(reply='1', from_dir='/foo')
 
         self.assertEqual('Invalid entry: out of range 0..0: 1\n',
-                         self.user.stderr())
+                         res.stderr)
 
     def test_it_gives_error_when_user_input_is_too_large(self):
-        self.user.having_a_trashed_file('/foo/bar')
-        self.user.chdir('/foo')
+        self.fixture.having_a_trashed_file('/foo/bar')
 
-        self.user.run_restore(with_user_typing='1')
+        res = self.user.run_restore(reply='1', from_dir='/foo')
 
         self.assertEqual('Invalid entry: out of range 0..0: 1\n',
-                         self.user.stderr())
+                         res.stderr)
 
     def test_it_shows_the_file_deleted_from_the_current_dir(self):
-        self.user.having_a_trashed_file('/foo/bar')
-        self.user.chdir('/foo')
+        self.fixture.having_a_trashed_file('/foo/bar')
 
-        self.user.run_restore(with_user_typing='')
+        res = self.user.run_restore(reply='', from_dir='/foo')
 
         self.assertEqual('   0 2000-01-01 00:00:01 /foo/bar\n'
-                         'Exiting\n', self.user.stdout())
-        self.assertEqual('', self.user.stderr())
+                         'Exiting\n', res.output())
+        self.assertEqual('', res.stderr)
 
     def test_it_restores_the_file_selected_by_the_user(self):
-        self.user.having_a_file_trashed_from_current_dir('foo')
-        self.user.chdir(self.cwd)
+        self.fixture.having_a_trashed_file(self.cwd / 'foo')
 
-        self.user.run_restore(with_user_typing='0')
+        self.user.run_restore(reply='0', from_dir=self.cwd)
 
-        self.file_should_have_been_restored(self.cwd / 'foo')
+        self.fixture.file_should_have_been_restored(self.cwd / 'foo')
 
     def test_it_refuses_overwriting_existing_file(self):
-        self.user.having_a_file_trashed_from_current_dir('foo')
-        self.user.chdir(self.cwd)
-        make_file(self.cwd / "foo")
+        self.fixture.having_a_trashed_file(self.cwd / 'foo')
+        self.fixture.make_file(self.cwd / "foo")
 
-        self.user.run_restore(with_user_typing='0')
+        res = self.user.run_restore(reply='0', from_dir=self.cwd)
 
         self.assertEqual('Refusing to overwrite existing file "foo".\n',
-                         self.user.stderr())
+                         res.stderr)
 
-    def file_should_have_been_restored(self, filename):
-        assert os.path.exists(filename)
+    def test_it_restores_the_file_and_delete_the_trash_info(self):
+        a_trashed_file = self.make_trashed_file()
+
+        res = self.user.run_restore(reply='0', from_dir=self.cwd)
+
+        assert res.stderr == ''
+        assert_that(a_trashed_file, has_been_restored(self.fs))
+
+    def make_trashed_file(self):  # type: () -> ATrashedFile
+        original_location = self.cwd / 'parent/path'
+        backup_copy = self.trash_dir / 'files/path'
+        info_file = self.trash_dir / 'info/path.trashinfo'
+
+        self.fixture.make_file(info_file,
+                               '[Trash Info]\n'
+                               'Path=%s\n' % original_location +
+                               'DeletionDate=2000-01-01T00:00:01\n')
+        self.fixture.make_empty_file(backup_copy)
+
+        return ATrashedFile(
+            trashed_from=self.cwd / 'parent/path',
+            info_file=self.trash_dir / 'info/path.trashinfo',
+            backup_copy=self.trash_dir / 'files/path',
+        )
 
     def tearDown(self):
         self.tmp_dir.clean_up()

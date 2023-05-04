@@ -12,7 +12,7 @@ from .file_system_dir_reader import FileSystemDirReader
 from .top_trash_dir_rules_file_system_reader import \
     TopTrashDirRulesFileSystemReader
 from ..fstab.volume_listing import RealVolumesListing
-from ..fstab.volumes import RealVolumes
+from ..fstab.volume_of import RealVolumeOf
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
                          content_reader=FileSystemContentReader(),
                          dir_reader=FileSystemDirReader(),
                          version=trash.version,
-                         volumes=RealVolumes())
+                         volumes=RealVolumeOf())
     return empty_cmd.run_cmd(sys.argv[1:], os.environ, os.getuid())
 
 

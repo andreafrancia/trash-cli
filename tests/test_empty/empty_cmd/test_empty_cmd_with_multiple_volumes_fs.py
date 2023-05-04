@@ -5,7 +5,7 @@ import unittest
 from mock import Mock
 from six import StringIO
 
-from tests.support.fake_volumes import volumes_fake
+from tests.support.fake_volume_of import volume_of_stub
 from tests.support.files import make_empty_file, require_empty_dir, make_dirs, \
     set_sticky_bit
 from tests.support.my_path import MyPath
@@ -37,7 +37,7 @@ class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
             content_reader=FileSystemContentReader(),
             dir_reader=FileSystemDirReader(),
             version='unused',
-            volumes=volumes_fake(),
+            volumes=volume_of_stub(),
         )
 
     def test_it_removes_trashinfos_from_method_1_dir(self):

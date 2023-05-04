@@ -1,9 +1,20 @@
 import os
 import shutil
 import stat
+from abc import abstractmethod, ABCMeta
+from typing import Iterable
+
+import six
 
 
-class FsMethods:
+@six.add_metaclass(ABCMeta)
+class PathExists:
+    @abstractmethod
+    def exists(self, path):
+        raise NotImplementedError()
+
+
+class FsMethods(PathExists):
     def entries_if_dir_exists(self, path):
         if os.path.exists(path):
             for entry in os.listdir(path):
@@ -46,7 +57,7 @@ class FsMethods:
     def move(self, path, dest):
         return shutil.move(path, str(dest))
 
-    def list_files_in_dir(self, path):
+    def list_files_in_dir(self, path):  # type: (str) -> Iterable[str]
         for entry in os.listdir(path):
             result = os.path.join(path, entry)
             yield result

@@ -14,9 +14,9 @@ from trashcli.empty.parse_reply import parse_reply
 from trashcli.empty.prepare_output_message import prepare_output_message
 from trashcli.empty.user import User
 from trashcli.fstab.volume_listing import VolumesListing
-from trashcli.fstab.volumes import Volumes
+from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.dir_reader import DirReader
-from trashcli.lib.my_input import my_input
+from trashcli.lib.my_input import MyInput
 from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.list.trash_dir_selector import TrashDirsSelector
 from trashcli.trash_dirs_scanner import TopTrashDirRules
@@ -43,7 +43,7 @@ class EmptyAction:
                  file_remover,  # type: ExistingFileRemover
                  volumes_listing,  # type: VolumesListing
                  file_reader,  # type: TopTrashDirRules.Reader
-                 volumes,  # type: Volumes
+                 volumes,  # type: VolumeOf
                  dir_reader,  # type: DirReader
                  content_reader,  # type: ContentReader
                  console,  # type: Console
@@ -54,7 +54,7 @@ class EmptyAction:
         trash_dir_reader = TrashDirReader(dir_reader)
         delete_mode = DeleteAccordingDate(content_reader,
                                           clock)
-        user = User(prepare_output_message, my_input, parse_reply)
+        user = User(prepare_output_message, MyInput(), parse_reply)
         self.emptier = Emptier(delete_mode, trash_dir_reader, file_remover,
                                console)
         self.guard = Guard(user)

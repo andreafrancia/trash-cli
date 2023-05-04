@@ -2,10 +2,8 @@ import os
 import random
 import sys
 
-import trashcli.fstab
-import trashcli.fstab.volumes
-import trashcli.trash
-from trashcli.lib.my_input import my_input
+from trashcli.fstab.volume_of import RealVolumeOf
+from trashcli.lib.my_input import MyInput
 from trashcli.put.clock import RealClock
 from trashcli.put.describer import Describer
 from trashcli.put.dir_maker import DirMaker
@@ -35,12 +33,17 @@ from trashcli.put.user import User
 
 def main():
     cmd = make_cmd(clock=RealClock(), fs=RealFs(),
-                   my_input=my_input, randint=random.randint,
-                   stderr=sys.stderr, volumes=trashcli.fstab.volumes.RealVolumes())
+                   my_input=MyInput(), randint=random.randint,
+                   stderr=sys.stderr, volumes=RealVolumeOf())
     return cmd.run(sys.argv, os.environ, os.getuid())
 
 
-def make_cmd(clock, fs, my_input, randint, stderr, volumes):
+def make_cmd(clock,
+             fs,
+             my_input, # type: MyInput
+             randint,
+             stderr,
+             volumes):
     logger = MyLogger(stderr)
     describer = Describer(fs)
     reporter = TrashPutReporter(logger, describer)

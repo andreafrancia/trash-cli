@@ -1,10 +1,10 @@
-from trashcli.fstab.volumes import Volumes
+from trashcli.fstab.volume_of import VolumeOf
 from trashcli.put.fs.parent_realpath import ParentRealpath
 
 
 class VolumeOfParent:
     def __init__(self,
-                 volumes,  # type: Volumes
+                 volumes,  # type: VolumeOf
                  parent_realpath,  # type: ParentRealpath
                  ):
         self.volumes = volumes

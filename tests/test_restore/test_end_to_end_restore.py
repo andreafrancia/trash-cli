@@ -4,8 +4,8 @@ from datetime import datetime
 from os.path import exists as file_exists, join as pj
 
 import pytest
-from trashcli.fs import read_file
 
+from trashcli.fs import read_file
 from .. import run_command
 from ..fake_trash_dir import FakeTrashDir
 from ..support.my_path import MyPath
@@ -25,20 +25,18 @@ class TestEndToEndRestore(unittest.TestCase):
 
         self.assertEqual("""\
 No files trashed from current dir ('%s')
-""" % self.curdir, result.stdout)
+""" % self.curdir, result.output())
 
     def test_original_file_not_existing(self):
         self.fake_trash_dir.add_trashinfo3("foo", "/path", datetime(2000,1,1,0,0,1))
 
         result = self.run_command("trash-restore", ["/"], input='0')
 
-        self.assertEqual("""\
-   0 2000-01-01 00:00:01 /path
-What file to restore [0..0]: """,
-                         result.stdout)
-        self.assertEqual("[Errno 2] No such file or directory: '%s/files/foo'\n" %
+        self.assertEqual("   0 2000-01-01 00:00:01 /path\n" 
+                         "What file to restore [0..0]: \n"
+                         "[Errno 2] No such file or directory: '%s/files/foo'\n" %
                          self.trash_dir,
-                         result.stderr)
+                         result.output())
 
     def test_restore_happy_path(self):
         self.fake_trash_dir.add_trashed_file(

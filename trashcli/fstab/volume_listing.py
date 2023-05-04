@@ -1,8 +1,9 @@
+import os
 from abc import ABCMeta, abstractmethod
 
 import six
 
-from trashcli.list_mount_points import MountPointsListing, \
+from trashcli.fstab.mount_points_listing import MountPointsListing, \
     RealMountPointsListing
 
 
@@ -35,3 +36,8 @@ class VolumesListingImpl:
 class NoVolumesListing(VolumesListing):
     def list_volumes(self, environ):
         return []
+
+
+class RealIsMount:
+    def is_mount(self, path):
+        return os.path.ismount(path)

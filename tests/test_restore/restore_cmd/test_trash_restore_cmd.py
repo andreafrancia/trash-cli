@@ -1,90 +1,79 @@
+import datetime
 import unittest
 
 from mock import Mock, call
-from six import StringIO
 
-from trashcli.restore.file_system import RestoreReadFileSystem, \
-    RestoreWriteFileSystem, FakeReadCwd
-from trashcli.restore.restore_cmd import RestoreCmd
-from trashcli.restore.trashed_file import TrashedFile, TrashedFiles
-
-
-def last_line_of(io):  # type: (StringIO) -> str
-    return io.getvalue().splitlines()[-1]
+from tests.test_restore.support.fake_restore_fs import FakeRestoreFs
+from tests.test_restore.support.restore_user import RestoreUser
+from trashcli.restore.file_system import RestoreWriteFileSystem
 
 
 class TestTrashRestoreCmd(unittest.TestCase):
     def setUp(self):
-        self.stdout = StringIO()
-        self.stderr = StringIO()
-        self.trashed_files = Mock(spec=TrashedFiles)
-        self.trashed_files.all_trashed_files.return_value = []
-        self.read_fs = Mock(spec=RestoreReadFileSystem)
         self.write_fs = Mock(spec=RestoreWriteFileSystem)
-        self.read_cwd = FakeReadCwd("cwd")
-        self.cmd = RestoreCmd.make(stdout=self.stdout,
-                                   stderr=self.stderr,
-                                   exit=self.capture_exit_status,
-                                   input=lambda x: self.user_reply,
-                                   version='1.2.3',
-                                   trashed_files=self.trashed_files,
-                                   read_fs=self.read_fs,
-                                   write_fs=self.write_fs,
-                                   read_cwd=self.read_cwd)
-
-    def capture_exit_status(self, exit_status):
-        self.exit_status = exit_status
+        self.fs = FakeRestoreFs()
+        self.user = RestoreUser(
+            environ={'XDG_DATA_HOME': '/data_home'},
+            uid=1000,
+            file_reader=self.fs,
+            read_fs=self.fs,
+            write_fs=self.write_fs,
+            listing_file_system=self.fs,
+            version='1.2.3',
+            volumes=self.fs,
+        )
 
     def test_should_print_version(self):
-        self.cmd.run(['trash-restore', '--version'])
+        res = self.cmd_run(['trash-restore', '--version'])
 
-        assert 'trash-restore 1.2.3\n' == self.stdout.getvalue()
+        assert 'trash-restore 1.2.3\n' == res.stdout
 
     def test_with_no_args_and_no_files_in_trashcan(self):
-        self.cmd.curdir = lambda: "cwd"
-
-        self.cmd.run(['trash-restore'])
+        res = self.cmd_run(['trash-restore'], from_dir='cwd')
 
         assert ("No files trashed from current dir ('cwd')\n" ==
-                self.stdout.getvalue())
+                res.stdout)
 
-    def test_until_the_restore_unit(self):
-        self.read_fs.path_exists.return_value = False
-        self.set_trashed_files_to([a_trashed_file_in('cwd/parent/path')])
+    def test_restore_operation(self):
+        self.fs.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
+                               datetime.datetime(2016, 1, 1), 'boo')
 
-        self.user_reply = '0'
-        self.cmd.run(['trash-restore'])
+        res = self.cmd_run(['trash-restore'], reply='0', from_dir='/cwd')
 
-        assert '' == self.stderr.getvalue()
-        assert [call.path_exists('cwd/parent/path')] == self.read_fs.mock_calls
-        assert [call.mkdirs('cwd/parent'),
-                call.move('orig_file', 'cwd/parent/path'),
-                call.remove_file('info_file')] == self.write_fs.mock_calls
+        assert '' == res.stderr
+        assert ([call.mkdirs('/cwd/parent'),
+                 call.move('/data_home/Trash/files/foo.txt',
+                           '/cwd/parent/foo.txt'),
+                 call.remove_file('/data_home/Trash/info/foo.txt.trashinfo')]
+                == self.write_fs.mock_calls)
+
+    def test_restore_operation_when_dest_exists(self):
+        self.fs.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
+                               datetime.datetime(2016, 1, 1), 'boo')
+        self.fs.add_file('/cwd/parent/foo.txt')
+
+        res = self.cmd_run(['trash-restore'], reply='0', from_dir='/cwd')
+
+        assert 'Refusing to overwrite existing file "foo.txt".\n' == res.stderr
+        assert ([] == self.write_fs.mock_calls)
 
     def test_when_user_reply_with_empty_string(self):
-        self.set_trashed_files_to([a_trashed_file])
+        self.fs.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
+                               datetime.datetime(2016, 1, 1), 'boo')
 
-        self.user_reply = ''
-        self.cmd.run(['trash-restore'])
+        res = self.cmd_run(['trash-restore'], reply='', from_dir='/cwd')
 
-        assert last_line_of(self.stdout) == 'Exiting'
+        assert res.last_line_of_stdout() == 'Exiting'
 
     def test_when_user_reply_with_not_number(self):
-        self.set_trashed_files_to([a_trashed_file])
+        self.fs.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
+                               datetime.datetime(2016, 1, 1), 'boo')
 
-        self.user_reply = 'non numeric'
-        self.cmd.run(['trash-restore'])
+        res = self.cmd_run(['trash-restore'], reply='non numeric', from_dir='/cwd')
 
-        assert last_line_of(self.stderr) == \
+        assert res.last_line_of_stderr() == \
                'Invalid entry: not an index: non numeric'
-        assert 1 == self.exit_status
+        assert 1 == res.exit_code
 
-    def set_trashed_files_to(self, trashed_files):
-        self.trashed_files.all_trashed_files.return_value = trashed_files
-
-
-a_trashed_file = TrashedFile("cwd/a_path", None, "info_file", "orig_file")
-
-
-def a_trashed_file_in(path):
-    return TrashedFile(path, None, 'info_file', 'orig_file')
+    def cmd_run(self, args, reply=None, from_dir=None):
+        return self.user.run_restore(args, reply=reply, from_dir=from_dir)

@@ -1,5 +1,5 @@
 # Copyright (C) 2009-2020 Andrea Francia Trivolzio(PV) Italy
-import os.path
+import os
 from abc import ABCMeta, abstractmethod
 
 import six
