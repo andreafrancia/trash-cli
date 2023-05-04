@@ -1,3 +1,6 @@
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from typing import TextIO, Callable
 
 from trashcli.restore.file_system import ReadCwd
@@ -52,7 +55,7 @@ class HandlerImpl(Handler):
             "No files trashed from current dir ('%s')" % self.cwd.getcwd_as_realpath())
 
     def println(self, line):
-        self.stdout.write(line + '\n')
+        print("%s" % line, file=self.stdout)
 
     def printerr(self, msg):
-        self.stderr.write('%s\n' % msg)
+        print("%s" % msg, file=self.stderr)
