@@ -1,5 +1,5 @@
-from textwrap import dedent
 import unittest
+from textwrap import dedent
 
 
 def assert_line_in_text(line, text):
