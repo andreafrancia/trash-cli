@@ -3,12 +3,12 @@ import unittest
 import six
 
 from trashcli.restore.range import Range
+from trashcli.restore.restore_asking_the_user import InvalidEntry, parse_indexes
 from trashcli.restore.sequences import Sequences
 from trashcli.restore.single import Single
-from trashcli.restore.restore_asking_the_user import InvalidEntry, parse_indexes
 
 
-class Test_parse_indexes(unittest.TestCase):
+class TestParseIndexes(unittest.TestCase):
     def test_non_numeric(self):
         with six.assertRaisesRegex(self, InvalidEntry, "^not an index: a$"):
             parse_indexes("a", 10)

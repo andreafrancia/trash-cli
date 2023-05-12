@@ -3,7 +3,7 @@ import unittest
 from trashcli.restore.run_restore_action import original_location_matches_path
 
 
-class Test_original_location_matches_path(unittest.TestCase):
+class TestOriginalLocationMatchesPath(unittest.TestCase):
     def test1(self):
         assert original_location_matches_path("/full/path", "/full") == True
 

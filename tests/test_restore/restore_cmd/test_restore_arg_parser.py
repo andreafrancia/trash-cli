@@ -1,11 +1,11 @@
 import unittest
 
-from trashcli.restore.parse_restore_args import parse_restore_args, RunRestoreArgs, \
+from trashcli.restore.parse_restore_args import parse_restore_args, \
+    RunRestoreArgs, \
     PrintVersionArgs
-from trashcli.restore.parse_restore_args import Command
 
 
-class Test_parse_args(unittest.TestCase):
+class TestRestoreArgs(unittest.TestCase):
     def test_default_path(self):
         args = parse_restore_args([''], "curdir")
 

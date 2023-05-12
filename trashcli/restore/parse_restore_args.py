@@ -5,7 +5,6 @@ from trashcli.lib.print_version import PrintVersionArgs
 from trashcli.shell_completion import add_argument_to, TRASH_FILES, TRASH_DIRS
 
 
-
 class RunRestoreArgs(
     NamedTuple('RunRestoreArgs', [
         ('path', str),

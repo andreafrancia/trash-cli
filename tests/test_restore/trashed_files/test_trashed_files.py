@@ -10,7 +10,6 @@ from trashcli.restore.trashed_file import TrashedFiles
 
 class TestTrashedFiles(unittest.TestCase):
     def setUp(self):
-        self.contents_of = Mock()
         self.file_reader = FakeFileReader()
         self.logger = Mock(spec=[])
         self.searcher = Mock(spec=InfoDirSearcher)
