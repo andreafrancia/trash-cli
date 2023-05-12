@@ -1,7 +1,8 @@
 from typing import Callable
 
+from six.moves import range
+
 from trashcli.lib.my_input import Input
-from trashcli.restore.my_range import my_range
 from trashcli.restore.range import Range
 from trashcli.restore.sequences import Sequences
 from trashcli.restore.single import Single
@@ -61,7 +62,7 @@ def parse_indexes(user_input, len_trashed_files):
             index = parse_int_index(index)
             sequences.append(Single(index))
     result = Sequences(sequences)
-    acceptable_values = my_range(0, len_trashed_files)
+    acceptable_values = range(0, len_trashed_files)
     for index in result.all_indexes():
         if not index in acceptable_values:
             raise InvalidEntry(

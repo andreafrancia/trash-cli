@@ -1,4 +1,4 @@
-from trashcli.restore.my_range import my_range
+from six.moves import range
 
 
 class Range:
@@ -16,7 +16,7 @@ class Range:
         return True
 
     def __iter__(self):
-        return iter(my_range(self.start, self.stop + 1))
+        return iter(range(self.start, self.stop + 1))
 
     def __repr__(self):
         return "Range(%s, %s)" % (self.start, self.stop)
