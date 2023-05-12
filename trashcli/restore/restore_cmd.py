@@ -10,7 +10,7 @@ from trashcli.restore.restore_arg_parser import RestoreArgParser
 from trashcli.restore.restorer import Restorer
 from trashcli.restore.run_restore_action import RunRestoreAction, Handler, \
     RunRestoreArgs
-from trashcli.restore.trashed_file import TrashedFiles
+from trashcli.restore.trashed_files import TrashedFiles
 
 
 class RestoreCmd(object):

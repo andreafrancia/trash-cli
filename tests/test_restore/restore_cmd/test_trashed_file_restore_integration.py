@@ -10,7 +10,8 @@ from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.file_system import RealRestoreWriteFileSystem, \
     FakeReadCwd, RealRestoreReadFileSystem
 from trashcli.restore.restore_cmd import RestoreCmd
-from trashcli.restore.trashed_file import TrashedFile, TrashedFiles
+from trashcli.restore.trashed_file import TrashedFile
+from trashcli.restore.trashed_files import TrashedFiles
 
 
 class TestTrashedFileRestoreIntegration(unittest.TestCase):

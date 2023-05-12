@@ -1,7 +1,7 @@
 import os
 from typing import NamedTuple, Optional
 
-from trashcli.restore.trashed_file import TrashedFiles
+from trashcli.restore.trashed_files import TrashedFiles
 
 
 class RunRestoreArgs(

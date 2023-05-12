@@ -12,7 +12,7 @@ from trashcli.restore.info_dir_searcher import InfoDirSearcher
 from trashcli.restore.info_files import InfoFiles
 from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.trash_directories import TrashDirectoriesImpl
-from trashcli.restore.trashed_file import TrashedFiles
+from trashcli.restore.trashed_files import TrashedFiles
 
 
 class MemoLogger:

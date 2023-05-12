@@ -6,7 +6,8 @@ from six import StringIO
 from trashcli.restore.file_system import FakeReadCwd
 from trashcli.restore.handler import Handler
 from trashcli.restore.restore_cmd import RestoreCmd
-from trashcli.restore.trashed_file import TrashedFiles, TrashedFile
+from trashcli.restore.trashed_file import TrashedFile
+from trashcli.restore.trashed_files import TrashedFiles
 
 
 class TestListingInRestoreCmd(unittest.TestCase):

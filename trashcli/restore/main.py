@@ -10,7 +10,7 @@ from .info_dir_searcher import InfoDirSearcher
 from .info_files import InfoFiles
 from .restore_cmd import RestoreCmd
 from .trash_directories import TrashDirectoriesImpl
-from .trashed_file import TrashedFiles
+from .trashed_files import TrashedFiles
 from ..fstab.volumes import RealVolumes
 from ..lib.logger import my_logger
 from ..lib.my_input import MyInput
