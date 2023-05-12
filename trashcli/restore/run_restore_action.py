@@ -1,6 +1,17 @@
 import os
+from typing import NamedTuple, Optional
 
 from trashcli.restore.trashed_file import TrashedFiles
+
+
+class RunRestoreArgs(
+    NamedTuple('RunRestoreArgs', [
+        ('path', str),
+        ('sort', str),
+        ('trash_dir', Optional[str]),
+        ('overwrite', bool),
+    ])):
+    pass
 
 
 class RunRestoreAction:
@@ -12,7 +23,7 @@ class RunRestoreAction:
         self.trashed_files = trashed_files
 
     def run_action(self, args,  # type RunRestoreArgs
-                   ): # type: (...) -> None
+                   ):  # type: (...) -> None
         trashed_files = list(self.all_files_trashed_from_path(
             args.path, args.trash_dir))
         if args.sort == 'path':
@@ -28,10 +39,11 @@ class RunRestoreAction:
                                           args.overwrite)
 
     def all_files_trashed_from_path(self,
-                                    path, # type: str
-                                    trash_dir_from_cli, # type: str
+                                    path,  # type: str
+                                    trash_dir_from_cli,  # type: str
                                     ):
-        for trashed_file in self.trashed_files.all_trashed_files(trash_dir_from_cli):
+        for trashed_file in self.trashed_files.all_trashed_files(
+                trash_dir_from_cli):
             if trashed_file.original_location_matches_path(path):
                 yield trashed_file
 

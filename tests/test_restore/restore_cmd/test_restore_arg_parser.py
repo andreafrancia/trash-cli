@@ -1,13 +1,16 @@
 import unittest
 
-from trashcli.restore.parse_restore_args import parse_restore_args, \
-    RunRestoreArgs, \
-    PrintVersionArgs
+from trashcli.lib.print_version import PrintVersionArgs
+from trashcli.restore.restore_arg_parser import RestoreArgParser
+from trashcli.restore.run_restore_action import RunRestoreArgs
 
 
 class TestRestoreArgs(unittest.TestCase):
+    def setUp(self):
+        self.parser = RestoreArgParser()
+
     def test_default_path(self):
-        args = parse_restore_args([''], "curdir")
+        args = self.parser.parse_restore_args([''], "curdir")
 
         self.assertEqual(RunRestoreArgs(path='curdir',
                                         sort='date',
@@ -16,7 +19,7 @@ class TestRestoreArgs(unittest.TestCase):
                          args)
 
     def test_path_specified_relative_path(self):
-        args = parse_restore_args(['', 'path'], "curdir")
+        args = self.parser.parse_restore_args(['', 'path'], "curdir")
 
         self.assertEqual(RunRestoreArgs(path='curdir/path',
                                         sort='date',
@@ -25,7 +28,7 @@ class TestRestoreArgs(unittest.TestCase):
                          args)
 
     def test_path_specified_fullpath(self):
-        args = parse_restore_args(['', '/a/path'], "ignored")
+        args = self.parser.parse_restore_args(['', '/a/path'], "ignored")
 
         self.assertEqual(RunRestoreArgs(path='/a/path',
                                         sort='date',
@@ -34,6 +37,7 @@ class TestRestoreArgs(unittest.TestCase):
                          args)
 
     def test_show_version(self):
-        args = parse_restore_args(['program', '--version'], "ignored")
+        args = self.parser.parse_restore_args(['program', '--version'],
+                                              "ignored")
 
         self.assertEqual(PrintVersionArgs(action="TODO", argv0='program'), args)

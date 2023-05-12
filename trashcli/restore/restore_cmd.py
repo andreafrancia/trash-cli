@@ -2,14 +2,14 @@
 from typing import TextIO, Callable
 
 from trashcli.lib.my_input import Input
-from trashcli.lib.print_version import PrintVersionAction
+from trashcli.lib.print_version import PrintVersionAction, PrintVersionArgs
 from trashcli.restore.file_system import RestoreReadFileSystem, \
     RestoreWriteFileSystem, ReadCwd
 from trashcli.restore.handler import HandlerImpl
-from trashcli.restore.parse_restore_args import parse_restore_args, \
-    PrintVersionArgs, RunRestoreArgs
+from trashcli.restore.restore_arg_parser import RestoreArgParser
 from trashcli.restore.restorer import Restorer
-from trashcli.restore.run_restore_action import RunRestoreAction, Handler
+from trashcli.restore.run_restore_action import RunRestoreAction, Handler, \
+    RunRestoreArgs
 from trashcli.restore.trashed_file import TrashedFiles
 
 
@@ -24,7 +24,7 @@ class RestoreCmd(object):
              read_fs,  # type: RestoreReadFileSystem
              write_fs,  # type: RestoreWriteFileSystem
              read_cwd,  # type: ReadCwd
-             ): # type: (...) -> RestoreCmd
+             ):  # type: (...) -> RestoreCmd
         restorer = Restorer(read_fs, write_fs)
         handler = HandlerImpl(stdout, stderr, exit, input, read_cwd,
                               restorer)
@@ -38,13 +38,15 @@ class RestoreCmd(object):
                  handler,  # type: Handler
                  ):
         self.read_cwd = read_cwd
+        self.parser = RestoreArgParser()
         self.run_restore_action = RunRestoreAction(handler,
                                                    trashed_files)
         self.print_version_action = PrintVersionAction(stdout,
                                                        version)
 
     def run(self, argv):
-        args = parse_restore_args(argv, self.read_cwd.getcwd_as_realpath())
+        args = self.parser.parse_restore_args(argv,
+                                              self.read_cwd.getcwd_as_realpath())
 
         if isinstance(args, RunRestoreArgs):
             self.run_restore_action.run_action(args)
