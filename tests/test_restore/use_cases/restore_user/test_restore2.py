@@ -8,7 +8,7 @@ from tests.test_restore.support.restore_user import RestoreUser
 from trashcli.restore.file_system import RestoreWriteFileSystem
 
 
-class TestTrashRestoreCmd(unittest.TestCase):
+class TestRestore2(unittest.TestCase):
     def setUp(self):
         self.write_fs = Mock(spec=RestoreWriteFileSystem)
         self.fs = FakeRestoreFs()

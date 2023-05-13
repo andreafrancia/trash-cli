@@ -6,6 +6,7 @@ from trashcli.lib.print_version import PrintVersionAction, PrintVersionArgs
 from trashcli.restore.file_system import RestoreReadFileSystem, \
     RestoreWriteFileSystem, ReadCwd
 from trashcli.restore.handler import HandlerImpl
+from trashcli.restore.real_output import RealOutput
 from trashcli.restore.restore_arg_parser import RestoreArgParser
 from trashcli.restore.restorer import Restorer
 from trashcli.restore.run_restore_action import RunRestoreAction, Handler, \
@@ -26,8 +27,8 @@ class RestoreCmd(object):
              read_cwd,  # type: ReadCwd
              ):  # type: (...) -> RestoreCmd
         restorer = Restorer(read_fs, write_fs)
-        handler = HandlerImpl(stdout, stderr, exit, input, read_cwd,
-                              restorer)
+        output = RealOutput(stdout, stderr, exit)
+        handler = HandlerImpl(input, read_cwd, restorer, output)
         return RestoreCmd(stdout, version, trashed_files, read_cwd, handler)
 
     def __init__(self,

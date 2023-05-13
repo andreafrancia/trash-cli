@@ -44,10 +44,3 @@ class TestParseIndexes(unittest.TestCase):
     def test_complex(self):
         indexes = parse_indexes("1-5,7", 10)
         self.assertEqual(Sequences([Range(1, 5), Single(7)]), indexes)
-
-
-class TestSequences(unittest.TestCase):
-    def test(self):
-        sequences = parse_indexes("1-5,7", 10)
-        result = [index for index in sequences.all_indexes()]
-        self.assertEqual([1, 2, 3, 4, 5, 7], result)

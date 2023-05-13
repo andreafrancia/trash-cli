@@ -1,62 +1,52 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from typing import TextIO, Callable
+from typing import List
 
 from trashcli.lib.my_input import Input
 from trashcli.restore.file_system import ReadCwd
+from trashcli.restore.output import Output
+from trashcli.restore.output_recorder import OutputRecorder
 from trashcli.restore.restore_asking_the_user import RestoreAskingTheUser
 from trashcli.restore.restorer import Restorer
 from trashcli.restore.run_restore_action import Handler
+from trashcli.restore.trashed_file import TrashedFile
 
 
 class HandlerImpl(Handler):
     def __init__(self,
-                 stdout,  # type: TextIO
-                 stderr,  # type: TextIO
-                 exit,  # type: Callable[[int], None]
                  input,  # type: Input
                  cwd,  # type: ReadCwd
                  restorer,  # type: Restorer
+                 output,  # type: Output
                  ):
-        self.stdout = stdout
-        self.stderr = stderr
-        self.exit = exit
         self.input = input
         self.cwd = cwd
         self.restorer = restorer
+        self.output = output
 
     def handle_trashed_files(self,
-                             trashed_files,
+                             trashed_files,  # type: List[TrashedFile]
                              overwrite,  # type: bool
                              ):
         if not trashed_files:
-            self.report_no_files_found()
+            self.report_no_files_found(self.cwd.getcwd_as_realpath())
         else:
-            for i, trashedfile in enumerate(trashed_files):
-                self.println("%4d %s %s" % (i,
-                                            trashedfile.deletion_date,
-                                            trashedfile.original_location))
+            for i, trashed_file in enumerate(trashed_files):
+                self.output.println("%4d %s %s" % (i,
+                                                   trashed_file.deletion_date,
+                                                   trashed_file.original_location))
             self.restore_asking_the_user(trashed_files, overwrite)
 
     def restore_asking_the_user(self, trashed_files, overwrite=False):
+        my_output = OutputRecorder()
         restore_asking_the_user = RestoreAskingTheUser(self.input,
-                                                       self.println,
                                                        self.restorer,
-                                                       self.die)
+                                                       my_output)
         restore_asking_the_user.restore_asking_the_user(trashed_files,
                                                         overwrite)
+        my_output.apply_to(self.output)
 
-    def die(self, error):
-        self.printerr(error)
-        self.exit(1)
-
-    def report_no_files_found(self):
-        self.println(
-            "No files trashed from current dir ('%s')" % self.cwd.getcwd_as_realpath())
-
-    def println(self, line):
-        print("%s" % line, file=self.stdout)
-
-    def printerr(self, msg):
-        print("%s" % msg, file=self.stderr)
+    def report_no_files_found(self, directory):  # type: (str) -> None
+        self.output.println(
+            "No files trashed from current dir ('%s')" % directory)

@@ -1,10 +1,15 @@
-from typing import NamedTuple
+from typing import NamedTuple, Union
 
 from trashcli.fs import PathExists
 
 
-def has_been_restored(fs): # type: (PathExists) -> HasBeenRestored
-    return HasBeenRestored(fs)
+def has_been_restored(fs):  # type: (PathExists) -> HasBeenRestoredBaseMatcher
+    return HasBeenRestoredBaseMatcher(fs, HasBeenRestoredExpectations())
+
+
+def has_not_been_restored(
+        fs):  # type: (PathExists) -> HasBeenRestoredBaseMatcher
+    return HasBeenRestoredBaseMatcher(fs, HasNotBeenYetRestoredExpectations())
 
 
 class ShouldExists(NamedTuple('ShouldExists', [
@@ -61,9 +66,34 @@ class Satisfaction:
         )
 
 
-class HasBeenRestored:
-    def __init__(self, fs): # type: (PathExists) -> None
+class HasBeenRestoredExpectations:
+    def expectations_for_file(self, a_trashed_file):
+        return [
+            ShouldExists("original_location", a_trashed_file.trashed_from),
+            ShouldNotExists("info_file", a_trashed_file.info_file),
+            ShouldNotExists("backup_copy", a_trashed_file.backup_copy),
+        ]
+
+
+class HasNotBeenYetRestoredExpectations:
+    def expectations_for_file(self, a_trashed_file):
+        return [
+            ShouldNotExists("original_location", a_trashed_file.trashed_from),
+            ShouldExists("info_file", a_trashed_file.info_file),
+            ShouldExists("backup_copy", a_trashed_file.backup_copy),
+        ]
+
+
+Expectations = Union[HasBeenRestoredExpectations,HasNotBeenYetRestoredExpectations]
+
+
+class HasBeenRestoredBaseMatcher:
+    def __init__(self,
+                 fs,  # type: PathExists
+                 expectations_maker,  # type: Expectations
+                 ):
         self.fs = fs
+        self.expectations_maker = expectations_maker
 
     def matches(self, a_trashed_file):
         return len(self._expectations_failed(a_trashed_file)) == 0
@@ -92,11 +122,8 @@ class HasBeenRestored:
             self._expectations_for(a_trashed_file, focus_on)]
 
     def _expectations_for(self, a_trashed_file, focus_on=None):
-        all_expectations = [
-            ShouldExists("original_location", a_trashed_file.trashed_from),
-            ShouldNotExists("info_file", a_trashed_file.info_file),
-            ShouldNotExists("backup_copy", a_trashed_file.backup_copy),
-        ]
+        all_expectations = self.expectations_maker.expectations_for_file(
+            a_trashed_file)
         if focus_on is None:
             return all_expectations
         else:

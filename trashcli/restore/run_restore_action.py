@@ -1,5 +1,8 @@
 import os
+from abc import ABCMeta, abstractmethod
 from typing import NamedTuple, Optional
+
+import six
 
 from trashcli.restore.trashed_files import TrashedFiles
 
@@ -22,7 +25,7 @@ class RunRestoreAction:
         self.handler = handler
         self.trashed_files = trashed_files
 
-    def run_action(self, args,  # type RunRestoreArgs
+    def run_action(self, args,  # type: RunRestoreArgs
                    ):  # type: (...) -> None
         trashed_files = list(self.all_files_trashed_from_path(
             args.path, args.trash_dir))
@@ -48,7 +51,9 @@ class RunRestoreAction:
                 yield trashed_file
 
 
+@six.add_metaclass(ABCMeta)
 class Handler:
+    @abstractmethod
     def handle_trashed_files(self,
                              trashed_files,
                              overwrite,  # type: bool
