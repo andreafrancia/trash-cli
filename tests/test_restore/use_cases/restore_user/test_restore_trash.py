@@ -3,16 +3,17 @@ import unittest
 
 import pytest
 
+from tests.support.asserts.assert_that import assert_that
+from tests.support.my_path import MyPath
+from tests.test_restore.support.a_trashed_file import ATrashedFile
+from tests.test_restore.support.has_been_restored_matcher import \
+    has_been_restored
+from tests.test_restore.support.restore_file_fixture import RestoreFileFixture
+from tests.test_restore.support.restore_user import RestoreUser
 from trashcli.fs import FsMethods
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.restore.file_system import RealFileReader, \
     RealRestoreReadFileSystem, RealRestoreWriteFileSystem, RealListingFileSystem
-from .support.a_trashed_file import ATrashedFile
-from .support.has_been_restored_matcher import has_been_restored
-from .support.restore_file_fixture import RestoreFileFixture
-from .support.restore_user import RestoreUser
-from ..support.asserts.assert_that import assert_that
-from ..support.my_path import MyPath
 
 
 @pytest.mark.slow

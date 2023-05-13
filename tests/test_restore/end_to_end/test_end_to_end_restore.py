@@ -5,10 +5,10 @@ from os.path import exists as file_exists, join as pj
 
 import pytest
 
+from tests import run_command
+from tests.fake_trash_dir import FakeTrashDir
+from tests.support.my_path import MyPath
 from trashcli.fs import read_file
-from .. import run_command
-from ..fake_trash_dir import FakeTrashDir
-from ..support.my_path import MyPath
 
 
 @pytest.mark.slow
