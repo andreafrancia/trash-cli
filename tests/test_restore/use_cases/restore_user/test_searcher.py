@@ -7,14 +7,6 @@ from tests.test_restore.support.restore_user import RestoreUser
 class TestSearcher:
     def setup_method(self):
         self.fs = FakeRestoreFs()
-        self.read_fs = self.fs
-        self.write_fs = self.fs
-        self.file_reader = self.fs
-        self.listing_file_system = self.fs
-        self.volumes = self.fs
-        self.uid = 123
-        self.environ = {'HOME': '/home/user'}
-        self.version = '1.0'
         self.user = RestoreUser(environ={'HOME': '/home/user'},
                                 uid=123,
                                 file_reader=self.fs,
