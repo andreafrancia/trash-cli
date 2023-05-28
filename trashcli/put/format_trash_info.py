@@ -1,6 +1,6 @@
 import datetime
 
-from trashcli.py2compat import url_quote
+from six.moves.urllib.parse import quote as url_quote
 
 
 def format_trashinfo(original_location,  # type: str
@@ -12,9 +12,9 @@ def format_trashinfo(original_location,  # type: str
     return content
 
 
-def format_date(deletion_date): # type: (datetime.datetime) -> str
+def format_date(deletion_date):  # type: (datetime.datetime) -> str
     return deletion_date.strftime("%Y-%m-%dT%H:%M:%S")
 
 
-def format_original_location(original_location): # type: (str) -> str
+def format_original_location(original_location):  # type: (str) -> str
     return url_quote(original_location, '/')

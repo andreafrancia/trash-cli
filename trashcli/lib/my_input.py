@@ -1,11 +1,7 @@
 from abc import abstractmethod, ABCMeta
 
 import six
-
-try:
-    _my_input = raw_input  # Python 2
-except NameError:
-    _my_input = input  # Python 3
+from six.moves import input as _my_input
 
 
 @six.add_metaclass(ABCMeta)
