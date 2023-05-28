@@ -4,14 +4,14 @@ from mock import Mock
 
 from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.lib.dir_checker import DirChecker
-from trashcli.lib.user_info import UserInfoProvider
+from trashcli.lib.user_info import SingleUserInfoProvider
 from trashcli.trash_dirs_scanner import TrashDirsScanner, trash_dir_found
 
 
 class TestTrashDirScanner(unittest.TestCase):
     def test_scan_trash_dirs(self):
         volumes_listing = Mock(spec=VolumesListing)
-        user_info_provider = UserInfoProvider()
+        user_info_provider = SingleUserInfoProvider()
         dir_checker = Mock(spec=DirChecker)
         scanner = TrashDirsScanner(
             user_info_provider,

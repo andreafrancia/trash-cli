@@ -20,8 +20,8 @@ class FileTrasher:
                  parent_realpath,  # type: ParentRealpath
                  logger,  # type: MyLogger
                  reporter,  # type: TrashPutReporter
-                 trash_file_in=None,  # type: TrashFileIn
-                 volume_of_parent=None,  # type: VolumeOfParent
+                 trash_file_in,  # type: TrashFileIn
+                 volume_of_parent,  # type: VolumeOfParent
                  ):  # type: (...) -> None
         self.volumes = volumes
         self.trash_directories_finder = trash_directories_finder
@@ -53,10 +53,10 @@ class FileTrasher:
         file_has_been_trashed = False
         for candidate in candidates:
             file_has_been_trashed = file_has_been_trashed or \
-                self.trash_file_in.trash_file_in(candidate,
-                                                 log_data,
-                                                 environ,
-                                                 file_be_trashed)
+                                    self.trash_file_in.trash_file_in(candidate,
+                                                                     log_data,
+                                                                     environ,
+                                                                     file_be_trashed)
             if file_has_been_trashed: break
 
         if not file_has_been_trashed:

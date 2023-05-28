@@ -1,6 +1,6 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 from abc import abstractmethod, ABCMeta
-from typing import Dict
+from typing import Dict, Optional
 
 import six
 
@@ -27,7 +27,9 @@ class TrashDirectoriesImpl(TrashDirectories):
         self.trash_directories2 = TrashDirectories2(volumes,
                                                     trash_directories1)
 
-    def list_trash_dirs(self, trash_dir_from_cli):
+    def list_trash_dirs(self,
+                        trash_dir_from_cli,  # type: Optional[str]
+                        ):
         return self.trash_directories2.trash_directories_or_user(
             trash_dir_from_cli)
 
@@ -40,7 +42,9 @@ class TrashDirectories2:
         self.volume_of = volume_of
         self.trash_directories = trash_directories
 
-    def trash_directories_or_user(self, trash_dir_from_cli):
+    def trash_directories_or_user(self,
+                                  trash_dir_from_cli,  # type: Optional[str]
+                                  ):
         if trash_dir_from_cli:
             return [(trash_dir_from_cli,
                      self.volume_of.volume_of(trash_dir_from_cli))]

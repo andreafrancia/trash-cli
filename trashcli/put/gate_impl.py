@@ -1,4 +1,4 @@
-from typing import Dict, NamedTuple, Optional
+from typing import Dict, NamedTuple, Optional, Protocol
 
 from trashcli.put.candidate import Candidate
 from trashcli.put.fs.fs import Fs
@@ -28,12 +28,12 @@ class GateCheckResult(NamedTuple('GateCheckResult', [
         return 'GateCheckResult(%s, %r)' % (self.ok, self.reason)
 
 
-class GateImpl(object):
-    @staticmethod
-    def can_trash_in(trashee,  # type: Trashee
+class GateImpl(Protocol):
+    def can_trash_in(self,
+                     trashee,  # type: Trashee
                      candidate,  # type: Candidate
                      environ,  # type: Dict[str, str]
-                     ):  # type (...) -> GateCheckResult
+                     ):  # type: (...) -> GateCheckResult
         pass
 
 
@@ -43,14 +43,14 @@ class ClosedGateImpl(GateImpl):
                      trashee,  # type: Trashee
                      candidate,  # type: Candidate
                      environ,  # type: Dict[str, str]
-                     ):
+                     ):  # type: (...) -> GateCheckResult
         return GateCheckResult.make_error("trash dir not enabled: %s" %
                                           candidate.shrink_user(environ))
 
 
 class HomeFallbackGateImpl(GateImpl):
     def __init__(self,
-                 fs, # type: Fs
+                 fs,  # type: Fs
                  ):
         self.fs = fs
 

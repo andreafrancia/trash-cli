@@ -6,12 +6,9 @@ from __future__ import print_function
 import os
 from typing import NamedTuple
 
-from trashcli.empty.actions import Action
-
 
 class PrintVersionArgs(
     NamedTuple('PrintVersionArgs', [
-        ('action', Action),
         ('argv0', str),
     ])):
 

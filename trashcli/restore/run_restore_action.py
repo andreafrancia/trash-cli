@@ -43,7 +43,7 @@ class RunRestoreAction:
 
     def all_files_trashed_from_path(self,
                                     path,  # type: str
-                                    trash_dir_from_cli,  # type: str
+                                    trash_dir_from_cli,  # type: Optional[str]
                                     ):
         for trashed_file in self.trashed_files.all_trashed_files(
                 trash_dir_from_cli):

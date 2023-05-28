@@ -1,16 +1,16 @@
 import os
+from typing import Union, Type
 
 
-class PathMakerType:
+class AbsolutePaths:
     pass
 
 
-class AbsolutePaths(PathMakerType):
+class RelativePaths:
     pass
 
 
-class RelativePaths(PathMakerType):
-    pass
+PathMakerType = Union[Type[AbsolutePaths], Type[RelativePaths]]
 
 
 class PathMaker:

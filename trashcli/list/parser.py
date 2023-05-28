@@ -1,5 +1,5 @@
 import argparse
-from typing import List
+from typing import List, Union
 
 from trashcli.lib.print_version import PrintVersionArgs
 from trashcli.list.list_trash_action import ListTrashArgs
@@ -10,6 +10,15 @@ from trashcli.list.minor_actions.print_python_executable import \
     PrintPythonExecutableArgs
 from trashcli.shell_completion import add_argument_to, TRASH_DIRS
 from trashcli.super_enum import SuperEnum
+
+Args = Union[
+    PrintVersionArgs,
+    PrintVolumesArgs,
+    DebugVolumesArgs,
+    ListTrashDirsArgs,
+    ListTrashArgs,
+    PrintPythonExecutableArgs
+]
 
 
 class Parser:
@@ -69,32 +78,32 @@ class Parser:
     def parse_list_args(self,
                         args,  # type: List[str]
                         argv0,  # type: str
-                        ):
+                        ):  # type: (...) -> Args
+
         parsed = self.parser.parse_args(args)
-        args = None
+
         if parsed.action == Action.print_version:
-            args = PrintVersionArgs(action="TODO",
-                                    argv0=argv0)
+            return PrintVersionArgs(argv0=argv0)
         if parsed.action == Action.list_volumes:
-            args = PrintVolumesArgs()
+            return PrintVolumesArgs()
         if parsed.action == Action.debug_volumes:
-            args = DebugVolumesArgs()
+            return DebugVolumesArgs()
         if parsed.action == Action.list_trash_dirs:
-            args = ListTrashDirsArgs(
+            return ListTrashDirsArgs(
                 trash_dirs=parsed.trash_dirs,
                 all_users=parsed.all_users
             )
         if parsed.action == Action.list_trash:
-            args = ListTrashArgs(
+            return ListTrashArgs(
                 trash_dirs=parsed.trash_dirs,
                 attribute_to_print=parsed.attribute_to_print,
                 show_files=parsed.show_files,
                 all_users=parsed.all_users
             )
         if parsed.action == Action.print_python_executable:
-            args = PrintPythonExecutableArgs()
+            return PrintPythonExecutableArgs()
 
-        return args
+        raise ValueError('Unknown action: {}'.format(parsed.action))
 
 
 class Action(SuperEnum):

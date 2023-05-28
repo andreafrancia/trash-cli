@@ -1,16 +1,12 @@
-from trashcli.empty.older_than import older_than
-from trashcli.parse_trashinfo.parse_deletion_date import parse_deletion_date
 from trashcli.empty.clock import Clock
-
-
-class ContentReader:
-    def contents_of(self, path):
-        raise NotImplementedError
+from trashcli.empty.older_than import older_than
+from trashcli.fs import ContentsOf
+from trashcli.parse_trashinfo.parse_deletion_date import parse_deletion_date
 
 
 class DeleteAccordingDate:
     def __init__(self,
-                 reader,  # type: ContentReader
+                 reader,  # type: ContentsOf
                  clock,  # type: Clock
                  ):
         self.reader = reader

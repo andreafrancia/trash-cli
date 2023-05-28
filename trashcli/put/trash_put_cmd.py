@@ -1,3 +1,5 @@
+from typing import Union, List, Dict
+
 from trashcli.put.my_logger import LogData
 from trashcli.put.parser import Parser, ExitWithCode, Trash
 from trashcli.put.reporter import TrashPutReporter
@@ -12,12 +14,16 @@ class TrashPutCmd:
         self.trash_all = trash_all
         self.reporter = reporter
 
-    def run(self, argv, environ, uid):
+    def run(self,
+            argv,  # type: List[str]
+            environ,  # type: Dict[str, str]
+            uid,  # type: int
+            ):  # type: (...) -> Union[str, int, None]
         parser = Parser()
         parsed = parser.parse_args(argv)
-        if parsed.type == ExitWithCode:
+        if isinstance(parsed, ExitWithCode):
             return parsed.exit_code
-        elif parsed.type == Trash:
+        elif isinstance(parsed, Trash):
             program_name = parsed.program_name
             log_data = LogData(program_name, parsed.verbose)
             result = self.trash_all.trash_all(parsed.files,

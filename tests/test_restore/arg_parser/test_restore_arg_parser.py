@@ -40,4 +40,4 @@ class TestRestoreArgs(unittest.TestCase):
         args = self.parser.parse_restore_args(['program', '--version'],
                                               "ignored")
 
-        self.assertEqual(PrintVersionArgs(action="TODO", argv0='program'), args)
+        self.assertEqual(PrintVersionArgs(argv0='program'), args)

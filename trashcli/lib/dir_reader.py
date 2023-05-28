@@ -1,16 +1,13 @@
 from __future__ import absolute_import
 
-import abc
+from typing import Protocol
 
-import six
+from trashcli.fs import EntriesIfDirExists, PathExists
 
 
-@six.add_metaclass(abc.ABCMeta)
-class DirReader:
-    @abc.abstractmethod
-    def entries_if_dir_exists(self, path):  # type: (str) -> list[str]
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def exists(self, path):  # type: (str) -> bool
-        raise NotImplementedError()
+class DirReader(
+    EntriesIfDirExists,
+    PathExists,
+    Protocol,
+):
+    pass

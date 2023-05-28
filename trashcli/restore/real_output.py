@@ -1,5 +1,6 @@
 from trashcli.restore.output import Output
-from trashcli.restore.output_event import Println, Die, Quit, Exiting
+from trashcli.restore.output_event import Println, Die, Quit, Exiting, \
+    OutputEvent
 
 
 class RealOutput(Output):

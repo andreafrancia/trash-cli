@@ -4,12 +4,10 @@ import os
 import unittest
 
 import pytest
-from trashcli.fs import has_sticky_bit, mkdirs, FsMethods
 
+from trashcli.fs import has_sticky_bit, mkdirs, is_sticky_dir
 from .support.files import make_empty_file, set_sticky_bit, unset_sticky_bit
 from .support.my_path import MyPath
-
-is_sticky_dir = FsMethods().is_sticky_dir
 
 
 @pytest.mark.slow

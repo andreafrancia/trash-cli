@@ -1,71 +1,73 @@
-import abc
+from abc import abstractmethod
+from typing import Protocol
 
-import six
 
+class Fs(Protocol):
 
-@six.add_metaclass(abc.ABCMeta)
-class Fs:
-
-    @abc.abstractmethod
+    @abstractmethod
     def atomic_write(self, path, content):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def chmod(self, path, mode):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def isdir(self, path):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def isfile(self, path):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def getsize(self, path):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def exists(self, path):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def makedirs(self, path, mode):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def move(self, path, dest):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def remove_file(self, path):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def islink(self, path):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def has_sticky_bit(self, path):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def realpath(self, path):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def is_accessible(self, path):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def make_file(self, path, content):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def get_mod(self, path):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def lexists(self, path):
+        pass
+
+    @abstractmethod
+    def walk_no_follow(self, top):
         pass

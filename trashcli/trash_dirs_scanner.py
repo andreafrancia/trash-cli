@@ -1,6 +1,10 @@
 import os
+from typing import Iterable, Protocol
 
+from trashcli.fs import PathExists, IsStickyDir, IsSymLink
 from trashcli.fstab.volume_listing import VolumesListing
+from trashcli.lib.dir_checker import DirChecker
+from trashcli.lib.user_info import UserInfoProvider
 
 
 class MyEnum(str):
@@ -39,15 +43,8 @@ class TrashDir(tuple):
 
 
 class TopTrashDirRules:
-    class Reader:
-        def exists(self, path):  # type: (str) -> bool
-            raise NotImplementedError()
-
-        def is_sticky_dir(self, path):  # type: (str) -> bool
-            raise NotImplementedError()
-
-        def is_symlink(self, path):  # type: (str) -> bool
-            raise NotImplementedError()
+    class Reader(PathExists, IsStickyDir, IsSymLink, Protocol):
+        pass
 
     def __init__(self, reader):  # type: (Reader) -> None
         self.reader = reader
@@ -66,10 +63,11 @@ class TopTrashDirRules:
 
 class TrashDirsScanner:
     def __init__(self,
-                 user_info_provider,
-                 volumes_listing,
-                 top_trash_dir_rules,
-                 dir_checker):
+                 user_info_provider,  # type: UserInfoProvider
+                 volumes_listing,  # type: VolumesListing
+                 top_trash_dir_rules,  # type: TopTrashDirRules
+                 dir_checker,  # type: DirChecker
+                 ):
         self.user_info_provider = user_info_provider
         self.volumes_listing = volumes_listing  # type: VolumesListing
         self.top_trash_dir_rules = top_trash_dir_rules
@@ -98,7 +96,8 @@ class TrashDirsScanner:
                     yield trash_dir_found, TrashDir(alt_top_trash_dir, volume)
 
 
-def only_found(events):
+def only_found(events, # type: Iterable[TrashDir]
+               ):  # type: (...) -> Iterable[TrashDir]
     for event, args in events:
         if event == trash_dir_found:
             yield args

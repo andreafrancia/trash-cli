@@ -3,7 +3,8 @@ from typing import Union, List
 
 from trashcli.lib.print_version import PrintVersionArgs
 from trashcli.restore.run_restore_action import RunRestoreArgs
-from trashcli.shell_completion import add_argument_to, TRASH_FILES, TRASH_DIRS
+from trashcli.shell_completion import add_argument_to, TRASH_FILES, TRASH_DIRS, \
+    complete_with
 
 Command = Union[PrintVersionArgs, RunRestoreArgs]
 
@@ -19,20 +20,25 @@ class RestoreArgParser:
             description='Restores from trash chosen file',
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
         add_argument_to(parser)
-        parser.add_argument('path',
-                            default="", nargs='?',
-                            help='Restore files from given path instead of current '
-                                 'directory'
-                            ).complete = TRASH_FILES
+        complete_with(
+            TRASH_FILES,
+            parser.add_argument('path',
+                                default="", nargs='?',
+                                help='Restore files from given path instead of current '
+                                     'directory'
+                                )
+        )
         parser.add_argument('--sort',
                             choices=['date', 'path', 'none'],
                             default='date',
                             help='Sort list of restore candidates by given field')
-        parser.add_argument('--trash-dir',
-                            action='store',
-                            dest='trash_dir',
-                            help=argparse.SUPPRESS
-                            ).complete = TRASH_DIRS
+        complete_with(
+            TRASH_DIRS,
+            parser.add_argument('--trash-dir',
+                                action='store',
+                                dest='trash_dir',
+                                help=argparse.SUPPRESS
+                                ))
         parser.add_argument('--version', action='store_true', default=False)
 
         parser.add_argument('--overwrite',
@@ -43,8 +49,7 @@ class RestoreArgParser:
         parsed = parser.parse_args(sys_argv[1:])
 
         if parsed.version:
-            return PrintVersionArgs(action="TODO",
-                                    argv0=sys_argv[0])
+            return PrintVersionArgs(argv0=sys_argv[0])
         else:
             path = os.path.normpath(
                 os.path.join(curdir + os.path.sep, parsed.path))

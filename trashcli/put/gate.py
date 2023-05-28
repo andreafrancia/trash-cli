@@ -1,21 +1,27 @@
+from typing import Union, Type
+
 import six
+
 from trashcli.put.class_name_meta import ClassNameMeta
 
 
-class Gate(object):
+@six.add_metaclass(ClassNameMeta)
+class ClosedGate:
     pass
 
 
 @six.add_metaclass(ClassNameMeta)
-class ClosedGate(Gate):
+class HomeFallbackGate:
     pass
 
 
 @six.add_metaclass(ClassNameMeta)
-class HomeFallbackGate(Gate):
+class SameVolumeGate:
     pass
 
 
-@six.add_metaclass(ClassNameMeta)
-class SameVolumeGate(Gate):
-    pass
+Gate = Union[
+    Type[ClosedGate],
+    Type[HomeFallbackGate],
+    Type[SameVolumeGate],
+]

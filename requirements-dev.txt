@@ -6,3 +6,4 @@ setuptools
 build
 flexmock
 parameterized
+types-six

@@ -1,11 +1,11 @@
-from io import TextIOWrapper
+from typing import TextIO
 
 from trashcli.empty.errors import format_error_msg
 
 
 class Console:
     def __init__(self, program_name, out,
-                 err):  # type: (str, TextIOWrapper, TextIOWrapper) -> None
+                 err):  # type: (str, TextIO, TextIO) -> None
         self.program_name = program_name
         self.out = out
         self.err = err

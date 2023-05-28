@@ -1,10 +1,8 @@
 from typing import Dict, NamedTuple, List
 
-from trashcli.empty.actions import Action
 from trashcli.empty.clock import Clock
 from trashcli.empty.console import Console
 from trashcli.empty.delete_according_date import (
-    ContentReader,
     DeleteAccordingDate,
 )
 from trashcli.empty.emptier import Emptier
@@ -13,6 +11,7 @@ from trashcli.empty.guard import Guard
 from trashcli.empty.parse_reply import parse_reply
 from trashcli.empty.prepare_output_message import prepare_output_message
 from trashcli.empty.user import User
+from trashcli.fs import ContentsOf
 from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.dir_reader import DirReader
@@ -24,7 +23,6 @@ from trashcli.trash_dirs_scanner import TopTrashDirRules
 
 class EmptyActionArgs(
     NamedTuple('EmptyActionArgs', [
-        ('action', Action),
         ('user_specified_trash_dirs', List[str]),
         ('all_users', bool),
         ('interactive', bool),
@@ -45,7 +43,7 @@ class EmptyAction:
                  file_reader,  # type: TopTrashDirRules.Reader
                  volumes,  # type: VolumeOf
                  dir_reader,  # type: DirReader
-                 content_reader,  # type: ContentReader
+                 content_reader,  # type: ContentsOf
                  console,  # type: Console
                  ):  # type: (...) -> None
         self.selector = TrashDirsSelector.make(volumes_listing,

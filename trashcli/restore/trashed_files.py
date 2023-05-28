@@ -38,7 +38,7 @@ class TrashedFiles:
                 raise RuntimeError()
 
     def all_trashed_files_internal(self,
-                                   trash_dir_from_cli  # type: str
+                                   trash_dir_from_cli,  # type: Optional[str]
                                    ):  # type: (...) -> Iterable[Event]
         for info_file in self.searcher.all_file_in_info_dir(trash_dir_from_cli):
             if info_file.type == 'non_trashinfo':

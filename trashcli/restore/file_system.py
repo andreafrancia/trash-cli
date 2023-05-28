@@ -1,11 +1,11 @@
 import os
 from abc import ABCMeta, abstractmethod
-from typing import Iterable
+from typing import Protocol
 
 import six
 
 from trashcli import fs
-from trashcli.fs import FsMethods
+from trashcli.fs import FsMethods, RealListFilesInDir, ListFilesInDir
 
 
 @six.add_metaclass(ABCMeta)
@@ -92,12 +92,8 @@ class FakeReadCwd(ReadCwd):
         return self.default_cur_dir
 
 
-@six.add_metaclass(ABCMeta)
-class ListingFileSystem:
-    @abstractmethod
-    def list_files_in_dir(self, path): # type: (str) -> Iterable[str]
-        pass
+class ListingFileSystem(ListFilesInDir, Protocol):
+    pass
 
-
-class RealListingFileSystem(ListingFileSystem):
-    list_files_in_dir = FsMethods().list_files_in_dir
+class RealListingFileSystem(ListingFileSystem, RealListFilesInDir):
+    pass

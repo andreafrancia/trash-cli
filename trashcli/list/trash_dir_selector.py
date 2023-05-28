@@ -1,9 +1,10 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
-from typing import List, Dict
+from typing import List, Dict, Iterator, Tuple
 
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.dir_checker import DirChecker
-from trashcli.lib.user_info import UserInfoProvider, AllUsersInfoProvider
+from trashcli.lib.user_info import AllUsersInfoProvider, \
+    SingleUserInfoProvider
 from trashcli.trash_dirs_scanner import trash_dir_found, TrashDir, \
     TopTrashDirRules, TrashDirsScanner
 
@@ -23,7 +24,7 @@ class TrashDirsSelector:
                user_specified_dirs, # type: List[str]
                environ, # type: Dict[str, str]
                uid, # type: int
-               ): # type (...) -> Iterator[Tuple[str, TrashDir[str, str]]]
+               ):  # type: (...) -> Iterator[Tuple[str, TrashDir]]
         if all_users_flag:
             for dir in self.all_users_dirs.scan_trash_dirs(environ, uid):
                 yield dir
@@ -40,7 +41,7 @@ class TrashDirsSelector:
              reader,  # type: TopTrashDirRules.Reader
              volumes  # type: VolumeOf
              ):
-        user_info_provider = UserInfoProvider()
+        user_info_provider = SingleUserInfoProvider()
         user_dir_scanner = TrashDirsScanner(user_info_provider,
                                             volumes_listing,
                                             TopTrashDirRules(reader),

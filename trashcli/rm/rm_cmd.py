@@ -1,15 +1,23 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
-from trashcli.rm.file_remover import FileRemover
-from trashcli.rm.filter import Filter
-from trashcli.rm.list_trashinfo import ListTrashinfos, FileContentReader
-from trashcli.rm.cleanable_trashcan import CleanableTrashcan
-from trashcli.lib.user_info import UserInfoProvider
+from typing import Protocol
+
+from trashcli.fs import ContentsOf
 from trashcli.lib.dir_checker import DirChecker
 from trashcli.lib.dir_reader import DirReader
+from trashcli.lib.user_info import SingleUserInfoProvider
+from trashcli.rm.cleanable_trashcan import CleanableTrashcan
+from trashcli.rm.file_remover import FileRemover
+from trashcli.rm.filter import Filter
+from trashcli.rm.list_trashinfo import ListTrashinfos
 from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
     trash_dir_found
 
-RmFileSystemReader = FileContentReader and DirReader and TopTrashDirRules.Reader
+
+class RmFileSystemReader(ContentsOf,
+                         DirReader,
+                         TopTrashDirRules.Reader,
+                         Protocol):
+    pass
 
 
 class RmCmd:
@@ -44,7 +52,7 @@ class RmCmd:
 
         listing = ListTrashinfos.make(self.file_reader, self.file_reader)
 
-        user_info_provider = UserInfoProvider()
+        user_info_provider = SingleUserInfoProvider()
         scanner = TrashDirsScanner(user_info_provider,
                                    self.volumes_listing,
                                    TopTrashDirRules(self.file_reader),

@@ -1,5 +1,5 @@
 # Copyright (C) 2022 Andrea Francia Bereguardo(PV) Italy
-from typing import Iterator
+from typing import Iterable
 
 from trashcli.empty.console import Console
 from trashcli.empty.delete_according_date import DeleteAccordingDate
@@ -17,8 +17,13 @@ class Emptier:
         self.delete_mode = delete_mode
         self.trash_dir_reader = trash_dir_reader
 
-    def do_empty(self, trash_dirs, environ, parsed_days,
-                 dry_run, verbose):  # type: (Iterator[TrashDir], dict, int, bool, int) -> None
+    def do_empty(self,
+                 trash_dirs,  # type: Iterable[TrashDir]
+                 environ,  # type: dict
+                 parsed_days,  # type: int
+                 dry_run,  # type: bool
+                 verbose,  # type: int
+                 ):  # type: (...) -> None
         for path in self.files_to_delete(trash_dirs, environ, parsed_days):
             if dry_run:
                 self.console.print_dry_run(path)
@@ -30,8 +35,11 @@ class Emptier:
                 except OSError:
                     self.console.print_cannot_remove_error(path)
 
-    def files_to_delete(self, trash_dirs, environ,
-                        parsed_days):  # type: (Iterator[TrashDir], dict, int) -> Iterator[str]
+    def files_to_delete(self,
+                        trash_dirs,  # type: Iterable[TrashDir]
+                        environ,  # type: dict
+                        parsed_days,  # type: int
+                        ):  # type: (...) -> Iterable[str]
         for trash_dir in only_found(trash_dirs):  # type: TrashDir
             for trash_info_path in self.trash_dir_reader.list_trashinfo(
                     trash_dir.path):

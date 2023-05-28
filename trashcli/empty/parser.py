@@ -1,8 +1,6 @@
 import argparse
-
 from typing import List, Dict
 
-from trashcli.empty.actions import Action
 from trashcli.empty.empty_action import EmptyActionArgs
 from trashcli.empty.print_time_action import PrintTimeArgs
 from trashcli.lib.print_version import PrintVersionArgs
@@ -22,15 +20,12 @@ class Parser:
 
         if namespace.version:
             return PrintVersionArgs(
-                action=Action.print_version,
                 argv0=argv0,
             )
         elif namespace.print_time:
-            return PrintTimeArgs(environ=environ,
-                                 action=Action.print_time)
+            return PrintTimeArgs(environ=environ)
         else:
             return EmptyActionArgs(
-                action=Action.empty,
                 user_specified_trash_dirs=namespace.user_specified_trash_dirs,
                 all_users=namespace.all_users,
                 interactive=namespace.interactive,

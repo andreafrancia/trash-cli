@@ -10,7 +10,7 @@ mode_interactive = 'interactive'
 
 ExitWithCode = NamedTuple('ExitWithCode', [
     ('type', type),
-    ('exit_code', int),
+    ('exit_code', Union[str, int, None]),
 ])
 
 Trash = NamedTuple('Trash', [

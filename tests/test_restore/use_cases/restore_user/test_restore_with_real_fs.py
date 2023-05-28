@@ -10,7 +10,7 @@ from tests.test_restore.support.has_been_restored_matcher import \
     has_been_restored
 from tests.test_restore.support.restore_file_fixture import RestoreFileFixture
 from tests.test_restore.support.restore_user import RestoreUser
-from trashcli.fs import FsMethods
+from trashcli.fs import RealExists
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.restore.file_system import RealFileReader, \
     RealRestoreReadFileSystem, RealRestoreWriteFileSystem, RealListingFileSystem
@@ -21,7 +21,7 @@ class TestRestoreTrash(unittest.TestCase):
     def setUp(self):
         self.tmp_dir = MyPath.make_temp_dir()
         self.fixture = RestoreFileFixture(self.tmp_dir / 'XDG_DATA_HOME')
-        self.fs = FsMethods()
+        self.fs = RealExists()
         self.cwd = self.tmp_dir / "cwd"
         XDG_DATA_HOME = self.tmp_dir / 'XDG_DATA_HOME'
         self.trash_dir = XDG_DATA_HOME / 'Trash'

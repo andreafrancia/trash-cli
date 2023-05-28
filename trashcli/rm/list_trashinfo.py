@@ -1,25 +1,24 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 import os
-import abc
+from abc import abstractmethod
+from typing import Protocol
 
-import six
-
-from trashcli.parse_trashinfo.parser_error import ParseError
-from trashcli.parse_trashinfo.parse_path import parse_path
-from trashcli.lib.trash_dir_reader import TrashDirReader
+from trashcli.fs import ContentsOf
 from trashcli.lib.dir_reader import DirReader
+from trashcli.lib.trash_dir_reader import TrashDirReader
+from trashcli.parse_trashinfo.parse_path import parse_path
+from trashcli.parse_trashinfo.parser_error import ParseError
 
 
-@six.add_metaclass(abc.ABCMeta)
-class FileContentReader:
-    @abc.abstractmethod
+class FileContentReader(Protocol):
+    @abstractmethod
     def contents_of(self, path):
         raise NotImplementedError()
 
 
 class ListTrashinfos:
     def __init__(self,
-                 file_content_reader,  # type: FileContentReader
+                 file_content_reader,  # type: ContentsOf
                  trash_dir_reader,  # type: TrashDirReader
                  ):
         self.trash_dir_reader = trash_dir_reader
@@ -38,7 +37,7 @@ class ListTrashinfos:
                 yield 'trashed_file', (complete_path, trashinfo_path)
 
     @staticmethod
-    def make(file_content_reader,  # type: FileContentReader
+    def make(file_content_reader,  # type: ContentsOf
              dir_reader,  # type: DirReader
              ):
         trash_dir_reader = TrashDirReader(dir_reader)

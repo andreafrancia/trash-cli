@@ -3,6 +3,7 @@ from typing import TypeVar, Generic, List, NamedTuple, Callable
 from six.moves import range
 
 from trashcli.lib.my_input import Input
+from trashcli.restore.index import Sequence
 from trashcli.restore.output import Output
 from trashcli.restore.output_event import Die, Exiting, OutputEvent, Quit
 from trashcli.restore.range import Range
@@ -15,8 +16,10 @@ SelectedFiles = NamedTuple('SelectedFiles', [
     ('overwrite', bool),
 ])
 
-Context = NamedTuple('Args', [('trashed_files', List[TrashedFile]),
-                              ('overwrite', bool)])
+Context = NamedTuple('Context', [
+    ('trashed_files', List[TrashedFile]),
+    ('overwrite', bool),
+])
 
 InputRead = NamedTuple('InputRead', [
     ('user_input', str),
@@ -41,7 +44,7 @@ class RestoreAskingTheUser(object):
         try:
             user_input = self.input.read_input(
                 "What file to restore [0..%d]: " % (
-                            len(args.trashed_files) - 1))
+                        len(args.trashed_files) - 1))
 
         except KeyboardInterrupt:
             return Left(Quit())
@@ -91,8 +94,10 @@ class Either(Generic[Error, Value]):
         raise NotImplementedError()
 
 
-class Left(Either):
-    def __init__(self, error):
+class Left(Either, Generic[Error, Value]):
+    def __init__(self,
+                 error,  # type: Error
+                 ):
         self.error = error
 
     def apply(self,
@@ -118,6 +123,7 @@ class Right(Either[Error, Value]):
     def on_error(self, f):
         return self
 
+
 def trashed_files_to_restore(input_read,  # type: InputRead
                              ):  # type: (...) -> Either[Die, SelectedFiles]
     try:
@@ -139,7 +145,7 @@ def parse_indexes(user_input,  # type: str
                   len_trashed_files,  # type: int
                   ):  # type: (...) -> Sequences
     indexes = user_input.split(',')
-    sequences = []
+    sequences = []  # type: List[Sequence]
     for index in indexes:
         if "-" in index:
             first, last = index.split("-", 2)
@@ -148,8 +154,8 @@ def parse_indexes(user_input,  # type: str
             split = list(map(parse_int_index, (first, last)))
             sequences.append(Range(split[0], split[1]))
         else:
-            index = parse_int_index(index)
-            sequences.append(Single(index))
+            int_index = parse_int_index(index)
+            sequences.append(Single(int_index))
     result = Sequences(sequences)
     acceptable_values = range(0, len_trashed_files)
     for index in result.all_indexes():
@@ -160,7 +166,7 @@ def parse_indexes(user_input,  # type: str
     return result
 
 
-def parse_int_index(text):
+def parse_int_index(text):  # type: (str) -> int
     try:
         return int(text)
     except ValueError:

@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 
 import pwd
+from typing import Union
 
 from trashcli.lib.trash_dirs import (
     home_trash_dir_path_from_env,
@@ -14,7 +15,7 @@ class UserInfo:
         self.uid = uid
 
 
-class UserInfoProvider:
+class SingleUserInfoProvider:
     @staticmethod
     def get_user_info(environ, uid):
         return [UserInfo(home_trash_dir_path_from_env(environ), uid)]
@@ -26,3 +27,6 @@ class AllUsersInfoProvider:
         for user in pwd.getpwall():
             yield UserInfo([home_trash_dir_path_from_home(user.pw_dir)],
                            user.pw_uid)
+
+
+UserInfoProvider = Union[SingleUserInfoProvider, AllUsersInfoProvider]

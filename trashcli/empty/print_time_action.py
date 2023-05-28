@@ -1,14 +1,12 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 from __future__ import print_function
-from typing import NamedTuple, Dict, Any
 
-from trashcli.empty.actions import Action
+from typing import NamedTuple, Dict
 
 
 class PrintTimeArgs(
     NamedTuple('PrintTimeArgs', [
         ('environ', Dict[str, str]),
-        ('action', Action)
     ])):
     pass
 

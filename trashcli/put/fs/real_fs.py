@@ -3,7 +3,6 @@ import stat
 
 from trashcli import fs
 from trashcli.fs import write_file
-from trashcli.put.fs.size_counter import SizeCounter
 from trashcli.put.fs.fs import Fs
 
 
@@ -26,7 +25,7 @@ class RealFs(Fs):
 
     def walk_no_follow(self, path):
         try:
-            import scandir
+            import scandir  # type: ignore
             walk = scandir.walk
         except ImportError:
             walk = os.walk
