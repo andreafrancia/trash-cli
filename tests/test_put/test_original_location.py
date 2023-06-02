@@ -1,11 +1,12 @@
 import unittest
 
-from parameterized import parameterized
+from parameterized import parameterized  # type: ignore
 
 from tests.test_put.support.fake_fs_with_realpath import FakeFsWithRealpath
 from trashcli.put.fs.parent_realpath import ParentRealpath
 from trashcli.put.original_location import OriginalLocation
 from trashcli.put.path_maker import PathMaker, AbsolutePaths, RelativePaths
+
 
 class TestOriginalLocation(unittest.TestCase):
 

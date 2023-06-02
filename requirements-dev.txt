@@ -7,3 +7,4 @@ build
 flexmock
 parameterized
 types-six
+types-mock

@@ -1,4 +1,5 @@
 import os
+from typing import Union
 
 from tests.test_put.support.fake_fs.directory import Directory, \
     make_inode_for_dir
@@ -35,7 +36,7 @@ class FakeFs(Fs, PathExists):
         dir = self.find_dir_or_file(dirname)
         dir.add_dir(basename, 0o755, path)
 
-    def find_dir_or_file(self, path):  # type: (str) -> Directory or File
+    def find_dir_or_file(self, path):  # type: (str) -> Union[Directory,File]
         path = os.path.join(self.cwd, path)
         if path == '/':
             return self.root
