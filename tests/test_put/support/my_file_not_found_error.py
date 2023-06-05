@@ -1,6 +1,6 @@
 try:
     FileNotFoundError
 except NameError:
-    FileNotFoundError = IOError
+    FileNotFoundError = OSError
 
 MyFileNotFoundError = FileNotFoundError

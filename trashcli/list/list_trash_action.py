@@ -1,8 +1,10 @@
 from __future__ import print_function
 
 import os
+
 from typing import NamedTuple, List
 
+from trashcli.lib.dir_reader import DirReader
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.list.extractors import DeletionDateExtractor, SizeExtractor
@@ -30,14 +32,16 @@ class ListTrashAction:
                  selector,
                  out,
                  err,
-                 file_reader,
+                 dir_reader,
+                 content_reader
                  ):
         self.environ = environ
         self.uid = uid
         self.selector = selector
         self.out = out
         self.err = err
-        self.file_reader = file_reader
+        self.dir_reader = dir_reader
+        self.content_reader = content_reader
 
     def run_action(self,
                    args, # type: ListTrashArgs
@@ -45,7 +49,8 @@ class ListTrashAction:
         for message in ListTrash(self.environ,
                                  self.uid,
                                  self.selector,
-                                 self.file_reader).list_all_trash(args):
+                                 self.dir_reader,
+                                 self.content_reader).list_all_trash(args):
             self.print_event(message)
 
     def print_event(self, event):
@@ -60,12 +65,14 @@ class ListTrash:
                  environ,
                  uid,
                  selector,
-                 file_reader,
+                 dir_reader,  # type: DirReader
+                 content_reader,
                  ):
         self.environ = environ
         self.uid = uid
         self.selector = selector
-        self.file_reader = file_reader
+        self.dir_reader = dir_reader
+        self.content_reader = content_reader
 
     def list_all_trash(self,
                        args,  # type: ListTrashArgs
@@ -85,7 +92,7 @@ class ListTrash:
         for event, event_args in trash_dirs:
             if event == trash_dir_found:
                 path, volume = event_args
-                trash_dir = TrashDirReader(self.file_reader)
+                trash_dir = TrashDirReader(self.dir_reader)
                 for trash_info in trash_dir.list_trashinfo(path):
                     for msg in self.print_trashinfo(volume, trash_info,
                                                     extractor, show_files):
@@ -107,7 +114,7 @@ class ListTrash:
                         extractor,
                         show_files):
         try:
-            contents = self.file_reader.contents_of(trashinfo_path)
+            contents = self.content_reader.contents_of(trashinfo_path)
         except IOError as e:
             yield Error(str(e))
         else:

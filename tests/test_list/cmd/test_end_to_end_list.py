@@ -81,7 +81,7 @@ options:
   --all-users           list trashcans of all the users
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues
-""", normalize_options(result.stdout))
+""", result.stderr + normalize_options(result.stdout))
 
     def tearDown(self):
         self.temp_dir.clean_up()

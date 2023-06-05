@@ -4,6 +4,8 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import os
+
+import six
 from typing import NamedTuple
 
 
@@ -28,4 +30,4 @@ class PrintVersionAction:
 
 
 def print_version(out, program_name, version):
-    print("%s %s" % (program_name, version), file=out)
+    print("%s %s" % (program_name, six.text_type(version)), file=out)

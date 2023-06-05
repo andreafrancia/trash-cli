@@ -2,7 +2,8 @@ import os
 import shutil
 import stat
 from abc import abstractmethod
-from typing import Iterable, Protocol
+
+from typing import Iterable, Protocol, List
 
 
 class FileSize(Protocol):
@@ -55,7 +56,7 @@ class RemoveFileIfExists(Protocol):
 
 class EntriesIfDirExists(Protocol):
     @abstractmethod
-    def entries_if_dir_exists(self, path):  # type: (str) -> list[str]
+    def entries_if_dir_exists(self, path):  # type: (str) -> List[str]
         raise NotImplementedError()
 
 

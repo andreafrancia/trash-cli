@@ -1,4 +1,5 @@
 import os
+
 from typing import Union
 
 from tests.test_put.support.fake_fs.directory import Directory, \
@@ -46,7 +47,10 @@ class FakeFs(Fs, PathExists):
                 cur_dir = cur_dir.get_file(component)
             except KeyError:
                 raise MyFileNotFoundError(
-                    "no such file or directory: %s" % path)
+                    "no such file or directory: %s\n%s" % (
+                        path,
+                        "\n".join(self.list_all()),
+                        ))
         return cur_dir
 
     def components_for(self, path):
@@ -197,3 +201,11 @@ class FakeFs(Fs, PathExists):
     def lexists(self, path):
         # TODO: consider links
         return self.exists(path)
+
+    def list_all(self):
+        result = self.walk_no_follow("/")
+        for top, dirs, non_dirs in result:
+            for d in dirs:
+                yield os.path.join(top, d)
+            for f in non_dirs:
+                yield os.path.join(top, f)

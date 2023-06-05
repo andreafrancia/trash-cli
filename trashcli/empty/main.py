@@ -2,6 +2,7 @@
 import os
 import sys
 from datetime import datetime
+
 from typing import Protocol
 
 from trashcli import trash
@@ -10,7 +11,7 @@ from trashcli.fs import RealContentsOf, ContentsOf
 from .existing_file_remover import ExistingFileRemover
 from .file_system_dir_reader import FileSystemDirReader
 from .top_trash_dir_rules_file_system_reader import \
-    TopTrashDirRulesFileSystemReader
+    RealTopTrashDirRulesReader
 from ..fstab.volume_listing import RealVolumesListing
 from ..fstab.volume_of import RealVolumeOf
 
@@ -25,7 +26,7 @@ def main():
                          err=sys.stderr,
                          volumes_listing=RealVolumesListing(),
                          now=datetime.now,
-                         file_reader=TopTrashDirRulesFileSystemReader(),
+                         file_reader=RealTopTrashDirRulesReader(),
                          file_remover=ExistingFileRemover(),
                          content_reader=FileSystemContentReader(),
                          dir_reader=FileSystemDirReader(),

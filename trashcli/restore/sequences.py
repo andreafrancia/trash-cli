@@ -1,10 +1,10 @@
-from typing import NamedTuple
+from typing import NamedTuple, List
 
 from trashcli.restore.index import Sequence
 
 
 class Sequences(NamedTuple('Sequences', [
-    ('sequences', list[Sequence]),
+    ('sequences', List[Sequence]),
 ])):
     def all_indexes(self):
         for sequence in self.sequences:
