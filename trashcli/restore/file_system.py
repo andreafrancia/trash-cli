@@ -1,23 +1,22 @@
 import os
 from abc import ABCMeta, abstractmethod
-from typing import Protocol
+from trashcli.compat import Protocol
 
 import six
 
 from trashcli import fs
-from trashcli.fs import FsMethods, RealListFilesInDir, ListFilesInDir
+from trashcli.fs import FsMethods, RealListFilesInDir, ListFilesInDir, \
+    RealContentsOf
 
 
-@six.add_metaclass(ABCMeta)
-class FileReader:
+class FileReader(Protocol):
     @abstractmethod
     def contents_of(self, path):
         raise NotImplementedError()
 
 
-class RealFileReader(FileReader):
-    def contents_of(self, path):
-        return FsMethods().contents_of(path)
+class RealFileReader(RealContentsOf, FileReader):
+    pass
 
 
 class FakeFileReader(FileReader):
@@ -94,6 +93,7 @@ class FakeReadCwd(ReadCwd):
 
 class ListingFileSystem(ListFilesInDir, Protocol):
     pass
+
 
 class RealListingFileSystem(ListingFileSystem, RealListFilesInDir):
     pass

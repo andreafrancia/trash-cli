@@ -3,7 +3,8 @@ import shutil
 import stat
 from abc import abstractmethod
 
-from typing import Iterable, Protocol, List
+from typing import Iterable, List
+from trashcli.compat import Protocol
 
 
 class FileSize(Protocol):

@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Protocol
+from trashcli.compat import Protocol
 
 
 class Fs(Protocol):

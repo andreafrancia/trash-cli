@@ -1,5 +1,6 @@
 import os
-from typing import Iterable, Protocol
+from typing import Iterable
+from trashcli.compat import Protocol
 
 from trashcli.fs import PathExists, IsStickyDir, IsSymLink
 from trashcli.fstab.volume_listing import VolumesListing

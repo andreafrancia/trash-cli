@@ -3,7 +3,7 @@ import os
 import sys
 from datetime import datetime
 
-from typing import Protocol
+from trashcli.compat import Protocol
 
 from trashcli import trash
 from trashcli.empty.empty_cmd import EmptyCmd

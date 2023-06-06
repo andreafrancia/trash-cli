@@ -1,5 +1,5 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
-from typing import Protocol
+from trashcli.compat import Protocol
 
 from trashcli.fs import ContentsOf
 from trashcli.lib.dir_checker import DirChecker

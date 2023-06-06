@@ -1,4 +1,5 @@
-from typing import Dict, NamedTuple, Optional, Protocol
+from typing import Dict, NamedTuple, Optional
+from trashcli.compat import Protocol
 
 from trashcli.put.candidate import Candidate
 from trashcli.put.fs.fs import Fs
@@ -34,7 +35,7 @@ class GateImpl(Protocol):
                      candidate,  # type: Candidate
                      environ,  # type: Dict[str, str]
                      ):  # type: (...) -> GateCheckResult
-        pass
+        raise NotImplementedError
 
 
 class ClosedGateImpl(GateImpl):
