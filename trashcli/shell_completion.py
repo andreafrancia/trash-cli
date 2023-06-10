@@ -1,5 +1,6 @@
 import argparse
 from copy import copy
+
 from typing import Dict
 
 try:
@@ -7,7 +8,7 @@ try:
         return [item for item in tuple]
 
 
-    from shtab import add_argument_to, FILE, DIR
+    from shtab import add_argument_to, FILE, DIR  # type: ignore
 
     defaults = convert_to_list(add_argument_to.__defaults__)
     defaults[-1] = {
