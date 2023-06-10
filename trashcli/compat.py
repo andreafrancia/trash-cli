@@ -3,9 +3,7 @@ def protocol():
         from typing import Protocol
         return Protocol
     except ImportError as e:
-        class Protocol:
-            pass
-
+        from typing_extensions import Protocol
         return Protocol
 
 
