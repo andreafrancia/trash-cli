@@ -1,5 +1,7 @@
 import os
 
+from typing import List
+
 from trashcli.lib.dir_reader import DirReader
 
 
@@ -7,7 +9,7 @@ class MockDirReader(DirReader):
     def __init__(self):
         self.root = {}
 
-    def entries_if_dir_exists(self, path):  # type: (str) -> list[str]
+    def entries_if_dir_exists(self, path):  # type: (str) -> List[str]
         return list(self.pick_dir(path).keys())
 
     def exists(self, path):  # type: (str) -> bool
