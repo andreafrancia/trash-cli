@@ -1,8 +1,9 @@
 import os
+
 from typing import Union, List
 
 from trashcli.lib.print_version import PrintVersionArgs
-from trashcli.restore.run_restore_action import RunRestoreArgs
+from trashcli.restore.args import RunRestoreArgs
 from trashcli.shell_completion import add_argument_to, TRASH_FILES, TRASH_DIRS, \
     complete_with
 

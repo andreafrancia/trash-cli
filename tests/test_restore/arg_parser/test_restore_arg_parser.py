@@ -1,8 +1,8 @@
 import unittest
 
 from trashcli.lib.print_version import PrintVersionArgs
+from trashcli.restore.args import RunRestoreArgs
 from trashcli.restore.restore_arg_parser import RestoreArgParser
-from trashcli.restore.run_restore_action import RunRestoreArgs
 
 
 class TestRestoreArgs(unittest.TestCase):

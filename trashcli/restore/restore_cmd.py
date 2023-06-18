@@ -3,14 +3,14 @@ from typing import TextIO, Callable
 
 from trashcli.lib.my_input import Input
 from trashcli.lib.print_version import PrintVersionAction, PrintVersionArgs
+from trashcli.restore.args import RunRestoreArgs
 from trashcli.restore.file_system import RestoreReadFileSystem, \
     RestoreWriteFileSystem, ReadCwd
 from trashcli.restore.handler import HandlerImpl
 from trashcli.restore.real_output import RealOutput
 from trashcli.restore.restore_arg_parser import RestoreArgParser
 from trashcli.restore.restorer import Restorer
-from trashcli.restore.run_restore_action import RunRestoreAction, Handler, \
-    RunRestoreArgs
+from trashcli.restore.run_restore_action import RunRestoreAction, Handler
 from trashcli.restore.trashed_files import TrashedFiles
 
 

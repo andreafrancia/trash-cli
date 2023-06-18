@@ -1,20 +1,13 @@
 import os
 from abc import ABCMeta, abstractmethod
-from typing import NamedTuple, Optional
 
 import six
+from typing import Optional, Iterable
 
+from trashcli.restore.args import RunRestoreArgs
+from trashcli.restore.sort_method import SortMethod
+from trashcli.restore.trashed_file import TrashedFile
 from trashcli.restore.trashed_files import TrashedFiles
-
-
-class RunRestoreArgs(
-    NamedTuple('RunRestoreArgs', [
-        ('path', str),
-        ('sort', str),
-        ('trash_dir', Optional[str]),
-        ('overwrite', bool),
-    ])):
-    pass
 
 
 class RunRestoreAction:
@@ -27,16 +20,10 @@ class RunRestoreAction:
 
     def run_action(self, args,  # type: RunRestoreArgs
                    ):  # type: (...) -> None
-        trashed_files = list(self.all_files_trashed_from_path(
-            args.path, args.trash_dir))
-        if args.sort == 'path':
-            trashed_files = sorted(trashed_files,
-                                   key=lambda
-                                       x: x.original_location + str(
-                                       x.deletion_date))
-        elif args.sort == 'date':
-            trashed_files = sorted(trashed_files,
-                                   key=lambda x: x.deletion_date)
+        trashed_files = self.all_files_trashed_from_path(args.path,
+                                                         args.trash_dir)
+        sort_method = SortMethod.parse_sort_method(args.sort)
+        trashed_files = sort_method.sort_files(trashed_files)
 
         self.handler.handle_trashed_files(trashed_files,
                                           args.overwrite)
@@ -44,7 +31,7 @@ class RunRestoreAction:
     def all_files_trashed_from_path(self,
                                     path,  # type: str
                                     trash_dir_from_cli,  # type: Optional[str]
-                                    ):
+                                    ):  # type: (...) -> Iterable[TrashedFile]
         for trashed_file in self.trashed_files.all_trashed_files(
                 trash_dir_from_cli):
             if trashed_file.original_location_matches_path(path):
