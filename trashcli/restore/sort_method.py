@@ -1,31 +1,48 @@
-from typing import NamedTuple, Optional, Callable, Any, Iterable, List
+from abc import abstractmethod
 
-from trashcli.restore.args import Sorter
+from typing import Callable, Any, Iterable
+
+from trashcli.compat import Protocol
+from trashcli.restore.args import Sort
 from trashcli.restore.trashed_file import TrashedFile
 
 
-class SortMethod(NamedTuple('SortMethod', [
-    ('sort_func', Optional[Callable[[TrashedFile], Any]])
-]), Sorter):
+def sort_files(sort,  # type: Sort.Type
+               trashed_files,  # type: Iterable[TrashedFile]
+               ):  # type: (...) -> Iterable[TrashedFile]
+    return sorter_for(sort).sort_files(trashed_files)
 
-    def sort_files(self,
-                   trashed_files,  # type: Iterable[TrashedFile]
-                   ):  # type: (...) -> List[TrashedFile]
-        if self.sort_func is None:
-            return list(trashed_files)
-        else:
-            return sorted(trashed_files, key=self.sort_func)
 
-    @classmethod
-    def parse_sort_method(cls, sort_method):  # type: (str) -> 'SortMethod'
-        sort_by_path = SortMethod(
-            lambda x: x.original_location + str(x.deletion_date))
-        sort_by_date = SortMethod(lambda x: x.deletion_date)
-        do_not_sort = SortMethod(None)
+class Sorter(Protocol):
+    @abstractmethod
+    def sort_files(self, trashed_files,  # type: Iterable[TrashedFile]
+                   ):  # type: (...) -> Iterable[TrashedFile]
+        raise NotImplementedError()
 
-        if sort_method == 'path':
-            return sort_by_path
-        elif sort_method == 'date':
-            return sort_by_date
-        else:
-            return do_not_sort
+
+class NoSorter(Sorter):
+    def sort_files(self, trashed_files,  # type: Iterable[TrashedFile]
+                   ):  # type: (...) -> Iterable[TrashedFile]
+        return trashed_files
+
+
+class SortFunction(Sorter):
+    def __init__(self,
+                 sort_func):  # type: (Callable[[TrashedFile], Any]) -> None
+        self.sort_func = sort_func
+
+    def sort_files(self, trashed_files,  # type: Iterable[TrashedFile]
+                   ):  # type: (...) -> Iterable[TrashedFile]
+        return sorted(trashed_files, key=self.sort_func)
+
+
+def sorter_for(sort,  # type: Sort.Type
+               ):  # type (...) -> Sorter
+
+    path_ranking = lambda x: x.original_location + str(x.deletion_date)
+    date_rankking = lambda x: x.deletion_date
+    return {
+        Sort.ByPath: SortFunction(path_ranking),
+        Sort.ByDate: SortFunction(date_rankking),
+        Sort.DoNot: NoSorter,
+    }[sort]

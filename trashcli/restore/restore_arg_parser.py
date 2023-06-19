@@ -1,9 +1,9 @@
 import os
 
-from typing import Union, List
+from typing import Union, List, cast
 
 from trashcli.lib.print_version import PrintVersionArgs
-from trashcli.restore.args import RunRestoreArgs
+from trashcli.restore.args import RunRestoreArgs, Sort
 from trashcli.shell_completion import add_argument_to, TRASH_FILES, TRASH_DIRS, \
     complete_with
 
@@ -54,7 +54,12 @@ class RestoreArgParser:
         else:
             path = os.path.normpath(
                 os.path.join(curdir + os.path.sep, parsed.path))
+
             return RunRestoreArgs(path=path,
-                                  sort=parsed.sort,
+                                  sort=cast(Sort.Type, {
+                                      'path': Sort.ByPath,
+                                      'date': Sort.ByDate,
+                                      'none': Sort.DoNot
+                                  }[parsed.sort]),
                                   trash_dir=parsed.trash_dir,
                                   overwrite=parsed.overwrite)

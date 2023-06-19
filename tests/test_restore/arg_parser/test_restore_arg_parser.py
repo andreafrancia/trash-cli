@@ -1,7 +1,7 @@
 import unittest
 
 from trashcli.lib.print_version import PrintVersionArgs
-from trashcli.restore.args import RunRestoreArgs
+from trashcli.restore.args import RunRestoreArgs, Sort
 from trashcli.restore.restore_arg_parser import RestoreArgParser
 
 
@@ -13,7 +13,7 @@ class TestRestoreArgs(unittest.TestCase):
         args = self.parser.parse_restore_args([''], "curdir")
 
         self.assertEqual(RunRestoreArgs(path='curdir',
-                                        sort='date',
+                                        sort=Sort.ByDate,
                                         trash_dir=None,
                                         overwrite=False),
                          args)
@@ -22,7 +22,7 @@ class TestRestoreArgs(unittest.TestCase):
         args = self.parser.parse_restore_args(['', 'path'], "curdir")
 
         self.assertEqual(RunRestoreArgs(path='curdir/path',
-                                        sort='date',
+                                        sort=Sort.ByDate,
                                         trash_dir=None,
                                         overwrite=False),
                          args)
@@ -31,7 +31,7 @@ class TestRestoreArgs(unittest.TestCase):
         args = self.parser.parse_restore_args(['', '/a/path'], "ignored")
 
         self.assertEqual(RunRestoreArgs(path='/a/path',
-                                        sort='date',
+                                        sort=Sort.ByDate,
                                         trash_dir=None,
                                         overwrite=False),
                          args)

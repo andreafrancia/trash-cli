@@ -5,7 +5,7 @@ import six
 from typing import Optional, Iterable
 
 from trashcli.restore.args import RunRestoreArgs
-from trashcli.restore.sort_method import SortMethod
+from trashcli.restore.sort_method import sort_files
 from trashcli.restore.trashed_file import TrashedFile
 from trashcli.restore.trashed_files import TrashedFiles
 
@@ -22,8 +22,8 @@ class RunRestoreAction:
                    ):  # type: (...) -> None
         trashed_files = self.all_files_trashed_from_path(args.path,
                                                          args.trash_dir)
-        sort_method = SortMethod.parse_sort_method(args.sort)
-        trashed_files = sort_method.sort_files(trashed_files)
+
+        trashed_files = sort_files(args.sort, trashed_files)
 
         self.handler.handle_trashed_files(trashed_files,
                                           args.overwrite)
