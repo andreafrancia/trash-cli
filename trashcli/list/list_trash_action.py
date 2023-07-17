@@ -20,6 +20,7 @@ class ListTrashArgs(
         ('trash_dirs', List[str]),
         ('attribute_to_print', str),
         ('show_files', bool),
+        ('only_print_wd', bool),
         ('all_users', bool),
     ])):
     pass
@@ -84,6 +85,7 @@ class ListTrash:
         user_specified_trash_dirs = args.trash_dirs
         extractor = extractors[args.attribute_to_print]
         show_files = args.show_files
+        only_print_wd = args.only_print_wd
         all_users = args.all_users
         trash_dirs = self.selector.select(all_users,
                                           user_specified_trash_dirs,
@@ -93,9 +95,10 @@ class ListTrash:
             if event == trash_dir_found:
                 path, volume = event_args
                 trash_dir = TrashDirReader(self.dir_reader)
+                cur_work_dir = os.getcwd()
                 for trash_info in trash_dir.list_trashinfo(path):
                     for msg in self.print_trashinfo(volume, trash_info,
-                                                    extractor, show_files):
+                                                    extractor, show_files, only_print_wd, cur_work_dir):
                         yield msg
             elif event == trash_dir_skipped_because_parent_not_sticky:
                 path, = event_args
@@ -112,7 +115,9 @@ class ListTrash:
                         volume,
                         trashinfo_path,
                         extractor,
-                        show_files):
+                        show_files,
+                        only_print_wd,
+                        cur_work_dir):
         try:
             contents = self.content_reader.contents_of(trashinfo_path)
         except IOError as e:
@@ -120,6 +125,8 @@ class ListTrash:
         else:
             try:
                 relative_location = parse_path(contents)
+                if not cur_work_dir in relative_location and only_print_wd:
+                    return
             except ParseError:
                 yield Error(self.print_parse_path_error(trashinfo_path))
             else:

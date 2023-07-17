@@ -43,6 +43,11 @@ class Parser:
                                  action='store_const',
                                  const=Action.list_volumes,
                                  help="list volumes")
+        self.parser.add_argument('--currentdir',
+                                 action='store_true',
+                                 default=False,
+                                 dest='only_print_wd',
+                                 help="Only show files trashed from current directory")
         self.parser.add_argument('--trash-dirs',
                                  dest='action',
                                  action='store_const',
@@ -98,6 +103,7 @@ class Parser:
                 trash_dirs=parsed.trash_dirs,
                 attribute_to_print=parsed.attribute_to_print,
                 show_files=parsed.show_files,
+                only_print_wd=parsed.only_print_wd,
                 all_users=parsed.all_users
             )
         if parsed.action == Action.print_python_executable:
