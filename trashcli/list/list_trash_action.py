@@ -125,7 +125,7 @@ class ListTrash:
         else:
             try:
                 relative_location = parse_path(contents)
-                if not cur_work_dir in relative_location and only_print_wd:
+                if not relative_location.startswith(cur_work_dir) and only_print_wd:
                     return
             except ParseError:
                 yield Error(self.print_parse_path_error(trashinfo_path))
