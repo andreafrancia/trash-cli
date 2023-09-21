@@ -1,4 +1,4 @@
-from tests.support.paragraphs import normalize_spaces
+from tests.support.help_reformatting import normalize_spaces
 
 
 class TestNormalizeSpaces:

@@ -1,3 +1,10 @@
+def reformat_help_message(help_message):
+    paragraphs = split_paragraphs(help_message)
+    return '\n'.join(
+        [normalize_spaces(paragraphs[0]) + "\n"]
+        + paragraphs[1:])
+
+
 def normalize_spaces(text):
     return " ".join(text.split())
 
