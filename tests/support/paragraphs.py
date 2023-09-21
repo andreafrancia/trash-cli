@@ -1,3 +1,7 @@
+def normalize_spaces(text):
+    return " ".join(text.split())
+
+
 def split_paragraphs(text):
     paragraphs = []
     par = ''
