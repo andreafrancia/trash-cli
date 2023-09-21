@@ -6,6 +6,7 @@ import pytest
 from tests import run_command
 from tests.fake_trash_dir import FakeTrashDir
 from tests.run_command import normalize_options
+from tests.support.help_reformatting import reformat_help_message
 from tests.support.my_path import MyPath
 
 
@@ -62,7 +63,7 @@ class TestEndToEndList(unittest.TestCase):
     def test_help(self):
         result = run_command.run_command(self.temp_dir, "trash-list", ['--help'])
 
-        self.assertEqual("""\
+        self.assertEqual(reformat_help_message("""\
 usage: trash-list [-h] [--print-completion {bash,zsh,tcsh}] [--version]
                   [--volumes] [--trash-dirs] [--trash-dir TRASH_DIRS]
                   [--all-users]
@@ -81,7 +82,7 @@ options:
   --all-users           list trashcans of all the users
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues
-""", result.stderr + normalize_options(result.stdout))
+"""), result.stderr + reformat_help_message(normalize_options(result.stdout)))
 
     def tearDown(self):
         self.temp_dir.clean_up()
