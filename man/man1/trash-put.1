@@ -40,8 +40,22 @@ compliant with the FreeDesktop.org Trash Specification.
 It remembers the name, original path, deletion date, and permissions of
 each trashed file.
 .br
-File trashed from the home partition will be moved here:
-~/.local/share/Trash/
+
+The file trashed from the home partition are trashed in a directory called
+"home trash" directory in the path $XDG_DATA_HOME/Trash or ~/.local/share/Trash/
+if $XDG_DATA_HOME is not defined or empty.
+
+File trashed from other partitions will can be trashed in one of the two places:
+
+ - $top_dir/.Trash/$uid
+ - $top_dir/.Trash-$uid
+
+Where:
+ - $top_dir is the mount point of the volume containing the file to be removed.
+ - $uid is the numeri ID of the deleting user
+
+The first option $top_dir/.Trash/$uid works only when .Trash dir has the sticky
+bit set. The second option is used when the first is not viable.
 
 .SH "ARGUMENTS"
 .TP
