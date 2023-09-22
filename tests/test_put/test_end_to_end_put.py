@@ -2,13 +2,11 @@
 import unittest
 from textwrap import dedent
 
+import pytest
+
 from tests import run_command
 from tests.run_command import first_line_of, last_line_of
 from ..support.my_path import MyPath
-
-import pytest
-
-from ..run_command import normalize_options
 
 
 @pytest.mark.slow
@@ -39,7 +37,7 @@ class TestEndToEndPut(unittest.TestCase):
     def test_on_help(self):
         result = run_command.run_command(self.tmp_dir, "trash-put", ['--help'])
 
-        assert [normalize_options(result.stdout),
+        assert [result.reformatted_help(),
                 result.exit_code] == \
                [dedent('''\
                 usage: trash-put [OPTION]... FILE...

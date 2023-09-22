@@ -3,6 +3,7 @@ import subprocess
 import sys
 
 from scripts.make_scripts import script_path_for
+from tests.support.help_reformatting import reformat_help_message
 from trashcli import base_dir
 
 
@@ -25,6 +26,8 @@ class CmdResult:
     def last_line_of_stdout(self):
         return last_line_of(self.stdout)
 
+    def reformatted_help(self):
+        return reformat_help_message(self.stdout)
     @staticmethod
     def _format(outs):
         outs = [out for out in outs if out != ""]
@@ -49,10 +52,6 @@ def run_command(cwd, command, args=None, input='', env=None):
     return CmdResult(stdout.decode('utf-8'),
                      stderr.decode('utf-8'),
                      process.returncode)
-
-
-def normalize_options(help_message):
-    return help_message.replace('optional arguments', 'options')
 
 
 def merge_dicts(x, y):

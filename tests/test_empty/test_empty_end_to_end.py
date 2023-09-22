@@ -1,9 +1,8 @@
 import unittest
 
 from trashcli import trash
-
 from .. import run_command
-from ..run_command import normalize_options
+from ..support.help_reformatting import reformat_help_message
 from ..support.my_path import MyPath
 
 
@@ -14,7 +13,7 @@ class TestEmptyEndToEnd(unittest.TestCase):
     def test_help(self):
         result = run_command.run_command(self.tmp_dir, "trash-empty",
                                          ['--help'])
-        self.assertEqual(["""\
+        self.assertEqual([reformat_help_message("""\
 usage: trash-empty [-h] [--print-completion {bash,zsh,tcsh}] [--version] [-v]
                    [--trash-dir TRASH_DIR] [--all-users] [-i] [-f] [--dry-run]
                    [days]
@@ -38,8 +37,8 @@ options:
   --dry-run             show which files would have been removed
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues
-""", '', 0],
-                         [normalize_options(result.stdout),
+"""), '', 0],
+                         [result.reformatted_help(),
                           result.stderr,
                           result.exit_code])
 

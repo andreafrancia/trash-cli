@@ -5,7 +5,6 @@ import pytest
 
 from tests import run_command
 from tests.fake_trash_dir import FakeTrashDir
-from tests.run_command import normalize_options
 from tests.support.help_reformatting import reformat_help_message
 from tests.support.my_path import MyPath
 
@@ -82,7 +81,7 @@ options:
   --all-users           list trashcans of all the users
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues
-"""), result.stderr + reformat_help_message(normalize_options(result.stdout)))
+"""), result.stderr + result.reformatted_help())
 
     def tearDown(self):
         self.temp_dir.clean_up()
