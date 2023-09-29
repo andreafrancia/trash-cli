@@ -41,18 +41,17 @@ It remembers the name, original path, deletion date, and permissions of
 each trashed file.
 .br
 
-The file trashed from the home partition are trashed in a directory called
-"home trash" directory in the path $XDG_DATA_HOME/Trash or ~/.local/share/Trash/
-if $XDG_DATA_HOME is not defined or empty.
+Files trashed from the home partition will be in either $XDG_DATA_HOME/Trash
+or ~/.local/share/Trash/ (if $XDG_DATA_HOME is not defined or empty).
 
-File trashed from other partitions will can be trashed in one of the two places:
+Files trashed from other partitions will be in one of the two places:
 
  - $top_dir/.Trash/$uid
  - $top_dir/.Trash-$uid
 
 Where:
- - $top_dir is the mount point of the volume containing the file to be removed.
- - $uid is the numeri ID of the deleting user
+ - $top_dir is the mount point of the volume containing the file to be removed
+ - $uid is the numeric ID of the deleting user
 
 The first option $top_dir/.Trash/$uid works only when .Trash dir has the sticky
 bit set. The second option is used when the first is not viable.
@@ -72,13 +71,13 @@ to the caller, because of any such nonexistent arguments.
 Show help message and exit.
 
 .IP "--trash-dir=TRASHDIR"
-Use TRASHDIR as trash folder.
+Use TRASHDIR as the trash folder.
 
 .IP "-v, --verbose"
 Explain what is being done.
 
 .IP "--version"
-Show program's version number and exit.
+Show the program's version number and exit.
 
 .SH "EXAMPLES"
 .nf
