@@ -1,27 +1,22 @@
-from six import add_metaclass
-from typing import NamedTuple, Optional, Union
-from typing import Type
+from enum import Enum
+from typing import NamedTuple, Optional
 
-from trashcli.put.class_name_meta import ClassNameMeta
+from trashcli.lib.enum_repr import repr_for_enum
 
 
-class Sort:
-    @add_metaclass(ClassNameMeta)
-    class ByDate: pass
+class Sort(Enum):
+    ByDate = "ByDate"
+    ByPath = "ByPath"
+    DoNot = "DoNot"
 
-    @add_metaclass(ClassNameMeta)
-    class ByPath: pass
-
-    @add_metaclass(ClassNameMeta)
-    class DoNot: pass
-
-    Type = Union[Type[ByDate], Type[ByPath], Type[DoNot]]
+    def __repr__(self):
+        return repr_for_enum(self)
 
 
 class RunRestoreArgs(
     NamedTuple('RunRestoreArgs', [
         ('path', str),
-        ('sort', Sort.Type),
+        ('sort', Sort),
         ('trash_dir', Optional[str]),
         ('overwrite', bool),
     ])):

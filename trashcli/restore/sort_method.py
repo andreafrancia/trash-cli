@@ -1,5 +1,4 @@
 from abc import abstractmethod
-
 from typing import Callable, Any, Iterable
 
 from trashcli.compat import Protocol
@@ -7,7 +6,7 @@ from trashcli.restore.args import Sort
 from trashcli.restore.trashed_file import TrashedFile
 
 
-def sort_files(sort,  # type: Sort.Type
+def sort_files(sort,  # type: Sort
                trashed_files,  # type: Iterable[TrashedFile]
                ):  # type: (...) -> Iterable[TrashedFile]
     return sorter_for(sort).sort_files(trashed_files)
@@ -36,7 +35,7 @@ class SortFunction(Sorter):
         return sorted(trashed_files, key=self.sort_func)
 
 
-def sorter_for(sort,  # type: Sort.Type
+def sorter_for(sort,  # type: Sort
                ):  # type (...) -> Sorter
 
     path_ranking = lambda x: x.original_location + str(x.deletion_date)

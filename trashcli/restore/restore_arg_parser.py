@@ -1,5 +1,4 @@
 import os
-
 from typing import Union, List, cast
 
 from trashcli.lib.print_version import PrintVersionArgs
@@ -56,7 +55,7 @@ class RestoreArgParser:
                 os.path.join(curdir + os.path.sep, parsed.path))
 
             return RunRestoreArgs(path=path,
-                                  sort=cast(Sort.Type, {
+                                  sort=cast(Sort, {
                                       'path': Sort.ByPath,
                                       'date': Sort.ByDate,
                                       'none': Sort.DoNot
