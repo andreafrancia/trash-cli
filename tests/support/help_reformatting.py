@@ -20,7 +20,7 @@ def normalize_spaces(text):
 def split_paragraphs(text):
     paragraphs = []
     par = ''
-    for line in text.splitlines(keepends=True):
+    for line in text.splitlines(True):
         if _is_empty_line(line):
             paragraphs.append(par)
             par = ''
