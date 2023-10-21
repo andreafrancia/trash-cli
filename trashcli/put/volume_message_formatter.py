@@ -1,5 +1,4 @@
-from typing import Dict
-
+from trashcli.lib.environ import Environ
 from trashcli.put.candidate import Candidate
 from trashcli.put.trashee import Trashee
 
@@ -8,7 +7,7 @@ class VolumeMessageFormatter:
     def format_msg(self,
                    trashee,  # type: Trashee
                    candidate,  # type: Candidate
-                   environ, # type: Dict[str, str]
+                   environ, # type: Environ
                    ):
         formatted_dir = candidate.shrink_user(environ)
 

@@ -1,8 +1,10 @@
 import argparse
-from typing import List, Dict
+
+from typing import List
 
 from trashcli.empty.empty_action import EmptyActionArgs
 from trashcli.empty.print_time_action import PrintTimeArgs
+from trashcli.lib.environ import Environ
 from trashcli.lib.print_version import PrintVersionArgs
 from trashcli.shell_completion import TRASH_DIRS, add_argument_to
 
@@ -10,7 +12,7 @@ from trashcli.shell_completion import TRASH_DIRS, add_argument_to
 class Parser:
     def parse(self,
               default_is_interactive,  # type: bool
-              environ,  # type: Dict[str, str]
+              environ,  # type: Environ
               args,  # type: List[str]
               uid,  # type: int
               argv0,  # type: str

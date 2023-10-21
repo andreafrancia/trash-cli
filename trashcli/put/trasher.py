@@ -1,10 +1,8 @@
 import os
 
-from typing import Dict
-
+from trashcli.lib.environ import Environ
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.fs.fs import Fs
-from trashcli.put.fs.real_fs import RealFs
 from trashcli.put.my_logger import LogData
 from trashcli.put.parser import mode_force, mode_interactive
 from trashcli.put.reporter import TrashPutReporter
@@ -33,7 +31,7 @@ class Trasher:
               home_fallback,
               program_name,
               log_data,  # type: LogData
-              environ,  # type: Dict[str, str]
+              environ,  # type: Environ
               uid,  # type: int
               ):
         """

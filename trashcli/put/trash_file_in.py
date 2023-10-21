@@ -1,5 +1,4 @@
-from typing import Dict
-
+from trashcli.lib.environ import Environ
 from trashcli.put.candidate import Candidate
 from trashcli.put.dir_maker import DirMaker
 from trashcli.put.fs.fs import Fs
@@ -28,7 +27,7 @@ class TrashFileIn:
     def trash_file_in(self,
                       candidate,  # type: Candidate
                       log_data,  # type: LogData
-                      environ,  # type: Dict[str, str]
+                      environ,  # type: Environ
                       trashee,  # type: Trashee
                       ):  # type: (...) -> bool
         trash_dir_is_secure, messages = self.security_check. \
@@ -59,7 +58,7 @@ class TrashFileIn:
     def try_trash(self,
                   candidate,  # type: Candidate
                   log_data,  # type : LogData
-                  environ,  # type: Dict[str, str]
+                  environ,  # type: Environ
                   trashee,  # type: Trashee
                   ):
         try:

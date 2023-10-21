@@ -1,6 +1,7 @@
-from typing import Dict, NamedTuple, Optional
-from trashcli.compat import Protocol
+from typing import NamedTuple, Optional
 
+from trashcli.compat import Protocol
+from trashcli.lib.environ import Environ
 from trashcli.put.candidate import Candidate
 from trashcli.put.fs.fs import Fs
 from trashcli.put.trash_dir_volume_reader import TrashDirVolumeReader
@@ -33,7 +34,7 @@ class GateImpl(Protocol):
     def can_trash_in(self,
                      trashee,  # type: Trashee
                      candidate,  # type: Candidate
-                     environ,  # type: Dict[str, str]
+                     environ,  # type: Environ
                      ):  # type: (...) -> GateCheckResult
         raise NotImplementedError
 
@@ -43,7 +44,7 @@ class ClosedGateImpl(GateImpl):
     def can_trash_in(self,
                      trashee,  # type: Trashee
                      candidate,  # type: Candidate
-                     environ,  # type: Dict[str, str]
+                     environ,  # type: Environ
                      ):  # type: (...) -> GateCheckResult
         return GateCheckResult.make_error("trash dir not enabled: %s" %
                                           candidate.shrink_user(environ))
@@ -58,7 +59,7 @@ class HomeFallbackGateImpl(GateImpl):
     def can_trash_in(self,
                      trashee,  # type: Trashee
                      candidate,  # type: Candidate
-                     environ,  # type: Dict[str, str]
+                     environ,  # type: Environ
                      ):
         if environ.get('TRASH_ENABLE_HOME_FALLBACK', None) == "1":
             return GateCheckResult.make_ok()
@@ -75,7 +76,7 @@ class SameVolumeGateImpl(GateImpl):
     def can_trash_in(self,
                      trashee,  # type: Trashee
                      candidate,  # type: Candidate
-                     environ,  # type: Dict[str, str]
+                     environ,  # type: Environ
                      ):
         same_volume = self.trash_dir_volume.volume_of_trash_dir(
             candidate.trash_dir_path) == trashee.volume

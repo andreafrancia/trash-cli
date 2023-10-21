@@ -1,7 +1,8 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
-from typing import Dict, List
+from typing import List
 
 from trashcli.fstab.volume_of import VolumeOf
+from trashcli.lib.environ import Environ
 from trashcli.lib.trash_dirs import (
     volume_trash_dir1, volume_trash_dir2, home_trash_dir)
 from trashcli.put.candidate import Candidate
@@ -19,7 +20,7 @@ class TrashDirectoriesFinder:
     def possible_trash_directories_for(self,
                                        volume,  # type: str
                                        specific_trash_dir,  # type: str
-                                       environ,  # type: Dict[str, str]
+                                       environ,  # type: Environ
                                        uid,  # type: int
                                        home_fallback,  # type: bool
                                        ):  # type: (...) -> List[Candidate]

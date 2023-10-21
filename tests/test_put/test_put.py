@@ -12,7 +12,7 @@ from tests.test_put.support.fake_random import FakeRandomInt
 from trashcli.fstab.volume_of import VolumeOfImpl
 from trashcli.lib.exit_codes import EX_OK, EX_IOERR
 from trashcli.lib.my_input import HardCodedInput
-from trashcli.put.core.environ import Environ
+from trashcli.lib.environ import Environ
 from trashcli.put.main import make_cmd
 from trashcli.put.parser import ensure_int
 

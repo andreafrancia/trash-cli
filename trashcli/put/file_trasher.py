@@ -1,7 +1,7 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
-from typing import Dict
 
 from trashcli.fstab.volume_of import VolumeOf
+from trashcli.lib.environ import Environ
 from trashcli.put.fs.parent_realpath import ParentRealpath
 from trashcli.put.fs.volume_of_parent import VolumeOfParent
 from trashcli.put.my_logger import MyLogger, LogData
@@ -37,7 +37,7 @@ class FileTrasher:
                    user_trash_dir,
                    home_fallback,
                    result,  # type: TrashResult
-                   environ,  # type: Dict[str, str]
+                   environ,  # type: Environ
                    uid,  # type: int
                    log_data,  # type: LogData
                    ):

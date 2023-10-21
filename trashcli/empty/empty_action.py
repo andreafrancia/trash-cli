@@ -1,4 +1,4 @@
-from typing import Dict, NamedTuple, List
+from typing import NamedTuple, List
 
 from trashcli.empty.clock import Clock
 from trashcli.empty.console import Console
@@ -15,6 +15,7 @@ from trashcli.fs import ContentsOf
 from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.dir_reader import DirReader
+from trashcli.lib.environ import Environ
 from trashcli.lib.my_input import RealInput
 from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.list.trash_dir_selector import TrashDirsSelector
@@ -29,7 +30,7 @@ class EmptyActionArgs(
         ('days', int),
         ('dry_run', bool),
         ('verbose', int),
-        ('environ', Dict[str, str]),
+        ('environ', Environ),
         ('uid', int),
     ])):
     pass

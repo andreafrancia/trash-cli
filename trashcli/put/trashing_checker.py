@@ -1,5 +1,6 @@
 from typing import Dict
 
+from trashcli.lib.environ import Environ
 from trashcli.put.candidate import Candidate
 from trashcli.put.gate import Gate
 from trashcli.put.gate_impl import GateCheckResult, GateImpl
@@ -13,7 +14,7 @@ class TrashingChecker:
     def file_could_be_trashed_in(self,
                                  trashee,  # type: Trashee
                                  candidate,  # type: Candidate
-                                 environ,  # type: Dict[str, str]
+                                 environ,  # type: Environ
                                  ):  # type: (...) -> GateCheckResult
         gate = self.gates[candidate.gate]
 

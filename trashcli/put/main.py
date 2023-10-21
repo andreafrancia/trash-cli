@@ -3,6 +3,7 @@ import random
 import sys
 
 from trashcli.fstab.volume_of import RealVolumeOf
+from trashcli.lib.environ import cast_environ
 from trashcli.lib.my_input import Input
 from trashcli.lib.my_input import RealInput
 from trashcli.put.clock import RealClock
@@ -40,7 +41,7 @@ def main():
                    randint=RandomIntGenerator(),
                    stderr=sys.stderr,
                    volumes=RealVolumeOf())
-    return cmd.run_put(sys.argv, os.environ, os.getuid())
+    return cmd.run_put(sys.argv, cast_environ(os.environ), os.getuid())
 
 
 def make_cmd(clock,

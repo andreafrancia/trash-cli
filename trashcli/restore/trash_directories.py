@@ -1,11 +1,12 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 from abc import abstractmethod, ABCMeta
-from typing import Dict, Optional
 
 import six
+from typing import Optional
 
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.fstab.volumes import Volumes
+from trashcli.lib.environ import Environ
 from trashcli.lib.trash_dirs import (
     volume_trash_dir1, volume_trash_dir2, home_trash_dir)
 
@@ -56,7 +57,7 @@ class TrashDirectories1:
     def __init__(self,
                  volumes,  # type: Volumes
                  uid,  # type: int
-                 environ,  # type: Dict[str, str]
+                 environ,  # type: Environ
                  ):
         self.volumes = volumes
         self.uid = uid
