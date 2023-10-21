@@ -1,4 +1,3 @@
-import datetime
 import os
 import unittest
 
@@ -6,7 +5,7 @@ import flexmock
 from six import StringIO
 
 from tests.support.fake_is_mount import FakeIsMount
-from tests.test_put.support.dummy_clock import DummyClock
+from tests.test_put.support.dummy_clock import FixedClock, jan_1st_2024
 from tests.test_put.support.fake_fs.fake_fs import FakeFs
 from trashcli.fstab.volume_of import VolumeOfImpl
 from trashcli.lib.exit_codes import EX_OK, EX_IOERR
@@ -16,14 +15,13 @@ from trashcli.put.main import make_cmd
 
 class TestPut(unittest.TestCase):
     def setUp(self):
-        clock = DummyClock(now_value=datetime.datetime(2014, 1, 1, 0, 0, 0))
         self.fs = FakeFs()
         my_input = HardCodedInput('y')
         randint = lambda: 44
         self.is_mount = FakeIsMount(['/'])
         volumes = VolumeOfImpl(self.is_mount, os.path.normpath)
         self.stderr = StringIO()
-        self.cmd = make_cmd(clock=clock,
+        self.cmd = make_cmd(clock=FixedClock(jan_1st_2024()),
                             fs=self.fs,
                             my_input=my_input,
                             randint=randint,
