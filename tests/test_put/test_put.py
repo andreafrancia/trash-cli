@@ -6,7 +6,8 @@ from six import StringIO
 
 from tests.support.fake_is_mount import FakeIsMount
 from tests.test_put.support.dummy_clock import FixedClock, jan_1st_2024
-from tests.test_put.support.fake_fs.fake_fs import FakeFs
+from tests.test_put.support.fake_fs.failing_fake_fs import FailingFakeFs
+from tests.test_put.support.fake_random import FakeRandomInt
 from trashcli.fstab.volume_of import VolumeOfImpl
 from trashcli.lib.exit_codes import EX_OK, EX_IOERR
 from trashcli.lib.my_input import HardCodedInput
@@ -15,18 +16,35 @@ from trashcli.put.main import make_cmd
 
 class TestPut(unittest.TestCase):
     def setUp(self):
-        self.fs = FakeFs()
+        self.fs = FailingFakeFs()
         my_input = HardCodedInput('y')
-        randint = lambda: 44
+        self.randint = FakeRandomInt(1492)
         self.is_mount = FakeIsMount(['/'])
         volumes = VolumeOfImpl(self.is_mount, os.path.normpath)
         self.stderr = StringIO()
         self.cmd = make_cmd(clock=FixedClock(jan_1st_2024()),
                             fs=self.fs,
                             my_input=my_input,
-                            randint=randint,
+                            randint=self.randint,
                             stderr=self.stderr,
                             volumes=volumes)
+
+    def test_when_needs_a_different_suffix(self):
+        self.fs.touch("/foo")
+        self.fs.fail_atomic_create_unless("foo_1.trashinfo")
+
+        self.run_cmd(['trash-put', '/foo'])
+
+        assert self.fs.ls_aa('/.Trash-123/files') == ['foo_1']
+
+    def test_when_needs_a_random_suffix(self):
+        self.fs.touch("/foo")
+        self.fs.fail_atomic_create_unless("foo_123.trashinfo")
+        self.randint.set_reply(123)
+
+        self.run_cmd(['trash-put', '/foo'])
+
+        assert self.fs.ls_aa('/.Trash-123/files') == ['foo_123']
 
     def test_when_file_does_not_exist(self):
         result = self.run_cmd(['trash-put', 'non-existent'],
@@ -167,7 +185,9 @@ class TestPut(unittest.TestCase):
         assert self.fs.read('/home/user/.local/share/Trash/files/pippo') \
                == 'content'
 
-    def run_cmd(self, args, environ, uid):
+    def run_cmd(self, args, environ=None, uid=None):
+        environ = environ or {}
+        uid = uid or 123
         err = None
         exit_code = None
         try:

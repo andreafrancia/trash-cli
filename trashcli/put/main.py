@@ -5,6 +5,7 @@ import sys
 from trashcli.fstab.volume_of import RealVolumeOf
 from trashcli.lib.my_input import MyInput
 from trashcli.put.clock import RealClock
+from trashcli.put.core.int_generator import IntGenerator
 from trashcli.put.describer import Describer
 from trashcli.put.dir_maker import DirMaker
 from trashcli.put.file_trasher import FileTrasher
@@ -32,16 +33,19 @@ from trashcli.put.user import User
 
 
 def main():
-    cmd = make_cmd(clock=RealClock(), fs=RealFs(),
-                   my_input=MyInput(), randint=random.randint,
-                   stderr=sys.stderr, volumes=RealVolumeOf())
+    cmd = make_cmd(clock=RealClock(),
+                   fs=RealFs(),
+                   my_input=MyInput(),
+                   randint=RandomIntGenerator(),
+                   stderr=sys.stderr,
+                   volumes=RealVolumeOf())
     return cmd.run(sys.argv, os.environ, os.getuid())
 
 
 def make_cmd(clock,
              fs,
-             my_input, # type: MyInput
-             randint,
+             my_input,  # type: MyInput
+             randint,  # type: IntGenerator
              stderr,
              volumes):
     logger = MyLogger(stderr)
@@ -80,3 +84,11 @@ def make_cmd(clock,
     trasher = Trasher(file_trasher, user, reporter, fs)
     trash_all = TrashAll(logger, trasher)
     return TrashPutCmd(trash_all, reporter)
+
+
+class RandomIntGenerator(IntGenerator):
+    def new_int(self,
+                min,  # type: int
+                max,  # type: int
+                ):
+        return random.randint(min, max)

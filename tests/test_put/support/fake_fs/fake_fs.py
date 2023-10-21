@@ -19,6 +19,10 @@ class FakeFs(Fs, PathExists):
         self.root = directory
         self.cwd = cwd
 
+    def touch(self, path):
+        if not self.exists(path):
+            self.make_file(path, '')
+
     def listdir(self, path):
         return self.ls_aa(path)
 
