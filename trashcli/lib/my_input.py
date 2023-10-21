@@ -11,7 +11,7 @@ class Input:
         raise NotImplementedError
 
 
-class MyInput(Input):
+class RealInput(Input):
     def read_input(self, prompt):  # type: (str) -> str
         return _my_input(prompt)
 

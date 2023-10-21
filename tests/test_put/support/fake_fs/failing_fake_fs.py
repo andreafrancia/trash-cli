@@ -7,6 +7,11 @@ class FailingFakeFs(FakeFs):
         super(FailingFakeFs, self).__init__()
         self._atomic_write_can_fail = False
 
+    def assert_does_not_exist(self, path):
+        if self.exists(path):
+            raise AssertionError(
+                "expected path to not exists but it does: %s" % path)
+
     def fail_atomic_create_unless(self, basename):
         self._atomic_write_can_fail = True
         self._atomic_write_failure_stop = basename

@@ -2,72 +2,73 @@ from abc import abstractmethod
 from trashcli.compat import Protocol
 
 
-class Fs(Protocol):
+class RealPathFs(Protocol):
+    @abstractmethod
+    def realpath(self, path):
+        raise NotImplementedError
 
+
+class Fs(RealPathFs, Protocol):
     @abstractmethod
     def atomic_write(self, path, content):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def chmod(self, path, mode):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def isdir(self, path):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def isfile(self, path):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def getsize(self, path):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def exists(self, path):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def makedirs(self, path, mode):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def move(self, path, dest):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def remove_file(self, path):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def islink(self, path):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def has_sticky_bit(self, path):
-        pass
-
-    @abstractmethod
-    def realpath(self, path):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def is_accessible(self, path):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def make_file(self, path, content):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_mod(self, path):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def lexists(self, path):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def walk_no_follow(self, top):
-        pass
+        raise NotImplementedError

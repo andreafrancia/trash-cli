@@ -1,8 +1,14 @@
 import os
 
+from trashcli.fstab.volume_of import VolumeOf
+from trashcli.put.fs.fs import RealPathFs
+
 
 class TrashDirVolumeReader:
-    def __init__(self, volumes, fs):
+    def __init__(self,
+                 volumes,  # type: VolumeOf
+                 fs,  # type: RealPathFs
+                 ):
         self.volumes = volumes
         self.fs = fs
 

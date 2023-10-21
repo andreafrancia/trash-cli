@@ -1,10 +1,10 @@
-from trashcli.lib.my_input import MyInput
+from trashcli.lib.my_input import Input
 
 
 class User:
     def __init__(self,
                  prepare_output_message,
-                 input, # type: MyInput
+                 input, # type: Input
                  parse_reply):
         self.prepare_output_message = prepare_output_message
         self.input = input

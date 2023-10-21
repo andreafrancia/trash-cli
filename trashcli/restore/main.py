@@ -13,7 +13,7 @@ from .trash_directories import TrashDirectoriesImpl
 from .trashed_files import TrashedFiles
 from ..fstab.volumes import RealVolumes
 from ..lib.logger import my_logger
-from ..lib.my_input import MyInput
+from ..lib.my_input import RealInput
 
 
 def main():
@@ -30,7 +30,7 @@ def main():
         stdout=sys.stdout,
         stderr=sys.stderr,
         exit=sys.exit,
-        input=MyInput(),
+        input=RealInput(),
         version=trashcli.trash.version,
         trashed_files=trashed_files,
         read_fs=RealRestoreReadFileSystem(),

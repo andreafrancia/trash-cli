@@ -1,4 +1,5 @@
 import os
+import pprint
 from argparse import SUPPRESS, ArgumentParser, RawDescriptionHelpFormatter
 from typing import NamedTuple, Any, Union, List, Optional
 
@@ -10,7 +11,7 @@ mode_interactive = 'interactive'
 
 ExitWithCode = NamedTuple('ExitWithCode', [
     ('type', type),
-    ('exit_code', Union[str, int, None]),
+    ('exit_code', int),
 ])
 
 Trash = NamedTuple('Trash', [
@@ -36,7 +37,7 @@ class Parser:
             if len(options.files) <= 0:
                 arg_parser.error("Please specify the files to trash.")
         except SystemExit as e:
-            return ExitWithCode(type=ExitWithCode, exit_code=e.code)
+            return ExitWithCode(type=ExitWithCode, exit_code=ensure_int(e.code))
 
         return Trash(type=Trash,
                      program_name=program_name,
@@ -47,6 +48,12 @@ class Parser:
                      forced_volume=options.forced_volume,
                      verbose=options.verbose,
                      home_fallback=options.home_fallback)
+
+
+def ensure_int(code):
+    if not isinstance(code, int):
+        raise ValueError("code must be an int, got %s" % pprint.pformat(code))
+    return code
 
 
 def make_parser(program_name):

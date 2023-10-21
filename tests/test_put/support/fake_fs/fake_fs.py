@@ -54,7 +54,7 @@ class FakeFs(Fs, PathExists):
                     "no such file or directory: %s\n%s" % (
                         path,
                         "\n".join(self.list_all()),
-                        ))
+                    ))
         return cur_dir
 
     def components_for(self, path):

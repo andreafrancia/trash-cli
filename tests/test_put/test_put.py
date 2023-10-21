@@ -1,5 +1,6 @@
 import os
 import unittest
+from typing import Optional, NamedTuple, List
 
 import flexmock
 from six import StringIO
@@ -11,23 +12,26 @@ from tests.test_put.support.fake_random import FakeRandomInt
 from trashcli.fstab.volume_of import VolumeOfImpl
 from trashcli.lib.exit_codes import EX_OK, EX_IOERR
 from trashcli.lib.my_input import HardCodedInput
+from trashcli.put.core.environ import Environ
 from trashcli.put.main import make_cmd
+from trashcli.put.parser import ensure_int
 
 
 class TestPut(unittest.TestCase):
     def setUp(self):
         self.fs = FailingFakeFs()
-        my_input = HardCodedInput('y')
+        self.my_input = HardCodedInput('y')
         self.randint = FakeRandomInt(1492)
         self.is_mount = FakeIsMount(['/'])
-        volumes = VolumeOfImpl(self.is_mount, os.path.normpath)
+        self.volumes = VolumeOfImpl(self.is_mount, os.path.normpath)
         self.stderr = StringIO()
-        self.cmd = make_cmd(clock=FixedClock(jan_1st_2024()),
+        self.clock = FixedClock(jan_1st_2024())
+        self.cmd = make_cmd(clock=self.clock,
                             fs=self.fs,
-                            my_input=my_input,
+                            user_input=self.my_input,
                             randint=self.randint,
                             stderr=self.stderr,
-                            volumes=volumes)
+                            volumes=self.volumes)
 
     def test_when_needs_a_different_suffix(self):
         self.fs.touch("/foo")
@@ -50,25 +54,48 @@ class TestPut(unittest.TestCase):
         result = self.run_cmd(['trash-put', 'non-existent'],
                               {"HOME": "/home/user"}, 123)
 
-        assert result == [
-            ["trash-put: cannot trash non existent 'non-existent'"],
-            'None',
-            EX_IOERR
-        ]
+        assert result.all() == [
+            EX_IOERR,
+            ["trash-put: cannot trash non existent 'non-existent'"]]
 
     def test_when_file_does_not_exist_with_force(self):
         result = self.run_cmd(['trash-put', '-f', 'non-existent'],
                               {"HOME": "/home/user"}, 123)
 
-        assert result == [[], 'None', 0]
+        assert result.all() == [EX_OK, []]
 
     def test_put_does_not_try_to_trash_non_existing_file(self):
         result = self.run_cmd(['trash-put', '-vvv', 'non-existing'],
                               {"HOME": "/home/user"}, 123)
 
-        assert result == \
-               [["trash-put: cannot trash non existent 'non-existing'"], 'None',
-                EX_IOERR]
+        assert result.all() == \
+               [
+                   EX_IOERR,
+                   ["trash-put: cannot trash non existent 'non-existing'"]
+               ]
+
+    def test_exit_code_will_be_0_when_trash_succeeds(self):
+        self.fs.touch("pippo")
+
+        result = self.run_cmd(['trash-put', 'pippo'])
+
+        assert result.exit_code == EX_OK
+
+    def test_exit_code_will_be_non_0_when_trash_fails(self):
+        self.fs.assert_does_not_exist("a")
+
+        result = self.run_cmd(['trash-put', 'a'])
+
+        assert result.exit_code == EX_IOERR
+
+    def test_exit_code_will_be_non_0_when_just_one_trash_fails(self):
+        self.fs.touch("a")
+        self.fs.assert_does_not_exist("b")
+        self.fs.touch("c")
+
+        result = self.run_cmd(['trash-put', 'a', 'b', 'c'])
+
+        assert result.exit_code == EX_IOERR
 
     def test_when_there_is_no_working_trash_dir(self):
         self.fs.make_file("pippo")
@@ -76,13 +103,16 @@ class TestPut(unittest.TestCase):
 
         result = self.run_cmd(['trash-put', '-vvv', 'pippo'], {}, 123)
 
-        assert result[0] == [
-            'trash-put: volume of file: /',
-            'trash-put: found unusable .Trash dir (should be a dir): /.Trash',
-            'trash-put: trash directory is not secure: /.Trash/123',
-            'trash-put: trying trash dir: /.Trash-123 from volume: /',
-            "trash-put: failed to trash pippo in /.Trash-123, because: [Errno 13] Permission denied: '/.Trash-123/files'",
-            "trash-put: cannot trash regular empty file 'pippo'",
+        assert result.all() == [
+            EX_IOERR,
+            [
+                'trash-put: volume of file: /',
+                'trash-put: found unusable .Trash dir (should be a dir): /.Trash',
+                'trash-put: trash directory is not secure: /.Trash/123',
+                'trash-put: trying trash dir: /.Trash-123 from volume: /',
+                "trash-put: failed to trash pippo in /.Trash-123, because: [Errno 13] Permission denied: '/.Trash-123/files'",
+                "trash-put: cannot trash regular empty file 'pippo'",
+            ]
         ]
 
     def test_multiple_volumes(self):
@@ -185,15 +215,28 @@ class TestPut(unittest.TestCase):
         assert self.fs.read('/home/user/.local/share/Trash/files/pippo') \
                == 'content'
 
-    def run_cmd(self, args, environ=None, uid=None):
+    def run_cmd(self,
+                args,  # type: List[str]
+                environ=None,  # type: Optional[Environ]
+                uid=None,  # type: Optional[int]
+                ):  # type: (...) -> Result
         environ = environ or {}
         uid = uid or 123
         err = None
         exit_code = None
         try:
-            exit_code = self.cmd.run(args, environ, uid)
+            exit_code = self.cmd.run_put(args, environ, uid)
         except IOError as e:
             err = e
         stderr = self.stderr.getvalue().splitlines()
 
-        return [stderr, str(err), exit_code]
+        return Result(stderr, str(err), ensure_int(exit_code))
+
+
+class Result(NamedTuple('Result', [
+    ('stderr', List[str]),
+    ('err', str),
+    ('exit_code', int),
+])):
+    def all(self):
+        return [self.exit_code, self.stderr]

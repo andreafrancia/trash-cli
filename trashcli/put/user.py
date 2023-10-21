@@ -1,10 +1,10 @@
-from trashcli.lib.my_input import MyInput
+from trashcli.lib.my_input import Input
 from trashcli.put.describer import Describer
 
 
 class User:
     def __init__(self,
-                 my_input,  # type: MyInput
+                 my_input,  # type: Input
                  describer,  # type: Describer
                  ):
         self.my_input = my_input
