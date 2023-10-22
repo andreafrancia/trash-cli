@@ -6,7 +6,7 @@ from trashcli.put.fs.fs import Fs
 from trashcli.put.my_logger import LogData
 from trashcli.put.parser import mode_force, mode_interactive
 from trashcli.put.reporter import TrashPutReporter
-from trashcli.put.trash_result import TrashResult
+from trashcli.put.core.trash_result import TrashResult
 from trashcli.put.user import User, user_replied_no
 
 
@@ -25,7 +25,6 @@ class Trasher:
     def trash(self,
               path,
               user_trash_dir,
-              result,  # type: TrashResult
               mode,
               forced_volume,
               home_fallback,
@@ -51,30 +50,30 @@ class Trasher:
 
         if self._should_skipped_by_specs(path):
             self.reporter.unable_to_trash_dot_entries(path, program_name)
-            return result
+            return TrashResult.Failure
 
         if not self.fs.lexists(path):
             if mode == mode_force:
-                return result
+                return TrashResult.Success
             else:
                 self.reporter.unable_to_trash_file(path, log_data)
-                return result.mark_unable_to_trash_file()
+                return TrashResult.Failure
 
         if mode == mode_interactive and self.fs.is_accessible(path):
             reply = self.user.ask_user_about_deleting_file(program_name, path)
             if reply == user_replied_no:
-                return result
+                return TrashResult.Success
 
         return self.file_trasher.trash_file(path,
                                             forced_volume,
                                             user_trash_dir,
                                             home_fallback,
-                                            result,
                                             environ,
                                             uid,
                                             log_data,
                                             )
 
-    def _should_skipped_by_specs(self, file):
-        basename = os.path.basename(file)
+    @staticmethod
+    def _should_skipped_by_specs(path):
+        basename = os.path.basename(path)
         return (basename == ".") or (basename == "..")

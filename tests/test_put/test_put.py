@@ -1,5 +1,4 @@
 import os
-import unittest
 from typing import Optional, NamedTuple, List
 
 import flexmock
@@ -17,10 +16,10 @@ from trashcli.put.main import make_cmd
 from trashcli.put.parser import ensure_int
 
 
-class TestPut(unittest.TestCase):
-    def setUp(self):
+class TestPut:
+    def setup_method(self):
         self.fs = FailingFakeFs()
-        self.my_input = HardCodedInput('y')
+        self.user_input = HardCodedInput('y')
         self.randint = FakeRandomInt(1492)
         self.is_mount = FakeIsMount(['/'])
         self.volumes = VolumeOfImpl(self.is_mount, os.path.normpath)
@@ -28,7 +27,7 @@ class TestPut(unittest.TestCase):
         self.clock = FixedClock(jan_1st_2024())
         self.cmd = make_cmd(clock=self.clock,
                             fs=self.fs,
-                            user_input=self.my_input,
+                            user_input=self.user_input,
                             randint=self.randint,
                             stderr=self.stderr,
                             volumes=self.volumes)
@@ -49,6 +48,44 @@ class TestPut(unittest.TestCase):
         self.run_cmd(['trash-put', '/foo'])
 
         assert self.fs.ls_aa('/.Trash-123/files') == ['foo_123']
+
+    def test_should_not_trash_dot_entry(self):
+        result = self.run_cmd(['trash-put', '.'])
+
+        assert result.all() == [
+            EX_IOERR,
+                ["trash-put: cannot trash directory '.'"]]
+
+    def test_should_not_trash_dot_dot_entry(self):
+        result = self.run_cmd(['trash-put', '..'])
+
+        assert result.all() == [
+            EX_IOERR,
+            ["trash-put: cannot trash directory '..'"]]
+
+    def test_user_reply_no(self):
+        self.fs.touch("foo")
+        self.user_input.set_reply('n')
+
+        result = self.run_cmd(['trash-put', '-i', 'foo'])
+
+        assert result.all() + [self.user_input.last_prompt(),
+                               self.fs.ls_existing(["foo"])] == [
+            EX_OK, [], "trash-put: trash regular empty file 'foo'? ",
+            ['foo'],
+        ]
+
+    def test_user_reply_yes(self):
+        self.fs.touch("foo")
+        self.user_input.set_reply('y')
+
+        result = self.run_cmd(['trash-put', '-i', 'foo'])
+
+        assert result.all() + [self.user_input.last_prompt(),
+                               self.fs.ls_existing(["foo"])] == [
+            EX_OK, [], "trash-put: trash regular empty file 'foo'? ",
+            []
+        ]
 
     def test_when_file_does_not_exist(self):
         result = self.run_cmd(['trash-put', 'non-existent'],

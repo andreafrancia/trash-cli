@@ -7,6 +7,7 @@ from grp import getgrgid
 from typing import List
 
 from trashcli.put.candidate import Candidate
+from trashcli.put.core.trash_all_result import TrashAllResult
 from trashcli.put.describer import Describer
 from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.lib.exit_codes import EX_OK, EX_IOERR
@@ -95,8 +96,10 @@ class TrashPutReporter:
                                                       candidate.volume),
             log_data)
 
-    def exit_code(self, result):
-        if not result.some_file_has_not_be_trashed:
+    def exit_code(self,
+                  result,  # type: TrashAllResult
+                  ): # type: (...) -> int
+        if not result.any_failure():
             return EX_OK
         else:
             return EX_IOERR

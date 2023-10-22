@@ -26,6 +26,9 @@ class FakeFs(Fs, PathExists):
     def listdir(self, path):
         return self.ls_aa(path)
 
+    def ls_existing(self, paths):
+        return [p for p in paths if self.exists(p)]
+
     def ls_aa(self, path):
         all_entries = self.ls_a(path)
         all_entries.remove(".")

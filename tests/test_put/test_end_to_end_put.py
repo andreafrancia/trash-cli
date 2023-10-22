@@ -6,6 +6,7 @@ import pytest
 
 from tests import run_command
 from tests.run_command import first_line_of, last_line_of
+from trashcli.lib.exit_codes import EX_IOERR
 from ..support.my_path import MyPath
 
 
@@ -73,13 +74,13 @@ class TestEndToEndPut(unittest.TestCase):
         result = run_command.run_command(self.tmp_dir, "trash-put", ['.'])
 
         assert [result.stderr, result.exit_code] == \
-               ["trash-put: cannot trash directory '.'\n", 0]
+               ["trash-put: cannot trash directory '.'\n", EX_IOERR]
 
     def test_it_should_skip_dotdot_entry(self):
         result = run_command.run_command(self.tmp_dir, "trash-put", ['..'])
 
         assert [result.stderr, result.exit_code] == \
-               ["trash-put: cannot trash directory '..'\n", 0]
+               ["trash-put: cannot trash directory '..'\n", EX_IOERR]
 
     def test_it_should_print_usage_on_no_argument(self):
         result = run_command.run_command(self.tmp_dir, "trash-put", [])

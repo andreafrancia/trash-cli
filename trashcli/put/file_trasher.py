@@ -8,7 +8,7 @@ from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_file_in import TrashFileIn
-from trashcli.put.trash_result import TrashResult
+from trashcli.put.core.trash_result import TrashResult
 from trashcli.put.trashee import Trashee
 
 
@@ -36,7 +36,6 @@ class FileTrasher:
                    forced_volume,
                    user_trash_dir,
                    home_fallback,
-                   result,  # type: TrashResult
                    environ,  # type: Environ
                    uid,  # type: int
                    log_data,  # type: LogData
@@ -60,7 +59,7 @@ class FileTrasher:
             if file_has_been_trashed: break
 
         if not file_has_been_trashed:
-            result = result.mark_unable_to_trash_file()
             self.reporter.unable_to_trash_file(path, log_data)
+            return TrashResult.Failure
 
-        return result
+        return TrashResult.Success
