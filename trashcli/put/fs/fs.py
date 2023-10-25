@@ -1,3 +1,4 @@
+import os
 from abc import abstractmethod
 from trashcli.compat import Protocol
 
@@ -72,3 +73,7 @@ class Fs(RealPathFs, Protocol):
     @abstractmethod
     def walk_no_follow(self, top):
         raise NotImplementedError
+
+    def parent_realpath2(self, path):
+        parent = os.path.dirname(path)
+        return self.realpath(parent)

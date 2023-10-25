@@ -7,7 +7,7 @@ from trashcli.lib.trash_dirs import (
     volume_trash_dir1, volume_trash_dir2, home_trash_dir)
 from trashcli.put.candidate import Candidate
 from trashcli.put.gate import SameVolumeGate, HomeFallbackGate
-from trashcli.put.path_maker import AbsolutePaths, RelativePaths
+from trashcli.put.core.path_maker_type import PathMakerType
 from trashcli.put.security_check import NoCheck, TopTrashDirCheck
 
 
@@ -30,7 +30,7 @@ class TrashDirectoriesFinder:
             trash_dirs.append(
                 Candidate(trash_dir_path=path,
                           volume=volume,
-                          path_maker_type=AbsolutePaths,
+                          path_maker_type=PathMakerType.AbsolutePaths,
                           check_type=NoCheck,
                           gate=gate))
 
@@ -38,7 +38,7 @@ class TrashDirectoriesFinder:
             trash_dirs.append(
                 Candidate(trash_dir_path=path,
                           volume=volume,
-                          path_maker_type=RelativePaths,
+                          path_maker_type=PathMakerType.RelativePaths,
                           check_type=TopTrashDirCheck,
                           gate=SameVolumeGate))
 
@@ -46,7 +46,7 @@ class TrashDirectoriesFinder:
             trash_dirs.append(
                 Candidate(trash_dir_path=path,
                           volume=volume,
-                          path_maker_type=RelativePaths,
+                          path_maker_type=PathMakerType.RelativePaths,
                           check_type=NoCheck,
                           gate=SameVolumeGate))
 
@@ -56,7 +56,7 @@ class TrashDirectoriesFinder:
             trash_dirs.append(
                 Candidate(trash_dir_path=path,
                           volume=volume,
-                          path_maker_type=RelativePaths,
+                          path_maker_type=PathMakerType.RelativePaths,
                           check_type=NoCheck,
                           gate=SameVolumeGate))
         else:

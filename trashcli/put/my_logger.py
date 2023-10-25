@@ -1,5 +1,3 @@
-from io import StringIO
-
 from typing import IO, Callable, List
 
 

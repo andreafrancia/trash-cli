@@ -4,7 +4,7 @@ import re
 from typing import NamedTuple, Type
 
 from trashcli.put.gate import Gate
-from trashcli.put.path_maker import PathMakerType
+from trashcli.put.core.path_maker_type import PathMakerType
 from trashcli.put.security_check import CheckType
 
 

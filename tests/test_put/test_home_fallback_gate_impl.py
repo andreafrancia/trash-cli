@@ -1,14 +1,12 @@
-import os
 import unittest
-from pprint import pprint
 
-from .support.fake_fs.fake_fs import FakeFs
 from trashcli.put.candidate import Candidate
 from trashcli.put.gate import HomeFallbackGate
 from trashcli.put.gate_impl import HomeFallbackGateImpl, GateCheckResult
-from trashcli.put.path_maker import AbsolutePaths
+from trashcli.put.core.path_maker_type import PathMakerType
 from trashcli.put.security_check import NoCheck
 from trashcli.put.trashee import Trashee
+from .support.fake_fs.fake_fs import FakeFs
 
 
 class TestHomeFallbackGateImpl(unittest.TestCase):
@@ -41,7 +39,7 @@ class TestHomeFallbackGateImpl(unittest.TestCase):
 
 
 def make_candidate(path):
-    return Candidate(path, '/disk2', AbsolutePaths, NoCheck,
+    return Candidate(path, '/disk2', PathMakerType.AbsolutePaths, NoCheck,
                      HomeFallbackGate)
 
 

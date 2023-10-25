@@ -1,6 +1,6 @@
 import unittest
 
-from trashcli.put.gate_impl import GateCheckResult
+from trashcli.put.trashing_checker import GateCheckResult
 
 
 class TestGateCheckResult(unittest.TestCase):

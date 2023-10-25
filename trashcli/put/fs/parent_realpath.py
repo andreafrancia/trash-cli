@@ -1,7 +1,7 @@
 import os
 
 
-class ParentRealpath:
+class ParentRealpathFs:
     def __init__(self, fs):
         self.fs = fs
 

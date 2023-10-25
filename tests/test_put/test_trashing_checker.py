@@ -1,16 +1,11 @@
-import unittest
-
-import flexmock
 from typing import cast
 
-from .support.fake_fs.fake_fs import FakeFs
+from trashcli.fstab.volumes import FakeVolumes
 from trashcli.put.candidate import Candidate
-from trashcli.put.gate import SameVolumeGate, ClosedGate, HomeFallbackGate
-from trashcli.put.gate_impl import ClosedGateImpl, HomeFallbackGateImpl, \
-    SameVolumeGateImpl
-from trashcli.put.trash_dir_volume_reader import TrashDirVolumeReader
+from trashcli.put.gate import SameVolumeGate, HomeFallbackGate
 from trashcli.put.trashee import Trashee
-from trashcli.put.trashing_checker import TrashingChecker
+from trashcli.put.trashing_checker import TrashDirChecker
+from .support.fake_fs.fake_fs import FakeFs
 
 
 class Value:
@@ -22,53 +17,47 @@ def mock_value(type, **kwargs):
     return cast(type, Value(kwargs))
 
 
-class TestTrashingChecker(unittest.TestCase):
-    def setUp(self):
+class TestTrashingChecker:
+    def setup_method(self):
         self.fs = FakeFs()
-        self.trash_dir_volume = flexmock.Mock()
-        self.checker = TrashingChecker(
-            {
-                ClosedGate: ClosedGateImpl(),
-                HomeFallbackGate: HomeFallbackGateImpl(self.fs),
-                SameVolumeGate: SameVolumeGateImpl(
-                    cast(TrashDirVolumeReader, self.trash_dir_volume)),
-            })
+        self.volumes = FakeVolumes(["/"])
+        self.checker = TrashDirChecker(self.fs, self.volumes)
 
     def test_trashing_checker_same(self):
-        self.trash_dir_volume.should_receive('volume_of_trash_dir') \
-            .with_args('trash-dir-path').and_return('/volume1')
+        self.volumes.add_volume('/volume1')
 
         result = self.checker.file_could_be_trashed_in(
             Trashee('/path1', '/volume1'),
-            make_candidate('trash-dir-path', SameVolumeGate, '/disk1'),
+            make_candidate('/volume1/trash-dir', SameVolumeGate),
             {})
 
         assert result.ok is True
 
     def test_home_in_same_volume(self):
+
         result = self.checker.file_could_be_trashed_in(
             Trashee('/path1', '/volume1'),
-            make_candidate('trash-dir-path', HomeFallbackGate, '/disk1'),
+            make_candidate('/home-vol/trash-dir', HomeFallbackGate),
             {})
 
         assert result.ok is False
 
     def test_trashing_checker_different(self):
-        self.trash_dir_volume.should_receive('volume_of_trash_dir') \
-            .with_args('trash-dir-path').and_return('/volume2')
+        self.volumes.add_volume("/vol1")
+        self.volumes.add_volume("/vol2")
 
         result = self.checker.file_could_be_trashed_in(
-            Trashee('/path1', '/volume1'),
-            make_candidate('trash-dir-path', SameVolumeGate, '/disk1'),
+            Trashee('/path1', '/vol1'),
+            make_candidate('/vol2/trash-dir-path', SameVolumeGate),
             {})
 
         assert result.ok is False
-        assert result.reason == "won't use trash dir trash-dir-path because its volume (/disk1) in a different volume than /path1 (/volume1)"
+        assert result.reason == "won't use trash dir /vol2/trash-dir-path because its volume (/vol2) in a different volume than /path1 (/vol1)"
 
 
-def make_candidate(trash_dir_path, gate, volume):
+def make_candidate(trash_dir_path, gate):
     return Candidate(trash_dir_path=trash_dir_path,
                      path_maker_type=None,
                      check_type=None,
                      gate=gate,
-                     volume=volume)
+                     volume="ignored")

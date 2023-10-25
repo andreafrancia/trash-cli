@@ -25,15 +25,15 @@ class TrashAll:
                   ):  # (...) -> Result
         failed_paths = []
         for path in paths:
-            result = self.trasher.trash(path,
-                                         user_trash_dir,
-                                         mode,
-                                         forced_volume,
-                                         home_fallback,
-                                         program_name,
-                                         log_data,
-                                         environ,
-                                         uid)
+            result = self.trasher.trash_single(path,
+                                               user_trash_dir,
+                                               mode,
+                                               forced_volume,
+                                               home_fallback,
+                                               program_name,
+                                               log_data,
+                                               environ,
+                                               uid)
             if result == TrashResult.Failure:
                 failed_paths.append(path)
 

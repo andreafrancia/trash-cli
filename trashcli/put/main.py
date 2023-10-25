@@ -11,26 +11,22 @@ from trashcli.put.core.int_generator import IntGenerator
 from trashcli.put.describer import Describer
 from trashcli.put.dir_maker import DirMaker
 from trashcli.put.file_trasher import FileTrasher
-from trashcli.put.fs.parent_realpath import ParentRealpath
+from trashcli.put.fs.fs import Fs
+from trashcli.put.fs.parent_realpath import ParentRealpathFs
 from trashcli.put.fs.real_fs import RealFs
 from trashcli.put.fs.volume_of_parent import VolumeOfParent
-from trashcli.put.gate import ClosedGate, HomeFallbackGate, SameVolumeGate
-from trashcli.put.gate_impl import ClosedGateImpl, HomeFallbackGateImpl, \
-    SameVolumeGateImpl
-from trashcli.put.info_dir import InfoDir
+from trashcli.put.info_dir import PersistingInfoDir, InfoDir2
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.original_location import OriginalLocation
-from trashcli.put.path_maker import PathMaker
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_all import TrashAll
-from trashcli.put.trash_dir_volume_reader import TrashDirVolumeReader
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
-from trashcli.put.trash_file_in import TrashFileIn
+from trashcli.put.trash_file_in import Janitor
 from trashcli.put.trash_put_cmd import TrashPutCmd
 from trashcli.put.trasher import Trasher
-from trashcli.put.trashing_checker import TrashingChecker
+from trashcli.put.trashing_checker import TrashDirChecker
 from trashcli.put.user import User
 
 
@@ -45,7 +41,7 @@ def main():
 
 
 def make_cmd(clock,
-             fs,
+             fs,  # type: Fs
              user_input,  # type: Input
              randint,  # type: IntGenerator
              stderr,
@@ -56,29 +52,21 @@ def make_cmd(clock,
     reporter = TrashPutReporter(logger, describer)
     suffix = Suffix(randint)
     dir_maker = DirMaker(fs)
-    info_dir = InfoDir(fs, logger, suffix)
-    path_maker = PathMaker()
-    parent_realpath = ParentRealpath(fs)
-    original_location = OriginalLocation(parent_realpath, path_maker)
-    trash_dir = TrashDirectoryForPut(fs,
-                                     info_dir,
-                                     original_location,
-                                     clock)
-    trash_dir_volume = TrashDirVolumeReader(volumes, fs)
-    trashing_checker = TrashingChecker({
-        ClosedGate: ClosedGateImpl(),
-        HomeFallbackGate: HomeFallbackGateImpl(fs),
-        SameVolumeGate: SameVolumeGateImpl(trash_dir_volume),
-    })
-    trash_file_in = TrashFileIn(fs,
-                                reporter,
-                                trash_dir,
-                                trashing_checker,
-                                dir_maker)
-    volume_of_parent = VolumeOfParent(volumes, parent_realpath)
+    info_dir = PersistingInfoDir(fs, logger, suffix)
+    original_location = OriginalLocation(fs)
+    info_dir2 = InfoDir2(info_dir, original_location, clock)
+    trash_dir = TrashDirectoryForPut(fs, info_dir2)
+    trashing_checker = TrashDirChecker(fs, volumes)
+    trash_file_in = Janitor(fs,
+                            reporter,
+                            trash_dir,
+                            trashing_checker,
+                            dir_maker,
+                            info_dir2)
+    volume_of_parent = VolumeOfParent(volumes, ParentRealpathFs(fs))
     file_trasher = FileTrasher(volumes,
                                TrashDirectoriesFinder(volumes),
-                               parent_realpath,
+                               ParentRealpathFs(fs),
                                logger,
                                reporter,
                                trash_file_in,

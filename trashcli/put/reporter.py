@@ -4,9 +4,10 @@ import re
 from pwd import getpwuid
 
 from grp import getgrgid
-from typing import List
+from typing import List, NamedTuple
 
 from trashcli.put.candidate import Candidate
+from trashcli.put.core.failure_reason import FailureReason, Level, LogContext
 from trashcli.put.core.trash_all_result import TrashAllResult
 from trashcli.put.describer import Describer
 from trashcli.put.my_logger import MyLogger, LogData
@@ -21,16 +22,16 @@ class TrashPutReporter:
         self.logger = logger
         self.describer = describer
 
-    def describe(self, path):
+    def _describe(self, path):
         return self.describer.describe(path)
 
     def unable_to_trash_dot_entries(self, file, program_name):
         self.logger.warning2(
-            "cannot trash %s '%s'" % (self.describe(file), file),
+            "cannot trash %s '%s'" % (self._describe(file), file),
             program_name)
 
     def unable_to_trash_file(self, f, log_data):
-        self.logger.warning2("cannot trash %s '%s'" % (self.describe(f), f),
+        self.logger.warning2("cannot trash %s '%s'" % (self._describe(f), f),
                              log_data.program_name)
 
     def file_has_been_trashed_in_as(self,
@@ -42,25 +43,12 @@ class TrashPutReporter:
         self.logger.info("'%s' trashed in %s" % (trashed_file, trash_dir_path),
                          log_data)
 
-    def trash_dir_is_not_secure(self,
-                                path,
-                                log_data,  # type: LogData
-                                ):
-        self.logger.info("trash directory is not secure: %s" % path,
-                         log_data)
-
     def log_info_messages(self,
                           messages,  # type: List[str]
                           log_data,  # type: LogData
                           ):
         for message in messages:
             self.logger.info(message, log_data)
-
-    def log_info(self,
-                 message,
-                 log_data,  # type: LogData
-                 ):
-        self.logger.info(message, log_data)
 
     def unable_to_trash_file_in_because(self,
                                         file_to_be_trashed,
@@ -98,7 +86,7 @@ class TrashPutReporter:
 
     def exit_code(self,
                   result,  # type: TrashAllResult
-                  ): # type: (...) -> int
+                  ):  # type: (...) -> int
         if not result.any_failure():
             return EX_OK
         else:
@@ -106,6 +94,23 @@ class TrashPutReporter:
 
     def volume_of_file(self, volume, log_data):
         self.logger.info("volume of file: %s" % volume, log_data)
+
+    def report_reason(self,
+                      reason,  # type: FailureReason
+                      log_data,  # type: LogData
+                      environ,  # type: Environ
+                      trashee,  # type: Trashee
+                      candidate,  # type: Candidate
+                      ):  # type: (...) -> None
+        for entry in reason.log_entries(
+            LogContext(trashee.path,
+                       candidate.shrink_user(environ),
+                       )
+        ):
+            if entry.level == Level.INFO:
+                self.logger.info(entry.message, log_data)
+            else:
+                raise ValueError("unknown level: %s" % entry.level)
 
 
 def gentle_stat_read(path):

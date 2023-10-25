@@ -64,6 +64,8 @@ class FakeFs(Fs, PathExists):
         return path.split('/')[1:]
 
     def atomic_write(self, path, content):
+        if self.exists(path):
+            raise OSError("already exists: %s" % path)
         self.make_file(path, content)
 
     def read(self, path):

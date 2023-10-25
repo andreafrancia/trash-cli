@@ -3,14 +3,15 @@ import unittest
 
 import pytest
 
-from trashcli.put.fs.parent_realpath import ParentRealpath
+from trashcli.put.fs.parent_realpath import ParentRealpathFs
 from trashcli.put.fs.real_fs import RealFs
 from ..support.files import make_empty_file, require_empty_dir
 from ..support.my_path import MyPath
 
 
 def parent_path(path):
-    return ParentRealpath(RealFs()).parent_realpath(path)
+    return ParentRealpathFs(RealFs()).parent_realpath(path)
+
 
 @pytest.mark.slow
 class Test_parent_path(unittest.TestCase):
@@ -21,7 +22,8 @@ class Test_parent_path(unittest.TestCase):
         require_empty_dir(self.tmp_dir / 'other_dir/dir')
         os.symlink(self.tmp_dir / 'other_dir/dir', self.tmp_dir / 'dir')
         make_empty_file(self.tmp_dir / 'dir/foo')
-        assert (self.tmp_dir / 'other_dir/dir' == parent_path(self.tmp_dir / 'dir/foo'))
+        assert (self.tmp_dir / 'other_dir/dir' == parent_path(
+            self.tmp_dir / 'dir/foo'))
 
     def test2(self):
         require_empty_dir(self.tmp_dir / 'test-disk/dir')
@@ -43,7 +45,7 @@ class Test_parent_path(unittest.TestCase):
         os.symlink('../bar/zap', self.tmp_dir / 'foo/zap')
         make_empty_file(self.tmp_dir / 'bar/zap')
         assert parent_path(self.tmp_dir / 'foo/zap') == \
-               os.path.join(self.tmp_dir,'foo')
+               os.path.join(self.tmp_dir, 'foo')
 
     def tearDown(self):
         self.tmp_dir.clean_up()

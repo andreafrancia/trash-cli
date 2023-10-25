@@ -20,7 +20,7 @@ class TestPut:
     def setup_method(self):
         self.fs = FailingFakeFs()
         self.user_input = HardCodedInput('y')
-        self.randint = FakeRandomInt(1492)
+        self.randint = FakeRandomInt([])
         self.is_mount = FakeIsMount(['/'])
         self.volumes = VolumeOfImpl(self.is_mount, os.path.normpath)
         self.stderr = StringIO()
@@ -49,12 +49,27 @@ class TestPut:
 
         assert self.fs.ls_aa('/.Trash-123/files') == ['foo_123']
 
+    def test_when_a_trashinfo_file_already_exists(self):
+        def touch_and_trash(path):
+            self.fs.touch(path)
+            self.run_cmd(['trash-put', path])
+
+        touch_and_trash("/foo")
+        touch_and_trash("/foo")
+        touch_and_trash("/foo")
+
+        assert self.fs.ls_aa('/.Trash-123/info') == [
+            'foo.trashinfo',
+            'foo_1.trashinfo',
+            'foo_2.trashinfo'
+        ]
+
     def test_should_not_trash_dot_entry(self):
         result = self.run_cmd(['trash-put', '.'])
 
         assert result.all() == [
             EX_IOERR,
-                ["trash-put: cannot trash directory '.'"]]
+            ["trash-put: cannot trash directory '.'"]]
 
     def test_should_not_trash_dot_dot_entry(self):
         result = self.run_cmd(['trash-put', '..'])
@@ -71,9 +86,9 @@ class TestPut:
 
         assert result.all() + [self.user_input.last_prompt(),
                                self.fs.ls_existing(["foo"])] == [
-            EX_OK, [], "trash-put: trash regular empty file 'foo'? ",
-            ['foo'],
-        ]
+                   EX_OK, [], "trash-put: trash regular empty file 'foo'? ",
+                   ['foo'],
+               ]
 
     def test_user_reply_yes(self):
         self.fs.touch("foo")
@@ -83,9 +98,9 @@ class TestPut:
 
         assert result.all() + [self.user_input.last_prompt(),
                                self.fs.ls_existing(["foo"])] == [
-            EX_OK, [], "trash-put: trash regular empty file 'foo'? ",
-            []
-        ]
+                   EX_OK, [], "trash-put: trash regular empty file 'foo'? ",
+                   []
+               ]
 
     def test_when_file_does_not_exist(self):
         result = self.run_cmd(['trash-put', 'non-existent'],
@@ -172,6 +187,24 @@ class TestPut:
                              'trash-put: trying trash dir: /home/user/.local/share/Trash from volume: /',
                              "trash-put: trash dir not enabled: ~/.local/share/Trash",
                              "trash-put: cannot trash regular empty file '/disk1/pippo'"]
+
+    def test_when_it_fails_to_prepare_trash_info_data(self):
+        flexmock.flexmock(self.fs).should_receive('parent_realpath2'). \
+            and_raise(IOError, 'Corruption')
+        self.fs.make_file("foo")
+
+        result = self.run_cmd(['trash-put', '-vvv', 'foo'],
+                              {"HOME": "/home/user"}, 123)
+        assert result.all() == [
+            EX_IOERR,
+            ['trash-put: volume of file: /',
+             'trash-put: trying trash dir: /home/user/.local/share/Trash from volume: /',
+             'trash-put: failed to trash foo in ~/.local/share/Trash, because: Corruption',
+             'trash-put: found unusable .Trash dir (should be a dir): /.Trash',
+             'trash-put: trash directory is not secure: /.Trash/123',
+             'trash-put: trying trash dir: /.Trash-123 from volume: /',
+             'trash-put: failed to trash foo in /.Trash-123, because: Corruption',
+             "trash-put: cannot trash regular empty file 'foo'"]]
 
     def test_make_file(self):
         self.fs.make_file("pippo", 'content')

@@ -22,17 +22,17 @@ class Trasher:
         self.reporter = reporter
         self.fs = fs
 
-    def trash(self,
-              path,
-              user_trash_dir,
-              mode,
-              forced_volume,
-              home_fallback,
-              program_name,
-              log_data,  # type: LogData
-              environ,  # type: Environ
-              uid,  # type: int
-              ):
+    def trash_single(self,
+                     path,
+                     user_trash_dir,
+                     mode,
+                     forced_volume,
+                     home_fallback,
+                     program_name,
+                     log_data,  # type: LogData
+                     environ,  # type: Environ
+                     uid,  # type: int
+                     ):
         """
         Trash a file in the appropriate trash directory.
         If the file belong to the same volume of the trash home directory it

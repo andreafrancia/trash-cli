@@ -1,14 +1,16 @@
+from typing import List
+
 from trashcli.put.core.int_generator import IntGenerator
 
 
 class FakeRandomInt(IntGenerator):
     def __init__(self,
-                 value,  # int
+                 values,  # type: List[int]
                  ):
-        self.value = value
+        self.values = values
 
     def new_int(self, _a, _b):
-        return self.value
+        return self.values.pop(0)
 
     def set_reply(self, value):
-        self.value = value
+        self.values = [value]
