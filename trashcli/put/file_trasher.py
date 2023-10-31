@@ -47,6 +47,7 @@ class FileTrasher:
         self.reporter.volume_of_file(volume, log_data)
         file_has_been_trashed = False
         for candidate in candidates:
+            self.reporter.trash_dir_with_volume(candidate, log_data)
             file_has_been_trashed, log = self.janitor.trash_file_in(candidate,
                                                                     log_data,
                                                                     environ,

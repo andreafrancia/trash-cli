@@ -1,7 +1,7 @@
 import errno
 import os
 
-from typing import Optional, NamedTuple, Tuple
+from typing import Iterator, Optional, NamedTuple, Tuple
 
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.put.candidate import Candidate
@@ -23,7 +23,7 @@ class TrashinfoData(NamedTuple('TrashinfoData', [
     pass
 
 
-class TrashedFile(NamedTuple('Paths', [
+class TrashedFile(NamedTuple('TrashedFile', [
     ('trashinfo_path', str),
 ])):
     @property
@@ -41,19 +41,20 @@ class PersistingInfoDir:
         self.logger = logger
         self.suffix = suffix
 
-    def persist_trash_info(self,
-                           data,  # type: TrashinfoData
-                           ):
-        """
-        Create a .trashinfo file in the $trash/info directory.
-        returns the created TrashInfoFile.
-        """
+    def create_trashinfo_file(self,
+                              trashinfo_data,  # type: TrashinfoData
+                              ):  # type: (...) -> TrashedFile
+        for _index, result in self.try_persist(trashinfo_data):
+            if result is not None:
+                return result
+        raise ValueError("Should not happen!")
 
-        index = -1
+    def try_persist(self,
+                    data,  # type: TrashinfoData
+                    ):  # type: (...) -> Iterator[Tuple[int, Optional[TrashedFile]]]
+        index = 0
         name_too_long = False
         while True:
-            index += 1
-
             suffix = self.suffix.suffix_for_index(index)
             trashinfo_basename = create_trashinfo_basename(data.basename,
                                                            suffix,
@@ -66,13 +67,16 @@ class PersistingInfoDir:
                 self.fs.atomic_write(trashinfo_path, data.content)
                 self.logger.debug(".trashinfo created as %s." % trashinfo_path,
                                   data.log_data)
-                return TrashedFile(trashinfo_path)
+                yield index, TrashedFile(trashinfo_path)
             except OSError as e:
                 if e.errno == errno.ENAMETOOLONG:
                     name_too_long = True
                 self.logger.debug(
                     "attempt for creating %s failed." % trashinfo_path,
                     data.log_data)
+                yield index, None
+
+            index += 1
 
 
 class InfoDir2:
@@ -84,15 +88,6 @@ class InfoDir2:
         self.persister = persister
         self.original_location = original_location
         self.clock = clock
-
-    def create_trashinfo_file(self,
-                              trashinfo_data, # type: TrashinfoData
-                              ):  # type: (...) -> Tuple[bool, Optional[TrashedFile], Optional[Exception]]
-        try:
-            trashed_file = self.persister.persist_trash_info(trashinfo_data)
-            return True, trashed_file, None
-        except (IOError, OSError) as error:
-            return False, None, error
 
     def make_trashinfo_data(self,
                             path,  # type: str

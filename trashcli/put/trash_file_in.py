@@ -7,6 +7,7 @@ from trashcli.put.core.failure_reason import FailureReason, LogEntry, Level, \
 from trashcli.put.dir_maker import DirMaker
 from trashcli.put.fs.fs import Fs
 from trashcli.put.info_dir import InfoDir2
+from trashcli.put.info_dir import PersistingInfoDir
 from trashcli.put.my_logger import LogData
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.security_check import SecurityCheck
@@ -20,14 +21,6 @@ class NoLog(FailureReason):
         return []
 
 
-class TrashDirIsNotSecure(NamedTuple('TrashDirIsNotSecure', [
-    ('trash_dir', Candidate),
-]), FailureReason):
-    def log_entries(self, context):  # type: (LogContext) -> List[LogEntry]
-        return [LogEntry(Level.INFO,
-                         "trash directory is not secure: %s" % self.trash_dir.norm_path())]
-
-
 class TrashDirCannotBeUsed(NamedTuple('TrashDirCannotBeUsed', [
     ('reason', str),
 ]), FailureReason):
@@ -36,6 +29,19 @@ class TrashDirCannotBeUsed(NamedTuple('TrashDirCannotBeUsed', [
 
 
 class UnableToGetParentVolume(NamedTuple('UnableToCreateTrashInfo', [
+    ('error', Exception),
+]), FailureReason):
+    def log_entries(self, context):
+        return [
+            LogEntry(Level.INFO,
+                     "failed to trash %s in %s, because: %s" % (
+                         context.trashee_path,
+                         context.shrunk_candidate_path,
+                         self.error)),
+        ]
+
+
+class UnableToMoveFileToTrash(NamedTuple('UnableToMoveFileToTrash', [
     ('error', Exception),
 ]), FailureReason):
     def log_entries(self, context):
@@ -99,6 +105,7 @@ class Janitor:
                  trashing_checker,  # type: TrashDirChecker
                  dir_maker,  # type: DirMaker
                  info_dir,  # type: InfoDir2
+                 persister,  # type: PersistingInfoDir
                  ):
         self.reporter = reporter
         self.trash_dir = trash_dir
@@ -106,6 +113,7 @@ class Janitor:
         self.trashing_checker = trashing_checker
         self.info_dir = info_dir
         self.security_check = SecurityCheck(fs)
+        self.persister = persister
 
     def trash_file_in(self,
                       candidate,  # type: Candidate
@@ -113,13 +121,10 @@ class Janitor:
                       environ,  # type: Environ
                       trashee,  # type: Trashee
                       ):  # type: (...) -> Tuple[bool, FailureReason]
-        trash_dir_is_secure, messages = self.security_check. \
-            check_trash_dir_is_secure(candidate)
-        self.reporter.log_info_messages(messages, log_data)
+        secure = self.security_check.check_trash_dir_is_secure(candidate)
 
-        if not trash_dir_is_secure:
-            return False, TrashDirIsNotSecure(candidate)
-        self.reporter.trash_dir_with_volume(candidate, log_data)
+        if secure.is_error():
+            return False, secure.error()
 
         ok, reason = self.trashing_checker.file_could_be_trashed_in(
             trashee, candidate, environ)
@@ -136,21 +141,11 @@ class Janitor:
         if not ok_data:
             return False, UnableToCreateTrashInfoContent(error)
 
-        trashinfo_ok, paths, error = self.info_dir.create_trashinfo_file(
-            trashinfo_data)
-        if not trashinfo_ok:
-            # TODO: use a specific Log class
-            self.reporter.unable_to_trash_file_in_because(
-                trashee.path, candidate, error, log_data,
-                environ)
-            return False, NoLog()
+        trashed_file = self.persister.create_trashinfo_file(trashinfo_data)
+        error = self.trash_dir.try_trash(trashee.path, trashed_file)
 
-        error = self.trash_dir.try_trash(trashee.path, paths)
         if error:
-            self.reporter.unable_to_trash_file_in_because(
-                trashee.path, candidate, error, log_data,
-                environ)
-            return False, NoLog()
+            return False, UnableToMoveFileToTrash(error)
 
         return True, NoLog()
 

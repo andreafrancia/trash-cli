@@ -9,9 +9,9 @@ from tests.test_put.support.dummy_clock import FixedClock, jan_1st_2024
 from tests.test_put.support.fake_fs.failing_fake_fs import FailingFakeFs
 from tests.test_put.support.fake_random import FakeRandomInt
 from trashcli.fstab.volume_of import VolumeOfImpl
+from trashcli.lib.environ import Environ
 from trashcli.lib.exit_codes import EX_OK, EX_IOERR
 from trashcli.lib.my_input import HardCodedInput
-from trashcli.lib.environ import Environ
 from trashcli.put.main import make_cmd
 from trashcli.put.parser import ensure_int
 
@@ -63,6 +63,22 @@ class TestPut:
             'foo_1.trashinfo',
             'foo_2.trashinfo'
         ]
+
+    def test_when_moving_file_in_trash_dir_fails(self):
+        self.fs.touch("foo")
+        self.fs.fail_move_on("/foo")
+
+        result = self.run_cmd(['trash-put', '-vvv', '/foo'])
+
+        assert result.all() == [EX_IOERR, [
+            'trash-put: volume of file: /',
+            'trash-put: trying trash dir: /.Trash/123 from volume: /',
+            'trash-put: found unusable .Trash dir (should be a dir): /.Trash',
+            'trash-put: trash directory is not secure: /.Trash/123',
+            'trash-put: trying trash dir: /.Trash-123 from volume: /',
+            'trash-put: .trashinfo created as /.Trash-123/info/foo.trashinfo.',
+            'trash-put: failed to trash /foo in /.Trash-123, because: move failed',
+            "trash-put: cannot trash regular empty file '/foo'"]]
 
     def test_should_not_trash_dot_entry(self):
         result = self.run_cmd(['trash-put', '.'])
@@ -159,6 +175,7 @@ class TestPut:
             EX_IOERR,
             [
                 'trash-put: volume of file: /',
+                'trash-put: trying trash dir: /.Trash/123 from volume: /',
                 'trash-put: found unusable .Trash dir (should be a dir): /.Trash',
                 'trash-put: trash directory is not secure: /.Trash/123',
                 'trash-put: trying trash dir: /.Trash-123 from volume: /',
@@ -180,6 +197,7 @@ class TestPut:
         assert result[0] == ['trash-put: volume of file: /disk1',
                              'trash-put: trying trash dir: /home/user/.local/share/Trash from volume: /',
                              "trash-put: won't use trash dir ~/.local/share/Trash because its volume (/) in a different volume than /disk1/pippo (/disk1)",
+                             'trash-put: trying trash dir: /disk1/.Trash/123 from volume: /disk1',
                              'trash-put: found unusable .Trash dir (should be a dir): /disk1/.Trash',
                              'trash-put: trash directory is not secure: /disk1/.Trash/123',
                              'trash-put: trying trash dir: /disk1/.Trash-123 from volume: /disk1',
@@ -200,6 +218,7 @@ class TestPut:
             ['trash-put: volume of file: /',
              'trash-put: trying trash dir: /home/user/.local/share/Trash from volume: /',
              'trash-put: failed to trash foo in ~/.local/share/Trash, because: Corruption',
+             'trash-put: trying trash dir: /.Trash/123 from volume: /',
              'trash-put: found unusable .Trash dir (should be a dir): /.Trash',
              'trash-put: trash directory is not secure: /.Trash/123',
              'trash-put: trying trash dir: /.Trash-123 from volume: /',

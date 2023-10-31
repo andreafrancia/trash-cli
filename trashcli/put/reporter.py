@@ -5,6 +5,7 @@ from pwd import getpwuid
 
 from grp import getgrgid
 from typing import List, NamedTuple
+from trashcli.lib.environ import Environ
 
 from trashcli.put.candidate import Candidate
 from trashcli.put.core.failure_reason import FailureReason, Level, LogContext
@@ -12,6 +13,7 @@ from trashcli.put.core.trash_all_result import TrashAllResult
 from trashcli.put.describer import Describer
 from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.lib.exit_codes import EX_OK, EX_IOERR
+from trashcli.put.trashee import Trashee
 
 
 class TrashPutReporter:
@@ -49,18 +51,6 @@ class TrashPutReporter:
                           ):
         for message in messages:
             self.logger.info(message, log_data)
-
-    def unable_to_trash_file_in_because(self,
-                                        file_to_be_trashed,
-                                        trash_dir,  # type: Candidate
-                                        error,
-                                        log_data,  # type: LogData
-                                        environ):
-        self.logger.info("failed to trash %s in %s, because: %s" % (
-            file_to_be_trashed, trash_dir.shrink_user(environ), error),
-                         log_data)
-        self.logger.debug_func_result(
-            lambda: self.log_data_for_debugging(error), log_data)
 
     @classmethod
     def log_data_for_debugging(cls, error):

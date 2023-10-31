@@ -3,16 +3,17 @@ import posixpath
 import re
 from typing import NamedTuple, Type
 
+from trashcli.put.core.check_type import CheckType
 from trashcli.put.gate import Gate
 from trashcli.put.core.path_maker_type import PathMakerType
-from trashcli.put.security_check import CheckType
+
 
 
 class Candidate(NamedTuple('Candidate', [
     ('trash_dir_path', str),
     ('volume', str),
     ('path_maker_type', PathMakerType),
-    ('check_type', Type[CheckType]),
+    ('check_type', CheckType),
     ('gate', Gate),
 ])):
     def info_dir(self):

@@ -52,9 +52,9 @@ def make_cmd(clock,
     reporter = TrashPutReporter(logger, describer)
     suffix = Suffix(randint)
     dir_maker = DirMaker(fs)
-    info_dir = PersistingInfoDir(fs, logger, suffix)
+    persister = PersistingInfoDir(fs, logger, suffix)
     original_location = OriginalLocation(fs)
-    info_dir2 = InfoDir2(info_dir, original_location, clock)
+    info_dir2 = InfoDir2(persister, original_location, clock)
     trash_dir = TrashDirectoryForPut(fs, info_dir2)
     trashing_checker = TrashDirChecker(fs, volumes)
     trash_file_in = Janitor(fs,
@@ -62,7 +62,8 @@ def make_cmd(clock,
                             trash_dir,
                             trashing_checker,
                             dir_maker,
-                            info_dir2)
+                            info_dir2,
+                            persister)
     volume_of_parent = VolumeOfParent(volumes, ParentRealpathFs(fs))
     file_trasher = FileTrasher(volumes,
                                TrashDirectoriesFinder(volumes),

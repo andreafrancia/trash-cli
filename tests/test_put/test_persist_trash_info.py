@@ -45,4 +45,6 @@ class Test_persist_trash_info(unittest.TestCase):
     def _persist_trash_info(self, basename, content):
         log_data = LogData('trash-cli', 2)
         data = TrashinfoData(basename, content, log_data, self.path)
-        return self.info_dir.persist_trash_info(data).trashinfo_path
+        for index, result in self.info_dir.try_persist(data):
+            if result is not None:
+                return result.trashinfo_path
