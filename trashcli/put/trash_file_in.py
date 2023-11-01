@@ -2,6 +2,8 @@ from typing import Tuple, NamedTuple, List
 
 from trashcli.lib.environ import Environ
 from trashcli.put.candidate import Candidate
+from trashcli.put.core.either import Either
+from trashcli.put.core.either import Right, Left
 from trashcli.put.core.failure_reason import FailureReason, LogEntry, Level, \
     LogContext
 from trashcli.put.dir_maker import DirMaker
@@ -19,13 +21,6 @@ from trashcli.put.trashing_checker import TrashDirChecker
 class NoLog(FailureReason):
     def log_entries(self, context):  # type: (LogContext) -> List[LogEntry]
         return []
-
-
-class TrashDirCannotBeUsed(NamedTuple('TrashDirCannotBeUsed', [
-    ('reason', str),
-]), FailureReason):
-    def log_entries(self, context):  # type: (LogContext) -> List[LogEntry]
-        return [LogEntry(Level.INFO, self.reason)]
 
 
 class UnableToGetParentVolume(NamedTuple('UnableToCreateTrashInfo', [
@@ -60,20 +55,6 @@ class TrashDirCannotBeCreated(
     ]), FailureReason):
     def log_entries(self,
                     context):  # type: (LogContext) -> List[LogEntry]
-        return [
-            LogEntry(Level.INFO,
-                     "failed to trash %s in %s, because: %s" % (
-                         context.trashee_path,
-                         context.shrunk_candidate_path,
-                         self.error)),
-        ]
-
-
-class UnableToCreateTrashInfoContent(
-    NamedTuple('UnableToCreateTrashInfoContent', [
-        ('error', Exception),
-    ]), FailureReason):
-    def log_entries(self, context):
         return [
             LogEntry(Level.INFO,
                      "failed to trash %s in %s, because: %s" % (
@@ -126,22 +107,22 @@ class Janitor:
         if secure.is_error():
             return False, secure.error()
 
-        ok, reason = self.trashing_checker.file_could_be_trashed_in(
+        can_be_used = self.trashing_checker.file_could_be_trashed_in(
             trashee, candidate, environ)
-        if not ok:
-            return False, TrashDirCannotBeUsed(reason)
-        ok, error = self._make_candidate_dirs(candidate)
-        if not ok:
-            return False, TrashDirCannotBeCreated(error)
+        if can_be_used.is_error():
+            return False, can_be_used.error()
 
-        ok_data, trashinfo_data, error = self.info_dir.make_trashinfo_data(
-            trashee.path,
-            candidate,
-            log_data)
-        if not ok_data:
-            return False, UnableToCreateTrashInfoContent(error)
+        dirs_creation = self._make_candidate_dirs(candidate)
+        if dirs_creation.is_error():
+            return False, dirs_creation.error()
 
-        trashed_file = self.persister.create_trashinfo_file(trashinfo_data)
+        trashinfo_data = self.info_dir.make_trashinfo_data(trashee.path,
+                                                           candidate,
+                                                           log_data)
+        if trashinfo_data.is_error():
+            return False, trashinfo_data.error()
+
+        trashed_file = self.persister.create_trashinfo_file(trashinfo_data.value())
         error = self.trash_dir.try_trash(trashee.path, trashed_file)
 
         if error:
@@ -149,11 +130,12 @@ class Janitor:
 
         return True, NoLog()
 
-    def _make_candidate_dirs(self, candidate):
+    def _make_candidate_dirs(self,
+                             candidate):  # type: (Candidate) -> Either[None, TrashDirCannotBeCreated]
         try:
             self.dir_maker.mkdir_p(candidate.trash_dir_path, 0o700)
             self.dir_maker.mkdir_p(candidate.files_dir(), 0o700)
             self.dir_maker.mkdir_p(candidate.info_dir(), 0o700)
-            return True, None
+            return Right(None)
         except (IOError, OSError) as error:
-            return False, error
+            return Left(TrashDirCannotBeCreated(error))

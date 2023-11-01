@@ -1,20 +1,9 @@
-from typing import Union, Type
-
-import six
-
-from trashcli.put.class_name_meta import ClassNameMeta
-
-@six.add_metaclass(ClassNameMeta)
-class HomeFallbackGate:
-    pass
+from enum import Enum
 
 
-@six.add_metaclass(ClassNameMeta)
-class SameVolumeGate:
-    pass
+class Gate(Enum):
+    HomeFallback = "HomeFallbackGate"
+    SameVolume = "SameVolumeGate"
 
-
-Gate = Union[
-    Type[HomeFallbackGate],
-    Type[SameVolumeGate],
-]
+    def __repr__(self):
+        return "%s.%s" % (type(self).__name__, self.name)

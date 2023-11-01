@@ -1,11 +1,12 @@
 import errno
 import os
-
 from typing import Iterator, Optional, NamedTuple, Tuple
 
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.put.candidate import Candidate
 from trashcli.put.clock import PutClock
+from trashcli.put.core.either import Either, Right, Left
+from trashcli.put.core.failure_reason import FailureReason, LogEntry, Level
 from trashcli.put.format_trash_info import format_trashinfo
 from trashcli.put.fs.fs import Fs
 from trashcli.put.my_logger import LogData
@@ -79,6 +80,20 @@ class PersistingInfoDir:
             index += 1
 
 
+class UnableToCreateTrashInfoContent(
+    NamedTuple('UnableToCreateTrashInfoContent', [
+        ('error', Exception),
+    ]), FailureReason):
+    def log_entries(self, context):
+        return [
+            LogEntry(Level.INFO,
+                     "failed to trash %s in %s, because: %s" % (
+                         context.trashee_path,
+                         context.shrunk_candidate_path,
+                         self.error)),
+        ]
+
+
 class InfoDir2:
     def __init__(self,
                  persister,  # type: PersistingInfoDir
@@ -89,11 +104,13 @@ class InfoDir2:
         self.original_location = original_location
         self.clock = clock
 
+    Result = Either[TrashinfoData, UnableToCreateTrashInfoContent]
+
     def make_trashinfo_data(self,
                             path,  # type: str
                             candidate,  # type: Candidate
                             log_data,  # type: LogData
-                            ):  # type: (...) -> Tuple[bool, Optional[TrashinfoData], Optional[Exception]]
+                            ):  # type: (...) -> Result
         try:
             original_location = self.original_location.for_file(path,
                                                                 candidate.path_maker_type,
@@ -102,9 +119,9 @@ class InfoDir2:
             basename = os.path.basename(original_location)
             trash_info_data = TrashinfoData(basename, content, log_data,
                                             candidate.info_dir())
-            return True, trash_info_data, None
+            return Right(trash_info_data)
         except (IOError, OSError) as error:
-            return False, None, error
+            return Left(UnableToCreateTrashInfoContent(error))
 
 
 def create_trashinfo_basename(basename, suffix, name_too_long):

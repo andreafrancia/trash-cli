@@ -1,8 +1,9 @@
-from trashcli.put.gate import SameVolumeGate
+from trashcli.put.gate import Gate
 
 
 class TestGate:
     def test_gate(self):
-        a = SameVolumeGate
-        assert repr(a) == 'SameVolumeGate'
-        assert str(a) == 'SameVolumeGate'
+        assert repr(Gate.SameVolume) == 'Gate.SameVolume'
+        assert str(Gate.SameVolume) == 'Gate.SameVolume'
+        assert repr(Gate.HomeFallback) == 'Gate.HomeFallback'
+        assert str(Gate.HomeFallback) == 'Gate.HomeFallback'
