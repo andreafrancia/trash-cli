@@ -9,13 +9,13 @@ from trashcli.lib.my_input import RealInput
 from trashcli.put.clock import RealClock
 from trashcli.put.core.int_generator import IntGenerator
 from trashcli.put.describer import Describer
-from trashcli.put.dir_maker import DirMaker
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.fs.fs import Fs
 from trashcli.put.fs.parent_realpath import ParentRealpathFs
 from trashcli.put.fs.real_fs import RealFs
 from trashcli.put.fs.volume_of_parent import VolumeOfParent
 from trashcli.put.info_dir import PersistingInfoDir, InfoDir2
+from trashcli.put.janitor_tools.trash_dir_checker import TrashDirChecker
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.original_location import OriginalLocation
 from trashcli.put.reporter import TrashPutReporter
@@ -26,7 +26,6 @@ from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
 from trashcli.put.trash_file_in import Janitor
 from trashcli.put.trash_put_cmd import TrashPutCmd
 from trashcli.put.trasher import Trasher
-from trashcli.put.trashing_checker import TrashDirChecker
 from trashcli.put.user import User
 
 
@@ -51,7 +50,6 @@ def make_cmd(clock,
     describer = Describer(fs)
     reporter = TrashPutReporter(logger, describer)
     suffix = Suffix(randint)
-    dir_maker = DirMaker(fs)
     persister = PersistingInfoDir(fs, logger, suffix)
     original_location = OriginalLocation(fs)
     info_dir2 = InfoDir2(persister, original_location, clock)
@@ -61,7 +59,6 @@ def make_cmd(clock,
                             reporter,
                             trash_dir,
                             trashing_checker,
-                            dir_maker,
                             info_dir2,
                             persister)
     volume_of_parent = VolumeOfParent(volumes, ParentRealpathFs(fs))

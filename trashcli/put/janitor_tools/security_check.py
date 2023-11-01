@@ -1,11 +1,11 @@
 import os
-from typing import List, NamedTuple
+from typing import NamedTuple, List
 
 from trashcli.put.candidate import Candidate
 from trashcli.put.core.check_type import NoCheck, TopTrashDirCheck
 from trashcli.put.core.either import Either, Right, Left
-from trashcli.put.core.failure_reason import FailureReason, LogEntry, Level, \
-    LogContext
+from trashcli.put.core.failure_reason import FailureReason, LogContext, \
+    LogEntry, Level
 
 
 class SecurityCheck:

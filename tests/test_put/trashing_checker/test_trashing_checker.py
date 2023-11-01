@@ -1,8 +1,8 @@
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.put.candidate import Candidate
 from trashcli.put.gate import Gate
+from trashcli.put.janitor_tools.trash_dir_checker import TrashDirChecker
 from trashcli.put.trashee import Trashee
-from trashcli.put.trashing_checker import TrashDirChecker
 from ..support.fake_fs.fake_fs import FakeFs
 
 

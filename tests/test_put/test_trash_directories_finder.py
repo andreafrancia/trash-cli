@@ -3,9 +3,9 @@ import unittest
 from mock import Mock
 
 from trashcli.put.candidate import Candidate
+from trashcli.put.core.check_type import NoCheck, TopTrashDirCheck
 from trashcli.put.core.path_maker_type import PathMakerType
 from trashcli.put.gate import Gate
-from trashcli.put.security_check import NoCheck, TopTrashDirCheck
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 
 
