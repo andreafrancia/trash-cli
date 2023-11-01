@@ -73,12 +73,11 @@ class TestPut:
         assert result.all() == [EX_IOERR, [
             'trash-put: volume of file: /',
             'trash-put: trying trash dir: /.Trash/123 from volume: /',
-            'trash-put: found unusable .Trash dir (should be a dir): /.Trash',
-            'trash-put: trash directory is not secure: /.Trash/123',
             'trash-put: trying trash dir: /.Trash-123 from volume: /',
             'trash-put: .trashinfo created as /.Trash-123/info/foo.trashinfo.',
-            'trash-put: failed to trash /foo in /.Trash-123, because: move failed',
-            "trash-put: cannot trash regular empty file '/foo'"]]
+            "trash-put: cannot trash regular empty file '/foo'",
+            'trash-put:  `- failed to trash /foo in /.Trash/123, because trash dir cannot be created because its parent does not exists, trash-dir: /.Trash/123, parent: /.Trash',
+            'trash-put:  `- failed to trash /foo in /.Trash-123, because failed to move /foo in /.Trash-123/files: move failed']]
 
     def test_should_not_trash_dot_entry(self):
         result = self.run_cmd(['trash-put', '.'])
@@ -176,11 +175,10 @@ class TestPut:
             [
                 'trash-put: volume of file: /',
                 'trash-put: trying trash dir: /.Trash/123 from volume: /',
-                'trash-put: found unusable .Trash dir (should be a dir): /.Trash',
-                'trash-put: trash directory is not secure: /.Trash/123',
                 'trash-put: trying trash dir: /.Trash-123 from volume: /',
-                "trash-put: failed to trash pippo in /.Trash-123, because: [Errno 13] Permission denied: '/.Trash-123/files'",
                 "trash-put: cannot trash regular empty file 'pippo'",
+                'trash-put:  `- failed to trash pippo in /.Trash/123, because trash dir cannot be created because its parent does not exists, trash-dir: /.Trash/123, parent: /.Trash',
+                "trash-put:  `- failed to trash pippo in /.Trash-123, because error during directory creation: [Errno 13] Permission denied: '/.Trash-123/files'"
             ]
         ]
 
@@ -196,15 +194,14 @@ class TestPut:
 
         assert result[0] == ['trash-put: volume of file: /disk1',
                              'trash-put: trying trash dir: /home/user/.local/share/Trash from volume: /',
-                             "trash-put: won't use trash dir ~/.local/share/Trash because its volume (/) in a different volume than /disk1/pippo (/disk1)",
                              'trash-put: trying trash dir: /disk1/.Trash/123 from volume: /disk1',
-                             'trash-put: found unusable .Trash dir (should be a dir): /disk1/.Trash',
-                             'trash-put: trash directory is not secure: /disk1/.Trash/123',
                              'trash-put: trying trash dir: /disk1/.Trash-123 from volume: /disk1',
-                             "trash-put: failed to trash /disk1/pippo in /disk1/.Trash-123, because: [Errno 13] Permission denied: '/disk1/.Trash-123/files'",
                              'trash-put: trying trash dir: /home/user/.local/share/Trash from volume: /',
-                             "trash-put: trash dir not enabled: ~/.local/share/Trash",
-                             "trash-put: cannot trash regular empty file '/disk1/pippo'"]
+                             "trash-put: cannot trash regular empty file '/disk1/pippo'",
+                             'trash-put:  `- failed to trash /disk1/pippo in /home/user/.local/share/Trash, because trash dir and file to be trashed are not in the same volume, trash-dir volume: /, file volume: /disk1',
+                             'trash-put:  `- failed to trash /disk1/pippo in /disk1/.Trash/123, because trash dir cannot be created because its parent does not exists, trash-dir: /disk1/.Trash/123, parent: /disk1/.Trash',
+                             "trash-put:  `- failed to trash /disk1/pippo in /disk1/.Trash-123, because error during directory creation: [Errno 13] Permission denied: '/disk1/.Trash-123/files'",
+                             'trash-put:  `- failed to trash /disk1/pippo in /home/user/.local/share/Trash, because home fallback not enabled']
 
     def test_when_it_fails_to_prepare_trash_info_data(self):
         flexmock.flexmock(self.fs).should_receive('parent_realpath2'). \
@@ -217,13 +214,12 @@ class TestPut:
             EX_IOERR,
             ['trash-put: volume of file: /',
              'trash-put: trying trash dir: /home/user/.local/share/Trash from volume: /',
-             'trash-put: failed to trash foo in ~/.local/share/Trash, because: Corruption',
              'trash-put: trying trash dir: /.Trash/123 from volume: /',
-             'trash-put: found unusable .Trash dir (should be a dir): /.Trash',
-             'trash-put: trash directory is not secure: /.Trash/123',
              'trash-put: trying trash dir: /.Trash-123 from volume: /',
-             'trash-put: failed to trash foo in /.Trash-123, because: Corruption',
-             "trash-put: cannot trash regular empty file 'foo'"]]
+             "trash-put: cannot trash regular empty file 'foo'",
+             'trash-put:  `- failed to trash foo in /home/user/.local/share/Trash, because failed to generate trashinfo content: Corruption',
+             'trash-put:  `- failed to trash foo in /.Trash/123, because trash dir cannot be created because its parent does not exists, trash-dir: /.Trash/123, parent: /.Trash',
+             'trash-put:  `- failed to trash foo in /.Trash-123, because failed to generate trashinfo content: Corruption']]
 
     def test_make_file(self):
         self.fs.make_file("pippo", 'content')
@@ -265,8 +261,8 @@ class TestPut:
 
         actual = {
             'file_pippo_exists': self.fs.exists("pippo"),
-            'exit_code': result[2],
-            'stderr': result[0],
+            'exit_code': result.exit_code,
+            'stderr': result.stderr,
             'files_in_info_dir': self.fs.ls_aa(
                 '/home/user/.local/share/Trash/info'),
             "content_of_trashinfo": self.fs.read_null(
@@ -280,7 +276,10 @@ class TestPut:
                           'content_of_trashinfo': None,
                           'exit_code': EX_IOERR,
                           'stderr': [
-                              "trash-put: cannot trash regular file 'pippo'"],
+                              "trash-put: cannot trash regular file 'pippo'",
+                              'trash-put:  `- failed to trash pippo in /home/user/.local/share/Trash, because failed to move pippo in /home/user/.local/share/Trash/files: No space left on device',
+                              'trash-put:  `- failed to trash pippo in /.Trash/123, because trash dir cannot be created because its parent does not exists, trash-dir: /.Trash/123, parent: /.Trash',
+                              'trash-put:  `- failed to trash pippo in /.Trash-123, because failed to move pippo in /.Trash-123/files: No space left on device'],
                           'file_pippo_exists': True,
                           'files_in_files_dir': [],
                           'files_in_info_dir': []}

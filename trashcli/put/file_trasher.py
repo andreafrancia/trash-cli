@@ -41,32 +41,26 @@ class FileTrasher:
                    log_data,  # type: LogData
                    ):
         volume = self._figure_out_volume(path, forced_volume)
-        file_be_trashed = Trashee(path, volume)
+        trashee = Trashee(path, volume)
         candidates = self._select_candidates(volume, user_trash_dir, environ,
                                              uid, home_fallback)
         self.reporter.volume_of_file(volume, log_data)
-        file_has_been_trashed = False
+        failures = []
         for candidate in candidates:
             self.reporter.trash_dir_with_volume(candidate, log_data)
-            file_has_been_trashed, log = self.janitor.trash_file_in(candidate,
-                                                                    log_data,
-                                                                    environ,
-                                                                    file_be_trashed)
-            if file_has_been_trashed:
+            trashing = self.janitor.trash_file_in(
+                candidate, log_data, environ, trashee)
+            if trashing.succeeded():
                 self.reporter.file_has_been_trashed_in_as(path,
                                                           candidate,
                                                           log_data,
                                                           environ)
-                break
+                return TrashResult.Success
             else:
-                self.reporter.report_reason(log, log_data, environ,
-                                            file_be_trashed, candidate)
-
-        if not file_has_been_trashed:
-            self.reporter.unable_to_trash_file(path, log_data)
-            return TrashResult.Failure
-
-        return TrashResult.Success
+                failures.append((candidate, trashing.reason))
+        self.reporter.unable_to_trash_file2(path, log_data, failures,
+                                            environ)
+        return TrashResult.Failure
 
     def _figure_out_volume(self, path, default_volume):
         if default_volume:

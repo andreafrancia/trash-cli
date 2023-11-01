@@ -1,9 +1,11 @@
 import errno
 import os
-from typing import NamedTuple, Iterator, Optional
+from typing import NamedTuple, Iterator
 
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.put.fs.fs import Fs
+from trashcli.put.jobs import JobStatus, NeedsMoreAttempts, Succeeded, \
+    JobExecutor
 from trashcli.put.my_logger import LogData, MyLogger
 from trashcli.put.suffix import Suffix
 
@@ -38,16 +40,13 @@ class InfoFilePersister:
                               trashinfo_data,  # type: TrashinfoData
                               log_data,  # type: LogData
                               ):  # type: (...) -> TrashedFile
-        for result in self.try_persist(trashinfo_data, log_data):
-            if result is not None:
-                return result
-        raise ValueError("Should not happen!")
+        return JobExecutor(self.logger).execute(
+            self.try_persist(trashinfo_data), log_data)
 
-    Result = Iterator[Optional[TrashedFile]]
+    Result = Iterator[JobStatus[TrashedFile]]
 
     def try_persist(self,
                     data,  # type: TrashinfoData
-                    log_data,  # type: LogData
                     ):  # type: (...) -> Result
         index = 0
         name_too_long = False
@@ -62,16 +61,13 @@ class InfoFilePersister:
                 continue
             try:
                 self.fs.atomic_write(trashinfo_path, data.content)
-                self.logger.debug(".trashinfo created as %s." % trashinfo_path,
-                                  log_data)
-                yield TrashedFile(trashinfo_path)
+                yield Succeeded(TrashedFile(trashinfo_path),
+                                ".trashinfo created as %s." % trashinfo_path)
             except OSError as e:
                 if e.errno == errno.ENAMETOOLONG:
                     name_too_long = True
-                self.logger.debug(
-                    "attempt for creating %s failed." % trashinfo_path,
-                    log_data)
-                yield None
+                yield NeedsMoreAttempts(trashinfo_path,
+                                        "attempt for creating %s failed." % trashinfo_path)
 
             index += 1
 

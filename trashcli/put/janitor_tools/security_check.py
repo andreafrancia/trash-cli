@@ -1,11 +1,7 @@
-import os
-from typing import NamedTuple, List
-
 from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.check_type import NoCheck, TopTrashDirCheck
 from trashcli.put.core.either import Either, Right, Left
-from trashcli.put.core.failure_reason import FailureReason, LogContext, \
-    LogEntry, Level
+from trashcli.put.core.failure_reason import FailureReason, LogContext
 
 
 class SecurityCheck:
@@ -15,33 +11,51 @@ class SecurityCheck:
 
     def check_trash_dir_is_secure(self,
                                   candidate,  # type: Candidate
-                                  ):  # type: (...) -> Either[None, TrashDirIsNotSecure]
+                                  ):  # type: (...) -> Either[None, FailureReason]
         if candidate.check_type == NoCheck:
             return Right(None)
         if candidate.check_type == TopTrashDirCheck:
-            parent = os.path.dirname(candidate.trash_dir_path)
+            parent = candidate.parent_dir()
+            if not self.fs.lexists(parent):
+                return Left(TrashDirDoesNotHaveParent())
             if not self.fs.isdir(parent):
-                return _error_c(candidate,
-                    "found unusable .Trash dir (should be a dir): %s" % parent)
+                return Left(TrashDirCannotBeCreatedBecauseParentIsFile())
             if self.fs.islink(parent):
-                return _error_c(candidate,
-                    "found unsecure .Trash dir (should not be a symlink): %s" % parent)
+                return Left(TrashDirIsNotSecureBecauseSymLink())
             if not self.fs.has_sticky_bit(parent):
-                return _error_c(candidate,
-                    "found unsecure .Trash dir (should be sticky): %s" % parent)
+                return Left(TrashDirIsNotSecureBecauseNotSticky())
             return Right(None)
         raise Exception("Unknown check type: %s" % candidate.check_type)
 
 
-def _error_c(candidate, message):
-    return Left(TrashDirIsNotSecure(candidate, [message]))
+class TrashDirDoesNotHaveParent(FailureReason):
+    def log_entries(self, context):  # type: (LogContext) -> str
+        return trash_dir_parent_problem(context, (
+            "trash dir cannot be created because its parent does not exists"))
 
 
-class TrashDirIsNotSecure(NamedTuple('TrashDirIsNotSecure', [
-    ('trash_dir', Candidate),
-    ('messages', List[str]),
-]), FailureReason):
-    def log_entries(self, context):  # type: (LogContext) -> List[LogEntry]
-        return [LogEntry(Level.INFO, m) for m in self.messages] + [
-            LogEntry(Level.INFO,
-                     "trash directory is not secure: %s" % self.trash_dir.norm_path())]
+class TrashDirCannotBeCreatedBecauseParentIsFile(FailureReason):
+    def log_entries(self, context):  # type: (LogContext) -> str
+        return trash_dir_parent_problem(context, (
+            "trash dir cannot be created as its parent is a file instead of being a directory"))
+
+
+class TrashDirIsNotSecureBecauseSymLink(FailureReason):
+    def log_entries(self, context):  # type: (LogContext) -> str
+        return trash_dir_parent_problem(context, (
+            "trash dir is insecure, its parent should not be a symlink"))
+
+
+class TrashDirIsNotSecureBecauseNotSticky(FailureReason):
+    def log_entries(self, context):  # type: (LogContext) -> str
+        return trash_dir_parent_problem(context, (
+            "trash dir is insecure, its parent should be sticky"))
+
+
+def trash_dir_parent_problem(context,  # type: LogContext
+                             message,  # type: str
+                             ):  # type: (...) -> str
+    return "%s, trash-dir: %s, parent: %s" % (
+        message,
+        context.trash_dir_norm_path(),
+        context.candidate.parent_dir())

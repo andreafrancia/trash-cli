@@ -61,7 +61,8 @@ def make_cmd(clock,
                       trash_dir,
                       trashing_checker,
                       info_dir2,
-                      persister)
+                      persister,
+                      logger)
     volume_of_parent = VolumeOfParent(volumes, ParentRealpathFs(fs))
     file_trasher = FileTrasher(volumes,
                                TrashDirectoriesFinder(volumes),

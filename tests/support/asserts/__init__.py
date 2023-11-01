@@ -1,18 +1,4 @@
 import unittest
-from textwrap import dedent
-
-
-def assert_line_in_text(line, text):
-    assert line in text.splitlines(), dedent('''\
-            Line not found in text
-            Line:
-
-            %s
-
-            Text:
-
-            ---
-            %s---''') % (repr(line), text)
 
 
 def assert_equals_with_unidiff(expected, actual):

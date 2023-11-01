@@ -1,5 +1,8 @@
 from typing import IO, Callable, List
 
+from trashcli.put.core.logs import Level
+from trashcli.put.core.logs import LogEntry
+
 
 class LogData:
     def __init__(self, program_name, verbose):
@@ -37,3 +40,12 @@ class MyLogger:
 
     def warning2(self, message, program_name):
         self.stderr.write("%s: %s\n" % (program_name, message))
+
+    def log_multiple(self, entries, log_data):  # type: (List[LogEntry], LogData) -> None
+        for entry in entries:
+            if entry.level == Level.INFO:
+                self.info(entry.message, log_data)
+            elif entry.level == Level.DEBUG:
+                self.debug(entry.message, log_data)
+            else:
+                raise ValueError("unknown level: %s" % entry.level)

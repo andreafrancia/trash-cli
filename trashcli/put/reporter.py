@@ -4,13 +4,13 @@ import re
 from grp import getgrgid
 from pwd import getpwuid
 from typing import List
+from typing import Tuple
 
 from trashcli.lib.environ import Environ
 from trashcli.lib.exit_codes import EX_OK, EX_IOERR
 from trashcli.put.core.candidate import Candidate
-from trashcli.put.core.failure_reason import FailureReason, Level, LogContext
+from trashcli.put.core.failure_reason import FailureReason, LogContext
 from trashcli.put.core.trash_all_result import TrashAllResult
-from trashcli.put.core.trashee import Trashee
 from trashcli.put.describer import Describer
 from trashcli.put.my_logger import MyLogger, LogData
 
@@ -34,6 +34,25 @@ class TrashPutReporter:
     def unable_to_trash_file(self, f, log_data):
         self.logger.warning2("cannot trash %s '%s'" % (self._describe(f), f),
                              log_data.program_name)
+
+    # TODO
+    def unable_to_trash_file2(self,
+                              path,  # type: str
+                              log_data,  # type: LogData
+                              failures,
+                              # type: List[Tuple[Candidate, FailureReason]]
+                              environ,  # type: Environ
+                              ):
+
+        self.logger.warning2("cannot trash %s '%s'" % (
+            self._describe(path), path), log_data.program_name)
+        for candidate, reason in failures:
+            context = LogContext(path, candidate, environ)
+            message = " `- failed to trash %s in %s, because %s" % (
+                path,
+                candidate.norm_path(),
+                reason.log_entries(context))
+            self.logger.warning2(message, log_data.program_name)
 
     def file_has_been_trashed_in_as(self,
                                     trashed_file,
@@ -68,7 +87,7 @@ class TrashPutReporter:
                               log_data,  # type: LogData
                               ):
         # type: (...) -> None
-        self.logger.info(
+        self.logger.debug(
             "trying trash dir: %s from volume: %s" % (candidate.norm_path(),
                                                       candidate.volume),
             log_data)
@@ -88,18 +107,11 @@ class TrashPutReporter:
                       reason,  # type: FailureReason
                       log_data,  # type: LogData
                       environ,  # type: Environ
-                      trashee,  # type: Trashee
+                      trashee_path,  # type: str
                       candidate,  # type: Candidate
                       ):  # type: (...) -> None
-        for entry in reason.log_entries(
-            LogContext(trashee.path,
-                       candidate.shrink_user(environ),
-                       )
-        ):
-            if entry.level == Level.INFO:
-                self.logger.info(entry.message, log_data)
-            else:
-                raise ValueError("unknown level: %s" % entry.level)
+        context = LogContext(trashee_path, candidate, environ)
+        self.logger.info(reason.log_entries(context), log_data)
 
 
 def gentle_stat_read(path):

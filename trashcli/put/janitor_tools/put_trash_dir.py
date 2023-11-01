@@ -1,7 +1,8 @@
 from typing import NamedTuple
 
 from trashcli.put.core.either import Either, Right, Left
-from trashcli.put.core.failure_reason import FailureReason, LogEntry, Level
+from trashcli.put.core.failure_reason import FailureReason
+from trashcli.put.core.failure_reason import LogContext
 from trashcli.put.fs.fs import Fs
 from trashcli.put.janitor_tools.info_creator import \
     TrashInfoCreator
@@ -11,14 +12,11 @@ from trashcli.put.janitor_tools.info_file_persister import TrashedFile
 class UnableToMoveFileToTrash(NamedTuple('UnableToMoveFileToTrash', [
     ('error', Exception),
 ]), FailureReason):
-    def log_entries(self, context):
-        return [
-            LogEntry(Level.INFO,
-                     "failed to trash %s in %s, because: %s" % (
-                         context.trashee_path,
-                         context.shrunk_candidate_path,
-                         self.error)),
-        ]
+    def log_entries(self, context):  # type: (LogContext) -> str
+        return "failed to move %s in %s: %s" % (
+            context.trashee_path,
+            context.files_dir(),
+            self.error)
 
 
 class PutTrashDir:

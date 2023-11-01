@@ -15,6 +15,9 @@ class Candidate(NamedTuple('Candidate', [
     ('check_type', CheckType),
     ('gate', Gate),
 ])):
+    def parent_dir(self):
+        return os.path.dirname(self.trash_dir_path)
+
     def info_dir(self):
         return os.path.join(self.trash_dir_path, 'info')
 

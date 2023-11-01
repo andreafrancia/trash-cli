@@ -1,25 +1,35 @@
-from typing import NamedTuple, List
+from typing import NamedTuple
 
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.environ import Environ
 from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.either import Either, Right, Left
-from trashcli.put.core.failure_reason import FailureReason, LogContext, \
-    LogEntry, Level
+from trashcli.put.core.failure_reason import FailureReason, LogContext
 from trashcli.put.core.trashee import Trashee
 from trashcli.put.fs.fs import Fs
 from trashcli.put.gate import Gate
 from trashcli.put.trash_dir_volume_reader import TrashDirVolumeReader
 
 
-class TrashDirCannotBeUsed(NamedTuple('TrashDirCannotBeUsed', [
-    ('reason', str),
+class DifferentVolumes(NamedTuple('DifferentVolumes', [
+    ('trash_dir_volume', str),
+    ('file_volume', str),
 ]), FailureReason):
-    def log_entries(self, context):  # type: (LogContext) -> List[LogEntry]
-        return [LogEntry(Level.INFO, self.reason)]
+    def log_entries(self, context):  # type: (LogContext) -> str
+        return (
+                "trash dir and file to be trashed are not in the same volume, trash-dir volume: %s, file volume: %s"
+                % (self.trash_dir_volume, self.file_volume))
 
 
-GateCheckResult = Either[None, TrashDirCannotBeUsed]
+class HomeFallBackNotEnabled(FailureReason):
+    def log_entries(self, context):  # type: (LogContext) -> str
+        return "home fallback not enabled"
+
+    def __eq__(self, other):
+        return isinstance(other, HomeFallBackNotEnabled)
+
+
+GateCheckResult = Either[None, FailureReason]
 
 
 class TrashDirChecker:
@@ -33,29 +43,23 @@ class TrashDirChecker:
                                  environ,  # type: Environ
                                  ):  # type: (...) -> GateCheckResult
         if candidate.gate is Gate.HomeFallback:
-            return self._can_be_trashed_in_home_trash_dir(candidate, environ)
+            return self._can_be_trashed_in_home_trash_dir(environ)
         elif candidate.gate is Gate.SameVolume:
             return SameVolumeGateImpl(self.volumes, self.fs).can_trash_in(
-                trashee, candidate, environ)
+                trashee, candidate)
         else:
             raise ValueError("Unknown gate: %s" % candidate.gate)
 
     @staticmethod
-    def _can_be_trashed_in_home_trash_dir(candidate,  # type: Candidate
-                                          environ,  # type: Environ
+    def _can_be_trashed_in_home_trash_dir(environ,  # type: Environ
                                           ):
         if environ.get('TRASH_ENABLE_HOME_FALLBACK', None) == "1":
             return make_ok()
-        return make_error("trash dir not enabled: %s" %
-                          candidate.shrink_user(environ))
+        return Left(HomeFallBackNotEnabled())
 
 
 def make_ok():
     return Right(None)
-
-
-def make_error(reason):
-    return Left(TrashDirCannotBeUsed(reason))
 
 
 class SameVolumeGateImpl:
@@ -69,31 +73,15 @@ class SameVolumeGateImpl:
     def can_trash_in(self,
                      trashee,  # type: Trashee
                      candidate,  # type: Candidate
-                     environ,  # type: Environ
                      ):
         trash_dir_volume = self._volume_of_trash_dir(candidate)
         same_volume = trash_dir_volume == trashee.volume
 
         if not same_volume:
-            message = self._format_msg(trashee, candidate, environ,
-                                       trash_dir_volume)
-            return make_error(message)
+            return Left(DifferentVolumes(trash_dir_volume, trashee.volume))
 
         return make_ok()
 
     def _volume_of_trash_dir(self, candidate):  # type: (Candidate) -> str
         return (TrashDirVolumeReader(self.volumes, self.fs)
                 .volume_of_trash_dir(candidate.trash_dir_path))
-
-    @staticmethod
-    def _format_msg(trashee,  # type: Trashee
-                    candidate,  # type: Candidate
-                    environ,  # type: Environ
-                    volume_of_trash_dir,  # type: str
-                    ):
-        formatted_dir = candidate.shrink_user(environ)
-
-        return (
-                "won't use trash dir %s because its volume (%s) in a different volume than %s (%s)"
-                % (formatted_dir, volume_of_trash_dir, trashee.path,
-                   trashee.volume))

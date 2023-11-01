@@ -1,9 +1,8 @@
-from typing import NamedTuple, List
+from typing import NamedTuple
 
 from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.either import Either, Right, Left
-from trashcli.put.core.failure_reason import FailureReason, LogContext, \
-    LogEntry, Level
+from trashcli.put.core.failure_reason import FailureReason, LogContext
 from trashcli.put.dir_maker import DirMaker
 from trashcli.put.fs.fs import Fs
 
@@ -12,15 +11,9 @@ class TrashDirCannotBeCreated(
     NamedTuple('TrashDirCannotBeCreated', [
         ('error', Exception),
     ]), FailureReason):
-    def log_entries(self,
-                    context):  # type: (LogContext) -> List[LogEntry]
-        return [
-            LogEntry(Level.INFO,
-                     "failed to trash %s in %s, because: %s" % (
-                         context.trashee_path,
-                         context.shrunk_candidate_path,
-                         self.error)),
-        ]
+    def log_entries(self, context):  # type: (LogContext) -> str
+        return "error during directory creation: %s" % (
+            self.error)
 
 
 class TrashDirCreator:

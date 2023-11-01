@@ -1,10 +1,11 @@
 from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.check_type import NoCheck
+from trashcli.put.core.either import Left
 from trashcli.put.core.path_maker_type import PathMakerType
 from trashcli.put.core.trashee import Trashee
 from trashcli.put.gate import Gate
 from trashcli.put.janitor_tools.trash_dir_checker import TrashDirChecker, \
-    make_ok, make_error
+    make_ok, HomeFallBackNotEnabled
 from ..support.fake_fs.fake_fs import FakeFs
 
 
@@ -18,7 +19,7 @@ class TestHomeFallbackGate:
             make_trashee(),
             make_candidate('/xdf/Trash'),
             {})
-        assert [result] == [make_error('trash dir not enabled: /xdf/Trash')]
+        assert result == Left(HomeFallBackNotEnabled())
 
     def test_enabled(self):
         result = self.gate_impl.file_could_be_trashed_in(
@@ -27,7 +28,7 @@ class TestHomeFallbackGate:
             {
                 "TRASH_ENABLE_HOME_FALLBACK": "1"
             })
-        assert [result] == [make_ok()]
+        assert result == make_ok()
 
     # def test(self):
     #     result = os.statvfs('/Users/andrea/trash-cli')

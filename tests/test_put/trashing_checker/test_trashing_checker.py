@@ -1,8 +1,10 @@
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.put.core.candidate import Candidate
+from trashcli.put.core.either import Left
 from trashcli.put.core.trashee import Trashee
 from trashcli.put.gate import Gate
-from trashcli.put.janitor_tools.trash_dir_checker import TrashDirChecker
+from trashcli.put.janitor_tools.trash_dir_checker import TrashDirChecker, \
+    DifferentVolumes
 from ..support.fake_fs.fake_fs import FakeFs
 
 
@@ -40,9 +42,7 @@ class TestTrashingChecker:
             make_candidate('/vol2/trash-dir-path', Gate.SameVolume),
             {})
 
-        assert result.is_valid() is False
-        assert result.error().reason == "won't use trash dir /vol2/trash-dir-path because its volume (/vol2) in a different volume than /path1 (/vol1)"
-
+        assert result == Left(DifferentVolumes("/vol2", "/vol1"))
 
 def make_candidate(trash_dir_path, gate):
     return Candidate(trash_dir_path=trash_dir_path,

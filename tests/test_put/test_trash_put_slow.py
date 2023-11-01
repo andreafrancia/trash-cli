@@ -2,15 +2,15 @@
 import os
 import unittest
 from os.path import exists as file_exists
+from typing import List
 
 import pytest
-from trashcli.fs import read_file
 
 from tests import run_command
-from tests.support.asserts import assert_line_in_text
 from tests.support.files import make_empty_file, require_empty_dir, \
     make_sticky_dir
 from tests.support.my_path import MyPath
+from trashcli.fs import read_file
 
 
 class TrashPutFixture:
@@ -37,7 +37,7 @@ class TrashPutFixture:
 class TestDeletingExistingFile(unittest.TestCase):
     def setUp(self):
         self.temp_dir = MyPath.make_temp_dir()
-        env = {'XDG_DATA_HOME': self.temp_dir / 'XDG_DATA_HOME' }
+        env = {'XDG_DATA_HOME': self.temp_dir / 'XDG_DATA_HOME'}
         make_empty_file(self.temp_dir / 'foo')
         self.result = run_command.run_command(self.temp_dir, "trash-put",
                                               [self.temp_dir / 'foo'],
@@ -54,6 +54,7 @@ class TestDeletingExistingFile(unittest.TestCase):
 
     def tearDown(self):
         self.temp_dir.clean_up()
+
 
 @pytest.mark.slow
 class Test_when_deleting_an_existing_file_in_verbose_mode(unittest.TestCase):
@@ -94,7 +95,6 @@ class Test_when_fed_with_dot_arguments(unittest.TestCase):
         self.fixture = TrashPutFixture()
 
     def test_dot_argument_is_skipped(self):
-
         self.fixture.run_trashput(".")
 
         # the dot directory shouldn't be operated, but a diagnostic message
@@ -103,7 +103,6 @@ class Test_when_fed_with_dot_arguments(unittest.TestCase):
                          self.fixture.stderr)
 
     def test_dot_dot_argument_is_skipped(self):
-
         self.fixture.run_trashput("..")
 
         # the dot directory shouldn't be operated, but a diagnostic message
@@ -156,9 +155,11 @@ class TestUnsecureTrashDirMessages(unittest.TestCase):
                                   '-v',
                                   self.fake_vol / 'foo')
 
-        assert_line_in_text(
-                'trash-put: found unsecure .Trash dir (should be sticky): ' +
-                self.fake_vol / '.Trash', self.fixture.stderr)
+        assert self.clean_and_focus('/.Trash/501') == [
+            'trash-put:  `- failed to trash /vol/foo in /vol/.Trash/501, because trash '
+            'dir is insecure, its parent should be sticky, trash-dir: /vol/.Trash/501, '
+            'parent: /vol/.Trash'
+        ]
 
     def test_when_it_is_not_a_dir(self):
         make_empty_file(self.fake_vol / '.Trash')
@@ -167,20 +168,39 @@ class TestUnsecureTrashDirMessages(unittest.TestCase):
                                   '-v',
                                   self.fake_vol / 'foo')
 
-        assert_line_in_text(
-                'trash-put: found unusable .Trash dir (should be a dir): ' +
-                self.fake_vol / '.Trash', self.fixture.stderr)
+        assert self.clean_and_focus('/.Trash/501') == [
+            'trash-put:  `- failed to trash /vol/foo in /vol/.Trash/501, because trash '
+            'dir cannot be created as its parent is a file instead of being a directory, '
+            'trash-dir: /vol/.Trash/501, parent: /vol/.Trash'
+        ]
 
     def test_when_is_a_symlink(self):
-        make_sticky_dir( self.fake_vol / 'link-destination')
-        os.symlink('link-destination',  self.fake_vol / '.Trash')
+        make_sticky_dir(self.fake_vol / 'link-destination')
+        os.symlink('link-destination', self.fake_vol / '.Trash')
 
         self.fixture.run_trashput('--force-volume', self.fake_vol,
                                   '-v', self.fake_vol / 'foo')
 
-        assert_line_in_text(
-                'trash-put: found unsecure .Trash dir (should not be a symlink): ' +
-                self.fake_vol / '.Trash', self.fixture.stderr)
+        assert self.clean_and_focus("insecure") == [
+            'trash-put:  `- failed to trash /vol/foo in /vol/.Trash/501, because '
+            'trash dir is insecure, its parent should not be a symlink, trash-dir: '
+            '/vol/.Trash/501, parent: /vol/.Trash']
 
     def tearDown(self):
         self.temp_dir.clean_up()
+
+    def clean_and_focus(self, pattern):
+        focus = grep(self.fixture.stderr, pattern)
+        cleaned = replace(self.fake_vol, "/vol", focus)
+        return cleaned
+
+
+def grep(lines, pattern):  # type: (str, str) -> List[str]
+    return [line for line in lines.splitlines() if pattern in line]
+
+
+def replace(pattern,  # type: str
+            replacement,  # type: str
+            lines,  # type: List[str]
+            ):  # type: (...) -> List[str]
+    return [line.replace(pattern, replacement) for line in lines]

@@ -1,8 +1,7 @@
 import os
 
-from trashcli.put.fs.fs import Fs
-from trashcli.put.fs.parent_realpath import ParentRealpathFs
 from trashcli.put.core.path_maker_type import PathMakerType
+from trashcli.put.fs.fs import Fs
 
 
 class OriginalLocation:
