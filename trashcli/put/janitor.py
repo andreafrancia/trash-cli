@@ -1,18 +1,17 @@
-from typing import Tuple, List
+from typing import List, Tuple
 
 from trashcli.lib.environ import Environ
-from trashcli.put.candidate import Candidate
-from trashcli.put.core.failure_reason import FailureReason, LogEntry, LogContext
+from trashcli.put.core.candidate import Candidate
+from trashcli.put.core.failure_reason import FailureReason, LogContext, LogEntry
+from trashcli.put.core.trashee import Trashee
 from trashcli.put.fs.fs import Fs
-from trashcli.put.info_dir import InfoDir2
-from trashcli.put.info_dir import PersistingInfoDir
+from trashcli.put.janitor_tools.info_creator import TrashInfoCreator
+from trashcli.put.janitor_tools.info_file_persister import InfoFilePersister
+from trashcli.put.janitor_tools.put_trash_dir import PutTrashDir
 from trashcli.put.janitor_tools.security_check import SecurityCheck
 from trashcli.put.janitor_tools.trash_dir_checker import TrashDirChecker
 from trashcli.put.janitor_tools.trash_dir_creator import TrashDirCreator
 from trashcli.put.my_logger import LogData
-from trashcli.put.reporter import TrashPutReporter
-from trashcli.put.trash_directory_for_put import TrashDirectoryForPut
-from trashcli.put.trashee import Trashee
 
 
 class NoLog(FailureReason):
@@ -23,13 +22,11 @@ class NoLog(FailureReason):
 class Janitor:
     def __init__(self,
                  fs,  # type: Fs
-                 reporter,  # type: TrashPutReporter
-                 trash_dir,  # type: TrashDirectoryForPut
+                 trash_dir,  # type: PutTrashDir
                  trashing_checker,  # type: TrashDirChecker
-                 info_dir,  # type: InfoDir2
-                 persister,  # type: PersistingInfoDir
+                 info_dir,  # type: TrashInfoCreator
+                 persister,  # type: InfoFilePersister
                  ):
-        self.reporter = reporter
         self.trash_dir = trash_dir
         self.trashing_checker = trashing_checker
         self.info_dir = info_dir
@@ -58,13 +55,12 @@ class Janitor:
             return False, dirs_creation.error()
 
         trashinfo_data = self.info_dir.make_trashinfo_data(trashee.path,
-                                                           candidate,
-                                                           log_data)
+                                                           candidate)
         if trashinfo_data.is_error():
             return False, trashinfo_data.error()
 
         trashed_file = self.persister.create_trashinfo_file(
-            trashinfo_data.value())
+            trashinfo_data.value(), log_data)
 
         trashed = self.trash_dir.try_trash(trashee.path, trashed_file)
         if trashed.is_error():

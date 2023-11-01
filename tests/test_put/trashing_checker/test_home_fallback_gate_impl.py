@@ -1,10 +1,10 @@
-from trashcli.put.candidate import Candidate
+from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.check_type import NoCheck
 from trashcli.put.core.path_maker_type import PathMakerType
+from trashcli.put.core.trashee import Trashee
 from trashcli.put.gate import Gate
 from trashcli.put.janitor_tools.trash_dir_checker import TrashDirChecker, \
     make_ok, make_error
-from trashcli.put.trashee import Trashee
 from ..support.fake_fs.fake_fs import FakeFs
 
 

@@ -1,6 +1,6 @@
 import unittest
 
-from trashcli.put.candidate import Candidate
+from trashcli.put.core.candidate import Candidate
 
 
 class TestCandidateShrinkUser(unittest.TestCase):

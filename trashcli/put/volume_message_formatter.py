@@ -1,6 +1,6 @@
 from trashcli.lib.environ import Environ
-from trashcli.put.candidate import Candidate
-from trashcli.put.trashee import Trashee
+from trashcli.put.core.candidate import Candidate
+from trashcli.put.core.trashee import Trashee
 
 
 class VolumeMessageFormatter:

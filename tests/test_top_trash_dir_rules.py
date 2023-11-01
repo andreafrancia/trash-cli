@@ -3,7 +3,7 @@ from typing import Tuple, Optional, List
 
 from mock import Mock, call
 
-from trashcli.put.candidate import Candidate
+from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.check_type import TopTrashDirCheck
 from trashcli.put.core.either import Either
 from trashcli.put.janitor_tools.security_check import SecurityCheck, \

@@ -3,13 +3,13 @@
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.environ import Environ
 from trashcli.put.core.trash_result import TrashResult
+from trashcli.put.core.trashee import Trashee
 from trashcli.put.fs.parent_realpath import ParentRealpathFs
 from trashcli.put.fs.volume_of_parent import VolumeOfParent
+from trashcli.put.janitor import Janitor
 from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
-from trashcli.put.trash_file_in import Janitor
-from trashcli.put.trashee import Trashee
 
 
 class FileTrasher:

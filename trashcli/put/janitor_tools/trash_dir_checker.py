@@ -2,14 +2,14 @@ from typing import NamedTuple, List
 
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.environ import Environ
-from trashcli.put.candidate import Candidate
+from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.either import Either, Right, Left
 from trashcli.put.core.failure_reason import FailureReason, LogContext, \
     LogEntry, Level
+from trashcli.put.core.trashee import Trashee
 from trashcli.put.fs.fs import Fs
 from trashcli.put.gate import Gate
 from trashcli.put.trash_dir_volume_reader import TrashDirVolumeReader
-from trashcli.put.trashee import Trashee
 
 
 class TrashDirCannotBeUsed(NamedTuple('TrashDirCannotBeUsed', [

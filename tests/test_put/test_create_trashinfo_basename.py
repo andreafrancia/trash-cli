@@ -1,9 +1,8 @@
-import unittest
+from trashcli.put.janitor_tools.info_file_persister import \
+    create_trashinfo_basename
 
-from trashcli.put.info_dir import create_trashinfo_basename
 
-
-class Test_create_trashinfo_basename(unittest.TestCase):
+class TestCreateTrashinfoBasename:
     def test_when_file_name_is_not_too_long(self):
         assert 'basename_1.trashinfo' == create_trashinfo_basename('basename',
                                                                    '_1',

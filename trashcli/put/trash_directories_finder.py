@@ -5,7 +5,7 @@ from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.environ import Environ
 from trashcli.lib.trash_dirs import (
     volume_trash_dir1, volume_trash_dir2, home_trash_dir)
-from trashcli.put.candidate import Candidate
+from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.check_type import NoCheck, TopTrashDirCheck
 from trashcli.put.core.path_maker_type import PathMakerType
 from trashcli.put.gate import Gate

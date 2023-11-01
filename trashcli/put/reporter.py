@@ -1,19 +1,18 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 import os
 import re
-from pwd import getpwuid
-
 from grp import getgrgid
-from typing import List, NamedTuple
-from trashcli.lib.environ import Environ
+from pwd import getpwuid
+from typing import List
 
-from trashcli.put.candidate import Candidate
+from trashcli.lib.environ import Environ
+from trashcli.lib.exit_codes import EX_OK, EX_IOERR
+from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.failure_reason import FailureReason, Level, LogContext
 from trashcli.put.core.trash_all_result import TrashAllResult
+from trashcli.put.core.trashee import Trashee
 from trashcli.put.describer import Describer
 from trashcli.put.my_logger import MyLogger, LogData
-from trashcli.lib.exit_codes import EX_OK, EX_IOERR
-from trashcli.put.trashee import Trashee
 
 
 class TrashPutReporter:

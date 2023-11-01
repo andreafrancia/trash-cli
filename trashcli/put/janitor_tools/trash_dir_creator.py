@@ -1,6 +1,6 @@
 from typing import NamedTuple, List
 
-from trashcli.put.candidate import Candidate
+from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.either import Either, Right, Left
 from trashcli.put.core.failure_reason import FailureReason, LogContext, \
     LogEntry, Level

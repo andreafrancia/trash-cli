@@ -1,12 +1,11 @@
 import os
 import posixpath
 import re
-from typing import NamedTuple, Type
+from typing import NamedTuple
 
 from trashcli.put.core.check_type import CheckType
-from trashcli.put.gate import Gate
 from trashcli.put.core.path_maker_type import PathMakerType
-
+from trashcli.put.gate import Gate
 
 
 class Candidate(NamedTuple('Candidate', [
