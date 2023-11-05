@@ -1,206 +1,177 @@
 # Copyright (C) 2009-2020 Andrea Francia Trivolzio(PV) Italy
 import os
-import unittest
 from os.path import exists as file_exists
 from typing import List
+from typing import Optional
 
 import pytest
 
 from tests import run_command
+from tests.run_command import temp_dir
 from tests.support.files import make_empty_file, require_empty_dir, \
     make_sticky_dir
 from tests.support.my_path import MyPath
 from trashcli.fs import read_file
+from trashcli.lib.environ import Environ
 
 
-class TrashPutFixture:
-
-    def __init__(self):
-        self.temp_dir = MyPath.make_temp_dir()
-
-    def run_trashput(self, *args):
-        self.environ = {'XDG_DATA_HOME': self.temp_dir / 'XDG_DATA_HOME',
-                        'HOME': self.temp_dir / 'home'}
-        result = run_command.run_command(self.temp_dir,
-                                         "trash-put",
-                                         list(args),
-                                         env=self.environ)
-        self.stdout = result.stdout
-        self.stderr = result.stderr
-        self.exit_code = result.exit_code
-
-    def __del__(self):
-        self.temp_dir.clean_up()
+@pytest.fixture
+def runner(temp_dir):
+    return Runner(temp_dir)
 
 
-@pytest.mark.slow
-class TestDeletingExistingFile(unittest.TestCase):
-    def setUp(self):
-        self.temp_dir = MyPath.make_temp_dir()
-        env = {'XDG_DATA_HOME': self.temp_dir / 'XDG_DATA_HOME'}
-        make_empty_file(self.temp_dir / 'foo')
-        self.result = run_command.run_command(self.temp_dir, "trash-put",
-                                              [self.temp_dir / 'foo'],
-                                              env=env)
+class Runner:
+    def __init__(self, cwd):
+        self.cwd = cwd
 
-    def test_it_should_remove_the_file(self):
-        assert not file_exists(self.temp_dir / 'foo')
-
-    def test_it_should_remove_it_silently(self):
-        self.assertEqual("", self.result.stdout)
-
-    def test_a_trashinfo_file_should_have_been_created(self):
-        read_file(self.temp_dir / 'XDG_DATA_HOME/Trash/info/foo.trashinfo')
-
-    def tearDown(self):
-        self.temp_dir.clean_up()
+    def run_trashput(self,
+                     args,  # type: List[str]
+                     env=None,  # type: Optional[Environ]
+                     ):  # type: (...) -> run_command.CmdResult
+        env = env or {}
+        return run_command.run_command(self.cwd,
+                                       "trash-put",
+                                       list(args),
+                                       env=env)
 
 
 @pytest.mark.slow
-class Test_when_deleting_an_existing_file_in_verbose_mode(unittest.TestCase):
-    def setUp(self):
-        self.fixture = TrashPutFixture()
-        self.foo_file = self.fixture.temp_dir / "foo"
-        make_empty_file(self.foo_file)
-        self.fixture.run_trashput('-v', self.foo_file)
+class TestDeletingExistingFile:
 
-    def test_should_tell_where_a_file_is_trashed(self):
-        output = self.fixture.stderr.splitlines()
-        expected_line = "trash-put: '%s' trashed in %s/XDG_DATA_HOME/Trash" % \
-                        (self.foo_file, self.fixture.temp_dir)
-        assert (expected_line in output)
+    @pytest.fixture
+    def trash_foo(self, temp_dir, runner):
+        make_empty_file(temp_dir / 'foo')
+        result = runner.run_trashput([temp_dir / 'foo'], env={
+            'XDG_DATA_HOME': temp_dir / 'XDG_DATA_HOME'})
+        yield result
 
-    def test_should_be_succesfull(self):
-        assert 0 == self.fixture.exit_code
+    def test_it_should_remove_the_file(self, temp_dir, trash_foo):
+        assert file_exists(temp_dir / 'foo') is False
 
+    def test_it_should_remove_it_silently(self, trash_foo):
+        assert trash_foo.stdout == ''
 
-@pytest.mark.slow
-class Test_when_deleting_a_non_existing_file(unittest.TestCase):
-    def setUp(self):
-        self.tmp_dir = MyPath.make_temp_dir()
-        self.fixture = TrashPutFixture()
-
-    def test_should_be_succesfull(self):
-        self.fixture.run_trashput('-v', self.tmp_dir / 'non-existent')
-        assert 0 != self.fixture.exit_code
-
-    def tearDown(self):
-        self.tmp_dir.clean_up()
+    def test_a_trashinfo_file_should_have_been_created(self, temp_dir,
+                                                       trash_foo):
+        read_file(temp_dir / 'XDG_DATA_HOME/Trash/info/foo.trashinfo')
 
 
 @pytest.mark.slow
-class Test_when_fed_with_dot_arguments(unittest.TestCase):
+class TestWhenDeletingAnExistingFileInVerboseMode:
+    @pytest.fixture
+    def run_trashput(self, temp_dir, runner):
+        make_empty_file(temp_dir / "foo")
+        return runner.run_trashput(["-v", temp_dir / "foo"], env={
+            'XDG_DATA_HOME': temp_dir / 'XDG_DATA_HOME',
+            'HOME': temp_dir / 'home'})
 
-    def setUp(self):
-        self.fixture = TrashPutFixture()
+    def test_should_tell_where_a_file_is_trashed(self, temp_dir, run_trashput):
+        output = run_trashput.clean_tmp_and_grep(temp_dir, "trashed in")
 
-    def test_dot_argument_is_skipped(self):
-        self.fixture.run_trashput(".")
+        assert "trash-put: '/foo' trashed in /XDG_DATA_HOME/Trash" in output
+
+    def test_should_be_successful(self, run_trashput):
+        assert 0 == run_trashput.exit_code
+
+
+@pytest.mark.slow
+class TestWhenDeletingANonExistingFile:
+    def test_should_be_succesfull(self, temp_dir, runner):
+        result = runner.run_trashput(['-v', temp_dir / 'non-existent'])
+        assert 0 != result.exit_code
+
+
+@pytest.mark.slow
+class TestWhenFedWithDotArguments:
+
+    def test_dot_argument_is_skipped(self, temp_dir, runner):
+        result = runner.run_trashput(["."])
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be written on stderr
-        self.assertEqual("trash-put: cannot trash directory '.'\n",
-                         self.fixture.stderr)
+        assert result.stderr == "trash-put: cannot trash directory '.'\n"
 
-    def test_dot_dot_argument_is_skipped(self):
-        self.fixture.run_trashput("..")
+    def test_dot_dot_argument_is_skipped(self, temp_dir, runner):
+        result = runner.run_trashput([".."])
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be written on stderr
-        self.assertEqual("trash-put: cannot trash directory '..'\n",
-                         self.fixture.stderr)
+        assert result.stderr == "trash-put: cannot trash directory '..'\n"
 
-    def test_dot_argument_is_skipped_even_in_subdirs(self):
+    def test_dot_argument_is_skipped_even_in_subdirs(self, temp_dir, runner):
         sandbox = MyPath.make_temp_dir()
 
-        self.fixture.run_trashput("%s/." % sandbox)
+        result = runner.run_trashput(["%s/." % sandbox])
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be written on stderr
-        self.assertEqual("trash-put: cannot trash '.' directory '%s/.'\n" %
-                         sandbox,
-                         self.fixture.stderr)
-
+        assert "trash-put: cannot trash '.' directory '%s/.'\n" % sandbox == \
+               result.stderr
         assert file_exists(sandbox)
         sandbox.clean_up()
 
-    def test_dot_dot_argument_is_skipped_even_in_subdirs(self):
+    def test_dot_dot_argument_is_skipped_even_in_subdirs(self, temp_dir,
+                                                         runner):
         sandbox = MyPath.make_temp_dir()
 
-        self.fixture.run_trashput("%s/.." % sandbox)
+        result = runner.run_trashput(["%s/.." % sandbox])
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be written on stderr
-        self.assertEqual("trash-put: cannot trash '..' directory '%s/..'\n" %
-                         sandbox,
-                         self.fixture.stderr)
-
+        assert result.stderr == (
+                "trash-put: cannot trash '..' directory '%s/..'\n" % sandbox)
         assert file_exists(sandbox)
         sandbox.clean_up()
 
 
 @pytest.mark.slow
-class TestUnsecureTrashDirMessages(unittest.TestCase):
-    def setUp(self):
-        self.temp_dir = MyPath.make_temp_dir()
-        self.fake_vol = self.temp_dir / 'fake-vol'
-        self.fixture = TrashPutFixture()
-        require_empty_dir(self.fake_vol)
-        make_empty_file(self.fake_vol / 'foo')
+class TestUnsecureTrashDirMessages:
 
-    def test_when_is_unsticky(self):
-        require_empty_dir(self.fake_vol / '.Trash')
+    @pytest.fixture
+    def fake_vol(self, temp_dir):
+        vol = temp_dir / 'fake-vol'
+        require_empty_dir(vol)
+        return vol
 
-        self.fixture.run_trashput('--force-volume', self.fake_vol,
-                                  '-v',
-                                  self.fake_vol / 'foo')
+    def test_when_is_unsticky(self, temp_dir, fake_vol, runner):
+        make_empty_file(fake_vol / 'foo')
+        require_empty_dir(fake_vol / '.Trash')
 
-        assert self.clean_and_focus('/.Trash/501') == [
+        result = runner.run_trashput(['--force-volume',
+                                      fake_vol,
+                                      '-v',
+                                      fake_vol / 'foo'])
+
+        assert result.clean_vol_and_grep('/.Trash/501', fake_vol) == [
             'trash-put:  `- failed to trash /vol/foo in /vol/.Trash/501, because trash '
             'dir is insecure, its parent should be sticky, trash-dir: /vol/.Trash/501, '
             'parent: /vol/.Trash'
         ]
 
-    def test_when_it_is_not_a_dir(self):
-        make_empty_file(self.fake_vol / '.Trash')
+    def test_when_it_is_not_a_dir(self, fake_vol, runner, temp_dir):
+        make_empty_file(fake_vol / 'foo')
+        make_empty_file(fake_vol / '.Trash')
 
-        self.fixture.run_trashput('--force-volume', self.fake_vol,
-                                  '-v',
-                                  self.fake_vol / 'foo')
+        result = runner.run_trashput(['--force-volume',
+                                      fake_vol,
+                                      '-v',
+                                      fake_vol / 'foo'])
 
-        assert self.clean_and_focus('/.Trash/501') == [
+        assert result.clean_vol_and_grep('/.Trash/501', fake_vol) == [
             'trash-put:  `- failed to trash /vol/foo in /vol/.Trash/501, because trash '
             'dir cannot be created as its parent is a file instead of being a directory, '
             'trash-dir: /vol/.Trash/501, parent: /vol/.Trash'
         ]
 
-    def test_when_is_a_symlink(self):
-        make_sticky_dir(self.fake_vol / 'link-destination')
-        os.symlink('link-destination', self.fake_vol / '.Trash')
+    def test_when_is_a_symlink(self, fake_vol, temp_dir, runner):
+        make_empty_file(fake_vol / 'foo')
+        make_sticky_dir(fake_vol / 'link-destination')
+        os.symlink('link-destination', fake_vol / '.Trash')
 
-        self.fixture.run_trashput('--force-volume', self.fake_vol,
-                                  '-v', self.fake_vol / 'foo')
+        result = runner.run_trashput(['--force-volume',
+                                      fake_vol, '-v', fake_vol / 'foo'])
 
-        assert self.clean_and_focus("insecure") == [
+        assert result.clean_vol_and_grep("insecure", fake_vol) == [
             'trash-put:  `- failed to trash /vol/foo in /vol/.Trash/501, because '
             'trash dir is insecure, its parent should not be a symlink, trash-dir: '
             '/vol/.Trash/501, parent: /vol/.Trash']
-
-    def tearDown(self):
-        self.temp_dir.clean_up()
-
-    def clean_and_focus(self, pattern):
-        focus = grep(self.fixture.stderr, pattern)
-        cleaned = replace(self.fake_vol, "/vol", focus)
-        return cleaned
-
-
-def grep(lines, pattern):  # type: (str, str) -> List[str]
-    return [line for line in lines.splitlines() if pattern in line]
-
-
-def replace(pattern,  # type: str
-            replacement,  # type: str
-            lines,  # type: List[str]
-            ):  # type: (...) -> List[str]
-    return [line.replace(pattern, replacement) for line in lines]
