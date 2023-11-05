@@ -38,7 +38,11 @@ def main():
                    randint=RandomIntGenerator(),
                    stderr=sys.stderr,
                    volumes=RealVolumeOf())
-    return cmd.run_put(sys.argv, cast_environ(os.environ), os.getuid())
+    try:
+        uid = int(os.environ["TRASH_PUT_FAKE_UID_FOR_TESTING"])
+    except KeyError:
+        uid = os.getuid()
+    return cmd.run_put(sys.argv, cast_environ(os.environ), uid)
 
 
 def make_cmd(clock,

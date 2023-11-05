@@ -29,6 +29,7 @@ class Runner:
                      env=None,  # type: Optional[Environ]
                      ):  # type: (...) -> run_command.CmdResult
         env = env or {}
+        env['TRASH_PUT_FAKE_UID_FOR_TESTING'] = '123'
         return run_command.run_command(self.cwd,
                                        "trash-put",
                                        list(args),
@@ -142,9 +143,9 @@ class TestUnsecureTrashDirMessages:
                                       '-v',
                                       fake_vol / 'foo'])
 
-        assert result.clean_vol_and_grep('/.Trash/501', fake_vol) == [
-            'trash-put:  `- failed to trash /vol/foo in /vol/.Trash/501, because trash '
-            'dir is insecure, its parent should be sticky, trash-dir: /vol/.Trash/501, '
+        assert result.clean_vol_and_grep('/.Trash/123', fake_vol) == [
+            'trash-put:  `- failed to trash /vol/foo in /vol/.Trash/123, because trash '
+            'dir is insecure, its parent should be sticky, trash-dir: /vol/.Trash/123, '
             'parent: /vol/.Trash'
         ]
 
@@ -157,10 +158,10 @@ class TestUnsecureTrashDirMessages:
                                       '-v',
                                       fake_vol / 'foo'])
 
-        assert result.clean_vol_and_grep('/.Trash/501', fake_vol) == [
-            'trash-put:  `- failed to trash /vol/foo in /vol/.Trash/501, because trash '
+        assert result.clean_vol_and_grep('/.Trash/123', fake_vol) == [
+            'trash-put:  `- failed to trash /vol/foo in /vol/.Trash/123, because trash '
             'dir cannot be created as its parent is a file instead of being a directory, '
-            'trash-dir: /vol/.Trash/501, parent: /vol/.Trash'
+            'trash-dir: /vol/.Trash/123, parent: /vol/.Trash'
         ]
 
     def test_when_is_a_symlink(self, fake_vol, temp_dir, runner):
@@ -172,6 +173,6 @@ class TestUnsecureTrashDirMessages:
                                       fake_vol, '-v', fake_vol / 'foo'])
 
         assert result.clean_vol_and_grep("insecure", fake_vol) == [
-            'trash-put:  `- failed to trash /vol/foo in /vol/.Trash/501, because '
+            'trash-put:  `- failed to trash /vol/foo in /vol/.Trash/123, because '
             'trash dir is insecure, its parent should not be a symlink, trash-dir: '
-            '/vol/.Trash/501, parent: /vol/.Trash']
+            '/vol/.Trash/123, parent: /vol/.Trash']
