@@ -7,7 +7,7 @@ R = TypeVar('R')
 
 
 class JobStatus(Generic[R]):
-    def __init__(self, message):
+    def __init__(self, message):  # type: (str) -> None
         self.log_entries = [LogEntry(Level.DEBUG, message)]
 
     def has_succeeded(self):
@@ -21,7 +21,10 @@ class JobStatus(Generic[R]):
 
 
 class NeedsMoreAttempts(JobStatus, Generic[R]):
-    def __init__(self, trashinfo_path, message):
+    def __init__(self,
+                 trashinfo_path,  # type: str
+                 message,  # type: str
+                 ):
         super(NeedsMoreAttempts, self).__init__(message)
         self.trashinfo_path = trashinfo_path
 

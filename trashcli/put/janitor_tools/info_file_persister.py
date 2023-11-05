@@ -58,6 +58,7 @@ class InfoFilePersister:
             trashinfo_path = os.path.join(data.info_dir_path,
                                           trashinfo_basename)
             if os.path.exists(path_of_backup_copy(trashinfo_path)):
+                index += 1
                 continue
             try:
                 self.fs.atomic_write(trashinfo_path, data.content)
