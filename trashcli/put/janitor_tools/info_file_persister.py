@@ -40,7 +40,7 @@ class InfoFilePersister:
                               trashinfo_data,  # type: TrashinfoData
                               log_data,  # type: LogData
                               ):  # type: (...) -> TrashedFile
-        return JobExecutor(self.logger).execute(
+        return JobExecutor(self.logger, TrashedFile).execute(
             self.try_persist(trashinfo_data), log_data)
 
     Result = Iterator[JobStatus[TrashedFile]]

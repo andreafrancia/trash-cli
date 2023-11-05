@@ -125,7 +125,7 @@ def gentle_stat_read(path):
         return str(e)
 
 
-def remove_octal_prefix(s):
+def remove_octal_prefix(s):  # type: (str) -> str
     remove_new_octal_format = s.replace('0o', '')
     remove_old_octal_format = re.sub(r"^0", '', remove_new_octal_format)
     return remove_old_octal_format

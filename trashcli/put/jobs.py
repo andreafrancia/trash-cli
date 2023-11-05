@@ -1,4 +1,4 @@
-from typing import Generic, Iterator, TypeVar
+from typing import Generic, Iterator, TypeVar, Type
 
 from trashcli.put.core.logs import LogEntry, Level
 from trashcli.put.my_logger import MyLogger, LogData
@@ -20,7 +20,7 @@ class JobStatus(Generic[R]):
         return self.log_entries
 
 
-class NeedsMoreAttempts(JobStatus):
+class NeedsMoreAttempts(JobStatus, Generic[R]):
     def __init__(self, trashinfo_path, message):
         super(NeedsMoreAttempts, self).__init__(message)
         self.trashinfo_path = trashinfo_path
@@ -30,7 +30,10 @@ class NeedsMoreAttempts(JobStatus):
 
 
 class Succeeded(JobStatus, Generic[R]):
-    def __init__(self, result, message):
+    def __init__(self,
+                 result,  # type: R
+                 message,  # type: str
+                 ):
         super(Succeeded, self).__init__(message)
         self._result = result  # type: R
 
@@ -44,6 +47,7 @@ class Succeeded(JobStatus, Generic[R]):
 class JobExecutor(Generic[R]):
     def __init__(self,
                  logger,  # type: MyLogger
+                 _result_type,  # type: Type[R]
                  ):
         self.logger = logger
 
