@@ -1,4 +1,5 @@
 import argparse
+from enum import Enum
 from typing import List, Union
 
 from trashcli.lib.print_version import PrintVersionArgs
@@ -9,7 +10,6 @@ from trashcli.list.minor_actions.list_volumes import PrintVolumesArgs
 from trashcli.list.minor_actions.print_python_executable import \
     PrintPythonExecutableArgs
 from trashcli.shell_completion import add_argument_to, TRASH_DIRS
-from trashcli.super_enum import SuperEnum
 
 Args = Union[
     PrintVersionArgs,
@@ -30,23 +30,23 @@ class Parser:
         self.parser.add_argument('--version',
                                  dest='action',
                                  action='store_const',
-                                 const=Action.print_version,
-                                 default=Action.list_trash,
+                                 const=ListAction.print_version,
+                                 default=ListAction.list_trash,
                                  help="show program's version number and exit")
         self.parser.add_argument('--debug-volumes',
                                  dest='action',
                                  action='store_const',
-                                 const=Action.debug_volumes,
+                                 const=ListAction.debug_volumes,
                                  help=argparse.SUPPRESS)
         self.parser.add_argument('--volumes',
                                  dest='action',
                                  action='store_const',
-                                 const=Action.list_volumes,
+                                 const=ListAction.list_volumes,
                                  help="list volumes")
         self.parser.add_argument('--trash-dirs',
                                  dest='action',
                                  action='store_const',
-                                 const=Action.list_trash_dirs,
+                                 const=ListAction.list_trash_dirs,
                                  help="list trash dirs")
         self.parser.add_argument('--trash-dir',
                                  action='append',
@@ -72,7 +72,7 @@ class Parser:
         self.parser.add_argument('--python',
                                  dest='action',
                                  action='store_const',
-                                 const=Action.print_python_executable,
+                                 const=ListAction.print_python_executable,
                                  help=argparse.SUPPRESS)
 
     def parse_list_args(self,
@@ -82,31 +82,31 @@ class Parser:
 
         parsed = self.parser.parse_args(args)
 
-        if parsed.action == Action.print_version:
+        if parsed.action == ListAction.print_version:
             return PrintVersionArgs(argv0=argv0)
-        if parsed.action == Action.list_volumes:
+        if parsed.action == ListAction.list_volumes:
             return PrintVolumesArgs()
-        if parsed.action == Action.debug_volumes:
+        if parsed.action == ListAction.debug_volumes:
             return DebugVolumesArgs()
-        if parsed.action == Action.list_trash_dirs:
+        if parsed.action == ListAction.list_trash_dirs:
             return ListTrashDirsArgs(
                 trash_dirs=parsed.trash_dirs,
                 all_users=parsed.all_users
             )
-        if parsed.action == Action.list_trash:
+        if parsed.action == ListAction.list_trash:
             return ListTrashArgs(
                 trash_dirs=parsed.trash_dirs,
                 attribute_to_print=parsed.attribute_to_print,
                 show_files=parsed.show_files,
                 all_users=parsed.all_users
             )
-        if parsed.action == Action.print_python_executable:
+        if parsed.action == ListAction.print_python_executable:
             return PrintPythonExecutableArgs()
 
         raise ValueError('Unknown action: {}'.format(parsed.action))
 
 
-class Action(SuperEnum):
+class ListAction(Enum):
     debug_volumes = 'debug_volumes'
     print_version = 'print_version'
     list_trash = 'list_trash'
