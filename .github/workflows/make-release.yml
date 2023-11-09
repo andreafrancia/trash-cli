@@ -1,0 +1,31 @@
+name: Make Release
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+    - name: Set version
+      run: |
+        scripts/set-dev-version ${{ github.ref_name }} ${{ github.sha }}
+
+    - name: Make release
+      run: scripts/test-sdist
+
+    - name: version name
+      run: echo "version=$(python -c 'import setuptools; setuptools.setup()' --version)" >> "$GITHUB_OUTPUT"
+      id: version-name
+
+    - name: Publish release
+      uses: actions/upload-artifact@v3
+      with:
+        name: trash-cli-${{ steps.version-name.outputs.version }}.zip
+        path: dist/*.tar.gz
+        if-no-files-found: error
+

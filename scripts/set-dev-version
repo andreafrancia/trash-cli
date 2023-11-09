@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+from __future__ import print_function
+
+import argparse
+import datetime
+import os
+import sys
+
+root = os.path.realpath(os.path.join(__file__, "..", ".."))
+sys.path.insert(0, root)
+from scripts import bump
+
+parser = argparse.ArgumentParser()
+parser.add_argument('ref')
+parser.add_argument('sha')
+args = parser.parse_args()
+
+if "-" in args.ref:
+    print("Ref cannot contain '-': %s\n" % args.ref +
+          "The reason is because any '-' will be converted to '.' by setuptools "
+          "during the egg_info phase that will result in an error in "
+          "scripts/make-scripts because it will be not able to find the .tar.gz file",
+          file=sys.stderr)
+    sys.exit(1)
+new_version = (bump.version_from_date(datetime.date.today()) +
+               '.dev0+git.%s.%s' % (args.ref, args.sha))
+version_file = os.path.join(root, 'trashcli', 'trash.py')
+bump.save_new_version(new_version, version_file)
+
+os.system("cat %s" % version_file)
