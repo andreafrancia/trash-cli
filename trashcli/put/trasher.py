@@ -1,13 +1,15 @@
 import os
 
 from trashcli.lib.environ import Environ
+from trashcli.put.core.trash_result import TrashResult
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.fs.fs import Fs
 from trashcli.put.my_logger import LogData
-from trashcli.put.parser import mode_force, mode_interactive
+from trashcli.put.parser import mode_force
+from trashcli.put.parser import mode_interactive
 from trashcli.put.reporter import TrashPutReporter
-from trashcli.put.core.trash_result import TrashResult
-from trashcli.put.user import User, user_replied_no
+from trashcli.put.user import User
+from trashcli.put.user import user_replied_no
 
 
 class Trasher:
@@ -56,7 +58,7 @@ class Trasher:
             if mode == mode_force:
                 return TrashResult.Success
             else:
-                self.reporter.unable_to_trash_file(path, log_data)
+                self.reporter.unable_to_trash_file_non_existent(path, log_data)
                 return TrashResult.Failure
 
         if mode == mode_interactive and self.fs.is_accessible(path):

@@ -1,18 +1,22 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 import os
 import re
-from grp import getgrgid
 from pwd import getpwuid
 from typing import List
 from typing import Tuple
 
+from grp import getgrgid
+
 from trashcli.lib.environ import Environ
-from trashcli.lib.exit_codes import EX_OK, EX_IOERR
+from trashcli.lib.exit_codes import EX_IOERR
+from trashcli.lib.exit_codes import EX_OK
 from trashcli.put.core.candidate import Candidate
-from trashcli.put.core.failure_reason import FailureReason, LogContext
+from trashcli.put.core.failure_reason import FailureReason
+from trashcli.put.core.failure_reason import LogContext
 from trashcli.put.core.trash_all_result import TrashAllResult
 from trashcli.put.describer import Describer
-from trashcli.put.my_logger import MyLogger, LogData
+from trashcli.put.my_logger import LogData
+from trashcli.put.my_logger import MyLogger
 
 
 class TrashPutReporter:
@@ -31,9 +35,12 @@ class TrashPutReporter:
             "cannot trash %s '%s'" % (self._describe(file), file),
             program_name)
 
-    def unable_to_trash_file(self, f, log_data):
-        self.logger.warning2("cannot trash %s '%s'" % (self._describe(f), f),
-                             log_data.program_name)
+    def unable_to_trash_file_non_existent(self,
+                                          path,  # type: str
+                                          log_data, # type: LogData
+                                          ):
+        self.logger.warning2("cannot trash %s '%s'" % (
+            self._describe(path), path), log_data.program_name)
 
     # TODO
     def unable_to_trash_file2(self,
