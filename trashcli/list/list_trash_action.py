@@ -1,18 +1,21 @@
 from __future__ import print_function
 
 import os
-
-from typing import NamedTuple, List
+from typing import List
+from typing import NamedTuple
 
 from trashcli.lib.dir_reader import DirReader
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.lib.trash_dir_reader import TrashDirReader
-from trashcli.list.extractors import DeletionDateExtractor, SizeExtractor
+from trashcli.list.extractors import DeletionDateExtractor
+from trashcli.list.extractors import SizeExtractor
 from trashcli.parse_trashinfo.parse_path import parse_path
 from trashcli.parse_trashinfo.parser_error import ParseError
-from trashcli.trash_dirs_scanner import trash_dir_found, \
-    trash_dir_skipped_because_parent_not_sticky, \
+from trashcli.trash_dirs_scanner import trash_dir_found
+from trashcli.trash_dirs_scanner import \
     trash_dir_skipped_because_parent_is_symlink
+from trashcli.trash_dirs_scanner import \
+    trash_dir_skipped_because_parent_not_sticky
 
 
 class ListTrashArgs(
@@ -94,8 +97,8 @@ class ListTrash:
                 path, volume = event_args
                 trash_dir = TrashDirReader(self.dir_reader)
                 for trash_info in trash_dir.list_trashinfo(path):
-                    for msg in self.print_trashinfo(volume, trash_info,
-                                                    extractor, show_files):
+                    for msg in self._print_trashinfo(volume, trash_info,
+                                                     extractor, show_files):
                         yield msg
             elif event == trash_dir_skipped_because_parent_not_sticky:
                 path, = event_args
@@ -108,11 +111,11 @@ class ListTrash:
                     self.top_trashdir_skipped_because_parent_is_symlink(path))
                 yield msg
 
-    def print_trashinfo(self,
-                        volume,
-                        trashinfo_path,
-                        extractor,
-                        show_files):
+    def _print_trashinfo(self,
+                         volume,
+                         trashinfo_path,
+                         extractor,
+                         show_files):
         try:
             contents = self.content_reader.contents_of(trashinfo_path)
         except IOError as e:
