@@ -7,7 +7,8 @@ from trashcli.put.core.trashee import Trashee
 from trashcli.put.fs.parent_realpath import ParentRealpathFs
 from trashcli.put.fs.volume_of_parent import VolumeOfParent
 from trashcli.put.janitor import Janitor
-from trashcli.put.my_logger import MyLogger, LogData
+from trashcli.put.my_logger import LogData
+from trashcli.put.my_logger import MyLogger
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 
@@ -44,7 +45,6 @@ class FileTrasher:
         trashee = Trashee(path, volume)
         candidates = self._select_candidates(volume, user_trash_dir, environ,
                                              uid, home_fallback)
-        self.reporter.volume_of_file(volume, log_data)
         failures = []
         for candidate in candidates:
             self.reporter.trash_dir_with_volume(candidate, log_data)
@@ -58,7 +58,7 @@ class FileTrasher:
                 return TrashResult.Success
             else:
                 failures.append((candidate, trashing.reason))
-        self.reporter.unable_to_trash_file2(path, log_data, failures,
+        self.reporter.unable_to_trash_file2(trashee, log_data, failures,
                                             environ)
         return TrashResult.Failure
 

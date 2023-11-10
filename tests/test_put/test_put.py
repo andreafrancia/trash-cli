@@ -1,16 +1,20 @@
 import os
-from typing import Optional, NamedTuple, List
+from typing import List
+from typing import NamedTuple
+from typing import Optional
 
 import flexmock
 from six import StringIO
 
 from tests.support.fake_is_mount import FakeIsMount
-from tests.test_put.support.dummy_clock import FixedClock, jan_1st_2024
+from tests.test_put.support.dummy_clock import FixedClock
+from tests.test_put.support.dummy_clock import jan_1st_2024
 from tests.test_put.support.fake_fs.failing_fake_fs import FailingFakeFs
 from tests.test_put.support.fake_random import FakeRandomInt
 from trashcli.fstab.volume_of import VolumeOfImpl
 from trashcli.lib.environ import Environ
-from trashcli.lib.exit_codes import EX_OK, EX_IOERR
+from trashcli.lib.exit_codes import EX_IOERR
+from trashcli.lib.exit_codes import EX_OK
 from trashcli.lib.my_input import HardCodedInput
 from trashcli.put.main import make_cmd
 from trashcli.put.parser import ensure_int
@@ -68,14 +72,10 @@ class TestPut:
         self.fs.touch("foo")
         self.fs.fail_move_on("/foo")
 
-        result = self.run_cmd(['trash-put', '-vvv', '/foo'])
+        result = self.run_cmd(['trash-put', '-v', '/foo'])
 
         assert result.all() == [EX_IOERR, [
-            'trash-put: volume of file: /',
-            'trash-put: trying trash dir: /.Trash/123 from volume: /',
-            'trash-put: trying trash dir: /.Trash-123 from volume: /',
-            'trash-put: .trashinfo created as /.Trash-123/info/foo.trashinfo.',
-            "trash-put: cannot trash regular empty file '/foo'",
+            "trash-put: cannot trash regular empty file '/foo' (from volume '/')",
             'trash-put:  `- failed to trash /foo in /.Trash/123, because trash dir cannot be created because its parent does not exists, trash-dir: /.Trash/123, parent: /.Trash',
             'trash-put:  `- failed to trash /foo in /.Trash-123, because failed to move /foo in /.Trash-123/files: move failed']]
 
@@ -168,15 +168,12 @@ class TestPut:
         self.fs.make_file("pippo")
         self.fs.makedirs('/.Trash-123', 0o000)
 
-        result = self.run_cmd(['trash-put', '-vvv', 'pippo'], {}, 123)
+        result = self.run_cmd(['trash-put', '-v', 'pippo'], {}, 123)
 
         assert result.all() == [
             EX_IOERR,
             [
-                'trash-put: volume of file: /',
-                'trash-put: trying trash dir: /.Trash/123 from volume: /',
-                'trash-put: trying trash dir: /.Trash-123 from volume: /',
-                "trash-put: cannot trash regular empty file 'pippo'",
+                "trash-put: cannot trash regular empty file 'pippo' (from volume '/')",
                 'trash-put:  `- failed to trash pippo in /.Trash/123, because trash dir cannot be created because its parent does not exists, trash-dir: /.Trash/123, parent: /.Trash',
                 "trash-put:  `- failed to trash pippo in /.Trash-123, because error during directory creation: [Errno 13] Permission denied: '/.Trash-123/files'"
             ]
@@ -188,16 +185,11 @@ class TestPut:
         self.fs.make_file("/disk1/pippo")
         self.is_mount.add_mount_point('/disk1')
 
-        result = self.run_cmd(['trash-put', '-vvv', '--home-fallback',
+        result = self.run_cmd(['trash-put', '-v', '--home-fallback',
                                '/disk1/pippo'],
                               {'HOME': '/home/user'}, 123)
 
-        assert result[0] == ['trash-put: volume of file: /disk1',
-                             'trash-put: trying trash dir: /home/user/.local/share/Trash from volume: /',
-                             'trash-put: trying trash dir: /disk1/.Trash/123 from volume: /disk1',
-                             'trash-put: trying trash dir: /disk1/.Trash-123 from volume: /disk1',
-                             'trash-put: trying trash dir: /home/user/.local/share/Trash from volume: /',
-                             "trash-put: cannot trash regular empty file '/disk1/pippo'",
+        assert result[0] == ["trash-put: cannot trash regular empty file '/disk1/pippo' (from volume '/disk1')",
                              'trash-put:  `- failed to trash /disk1/pippo in /home/user/.local/share/Trash, because trash dir and file to be trashed are not in the same volume, trash-dir volume: /, file volume: /disk1',
                              'trash-put:  `- failed to trash /disk1/pippo in /disk1/.Trash/123, because trash dir cannot be created because its parent does not exists, trash-dir: /disk1/.Trash/123, parent: /disk1/.Trash',
                              "trash-put:  `- failed to trash /disk1/pippo in /disk1/.Trash-123, because error during directory creation: [Errno 13] Permission denied: '/disk1/.Trash-123/files'",
@@ -208,15 +200,11 @@ class TestPut:
             and_raise(IOError, 'Corruption')
         self.fs.make_file("foo")
 
-        result = self.run_cmd(['trash-put', '-vvv', 'foo'],
+        result = self.run_cmd(['trash-put', '-v', 'foo'],
                               {"HOME": "/home/user"}, 123)
         assert result.all() == [
             EX_IOERR,
-            ['trash-put: volume of file: /',
-             'trash-put: trying trash dir: /home/user/.local/share/Trash from volume: /',
-             'trash-put: trying trash dir: /.Trash/123 from volume: /',
-             'trash-put: trying trash dir: /.Trash-123 from volume: /',
-             "trash-put: cannot trash regular empty file 'foo'",
+            ["trash-put: cannot trash regular empty file 'foo' (from volume '/')",
              'trash-put:  `- failed to trash foo in /home/user/.local/share/Trash, because failed to generate trashinfo content: Corruption',
              'trash-put:  `- failed to trash foo in /.Trash/123, because trash dir cannot be created because its parent does not exists, trash-dir: /.Trash/123, parent: /.Trash',
              'trash-put:  `- failed to trash foo in /.Trash-123, because failed to generate trashinfo content: Corruption']]
@@ -276,7 +264,7 @@ class TestPut:
                           'content_of_trashinfo': None,
                           'exit_code': EX_IOERR,
                           'stderr': [
-                              "trash-put: cannot trash regular file 'pippo'",
+                              "trash-put: cannot trash regular file 'pippo' (from volume '/')",
                               'trash-put:  `- failed to trash pippo in /home/user/.local/share/Trash, because failed to move pippo in /home/user/.local/share/Trash/files: No space left on device',
                               'trash-put:  `- failed to trash pippo in /.Trash/123, because trash dir cannot be created because its parent does not exists, trash-dir: /.Trash/123, parent: /.Trash',
                               'trash-put:  `- failed to trash pippo in /.Trash-123, because failed to move pippo in /.Trash-123/files: No space left on device'],

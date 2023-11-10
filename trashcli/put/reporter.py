@@ -14,6 +14,7 @@ from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.failure_reason import FailureReason
 from trashcli.put.core.failure_reason import LogContext
 from trashcli.put.core.trash_all_result import TrashAllResult
+from trashcli.put.core.trashee import Trashee
 from trashcli.put.describer import Describer
 from trashcli.put.my_logger import LogData
 from trashcli.put.my_logger import MyLogger
@@ -44,15 +45,16 @@ class TrashPutReporter:
 
     # TODO
     def unable_to_trash_file2(self,
-                              path,  # type: str
+                              trashee,  # type: Trashee
                               log_data,  # type: LogData
                               failures,
                               # type: List[Tuple[Candidate, FailureReason]]
                               environ,  # type: Environ
                               ):
-
-        self.logger.warning2("cannot trash %s '%s'" % (
-            self._describe(path), path), log_data.program_name)
+        path = trashee.path
+        volume = trashee.volume
+        self.logger.warning2("cannot trash %s '%s' (from volume '%s')" % (
+            self._describe(path), path, volume), log_data.program_name)
         for candidate, reason in failures:
             context = LogContext(path, candidate, environ)
             message = " `- failed to trash %s in %s, because %s" % (
@@ -106,9 +108,6 @@ class TrashPutReporter:
             return EX_OK
         else:
             return EX_IOERR
-
-    def volume_of_file(self, volume, log_data):
-        self.logger.info("volume of file: %s" % volume, log_data)
 
     def report_reason(self,
                       reason,  # type: FailureReason
