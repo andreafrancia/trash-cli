@@ -1,14 +1,19 @@
-from typing import Generic, Iterator, TypeVar, Type
+from typing import Generic
+from typing import Iterator
+from typing import Type
+from typing import TypeVar
 
-from trashcli.put.core.logs import LogEntry, Level
-from trashcli.put.my_logger import MyLogger, LogData
+from trashcli.put.core.logs import Level
+from trashcli.put.core.logs import LogData
+from trashcli.put.core.logs import LogEntry
+from trashcli.put.core.logs import MessageStr
 
 R = TypeVar('R')
 
 
 class JobStatus(Generic[R]):
     def __init__(self, message):  # type: (str) -> None
-        self.log_entries = [LogEntry(Level.DEBUG, message)]
+        self.log_entries = [LogEntry(Level.DEBUG, MessageStr(message))]
 
     def has_succeeded(self):
         return isinstance(self, Succeeded)

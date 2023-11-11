@@ -51,7 +51,7 @@ class Trasher:
         """
 
         if self._should_skipped_by_specs(path):
-            self.reporter.unable_to_trash_dot_entries(path, program_name)
+            self.reporter.unable_to_trash_dot_entries(path, log_data)
             return TrashResult.Failure
 
         if not self.fs.lexists(path):

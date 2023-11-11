@@ -1,11 +1,10 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 import os
 import re
+from grp import getgrgid
 from pwd import getpwuid
 from typing import List
 from typing import Tuple
-
-from grp import getgrgid
 
 from trashcli.lib.environ import Environ
 from trashcli.lib.exit_codes import EX_IOERR
@@ -13,10 +12,13 @@ from trashcli.lib.exit_codes import EX_OK
 from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.failure_reason import FailureReason
 from trashcli.put.core.failure_reason import LogContext
+from trashcli.put.core.logs import LogData
+from trashcli.put.core.logs import debug_str
+from trashcli.put.core.logs import info_str
+from trashcli.put.core.logs import warning_str
 from trashcli.put.core.trash_all_result import TrashAllResult
 from trashcli.put.core.trashee import Trashee
 from trashcli.put.describer import Describer
-from trashcli.put.my_logger import LogData
 from trashcli.put.my_logger import MyLogger
 
 
@@ -31,17 +33,21 @@ class TrashPutReporter:
     def _describe(self, path):
         return self.describer.describe(path)
 
-    def unable_to_trash_dot_entries(self, file, program_name):
-        self.logger.warning2(
-            "cannot trash %s '%s'" % (self._describe(file), file),
-            program_name)
+    def unable_to_trash_dot_entries(self,
+                                    file,
+                                    log_data,  # type: LogData
+                                    ):
+        self.logger.log_put(warning_str(
+            "cannot trash %s '%s'" % (self._describe(file), file)),
+            log_data)
 
     def unable_to_trash_file_non_existent(self,
                                           path,  # type: str
-                                          log_data, # type: LogData
+                                          log_data,  # type: LogData
                                           ):
-        self.logger.warning2("cannot trash %s '%s'" % (
-            self._describe(path), path), log_data.program_name)
+        self.logger.log_put(
+            warning_str("cannot trash %s '%s'" % (self._describe(path), path)),
+            log_data)
 
     # TODO
     def unable_to_trash_file2(self,
@@ -53,15 +59,16 @@ class TrashPutReporter:
                               ):
         path = trashee.path
         volume = trashee.volume
-        self.logger.warning2("cannot trash %s '%s' (from volume '%s')" % (
-            self._describe(path), path, volume), log_data.program_name)
+        self.logger.log_put(warning_str(
+            "cannot trash %s '%s' (from volume '%s')" % (
+                self._describe(path), path, volume)), log_data)
         for candidate, reason in failures:
             context = LogContext(path, candidate, environ)
             message = " `- failed to trash %s in %s, because %s" % (
                 path,
                 candidate.norm_path(),
                 reason.log_entries(context))
-            self.logger.warning2(message, log_data.program_name)
+            self.logger.log_put(warning_str(message), log_data)
 
     def file_has_been_trashed_in_as(self,
                                     trashed_file,
@@ -69,15 +76,16 @@ class TrashPutReporter:
                                     log_data,  # type: LogData
                                     environ):
         trash_dir_path = trash_dir.shrink_user(environ)
-        self.logger.info("'%s' trashed in %s" % (trashed_file, trash_dir_path),
-                         log_data)
+        self.logger.log_put(info_str("'%s' trashed in %s" % (trashed_file,
+                                                             trash_dir_path)),
+                            log_data)
 
     def log_info_messages(self,
                           messages,  # type: List[str]
                           log_data,  # type: LogData
                           ):
         for message in messages:
-            self.logger.info(message, log_data)
+            self.logger.log_put(info_str(message), log_data)
 
     @classmethod
     def log_data_for_debugging(cls, error):
@@ -96,10 +104,10 @@ class TrashPutReporter:
                               log_data,  # type: LogData
                               ):
         # type: (...) -> None
-        self.logger.debug(
+        self.logger.log_put(debug_str(
             "trying trash dir: %s from volume: %s" % (candidate.norm_path(),
-                                                      candidate.volume),
-            log_data)
+                                                      candidate.volume)),
+                            log_data)
 
     def exit_code(self,
                   result,  # type: TrashAllResult
@@ -117,7 +125,7 @@ class TrashPutReporter:
                       candidate,  # type: Candidate
                       ):  # type: (...) -> None
         context = LogContext(trashee_path, candidate, environ)
-        self.logger.info(reason.log_entries(context), log_data)
+        self.logger.log_put(info_str(reason.log_entries(context)), log_data)
 
 
 def gentle_stat_read(path):
