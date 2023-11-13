@@ -3,13 +3,14 @@ import os
 import re
 from grp import getgrgid
 from pwd import getpwuid
-from typing import List
+from typing import List, NamedTuple
 from typing import Tuple
 
 from trashcli.lib.environ import Environ
 from trashcli.lib.exit_codes import EX_IOERR
 from trashcli.lib.exit_codes import EX_OK
 from trashcli.put.core.candidate import Candidate
+from trashcli.put.core.either import Either, Right, Left
 from trashcli.put.core.failure_reason import FailureReason
 from trashcli.put.core.failure_reason import LogContext
 from trashcli.put.core.logs import LogData
@@ -107,7 +108,7 @@ class TrashPutReporter:
         self.logger.log_put(debug_str(
             "trying trash dir: %s from volume: %s" % (candidate.norm_path(),
                                                       candidate.volume)),
-                            log_data)
+            log_data)
 
     def exit_code(self,
                   result,  # type: TrashAllResult
@@ -128,18 +129,45 @@ class TrashPutReporter:
         self.logger.log_put(info_str(reason.log_entries(context)), log_data)
 
 
+class Stats(NamedTuple('Result', [
+    ('user', str),
+    ('group', str),
+    ('mode', int),
+])):
+    def octal_mode(self):  # () -> str
+        return self._remove_octal_prefix(oct(self.mode & 0o777))
+
+    @staticmethod
+    def _remove_octal_prefix(mode):  # type: (str) -> str
+        remove_new_octal_format = mode.replace('0o', '')
+        remove_old_octal_format = re.sub(r"^0", '', remove_new_octal_format)
+        return remove_old_octal_format
+
+
+class StatReader:
+    def read_stats(self,
+                   path,  # type: str
+                   ):  # type: (...) -> Either[Result, Exception]
+        try:
+            stats = os.lstat(path)
+            user = getpwuid(stats.st_uid).pw_name
+            group = getgrgid(stats.st_gid).gr_name
+            mode = stats.st_mode
+
+            return Right(Stats(user, group, mode))
+        except (IOError, OSError) as e:
+            return Left(e)
+
+
 def gentle_stat_read(path):
-    try:
-        stats = os.lstat(path)
-        user = getpwuid(stats.st_uid).pw_name
-        group = getgrgid(stats.st_gid).gr_name
-        perms = remove_octal_prefix(oct(stats.st_mode & 0o777))
-        return "%s %s %s" % (perms, user, group)
-    except OSError as e:
-        return str(e)
+    def stats_str(stats):  # type: (Either[Stats, Exception]) -> str
+        if isinstance(result, Right):
+            value = result.value()
+            return "%s %s %s" % (value.octal_mode(), value.user, value.group)
+        elif isinstance(result, Left):
+            return str(result.error())
+        else:
+            raise ValueError()
 
-
-def remove_octal_prefix(s):  # type: (str) -> str
-    remove_new_octal_format = s.replace('0o', '')
-    remove_old_octal_format = re.sub(r"^0", '', remove_new_octal_format)
-    return remove_old_octal_format
+    result = StatReader().read_stats(path)
+    return stats_str(result)
