@@ -1,9 +1,16 @@
 import os
 import stat
+from typing import NamedTuple
 
 from trashcli import fs
 from trashcli.fs import write_file
 from trashcli.put.fs.fs import Fs
+
+
+class Stat(NamedTuple('Stat', [
+    ('mode', int)
+])):
+    pass
 
 
 class RealFs(Fs):
@@ -37,6 +44,13 @@ class RealFs(Fs):
 
     def makedirs(self, path, mode):
         os.makedirs(path, mode)
+
+    def lstat(self, path):
+        stat = os.lstat(path)
+        return Stat(mode=stat.st_mode)
+
+    def mkdir(self, path):
+        os.mkdir(path)
 
     def move(self, path, dest):
         return fs.move(path, dest)
