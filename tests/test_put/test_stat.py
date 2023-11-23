@@ -22,8 +22,20 @@ class TestOctal:
 
 
 class TestStat:
-    def test(self, temp_dir):
+    def test_mode_for_a_dir(self, temp_dir):
         fs = RealFs()
         fs.mkdir(temp_dir / 'foo')
         stat = fs.lstat(temp_dir / 'foo')
-        assert stat.mode == 16877
+        assert octal(stat.mode) == '0o40755'
+
+    def test_mode_for_a_file(self, temp_dir):
+        fs = RealFs()
+        fs.touch(temp_dir / 'foo')
+        stat = fs.lstat(temp_dir / 'foo')
+        assert octal(stat.mode) == '0o100644'
+
+    def test_mode_for_a_symlink(self, temp_dir):
+        fs = RealFs()
+        fs.symlink(temp_dir / 'foo', temp_dir / 'bar')
+        stat = fs.lstat(temp_dir / 'bar')
+        assert octal(stat.mode) == '0o120755'

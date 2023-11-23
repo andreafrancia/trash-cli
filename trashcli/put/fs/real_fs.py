@@ -15,6 +15,14 @@ class Stat(NamedTuple('Stat', [
 
 class RealFs(Fs):
 
+    def symlink(self, src, dest):  # type: (str, str) -> None
+        os.symlink(src, dest)
+
+    def touch(self, path):  # type: (str) -> None
+        with open(path, 'a'):
+            import os
+            os.utime(path, None)
+
     def atomic_write(self, path, content):
         fs.atomic_write(path, content)
 
