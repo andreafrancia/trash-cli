@@ -3,6 +3,7 @@ import os
 import pwd
 import stat
 from typing import NamedTuple
+from typing import Optional
 
 from trashcli import fs
 from trashcli.fs import write_file
@@ -10,11 +11,17 @@ from trashcli.put.fs.fs import Fs
 
 
 class Names:
-    def username(self, uid):
-        return pwd.getpwuid(uid).pw_name
+    def username(self, uid):  # type: (int) -> Optional[str]
+        try:
+            return pwd.getpwuid(uid).pw_name
+        except KeyError as e:
+            return None
 
     def groupname(self, gid):
-        return grp.getgrgid(gid).gr_name
+        try:
+            return grp.getgrgid(gid).gr_name
+        except KeyError as e:
+            return None
 
 
 class Stat(NamedTuple('Stat', [
