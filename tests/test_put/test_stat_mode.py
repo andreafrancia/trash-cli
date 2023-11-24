@@ -3,7 +3,7 @@ from trashcli.put.fs.real_fs import RealFs
 from trashcli.put.octal import octal
 
 
-class TestStat:
+class TestStatMode:
     def setup_method(self):
         self.fs = RealFs()
 

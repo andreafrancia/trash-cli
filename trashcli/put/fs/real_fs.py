@@ -1,4 +1,6 @@
+import grp
 import os
+import pwd
 import stat
 from typing import NamedTuple
 
@@ -7,8 +9,18 @@ from trashcli.fs import write_file
 from trashcli.put.fs.fs import Fs
 
 
+class Names:
+    def username(self, uid):
+        return pwd.getpwuid(uid).pw_name
+
+    def groupname(self, gid):
+        return grp.getgrgid(gid).gr_name
+
+
 class Stat(NamedTuple('Stat', [
-    ('mode', int)
+    ('mode', int),
+    ('uid', int),
+    ('gid', int),
 ])):
     pass
 
@@ -55,7 +67,7 @@ class RealFs(Fs):
 
     def lstat(self, path):
         stat = os.lstat(path)
-        return Stat(mode=stat.st_mode)
+        return Stat(mode=stat.st_mode, uid=stat.st_uid, gid=stat.st_gid)
 
     def mkdir(self, path):
         os.mkdir(path)
