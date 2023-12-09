@@ -7,9 +7,11 @@ from six import StringIO
 
 from trashcli.fs import read_file
 from trashcli.put.fs.real_fs import RealFs
-from trashcli.put.janitor_tools.info_file_persister import TrashinfoData, \
-    InfoFilePersister
-from trashcli.put.my_logger import LogData, MyLogger
+from trashcli.put.janitor_tools.info_file_persister import InfoFilePersister
+from trashcli.put.janitor_tools.info_file_persister import TrashinfoData
+from trashcli.put.my_logger import LogData
+from trashcli.put.my_logger import MyLogger
+from trashcli.put.my_logger import StreamBackend
 from trashcli.put.suffix import Suffix
 from .support.fake_random import FakeRandomInt
 from ..support.my_path import MyPath
@@ -21,7 +23,8 @@ class TestPersistTrashInfo(unittest.TestCase):
         self.path = MyPath.make_temp_dir()
         self.fs = RealFs()
         self.stderr = StringIO()
-        self.logger = MyLogger(self.stderr)
+        self.backend = StreamBackend(self.stderr)
+        self.logger = MyLogger(self.backend)
         self.suffix = Suffix(FakeRandomInt([0,1]))
         self.info_dir = InfoFilePersister(self.fs, self.logger, self.suffix)
 

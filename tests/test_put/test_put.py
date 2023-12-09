@@ -17,6 +17,7 @@ from trashcli.lib.exit_codes import EX_IOERR
 from trashcli.lib.exit_codes import EX_OK
 from trashcli.lib.my_input import HardCodedInput
 from trashcli.put.main import make_cmd
+from trashcli.put.my_logger import RecordingBackend
 from trashcli.put.parser import ensure_int
 
 
@@ -29,11 +30,12 @@ class TestPut:
         self.volumes = VolumeOfImpl(self.is_mount, os.path.normpath)
         self.stderr = StringIO()
         self.clock = FixedClock(jan_1st_2024())
+        self.backend = RecordingBackend(self.stderr)
         self.cmd = make_cmd(clock=self.clock,
                             fs=self.fs,
                             user_input=self.user_input,
                             randint=self.randint,
-                            stderr=self.stderr,
+                            backend=self.backend,
                             volumes=self.volumes)
 
     def test_when_needs_a_different_suffix(self):

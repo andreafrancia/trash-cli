@@ -20,7 +20,9 @@ from trashcli.put.janitor_tools.info_creator import \
 from trashcli.put.janitor_tools.info_file_persister import InfoFilePersister
 from trashcli.put.janitor_tools.put_trash_dir import PutTrashDir
 from trashcli.put.janitor_tools.trash_dir_checker import TrashDirChecker
+from trashcli.put.my_logger import LoggerBackend
 from trashcli.put.my_logger import MyLogger
+from trashcli.put.my_logger import StreamBackend
 from trashcli.put.original_location import OriginalLocation
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.suffix import Suffix
@@ -36,7 +38,7 @@ def main():
                    fs=RealFs(),
                    user_input=RealInput(),
                    randint=RandomIntGenerator(),
-                   stderr=sys.stderr,
+                   backend=StreamBackend(sys.stderr),
                    volumes=RealVolumeOf())
     try:
         uid = int(os.environ["TRASH_PUT_FAKE_UID_FOR_TESTING"])
@@ -49,10 +51,10 @@ def make_cmd(clock,
              fs,  # type: Fs
              user_input,  # type: Input
              randint,  # type: IntGenerator
-             stderr,
+             backend,  # type: LoggerBackend
              volumes,
              ):  # type: (...) -> TrashPutCmd
-    logger = MyLogger(stderr)
+    logger = MyLogger(backend)
     describer = Describer(fs)
     reporter = TrashPutReporter(logger, describer)
     suffix = Suffix(randint)
