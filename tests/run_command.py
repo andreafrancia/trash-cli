@@ -2,6 +2,7 @@ import os
 import subprocess
 import sys
 from typing import List
+from typing import Optional
 
 import pytest
 
@@ -9,6 +10,7 @@ from scripts.make_scripts import script_path_for
 from tests.support.help_reformatting import reformat_help_message
 from tests.support.my_path import MyPath
 from trashcli import base_dir
+from trashcli.lib.environ import Environ
 
 
 class CmdResult:
@@ -89,6 +91,18 @@ def run_command(cwd, command, args=None, input='', env=None):
     return CmdResult(stdout.decode('utf-8'),
                      stderr.decode('utf-8'),
                      process.returncode)
+
+
+def run_trash_put_in_tmp_dir(tmp_dir,  # type: MyPath
+                             args,  # type: List[str]
+                             env=None,  # type: Optional[Environ]
+                             ):  # type: (...) -> List[str]
+    result = run_command(tmp_dir, 'trash-put', [
+        '-v',
+        '--trash-dir', tmp_dir / 'trash-dir',
+    ] + args
+                         , env=env)
+    return result.clean_temp_dir(tmp_dir)
 
 
 @pytest.fixture

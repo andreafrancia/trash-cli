@@ -14,6 +14,10 @@ class MyPath(str):
     def path_join(self, other_path):
         return MyPath(os.path.join(self, other_path))
 
+    @property
+    def parent(self):  # type: (...) -> MyPath
+        return MyPath(os.path.dirname(self))
+
     def clean_up(self):
         shutil.rmtree(self)
 
