@@ -1,7 +1,9 @@
 import os
+from typing import IO
 from typing import List
 from typing import NamedTuple
 from typing import Optional
+from typing import Tuple
 
 import flexmock
 from six import StringIO
@@ -16,8 +18,14 @@ from trashcli.lib.environ import Environ
 from trashcli.lib.exit_codes import EX_IOERR
 from trashcli.lib.exit_codes import EX_OK
 from trashcli.lib.my_input import HardCodedInput
+from trashcli.put.core.logs import Level
+from trashcli.put.core.logs import LogData
+from trashcli.put.core.logs import LogEntry
+from trashcli.put.core.logs import LogTag
 from trashcli.put.main import make_cmd
-from trashcli.put.my_logger import RecordingBackend
+from trashcli.put.my_logger import LoggerBackend
+from trashcli.put.my_logger import StreamBackend
+from trashcli.put.my_logger import is_right_for_level
 from trashcli.put.parser import ensure_int
 
 
@@ -76,7 +84,7 @@ class TestPut:
 
         result = self.run_cmd(['trash-put', '-v', '/foo'])
 
-        assert result.all() == [EX_IOERR, [
+        assert result.exit_code_and_stderr() == [EX_IOERR, [
             "trash-put: cannot trash regular empty file '/foo' (from volume '/')",
             'trash-put:  `- failed to trash /foo in /.Trash/123, because trash dir cannot be created because its parent does not exists, trash-dir: /.Trash/123, parent: /.Trash',
             'trash-put:  `- failed to trash /foo in /.Trash-123, because failed to move /foo in /.Trash-123/files: move failed']]
@@ -84,14 +92,14 @@ class TestPut:
     def test_should_not_trash_dot_entry(self):
         result = self.run_cmd(['trash-put', '.'])
 
-        assert result.all() == [
+        assert result.exit_code_and_stderr() == [
             EX_IOERR,
             ["trash-put: cannot trash directory '.'"]]
 
     def test_should_not_trash_dot_dot_entry(self):
         result = self.run_cmd(['trash-put', '..'])
 
-        assert result.all() == [
+        assert result.exit_code_and_stderr() == [
             EX_IOERR,
             ["trash-put: cannot trash directory '..'"]]
 
@@ -101,8 +109,8 @@ class TestPut:
 
         result = self.run_cmd(['trash-put', '-i', 'foo'])
 
-        assert result.all() + [self.user_input.last_prompt(),
-                               self.fs.ls_existing(["foo"])] == [
+        assert result.exit_code_and_stderr() + [self.user_input.last_prompt(),
+                                                self.fs.ls_existing(["foo"])] == [
                    EX_OK, [], "trash-put: trash regular empty file 'foo'? ",
                    ['foo'],
                ]
@@ -113,8 +121,8 @@ class TestPut:
 
         result = self.run_cmd(['trash-put', '-i', 'foo'])
 
-        assert result.all() + [self.user_input.last_prompt(),
-                               self.fs.ls_existing(["foo"])] == [
+        assert result.exit_code_and_stderr() + [self.user_input.last_prompt(),
+                                                self.fs.ls_existing(["foo"])] == [
                    EX_OK, [], "trash-put: trash regular empty file 'foo'? ",
                    []
                ]
@@ -123,7 +131,7 @@ class TestPut:
         result = self.run_cmd(['trash-put', 'non-existent'],
                               {"HOME": "/home/user"}, 123)
 
-        assert result.all() == [
+        assert result.exit_code_and_stderr() == [
             EX_IOERR,
             ["trash-put: cannot trash non existent 'non-existent'"]]
 
@@ -131,17 +139,27 @@ class TestPut:
         result = self.run_cmd(['trash-put', '-f', 'non-existent'],
                               {"HOME": "/home/user"}, 123)
 
-        assert result.all() == [EX_OK, []]
+        assert result.exit_code_and_stderr() == [EX_OK, []]
 
     def test_put_does_not_try_to_trash_non_existing_file(self):
         result = self.run_cmd(['trash-put', '-vvv', 'non-existing'],
                               {"HOME": "/home/user"}, 123)
 
-        assert result.all() == \
+        assert result.exit_code_and_stderr() == \
                [
                    EX_IOERR,
                    ["trash-put: cannot trash non existent 'non-existing'"]
                ]
+
+    def test_when_file_cannot_be_trashed(self):
+        self.fs.touch("foo")
+        self.fs.fail_move_on("foo")
+
+        result = self.run_cmd(['trash-put', 'foo'])
+
+        assert (result.exit_code_and_logs(LogTag.trash_failed) ==
+                (74, [
+                    "cannot trash regular empty file 'foo' (from volume '/')"]))
 
     def test_exit_code_will_be_0_when_trash_succeeds(self):
         self.fs.touch("pippo")
@@ -172,7 +190,7 @@ class TestPut:
 
         result = self.run_cmd(['trash-put', '-v', 'pippo'], {}, 123)
 
-        assert result.all() == [
+        assert result.exit_code_and_stderr() == [
             EX_IOERR,
             [
                 "trash-put: cannot trash regular empty file 'pippo' (from volume '/')",
@@ -191,11 +209,11 @@ class TestPut:
                                '/disk1/pippo'],
                               {'HOME': '/home/user'}, 123)
 
-        assert result[0] == ["trash-put: cannot trash regular empty file '/disk1/pippo' (from volume '/disk1')",
-                             'trash-put:  `- failed to trash /disk1/pippo in /home/user/.local/share/Trash, because trash dir and file to be trashed are not in the same volume, trash-dir volume: /, file volume: /disk1',
-                             'trash-put:  `- failed to trash /disk1/pippo in /disk1/.Trash/123, because trash dir cannot be created because its parent does not exists, trash-dir: /disk1/.Trash/123, parent: /disk1/.Trash',
-                             "trash-put:  `- failed to trash /disk1/pippo in /disk1/.Trash-123, because error during directory creation: [Errno 13] Permission denied: '/disk1/.Trash-123/files'",
-                             'trash-put:  `- failed to trash /disk1/pippo in /home/user/.local/share/Trash, because home fallback not enabled']
+        assert result.stderr == ["trash-put: cannot trash regular empty file '/disk1/pippo' (from volume '/disk1')",
+                                 'trash-put:  `- failed to trash /disk1/pippo in /home/user/.local/share/Trash, because trash dir and file to be trashed are not in the same volume, trash-dir volume: /, file volume: /disk1',
+                                 'trash-put:  `- failed to trash /disk1/pippo in /disk1/.Trash/123, because trash dir cannot be created because its parent does not exists, trash-dir: /disk1/.Trash/123, parent: /disk1/.Trash',
+                                 "trash-put:  `- failed to trash /disk1/pippo in /disk1/.Trash-123, because error during directory creation: [Errno 13] Permission denied: '/disk1/.Trash-123/files'",
+                                 'trash-put:  `- failed to trash /disk1/pippo in /home/user/.local/share/Trash, because home fallback not enabled']
 
     def test_when_it_fails_to_prepare_trash_info_data(self):
         flexmock.flexmock(self.fs).should_receive('parent_realpath2'). \
@@ -204,7 +222,7 @@ class TestPut:
 
         result = self.run_cmd(['trash-put', '-v', 'foo'],
                               {"HOME": "/home/user"}, 123)
-        assert result.all() == [
+        assert result.exit_code_and_stderr() == [
             EX_IOERR,
             ["trash-put: cannot trash regular empty file 'foo' (from volume '/')",
              'trash-put:  `- failed to trash foo in /home/user/.local/share/Trash, because failed to generate trashinfo content: Corruption',
@@ -223,7 +241,7 @@ class TestPut:
 
         actual = {
             'file_pippo_exists': self.fs.exists("pippo"),
-            'exit_code': result[2],
+            'exit_code': result.exit_code,
             'files_in_info_dir': self.fs.ls_aa(
                 '/home/user/.local/share/Trash/info'),
             "content_of_trashinfo": self.fs.read(
@@ -281,7 +299,7 @@ class TestPut:
                               {"HOME": "/home/user"}, 123)
 
         assert False == self.fs.exists("pippo")
-        assert EX_OK == result[2]
+        assert EX_OK == result.exit_code
         assert ['pippo.trashinfo'] == self.fs.ls_aa(
             '/home/user/.local/share/Trash/info')
         trash_info = self.fs.read(
@@ -308,13 +326,77 @@ class TestPut:
             err = e
         stderr = self.stderr.getvalue().splitlines()
 
-        return Result(stderr, str(err), ensure_int(exit_code))
+        return Result(stderr, str(err), ensure_int(exit_code),
+                      self.backend.collected())
 
 
-class Result(NamedTuple('Result', [
-    ('stderr', List[str]),
-    ('err', str),
-    ('exit_code', int),
+class LogLine(NamedTuple('LogLine', [
+    ('level', Level),
+    ('verbose', int),
+    ('program_name', str),
+    ('message', str),
+    ('tag', LogTag)
 ])):
-    def all(self):
-        return [self.exit_code, self.stderr]
+    pass
+
+
+class Logs(NamedTuple('Logs', [
+    ('logs', List[LogLine])
+])):
+    def as_stderr_lines(self):
+        return ["%s: %s" % (line.program_name, line.message)
+                for line in self.logs
+                if is_right_for_level(line.verbose, line.level)]
+
+    def with_tag(self,
+                 log_tag,  # type: LogTag
+                 ):  # type: (...) -> List[str]
+        return ["%s" % line.message
+                for line in self.logs
+                if log_tag == line.tag
+                ]
+
+
+class Result:
+    def __init__(self,
+                 stderr,  # type: List[str]
+                 err,  # type: str
+                 exit_code,  # type: int
+                 collected_logs,  # type: 'Logs'
+                 ):
+        self.stderr = stderr
+        self.err = err
+        self.exit_code = exit_code
+        self.collected_logs = collected_logs
+
+    def exit_code_and_stderr(self):
+        return [self.exit_code,
+                self.stderr]
+
+    def exit_code_and_logs(self,
+                           log_tag,  # type: LogTag
+                           ):  # type: (...) -> Tuple[int, List[str]]
+        return (self.exit_code,
+                self.collected_logs.with_tag(log_tag))
+
+
+class RecordingBackend(LoggerBackend):
+    def __init__(self,
+                 stderr,  # type: IO[str]
+                 ):
+        self.stderr = stderr
+        self.logs = []
+
+    def write_message(self,
+                      log_entry,  # type: LogEntry
+                      log_data,  # type: LogData
+                      ):
+        StreamBackend(self.stderr).write_message(log_entry, log_data)
+        self.logs.append(LogLine(log_entry.level,
+                                 log_data.verbose,
+                                 log_data.program_name,
+                                 log_entry.resolve_message(),
+                                 log_entry.tag))
+
+    def collected(self):
+        return Logs(self.logs)

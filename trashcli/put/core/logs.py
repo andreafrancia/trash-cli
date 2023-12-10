@@ -10,6 +10,12 @@ class Level(Enum):
     WARNING = "WARNING"
 
 
+class LogTag(Enum):
+    "tags used only during testing"
+    unspecified = "unspecified"
+    trash_failed = "trash_failed"
+
+
 class LogData:
     def __init__(self, program_name, verbose):
         self.program_name = program_name
@@ -25,6 +31,7 @@ class Message(Protocol):
 class LogEntry(NamedTuple('LogEntry', [
     ('level', Level),
     ('message', Message),
+    ('tag', LogTag)
 ])):
     def resolve_message(self):
         return self.message.resolve()
@@ -37,13 +44,19 @@ class MessageStr(NamedTuple('Message', [
         return self.message
 
 
+def log_str(level,  # type: Level
+            tag,  # type: LogTag
+            message,  # type: str
+            ):
+    return LogEntry(level, MessageStr(message), tag)
+
 def warning_str(message):  # type: (str) -> LogEntry
-    return LogEntry(Level.WARNING, MessageStr(message))
+    return LogEntry(Level.WARNING, MessageStr(message), LogTag.unspecified)
 
 
 def info_str(message):  # type: (str) -> LogEntry
-    return LogEntry(Level.INFO, MessageStr(message))
+    return LogEntry(Level.INFO, MessageStr(message), LogTag.unspecified)
 
 
 def debug_str(message):  # type: (str) -> LogEntry
-    return LogEntry(Level.DEBUG, MessageStr(message))
+    return LogEntry(Level.DEBUG, MessageStr(message), LogTag.unspecified)

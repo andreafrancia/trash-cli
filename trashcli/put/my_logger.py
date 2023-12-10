@@ -9,30 +9,10 @@ from trashcli.put.core.logs import LogEntry
 
 class LoggerBackend(Protocol):
     def write_message(self,
-                      level,  # type: Level
-                      verbose,  # type: int
-                      program_name,  # type: str
-                      message,  # type: str
+                      log_entry,  # type: LogEntry
+                      log_data,  # type: LogData
                       ):
         raise NotImplementedError()
-
-
-class RecordingBackend(LoggerBackend):
-    def __init__(self,
-                 stderr,  # type: IO[str]
-                 ):
-        self.stderr = stderr
-        self.logs = []
-
-    def write_message(self,
-                      level,  # type: Level
-                      verbose,  # type: int
-                      program_name,  # type: str
-                      message,  # type: str
-                      ):
-        StreamBackend(self.stderr).write_message(level, verbose,
-                                                 program_name, message)
-        self.logs.append((message,))
 
 
 class StreamBackend(LoggerBackend):
@@ -42,13 +22,12 @@ class StreamBackend(LoggerBackend):
         self.stderr = stderr
 
     def write_message(self,
-                      level,  # type: Level
-                      verbose,  # type: int
-                      program_name,  # type: str
-                      message,  # type: str
+                      log_entry,  # type: LogEntry
+                      log_data,  # type: LogData
                       ):
-        if is_right_for_level(verbose, level):
-            self.stderr.write("%s: %s\n" % (program_name, message))
+        if is_right_for_level(log_data.verbose, log_entry.level):
+            self.stderr.write("%s: %s\n" % (log_data.program_name,
+                                            log_entry.resolve_message()))
 
 
 def is_right_for_level(verbose,  # type: int
@@ -72,12 +51,7 @@ class MyLogger:
                 entry,  # type: LogEntry
                 log_data,  # type: LogData
                 ):
-        self.backend.write_message(
-            entry.level,
-            log_data.verbose,
-            log_data.program_name,
-            entry.resolve_message(),
-        )
+        self.backend.write_message(entry, log_data)
 
     def log_multiple(self,
                      entries,  # type: List[LogEntry]

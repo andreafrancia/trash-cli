@@ -1,21 +1,28 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 import os
 import re
-from grp import getgrgid
 from pwd import getpwuid
-from typing import List, NamedTuple
+from typing import List
+from typing import NamedTuple
 from typing import Tuple
+
+from grp import getgrgid
 
 from trashcli.lib.environ import Environ
 from trashcli.lib.exit_codes import EX_IOERR
 from trashcli.lib.exit_codes import EX_OK
 from trashcli.put.core.candidate import Candidate
-from trashcli.put.core.either import Either, Right, Left
+from trashcli.put.core.either import Either
+from trashcli.put.core.either import Left
+from trashcli.put.core.either import Right
 from trashcli.put.core.failure_reason import FailureReason
 from trashcli.put.core.failure_reason import LogContext
+from trashcli.put.core.logs import Level
 from trashcli.put.core.logs import LogData
+from trashcli.put.core.logs import LogTag
 from trashcli.put.core.logs import debug_str
 from trashcli.put.core.logs import info_str
+from trashcli.put.core.logs import log_str
 from trashcli.put.core.logs import warning_str
 from trashcli.put.core.trash_all_result import TrashAllResult
 from trashcli.put.core.trashee import Trashee
@@ -38,16 +45,17 @@ class TrashPutReporter:
                                     file,
                                     log_data,  # type: LogData
                                     ):
-        self.logger.log_put(warning_str(
-            "cannot trash %s '%s'" % (self._describe(file), file)),
-            log_data)
+        self.logger.log_put(log_str(Level.WARNING, LogTag.trash_failed,
+                                    "cannot trash %s '%s'" % (self._describe(file), file)),
+                            log_data)
 
     def unable_to_trash_file_non_existent(self,
                                           path,  # type: str
                                           log_data,  # type: LogData
                                           ):
         self.logger.log_put(
-            warning_str("cannot trash %s '%s'" % (self._describe(path), path)),
+            log_str(Level.WARNING, LogTag.trash_failed,
+                    "cannot trash %s '%s'" % (self._describe(path), path)),
             log_data)
 
     # TODO
@@ -60,7 +68,8 @@ class TrashPutReporter:
                               ):
         path = trashee.path
         volume = trashee.volume
-        self.logger.log_put(warning_str(
+        self.logger.log_put(log_str(
+            Level.WARNING, LogTag.trash_failed,
             "cannot trash %s '%s' (from volume '%s')" % (
                 self._describe(path), path, volume)), log_data)
         for candidate, reason in failures:

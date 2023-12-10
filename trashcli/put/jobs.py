@@ -6,6 +6,7 @@ from typing import TypeVar
 from trashcli.put.core.logs import Level
 from trashcli.put.core.logs import LogData
 from trashcli.put.core.logs import LogEntry
+from trashcli.put.core.logs import LogTag
 from trashcli.put.core.logs import MessageStr
 
 R = TypeVar('R')
@@ -13,7 +14,8 @@ R = TypeVar('R')
 
 class JobStatus(Generic[R]):
     def __init__(self, message):  # type: (str) -> None
-        self.log_entries = [LogEntry(Level.DEBUG, MessageStr(message))]
+        self.log_entries = [LogEntry(Level.DEBUG, MessageStr(message),
+                                     LogTag.unspecified)]
 
     def has_succeeded(self):
         return isinstance(self, Succeeded)
