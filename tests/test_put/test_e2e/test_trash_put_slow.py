@@ -7,9 +7,9 @@ from typing import Optional
 import pytest
 
 from tests import run_command
-from tests.run_command import temp_dir
-from tests.support.files import make_empty_file, require_empty_dir, \
-    make_sticky_dir
+from tests.support.files import make_empty_file
+from tests.support.files import make_sticky_dir
+from tests.support.files import require_empty_dir
 from tests.support.my_path import MyPath
 from trashcli.fs import read_file
 from trashcli.lib.environ import Environ

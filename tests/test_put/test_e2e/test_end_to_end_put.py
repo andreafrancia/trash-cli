@@ -5,9 +5,10 @@ from textwrap import dedent
 import pytest
 
 from tests import run_command
-from tests.run_command import first_line_of, last_line_of
+from tests.run_command import first_line_of
+from tests.run_command import last_line_of
+from tests.support.my_path import MyPath
 from trashcli.lib.exit_codes import EX_IOERR
-from ..support.my_path import MyPath
 
 
 @pytest.mark.slow
