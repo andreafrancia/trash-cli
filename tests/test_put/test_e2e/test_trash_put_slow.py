@@ -33,10 +33,10 @@ class Runner:
                      ):  # type: (...) -> run_command.CmdResult
         env = env or {}
         env['TRASH_PUT_FAKE_UID_FOR_TESTING'] = '123'
-        return run_command.run_command(self.cwd,
+        return run_command.run_commmand(self.cwd,
                                        "trash-put",
-                                       list(args),
-                                       env=env)
+                                        list(args),
+                                        env=env)
 
 
 @pytest.mark.slow

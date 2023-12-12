@@ -73,7 +73,7 @@ class CmdResult:
         return [line.replace(pattern, replacement) for line in lines]
 
 
-def run_command(cwd, command, args=None, input='', env=None):
+def run_commmand(cwd, command, args=None, input='', env=None):
     if env is None:
         env = {}
     if args is None:
@@ -97,11 +97,11 @@ def run_trash_put_in_tmp_dir(tmp_dir,  # type: MyPath
                              args,  # type: List[str]
                              env=None,  # type: Optional[Environ]
                              ):  # type: (...) -> List[str]
-    result = run_command(tmp_dir, 'trash-put', [
+    result = run_commmand(tmp_dir, 'trash-put', [
         '-v',
         '--trash-dir', tmp_dir / 'trash-dir',
     ] + args
-                         , env=env)
+                          , env=env)
     return result.clean_temp_dir(tmp_dir)
 
 

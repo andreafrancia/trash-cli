@@ -19,8 +19,8 @@ class TestEmptyEndToEndWithArgument(unittest.TestCase):
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
 
     def user_run_trash_empty(self, args):
-        return run_command.run_command(self.tmp_dir, "trash-empty",
-                                       args, env=self.environ)
+        return run_command.run_commmand(self.tmp_dir, "trash-empty",
+                                        args, env=self.environ)
 
     def set_clock_at(self, yyyy_mm_dd):
         self.environ['TRASH_DATE'] = '%sT00:00:00' % yyyy_mm_dd

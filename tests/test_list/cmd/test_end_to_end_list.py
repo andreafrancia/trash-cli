@@ -24,8 +24,8 @@ class TestEndToEndList(unittest.TestCase):
                                            datetime.datetime(2000, 1, 1, 0, 0,
                                                              1))
 
-        result = run_command.run_command(self.temp_dir, "trash-list",
-                                         ['--trash-dir', self.trash_dir])
+        result = run_command.run_commmand(self.temp_dir, "trash-list",
+                                          ['--trash-dir', self.trash_dir])
 
         assert [
                    '2000-01-01 00:00:01 /file1',
@@ -33,7 +33,7 @@ class TestEndToEndList(unittest.TestCase):
                ] == sorted(result.stdout.splitlines())
 
     def test_list_trash_dirs(self):
-        result = run_command.run_command(
+        result = run_command.run_commmand(
             self.temp_dir, "trash-list",
             ['--trash-dirs', '--trash-dir=/home/user/.local/share/Trash'])
         assert (result.stderr,
@@ -50,8 +50,8 @@ class TestEndToEndList(unittest.TestCase):
                                            datetime.datetime(2000, 1, 1, 0, 0,
                                                              1))
 
-        result = run_command.run_command(self.temp_dir, "trash-list",
-                                         ['--trash-dir', self.trash_dir,
+        result = run_command.run_commmand(self.temp_dir, "trash-list",
+                                          ['--trash-dir', self.trash_dir,
                                           '--files'])
 
         assert ('', [
@@ -60,7 +60,7 @@ class TestEndToEndList(unittest.TestCase):
         ]) == (result.stderr, sorted(result.stdout.splitlines()))
 
     def test_help(self):
-        result = run_command.run_command(self.temp_dir, "trash-list", ['--help'])
+        result = run_command.run_commmand(self.temp_dir, "trash-list", ['--help'])
 
         self.assertEqual(reformat_help_message("""\
 usage: trash-list [-h] [--print-completion {bash,zsh,tcsh}] [--version]
