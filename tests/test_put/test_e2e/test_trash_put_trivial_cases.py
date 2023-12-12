@@ -1,12 +1,10 @@
 import pytest
 
 from tests.run_command import run_commmand
-from tests.run_command import temp_dir
+from tests.run_command import temp_dir  # noqa
 from trashcli.put.fs.real_fs import RealFs
 
 fs = RealFs()
-
-temp_dir = temp_dir
 
 
 @pytest.mark.slow
@@ -20,4 +18,3 @@ class TestTrashPutTrivial:
         result = run_commmand('.', 'trash-put', ['non-existent'])
         assert (result.stderr ==
                 "trash-put: cannot trash non existent 'non-existent'\n")
-

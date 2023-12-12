@@ -1,4 +1,4 @@
-from tests.run_command import temp_dir
+from tests.run_command import temp_dir  # noqa
 from trashcli.put.fs.real_fs import RealFs
 from trashcli.put.octal import octal
 

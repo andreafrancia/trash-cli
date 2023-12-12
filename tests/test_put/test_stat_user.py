@@ -1,10 +1,7 @@
 import os
 
-from tests.run_command import temp_dir
+from tests.run_command import temp_dir  # noqa
 from trashcli.put.fs.real_fs import RealFs
-
-# tell the IDE to don't remove temp_dir import during optimization
-temp_dir = temp_dir  # this a pytest fixture
 
 
 class TestStatMode:

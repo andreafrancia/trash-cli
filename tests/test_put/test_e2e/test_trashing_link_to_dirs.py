@@ -3,12 +3,10 @@ import os
 import pytest
 
 from tests.run_command import run_trash_put_in_tmp_dir
-from tests.run_command import temp_dir
+from tests.run_command import temp_dir  # noqa
 from trashcli.put.fs.real_fs import RealFs
 
 fs = RealFs()
-
-temp_dir = temp_dir
 
 
 @pytest.mark.slow

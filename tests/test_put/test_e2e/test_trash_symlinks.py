@@ -3,14 +3,12 @@ import os
 import pytest
 
 from tests.run_command import run_trash_put_in_tmp_dir
-from tests.run_command import temp_dir
+from tests.run_command import temp_dir  # noqa
 from tests.support.files import make_file
 from tests.support.my_path import MyPath
 from trashcli.put.fs.real_fs import RealFs
 
 fs = RealFs()
-
-temp_dir = temp_dir
 
 
 def _make_connected_link(path):  # type: (MyPath) -> None

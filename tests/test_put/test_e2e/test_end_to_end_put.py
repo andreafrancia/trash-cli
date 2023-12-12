@@ -1,5 +1,4 @@
 # Copyright (C) 2021 Andrea Francia Bereguardo(PV) Italy
-import unittest
 from textwrap import dedent
 
 import pytest
@@ -7,6 +6,7 @@ import pytest
 from tests import run_command
 from tests.run_command import first_line_of
 from tests.run_command import last_line_of
+from tests.run_command import temp_dir  # noqa
 from tests.support.my_path import MyPath
 from trashcli.lib.exit_codes import EX_IOERR
 

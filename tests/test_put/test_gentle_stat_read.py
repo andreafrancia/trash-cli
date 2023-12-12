@@ -2,7 +2,7 @@ import grp
 import os
 import pwd
 
-from tests.run_command import temp_dir
+from tests.run_command import temp_dir  # noqa
 from tests.support.files import make_file
 from trashcli.put.reporter import gentle_stat_read
 
