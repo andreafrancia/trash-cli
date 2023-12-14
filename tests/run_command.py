@@ -36,6 +36,14 @@ class Stream(NamedTuple('Output', [
         else:
             return repr(self.stream)
 
+    def grep(self, pattern):
+        return Stream(stream=grep(self.stream, pattern),
+                      temp_dir=self.temp_dir)
+
+    def replace(self, old, new):
+        return Stream(stream=self.stream.replace(old, new),
+                      temp_dir=self.temp_dir)
+
 
 class PutResult(NamedTuple('Output', [
     ('stderr', Stream),
@@ -58,9 +66,6 @@ class PutResult(NamedTuple('Output', [
     def both(self):
         return Stream(stream=self.stderr.stream + self.stdout.stream,
                       temp_dir=self.temp_dir)
-
-    def messages(self):
-        return self.both().cleaned()
 
 
 class CmdResult:
@@ -94,28 +99,11 @@ class CmdResult:
         outs = [out for out in outs if out != ""]
         return "".join([out.rstrip("\n") + "\n" for out in outs])
 
-    def clean_vol_and_grep(self,
-                           pattern,  # type: str
-                           fake_vol,  # type: MyPath
-                           ):  # type: (...) -> List[str]
 
-        matching_lines = self._grep(self.stderr, pattern)
-        return matching_lines.replace(fake_vol, "/vol").splitlines()
-
-    @staticmethod
-    def _grep(stream, pattern):  # type: (str, str) -> str
-        return ''.join([line
-                        for line in stream.splitlines(True)
-                        if pattern in line])
-
-    def clean_temp_dir(self, temp_dir):  # type: (MyPath) -> str
-        return self.stderr.replace(temp_dir, "")
-
-    def clean_tmp_and_grep(self,
-                           temp_dir,  # type: MyPath
-                           pattern,  # type: str
-                           ):  # type: (...) -> str
-        return self._grep(self.clean_temp_dir(temp_dir), pattern)
+def grep(stream, pattern):  # type: (str, str) -> str
+    return ''.join([line
+                    for line in stream.splitlines(True)
+                    if pattern in line])
 
 
 def run_command(cwd, command, args=None, input='', env=None):
@@ -150,6 +138,17 @@ def run_trash_put(tmp_dir,  # type: MyPath
     return run_trash_put2(tmp_dir, extra_args + args, env=env)
 
 
+def run_trashput_with_vol(temp_dir,  # type: MyPath
+                          fake_vol,  # type: MyPath
+                          args,  # type: List[str]
+                          ):  # type: (...) -> run_command.Stream
+    result = run_trash_put2(temp_dir,
+                            ["--force-volume=%s" % fake_vol, '-v'] + args,
+                            env=_with_uid(123))
+    output = result.both().replace(fake_vol, "/vol")
+    return output
+
+
 def run_trash_put2(tmp_dir,  # type: MyPath
                    args,  # type: List[str]
                    env,  # type: Environ
@@ -168,6 +167,10 @@ def make_put_result(result,  # type: CmdResult
                      stderr=Stream(stream=result.stderr, temp_dir=temp_dir),
                      exit_code=result.exit_code,
                      temp_dir=temp_dir)
+
+
+def _with_uid(uid):
+    return {'TRASH_PUT_FAKE_UID_FOR_TESTING': str(uid)}
 
 
 @pytest.fixture
