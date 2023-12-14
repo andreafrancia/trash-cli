@@ -14,13 +14,17 @@ class MyPath(str):
     def path_join(self, other_path):
         return MyPath(os.path.join(self, other_path))
 
-    def existence_of(self, path):
+    def existence_of(self, *paths):
+        return [self.existence_of_single(p) for p in paths]
+
+    def existence_of_single(self, path):  # type: (MyPath) -> str
+        path = self / path
         existence = os.path.exists(path)
         existence_message = {
             True: "exists",
-            False: "does not exists"
+            False: "does not exist"
         }[existence]
-        return ["%s: %s" % (path.replace(self, ''), existence_message)]
+        return "%s: %s" % (path.replace(self, ''), existence_message)
 
     @property
     def parent(self):  # type: (...) -> MyPath

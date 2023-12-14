@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from tests.run_command import run_trash_put_in_tmp_dir
+from tests.run_command import run_trash_put
 from tests.run_command import temp_dir  # noqa
 from trashcli.put.fs.real_fs import RealFs
 
@@ -17,7 +17,7 @@ class TestTrashingLinkToDirs:
 
         fs.symlink(temp_dir / 'a-dir', temp_dir / 'link-to-dir')
 
-        output = run_trash_put_in_tmp_dir(temp_dir, ['link-to-dir'])
+        output = run_trash_put(temp_dir, ['link-to-dir'])
 
         assert output.stderr.lines() == [
             "trash-put: 'link-to-dir' trashed in /trash-dir"
@@ -30,7 +30,7 @@ class TestTrashingLinkToDirs:
 
         fs.symlink(temp_dir / 'a-dir', temp_dir / 'link-to-dir')
 
-        output = run_trash_put_in_tmp_dir(temp_dir, ['link-to-dir/'])
+        output = run_trash_put(temp_dir, ['link-to-dir/'])
 
         assert output.stderr.lines() == ["trash-put: 'link-to-dir/' trashed in /trash-dir"]
         assert os.listdir(temp_dir) == ['link-to-dir',

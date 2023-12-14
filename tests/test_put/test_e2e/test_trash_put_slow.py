@@ -1,6 +1,5 @@
 # Copyright (C) 2009-2020 Andrea Francia Trivolzio(PV) Italy
 import os
-from os.path import exists as file_exists
 from typing import List
 from typing import Optional
 
@@ -11,7 +10,6 @@ from tests.run_command import temp_dir  # noqa
 from tests.support.files import make_empty_file
 from tests.support.files import make_sticky_dir
 from tests.support.files import require_empty_dir
-from trashcli.fs import read_file
 from trashcli.lib.environ import Environ
 
 
@@ -36,43 +34,6 @@ class Runner:
                                        env=env)
 
 
-@pytest.mark.slow
-class TestDeletingExistingFile:
-
-    @pytest.fixture
-    def trash_foo(self, temp_dir, runner):
-        make_empty_file(temp_dir / 'foo')
-        result = runner.run_trashput([temp_dir / 'foo'], env={
-            'XDG_DATA_HOME': temp_dir / 'XDG_DATA_HOME'})
-        yield result
-
-    def test_it_should_remove_the_file(self, temp_dir, trash_foo):
-        assert file_exists(temp_dir / 'foo') is False
-
-    def test_it_should_remove_it_silently(self, trash_foo):
-        assert trash_foo.stdout == ''
-
-    def test_a_trashinfo_file_should_have_been_created(self, temp_dir,
-                                                       trash_foo):
-        read_file(temp_dir / 'XDG_DATA_HOME/Trash/info/foo.trashinfo')
-
-
-@pytest.mark.slow
-class TestWhenDeletingAnExistingFileInVerboseMode:
-    @pytest.fixture
-    def run_trashput(self, temp_dir, runner):
-        make_empty_file(temp_dir / "foo")
-        return runner.run_trashput(["-v", temp_dir / "foo"], env={
-            'XDG_DATA_HOME': temp_dir / 'XDG_DATA_HOME',
-            'HOME': temp_dir / 'home'})
-
-    def test_should_tell_where_a_file_is_trashed(self, temp_dir, run_trashput):
-        output = run_trashput.clean_tmp_and_grep(temp_dir, "trashed in")
-
-        assert "trash-put: '/foo' trashed in /XDG_DATA_HOME/Trash" in output.splitlines()
-
-    def test_should_be_successful(self, run_trashput):
-        assert 0 == run_trashput.exit_code
 
 
 @pytest.mark.slow

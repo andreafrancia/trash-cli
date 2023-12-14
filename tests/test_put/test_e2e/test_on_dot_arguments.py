@@ -1,6 +1,6 @@
 import pytest
 
-from tests.run_command import run_trash_put_in_tmp_dir
+from tests.run_command import run_trash_put
 from tests.run_command import temp_dir  # noqa
 from tests.support.files import mkdir_p
 from trashcli.lib.exit_codes import EX_IOERR
@@ -10,7 +10,7 @@ from trashcli.lib.exit_codes import EX_IOERR
 class TestWhenFedWithDotArguments:
 
     def test_dot_argument_is_skipped(self, temp_dir):
-        result = run_trash_put_in_tmp_dir(temp_dir, ["."])
+        result = run_trash_put(temp_dir, ["."])
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be written on stderr
@@ -18,7 +18,7 @@ class TestWhenFedWithDotArguments:
             "trash-put: cannot trash directory '.'\n", EX_IOERR]
 
     def test_dot_dot_argument_is_skipped(self, temp_dir):
-        result = run_trash_put_in_tmp_dir(temp_dir, [".."])
+        result = run_trash_put(temp_dir, [".."])
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be written on stderr
@@ -29,7 +29,7 @@ class TestWhenFedWithDotArguments:
         sandbox = temp_dir / 'sandbox'
         mkdir_p(sandbox)
 
-        result = run_trash_put_in_tmp_dir(temp_dir, ["%s/." % sandbox])
+        result = run_trash_put(temp_dir, ["%s/." % sandbox])
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be written on stderr
@@ -41,7 +41,7 @@ class TestWhenFedWithDotArguments:
         sandbox = temp_dir / 'sandbox'
         mkdir_p(sandbox)
 
-        result = run_trash_put_in_tmp_dir(temp_dir, ["%s/.." % sandbox])
+        result = run_trash_put(temp_dir, ["%s/.." % sandbox])
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be written on stderr
