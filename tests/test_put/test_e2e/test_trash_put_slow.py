@@ -7,7 +7,6 @@ from typing import Optional
 import pytest
 
 from tests import run_command
-from tests.run_command import run_trash_put_in_tmp_dir
 from tests.run_command import temp_dir  # noqa
 from tests.support.files import make_empty_file
 from tests.support.files import make_sticky_dir
@@ -35,12 +34,6 @@ class Runner:
                                        "trash-put",
                                        list(args),
                                        env=env)
-
-    def run_trashput2(self,
-                      args,  # type: List[str]
-                      env=None,  # type: Optional[Environ]
-                      ):  # type: (...) -> run_command.PutResult
-        return run_trash_put_in_tmp_dir(self.cwd, args)
 
 
 @pytest.mark.slow
