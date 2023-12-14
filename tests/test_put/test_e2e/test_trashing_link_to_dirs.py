@@ -17,9 +17,9 @@ class TestTrashingLinkToDirs:
 
         fs.symlink(temp_dir / 'a-dir', temp_dir / 'link-to-dir')
 
-        stderr = run_trash_put_in_tmp_dir(temp_dir, ['link-to-dir'])
+        output = run_trash_put_in_tmp_dir(temp_dir, ['link-to-dir'])
 
-        assert stderr == [
+        assert output.stderr.lines() == [
             "trash-put: 'link-to-dir' trashed in /trash-dir"
         ]
         assert os.listdir(temp_dir) == ['a-file', 'a-dir', 'trash-dir']
@@ -30,9 +30,9 @@ class TestTrashingLinkToDirs:
 
         fs.symlink(temp_dir / 'a-dir', temp_dir / 'link-to-dir')
 
-        stderr = run_trash_put_in_tmp_dir(temp_dir, ['link-to-dir/'])
+        output = run_trash_put_in_tmp_dir(temp_dir, ['link-to-dir/'])
 
-        assert stderr == ["trash-put: 'link-to-dir/' trashed in /trash-dir"]
+        assert output.stderr.lines() == ["trash-put: 'link-to-dir/' trashed in /trash-dir"]
         assert os.listdir(temp_dir) == ['link-to-dir',
                                         'a-file',
                                         'trash-dir']

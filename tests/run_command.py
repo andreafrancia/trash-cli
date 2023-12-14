@@ -2,6 +2,7 @@ import os
 import subprocess
 import sys
 from typing import List
+from typing import NamedTuple
 from typing import Optional
 
 import pytest
@@ -11,6 +12,20 @@ from tests.support.help_reformatting import reformat_help_message
 from tests.support.my_path import MyPath
 from trashcli import base_dir
 from trashcli.lib.environ import Environ
+
+
+class Stream(NamedTuple('Output', [
+    ('stream', str),
+    ('temp_dir', MyPath)
+])):
+    def lines(self):
+        return self.stream.replace(self.temp_dir, '').splitlines()
+
+
+class Output(NamedTuple('Output', [
+    ('stderr', Stream),
+])):
+    pass
 
 
 class CmdResult:
@@ -91,13 +106,21 @@ def run_command(cwd, command, args=None, input='', env=None):
 def run_trash_put_in_tmp_dir(tmp_dir,  # type: MyPath
                              args,  # type: List[str]
                              env=None,  # type: Optional[Environ]
-                             ):  # type: (...) -> List[str]
+                             ):  # type: (...) -> Output
+
     result = run_command(tmp_dir, 'trash-put', [
         '-v',
         '--trash-dir', tmp_dir / 'trash-dir',
     ] + args
                          , env=env)
-    return result.clean_temp_dir(tmp_dir).splitlines()
+
+    return make_output(result, tmp_dir)
+
+
+def make_output(result,  # type: CmdResult
+                temp_dir,  # type: MyPath
+                ):  # type: (...) -> Output
+    return Output(stderr=Stream(stream=result.stderr, temp_dir=temp_dir))
 
 
 @pytest.fixture
