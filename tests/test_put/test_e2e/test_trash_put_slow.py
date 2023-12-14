@@ -31,10 +31,10 @@ class Runner:
                      ):  # type: (...) -> run_command.CmdResult
         env = env or {}
         env['TRASH_PUT_FAKE_UID_FOR_TESTING'] = '123'
-        return run_command.run_commmand(self.cwd,
+        return run_command.run_command(self.cwd,
                                        "trash-put",
-                                        list(args),
-                                        env=env)
+                                       list(args),
+                                       env=env)
 
 
 @pytest.mark.slow
@@ -70,7 +70,7 @@ class TestWhenDeletingAnExistingFileInVerboseMode:
     def test_should_tell_where_a_file_is_trashed(self, temp_dir, run_trashput):
         output = run_trashput.clean_tmp_and_grep(temp_dir, "trashed in")
 
-        assert "trash-put: '/foo' trashed in /XDG_DATA_HOME/Trash" in output
+        assert "trash-put: '/foo' trashed in /XDG_DATA_HOME/Trash" in output.splitlines()
 
     def test_should_be_successful(self, run_trashput):
         assert 0 == run_trashput.exit_code

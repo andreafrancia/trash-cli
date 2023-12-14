@@ -81,10 +81,10 @@ What file to restore [0..0]: """ % {'curdir': self.curdir},
     def run_command(self, command, args=None, input=''):
         if args is None:
             args = []
-        return run_command.run_commmand(self.curdir,
-                                        command,
-                                        ["--trash-dir", self.trash_dir] + args,
-                                        input)
+        return run_command.run_command(self.curdir,
+                                       command,
+                                       ["--trash-dir", self.trash_dir] + args,
+                                       input)
 
     def tearDown(self):
         self.tmp_dir.clean_up()

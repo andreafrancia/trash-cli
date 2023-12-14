@@ -48,32 +48,27 @@ class CmdResult:
                            pattern,  # type: str
                            fake_vol,  # type: MyPath
                            ):  # type: (...) -> List[str]
-        matching_lines = self._grep(self.stderr_lines(), pattern)
-        return self._replace(fake_vol, "/vol", matching_lines)
+
+        matching_lines = self._grep(self.stderr, pattern)
+        return matching_lines.replace(fake_vol, "/vol").splitlines()
 
     @staticmethod
-    def _grep(lines, pattern):  # type: (List[str], str) -> List[str]
-        return [line for line in lines if pattern in line]
+    def _grep(stream, pattern):  # type: (str, str) -> str
+        return ''.join([line
+                        for line in stream.splitlines(True)
+                        if pattern in line])
 
-    def clean_temp_dir(self, temp_dir):  # type: (MyPath) -> List[str]
-        return self._replace(temp_dir, "", self.stderr_lines())
+    def clean_temp_dir(self, temp_dir):  # type: (MyPath) -> str
+        return self.stderr.replace(temp_dir, "")
 
-    def clean_tmp_and_grep(self, temp_dir,
-                           pattern):  # type: (MyPath, str) -> List[str]
+    def clean_tmp_and_grep(self,
+                           temp_dir,  # type: MyPath
+                           pattern,  # type: str
+                           ):  # type: (...) -> str
         return self._grep(self.clean_temp_dir(temp_dir), pattern)
 
-    def stderr_lines(self):  # type: () -> List[str]
-        return self.stderr.splitlines()
 
-    @staticmethod
-    def _replace(pattern,  # type: str
-                 replacement,  # type: str
-                 lines,  # type: List[str]
-                 ):  # type: (...) -> List[str]
-        return [line.replace(pattern, replacement) for line in lines]
-
-
-def run_commmand(cwd, command, args=None, input='', env=None):
+def run_command(cwd, command, args=None, input='', env=None):
     if env is None:
         env = {}
     if args is None:
@@ -97,12 +92,12 @@ def run_trash_put_in_tmp_dir(tmp_dir,  # type: MyPath
                              args,  # type: List[str]
                              env=None,  # type: Optional[Environ]
                              ):  # type: (...) -> List[str]
-    result = run_commmand(tmp_dir, 'trash-put', [
+    result = run_command(tmp_dir, 'trash-put', [
         '-v',
         '--trash-dir', tmp_dir / 'trash-dir',
     ] + args
-                          , env=env)
-    return result.clean_temp_dir(tmp_dir)
+                         , env=env)
+    return result.clean_temp_dir(tmp_dir).splitlines()
 
 
 @pytest.fixture
