@@ -21,11 +21,23 @@ class Stream(NamedTuple('Output', [
     def lines(self):
         return self.stream.replace(self.temp_dir, '').splitlines()
 
+    def last_line(self):
+        return self.lines()[-1]
+
+    def first_line(self):
+        return self.lines()[0]
+
 
 class Output(NamedTuple('Output', [
     ('stderr', Stream),
+    ('stdout', Stream),
+    ('exit_code', int),
 ])):
-    pass
+    def help_message(self):
+        return reformat_help_message(self.stdout.stream)
+
+    def combined(self):
+        return [self.stderr.stream + self.stdout.stream, self.exit_code]
 
 
 class CmdResult:
@@ -120,7 +132,9 @@ def run_trash_put_in_tmp_dir(tmp_dir,  # type: MyPath
 def make_output(result,  # type: CmdResult
                 temp_dir,  # type: MyPath
                 ):  # type: (...) -> Output
-    return Output(stderr=Stream(stream=result.stderr, temp_dir=temp_dir))
+    return Output(stdout=Stream(stream=result.stdout, temp_dir=temp_dir),
+                  stderr=Stream(stream=result.stderr, temp_dir=temp_dir),
+                  exit_code=result.exit_code)
 
 
 @pytest.fixture
@@ -141,7 +155,3 @@ def last_line_of(stdout):
         return stdout.splitlines()[-1]
     else:
         return ''
-
-
-def first_line_of(out):
-    return out.splitlines()[0]
