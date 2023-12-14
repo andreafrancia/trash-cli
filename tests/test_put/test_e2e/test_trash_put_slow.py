@@ -7,11 +7,11 @@ from typing import Optional
 import pytest
 
 from tests import run_command
+from tests.run_command import run_trash_put_in_tmp_dir
 from tests.run_command import temp_dir  # noqa
 from tests.support.files import make_empty_file
 from tests.support.files import make_sticky_dir
 from tests.support.files import require_empty_dir
-from tests.support.my_path import MyPath
 from trashcli.fs import read_file
 from trashcli.lib.environ import Environ
 
@@ -35,6 +35,12 @@ class Runner:
                                        "trash-put",
                                        list(args),
                                        env=env)
+
+    def run_trashput2(self,
+                      args,  # type: List[str]
+                      env=None,  # type: Optional[Environ]
+                      ):  # type: (...) -> run_command.PutResult
+        return run_trash_put_in_tmp_dir(self.cwd, args)
 
 
 @pytest.mark.slow
@@ -74,56 +80,6 @@ class TestWhenDeletingAnExistingFileInVerboseMode:
 
     def test_should_be_successful(self, run_trashput):
         assert 0 == run_trashput.exit_code
-
-
-@pytest.mark.slow
-class TestWhenDeletingANonExistingFile:
-    def test_should_be_succesfull(self, temp_dir, runner):
-        result = runner.run_trashput(['-v', temp_dir / 'non-existent'])
-        assert 0 != result.exit_code
-
-
-@pytest.mark.slow
-class TestWhenFedWithDotArguments:
-
-    def test_dot_argument_is_skipped(self, temp_dir, runner):
-        result = runner.run_trashput(["."])
-
-        # the dot directory shouldn't be operated, but a diagnostic message
-        # shall be written on stderr
-        assert result.stderr == "trash-put: cannot trash directory '.'\n"
-
-    def test_dot_dot_argument_is_skipped(self, temp_dir, runner):
-        result = runner.run_trashput([".."])
-
-        # the dot directory shouldn't be operated, but a diagnostic message
-        # shall be written on stderr
-        assert result.stderr == "trash-put: cannot trash directory '..'\n"
-
-    def test_dot_argument_is_skipped_even_in_subdirs(self, temp_dir, runner):
-        sandbox = MyPath.make_temp_dir()
-
-        result = runner.run_trashput(["%s/." % sandbox])
-
-        # the dot directory shouldn't be operated, but a diagnostic message
-        # shall be written on stderr
-        assert "trash-put: cannot trash '.' directory '%s/.'\n" % sandbox == \
-               result.stderr
-        assert file_exists(sandbox)
-        sandbox.clean_up()
-
-    def test_dot_dot_argument_is_skipped_even_in_subdirs(self, temp_dir,
-                                                         runner):
-        sandbox = MyPath.make_temp_dir()
-
-        result = runner.run_trashput(["%s/.." % sandbox])
-
-        # the dot directory shouldn't be operated, but a diagnostic message
-        # shall be written on stderr
-        assert result.stderr == (
-                "trash-put: cannot trash '..' directory '%s/..'\n" % sandbox)
-        assert file_exists(sandbox)
-        sandbox.clean_up()
 
 
 @pytest.mark.slow

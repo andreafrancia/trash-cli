@@ -1,7 +1,14 @@
 import os
 import shutil
 
-from trashcli.fs import write_file, has_sticky_bit, mkdirs
+from trashcli.fs import has_sticky_bit
+from trashcli.fs import mkdirs
+from trashcli.fs import write_file
+
+
+def mkdir_p(path):
+    if not os.path.isdir(path):
+        os.makedirs(path)
 
 
 def make_empty_file(path):

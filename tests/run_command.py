@@ -27,8 +27,11 @@ class Stream(NamedTuple('Output', [
     def first_line(self):
         return self.lines()[0]
 
+    def cleaned(self):
+        return self.stream.replace(self.temp_dir, '')
 
-class Output(NamedTuple('Output', [
+
+class PutResult(NamedTuple('Output', [
     ('stderr', Stream),
     ('stdout', Stream),
     ('exit_code', int),
@@ -37,7 +40,9 @@ class Output(NamedTuple('Output', [
         return reformat_help_message(self.stdout.stream)
 
     def combined(self):
-        return [self.stderr.stream + self.stdout.stream, self.exit_code]
+        return [self.stderr.cleaned() +
+                self.stdout.cleaned(),
+                self.exit_code]
 
 
 class CmdResult:
@@ -118,7 +123,7 @@ def run_command(cwd, command, args=None, input='', env=None):
 def run_trash_put_in_tmp_dir(tmp_dir,  # type: MyPath
                              args,  # type: List[str]
                              env=None,  # type: Optional[Environ]
-                             ):  # type: (...) -> Output
+                             ):  # type: (...) -> PutResult
 
     result = run_command(tmp_dir, 'trash-put', [
         '-v',
@@ -131,10 +136,10 @@ def run_trash_put_in_tmp_dir(tmp_dir,  # type: MyPath
 
 def make_output(result,  # type: CmdResult
                 temp_dir,  # type: MyPath
-                ):  # type: (...) -> Output
-    return Output(stdout=Stream(stream=result.stdout, temp_dir=temp_dir),
-                  stderr=Stream(stream=result.stderr, temp_dir=temp_dir),
-                  exit_code=result.exit_code)
+                ):  # type: (...) -> PutResult
+    return PutResult(stdout=Stream(stream=result.stdout, temp_dir=temp_dir),
+                     stderr=Stream(stream=result.stderr, temp_dir=temp_dir),
+                     exit_code=result.exit_code)
 
 
 @pytest.fixture

@@ -14,6 +14,14 @@ class MyPath(str):
     def path_join(self, other_path):
         return MyPath(os.path.join(self, other_path))
 
+    def existence_of(self, path):
+        existence = os.path.exists(path)
+        existence_message = {
+            True: "exists",
+            False: "does not exists"
+        }[existence]
+        return ["%s: %s" % (path.replace(self, ''), existence_message)]
+
     @property
     def parent(self):  # type: (...) -> MyPath
         return MyPath(os.path.dirname(self))
