@@ -2,10 +2,10 @@ import os
 
 import pytest
 
-from tests.run_command import run_trash_put
 from tests.run_command import temp_dir  # noqa
 from tests.support.files import make_file
 from tests.support.my_path import MyPath
+from tests.test_put.test_e2e.run_trash_put import run_trash_put
 from trashcli.put.fs.real_fs import RealFs
 
 fs = RealFs()
@@ -21,7 +21,7 @@ def _make_dangling_link(path):  # type: (MyPath) -> None
 
 
 @pytest.mark.slow
-class TestTrashSymlinks:
+class TestOnSymbolicLinks:
     def test_trashes_dangling_symlink(self, temp_dir):
         _make_dangling_link(temp_dir / 'link')
 

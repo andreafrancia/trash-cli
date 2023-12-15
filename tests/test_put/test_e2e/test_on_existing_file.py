@@ -2,9 +2,9 @@
 
 import pytest
 
-from tests.run_command import run_trash_put2
 from tests.run_command import temp_dir  # noqa
 from tests.support.files import make_empty_file
+from tests.test_put.test_e2e.run_trash_put import run_trash_put2
 
 
 @pytest.mark.slow

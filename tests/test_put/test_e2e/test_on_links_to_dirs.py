@@ -2,15 +2,15 @@ import os
 
 import pytest
 
-from tests.run_command import run_trash_put
 from tests.run_command import temp_dir  # noqa
+from tests.test_put.test_e2e.run_trash_put import run_trash_put
 from trashcli.put.fs.real_fs import RealFs
 
 fs = RealFs()
 
 
 @pytest.mark.slow
-class TestTrashingLinkToDirs:
+class TestOnLinksToDirs:
     def test_link_to_dir_without_slashes(self, temp_dir):
         fs.mkdir(temp_dir / 'a-dir')
         fs.touch(temp_dir / "a-file")

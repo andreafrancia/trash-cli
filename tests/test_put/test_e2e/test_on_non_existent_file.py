@@ -1,7 +1,7 @@
 import pytest
 
-from tests.run_command import run_trash_put
 from tests.run_command import temp_dir  # noqa
+from tests.test_put.test_e2e.run_trash_put import run_trash_put
 from trashcli.lib.exit_codes import EX_IOERR
 
 
