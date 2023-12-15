@@ -1,5 +1,7 @@
 import os
 from abc import abstractmethod
+from typing import Iterable
+
 from trashcli.compat import Protocol
 
 
@@ -77,3 +79,12 @@ class Fs(RealPathFs, Protocol):
     def parent_realpath2(self, path):
         parent = os.path.dirname(path)
         return self.realpath(parent)
+
+
+def list_all(fs):  # type: (Fs) -> Iterable[str]
+    result = fs.walk_no_follow("/")
+    for top, dirs, non_dirs in result:
+        for d in dirs:
+            yield os.path.join(top, d)
+        for f in non_dirs:
+            yield os.path.join(top, f)

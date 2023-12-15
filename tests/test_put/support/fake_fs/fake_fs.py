@@ -1,15 +1,15 @@
 import os
-
 from typing import Union
 
-from tests.test_put.support.fake_fs.directory import Directory, \
-    make_inode_for_dir
+from tests.test_put.support.fake_fs.directory import Directory
+from tests.test_put.support.fake_fs.directory import make_inode_for_dir
 from tests.test_put.support.fake_fs.file import File
 from tests.test_put.support.fake_fs.inode import SymLink
 from tests.test_put.support.format_mode import format_mode
 from tests.test_put.support.my_file_not_found_error import MyFileNotFoundError
 from trashcli.fs import PathExists
 from trashcli.put.fs.fs import Fs
+from trashcli.put.fs.fs import list_all
 
 
 class FakeFs(Fs, PathExists):
@@ -56,7 +56,7 @@ class FakeFs(Fs, PathExists):
                 raise MyFileNotFoundError(
                     "no such file or directory: %s\n%s" % (
                         path,
-                        "\n".join(self.list_all()),
+                        "\n".join(list_all(self)),
                     ))
         return cur_dir
 
@@ -211,10 +211,4 @@ class FakeFs(Fs, PathExists):
         # TODO: consider links
         return self.exists(path)
 
-    def list_all(self):
-        result = self.walk_no_follow("/")
-        for top, dirs, non_dirs in result:
-            for d in dirs:
-                yield os.path.join(top, d)
-            for f in non_dirs:
-                yield os.path.join(top, f)
+
