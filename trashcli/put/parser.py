@@ -1,13 +1,19 @@
 import os
 import pprint
-from argparse import SUPPRESS, ArgumentParser, RawDescriptionHelpFormatter
-from typing import NamedTuple, Any, Union, List, Optional
+from argparse import ArgumentParser
+from argparse import RawDescriptionHelpFormatter
+from argparse import SUPPRESS
+from typing import Any
+from typing import List
+from typing import NamedTuple
+from typing import Optional
+from typing import Union
 
-from trashcli.shell_completion import TRASH_DIRS, TRASH_FILES, add_argument_to
+from trashcli.put.core.mode import Mode
+from trashcli.shell_completion import TRASH_DIRS
+from trashcli.shell_completion import TRASH_FILES
+from trashcli.shell_completion import add_argument_to
 from trashcli.trash import version
-
-mode_force = 'force'
-mode_interactive = 'interactive'
 
 ExitWithCode = NamedTuple('ExitWithCode', [
     ('type', type),
@@ -77,12 +83,14 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
     parser.add_argument("-f", "--force",
                         action="store_const",
                         dest="mode",
-                        const=mode_force,
+                        const=Mode.mode_force,
+                        default=Mode.mode_unspecified,
                         help="silently ignore nonexistent files")
     parser.add_argument("-i", "--interactive",
                         action="store_const",
                         dest="mode",
-                        const=mode_interactive,
+                        const=Mode.mode_interactive,
+                        default=Mode.mode_unspecified,
                         help="prompt before every removal")
     parser.add_argument("-r", "-R", "--recursive",
                         action="store_true",

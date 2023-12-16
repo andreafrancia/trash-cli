@@ -1,5 +1,6 @@
 import unittest
 
+from trashcli.put.core.mode import Mode
 from trashcli.put.parser import make_parser
 
 
@@ -45,19 +46,19 @@ class Test_make_parser(unittest.TestCase):
     def test_force_option_default(self):
         options = self.parser.parse_args([])
 
-        assert options.mode is None
+        assert options.mode == Mode.mode_unspecified
 
     def test_force_option(self):
         options = self.parser.parse_args(['-f'])
 
-        assert options.mode == 'force'
+        assert options.mode == Mode.mode_force
 
     def test_interactive_override_force_option(self):
         options = self.parser.parse_args(['-f', '-i'])
 
-        assert options.mode == 'interactive'
+        assert options.mode == Mode.mode_interactive
 
     def test_interactive_option(self):
         options = self.parser.parse_args(['-i'])
 
-        assert options.mode == 'interactive'
+        assert options.mode == Mode.mode_interactive
