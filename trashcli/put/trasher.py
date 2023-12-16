@@ -26,7 +26,7 @@ class Trasher:
     def trash_single(self,
                      path,
                      user_trash_dir,
-                     mode,
+                     mode,  # type: Mode
                      forced_volume,
                      home_fallback,
                      program_name,
@@ -54,13 +54,13 @@ class Trasher:
             return TrashResult.Failure
 
         if not self.fs.lexists(path):
-            if mode == Mode.mode_force:
+            if mode.can_ignore_not_existent_path():
                 return TrashResult.Success
             else:
                 self.reporter.unable_to_trash_file_non_existent(path, log_data)
                 return TrashResult.Failure
 
-        if mode == Mode.mode_interactive and self.fs.is_accessible(path):
+        if mode.should_we_ask_to_the_user(self.fs.is_accessible(path)):
             reply = self.user.ask_user_about_deleting_file(program_name, path)
             if reply == user_replied_no:
                 return TrashResult.Success
