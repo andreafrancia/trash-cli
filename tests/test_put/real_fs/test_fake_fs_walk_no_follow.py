@@ -10,8 +10,8 @@ class TestWalkNoFollow:
         self.fs.make_file("pippo")
         self.fs.makedirs("/a/b/c/d", 0o700)
 
-        assert "\n".join(list_all(self.fs)) == '/a\n' \
-                                               '/pippo\n' \
-                                               '/a/b\n' \
-                                               '/a/b/c\n' \
-                                               '/a/b/c/d'
+        assert "\n".join(list_all(self.fs, "/")) == '/a\n' \
+                                                    '/pippo\n' \
+                                                    '/a/b\n' \
+                                                    '/a/b/c\n' \
+                                                    '/a/b/c/d'

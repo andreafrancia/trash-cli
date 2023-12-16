@@ -56,7 +56,7 @@ class FakeFs(Fs, PathExists):
                 raise MyFileNotFoundError(
                     "no such file or directory: %s\n%s" % (
                         path,
-                        "\n".join(list_all(self)),
+                        "\n".join(list_all(self, "/")),
                     ))
         return cur_dir
 
