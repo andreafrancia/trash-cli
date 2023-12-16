@@ -1,8 +1,7 @@
-import os
-
 from trashcli.lib.environ import Environ
 from trashcli.put.core.mode import Mode
 from trashcli.put.core.trash_result import TrashResult
+from trashcli.put.core.trashee import should_skipped_by_specs
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.fs.fs import Fs
 from trashcli.put.my_logger import LogData
@@ -49,7 +48,7 @@ class Trasher:
         then try to trash in the second trash directory.
         """
 
-        if self._should_skipped_by_specs(path):
+        if should_skipped_by_specs(path):
             self.reporter.unable_to_trash_dot_entries(path, log_data)
             return TrashResult.Failure
 
@@ -73,8 +72,3 @@ class Trasher:
                                             uid,
                                             log_data,
                                             )
-
-    @staticmethod
-    def _should_skipped_by_specs(path):
-        basename = os.path.basename(path)
-        return (basename == ".") or (basename == "..")
