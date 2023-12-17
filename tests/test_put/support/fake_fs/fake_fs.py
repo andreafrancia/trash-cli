@@ -61,7 +61,7 @@ class FakeFs(Fs, PathExists):
         return cur_dir
 
     def _join_cwd(self, path):
-        return os.path.join(self.cwd, path)
+        return os.path.join(os.path.join("/", self.cwd), path)
 
     def components_for(self, path):
         return path.split('/')[1:]
@@ -79,6 +79,12 @@ class FakeFs(Fs, PathExists):
             return self.find_dir_or_file(path).content
         except MyFileNotFoundError:
             return None
+
+    def make_file_and_dirs(self, path, content=''):
+        path = self._join_cwd(path)
+        dirname, basename = os.path.split(path)
+        self.makedirs(dirname, 0o755)
+        self.make_file(path, content)
 
     def make_file(self, path, content=''):
         path = self._join_cwd(path)
@@ -171,6 +177,7 @@ class FakeFs(Fs, PathExists):
         entry.sticky = True
 
     def realpath(self, path):
+        path = self._join_cwd(path)
         return os.path.join("/", path)
 
     def cd(self, path):
