@@ -45,7 +45,7 @@ class FakeFs(Fs, PathExists):
         dir.add_dir(basename, 0o755, path)
 
     def find_dir_or_file(self, path):  # type: (str) -> Union[Directory,File]
-        path = os.path.join(self.cwd, path)
+        path = self._join_cwd(path)
         if path == '/':
             return self.root
         cur_dir = self.root
@@ -59,6 +59,9 @@ class FakeFs(Fs, PathExists):
                         "\n".join(list_all(self, "/")),
                     ))
         return cur_dir
+
+    def _join_cwd(self, path):
+        return os.path.join(self.cwd, path)
 
     def components_for(self, path):
         return path.split('/')[1:]
@@ -78,7 +81,7 @@ class FakeFs(Fs, PathExists):
             return None
 
     def make_file(self, path, content=''):
-        path = os.path.join(self.cwd, path)
+        path = self._join_cwd(path)
         dirname, basename = os.path.split(path)
         dir = self.find_dir_or_file(dirname)
         dir.add_file(basename, content, path)
@@ -88,7 +91,7 @@ class FakeFs(Fs, PathExists):
         return entry.mode
 
     def _find_entry(self, path):
-        path = os.path.join(self.cwd, path)
+        path = self._join_cwd(path)
         dirname, basename = os.path.split(path)
         dir = self.find_dir_or_file(dirname)
         return dir._get_entry(basename)
@@ -117,6 +120,7 @@ class FakeFs(Fs, PathExists):
         dir.remove(basename)
 
     def makedirs(self, path, mode):
+        path = self._join_cwd(path)
         cur_dir = self.root
         for component in self.components_for(path):
             try:
