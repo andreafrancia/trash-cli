@@ -1,19 +1,25 @@
 from collections import OrderedDict
+from typing import Optional
 
-from tests.test_put.support.fake_fs.inode import INode, SymLink
+from tests.test_put.support.fake_fs.ent import Ent
+from tests.test_put.support.fake_fs.inode import INode
+from tests.test_put.support.fake_fs.symlink import SymLink
 from tests.test_put.support.fake_fs.file import File
 from tests.test_put.support.my_file_not_found_error import MyFileNotFoundError
 from trashcli.lib.my_permission_error import MyPermissionError
 
 
-def make_inode_for_dir(file_or_dir, mode, parent_inode=None):
+def make_inode_for_dir(directory,  # type: Directory
+                       mode,  # type: int
+                       parent_inode,  # type: Optional[INode]
+                       ):
     inode = INode(mode, sticky=False)
-    file_or_dir.set_dot_entries(inode, parent_inode or inode)
-    inode.set_file_or_dir(file_or_dir)
+    directory.set_dot_entries(inode, parent_inode or inode)
+    inode.set_file_or_dir(directory)
     return inode
 
 
-class Directory:
+class Directory(Ent):
     def __init__(self, name):
         self.name = name
         self._entries = OrderedDict()
@@ -29,8 +35,8 @@ class Directory:
         if self._inode().mode & 0o200 == 0:
             raise MyPermissionError(
                 "[Errno 13] Permission denied: '%s'" % complete_path)
-        file_or_dir = Directory(basename)
-        inode = make_inode_for_dir(file_or_dir, mode, self._inode())
+        directory = Directory(basename)
+        inode = make_inode_for_dir(directory, mode, self._inode())
         self._entries[basename] = inode
 
     def add_file(self, basename, content, complete_path):

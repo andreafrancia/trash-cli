@@ -4,7 +4,7 @@ from typing import Union
 from tests.test_put.support.fake_fs.directory import Directory
 from tests.test_put.support.fake_fs.directory import make_inode_for_dir
 from tests.test_put.support.fake_fs.file import File
-from tests.test_put.support.fake_fs.inode import SymLink
+from tests.test_put.support.fake_fs.symlink import SymLink
 from tests.test_put.support.format_mode import format_mode
 from tests.test_put.support.my_file_not_found_error import MyFileNotFoundError
 from trashcli.fs import PathExists
@@ -15,7 +15,7 @@ from trashcli.put.fs.fs import list_all
 class FakeFs(Fs, PathExists):
     def __init__(self, cwd='/'):
         directory = Directory('/')
-        make_inode_for_dir(directory, 0o755)
+        make_inode_for_dir(directory, 0o755, None)
         self.root = directory
         self.cwd = cwd
 
