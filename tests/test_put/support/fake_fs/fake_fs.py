@@ -45,8 +45,6 @@ class FakeFs(Fs, PathExists):
 
     def find_dir_or_file(self, path):  # type: (str) -> Union[Directory,File]
         path = self._join_cwd(path)
-        if path == '/':
-            return self.root
         inode = self.root_inode
         for component in self.components_for(path):
             try:
@@ -61,18 +59,20 @@ class FakeFs(Fs, PathExists):
 
     def makedirs(self, path, mode):
         path = self._join_cwd(path)
-        cur_dir = self.root
+        inode = self.root_inode
         for component in self.components_for(path):
             try:
-                cur_dir = cur_dir.get_file(component)
+                inode = inode.entity.get_inode(component)
             except KeyError:
-                cur_dir.add_dir(component, mode, path)
-                cur_dir = cur_dir.get_file(component)
+                inode.entity.add_dir(component, mode, path)
+                inode = inode.entity.get_inode(component)
 
     def _join_cwd(self, path):
         return os.path.join(os.path.join("/", self.cwd), path)
 
     def components_for(self, path):
+        if path == '/':
+            return []
         return path.split('/')[1:]
 
     def atomic_write(self, path, content):
