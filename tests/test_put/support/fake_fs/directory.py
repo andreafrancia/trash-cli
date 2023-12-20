@@ -55,6 +55,9 @@ class Directory(Ent):
     def get_file(self, basename):
         return self._entries[basename].entity
 
+    def get_inode(self, basename):
+        return self._entries[basename]
+
     def _add_entry(self, basename, entry):
         self._entries[basename] = entry
 

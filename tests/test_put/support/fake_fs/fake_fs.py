@@ -47,17 +47,17 @@ class FakeFs(Fs, PathExists):
         path = self._join_cwd(path)
         if path == '/':
             return self.root
-        cur_dir = self.root
+        inode = self.root_inode
         for component in self.components_for(path):
             try:
-                cur_dir = cur_dir.get_file(component)
+                inode = inode.entity.get_inode(component)
             except KeyError:
                 raise MyFileNotFoundError(
                     "no such file or directory: %s\n%s" % (
                         path,
                         "\n".join(list_all(self, "/")),
                     ))
-        return cur_dir
+        return inode.entity
 
     def makedirs(self, path, mode):
         path = self._join_cwd(path)
