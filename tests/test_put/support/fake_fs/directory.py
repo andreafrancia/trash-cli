@@ -15,7 +15,7 @@ def make_inode_for_dir(directory,  # type: Directory
                        ):
     inode = INode(mode, sticky=False)
     directory.set_dot_entries(inode, parent_inode or inode)
-    inode.set_file_or_dir(directory)
+    inode.set_entity(directory)
     return inode
 
 
@@ -46,14 +46,14 @@ class Directory(Ent):
                 "[Errno 13] Permission denied: '%s'" % complete_path)
         file_or_dir = File(content)
         inode = INode(mode, sticky=False)
-        inode.set_file_or_dir(file_or_dir)
+        inode.set_entity(file_or_dir)
         self._entries[basename] = inode
 
     def _inode(self):  # type: ()->INode
         return self._entries["."]
 
     def get_file(self, basename):
-        return self._entries[basename].file_or_dir
+        return self._entries[basename].entity
 
     def _add_entry(self, basename, entry):
         self._entries[basename] = entry
