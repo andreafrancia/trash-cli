@@ -2,7 +2,7 @@ import os
 from typing import Union
 
 from tests.test_put.support.fake_fs.directory import Directory
-from tests.test_put.support.fake_fs.directory import make_inode_for_dir
+from tests.test_put.support.fake_fs.directory import make_inode_dir
 from tests.test_put.support.fake_fs.file import File
 from tests.test_put.support.fake_fs.symlink import SymLink
 from tests.test_put.support.format_mode import format_mode
@@ -14,9 +14,8 @@ from trashcli.put.fs.fs import list_all
 
 class FakeFs(Fs, PathExists):
     def __init__(self, cwd='/'):
-        directory = Directory('/')
-        make_inode_for_dir(directory, 0o755, None)
-        self.root = directory
+        self.root_inode = make_inode_dir('/', 0o755, None)
+        self.root = self.root_inode.entity
         self.cwd = cwd
 
     def touch(self, path):
@@ -59,6 +58,16 @@ class FakeFs(Fs, PathExists):
                         "\n".join(list_all(self, "/")),
                     ))
         return cur_dir
+
+    def makedirs(self, path, mode):
+        path = self._join_cwd(path)
+        cur_dir = self.root
+        for component in self.components_for(path):
+            try:
+                cur_dir = cur_dir.get_file(component)
+            except KeyError:
+                cur_dir.add_dir(component, mode, path)
+                cur_dir = cur_dir.get_file(component)
 
     def _join_cwd(self, path):
         return os.path.join(os.path.join("/", self.cwd), path)
@@ -124,16 +133,6 @@ class FakeFs(Fs, PathExists):
         dirname, basename = os.path.split(path)
         dir = self.find_dir_or_file(dirname)
         dir.remove(basename)
-
-    def makedirs(self, path, mode):
-        path = self._join_cwd(path)
-        cur_dir = self.root
-        for component in self.components_for(path):
-            try:
-                cur_dir = cur_dir.get_file(component)
-            except KeyError:
-                cur_dir.add_dir(component, mode, path)
-                cur_dir = cur_dir.get_file(component)
 
     def move(self, src, dest):
         basename, entry = self._pop_entry_from_dir(src)

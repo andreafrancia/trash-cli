@@ -9,10 +9,11 @@ from tests.test_put.support.my_file_not_found_error import MyFileNotFoundError
 from trashcli.lib.my_permission_error import MyPermissionError
 
 
-def make_inode_for_dir(directory,  # type: Directory
-                       mode,  # type: int
-                       parent_inode,  # type: Optional[INode]
-                       ):
+def make_inode_dir(directory_path,  # type: str
+                   mode,  # type: int
+                   parent_inode,  # type: Optional[INode]
+                   ):  # type: (...)->INode
+    directory = Directory(directory_path)
     inode = INode(mode, sticky=False)
     directory.set_dot_entries(inode, parent_inode or inode)
     inode.set_entity(directory)
@@ -35,8 +36,7 @@ class Directory(Ent):
         if self._inode().mode & 0o200 == 0:
             raise MyPermissionError(
                 "[Errno 13] Permission denied: '%s'" % complete_path)
-        directory = Directory(basename)
-        inode = make_inode_for_dir(directory, mode, self._inode())
+        inode = make_inode_dir(basename, mode, self._inode())
         self._entries[basename] = inode
 
     def add_file(self, basename, content, complete_path):
