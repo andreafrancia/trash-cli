@@ -1,6 +1,7 @@
 from enum import Enum
-from typing import Optional
+
 from tests.test_put.support.fake_fs.ent import Ent
+from trashcli.put.check_cast import check_cast
 
 
 class Stickiness(Enum):
@@ -23,3 +24,11 @@ class INode:
 
     def __repr__(self):
         return "INode(%r, %r, %r)" % (self.entity, self.mode, self.stickiness)
+
+    def directory(self):
+        from tests.test_put.support.fake_fs.directory import Directory
+        return check_cast(Directory, self.entity)
+
+    def reg_file(self):
+        from tests.test_put.support.fake_fs.file import File
+        return check_cast(File, self.entity)
