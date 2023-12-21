@@ -57,7 +57,7 @@ class Directory(Ent):
     def get_file(self, basename):
         return self._entries[basename].entity
 
-    def get_inode(self, basename, path, fs):
+    def get_entry(self, basename, path, fs):
         try:
             return self._entries[basename]
         except KeyError:

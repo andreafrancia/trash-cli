@@ -78,7 +78,7 @@ class FakeFs(Fs, PathExists):
         path = self._join_cwd(path)
         entry = self.root_inode
         for component in self.components_for(path):
-            entry = as_directory(as_inode(entry).entity).get_inode(component, path, self)
+            entry = as_directory(as_inode(entry).entity).get_entry(component, path, self)
         return entry
 
     def makedirs(self, path, mode):
@@ -86,11 +86,11 @@ class FakeFs(Fs, PathExists):
         inode = self.root_inode
         for component in self.components_for(path):
             try:
-                inode = inode.entity.get_inode(component, path, self)
+                inode = inode.entity.get_entry(component, path, self)
             except FileNotFoundError:
                 dir_ent = as_directory(inode.entity)
                 inode.entity.add_dir(component, mode, path)
-                inode = dir_ent.get_inode(component, path, self)
+                inode = dir_ent.get_entry(component, path, self)
 
     def _join_cwd(self, path):
         return os.path.join(os.path.join("/", self.cwd), path)
@@ -109,7 +109,7 @@ class FakeFs(Fs, PathExists):
         path = self._join_cwd(path)
         dirname, basename = os.path.split(os.path.normpath(path))
         dir_ent = as_directory(self.get_entity_at(dirname))
-        inode = dir_ent.get_inode(basename, path, self)
+        inode = dir_ent.get_entry(basename, path, self)
         if isinstance(inode, SymLink):
             link_target = self.readlink(path)
             return self.read(os.path.join(dirname, link_target))
@@ -150,7 +150,7 @@ class FakeFs(Fs, PathExists):
         path = self._join_cwd(path)
         dirname, basename = os.path.split(path)
         dir_ent = self.get_entity_at(dirname)
-        return dir_ent.get_inode(basename, path, self)
+        return dir_ent.get_entry(basename, path, self)
 
     def chmod(self, path, mode):
         entry = self._find_entry(path)
@@ -193,7 +193,7 @@ class FakeFs(Fs, PathExists):
     def _pop_entry_from_dir(self, path):
         dirname, basename = os.path.split(path)
         directory = self.get_directory_at(dirname)
-        entry = directory.get_inode(basename, path, self)
+        entry = directory.get_entry(basename, path, self)
         directory.remove(basename)
         return basename, entry
 
