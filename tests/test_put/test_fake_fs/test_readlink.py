@@ -38,3 +38,27 @@ class TestReadLink:
 
         assert ((type(exc), str(exc)) ==
                 (OSError, "[Errno 22] Invalid argument: '/regular-file'"))
+
+    def test_read_file(self):
+        self.fs.make_file("regular_file", "contents")
+
+        assert self.fs.read("regular_file") == "contents"
+
+    def test_read_linked_file(self):
+        self.fs.make_file("regular_file", "contents")
+        self.fs.symlink("regular_file", "link")
+
+        assert self.fs.read("link") == "contents"
+
+    def test_is_dir_for_links(self):
+        self.fs.symlink("target", "link")
+
+        assert self.fs.isdir("link") is False
+
+    def test_read_linked_file_with_relative_path(self):
+        self.fs.makedirs("/a/b/c/d", 0o777)
+        self.fs.make_file("/a/b/c/d/regular_file", "contents")
+
+        self.fs.symlink("c/d/regular_file", "/a/b/link")
+
+        assert self.fs.read("/a/b/link") == "contents"

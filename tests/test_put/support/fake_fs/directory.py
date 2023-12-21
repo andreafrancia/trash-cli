@@ -57,8 +57,15 @@ class Directory(Ent):
     def get_file(self, basename):
         return self._entries[basename].entity
 
-    def get_inode(self, basename):
-        return self._entries[basename]
+    def get_inode(self, basename, path, fs):
+        try:
+            return self._entries[basename]
+        except KeyError:
+            raise MyFileNotFoundError(
+                "no such file or directory: %s\n%s" % (
+                    path,
+                    "\n".join(fs.find_all()),
+                ))
 
     def _add_entry(self, basename, entry):
         self._entries[basename] = entry

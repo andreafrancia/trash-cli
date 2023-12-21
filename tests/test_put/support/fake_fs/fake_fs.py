@@ -29,6 +29,10 @@ def check_cast(t, value):  # type: (Type[T], Any) -> T
         raise TypeError("expected %s, got %s" % (t, type(value)))
 
 
+def as_directory(ent):  # type: (Ent) -> Directory
+    return check_cast(Directory, ent)
+
+
 class FakeFs(Fs, PathExists):
     def __init__(self, cwd='/'):
         self.root_inode = make_inode_dir('/', 0o755, None)
@@ -67,14 +71,7 @@ class FakeFs(Fs, PathExists):
         path = self._join_cwd(path)
         inode = self.root_inode
         for component in self.components_for(path):
-            try:
-                inode = inode.entity.get_inode(component)
-            except KeyError:
-                raise MyFileNotFoundError(
-                    "no such file or directory: %s\n%s" % (
-                        path,
-                        "\n".join(list_all(self, "/")),
-                    ))
+            inode = inode.entity.get_inode(component, path, self)
         return inode
 
     def makedirs(self, path, mode):
@@ -82,10 +79,11 @@ class FakeFs(Fs, PathExists):
         inode = self.root_inode
         for component in self.components_for(path):
             try:
-                inode = inode.entity.get_inode(component)
-            except KeyError:
+                inode = inode.entity.get_inode(component, path, self)
+            except FileNotFoundError:
+                dir_ent = as_directory(inode.entity)
                 inode.entity.add_dir(component, mode, path)
-                inode = inode.entity.get_inode(component)
+                inode = dir_ent.get_inode(component, path, self)
 
     def _join_cwd(self, path):
         return os.path.join(os.path.join("/", self.cwd), path)
@@ -101,7 +99,23 @@ class FakeFs(Fs, PathExists):
         self.make_file(path, content)
 
     def read(self, path):
-        return self.get_entity_at(path).content
+        path = self._join_cwd(path)
+        dirname, basename = os.path.split(os.path.normpath(path))
+        dir_ent = as_directory(self.get_entity_at(dirname))
+        inode = dir_ent.get_inode(basename, path, self)
+        if isinstance(inode, SymLink):
+            link_target = self.readlink(path)
+            return self.read(os.path.join(dirname, link_target))
+        else:
+            return inode.entity.content
+
+    def readlink(self, path):
+        path = self._join_cwd(path)
+        link = self.get_inode_at(path)
+        if isinstance(link, SymLink):
+            return link.dest
+        else:
+            raise OSError(errno.EINVAL, "Invalid argument", path)
 
     def read_null(self, path):
         try:
@@ -137,10 +151,14 @@ class FakeFs(Fs, PathExists):
 
     def isdir(self, path):
         try:
-            file = self.get_entity_at(path)
+            entry = self.get_inode_at(path)
         except MyFileNotFoundError:
             return False
-        return isinstance(file, Directory)
+        else:
+            if isinstance(entry, SymLink):
+                return False
+            file = entry.entity
+            return isinstance(file, Directory)
 
     def exists(self, path):
         try:
@@ -180,21 +198,13 @@ class FakeFs(Fs, PathExists):
         else:
             return isinstance(entry, SymLink)
 
-    def readlink(self, path):
-        path = self._join_cwd(path)
-        link = self.get_inode_at(path)
-        if isinstance(link, SymLink):
-            return link.dest
-        else:
-            raise OSError(errno.EINVAL, "Invalid argument", path)
-
     def symlink(self, src, dest):
         dest = os.path.join(self.cwd, dest)
         dirname, basename = os.path.split(dest)
         if dirname == '':
             raise OSError("only absolute dests are supported, got %s" % dest)
-        dir = check_cast(Directory, self.get_entity_at(dirname))
-        dir.add_link(basename, src)
+        dir_ent = as_directory(self.get_entity_at(dirname))
+        dir_ent.add_link(basename, src)
 
     def has_sticky_bit(self, path):
         return self._find_entry(path).stickiness is Stickiness.sticky
