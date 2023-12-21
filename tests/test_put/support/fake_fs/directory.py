@@ -3,6 +3,7 @@ from typing import Optional
 
 from tests.test_put.support.fake_fs.ent import Ent
 from tests.test_put.support.fake_fs.inode import INode
+from tests.test_put.support.fake_fs.inode import Stickiness
 from tests.test_put.support.fake_fs.symlink import SymLink
 from tests.test_put.support.fake_fs.file import File
 from tests.test_put.support.my_file_not_found_error import MyFileNotFoundError
@@ -14,9 +15,8 @@ def make_inode_dir(directory_path,  # type: str
                    parent_inode,  # type: Optional[INode]
                    ):  # type: (...)->INode
     directory = Directory(directory_path)
-    inode = INode(mode, sticky=False)
+    inode = INode(directory, mode, Stickiness.not_sticky)
     directory.set_dot_entries(inode, parent_inode or inode)
-    inode.set_entity(directory)
     return inode
 
 
@@ -24,6 +24,9 @@ class Directory(Ent):
     def __init__(self, name):
         self.name = name
         self._entries = OrderedDict()
+
+    def __repr__(self):
+        return "Directory(%r)" % self.name
 
     def set_dot_entries(self, inode, parent_inode):
         self._entries['.'] = inode
@@ -44,9 +47,8 @@ class Directory(Ent):
         if self._inode().mode & 0o200 == 0:
             raise MyPermissionError(
                 "[Errno 13] Permission denied: '%s'" % complete_path)
-        file_or_dir = File(content)
-        inode = INode(mode, sticky=False)
-        inode.set_entity(file_or_dir)
+        file = File(content)
+        inode = INode(file, mode, Stickiness.not_sticky)
         self._entries[basename] = inode
 
     def _inode(self):  # type: ()->INode

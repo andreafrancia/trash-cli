@@ -19,11 +19,11 @@ class TestFakeFs(unittest.TestCase):
         assert result == [".", "..", "foo"]
 
     def test_find_dir_root(self):
-        assert '/' == self.fs.find_dir_or_file('/').name
+        assert '/' == self.fs.get_entity_at('/').name
 
     def test_find_dir_root_subdir(self):
         self.fs.mkdir("/foo")
-        assert 'foo' == self.fs.find_dir_or_file('/foo').name
+        assert 'foo' == self.fs.get_entity_at('/foo').name
 
     def test_create_dir_in_dir(self):
         self.fs.mkdir("/foo")
@@ -116,19 +116,19 @@ class TestFakeFs(unittest.TestCase):
 
     def test_absolute_path(self):
         self.fs.make_file('/foo')
-        assert '' == self.fs.find_dir_or_file('/foo').content
+        assert '' == self.fs.get_entity_at('/foo').content
 
     def test_relativae_path(self):
         self.fs.make_file('/foo', 'content')
 
-        assert 'content' == self.fs.find_dir_or_file('foo').content
+        assert 'content' == self.fs.get_entity_at('foo').content
 
     def test_relativae_path_with_cd(self):
         self.fs.makedirs('/foo/bar', 0o755)
         self.fs.make_file('/foo/bar/baz', 'content')
         self.fs.cd('/foo/bar')
 
-        assert 'content' == self.fs.find_dir_or_file('baz').content
+        assert 'content' == self.fs.get_entity_at('baz').content
 
     def test_isfile_with_file(self):
         self.fs.make_file('/foo')

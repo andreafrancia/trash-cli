@@ -1,15 +1,32 @@
+import errno
 import os
+from typing import Any
+from typing import Type
+from typing import TypeVar
 from typing import Union
+from typing import cast
 
 from tests.test_put.support.fake_fs.directory import Directory
 from tests.test_put.support.fake_fs.directory import make_inode_dir
+from tests.test_put.support.fake_fs.ent import Ent
 from tests.test_put.support.fake_fs.file import File
+from tests.test_put.support.fake_fs.inode import INode
+from tests.test_put.support.fake_fs.inode import Stickiness
 from tests.test_put.support.fake_fs.symlink import SymLink
 from tests.test_put.support.format_mode import format_mode
 from tests.test_put.support.my_file_not_found_error import MyFileNotFoundError
 from trashcli.fs import PathExists
 from trashcli.put.fs.fs import Fs
 from trashcli.put.fs.fs import list_all
+
+T = TypeVar('T')
+
+
+def check_cast(t, value):  # type: (Type[T], Any) -> T
+    if isinstance(value, t):
+        return cast(t, value)
+    else:
+        raise TypeError("expected %s, got %s" % (t, type(value)))
 
 
 class FakeFs(Fs, PathExists):
@@ -35,15 +52,18 @@ class FakeFs(Fs, PathExists):
         return all_entries
 
     def ls_a(self, path):
-        dir = self.find_dir_or_file(path)
+        dir = self.get_entity_at(path)
         return list(dir.entries())
 
     def mkdir(self, path):
         dirname, basename = os.path.split(path)
-        dir = self.find_dir_or_file(dirname)
+        dir = self.get_entity_at(dirname)
         dir.add_dir(basename, 0o755, path)
 
-    def find_dir_or_file(self, path):  # type: (str) -> Union[Directory,File]
+    def get_entity_at(self, path):  # type: (str) -> Ent
+        return self.get_inode_at(path).entity
+
+    def get_inode_at(self, path):  # type: (str) -> Union[INode, SymLink]
         path = self._join_cwd(path)
         inode = self.root_inode
         for component in self.components_for(path):
@@ -55,7 +75,7 @@ class FakeFs(Fs, PathExists):
                         path,
                         "\n".join(list_all(self, "/")),
                     ))
-        return inode.entity
+        return inode
 
     def makedirs(self, path, mode):
         path = self._join_cwd(path)
@@ -81,11 +101,11 @@ class FakeFs(Fs, PathExists):
         self.make_file(path, content)
 
     def read(self, path):
-        return self.find_dir_or_file(path).content
+        return self.get_entity_at(path).content
 
     def read_null(self, path):
         try:
-            return self.find_dir_or_file(path).content
+            return self.get_entity_at(path).content
         except MyFileNotFoundError:
             return None
 
@@ -98,7 +118,7 @@ class FakeFs(Fs, PathExists):
     def make_file(self, path, content=''):
         path = self._join_cwd(path)
         dirname, basename = os.path.split(path)
-        dir = self.find_dir_or_file(dirname)
+        dir = self.get_entity_at(dirname)
         dir.add_file(basename, content, path)
 
     def get_mod(self, path):
@@ -108,7 +128,7 @@ class FakeFs(Fs, PathExists):
     def _find_entry(self, path):
         path = self._join_cwd(path)
         dirname, basename = os.path.split(path)
-        dir = self.find_dir_or_file(dirname)
+        dir = self.get_entity_at(dirname)
         return dir._get_entry(basename)
 
     def chmod(self, path, mode):
@@ -117,37 +137,37 @@ class FakeFs(Fs, PathExists):
 
     def isdir(self, path):
         try:
-            file = self.find_dir_or_file(path)
+            file = self.get_entity_at(path)
         except MyFileNotFoundError:
             return False
         return isinstance(file, Directory)
 
     def exists(self, path):
         try:
-            self.find_dir_or_file(path)
+            self.get_entity_at(path)
             return True
         except MyFileNotFoundError:
             return False
 
     def remove_file(self, path):
         dirname, basename = os.path.split(path)
-        dir = self.find_dir_or_file(dirname)
+        dir = self.get_entity_at(dirname)
         dir.remove(basename)
 
     def move(self, src, dest):
         basename, entry = self._pop_entry_from_dir(src)
 
         if self.exists(dest) and self.isdir(dest):
-            dest_dir = self.find_dir_or_file(dest)
+            dest_dir = self.get_entity_at(dest)
             dest_dir._add_entry(basename, entry)
         else:
             dest_dirname, dest_basename = os.path.split(dest)
-            dest_dir = self.find_dir_or_file(dest_dirname)
+            dest_dir = self.get_entity_at(dest_dirname)
             dest_dir._add_entry(dest_basename, entry)
 
     def _pop_entry_from_dir(self, path):
         dirname, basename = os.path.split(path)
-        dir = self.find_dir_or_file(dirname)
+        dir = self.get_entity_at(dirname)
         entry = dir._get_entry(basename)
         dir.remove(basename)
         return basename, entry
@@ -160,20 +180,28 @@ class FakeFs(Fs, PathExists):
         else:
             return isinstance(entry, SymLink)
 
+    def readlink(self, path):
+        path = self._join_cwd(path)
+        link = self.get_inode_at(path)
+        if isinstance(link, SymLink):
+            return link.dest
+        else:
+            raise OSError(errno.EINVAL, "Invalid argument", path)
+
     def symlink(self, src, dest):
         dest = os.path.join(self.cwd, dest)
         dirname, basename = os.path.split(dest)
         if dirname == '':
             raise OSError("only absolute dests are supported, got %s" % dest)
-        dir = self.find_dir_or_file(dirname)
+        dir = check_cast(Directory, self.get_entity_at(dirname))
         dir.add_link(basename, src)
 
     def has_sticky_bit(self, path):
-        return self._find_entry(path).sticky
+        return self._find_entry(path).stickiness is Stickiness.sticky
 
     def set_sticky_bit(self, path):
         entry = self._find_entry(path)
-        entry.sticky = True
+        entry.stickiness = Stickiness.sticky
 
     def realpath(self, path):
         path = self._join_cwd(path)
@@ -184,13 +212,13 @@ class FakeFs(Fs, PathExists):
 
     def isfile(self, path):
         try:
-            file = self.find_dir_or_file(path)
+            file = self.get_entity_at(path)
         except MyFileNotFoundError:
             return False
         return isinstance(file, File)
 
     def getsize(self, path):
-        file = self.find_dir_or_file(path)
+        file = self.get_entity_at(path)
         return file.getsize()
 
     def is_accessible(self, path):
@@ -221,4 +249,5 @@ class FakeFs(Fs, PathExists):
         # TODO: consider links
         return self.exists(path)
 
-
+    def find_all(self):
+        return list(list_all(self, "/"))

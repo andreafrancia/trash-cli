@@ -34,6 +34,9 @@ class Stat(NamedTuple('Stat', [
 
 class RealFs(Fs):
 
+    def readlink(self, path):
+        return os.readlink(path)
+
     def symlink(self, src, dest):  # type: (str, str) -> None
         os.symlink(src, dest)
 
