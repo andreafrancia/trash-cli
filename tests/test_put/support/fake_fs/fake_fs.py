@@ -3,12 +3,12 @@ import os
 from typing import Any
 from typing import Type
 from typing import TypeVar
-from typing import Union
 from typing import cast
 
 from tests.test_put.support.fake_fs.directory import Directory
 from tests.test_put.support.fake_fs.directory import make_inode_dir
 from tests.test_put.support.fake_fs.ent import Ent
+from tests.test_put.support.fake_fs.entry import Entry
 from tests.test_put.support.fake_fs.file import File
 from tests.test_put.support.fake_fs.inode import INode
 from tests.test_put.support.fake_fs.inode import Stickiness
@@ -31,6 +31,10 @@ def check_cast(t, value):  # type: (Type[T], Any) -> T
 
 def as_directory(ent):  # type: (Ent) -> Directory
     return check_cast(Directory, ent)
+
+
+def as_inode(entry):  # type: (Entry) -> INode
+    return check_cast(INode, entry)
 
 
 class FakeFs(Fs, PathExists):
@@ -65,14 +69,17 @@ class FakeFs(Fs, PathExists):
         dir.add_dir(basename, 0o755, path)
 
     def get_entity_at(self, path):  # type: (str) -> Ent
-        return self.get_inode_at(path).entity
+        return self.get_entry_at(path).entity
 
-    def get_inode_at(self, path):  # type: (str) -> Union[INode, SymLink]
+    def get_directory_at(self, path):
+        return as_directory(self.get_entity_at(path))
+
+    def get_entry_at(self, path):  # type: (str) -> Entry
         path = self._join_cwd(path)
-        inode = self.root_inode
+        entry = self.root_inode
         for component in self.components_for(path):
-            inode = inode.entity.get_inode(component, path, self)
-        return inode
+            entry = as_directory(as_inode(entry).entity).get_inode(component, path, self)
+        return entry
 
     def makedirs(self, path, mode):
         path = self._join_cwd(path)
@@ -111,9 +118,9 @@ class FakeFs(Fs, PathExists):
 
     def readlink(self, path):
         path = self._join_cwd(path)
-        link = self.get_inode_at(path)
-        if isinstance(link, SymLink):
-            return link.dest
+        maybe_link = self.get_entry_at(path)
+        if isinstance(maybe_link, SymLink):
+            return maybe_link.dest
         else:
             raise OSError(errno.EINVAL, "Invalid argument", path)
 
@@ -142,8 +149,8 @@ class FakeFs(Fs, PathExists):
     def _find_entry(self, path):
         path = self._join_cwd(path)
         dirname, basename = os.path.split(path)
-        dir = self.get_entity_at(dirname)
-        return dir._get_entry(basename)
+        dir_ent = self.get_entity_at(dirname)
+        return dir_ent.get_inode(basename, path, self)
 
     def chmod(self, path, mode):
         entry = self._find_entry(path)
@@ -151,7 +158,7 @@ class FakeFs(Fs, PathExists):
 
     def isdir(self, path):
         try:
-            entry = self.get_inode_at(path)
+            entry = self.get_entry_at(path)
         except MyFileNotFoundError:
             return False
         else:
@@ -176,18 +183,18 @@ class FakeFs(Fs, PathExists):
         basename, entry = self._pop_entry_from_dir(src)
 
         if self.exists(dest) and self.isdir(dest):
-            dest_dir = self.get_entity_at(dest)
-            dest_dir._add_entry(basename, entry)
+            dest_dir = self.get_directory_at(dest)
+            dest_dir.add_entry(basename, entry)
         else:
             dest_dirname, dest_basename = os.path.split(dest)
-            dest_dir = self.get_entity_at(dest_dirname)
-            dest_dir._add_entry(dest_basename, entry)
+            dest_dir = self.get_directory_at(dest_dirname)
+            dest_dir.add_entry(dest_basename, entry)
 
     def _pop_entry_from_dir(self, path):
         dirname, basename = os.path.split(path)
-        dir = self.get_entity_at(dirname)
-        entry = dir._get_entry(basename)
-        dir.remove(basename)
+        directory = self.get_directory_at(dirname)
+        entry = directory.get_inode(basename, path, self)
+        directory.remove(basename)
         return basename, entry
 
     def islink(self, path):
@@ -256,8 +263,13 @@ class FakeFs(Fs, PathExists):
                     yield x
 
     def lexists(self, path):
-        # TODO: consider links
-        return self.exists(path)
+        path = self._join_cwd(path)
+        try:
+            self.get_entry_at(path)
+        except MyFileNotFoundError:
+            return False
+        else:
+            return True
 
     def find_all(self):
         return list(list_all(self, "/"))

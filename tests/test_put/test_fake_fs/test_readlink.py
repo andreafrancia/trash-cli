@@ -21,6 +21,11 @@ class TestReadLinkOnRealFs:
         assert ((type(exc), str(exc).replace(temp_dir, '')) ==
                 (OSError, "[Errno 22] Invalid argument: '/regular-file'"))
 
+    def test_lexists(self, temp_dir):
+        self.fs.symlink("target", temp_dir / "link")
+
+        assert self.fs.lexists(temp_dir / "link") is True
+
 
 class TestReadLink:
     def setup_method(self):
@@ -62,3 +67,8 @@ class TestReadLink:
         self.fs.symlink("c/d/regular_file", "/a/b/link")
 
         assert self.fs.read("/a/b/link") == "contents"
+
+    def test_lexists(self):
+        self.fs.symlink("target", "link")
+
+        assert self.fs.lexists("link") is True

@@ -67,18 +67,11 @@ class Directory(Ent):
                     "\n".join(fs.find_all()),
                 ))
 
-    def _add_entry(self, basename, entry):
+    def add_entry(self, basename, entry):
         self._entries[basename] = entry
 
     def add_link(self, basename, src):
         self._entries[basename] = SymLink(src)
-
-    def _get_entry(self, basename):  # type: (str) -> INode
-        try:
-            return self._entries[basename]
-        except KeyError:
-            raise MyFileNotFoundError(
-                "no such file or directory: %s" % basename)
 
     def remove(self, basename):
         self._entries.pop(basename)
