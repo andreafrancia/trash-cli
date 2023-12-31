@@ -1,6 +1,6 @@
 import os
 import pprint
-from argparse import SUPPRESS, ArgumentParser, RawTextHelpFormatter
+from argparse import SUPPRESS, ArgumentParser, RawDescriptionHelpFormatter
 from typing import NamedTuple, Any, Union, List, Optional
 
 from trashcli.shell_completion import TRASH_DIRS, TRASH_FILES, add_argument_to
@@ -58,9 +58,9 @@ def ensure_int(code):
 
 def make_parser(program_name):
     parser = ArgumentParser(prog=program_name,
-                            usage="%(prog)s [OPTION]... FILE...",
+                            usage="%(prog)s [OPTION]... FILE...\ntrash-put\t\ttrash files and directories.\ntrash-empty\t\tempty the trashcan(s).\ntrash-list\t\tlist trashed files.\ntrash-restore\t\trestore a trashed file.\ntrash-rm\t\tremove individual files from the trashcan",
                             description="Put files in trash",
-                            formatter_class=RawTextHelpFormatter,
+                            formatter_class=RawDescriptionHelpFormatter,
                             epilog="""\
 To remove a file whose name starts with a '-', for example '-foo',
 use one of these commands:
@@ -71,8 +71,6 @@ use one of these commands:
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues""")
     add_argument_to(parser)
-    parser.add_argument( "--quickhelp",
-                        help="trash-put\t\ttrash files and directories.\ntrash-empty\t\tempty the trashcan(s).\ntrash-list\t\tlist trashed files.\ntrash-restore\t\trestore a trashed file.\ntrash-rm\t\tremove individual files from the trashcan")
     parser.add_argument("-d", "--directory",
                         action="store_true",
                         help="ignored (for GNU rm compatibility)")
