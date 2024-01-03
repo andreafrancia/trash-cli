@@ -58,10 +58,16 @@ def ensure_int(code):
 
 def make_parser(program_name):
     parser = ArgumentParser(prog=program_name,
-                            usage="%(prog)s [OPTION]... FILE...\ntrash-put\t\ttrash files and directories.\ntrash-empty\t\tempty the trashcan(s).\ntrash-list\t\tlist trashed files.\ntrash-restore\t\trestore a trashed file.\ntrash-rm\t\tremove individual files from the trashcan",
+                            usage="%(prog)s [OPTION]... FILE...",
                             description="Put files in trash",
                             formatter_class=RawDescriptionHelpFormatter,
                             epilog="""\
+trash-put\t\ttrash files and directories.
+trash-empty\t\tempty the trashcan(s).
+trash-list\t\tlist trashed files.
+trash-restore\t\trestore a trashed file.
+trash-rm\t\tremove individual files from the trashcan
+
 To remove a file whose name starts with a '-', for example '-foo',
 use one of these commands:
 
