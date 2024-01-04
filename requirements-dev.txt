@@ -1,11 +1,13 @@
-mock
+# testing
 pytest
-six
-twine
-setuptools
-build
+mock
 flexmock
 parameterized
+# build and publish
+build
+setuptools
+twine
+# types
 types-six
 types-mock
 types-psutil

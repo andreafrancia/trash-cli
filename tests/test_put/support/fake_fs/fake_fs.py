@@ -75,7 +75,7 @@ class FakeFs(Fs, PathExists):
         for component in self.components_for(path):
             try:
                 inode = inode.directory().get_entry(component, path, self)
-            except FileNotFoundError:
+            except MyFileNotFoundError:
                 directory = inode.directory()
                 directory.add_dir(component, mode, path)
                 inode = directory.get_entry(component, path, self)
