@@ -317,7 +317,7 @@ class TestPut:
             exit_code = cmd.run_put(args, environ, uid)
         except IOError as e:
             err = e
-        stderr = stderr.getvalue().splitlines()
+        stderr_lines = stderr.getvalue().splitlines()
 
-        return Result(stderr, str(err), ensure_int(exit_code),
+        return Result(stderr_lines, str(err), ensure_int(exit_code),
                       backend.collected())

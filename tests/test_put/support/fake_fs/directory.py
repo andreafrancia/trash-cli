@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from typing import Optional
+from typing import Union
 
 from tests.test_put.support.fake_fs.ent import Ent
 from tests.test_put.support.fake_fs.inode import INode
@@ -21,9 +22,9 @@ def make_inode_dir(directory_path,  # type: str
 
 
 class Directory(Ent):
-    def __init__(self, name):
+    def __init__(self, name):  # type: (str) -> None
         self.name = name
-        self._entries = OrderedDict()
+        self._entries = OrderedDict()  # type: dict[str, Union[INode, SymLink]]
 
     def __repr__(self):
         return "Directory(%r)" % self.name
@@ -51,7 +52,7 @@ class Directory(Ent):
         inode = INode(file, mode, Stickiness.not_sticky)
         self._entries[basename] = inode
 
-    def _inode(self):  # type: ()->INode
+    def _inode(self):  # type: ()->Union[INode, SymLink]
         return self._entries["."]
 
     def get_file(self, basename):

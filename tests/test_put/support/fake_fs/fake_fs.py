@@ -57,7 +57,8 @@ class FakeFs(Fs, PathExists):
         directory.add_dir(basename, 0o755, path)
 
     def get_entity_at(self, path):  # type: (str) -> Ent
-        return self.get_entry_at(path).entity
+        inode = check_cast(INode, self.get_entry_at(path))
+        return inode.entity
 
     def get_directory_at(self, path):
         return as_directory(self.get_entity_at(path))

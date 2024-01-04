@@ -1,5 +1,7 @@
 from typing import IO
 
+from typing import List
+
 from tests.test_put.test_put_command.logs import Logs
 from tests.test_put.test_put_command.log_line import LogLine
 from trashcli.put.core.logs import LogData
@@ -13,7 +15,7 @@ class RecordingBackend(LoggerBackend):
                  stderr,  # type: IO[str]
                  ):
         self.stderr = stderr
-        self.logs = []
+        self.logs = []  # type: List[LogLine]
 
     def write_message(self,
                       log_entry,  # type: LogEntry

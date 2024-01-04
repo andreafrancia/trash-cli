@@ -156,7 +156,7 @@ class Stats(NamedTuple('Result', [
 class StatReader:
     def read_stats(self,
                    path,  # type: str
-                   ):  # type: (...) -> Either[Result, Exception]
+                   ):  # type: (...) -> Either[Stats, Exception]
         try:
             stats = os.lstat(path)
             user = getpwuid(stats.st_uid).pw_name

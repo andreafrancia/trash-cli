@@ -8,6 +8,7 @@ from trashcli.put.core.logs import LogData
 from trashcli.put.core.logs import LogEntry
 from trashcli.put.core.logs import LogTag
 from trashcli.put.core.logs import MessageStr
+from trashcli.put.my_logger import MyLogger
 
 R = TypeVar('R')
 

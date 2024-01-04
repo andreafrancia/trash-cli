@@ -1,6 +1,7 @@
 from typing import List
 from typing import Tuple
 
+from tests.test_put.test_put_command.logs import Logs
 from trashcli.put.core.logs import LogTag
 
 
@@ -9,7 +10,7 @@ class Result:
                  stderr,  # type: List[str]
                  err,  # type: str
                  exit_code,  # type: int
-                 collected_logs,  # type: 'Logs'
+                 collected_logs,  # type: Logs
                  ):
         self.stderr = stderr
         self.err = err
