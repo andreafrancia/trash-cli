@@ -1,9 +1,6 @@
 import os
-from typing import IO
 from typing import List
-from typing import NamedTuple
 from typing import Optional
-from typing import Tuple
 
 import flexmock
 from six import StringIO
@@ -13,19 +10,15 @@ from tests.test_put.support.dummy_clock import FixedClock
 from tests.test_put.support.dummy_clock import jan_1st_2024
 from tests.test_put.support.fake_fs.failing_fake_fs import FailingFakeFs
 from tests.test_put.support.fake_random import FakeRandomInt
+from tests.test_put.test_put_command.recording_backend import RecordingBackend
+from tests.test_put.test_put_command.result import Result
 from trashcli.fstab.volume_of import VolumeOfImpl
 from trashcli.lib.environ import Environ
 from trashcli.lib.exit_codes import EX_IOERR
 from trashcli.lib.exit_codes import EX_OK
 from trashcli.lib.my_input import HardCodedInput
-from trashcli.put.core.logs import Level
-from trashcli.put.core.logs import LogData
-from trashcli.put.core.logs import LogEntry
 from trashcli.put.core.logs import LogTag
 from trashcli.put.main import make_cmd
-from trashcli.put.my_logger import LoggerBackend
-from trashcli.put.my_logger import StreamBackend
-from trashcli.put.my_logger import is_right_for_level
 from trashcli.put.parser import ensure_int
 
 
@@ -330,73 +323,3 @@ class TestPut:
                       self.backend.collected())
 
 
-class LogLine(NamedTuple('LogLine', [
-    ('level', Level),
-    ('verbose', int),
-    ('program_name', str),
-    ('message', str),
-    ('tag', LogTag)
-])):
-    pass
-
-
-class Logs(NamedTuple('Logs', [
-    ('logs', List[LogLine])
-])):
-    def as_stderr_lines(self):
-        return ["%s: %s" % (line.program_name, line.message)
-                for line in self.logs
-                if is_right_for_level(line.verbose, line.level)]
-
-    def with_tag(self,
-                 log_tag,  # type: LogTag
-                 ):  # type: (...) -> List[str]
-        return ["%s" % line.message
-                for line in self.logs
-                if log_tag == line.tag
-                ]
-
-
-class Result:
-    def __init__(self,
-                 stderr,  # type: List[str]
-                 err,  # type: str
-                 exit_code,  # type: int
-                 collected_logs,  # type: 'Logs'
-                 ):
-        self.stderr = stderr
-        self.err = err
-        self.exit_code = exit_code
-        self.collected_logs = collected_logs
-
-    def exit_code_and_stderr(self):
-        return [self.exit_code,
-                self.stderr]
-
-    def exit_code_and_logs(self,
-                           log_tag,  # type: LogTag
-                           ):  # type: (...) -> Tuple[int, List[str]]
-        return (self.exit_code,
-                self.collected_logs.with_tag(log_tag))
-
-
-class RecordingBackend(LoggerBackend):
-    def __init__(self,
-                 stderr,  # type: IO[str]
-                 ):
-        self.stderr = stderr
-        self.logs = []
-
-    def write_message(self,
-                      log_entry,  # type: LogEntry
-                      log_data,  # type: LogData
-                      ):
-        StreamBackend(self.stderr).write_message(log_entry, log_data)
-        self.logs.append(LogLine(log_entry.level,
-                                 log_data.verbose,
-                                 log_data.program_name,
-                                 log_entry.resolve_message(),
-                                 log_entry.tag))
-
-    def collected(self):
-        return Logs(self.logs)
