@@ -28,16 +28,6 @@ class TestPut:
         self.user_input = HardCodedInput('y')
         self.randint = FakeRandomInt([])
         self.is_mount = FakeIsMount(['/'])
-        self.volumes = VolumeOfImpl(self.is_mount, os.path.normpath)
-        self.stderr = StringIO()
-        self.clock = FixedClock(jan_1st_2024())
-        self.backend = RecordingBackend(self.stderr)
-        self.cmd = make_cmd(clock=self.clock,
-                            fs=self.fs,
-                            user_input=self.user_input,
-                            randint=self.randint,
-                            backend=self.backend,
-                            volumes=self.volumes)
 
     def test_when_needs_a_different_suffix(self):
         self.fs.touch("/foo")
@@ -313,13 +303,21 @@ class TestPut:
         uid = uid or 123
         err = None
         exit_code = None
+        stderr = StringIO()
+        clock = FixedClock(jan_1st_2024())
+        volumes = VolumeOfImpl(self.is_mount, os.path.normpath)
+        backend = RecordingBackend(stderr)
+        cmd = make_cmd(clock=clock,
+                       fs=self.fs,
+                       user_input=self.user_input,
+                       randint=self.randint,
+                       backend=backend,
+                       volumes=volumes)
         try:
-            exit_code = self.cmd.run_put(args, environ, uid)
+            exit_code = cmd.run_put(args, environ, uid)
         except IOError as e:
             err = e
-        stderr = self.stderr.getvalue().splitlines()
+        stderr = stderr.getvalue().splitlines()
 
         return Result(stderr, str(err), ensure_int(exit_code),
-                      self.backend.collected())
-
-
+                      backend.collected())
