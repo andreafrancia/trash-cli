@@ -9,7 +9,7 @@ def prepare_output_message(trash_dirs):
             if event == trash_dir_found:
                 trash_dir, volume = args
                 result.append("    - %s" % trash_dir)
-        result.append("Proceed? (y/n) ")
+        result.append("Proceed? (y/N) ")
         return "\n".join(result)
     else:
         return 'No trash directories to empty.\n'

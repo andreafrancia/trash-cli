@@ -14,7 +14,7 @@ class TestPrepareOutputMessage(unittest.TestCase):
         assert """\
 Would empty the following trash directories:
     - /Trash
-Proceed? (y/n) """ == result
+Proceed? (y/N) """ == result
 
     def test_multiple_dirs(self):
         trash_dirs = [
@@ -27,7 +27,7 @@ Proceed? (y/n) """ == result
 Would empty the following trash directories:
     - /Trash1
     - /Trash2
-Proceed? (y/n) """ == result
+Proceed? (y/N) """ == result
 
     def test_no_dirs(self):
         trash_dirs = []
