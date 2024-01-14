@@ -39,7 +39,7 @@ class TestEmptyEndToEndInteractive(unittest.TestCase):
         assert result.all == [
             'Would empty the following trash directories:\n'
             '    - %s\n'
-            'Proceed? (y/n) ' % self.trash_dir, '', 0]
+            'Proceed? (y/N) ' % self.trash_dir, '', 0]
 
     def tearDown(self):
         self.tmp_dir.clean_up()
