@@ -52,7 +52,7 @@ class RestoreAskingTheUser(object):
             return Left(Quit())
         else:
             if user_input == "":
-                return Left(Exiting())
+                return Left(Die("No files were restored"))
             else:
                 return Right(
                     InputRead(user_input, args.trashed_files, args.overwrite))
