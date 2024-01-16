@@ -40,6 +40,7 @@ def os_mount_points():
         'fuse.glusterfs',
         # https://github.com/andreafrancia/trash-cli/issues/255
         'fuse.mergerfs',
+        'fuse.gocryptfs',
     ]
 
     # Append fstypes of physical devices to list
