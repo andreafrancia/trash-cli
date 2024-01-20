@@ -1,8 +1,8 @@
 import unittest
 from textwrap import dedent
+from unittest import mock
+from unittest.mock import Mock
 
-import mock
-from mock import Mock
 from scripts.make_scripts import (
     Scripts,
     script_path_for,

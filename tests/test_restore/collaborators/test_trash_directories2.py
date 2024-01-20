@@ -1,7 +1,7 @@
 import unittest
+from unittest.mock import Mock, call
 
 import pytest
-from mock import Mock, call
 
 from tests.support.fake_volume_of import volume_of_stub
 from trashcli.restore.trash_directories import TrashDirectories2

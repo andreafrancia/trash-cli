@@ -1,9 +1,9 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import unittest
+from io import StringIO
+from unittest.mock import Mock
 
 import pytest
-from mock import Mock
-from six import StringIO
 
 from tests.support.fake_volume_of import volume_of_stub
 from tests.support.files import make_unreadable_dir, make_readable

@@ -1,9 +1,9 @@
 import os
+from io import StringIO
 from typing import List
 from typing import Optional
 
 import flexmock
-from six import StringIO
 
 from tests.support.fake_is_mount import FakeIsMount
 from tests.test_put.support.dummy_clock import FixedClock

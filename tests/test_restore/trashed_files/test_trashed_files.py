@@ -1,7 +1,6 @@
 import datetime
 import unittest
-
-from mock import Mock
+from unittest.mock import Mock
 
 from trashcli.restore.file_system import FakeFileReader
 from trashcli.restore.info_dir_searcher import InfoDirSearcher, FileFound

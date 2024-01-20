@@ -1,6 +1,5 @@
 # testing
 pytest
-mock
 flexmock
 parameterized
 # build and publish
@@ -9,5 +8,4 @@ setuptools
 twine
 # types
 types-six
-types-mock
 types-psutil

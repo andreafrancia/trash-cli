@@ -1,6 +1,6 @@
 import unittest
+from unittest.mock import Mock, call
 
-from mock import Mock, call
 from trashcli.trash_dirs_scanner import (
     TopTrashDirRules,
     top_trash_dir_does_not_exist,

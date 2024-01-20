@@ -1,6 +1,5 @@
 import os
-
-from mock import Mock
+from unittest.mock import Mock
 
 from tests.fake_trash_dir import FakeTrashDir
 from tests.output_collector import OutputCollector

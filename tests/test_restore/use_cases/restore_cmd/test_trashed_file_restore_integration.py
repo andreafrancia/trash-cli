@@ -1,8 +1,7 @@
 import os
 import unittest
-
-from mock import Mock
-from six import StringIO
+from io import StringIO
+from unittest.mock import Mock
 
 from tests.support.files import make_empty_file
 from tests.support.my_path import MyPath

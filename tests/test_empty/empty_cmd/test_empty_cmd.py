@@ -1,10 +1,10 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import unittest
+from io import StringIO
 from typing import cast
+from unittest.mock import Mock, call
 
 from flexmock import flexmock
-from mock import Mock, call
-from six import StringIO
 
 from tests.mock_dir_reader import MockDirReader
 from tests.support.fake_volume_of import volume_of_stub

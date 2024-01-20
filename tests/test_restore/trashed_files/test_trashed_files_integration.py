@@ -1,7 +1,6 @@
 import datetime
 import unittest
-
-from mock import Mock
+from unittest.mock import Mock
 
 from tests.support.files import make_file, require_empty_dir
 from tests.support.remove_dir_if_exists import remove_dir_if_exists

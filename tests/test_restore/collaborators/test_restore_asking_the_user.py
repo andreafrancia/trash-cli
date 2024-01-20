@@ -1,6 +1,5 @@
 import unittest
-
-from mock import Mock, call
+from unittest.mock import Mock, call
 
 from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.output_event import Quit

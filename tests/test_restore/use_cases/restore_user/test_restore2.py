@@ -1,7 +1,6 @@
 import datetime
 import unittest
-
-from mock import Mock, call
+from unittest.mock import Mock, call
 
 from tests.test_restore.support.fake_restore_fs import FakeRestoreFs
 from tests.test_restore.support.restore_user import RestoreUser

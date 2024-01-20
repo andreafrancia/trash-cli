@@ -1,7 +1,6 @@
 import unittest
-
-from mock import Mock
-from six import StringIO
+from io import StringIO
+from unittest.mock import Mock
 
 from trashcli.restore.file_system import FakeReadCwd
 from trashcli.restore.handler import Handler

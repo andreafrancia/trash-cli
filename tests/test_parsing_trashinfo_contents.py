@@ -1,8 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 import unittest
 from datetime import datetime
-
-from mock import MagicMock
+from unittest.mock import MagicMock
 
 from trashcli.parse_trashinfo.parse_path import parse_path
 from trashcli.parse_trashinfo.parse_trashinfo import ParseTrashInfo

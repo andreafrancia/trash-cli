@@ -1,9 +1,8 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import os
 import unittest
-
-from mock import Mock
-from six import StringIO
+from io import StringIO
+from unittest.mock import Mock
 
 from tests.support.fake_volume_of import volume_of_stub
 from tests.support.files import make_empty_file, require_empty_dir, make_dirs, \
