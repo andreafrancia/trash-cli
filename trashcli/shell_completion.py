@@ -62,4 +62,4 @@ except ImportError:
         pass
 
 TRASH_FILES.update({"zsh": "_trash_files"})
-TRASH_DIRS.update({"zsh": "(${$(trash-list --trash-dirs)#parent_*:})"})
+TRASH_DIRS.update({"zsh": "(\\${\\$(trash-list --trash-dirs)#parent_*})"})
