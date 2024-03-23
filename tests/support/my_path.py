@@ -2,6 +2,9 @@ import os
 import shutil
 import tempfile
 
+from trashcli.put.fs.real_fs import RealFs
+from trashcli.put.fs.fs import list_all
+
 
 class MyPath(str):
 
@@ -36,3 +39,7 @@ class MyPath(str):
     @classmethod
     def make_temp_dir(cls):
         return cls(os.path.realpath(tempfile.mkdtemp(suffix="_trash_cli_test")))
+
+    def list_all_files_sorted(self):
+        return sorted([p.replace(self, '')
+                       for p in list_all(RealFs(), self)])
