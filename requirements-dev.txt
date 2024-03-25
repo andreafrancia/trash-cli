@@ -3,6 +3,7 @@ pytest
 mock
 flexmock
 parameterized
+PyYAML
 # build and publish
 build
 setuptools
