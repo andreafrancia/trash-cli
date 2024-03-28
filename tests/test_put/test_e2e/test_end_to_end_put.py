@@ -58,6 +58,13 @@ class TestEndToEndPut:
                   -v, --verbose         explain what is being done
                   --version             show program's version number and exit
 
+                all trash-cli commands:
+                  trash-put             trash files and directories.
+                  trash-empty           empty the trashcan(s).
+                  trash-list            list trashed files.
+                  trash-restore         restore a trashed file.
+                  trash-rm              remove individual files from the trashcan
+  
                 To remove a file whose name starts with a '-', for example '-foo',
                 use one of these commands:
 
@@ -89,5 +96,6 @@ class TestEndToEndPut:
 
     def test_it_should_skip_missing_files(self, temp_dir):
         result = run_trash_put(temp_dir,
-                               ['-f', 'this_file_does_not_exist', 'nor_does_this_file'])
+                               ['-f', 'this_file_does_not_exist',
+                                'nor_does_this_file'])
         assert result.combined() == ['', 0]
