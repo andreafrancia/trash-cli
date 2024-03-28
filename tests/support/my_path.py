@@ -29,6 +29,15 @@ class MyPath(str):
         }[existence]
         return "%s: %s" % (path.replace(self, ''), existence_message)
 
+    def mkdir_rel(self, path):
+        RealFs().mkdir(self / path)
+
+    def symlink_rel(self, src, dest):
+        RealFs().symlink(self / src, self / dest)
+
+    def list_dir_rel(self):
+        return RealFs().listdir(self)
+
     @property
     def parent(self):  # type: (...) -> MyPath
         return MyPath(os.path.dirname(self))

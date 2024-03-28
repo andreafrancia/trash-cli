@@ -1,3 +1,7 @@
+import logging
+import os.path
+from pprint import pprint
+from traceback import format_exception
 from typing import NamedTuple
 
 from trashcli.put.core.either import Either, Right, Left
@@ -16,7 +20,8 @@ class UnableToMoveFileToTrash(NamedTuple('UnableToMoveFileToTrash', [
         return "failed to move %s in %s: %s" % (
             context.trashee_path,
             context.files_dir(),
-            self.error)
+            self.error,
+        )
 
 
 class PutTrashDir:
@@ -32,8 +37,17 @@ class PutTrashDir:
                   paths,  # type: TrashedFile
                   ):  # type: (...) -> Either[None, Exception]
         try:
-            self.fs.move(path, paths.backup_copy_path)
+            move_file(self.fs, path, paths.backup_copy_path)
             return Right(None)
         except (IOError, OSError) as error:
             self.fs.remove_file(paths.trashinfo_path)
             return Left(UnableToMoveFileToTrash(error))
+
+
+def move_file(fs,  # type: Fs
+              src, # type: str
+              dest, # type: str
+              ):
+    # Using nornpath allow to delete symlink to a dir even if the are
+    # specified with traling slash
+    fs.move(os.path.normpath(src), dest)
