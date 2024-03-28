@@ -68,6 +68,12 @@ def make_parser(program_name):
                             description="Put files in trash",
                             formatter_class=RawDescriptionHelpFormatter,
                             epilog="""\
+trash-put\t\ttrash files and directories.
+trash-empty\t\tempty the trashcan(s).
+trash-list\t\tlist trashed files.
+trash-restore\t\trestore a trashed file.
+trash-rm\t\tremove individual files from the trashcan
+
 To remove a file whose name starts with a '-', for example '-foo',
 use one of these commands:
 
