@@ -1,11 +1,11 @@
 from __future__ import print_function
 
 
-class PrintVolumesArgs:
+class PrintVolumesArgs(object):
     pass
 
 
-class PrintVolumesList:
+class PrintVolumesList(object):
     def __init__(self, environ, volumes_listing, out):
         self.environ = environ
         self.volumes_listing = volumes_listing
