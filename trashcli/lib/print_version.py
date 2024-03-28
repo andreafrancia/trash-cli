@@ -18,7 +18,7 @@ class PrintVersionArgs(
         return os.path.basename(self.argv0)
 
 
-class PrintVersionAction:
+class PrintVersionAction(object):
     def __init__(self, out, version):
         self.out = out
         self.version = version

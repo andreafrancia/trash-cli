@@ -82,6 +82,9 @@ class RealFs(Fs):
     def mkdir(self, path):
         os.mkdir(path)
 
+    def mkdir_with_mode(self, path, mode):
+        os.mkdir(path, mode)
+
     def move(self, path, dest):
         return fs.move(path, dest)
 

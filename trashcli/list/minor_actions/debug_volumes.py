@@ -1,11 +1,13 @@
 from pprint import pprint
 
+
 class DebugVolumesArgs:
     pass
 
-class DebugVolumes:
+
+class DebugVolumes(object):
     def run_action(self,
-                   _args, # type: DebugVolumesArgs
+                   _args,  # type: DebugVolumesArgs
                    ):
         import psutil
         import os

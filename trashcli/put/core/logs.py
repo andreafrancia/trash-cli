@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from enum import Enum
 from typing import NamedTuple
-from typing import Protocol
+from trashcli.compat import Protocol
 
 
 class Level(Enum):

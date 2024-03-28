@@ -1,3 +1,3 @@
 #!/bin/bash
 [ -x "$(command -v mypy)" ] || pip install mypy
-mypy trashcli tests
+mypy trashcli

@@ -2,7 +2,6 @@
 import unittest
 from typing import cast
 
-from flexmock import flexmock
 from mock import Mock, call
 from six import StringIO
 
@@ -14,14 +13,14 @@ from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.lib.dir_reader import DirReader
 from trashcli.trash_dirs_scanner import TopTrashDirRules
-
+from mock import Mock
 
 class TestTrashEmptyCmdFs(unittest.TestCase):
     def setUp(self):
         self.volumes_listing = Mock(spec=VolumesListing)
-        self.file_reader = flexmock(TopTrashDirRules.Reader)
+        self.file_reader = Mock(spec=TopTrashDirRules.Reader)
         self.file_remover = Mock(spec=ExistingFileRemover)
-        self.content_reader = flexmock(ContentsOf)
+        self.content_reader = Mock(spec=ContentsOf)
         self.dir_reader = MockDirReader()
         self.err = StringIO()
         self.out = StringIO()

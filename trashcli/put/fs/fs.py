@@ -80,6 +80,9 @@ class Fs(RealPathFs, Protocol):
         parent = os.path.dirname(path)
         return self.realpath(parent)
 
+    def list_sorted(self, path):
+        return sorted(self.listdir(path))
+
 
 def list_all(fs, path):  # type: (Fs, str) -> Iterable[str]
     result = fs.walk_no_follow(path)

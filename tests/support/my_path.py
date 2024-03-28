@@ -2,6 +2,9 @@ import os
 import shutil
 import tempfile
 
+from trashcli.put.fs.real_fs import RealFs
+from trashcli.put.fs.fs import list_all
+
 
 class MyPath(str):
 
@@ -26,6 +29,15 @@ class MyPath(str):
         }[existence]
         return "%s: %s" % (path.replace(self, ''), existence_message)
 
+    def mkdir_rel(self, path):
+        RealFs().mkdir(self / path)
+
+    def symlink_rel(self, src, dest):
+        RealFs().symlink(self / src, self / dest)
+
+    def list_dir_rel(self):
+        return RealFs().listdir(self)
+
     @property
     def parent(self):  # type: (...) -> MyPath
         return MyPath(os.path.dirname(self))
@@ -36,3 +48,7 @@ class MyPath(str):
     @classmethod
     def make_temp_dir(cls):
         return cls(os.path.realpath(tempfile.mkdtemp(suffix="_trash_cli_test")))
+
+    def list_all_files_sorted(self):
+        return sorted([p.replace(self, '')
+                       for p in list_all(RealFs(), self)])
