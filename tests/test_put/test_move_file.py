@@ -1,5 +1,3 @@
-import os.path
-
 import pytest
 
 from tests.run_command import temp_dir  # noqa
@@ -18,4 +16,4 @@ class TestMoveFile:
 
         move_file(fs, temp_dir / "link-to-dir/", temp_dir / "trash-location")
 
-        assert fs.listdir(temp_dir) == ['trash-location', 'dir']
+        assert temp_dir.list_all_files_sorted() == ['/dir', '/trash-location']
