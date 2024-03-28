@@ -1,10 +1,9 @@
-import logging
 import os.path
-from pprint import pprint
-from traceback import format_exception
 from typing import NamedTuple
 
-from trashcli.put.core.either import Either, Right, Left
+from trashcli.put.core.either import Either
+from trashcli.put.core.either import Left
+from trashcli.put.core.either import Right
 from trashcli.put.core.failure_reason import FailureReason
 from trashcli.put.core.failure_reason import LogContext
 from trashcli.put.fs.fs import Fs
