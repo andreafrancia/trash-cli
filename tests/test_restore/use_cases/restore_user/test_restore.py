@@ -41,7 +41,7 @@ class TestSearcher:
 
         assert (res.output() ==
                 '   0 2018-01-01 00:00:00 /home/user/foo\n'
-                'Exiting\n')
+                'No files were restored\n')
 
     def test_actual_restore(self):
         trashed_file = self.fs.make_trashed_file("/home/user/foo",
@@ -68,7 +68,7 @@ class TestSearcher:
                 '   0 2011-01-01 00:00:00 /home/user/first\n'
                 '   1 2012-01-01 00:00:00 /home/user/second\n'
                 '   2 2013-01-01 00:00:00 /home/user/third\n'
-                'Exiting\n')
+                'No files were restored\n')
 
     def test_will_sort_by_path(self):
         self.add_file_trashed_at("/home/user/ccc", date_at(2011, 1, 1))
@@ -81,7 +81,7 @@ class TestSearcher:
                 '   0 2011-01-01 00:00:00 /home/user/aaa\n'
                 '   1 2011-01-01 00:00:00 /home/user/bbb\n'
                 '   2 2011-01-01 00:00:00 /home/user/ccc\n'
-                'Exiting\n')
+                'No files were restored\n')
 
     def run_restore(self, args, reply='', from_dir=None):
         return self.user.run_restore(args, reply, from_dir)

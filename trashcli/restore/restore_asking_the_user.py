@@ -5,7 +5,8 @@ from six.moves import range
 from trashcli.lib.my_input import Input
 from trashcli.restore.index import Sequence
 from trashcli.restore.output import Output
-from trashcli.restore.output_event import Die, Exiting, OutputEvent, Quit
+from trashcli.restore.output_event import Die, OutputEvent, Quit
+from trashcli.restore.output_event import Exiting
 from trashcli.restore.range import Range
 from trashcli.restore.sequences import Sequences
 from trashcli.restore.single import Single
@@ -52,7 +53,7 @@ class RestoreAskingTheUser(object):
             return Left(Quit())
         else:
             if user_input == "":
-                return Left(Die("No files were restored"))
+                return Left(Exiting("No files were restored"))
             else:
                 return Right(
                     InputRead(user_input, args.trashed_files, args.overwrite))

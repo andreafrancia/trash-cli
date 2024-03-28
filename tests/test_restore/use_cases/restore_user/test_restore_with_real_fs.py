@@ -70,7 +70,7 @@ class TestRestoreTrash(unittest.TestCase):
         res = self.user.run_restore(reply='', from_dir='/foo')
 
         self.assertEqual('   0 2000-01-01 00:00:01 /foo/bar\n'
-                         'Exiting\n', res.output())
+                         'No files were restored\n', res.output())
         self.assertEqual('', res.stderr)
 
     def test_it_restores_the_file_selected_by_the_user(self):

@@ -63,7 +63,7 @@ class TestRestore2(unittest.TestCase):
 
         res = self.cmd_run(['trash-restore'], reply='', from_dir='/cwd')
 
-        assert res.last_line_of_stdout() == 'Exiting'
+        assert res.last_line_of_stdout() == 'No files were restored'
 
     def test_when_user_reply_with_not_number(self):
         self.fs.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',

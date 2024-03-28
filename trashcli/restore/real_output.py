@@ -36,6 +36,6 @@ class RealOutput(Output):
         elif isinstance(event, Quit):
             self.quit()
         elif isinstance(event, Exiting):
-            self.println("Exiting")
+            self.println(event.msg)
         else:
             raise Exception("Unknown call %s" % event)
