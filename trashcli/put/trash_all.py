@@ -18,8 +18,7 @@ class TrashAll:
                   ):  # (...) -> Result
         failed_paths = []
         for path in context.paths:
-            result = self.trasher.trash_single(path,
-                                               context)
+            result = self.trasher.trash_single(path, context)
             if result == TrashResult.Failure:
                 failed_paths.append(path)
 
