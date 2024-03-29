@@ -1,10 +1,8 @@
-from trashcli.lib.environ import Environ
-from trashcli.put.core.mode import Mode
+from trashcli.put.context import Context
 from trashcli.put.core.trash_result import TrashResult
 from trashcli.put.core.trashee import should_skipped_by_specs
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.fs.fs import Fs
-from trashcli.put.my_logger import LogData
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.user import User
 from trashcli.put.user import user_replied_no
@@ -23,15 +21,8 @@ class Trasher:
         self.fs = fs
 
     def trash_single(self,
-                     path,
-                     user_trash_dir,
-                     mode,  # type: Mode
-                     forced_volume,
-                     home_fallback,
-                     program_name,
-                     log_data,  # type: LogData
-                     environ,  # type: Environ
-                     uid,  # type: int
+                     path,  # type: str
+                     context,  # type: Context
                      ):
         """
         Trash a file in the appropriate trash directory.
@@ -49,26 +40,21 @@ class Trasher:
         """
 
         if should_skipped_by_specs(path):
-            self.reporter.unable_to_trash_dot_entries(path, log_data)
+            self.reporter.unable_to_trash_dot_entries(path, context.log_data)
             return TrashResult.Failure
 
         if not self.fs.lexists(path):
-            if mode.can_ignore_not_existent_path():
+            if context.mode.can_ignore_not_existent_path():
                 return TrashResult.Success
             else:
-                self.reporter.unable_to_trash_file_non_existent(path, log_data)
+                self.reporter.unable_to_trash_file_non_existent(path,
+                                                                context.log_data)
                 return TrashResult.Failure
 
-        if mode.should_we_ask_to_the_user(self.fs.is_accessible(path)):
-            reply = self.user.ask_user_about_deleting_file(program_name, path)
+        if context.mode.should_we_ask_to_the_user(self.fs.is_accessible(path)):
+            reply = self.user.ask_user_about_deleting_file(context.program_name,
+                                                           path)
             if reply == user_replied_no:
                 return TrashResult.Success
 
-        return self.file_trasher.trash_file(path,
-                                            forced_volume,
-                                            user_trash_dir,
-                                            home_fallback,
-                                            environ,
-                                            uid,
-                                            log_data,
-                                            )
+        return self.file_trasher.trash_file(path, context)

@@ -1,6 +1,7 @@
+from trashcli.put.context import Context
 from trashcli.put.core.trash_all_result import TrashAllResult
-from trashcli.put.my_logger import MyLogger, LogData
 from trashcli.put.core.trash_result import TrashResult
+from trashcli.put.my_logger import MyLogger
 from trashcli.put.trasher import Trasher
 
 
@@ -13,27 +14,12 @@ class TrashAll:
         self.trasher = trasher
 
     def trash_all(self,
-                  paths,
-                  user_trash_dir,
-                  mode,
-                  forced_volume,
-                  home_fallback,
-                  program_name,
-                  log_data,  # type: LogData
-                  environ,
-                  uid,
+                  context,  # type: Context
                   ):  # (...) -> Result
         failed_paths = []
-        for path in paths:
+        for path in context.paths:
             result = self.trasher.trash_single(path,
-                                               user_trash_dir,
-                                               mode,
-                                               forced_volume,
-                                               home_fallback,
-                                               program_name,
-                                               log_data,
-                                               environ,
-                                               uid)
+                                               context)
             if result == TrashResult.Failure:
                 failed_paths.append(path)
 
