@@ -23,7 +23,7 @@ jobs:
       id: version-name
 
     - name: Publish release
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: trash-cli-${{ steps.version-name.outputs.version }}.zip
         path: dist/*.tar.gz
