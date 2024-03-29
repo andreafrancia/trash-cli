@@ -26,7 +26,7 @@ Trash = NamedTuple('Trash', [
     ('options', Any),
     ('files', List[str]),
     ('trash_dir', Optional[str]),
-    ('mode', str),
+    ('mode', Mode),
     ('forced_volume', Optional[str]),
     ('verbose', int),
     ('home_fallback', bool),
