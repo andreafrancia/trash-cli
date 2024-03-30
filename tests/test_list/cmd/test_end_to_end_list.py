@@ -64,7 +64,7 @@ class TestEndToEndList(unittest.TestCase):
 
         self.assertEqual(reformat_help_message("""\
 usage: trash-list [-h] [--print-completion {bash,zsh,tcsh}] [--version]
-                  [--volumes] [--trash-dirs] [--trash-dir TRASH_DIRS]
+                  [--volumes] [--currentdir] [--trash-dirs] [--trash-dir TRASH_DIRS]
                   [--all-users]
 
 List trashed files
@@ -75,6 +75,7 @@ options:
                         print shell completion script
   --version             show program's version number and exit
   --volumes             list volumes
+  --currentdir          only show files trashed from current directory
   --trash-dirs          list trash dirs
   --trash-dir TRASH_DIRS
                         specify the trash directory to use
