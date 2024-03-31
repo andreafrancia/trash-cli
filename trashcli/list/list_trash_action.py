@@ -37,7 +37,8 @@ class ListTrashAction:
                  out,
                  err,
                  dir_reader,
-                 content_reader
+                 content_reader,
+                 read_cwd
                  ):
         self.environ = environ
         self.uid = uid
@@ -46,6 +47,7 @@ class ListTrashAction:
         self.err = err
         self.dir_reader = dir_reader
         self.content_reader = content_reader
+        self.read_cwd = read_cwd
 
     def run_action(self,
                    args, # type: ListTrashArgs
@@ -54,7 +56,8 @@ class ListTrashAction:
                                  self.uid,
                                  self.selector,
                                  self.dir_reader,
-                                 self.content_reader).list_all_trash(args):
+                                 self.content_reader,
+                                 self.read_cwd).list_all_trash(args):
             self.print_event(message)
 
     def print_event(self, event):
@@ -71,12 +74,14 @@ class ListTrash:
                  selector,
                  dir_reader,  # type: DirReader
                  content_reader,
+                 read_cwd
                  ):
         self.environ = environ
         self.uid = uid
         self.selector = selector
         self.dir_reader = dir_reader
         self.content_reader = content_reader
+        self.read_cwd = read_cwd
 
     def list_all_trash(self,
                        args,  # type: ListTrashArgs
@@ -98,10 +103,9 @@ class ListTrash:
             if event == trash_dir_found:
                 path, volume = event_args
                 trash_dir = TrashDirReader(self.dir_reader)
-                cur_work_dir = os.getcwd()
                 for trash_info in trash_dir.list_trashinfo(path):
                     for msg in self._print_trashinfo(volume, trash_info,
-                                                     extractor, show_files, only_print_wd, cur_work_dir):
+                                                     extractor, show_files, only_print_wd, self.read_cwd):
                         yield msg
             elif event == trash_dir_skipped_because_parent_not_sticky:
                 path, = event_args
@@ -128,7 +132,7 @@ class ListTrash:
         else:
             try:
                 relative_location = parse_path(contents)
-                if only_print_wd and not relative_location.startswith(cur_work_dir + "/"):
+                if only_print_wd and not relative_location.startswith(cur_work_dir + os.path.sep):
                 	return
             except ParseError:
                 yield Error(self.print_parse_path_error(trashinfo_path))
