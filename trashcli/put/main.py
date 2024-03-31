@@ -61,7 +61,7 @@ def make_cmd(clock,
     persister = InfoFilePersister(fs, logger, suffix)
     original_location = OriginalLocation(fs)
     info_dir2 = TrashInfoCreator(persister, original_location, clock)
-    trash_dir = PutTrashDir(fs, info_dir2)
+    trash_dir = PutTrashDir(fs)
     trashing_checker = TrashDirChecker(fs, volumes)
     janitor = Janitor(fs,
                       trash_dir,
