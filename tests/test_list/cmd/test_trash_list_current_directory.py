@@ -1,7 +1,6 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
 from datetime import datetime
-import os
 
 from tests.support.sort_lines import sort_lines
 from tests.test_list.cmd.setup import Setup
