@@ -8,7 +8,7 @@ class TestVersion(Setup):
     def test_should_output_the_version(self):
         self.user.set_version('1.2.3')
 
-        self.user.run_trash_list('--version')
+        output = self.user.run_trash_list('--version')
 
         assert_equals_with_unidiff('trash-list 1.2.3\n',
-                                   self.user.output())
+                                   output.whole_output())

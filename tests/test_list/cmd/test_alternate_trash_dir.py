@@ -15,8 +15,7 @@ class TestAlternateTrashDir(Setup):
         self.user.add_trashinfo(self.top_dir / '.Trash-123', 'file',
                                 "2000-01-01")
 
-        self.user.run_trash_list()
+        output = self.user.run_trash_list()
 
         assert_equals_with_unidiff("2000-01-01 00:00:00 %s/file\n" %
-                                   self.top_dir,
-                                   self.user.output())
+                                   self.top_dir, output.stdout)

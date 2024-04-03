@@ -7,9 +7,8 @@ class TestListVolumes(Setup):
         self.user.volumes.append("/disk2")
         self.user.volumes.append("/disk3")
 
-        self.user.run_trash_list('--volumes')
-        output = self.user.output()
+        output = self.user.run_trash_list('--volumes')
 
-        assert output == ('/disk1\n'
-                          '/disk2\n'
-                          '/disk3\n')
+        assert output.whole_output() == ('/disk1\n'
+                                         '/disk2\n'
+                                         '/disk3\n')
