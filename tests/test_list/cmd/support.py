@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from mock import Mock
 
@@ -52,6 +53,32 @@ class TrashListUser:
 
     def add_volume(self, mount_point):
         self.volumes.append(mount_point)
+
+    def add_trashinfo(self, trash_dir, basename, deletion_date):
+        deletion_date = datetime.fromisoformat(deletion_date)
+        FakeTrashDir(trash_dir).add_trashinfo2(basename, deletion_date)
+
+    def add_home_trashinfo_without_date(self, basename):
+        self.home_trashdir.add_trashinfo_without_date(basename)
+
+    def add_home_trash_with_content(self, basename, content):
+        self.home_trashdir.add_trashinfo_content(basename, content)
+
+    def add_unreadable_trashinfo(self, basename):
+        self.home_trashdir.add_unreadable_trashinfo(basename)
+
+    def add_trashinfo_without_path(self, basename):
+        self.home_trashdir.add_trashinfo_without_path(basename)
+
+    def add_trashinfo_wrong_date(self, basename, wrong_date):
+        self.home_trashdir.add_trashinfo_wrong_date(basename, wrong_date)
+
+    def add_home_trashinfo(self,
+                           basename,  # type: str
+                           deletion_date,  # type: str
+                           ):
+        deletion_date = datetime.fromisoformat(deletion_date)
+        self.home_trashdir.add_trashinfo2(basename, deletion_date)
 
     def error(self):
         return self.stderr.getvalue()
