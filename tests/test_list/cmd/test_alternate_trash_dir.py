@@ -13,7 +13,7 @@ class TestAlternateTrashDir:
     def test_should_list_contents_of_alternate_trashdir(self):
         self.user.set_fake_uid(123)
         self.user.add_volume(self.top_dir)
-        self.user.trash_dir1(self.top_dir).add_trashinfo4('file', "2000-01-01")
+        self.user.top2(self.top_dir).add_trashinfo4('file', "2000-01-01")
 
         output = self.user.run_trash_list()
 
