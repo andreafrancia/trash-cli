@@ -1,7 +1,11 @@
-from tests.test_list.cmd.setup import Setup
+from tests.support.my_path import MyPath
+from tests.test_list.cmd.support.trash_list_user import TrashListUser
 
 
-class TestListVolumes(Setup):
+class TestListVolumes:
+    def setup_method(self):
+        self.user = TrashListUser(MyPath.make_temp_dir())
+
     def test(self):
         self.user.volumes.append("/disk1")
         self.user.volumes.append("/disk2")
