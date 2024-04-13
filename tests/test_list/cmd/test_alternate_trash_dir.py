@@ -1,13 +1,14 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
-from datetime import datetime
-
-from tests.test_list.cmd.setup import Setup
 
 from tests.support.asserts import assert_equals_with_unidiff
-from tests.fake_trash_dir import FakeTrashDir
+from tests.support.my_path import MyPath
+from tests.test_list.cmd.support import TrashListUser
 
 
-class TestAlternateTrashDir(Setup):
+class TestAlternateTrashDir:
+    def setup_method(self):
+        self.user = TrashListUser(MyPath.make_temp_dir())
+        self.top_dir = MyPath.make_temp_dir()
 
     def test_should_list_contents_of_alternate_trashdir(self):
         self.user.set_fake_uid(123)
