@@ -14,9 +14,10 @@ pip install --upgrade pip
 pip install --upgrade build
 pip install --upgrade setuptools
 version="$(my_python -c 'import setuptools; setuptools.setup()' --version)"
+rm dist/*.tar.gz
 my_python -m build --sdist
 
-pip install "dist/trash-cli-$version.tar.gz"
+pip install dist/trash[_-]cli-$version.tar.gz
 
 trash --version
 trash-put --version
