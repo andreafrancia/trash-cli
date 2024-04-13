@@ -41,8 +41,8 @@ class TrashListUser:
             content_reader=FileSystemContentReader(),
             version=self.version
         ).run(['trash-list'] + list(args))
-        return RunResult(stdout.getvalue(),
-                         stderr.getvalue())
+        return RunResult(clean(stdout.getvalue(), self.xdg_data_home),
+                         clean(stderr.getvalue(), self.xdg_data_home))
 
     def set_fake_uid(self, uid):
         self.fake_uid = uid
@@ -56,6 +56,9 @@ class TrashListUser:
     def home(self):
         return FakeTrashDir(self.xdg_data_home / "Trash")
 
-
     def set_version(self, version):
         self.version = version
+
+
+def clean(stream, xdg_data_home):
+    return stream.replace(xdg_data_home, 'XDG_DATA_HOME')
