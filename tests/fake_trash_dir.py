@@ -5,6 +5,7 @@ import uuid
 from trashcli.put.format_trash_info import format_original_location
 
 from .support.files import make_file, make_parent_for, make_unreadable_file
+from .test_list.cmd.support.parse_date import parse_date
 
 
 def a_default_datetime():
@@ -41,6 +42,11 @@ class FakeTrashDir:
     def add_trashinfo3(self, basename, path, deletion_date):
         content = trashinfo_content(path, deletion_date)
         self.add_trashinfo_content(basename, content)
+
+    def add_trashinfo4(self, path, deletion_date_as_string):
+        basename = str(uuid.uuid4())
+        deletion_date = parse_date(deletion_date_as_string)
+        self.add_trashinfo3(basename, path, deletion_date)
 
     def add_trashinfo_with_date(self, basename, deletion_date):
         content = trashinfo_content2([
@@ -83,6 +89,7 @@ class FakeTrashDir:
         trashinfo_path = self.a_trashinfo_path(basename)
         make_parent_for(trashinfo_path)
         make_file(trashinfo_path, content)
+
 
     def ls_info(self):
         return os.listdir(self.info_path)

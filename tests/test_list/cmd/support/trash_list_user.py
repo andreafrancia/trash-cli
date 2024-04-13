@@ -1,5 +1,3 @@
-import os
-
 from mock import Mock
 
 from tests.fake_trash_dir import FakeTrashDir
@@ -12,17 +10,16 @@ from trashcli.file_system_reader import FileSystemReader
 from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.lib.dir_reader import RealDirReader
 from trashcli.list.main import ListCmd
-from .parse_date import parse_date
 from .run_result import RunResult
 
 
 class TrashListUser:
     def __init__(self, xdg_data_home):
+        self.xdg_data_home = xdg_data_home
         self.environ = {'XDG_DATA_HOME': xdg_data_home}
         self.fake_uid = None
         self.volumes = []
-        trash_dir = os.path.join(xdg_data_home, "Trash")
-        self.home_trashdir = FakeTrashDir(trash_dir)
+        self.home_trashdir = self.home()
         self.version = None
 
     def run_trash_list(self, *args):  # type: (...) -> RunResult
@@ -53,31 +50,12 @@ class TrashListUser:
     def add_volume(self, mount_point):
         self.volumes.append(mount_point)
 
-    def add_trashinfo(self, trash_dir, basename, deletion_date):
-        deletion_date = parse_date(deletion_date)
-        FakeTrashDir(trash_dir).add_trashinfo2(basename, deletion_date)
+    def trash_dir1(self, top_dir):
+        return FakeTrashDir(top_dir / '.Trash-123')
 
-    def add_home_trashinfo_without_date(self, basename):
-        self.home_trashdir.add_trashinfo_without_date(basename)
+    def home(self):
+        return FakeTrashDir(self.xdg_data_home / "Trash")
 
-    def add_home_trash_with_content(self, basename, content):
-        self.home_trashdir.add_trashinfo_content(basename, content)
-
-    def add_unreadable_trashinfo(self, basename):
-        self.home_trashdir.add_unreadable_trashinfo(basename)
-
-    def add_trashinfo_without_path(self, basename):
-        self.home_trashdir.add_trashinfo_without_path(basename)
-
-    def add_trashinfo_wrong_date(self, basename, wrong_date):
-        self.home_trashdir.add_trashinfo_wrong_date(basename, wrong_date)
-
-    def add_home_trashinfo(self,
-                           basename,  # type: str
-                           deletion_date,  # type: str
-                           ):
-        deletion_date = parse_date(deletion_date)
-        self.home_trashdir.add_trashinfo2(basename, deletion_date)
 
     def set_version(self, version):
         self.version = version
