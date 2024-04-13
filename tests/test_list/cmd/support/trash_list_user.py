@@ -19,7 +19,6 @@ class TrashListUser:
         self.environ = {'XDG_DATA_HOME': xdg_data_home}
         self.fake_uid = None
         self.volumes = []
-        self.home_trashdir = self.home()
         self.version = None
 
     def run_trash_list(self, *args):  # type: (...) -> RunResult
