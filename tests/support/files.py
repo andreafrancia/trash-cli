@@ -23,6 +23,15 @@ def make_file(filename, contents=''):
 def require_empty_dir(path):
     if os.path.exists(path): shutil.rmtree(path)
     make_dirs(path)
+    check_empty_dir(path)
+
+
+def make_empty_dir(path):
+    os.mkdir(path)
+    check_empty_dir(path)
+
+
+def check_empty_dir(path):
     assert os.path.isdir(path)
     assert [] == list(os.listdir(path))
 

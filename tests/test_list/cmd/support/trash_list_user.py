@@ -49,6 +49,9 @@ class TrashListUser:
     def add_volume(self, mount_point):
         self.volumes.append(mount_point)
 
+    def top1(self, top_dir):
+        return FakeTrashDir(top_dir / '.Trash/123')
+
     def top2(self, top_dir):
         return FakeTrashDir(top_dir / '.Trash-123')
 

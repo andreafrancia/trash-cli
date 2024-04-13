@@ -14,6 +14,7 @@ def a_default_datetime():
 
 class FakeTrashDir:
     def __init__(self, path):
+        self.path = path
         self.info_path = os.path.join(path, 'info')
         self.files_path = os.path.join(path, 'files')
 
@@ -42,6 +43,9 @@ class FakeTrashDir:
     def add_trashinfo3(self, basename, path, deletion_date):
         content = trashinfo_content(path, deletion_date)
         self.add_trashinfo_content(basename, content)
+
+    def add_a_valid_trashinfo(self):
+        self.add_trashinfo4('file1', "2000-01-01")
 
     def add_trashinfo4(self, path, deletion_date_as_string):
         basename = str(uuid.uuid4())
@@ -89,7 +93,6 @@ class FakeTrashDir:
         trashinfo_path = self.a_trashinfo_path(basename)
         make_parent_for(trashinfo_path)
         make_file(trashinfo_path, content)
-
 
     def ls_info(self):
         return os.listdir(self.info_path)
