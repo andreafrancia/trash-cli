@@ -2,7 +2,7 @@
 
 from tests.support.asserts import assert_equals_with_unidiff
 from tests.support.my_path import MyPath
-from tests.test_list.cmd.support import TrashListUser
+from tests.test_list.cmd.support.trash_list_user import TrashListUser
 
 
 class TestAlternateTrashDir:

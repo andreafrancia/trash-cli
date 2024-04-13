@@ -3,10 +3,10 @@ import unittest
 
 import pytest
 
-from tests.test_list.cmd.support import TrashListUser
-
 from tests.support.files import require_empty_dir
 from tests.support.my_path import MyPath
+from tests.test_list.cmd.support.trash_list_user import TrashListUser
+
 
 @pytest.mark.slow
 class Setup(unittest.TestCase):
