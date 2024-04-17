@@ -9,6 +9,7 @@ from trashcli.empty.top_trash_dir_rules_file_system_reader import \
 from trashcli.file_system_reader import FileSystemReader
 from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.lib.dir_reader import RealDirReader
+from trashcli.restore.file_system import FakeReadCwd
 from trashcli.list.main import ListCmd
 from .run_result import RunResult
 
@@ -20,6 +21,7 @@ class TrashListUser:
         self.fake_uid = None
         self.volumes = []
         self.version = None
+        self.fake_cwd = FakeReadCwd("dir")
 
     def run_trash_list(self, *args):  # type: (...) -> RunResult
         file_reader = FileSystemReader()
@@ -38,13 +40,17 @@ class TrashListUser:
             dir_reader=RealDirReader(),
             file_reader=RealTopTrashDirRulesReader(),
             content_reader=FileSystemContentReader(),
-            version=self.version
+            version=self.version,
+            read_cwd=self.fake_cwd,
         ).run(['trash-list'] + list(args))
         return RunResult(clean(stdout.getvalue(), self.xdg_data_home),
                          clean(stderr.getvalue(), self.xdg_data_home))
 
     def set_fake_uid(self, uid):
         self.fake_uid = uid
+        
+    def set_fake_cwd(self, cwd_name):
+        self.fake_cwd = FakeReadCwd(cwd_name)
 
     def add_volume(self, mount_point):
         self.volumes.append(mount_point)
