@@ -23,11 +23,11 @@ Create the tarball::
 
 Check test::
 
-    twine check "dist/trash-cli-$version.tar.gz"
+    twine check --strict "dist/trash_cli-$version.tar.gz"
 
 Upload to Test PyPI::
 
-    twine upload --repository testpypi "dist/trash-cli-$version.tar.gz"
+    twine upload --repository testpypi "dist/trash_cli-$version.tar.gz"
 
 Remove previous installation::
 
@@ -39,7 +39,7 @@ Test the installation::
 
 Register and upload::
 
-    twine upload "dist/trash-cli-$version.tar.gz"
+    twine upload "dist/trash_cli-$version.tar.gz"
 
 Now you can tag the repo status::
 
@@ -47,6 +47,6 @@ Now you can tag the repo status::
 
 Push the tag::
 
-    git push --tags origin master
+    git push origin "${version:?}"
 
 -EOF
