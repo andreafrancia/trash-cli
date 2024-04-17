@@ -1,11 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 
-from datetime import datetime
-
-from tests.support.my_path import MyPath
-from tests.support.sort_lines import sort_lines
-
 from tests.support.asserts import assert_equals_with_unidiff
+from tests.support.my_path import MyPath
 from tests.test_list.cmd.support.trash_list_user import TrashListUser
 
 
@@ -24,7 +20,7 @@ class TestTrashListCurrentDirectory:
         result = self.user.run_trash_list('--currentdir')
 
         assert_equals_with_unidiff(
-            "2001-02-03 23:55:59 " + "/home/user/currentdir/file1\n",
+            "2001-02-03 23:55:59 /home/user/currentdir/file1\n",
             result.whole_output())
 
     def test_currentdir_nested_folders(self):
@@ -36,7 +32,7 @@ class TestTrashListCurrentDirectory:
         result = self.user.run_trash_list('--currentdir')
 
         assert_equals_with_unidiff(
-            "2001-02-03 23:55:59 " + "/home/user/currentdir/newdirectory/file2\n",
+            "2001-02-03 23:55:59 /home/user/currentdir/newdirectory/file2\n",
             result.whole_output())
 
     def test_should_output_currendir_should_not_show_currentdir_itself(self):
