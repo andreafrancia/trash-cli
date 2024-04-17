@@ -23,6 +23,7 @@ class ListTrashArgs(
         ('trash_dirs', List[str]),
         ('attribute_to_print', str),
         ('show_files', bool),
+        ('only_print_wd', bool),
         ('all_users', bool),
     ])):
     pass
@@ -36,7 +37,8 @@ class ListTrashAction:
                  out,
                  err,
                  dir_reader,
-                 content_reader
+                 content_reader,
+                 read_cwd
                  ):
         self.environ = environ
         self.uid = uid
@@ -45,6 +47,7 @@ class ListTrashAction:
         self.err = err
         self.dir_reader = dir_reader
         self.content_reader = content_reader
+        self.read_cwd = read_cwd
 
     def run_action(self,
                    args, # type: ListTrashArgs
@@ -53,7 +56,8 @@ class ListTrashAction:
                                  self.uid,
                                  self.selector,
                                  self.dir_reader,
-                                 self.content_reader).list_all_trash(args):
+                                 self.content_reader,
+                                 self.read_cwd).list_all_trash(args):
             self.print_event(message)
 
     def print_event(self, event):
@@ -70,12 +74,14 @@ class ListTrash:
                  selector,
                  dir_reader,  # type: DirReader
                  content_reader,
+                 read_cwd
                  ):
         self.environ = environ
         self.uid = uid
         self.selector = selector
         self.dir_reader = dir_reader
         self.content_reader = content_reader
+        self.read_cwd = read_cwd
 
     def list_all_trash(self,
                        args,  # type: ListTrashArgs
@@ -87,6 +93,7 @@ class ListTrash:
         user_specified_trash_dirs = args.trash_dirs
         extractor = extractors[args.attribute_to_print]
         show_files = args.show_files
+        only_print_wd = args.only_print_wd
         all_users = args.all_users
         trash_dirs = self.selector.select(all_users,
                                           user_specified_trash_dirs,
@@ -98,7 +105,7 @@ class ListTrash:
                 trash_dir = TrashDirReader(self.dir_reader)
                 for trash_info in trash_dir.list_trashinfo(path):
                     for msg in self._print_trashinfo(volume, trash_info,
-                                                     extractor, show_files):
+                                                     extractor, show_files, only_print_wd, self.read_cwd):
                         yield msg
             elif event == trash_dir_skipped_because_parent_not_sticky:
                 path, = event_args
@@ -115,7 +122,9 @@ class ListTrash:
                          volume,
                          trashinfo_path,
                          extractor,
-                         show_files):
+                         show_files,
+                         only_print_wd,
+                         cur_work_dir):
         try:
             contents = self.content_reader.contents_of(trashinfo_path)
         except IOError as e:
@@ -123,6 +132,8 @@ class ListTrash:
         else:
             try:
                 relative_location = parse_path(contents)
+                if only_print_wd and not relative_location.startswith(cur_work_dir + os.path.sep):
+                	return
             except ParseError:
                 yield Error(self.print_parse_path_error(trashinfo_path))
             else:

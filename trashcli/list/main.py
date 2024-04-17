@@ -24,6 +24,7 @@ from trashcli.list.minor_actions.print_python_executable import \
 from trashcli.list.parser import Parser
 from trashcli.list.trash_dir_selector import TrashDirsSelector
 from trashcli.trash_dirs_scanner import TopTrashDirRules
+from trashcli.restore.file_system import RealReadCwd
 
 
 def main():
@@ -37,7 +38,8 @@ def main():
         dir_reader=RealDirReader(),
         file_reader=FileSystemReader(),
         content_reader=RealContentsOf(),
-        version=trashcli.trash.version
+        version=trashcli.trash.version,
+        read_cwd=RealReadCwd()
     ).run(sys.argv)
 
 
@@ -53,6 +55,7 @@ class ListCmd:
                  dir_reader,  # type: DirReader
                  content_reader, # type: ContentReader
                  version,
+                 read_cwd,
                  ):
         self.out = out
         self.err = err
@@ -61,6 +64,7 @@ class ListCmd:
         self.content_reader = content_reader
         self.environ = environ
         self.uid = uid
+        self.read_cwd = read_cwd
         self.volumes_listing = volumes_listing
         self.selector = TrashDirsSelector.make(volumes_listing,
                                                file_reader,
@@ -80,7 +84,8 @@ class ListCmd:
                                                        self.out,
                                                        self.err,
                                                        self.dir_reader,
-                                                       self.content_reader),
+                                                       self.content_reader,
+                                                       self.read_cwd.getcwd_as_realpath()),
                         PrintPythonExecutableArgs: PrintPythonExecutable()}
 
     def run(self, argv):
