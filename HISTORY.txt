@@ -1,9 +1,54 @@
-0.22.10.20:
+0.24.4.17 (68c34e0a):
+User visible changes:
+ - trash-put --help shows also other commands (Joseph Masone)
+ - trash-restore prints a message when no file are restored: "No files were
+   restored" (lukasvrenner)
+ - fix a regression that would crash `trash-list --volumes` at every launch
+ - add `fuse.gocryptfs` to the mount_points to the list of allowed filesystems
+   (Maxim Baz)
+ - Fix a bug that would trash a link destination instead of trashing the link
+   when the file to be trashed contains trailing slashes.
+ - fix typos/grammar in man pages (qadzek)
+ - improved shell TAB-completion (Giuseppe Stelluto)
+Work on the tools:
+ - made GitHub Actions workflows to work again
+ - updated the actions versions in GitHub Actions
+ - made the tests work again against python 2.7
+ - fixed the tox configuration (in some cases it would run python 2.7 tests on python 3!)
+ - made the type checker happy again
+ - the tarball created by python -m build sdist changed name, a dash "-" became
+   a underscore "_"; before was "trash-cli-version.tar.gz" now we have:
+   "trash_cli-version.tar.gz". The affected scripts has been updated to
+   accomodate this change
+
+0.23.11.10 (68c34e0a):
+ - use enum34...
+ - mypy
+ - trash-put clearer error messages
+
+0.23.9.23  (ae690713)
+ - man page trash-put.1 will also document trash-dirs locations (Joel Pereira)
+ - fixed typos in man page trash-put.1 (Joel Pereira)
+ - removed python 2.7 from the list of tested platforms (as GitHub Actions no
+   longer support this Python version)
+ - add MyPy checks to the GitHub Action test workflow
+ - improved error message when TrashInfo is not parsable in trash-restore
+ - suggested to use pipx in README.md (bryango)
+ - add instruction for installation on Fedora (Mohammed Eshan)
+ - get back `--` the command ending for trash-put (@laggardkernel)
+ - fixed typos (David Auer)
+ - check info target trash folder non-exists Tin Lai
+
+0.22.10.20 (07674600):
  - Made visible option -v/--verbose of trash-empty - Andrea Francia
  - Documented how completion works in README - Wu Zhenyu
- - Change: now if a file does not exists it does not tries to delete it using all available trash dirs - Andrea Francia
- - Removed an error that would occur on trash-put when HOME environment is not set - Andrea Francia
+ - Change: now if a file does not exists it does not tries to delete it using
+   all available trash dirs - Andrea Francia
+ - Removed an error that would occur on trash-put when HOME environment is not
+   set - Andrea Francia
  - Whitelisted fuse.glusterfs filesystem - Andrea Francia
+ - Add tox
+
 0.22.10.4.4:
  - Revisited the trash-put log messages
  - Add shell completions by shtab
