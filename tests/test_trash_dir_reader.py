@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
 import unittest
 
-from tests.fake_file_system import FakeFileSystem
+from tests.support.fake_file_system import FakeFileSystem
 
 from trashcli.lib.trash_dir_reader import TrashDirReader
 
