@@ -1,6 +1,6 @@
 from typing import NamedTuple
 
-from tests.run_command import CmdResult
+from tests.support.run_command import CmdResult
 from tests.support.help_reformatting import reformat_help_message
 from tests.support.my_path import MyPath
 from tests.test_put.test_e2e.run_trash_put.stream import Stream

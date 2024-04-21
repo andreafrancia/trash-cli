@@ -1,7 +1,7 @@
 import unittest
 
 from trashcli import trash
-from .. import run_command
+from ..support import run_command
 from ..support.help_reformatting import reformat_help_message
 from ..support.my_path import MyPath
 

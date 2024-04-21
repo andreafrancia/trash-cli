@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from tests.run_command import temp_dir  # noqa
+from tests.support.run_command import temp_dir  # noqa
 from tests.support.files import make_empty_file
 from tests.support.files import make_sticky_dir
 from tests.support.files import require_empty_dir

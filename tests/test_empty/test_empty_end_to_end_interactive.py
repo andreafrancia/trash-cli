@@ -3,7 +3,7 @@ import unittest
 
 import pytest
 
-from .. import run_command
+from ..support import run_command
 from tests.support.fake_trash_dir import FakeTrashDir
 from ..support.my_path import MyPath
 

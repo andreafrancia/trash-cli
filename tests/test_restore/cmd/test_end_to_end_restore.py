@@ -6,7 +6,7 @@ from os.path import join as pj
 
 import pytest
 
-from tests import run_command
+from tests.support import run_command
 from tests.support.fake_trash_dir import FakeTrashDir
 from tests.support.my_path import MyPath
 from trashcli.fs import read_file

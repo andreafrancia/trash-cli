@@ -1,6 +1,6 @@
 import os
 
-from tests.run_command import temp_dir  # noqa
+from tests.support.run_command import temp_dir  # noqa
 from trashcli.put.fs.real_fs import RealFs
 
 

@@ -1,4 +1,4 @@
-from tests.run_command import temp_dir  # noqa
+from tests.support.run_command import temp_dir  # noqa
 from tests.support.capture_error import capture_error
 from tests.test_put.support.fake_fs.fake_fs import FakeFs
 from trashcli.put.fs.real_fs import RealFs

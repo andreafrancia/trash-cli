@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from tests import run_command
+from tests.support import run_command
 from tests.support.fake_trash_dir import FakeTrashDir
 from tests.support.files import make_file
 from tests.support.list_trash_dir import list_trash_dir

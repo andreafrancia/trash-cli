@@ -1,5 +1,5 @@
-from tests.run_command import temp_dir  # qa
 from tests.support.files import make_file
+from tests.support.run_command import temp_dir  # noqa
 
 from trashcli import fs
 
