@@ -1,4 +1,5 @@
 from mock import Mock
+import pytest
 
 from tests.fake_trash_dir import FakeTrashDir
 from tests.output_collector import OutputCollector
@@ -11,6 +12,14 @@ from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.lib.dir_reader import RealDirReader
 from trashcli.list.main import ListCmd
 from .run_result import RunResult
+from tests.support.my_path import MyPath
+
+
+@pytest.fixture
+def trash_list_user():
+    temp_dir = MyPath.make_temp_dir()
+    yield TrashListUser(temp_dir)
+    temp_dir.clean_up()
 
 
 class TrashListUser:

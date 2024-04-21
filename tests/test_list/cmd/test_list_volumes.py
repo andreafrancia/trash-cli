@@ -1,17 +1,16 @@
-from tests.support.my_path import MyPath
-from tests.test_list.cmd.support.trash_list_user import TrashListUser
+from tests.test_list.cmd.support.trash_list_user import trash_list_user  # noqa
+
+user = trash_list_user
 
 
 class TestListVolumes:
-    def setup_method(self):
-        self.user = TrashListUser(MyPath.make_temp_dir())
 
-    def test(self):
-        self.user.add_volume("/disk1")
-        self.user.add_volume("/disk2")
-        self.user.add_volume("/disk3")
+    def test(self, user):
+        user.add_volume("/disk1")
+        user.add_volume("/disk2")
+        user.add_volume("/disk3")
 
-        output = self.user.run_trash_list('--volumes')
+        output = user.run_trash_list('--volumes')
 
         assert output.whole_output() == ('/disk1\n'
                                          '/disk2\n'
