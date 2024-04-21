@@ -3,7 +3,9 @@ import pytest
 
 from tests.fake_trash_dir import FakeTrashDir
 from tests.output_collector import OutputCollector
+from tests.run_command import temp_dir  # noqa
 from tests.support.fake_volume_of import volume_of_stub
+from tests.support.my_path import MyPath
 from trashcli.empty.main import FileSystemContentReader
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirRulesReader
@@ -12,7 +14,6 @@ from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.lib.dir_reader import RealDirReader
 from trashcli.list.main import ListCmd
 from .run_result import RunResult
-from tests.support.my_path import MyPath
 
 
 @pytest.fixture
