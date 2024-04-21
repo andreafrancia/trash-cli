@@ -3,6 +3,8 @@
 import os
 
 from tests.support.asserts import assert_equals_with_unidiff
+from tests.support.files import does_not_exist
+from tests.support.files import is_a_symlink_to_a_dir
 from tests.support.files import make_empty_dir
 from tests.support.files import make_sticky_dir
 from tests.support.files import make_unsticky_dir
@@ -44,7 +46,7 @@ class TestWithATopTrashDir:
     def test_but_it_should_not_warn_when_the_parent_is_unsticky_but_there_is_no_trashdir(
             self):
         make_unsticky_dir(self.top_dir / '.Trash')
-        but_does_not_exists_any(self.top_dir / '.Trash/123')
+        does_not_exist(self.top_dir / '.Trash/123')
 
         output = self.user.run_trash_list()
 
@@ -59,7 +61,7 @@ class TestWithATopTrashDir:
         assert_equals_with_unidiff('', output.stdout)
 
     def test_it_should_ignore_Trash_is_a_symlink(self):
-        when_is_a_symlink_to_a_dir(self.top_dir / '.Trash')
+        is_a_symlink_to_a_dir(self.top_dir / '.Trash')
         self.user.top1(self.top_dir).add_a_valid_trashinfo()
 
         output = self.user.run_trash_list()
@@ -67,7 +69,7 @@ class TestWithATopTrashDir:
         assert_equals_with_unidiff('', output.stdout)
 
     def test_and_should_warn_about_it(self):
-        when_is_a_symlink_to_a_dir(self.top_dir / '.Trash')
+        is_a_symlink_to_a_dir(self.top_dir / '.Trash')
         self.user.top1(self.top_dir).add_a_valid_trashinfo()
 
         output = self.user.run_trash_list()
@@ -79,12 +81,3 @@ class TestWithATopTrashDir:
         )
 
 
-def but_does_not_exists_any(path):
-    assert not os.path.exists(path)
-
-
-def when_is_a_symlink_to_a_dir(path):
-    dest = "%s-dest" % path
-    os.mkdir(dest)
-    rel_dest = os.path.basename(dest)
-    os.symlink(rel_dest, path)

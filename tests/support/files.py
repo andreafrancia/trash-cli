@@ -103,3 +103,14 @@ def assert_dir_empty(path):
 
 def assert_dir_contains(path, filename):
     assert os.path.exists(os.path.join(path, filename))
+
+
+def does_not_exist(path):
+    assert not os.path.exists(path)
+
+
+def is_a_symlink_to_a_dir(path):
+    dest = "%s-dest" % path
+    os.mkdir(dest)
+    rel_dest = os.path.basename(dest)
+    os.symlink(rel_dest, path)
