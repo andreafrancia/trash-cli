@@ -4,8 +4,8 @@ import uuid
 
 from trashcli.put.format_trash_info import format_original_location
 
-from .support.files import make_file, make_parent_for, make_unreadable_file
-from .test_list.cmd.support.parse_date import parse_date
+from tests.support.files import make_file, make_parent_for, make_unreadable_file
+from tests.test_list.cmd.support.parse_date import parse_date
 
 
 def a_default_datetime():

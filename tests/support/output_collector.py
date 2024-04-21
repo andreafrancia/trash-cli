@@ -1,6 +1,6 @@
 from six import StringIO
 
-from .support.asserts import assert_equals_with_unidiff
+from tests.support.asserts import assert_equals_with_unidiff
 
 
 class OutputCollector:

@@ -1,8 +1,8 @@
 from mock import Mock
 import pytest
 
-from tests.fake_trash_dir import FakeTrashDir
-from tests.output_collector import OutputCollector
+from tests.support.fake_trash_dir import FakeTrashDir
+from tests.support.output_collector import OutputCollector
 from tests.run_command import temp_dir  # noqa
 from tests.support.fake_volume_of import volume_of_stub
 from tests.support.my_path import MyPath

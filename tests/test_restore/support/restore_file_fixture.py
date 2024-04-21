@@ -1,6 +1,6 @@
 import os
 
-from tests.fake_trash_dir import trashinfo_content_default_date
+from tests.support.fake_trash_dir import trashinfo_content_default_date
 from tests.support.files import make_file
 
 

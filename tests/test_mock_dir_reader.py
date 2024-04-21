@@ -1,6 +1,6 @@
 import unittest
 
-from tests.mock_dir_reader import MockDirReader
+from tests.support.mock_dir_reader import MockDirReader
 
 
 class TestMockDirReader(unittest.TestCase):

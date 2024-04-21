@@ -2,10 +2,10 @@
 import unittest
 from typing import cast
 
-from mock import Mock, call
+from mock import call
 from six import StringIO
 
-from tests.mock_dir_reader import MockDirReader
+from tests.support.mock_dir_reader import MockDirReader
 from tests.support.fake_volume_of import volume_of_stub
 from trashcli.empty.delete_according_date import ContentsOf
 from trashcli.empty.empty_cmd import EmptyCmd
