@@ -7,9 +7,9 @@ class TestListVolumes:
         self.user = TrashListUser(MyPath.make_temp_dir())
 
     def test(self):
-        self.user.volumes.append("/disk1")
-        self.user.volumes.append("/disk2")
-        self.user.volumes.append("/disk3")
+        self.user.add_volume("/disk1")
+        self.user.add_volume("/disk2")
+        self.user.add_volume("/disk3")
 
         output = self.user.run_trash_list('--volumes')
 
