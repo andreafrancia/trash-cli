@@ -2,14 +2,12 @@
 import pytest
 
 from tests.support.run_command import temp_dir  # noqa
-from tests.test_list.cmd.support.trash_list_user import trash_list_user  # noqa
+from tests.test_list.cmd.support.trash_list_user import trash_list_user
+
+user = trash_list_user
 
 
 class TestTrashList:
-    @pytest.fixture
-    def user(self, trash_list_user):
-        return trash_list_user
-
     def test_should_output_nothing_when_trashcan_is_empty(self, user):
         output = user.run_trash_list()
 
