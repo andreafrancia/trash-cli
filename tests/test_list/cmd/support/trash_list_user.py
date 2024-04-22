@@ -1,9 +1,9 @@
+from six import StringIO
 from mock import Mock
 import pytest
 
 from tests.support.fake_trash_dir import FakeTrashDir
 from tests.support.files import make_empty_dir
-from tests.support.output_collector import OutputCollector
 from tests.support.fake_volume_of import volume_of_stub
 from tests.support.my_path import MyPath
 from trashcli.empty.main import FileSystemContentReader
@@ -37,8 +37,8 @@ class TrashListUser:
         file_reader.list_volumes = lambda: self.volumes
         volumes_listing = Mock(spec=VolumesListing)
         volumes_listing.list_volumes.return_value = self.volumes
-        stdout = OutputCollector()
-        stderr = OutputCollector()
+        stdout = StringIO()
+        stderr = StringIO()
         ListCmd(
             out=stdout,
             err=stderr,
