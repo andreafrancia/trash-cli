@@ -13,7 +13,8 @@ class TestTrashList:
         assert output.whole_output() == ''
 
     def test_should_output_deletion_date_and_path(self, user):
-        user.home_trash_dir().add_trashinfo4('/absolute/path', "2001-02-03 23:55:59")
+        user.home_trash_dir().add_trashinfo4('/absolute/path',
+                                             "2001-02-03 23:55:59")
 
         output = user.run_trash_list()
 
@@ -39,7 +40,7 @@ class TestTrashList:
 
     def test_should_output_invalid_dates_using_question_marks(self, user):
         user.home_trash_dir().add_trashinfo_wrong_date('with-invalid-date',
-                                             'Wrong date')
+                                                       'Wrong date')
 
         output = user.run_trash_list()
 
@@ -51,24 +52,26 @@ class TestTrashList:
 
         output = user.run_trash_list()
 
-        assert (("Parse Error: /xdg-data-home/Trash/info/empty.trashinfo: "
-                 "Unable to parse Path.\n", '') ==
-                output.err_and_out())
+        assert output.err_and_out() == (
+            "Parse Error: /xdg-data-home/Trash/info/empty.trashinfo: Unable "
+            "to parse Path.\n", '')
 
     def test_should_warn_about_unreadable_trashinfo(self, user):
         user.home_trash_dir().add_unreadable_trashinfo('unreadable')
 
         output = user.run_trash_list()
 
-        assert (("[Errno 13] Permission denied: "
-                 "'/xdg-data-home/Trash/info/unreadable.trashinfo'\n", '') ==
-                output.err_and_out())
+        assert output.err_and_out() == (
+            "[Errno 13] Permission denied: "
+            "'/xdg-data-home/Trash/info/unreadable.trashinfo'\n",
+            '')
 
     def test_should_warn_about_unexistent_path_entry(self, user):
         user.home_trash_dir().add_trashinfo_without_path("foo")
 
         output = user.run_trash_list()
 
-        assert (("Parse Error: /xdg-data-home/Trash/info/foo.trashinfo: "
-                 "Unable to parse Path.\n", '') ==
-                output.err_and_out())
+        assert output.err_and_out() == (
+            "Parse Error: /xdg-data-home/Trash/info/foo.trashinfo: "
+            "Unable to parse Path.\n",
+            '')

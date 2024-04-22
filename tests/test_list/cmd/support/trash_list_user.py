@@ -67,10 +67,11 @@ class TrashListUser:
         return top_dir
 
     def trash_dir1(self, disk_name):
-        return FakeTrashDir(self._trash_dir1_parent(disk_name) / '123')
+        return FakeTrashDir(
+            self._trash_dir1_parent(disk_name) / str(self.fake_uid))
 
     def trash_dir2(self, disk_name):
-        return FakeTrashDir(self.root / disk_name / '.Trash-123')
+        return FakeTrashDir(self.root / disk_name / '.Trash-%s' % self.fake_uid)
 
     def _trash_dir1_parent(self, disk_name):
         return self.root / disk_name / '.Trash'
