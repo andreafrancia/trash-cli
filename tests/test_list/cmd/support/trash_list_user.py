@@ -75,7 +75,7 @@ class TrashListUser:
     def _trash_dir1_parent(self, disk_name):
         return self.root / disk_name / '.Trash'
 
-    def home(self):
+    def home_trash_dir(self):
         return FakeTrashDir(self.xdg_data_home / "Trash")
 
     def set_version(self, version):

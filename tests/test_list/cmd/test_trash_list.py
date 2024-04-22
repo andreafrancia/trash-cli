@@ -13,16 +13,16 @@ class TestTrashList:
         assert output.whole_output() == ''
 
     def test_should_output_deletion_date_and_path(self, user):
-        user.home().add_trashinfo4('/absolute/path', "2001-02-03 23:55:59")
+        user.home_trash_dir().add_trashinfo4('/absolute/path', "2001-02-03 23:55:59")
 
         output = user.run_trash_list()
 
         assert (output.whole_output() == "2001-02-03 23:55:59 /absolute/path\n")
 
     def test_should_output_info_for_multiple_files(self, user):
-        user.home().add_trashinfo4('/file1', "2000-01-01 00:00:01")
-        user.home().add_trashinfo4('/file2', "2000-01-01 00:00:02")
-        user.home().add_trashinfo4('/file3', "2000-01-01 00:00:03")
+        user.home_trash_dir().add_trashinfo4('/file1', "2000-01-01 00:00:01")
+        user.home_trash_dir().add_trashinfo4('/file2', "2000-01-01 00:00:02")
+        user.home_trash_dir().add_trashinfo4('/file3', "2000-01-01 00:00:03")
 
         output = user.run_trash_list()
 
@@ -31,14 +31,14 @@ class TestTrashList:
                                       "2000-01-01 00:00:03 /file3"}
 
     def test_should_output_unknown_dates_with_question_marks(self, user):
-        user.home().add_trashinfo_without_date('without-date')
+        user.home_trash_dir().add_trashinfo_without_date('without-date')
 
         output = user.run_trash_list()
 
         assert output.whole_output() == "????-??-?? ??:??:?? /without-date\n"
 
     def test_should_output_invalid_dates_using_question_marks(self, user):
-        user.home().add_trashinfo_wrong_date('with-invalid-date',
+        user.home_trash_dir().add_trashinfo_wrong_date('with-invalid-date',
                                              'Wrong date')
 
         output = user.run_trash_list()
@@ -47,7 +47,7 @@ class TestTrashList:
                 "????-??-?? ??:??:?? /with-invalid-date\n")
 
     def test_should_warn_about_empty_trashinfos(self, user):
-        user.home().add_trashinfo_content('empty', '')
+        user.home_trash_dir().add_trashinfo_content('empty', '')
 
         output = user.run_trash_list()
 
@@ -56,7 +56,7 @@ class TestTrashList:
                 output.err_and_out())
 
     def test_should_warn_about_unreadable_trashinfo(self, user):
-        user.home().add_unreadable_trashinfo('unreadable')
+        user.home_trash_dir().add_unreadable_trashinfo('unreadable')
 
         output = user.run_trash_list()
 
@@ -65,7 +65,7 @@ class TestTrashList:
                 output.err_and_out())
 
     def test_should_warn_about_unexistent_path_entry(self, user):
-        user.home().add_trashinfo_without_path("foo")
+        user.home_trash_dir().add_trashinfo_without_path("foo")
 
         output = user.run_trash_list()
 
