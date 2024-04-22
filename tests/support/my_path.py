@@ -2,6 +2,7 @@ import os
 import shutil
 import tempfile
 
+from tests.support.files import make_sticky_dir
 from trashcli.put.fs.real_fs import RealFs
 from trashcli.put.fs.fs import list_all
 

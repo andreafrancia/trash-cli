@@ -1,5 +1,4 @@
 # Copyright (C) 2011-2024 Andrea Francia Trivolzio(PV) Italy
-import pytest
 
 from tests.support.run_command import temp_dir  # noqa
 from tests.test_list.cmd.support.trash_list_user import trash_list_user
@@ -52,7 +51,7 @@ class TestTrashList:
 
         output = user.run_trash_list()
 
-        assert (("Parse Error: XDG_DATA_HOME/Trash/info/empty.trashinfo: "
+        assert (("Parse Error: /xdg-data-home/Trash/info/empty.trashinfo: "
                  "Unable to parse Path.\n", '') ==
                 output.err_and_out())
 
@@ -62,7 +61,7 @@ class TestTrashList:
         output = user.run_trash_list()
 
         assert (("[Errno 13] Permission denied: "
-                 "'XDG_DATA_HOME/Trash/info/unreadable.trashinfo'\n", '') ==
+                 "'/xdg-data-home/Trash/info/unreadable.trashinfo'\n", '') ==
                 output.err_and_out())
 
     def test_should_warn_about_unexistent_path_entry(self, user):
@@ -70,6 +69,6 @@ class TestTrashList:
 
         output = user.run_trash_list()
 
-        assert (("Parse Error: XDG_DATA_HOME/Trash/info/foo.trashinfo: "
+        assert (("Parse Error: /xdg-data-home/Trash/info/foo.trashinfo: "
                  "Unable to parse Path.\n", '') ==
                 output.err_and_out())

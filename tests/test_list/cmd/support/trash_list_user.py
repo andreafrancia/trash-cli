@@ -2,8 +2,8 @@ from mock import Mock
 import pytest
 
 from tests.support.fake_trash_dir import FakeTrashDir
+from tests.support.files import make_empty_dir
 from tests.support.output_collector import OutputCollector
-from tests.support.run_command import temp_dir  # noqa
 from tests.support.fake_volume_of import volume_of_stub
 from tests.support.my_path import MyPath
 from trashcli.empty.main import FileSystemContentReader
@@ -24,9 +24,10 @@ def trash_list_user():
 
 
 class TrashListUser:
-    def __init__(self, xdg_data_home):
-        self.xdg_data_home = xdg_data_home
-        self.environ = {'XDG_DATA_HOME': xdg_data_home}
+    def __init__(self, root):
+        self.root = root
+        self.xdg_data_home = root / 'xdg-data-home'
+        self.environ = {'XDG_DATA_HOME': self.xdg_data_home}
         self.fake_uid = None
         self.volumes = []
         self.version = None
@@ -50,8 +51,8 @@ class TrashListUser:
             content_reader=FileSystemContentReader(),
             version=self.version
         ).run(['trash-list'] + list(args))
-        return RunResult(clean(stdout.getvalue(), self.xdg_data_home),
-                         clean(stderr.getvalue(), self.xdg_data_home))
+        return RunResult(clean(stdout.getvalue(), self.root),
+                         clean(stderr.getvalue(), self.root))
 
     def set_fake_uid(self, uid):
         self.fake_uid = uid
@@ -59,11 +60,20 @@ class TrashListUser:
     def add_volume(self, mount_point):
         self.volumes.append(mount_point)
 
-    def top1(self, top_dir):
-        return FakeTrashDir(top_dir / '.Trash/123')
+    def add_disk(self, disk_name):
+        top_dir = self.root / disk_name
+        make_empty_dir(top_dir)
+        self.add_volume(top_dir)
+        return top_dir
 
-    def top2(self, top_dir):
-        return FakeTrashDir(top_dir / '.Trash-123')
+    def trash_dir1(self, disk_name):
+        return FakeTrashDir(self._trash_dir1_parent(disk_name) / '123')
+
+    def trash_dir2(self, disk_name):
+        return FakeTrashDir(self.root / disk_name / '.Trash-123')
+
+    def _trash_dir1_parent(self, disk_name):
+        return self.root / disk_name / '.Trash'
 
     def home(self):
         return FakeTrashDir(self.xdg_data_home / "Trash")
@@ -73,4 +83,4 @@ class TrashListUser:
 
 
 def clean(stream, xdg_data_home):
-    return stream.replace(xdg_data_home, 'XDG_DATA_HOME')
+    return stream.replace(xdg_data_home, '')

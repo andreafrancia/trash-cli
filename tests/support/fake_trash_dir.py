@@ -2,6 +2,10 @@ import datetime
 import os
 import uuid
 
+from tests.support.files import does_not_exist
+from tests.support.files import is_a_symlink_to_a_dir
+from tests.support.files import make_sticky_dir
+from tests.support.files import make_unsticky_dir
 from trashcli.put.format_trash_info import format_original_location
 
 from tests.support.files import make_file, make_parent_for, make_unreadable_file
@@ -96,6 +100,21 @@ class FakeTrashDir:
 
     def ls_info(self):
         return os.listdir(self.info_path)
+
+    def make_parent_sticky(self):
+        make_sticky_dir(self.path.parent)
+
+    def make_parent_unsticky(self):
+        make_unsticky_dir(self.path.parent)
+
+    def make_parent_symlink(self):
+        is_a_symlink_to_a_dir(self.path.parent)
+
+    def make_dir(self):
+        os.mkdir(self.path)
+
+    def does_not_exist(self):
+        does_not_exist(self.path)
 
 
 def trashinfo_content_default_date(path):

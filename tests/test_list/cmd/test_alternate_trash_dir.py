@@ -1,21 +1,20 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
+import pytest
 
-from tests.support.asserts import assert_equals_with_unidiff
-from tests.support.my_path import MyPath
-from tests.test_list.cmd.support.trash_list_user import TrashListUser
+from tests.test_list.cmd.support.trash_list_user import trash_list_user  # noqa
 
 
 class TestAlternateTrashDir:
-    def setup_method(self):
-        self.user = TrashListUser(MyPath.make_temp_dir())
-        self.top_dir = MyPath.make_temp_dir()
+    @pytest.fixture
+    def user(self, trash_list_user):
+        u = trash_list_user
+        u.set_fake_uid(123)
+        u.add_disk("disk")
+        return u
 
-    def test_should_list_contents_of_alternate_trashdir(self):
-        self.user.set_fake_uid(123)
-        self.user.add_volume(self.top_dir)
-        self.user.top2(self.top_dir).add_trashinfo4('file', "2000-01-01")
+    def test_should_list_contents_of_alternate_trashdir(self, user):
+        user.trash_dir2("disk").add_trashinfo4('file', "2000-01-01")
 
-        output = self.user.run_trash_list()
+        output = user.run_trash_list()
 
-        assert_equals_with_unidiff("2000-01-01 00:00:00 %s/file\n" %
-                                   self.top_dir, output.stdout)
+        assert output.stdout == "2000-01-01 00:00:00 /disk/file\n"
