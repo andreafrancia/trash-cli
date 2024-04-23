@@ -1,6 +1,6 @@
 # Copyright (C) 2011-2024 Andrea Francia Trivolzio(PV) Italy
 
-from tests.support.run_command import temp_dir  # noqa
+from tests.support.temp_dir import temp_dir
 from tests.test_list.cmd.support.trash_list_user import trash_list_user
 
 user = trash_list_user

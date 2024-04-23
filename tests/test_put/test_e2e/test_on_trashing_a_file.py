@@ -1,6 +1,6 @@
 import pytest
 
-from tests.support.run_command import temp_dir  # noqa
+from tests.support.temp_dir import temp_dir
 from tests.support.files import make_empty_file
 from tests.test_put.test_e2e.run_trash_put import run_trash_put2
 

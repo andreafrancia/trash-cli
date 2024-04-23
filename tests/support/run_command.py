@@ -2,11 +2,8 @@ import os
 import subprocess
 import sys
 
-import pytest
-
 from scripts.make_scripts import script_path_for
 from tests.support.help_reformatting import reformat_help_message
-from tests.support.my_path import MyPath
 from trashcli import base_dir
 
 
@@ -69,13 +66,6 @@ def run_command(cwd, command, args=None, input='', env=None):
     return CmdResult(stdout.decode('utf-8'),
                      stderr.decode('utf-8'),
                      process.returncode)
-
-
-@pytest.fixture
-def temp_dir():
-    temp_dir = MyPath.make_temp_dir()
-    yield temp_dir
-    temp_dir.clean_up()
 
 
 def merge_dicts(x, y):

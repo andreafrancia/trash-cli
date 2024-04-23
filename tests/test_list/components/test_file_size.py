@@ -1,5 +1,5 @@
 from tests.support.files import make_file
-from tests.support.run_command import temp_dir  # noqa
+from tests.support.temp_dir import temp_dir
 
 from trashcli import fs
 

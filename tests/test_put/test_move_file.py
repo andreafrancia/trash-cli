@@ -1,6 +1,6 @@
 import pytest
 
-from tests.support.run_command import temp_dir  # noqa
+from tests.support.temp_dir import temp_dir
 from tests.support.my_path import MyPath
 from trashcli.put.fs.real_fs import RealFs
 from trashcli.put.janitor_tools.put_trash_dir import move_file
