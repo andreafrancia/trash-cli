@@ -5,11 +5,11 @@ import pytest
 
 from tests.support.asserts.assert_that import assert_that
 from tests.support.dirs.my_path import MyPath
-from tests.test_restore.support.a_trashed_file import ATrashedFile
-from tests.test_restore.support.has_been_restored_matcher import \
+from tests.support.restore.a_trashed_file import ATrashedFile
+from tests.support.restore.has_been_restored_matcher import \
     has_been_restored
-from tests.test_restore.support.restore_file_fixture import RestoreFileFixture
-from tests.test_restore.support.restore_user import RestoreUser
+from tests.support.restore.restore_file_fixture import RestoreFileFixture
+from tests.support.restore.restore_user import RestoreUser
 from trashcli.fs import RealExists
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.restore.file_system import RealFileReader, \

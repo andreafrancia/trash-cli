@@ -1,6 +1,4 @@
-import os
-
-from tests.test_put.support.fake_fs.fake_fs import FakeFs
+from tests.support.put.fake_fs.fake_fs import FakeFs
 
 
 class TestRealpath:

@@ -1,6 +1,6 @@
 from enum import Enum
 
-from tests.test_put.support.fake_fs.ent import Ent
+from tests.support.put.fake_fs.ent import Ent
 from trashcli.put.check_cast import check_cast
 
 
@@ -26,9 +26,9 @@ class INode:
         return "INode(%r, %r, %r)" % (self.entity, self.mode, self.stickiness)
 
     def directory(self):
-        from tests.test_put.support.fake_fs.directory import Directory
+        from tests.support.put.fake_fs.directory import Directory
         return check_cast(Directory, self.entity)
 
     def reg_file(self):
-        from tests.test_put.support.fake_fs.file import File
+        from tests.support.put.fake_fs.file import File
         return check_cast(File, self.entity)

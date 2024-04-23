@@ -13,7 +13,7 @@ from trashcli.put.my_logger import LogData
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.my_logger import StreamBackend
 from trashcli.put.suffix import Suffix
-from .support.fake_random import FakeRandomInt
+from tests.support.put.fake_random import FakeRandomInt
 from tests.support.dirs.my_path import MyPath
 
 

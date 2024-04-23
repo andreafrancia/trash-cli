@@ -1,4 +1,4 @@
-from tests.test_put.support.fake_fs.ent import Ent
+from tests.support.put.fake_fs.ent import Ent
 
 
 class File(Ent):

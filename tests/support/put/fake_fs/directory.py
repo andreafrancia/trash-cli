@@ -2,12 +2,12 @@ from collections import OrderedDict
 from typing import Optional
 from typing import Union
 
-from tests.test_put.support.fake_fs.ent import Ent
-from tests.test_put.support.fake_fs.inode import INode
-from tests.test_put.support.fake_fs.inode import Stickiness
-from tests.test_put.support.fake_fs.symlink import SymLink
-from tests.test_put.support.fake_fs.file import File
-from tests.test_put.support.my_file_not_found_error import MyFileNotFoundError
+from tests.support.put.fake_fs.ent import Ent
+from tests.support.put.fake_fs.inode import INode
+from tests.support.put.fake_fs.inode import Stickiness
+from tests.support.put.fake_fs.symlink import SymLink
+from tests.support.put.fake_fs.file import File
+from tests.support.put.my_file_not_found_error import MyFileNotFoundError
 from trashcli.lib.my_permission_error import MyPermissionError
 
 

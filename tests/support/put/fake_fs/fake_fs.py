@@ -1,16 +1,16 @@
 import errno
 import os
 
-from tests.test_put.support.fake_fs.directory import Directory
-from tests.test_put.support.fake_fs.directory import make_inode_dir
-from tests.test_put.support.fake_fs.ent import Ent
-from tests.test_put.support.fake_fs.entry import Entry
-from tests.test_put.support.fake_fs.file import File
-from tests.test_put.support.fake_fs.inode import INode
-from tests.test_put.support.fake_fs.inode import Stickiness
-from tests.test_put.support.fake_fs.symlink import SymLink
-from tests.test_put.support.format_mode import format_mode
-from tests.test_put.support.my_file_not_found_error import MyFileNotFoundError
+from tests.support.put.fake_fs.directory import Directory
+from tests.support.put.fake_fs.directory import make_inode_dir
+from tests.support.put.fake_fs.ent import Ent
+from tests.support.put.fake_fs.entry import Entry
+from tests.support.put.fake_fs.file import File
+from tests.support.put.fake_fs.inode import INode
+from tests.support.put.fake_fs.inode import Stickiness
+from tests.support.put.fake_fs.symlink import SymLink
+from tests.support.put.format_mode import format_mode
+from tests.support.put.my_file_not_found_error import MyFileNotFoundError
 from trashcli.fs import PathExists
 from trashcli.put.check_cast import check_cast
 from trashcli.put.fs.fs import Fs

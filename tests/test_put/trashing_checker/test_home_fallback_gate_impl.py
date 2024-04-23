@@ -1,3 +1,4 @@
+from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.check_type import NoCheck
 from trashcli.put.core.either import Left
@@ -6,8 +7,6 @@ from trashcli.put.core.trashee import Trashee
 from trashcli.put.gate import Gate
 from trashcli.put.janitor_tools.trash_dir_checker import TrashDirChecker, \
     make_ok, HomeFallBackNotEnabled
-from ..support.fake_fs.fake_fs import FakeFs
-
 
 class TestHomeFallbackGate:
     def setup_method(self):

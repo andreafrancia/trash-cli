@@ -3,7 +3,7 @@ import unittest
 
 from parameterized import parameterized  # type: ignore
 
-from tests.test_put.support.fake_fs.fake_fs import FakeFs
+from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.put.core.path_maker_type import PathMakerType
 from trashcli.put.original_location import OriginalLocation
 

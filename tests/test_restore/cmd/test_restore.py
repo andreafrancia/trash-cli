@@ -1,10 +1,10 @@
 import datetime
 
 from tests.support.asserts.assert_that import assert_that
-from tests.test_restore.support.fake_restore_fs import FakeRestoreFs
-from tests.test_restore.support.has_been_restored_matcher import \
+from tests.support.restore.fake_restore_fs import FakeRestoreFs
+from tests.support.restore.has_been_restored_matcher import \
     has_been_restored, has_not_been_restored
-from tests.test_restore.support.restore_user import RestoreUser
+from tests.support.restore.restore_user import RestoreUser
 
 
 class TestSearcher:

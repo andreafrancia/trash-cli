@@ -1,7 +1,7 @@
 import unittest
 
-from tests.test_put.support.fake_fs.fake_fs import FakeFs
-from tests.test_put.support.format_mode import format_mode
+from tests.support.put.fake_fs.fake_fs import FakeFs
+from tests.support.put.format_mode import format_mode
 from tests.support.capture_error import capture_error
 
 

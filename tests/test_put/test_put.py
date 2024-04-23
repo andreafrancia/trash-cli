@@ -6,10 +6,10 @@ import flexmock
 from six import StringIO
 
 from tests.support.fakes.fake_is_mount import FakeIsMount
-from tests.test_put.support.dummy_clock import FixedClock
-from tests.test_put.support.dummy_clock import jan_1st_2024
-from tests.test_put.support.fake_fs.failing_fake_fs import FailingFakeFs
-from tests.test_put.support.fake_random import FakeRandomInt
+from tests.support.put.dummy_clock import FixedClock
+from tests.support.put.dummy_clock import jan_1st_2024
+from tests.support.put.fake_fs.failing_fake_fs import FailingFakeFs
+from tests.support.put.fake_random import FakeRandomInt
 from tests.test_put.test_put_command.recording_backend import RecordingBackend
 from tests.test_put.test_put_command.result import Result
 from trashcli.fstab.volume_of import VolumeOfImpl

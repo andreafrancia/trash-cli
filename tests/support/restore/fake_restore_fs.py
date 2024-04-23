@@ -1,7 +1,7 @@
 import os
 
-from tests.test_put.support.fake_fs.fake_fs import FakeFs
-from tests.test_restore.support.a_trashed_file import ATrashedFile
+from tests.support.put.fake_fs.fake_fs import FakeFs
+from tests.support.restore.a_trashed_file import ATrashedFile
 from trashcli.fs import PathExists
 from trashcli.fstab.volumes import Volumes, FakeVolumes
 from trashcli.put.format_trash_info import format_trashinfo
