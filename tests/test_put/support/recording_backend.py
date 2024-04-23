@@ -2,8 +2,8 @@ from typing import IO
 
 from typing import List
 
-from tests.test_put.test_put_command.logs import Logs
-from tests.test_put.test_put_command.log_line import LogLine
+from tests.test_put.support.logs import Logs
+from tests.test_put.support.log_line import LogLine
 from trashcli.put.core.logs import LogData
 from trashcli.put.core.logs import LogEntry
 from trashcli.put.my_logger import LoggerBackend

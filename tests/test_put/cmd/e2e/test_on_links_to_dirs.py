@@ -1,7 +1,7 @@
 import pytest
 
 from tests.support.dirs.temp_dir import temp_dir
-from tests.test_put.test_e2e.run_trash_put.directory_layout import \
+from tests.test_put.cmd.e2e.run_trash_put.directory_layout import \
     DirectoriesLayout
 from trashcli.put.fs.real_fs import RealFs
 

@@ -1,5 +1,5 @@
-from tests.test_put.test_e2e.run_trash_put import PutResult
-from tests.test_put.test_e2e.run_trash_put import run_trash_put4
+from tests.test_put.cmd.e2e.run_trash_put import PutResult
+from tests.test_put.cmd.e2e.run_trash_put import run_trash_put4
 
 
 class Result:

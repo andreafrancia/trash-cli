@@ -10,8 +10,8 @@ from tests.support.put.dummy_clock import FixedClock
 from tests.support.put.dummy_clock import jan_1st_2024
 from tests.support.put.fake_fs.failing_fake_fs import FailingFakeFs
 from tests.support.put.fake_random import FakeRandomInt
-from tests.test_put.test_put_command.recording_backend import RecordingBackend
-from tests.test_put.test_put_command.result import Result
+from tests.test_put.support.recording_backend import RecordingBackend
+from tests.test_put.support.result import Result
 from trashcli.fstab.volume_of import VolumeOfImpl
 from trashcli.lib.environ import Environ
 from trashcli.lib.exit_codes import EX_IOERR

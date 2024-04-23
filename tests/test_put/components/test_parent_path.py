@@ -5,7 +5,7 @@ import pytest
 
 from trashcli.put.fs.parent_realpath import ParentRealpathFs
 from trashcli.put.fs.real_fs import RealFs
-from ..support.files import make_empty_file, require_empty_dir
+from tests.support.files import make_empty_file, require_empty_dir
 from tests.support.dirs.my_path import MyPath
 
 

@@ -3,7 +3,7 @@ from typing import NamedTuple
 from tests.support.run.cmd_result import CmdResult
 from tests.support.help.help_reformatting import reformat_help_message
 from tests.support.dirs.my_path import MyPath
-from tests.test_put.test_e2e.run_trash_put.stream import Stream
+from tests.test_put.cmd.e2e.run_trash_put.stream import Stream
 
 
 class PutResult(NamedTuple('Output', [

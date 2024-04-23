@@ -3,7 +3,7 @@ import unittest
 from trashcli import trash
 from tests.support.help.help_reformatting import reformat_help_message
 from tests.support.dirs.my_path import MyPath
-from ..support.run.run_command import run_command
+from tests.support.run.run_command import run_command
 
 
 class TestEmptyEndToEnd(unittest.TestCase):

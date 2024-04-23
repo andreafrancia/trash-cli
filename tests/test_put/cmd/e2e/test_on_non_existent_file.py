@@ -1,7 +1,7 @@
 import pytest
 
-from tests.test_put.test_e2e.run_trash_put import run_trash_put
-from tests.test_put.test_e2e.test_end_to_end_put import temp_dir
+from tests.test_put.cmd.e2e.run_trash_put import run_trash_put
+from tests.test_put.cmd.e2e.test_end_to_end_put import temp_dir
 from trashcli.lib.exit_codes import EX_IOERR
 
 temp_dir = temp_dir

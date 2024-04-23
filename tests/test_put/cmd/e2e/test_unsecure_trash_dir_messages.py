@@ -6,7 +6,7 @@ import pytest
 from tests.support.files import make_empty_file
 from tests.support.files import make_sticky_dir
 from tests.support.files import require_empty_dir
-from tests.test_put.test_e2e.run_trash_put import run_trashput_with_vol
+from tests.test_put.cmd.e2e.run_trash_put import run_trashput_with_vol
 from tests.support.dirs.temp_dir import temp_dir
 
 temp_dir = temp_dir

@@ -1,7 +1,7 @@
 from typing import List
 from typing import Tuple
 
-from tests.test_put.test_put_command.logs import Logs
+from tests.test_put.support.logs import Logs
 from trashcli.put.core.logs import LogTag
 
 

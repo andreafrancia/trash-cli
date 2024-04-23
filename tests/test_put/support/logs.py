@@ -1,7 +1,7 @@
 from typing import List
 from typing import NamedTuple
 
-from tests.test_put.test_put_command.log_line import LogLine
+from tests.test_put.support.log_line import LogLine
 from trashcli.put.core.logs import LogTag
 from trashcli.put.my_logger import is_right_for_level
 
