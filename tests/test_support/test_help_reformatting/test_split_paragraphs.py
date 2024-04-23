@@ -1,6 +1,6 @@
 from parameterized import parameterized  # type: ignore
 
-from tests.support.help_reformatting import split_paragraphs
+from tests.support.help.help_reformatting import split_paragraphs
 
 
 @parameterized.expand([

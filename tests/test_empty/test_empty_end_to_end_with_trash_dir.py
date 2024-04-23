@@ -4,7 +4,7 @@ import unittest
 from tests.support.run.run_command import run_command
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.files import make_file
-from tests.support.list_trash_dir import list_trash_dir
+from tests.support.trash_dirs.list_trash_dir import list_trash_dir
 from tests.support.dirs.my_path import MyPath
 
 

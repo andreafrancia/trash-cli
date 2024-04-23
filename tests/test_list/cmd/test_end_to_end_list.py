@@ -4,7 +4,7 @@ import unittest
 import pytest
 
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
-from tests.support.help_reformatting import reformat_help_message
+from tests.support.help.help_reformatting import reformat_help_message
 from tests.support.dirs.my_path import MyPath
 from tests.support.run.run_command import run_command
 

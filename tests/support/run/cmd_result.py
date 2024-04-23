@@ -1,5 +1,4 @@
-from tests.support.help_reformatting import reformat_help_message
-from tests.support.text.last_line_of import last_line_of
+from tests.support.help.help_reformatting import reformat_help_message
 from tests.support.text.last_line_of import last_line_of
 
 

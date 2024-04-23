@@ -1,4 +1,4 @@
-from tests.support.help_reformatting import reformat_help_message, split_paragraphs
+from tests.support.help.help_reformatting import reformat_help_message, split_paragraphs
 
 
 class TestParseHelp:
