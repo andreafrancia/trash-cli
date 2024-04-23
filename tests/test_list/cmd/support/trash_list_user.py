@@ -2,9 +2,9 @@ from six import StringIO
 from mock import Mock
 import pytest
 
-from tests.support.fake_trash_dir import FakeTrashDir
+from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.files import make_empty_dir
-from tests.support.fake_volume_of import volume_of_stub
+from tests.support.fakes.fake_volume_of import volume_of_stub
 from tests.support.my_path import MyPath
 from trashcli.empty.main import FileSystemContentReader
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \

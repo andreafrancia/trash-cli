@@ -5,7 +5,7 @@ import pytest
 from mock import Mock
 from six import StringIO
 
-from tests.support.fake_volume_of import volume_of_stub
+from tests.support.fakes.fake_volume_of import volume_of_stub
 from tests.support.files import make_unreadable_dir, make_readable
 from tests.support.my_path import MyPath
 from trashcli.empty.empty_cmd import EmptyCmd

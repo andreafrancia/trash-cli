@@ -1,6 +1,6 @@
 import unittest
 
-from tests.support.fake_is_mount import FakeIsMount
+from tests.support.fakes.fake_is_mount import FakeIsMount
 
 
 class TestOnDefault(unittest.TestCase):

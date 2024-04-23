@@ -1,7 +1,7 @@
 import os
 from typing import List, Callable
 
-from tests.support.fake_is_mount import FakeIsMount
+from tests.support.fakes.fake_is_mount import FakeIsMount
 from trashcli.fstab.volume_of import VolumeOf, VolumeOfImpl
 
 

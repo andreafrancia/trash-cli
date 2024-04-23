@@ -5,7 +5,7 @@ from typing import Optional
 import flexmock
 from six import StringIO
 
-from tests.support.fake_is_mount import FakeIsMount
+from tests.support.fakes.fake_is_mount import FakeIsMount
 from tests.test_put.support.dummy_clock import FixedClock
 from tests.test_put.support.dummy_clock import jan_1st_2024
 from tests.test_put.support.fake_fs.failing_fake_fs import FailingFakeFs

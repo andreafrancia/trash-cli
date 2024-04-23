@@ -2,7 +2,7 @@ import unittest
 
 from mock import Mock
 
-from tests.support.fake_volume_of import fake_volume_of
+from tests.support.fakes.fake_volume_of import fake_volume_of
 from trashcli.put.trash_dir_volume_reader import TrashDirVolumeReader
 
 

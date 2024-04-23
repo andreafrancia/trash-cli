@@ -1,6 +1,6 @@
 import unittest
 
-from tests.support.fake_volume_of import fake_volume_of
+from tests.support.fakes.fake_volume_of import fake_volume_of
 
 
 class Test_create_fake_volume_of(unittest.TestCase):

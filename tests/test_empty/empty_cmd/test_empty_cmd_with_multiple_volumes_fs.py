@@ -5,7 +5,7 @@ import unittest
 from mock import Mock
 from six import StringIO
 
-from tests.support.fake_volume_of import volume_of_stub
+from tests.support.fakes.fake_volume_of import volume_of_stub
 from tests.support.files import make_empty_file, require_empty_dir, make_dirs, \
     set_sticky_bit
 from tests.support.my_path import MyPath

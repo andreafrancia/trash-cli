@@ -1,6 +1,6 @@
 from typing import NamedTuple
 
-from tests.support.sort_lines import sort_lines
+from tests.support.text.sort_lines import sort_lines
 
 
 class RunResult(NamedTuple("RunResult", [

@@ -1,6 +1,6 @@
 import unittest
 
-from tests.support.fake_volume_of import volume_of_stub
+from tests.support.fakes.fake_volume_of import volume_of_stub
 from trashcli.list.trash_dir_selector import TrashDirsSelector
 from trashcli.trash_dirs_scanner import trash_dir_found
 

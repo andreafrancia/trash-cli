@@ -1,7 +1,7 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 import unittest
 
-from tests.support.fake_file_system import FakeFileSystem
+from tests.support.fakes.fake_file_system import FakeFileSystem
 
 
 class TestFakeFileSystem(unittest.TestCase):
