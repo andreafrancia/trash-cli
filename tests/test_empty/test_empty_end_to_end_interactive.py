@@ -3,9 +3,9 @@ import unittest
 
 import pytest
 
-from ..support import run_command
 from tests.support.fake_trash_dir import FakeTrashDir
 from ..support.my_path import MyPath
+from ..support.run.run_command import run_command
 
 
 @pytest.mark.slow
@@ -21,11 +21,8 @@ class TestEmptyEndToEndInteractive(unittest.TestCase):
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
 
     def user_run_trash_empty(self, args):
-        return run_command.run_command(self.tmp_dir,
-                                       "trash-empty",
-                                       args,
-                                       env=self.environ,
-                                       input='y')
+        return run_command(self.tmp_dir, "trash-empty", args,
+                           env=self.environ, input='y')
 
     def set_clock_at(self, yyyy_mm_dd):
         self.environ['TRASH_DATE'] = '%sT00:00:00' % yyyy_mm_dd

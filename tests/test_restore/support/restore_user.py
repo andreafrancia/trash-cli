@@ -2,7 +2,7 @@ import sys
 from io import StringIO
 from typing import Dict
 
-from tests.support.run_command import CmdResult
+from tests.support.run.cmd_result import CmdResult
 from trashcli.fstab.volumes import Volumes
 from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.file_system import FakeReadCwd, FileReader, \

@@ -1,6 +1,6 @@
 from typing import NamedTuple
 
-from tests.support.run_command import grep
+from tests.support.text.grep import grep
 from tests.support.my_path import MyPath
 
 

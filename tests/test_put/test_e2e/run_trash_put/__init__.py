@@ -1,7 +1,7 @@
 from typing import List
 from typing import Optional
 
-from tests.support.run_command import run_command
+from tests.support.run.run_command import run_command
 from tests.support.my_path import MyPath
 from tests.test_put.test_e2e.run_trash_put.put_result import PutResult
 from tests.test_put.test_e2e.run_trash_put.put_result import make_put_result
