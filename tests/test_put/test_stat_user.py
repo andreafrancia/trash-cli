@@ -1,7 +1,9 @@
 import os
 
-from tests.support.temp_dir import temp_dir
 from trashcli.put.fs.real_fs import RealFs
+from tests.support.dirs.temp_dir import temp_dir
+
+temp_dir = temp_dir
 
 
 class TestStatMode:

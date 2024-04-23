@@ -4,7 +4,7 @@ import pytest
 from six import StringIO
 
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
-from tests.support.my_path import MyPath
+from tests.support.dirs.my_path import MyPath
 from trashcli.fstab.volume_listing import NoVolumesListing
 from trashcli.rm.main import RealRmFileSystemReader
 from trashcli.rm.rm_cmd import RmCmd

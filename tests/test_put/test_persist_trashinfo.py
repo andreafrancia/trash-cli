@@ -14,7 +14,7 @@ from trashcli.put.my_logger import MyLogger
 from trashcli.put.my_logger import StreamBackend
 from trashcli.put.suffix import Suffix
 from .support.fake_random import FakeRandomInt
-from ..support.my_path import MyPath
+from tests.support.dirs.my_path import MyPath
 
 
 @pytest.mark.slow

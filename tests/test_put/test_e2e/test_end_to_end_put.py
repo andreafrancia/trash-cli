@@ -3,10 +3,12 @@ from textwrap import dedent
 
 import pytest
 
-from tests.support.temp_dir import temp_dir
-from tests.support.my_path import MyPath
+from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import temp_dir
 from tests.test_put.test_e2e.run_trash_put import run_trash_put
 from trashcli.lib.exit_codes import EX_IOERR
+
+temp_dir = temp_dir
 
 
 @pytest.mark.slow

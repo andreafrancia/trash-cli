@@ -3,7 +3,7 @@ import unittest
 import pytest
 
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
-from tests.support.my_path import MyPath
+from tests.support.dirs.my_path import MyPath
 from trashcli.file_system_reader import FileSystemReader
 from trashcli.rm.list_trashinfo import ListTrashinfos
 

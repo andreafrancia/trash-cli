@@ -1,4 +1,4 @@
-from tests.support.list_file_in_dir import list_files_in_dir
+from tests.support.dirs.list_file_in_dir import list_files_in_dir
 
 
 def list_files_in_subdir(path, subdir):

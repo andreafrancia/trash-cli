@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from tests.support.my_path import MyPath
+from tests.support.dirs.my_path import MyPath
 from trashcli.put.fs.real_fs import RealFs
 
 

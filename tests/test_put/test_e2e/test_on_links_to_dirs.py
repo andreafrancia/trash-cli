@@ -1,9 +1,11 @@
 import pytest
 
-from tests.support.temp_dir import temp_dir
+from tests.support.dirs.temp_dir import temp_dir
 from tests.test_put.test_e2e.run_trash_put.directory_layout import \
     DirectoriesLayout
 from trashcli.put.fs.real_fs import RealFs
+
+temp_dir = temp_dir
 
 
 @pytest.mark.slow
@@ -43,6 +45,3 @@ class TestOnLinksToDirs:
                                   '/info',
                                   '/info/link-to-dir.trashinfo'],
         }
-
-
-

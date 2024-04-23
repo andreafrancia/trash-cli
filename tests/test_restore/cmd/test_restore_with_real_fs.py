@@ -4,7 +4,7 @@ import unittest
 import pytest
 
 from tests.support.asserts.assert_that import assert_that
-from tests.support.my_path import MyPath
+from tests.support.dirs.my_path import MyPath
 from tests.test_restore.support.a_trashed_file import ATrashedFile
 from tests.test_restore.support.has_been_restored_matcher import \
     has_been_restored

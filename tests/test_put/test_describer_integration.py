@@ -5,7 +5,7 @@ import unittest
 import pytest
 
 from tests.support.files import make_empty_file, make_file, require_empty_dir
-from tests.support.my_path import MyPath
+from tests.support.dirs.my_path import MyPath
 from trashcli.put.describer import Describer
 from trashcli.put.fs.real_fs import RealFs
 

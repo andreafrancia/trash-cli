@@ -5,7 +5,7 @@ from mock import Mock
 from six import StringIO
 
 from tests.support.files import make_empty_file
-from tests.support.my_path import MyPath
+from tests.support.dirs.my_path import MyPath
 from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.file_system import RealRestoreWriteFileSystem, \
     FakeReadCwd, RealRestoreReadFileSystem

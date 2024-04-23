@@ -1,6 +1,6 @@
 import pytest
 
-from tests.support.my_path import MyPath
+from tests.support.dirs.my_path import MyPath
 
 
 @pytest.fixture

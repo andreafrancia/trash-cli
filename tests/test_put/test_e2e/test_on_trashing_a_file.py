@@ -1,14 +1,17 @@
 import pytest
 
-from tests.support.temp_dir import temp_dir
 from tests.support.files import make_empty_file
 from tests.test_put.test_e2e.run_trash_put import run_trash_put2
+from tests.support.dirs.temp_dir import temp_dir
+
+temp_dir = temp_dir
 
 
 @pytest.mark.slow
 class TestOnTrashingAFile:
 
-    def test_in_verbose_mode_should_tell_where_a_file_is_trashed(self, temp_dir):
+    def test_in_verbose_mode_should_tell_where_a_file_is_trashed(self,
+                                                                 temp_dir):
         env = {'XDG_DATA_HOME': temp_dir / 'XDG_DATA_HOME',
                'HOME': temp_dir / 'home'}
         make_empty_file(temp_dir / "foo")
@@ -19,4 +22,3 @@ class TestOnTrashingAFile:
             "trash-put: '/foo' trashed in /XDG_DATA_HOME/Trash\n",
             0
         ]
-

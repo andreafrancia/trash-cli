@@ -1,7 +1,7 @@
 from typing import NamedTuple
 
 from tests.support.text.grep import grep
-from tests.support.my_path import MyPath
+from tests.support.dirs.my_path import MyPath
 
 
 class Stream(NamedTuple('Output', [

@@ -7,7 +7,7 @@ import pytest
 
 from trashcli.fs import has_sticky_bit, mkdirs, is_sticky_dir
 from tests.support.files import make_empty_file, set_sticky_bit, unset_sticky_bit
-from tests.support.my_path import MyPath
+from tests.support.dirs.my_path import MyPath
 
 
 @pytest.mark.slow

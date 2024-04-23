@@ -4,7 +4,7 @@ import pytest
 import six
 
 from tests.support.files import make_file, require_empty_dir
-from tests.support.my_path import MyPath
+from tests.support.dirs.my_path import MyPath
 from trashcli.restore.file_system import RealListingFileSystem
 from trashcli.restore.info_files import InfoFiles
 

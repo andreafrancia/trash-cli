@@ -2,13 +2,14 @@ import os
 
 import pytest
 
-from tests.support.temp_dir import temp_dir
+from tests.support.dirs.temp_dir import temp_dir
 from tests.support.files import make_file
-from tests.support.my_path import MyPath
+from tests.support.dirs.my_path import MyPath
 from tests.test_put.test_e2e.run_trash_put import run_trash_put
 from trashcli.put.fs.real_fs import RealFs
 
 fs = RealFs()
+temp_dir = temp_dir
 
 
 def _make_connected_link(path):  # type: (MyPath) -> None

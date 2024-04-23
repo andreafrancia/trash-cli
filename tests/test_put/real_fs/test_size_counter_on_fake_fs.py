@@ -1,6 +1,6 @@
 import unittest
 
-from tests.support.my_path import MyPath
+from tests.support.dirs.my_path import MyPath
 from tests.test_put.support.fake_fs.fake_fs import FakeFs
 from trashcli.put.fs.size_counter import SizeCounter
 

@@ -7,7 +7,7 @@ from trashcli.fs import remove_file2
 
 from ...support.files import make_unreadable_dir, \
     make_readable
-from ...support.my_path import MyPath
+from tests.support.dirs.my_path import MyPath
 
 
 class Test_make_unreadable_dir(unittest.TestCase):

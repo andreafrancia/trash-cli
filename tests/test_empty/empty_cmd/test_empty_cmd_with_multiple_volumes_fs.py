@@ -8,7 +8,7 @@ from six import StringIO
 from tests.support.fakes.fake_volume_of import volume_of_stub
 from tests.support.files import make_empty_file, require_empty_dir, make_dirs, \
     set_sticky_bit
-from tests.support.my_path import MyPath
+from tests.support.dirs.my_path import MyPath
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader

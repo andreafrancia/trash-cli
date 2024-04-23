@@ -1,6 +1,3 @@
-from typing import List
-
-from tests.support.my_path import MyPath
 from tests.test_put.test_e2e.run_trash_put import PutResult
 from tests.test_put.test_e2e.run_trash_put import run_trash_put4
 
