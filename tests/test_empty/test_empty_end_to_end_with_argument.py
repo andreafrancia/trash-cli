@@ -30,7 +30,7 @@ class TestEmptyEndToEndWithArgument(unittest.TestCase):
 
         result = self.user_run_trash_empty(['--print-time'])
 
-        self.assertEqual(['2000-01-01T00:00:00\n', '', 0], result.all)
+        self.assertEqual(('2000-01-01T00:00:00\n', '', 0), result.all)
 
     def test_it_should_keep_files_newer_than_N_days(self):
         self.fake_trash_dir.add_trashinfo_with_date('foo', datetime.date(2000, 1, 1))

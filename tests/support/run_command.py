@@ -19,7 +19,10 @@ class CmdResult:
         self.stdout = stdout
         self.stderr = stderr
         self.exit_code = exit_code
-        self.all = [stdout, stderr, exit_code]
+        self.all = (stdout, stderr, exit_code)
+
+    def all_lines(self):
+        return set(self.stderr.splitlines() + self.stdout.splitlines())
 
     def __str__(self):
         return str(self.all)

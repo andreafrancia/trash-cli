@@ -75,10 +75,7 @@ Report bugs to https://github.com/andreafrancia/trash-cli/issues
             ['--print-time'],
             env={'TRASH_DATE': '1970-12-31T23:59:59'})
 
-        self.assertEqual(['1970-12-31T23:59:59\n',
-                          '',
-                          0],
-                         result.all)
+        self.assertEqual(('1970-12-31T23:59:59\n', '', 0), result.all)
 
     def test_on_trash_date_not_parsable(self):
         result = run_command.run_command(

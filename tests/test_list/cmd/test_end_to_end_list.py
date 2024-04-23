@@ -17,30 +17,20 @@ class TestEndToEndList(unittest.TestCase):
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
 
     def test_list(self):
-        self.fake_trash_dir.add_trashinfo2("/file1",
-                                           datetime.datetime(2000, 1, 1, 0, 0,
-                                                             1))
-        self.fake_trash_dir.add_trashinfo2("/file2",
-                                           datetime.datetime(2000, 1, 1, 0, 0,
-                                                             1))
+        self.fake_trash_dir.add_trashinfo4("/file1", '2000-01-01 00:00:01')
+        self.fake_trash_dir.add_trashinfo4("/file2", '2000-01-01 00:00:02')
 
         result = run_command.run_command(self.temp_dir, "trash-list",
                                          ['--trash-dir', self.trash_dir])
 
-        assert [
-                   '2000-01-01 00:00:01 /file1',
-                   '2000-01-01 00:00:01 /file2',
-               ] == sorted(result.stdout.splitlines())
+        assert result.all_lines() == {'2000-01-01 00:00:01 /file1',
+                                      '2000-01-01 00:00:02 /file2', }
 
     def test_list_trash_dirs(self):
         result = run_command.run_command(
             self.temp_dir, "trash-list",
             ['--trash-dirs', '--trash-dir=/home/user/.local/share/Trash'])
-        assert (result.stderr,
-                sorted(result.stdout.splitlines()), result.exit_code) == (
-                   '', [
-                       '/home/user/.local/share/Trash'
-                   ], 0)
+        assert result.all == ('/home/user/.local/share/Trash\n', '', 0)
 
     def test_list_with_paths(self):
         self.fake_trash_dir.add_trashinfo3("base1", "/file1",
@@ -60,7 +50,8 @@ class TestEndToEndList(unittest.TestCase):
         ]) == (result.stderr, sorted(result.stdout.splitlines()))
 
     def test_help(self):
-        result = run_command.run_command(self.temp_dir, "trash-list", ['--help'])
+        result = run_command.run_command(self.temp_dir, "trash-list",
+                                         ['--help'])
 
         self.assertEqual(reformat_help_message("""\
 usage: trash-list [-h] [--print-completion {bash,zsh,tcsh}] [--version]

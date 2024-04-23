@@ -9,7 +9,7 @@ from tests.support.files import make_unsticky_dir
 from trashcli.put.format_trash_info import format_original_location
 
 from tests.support.files import make_file, make_parent_for, make_unreadable_file
-from tests.test_list.cmd.support.parse_date import parse_date
+from tests.support.trashinfo.parse_date import parse_date
 
 
 def a_default_datetime():
@@ -52,6 +52,10 @@ class FakeTrashDir:
         self.add_trashinfo4('file1', "2000-01-01")
 
     def add_trashinfo4(self, path, deletion_date_as_string):
+        if isinstance(deletion_date_as_string, datetime.datetime):
+            raise ValueError("Use a string instead: %s" %
+                             repr(deletion_date_as_string.strftime('%Y-%m-%d %H:%M:%S')))
+
         basename = str(uuid.uuid4())
         deletion_date = parse_date(deletion_date_as_string)
         self.add_trashinfo3(basename, path, deletion_date)

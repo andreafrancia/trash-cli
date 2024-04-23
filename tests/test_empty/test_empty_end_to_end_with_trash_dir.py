@@ -27,7 +27,7 @@ class TestEmptyEndToEndWithTrashDir(unittest.TestCase):
                                          ['--trash-dir', self.trash_dir])
 
         assert [result.all, list_trash_dir(self.trash_dir)] == \
-               [['', '', 0], []]
+               [('', '', 0), []]
 
     def test_xdg_data_home(self):
         xdg_data_home = self.tmp_dir / 'xdg'
@@ -40,7 +40,7 @@ class TestEmptyEndToEndWithTrashDir(unittest.TestCase):
 
         trash_dir = xdg_data_home / 'Trash'
         assert [result.all, list_trash_dir(trash_dir)] == \
-               [['', '', 0], []]
+               [('', '', 0), []]
 
     def test_non_trash_info_is_not_deleted(self):
         make_file(self.trash_dir / 'info' / 'non-trashinfo')
@@ -49,7 +49,7 @@ class TestEmptyEndToEndWithTrashDir(unittest.TestCase):
                                          ['--trash-dir', self.trash_dir])
 
         assert [result.all, list_trash_dir(self.trash_dir)] == \
-               [['', '', 0], ['info/non-trashinfo']]
+               [('', '', 0), ['info/non-trashinfo']]
 
     def test_orphan_are_deleted(self):
         make_file(self.trash_dir / 'files' / 'orphan')
@@ -59,7 +59,7 @@ class TestEmptyEndToEndWithTrashDir(unittest.TestCase):
                                          ['--trash-dir', self.trash_dir])
 
         assert [result.all, list_trash_dir(self.trash_dir)] == \
-               [['', '', 0], []]
+               [('', '', 0), []]
 
     def tearDown(self):
         self.tmp_dir.clean_up()
