@@ -10,13 +10,22 @@ from trashcli.fstab.mount_points_listing import MountPointsListing, \
 @six.add_metaclass(ABCMeta)
 class VolumesListing:
     @abstractmethod
-    def list_volumes(self, environ): # type (dict) -> Iterable[str]
+    def list_volumes(self, environ):  # type (dict) -> Iterable[str]
         raise NotImplementedError()
+
+
+class FixedVolumesListing(VolumesListing):
+    def __init__(self, volumes):
+        self.volumes = volumes
+
+    def list_volumes(self, _environ):
+        return self.volumes
 
 
 class RealVolumesListing(VolumesListing):
     def list_volumes(self, environ):
-        return VolumesListingImpl(RealMountPointsListing()).list_volumes(environ)
+        return VolumesListingImpl(RealMountPointsListing()).list_volumes(
+            environ)
 
 
 class VolumesListingImpl:

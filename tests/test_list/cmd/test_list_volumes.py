@@ -6,9 +6,9 @@ user = trash_list_user
 class TestListVolumes:
 
     def test(self, user):
-        user.add_volume("/disk1")
-        user.add_volume("/disk2")
-        user.add_volume("/disk3")
+        user.add_disk("/disk1")
+        user.add_disk("/disk2")
+        user.add_disk("/disk3")
 
         output = user.run_trash_list('--volumes')
 

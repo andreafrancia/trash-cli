@@ -10,6 +10,7 @@ from tests.support.fakes.fake_volume_of import volume_of_stub
 from trashcli.empty.delete_according_date import ContentsOf
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
+from trashcli.fstab.volume_listing import FixedVolumesListing
 from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.lib.dir_reader import DirReader
 from trashcli.trash_dirs_scanner import TopTrashDirRules
@@ -17,7 +18,7 @@ from mock import Mock
 
 class TestTrashEmptyCmdFs(unittest.TestCase):
     def setUp(self):
-        self.volumes_listing = Mock(spec=VolumesListing)
+        self.volumes_listing = FixedVolumesListing([])
         self.file_reader = Mock(spec=TopTrashDirRules.Reader)
         self.file_remover = Mock(spec=ExistingFileRemover)
         self.content_reader = Mock(spec=ContentsOf)
@@ -40,7 +41,6 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
         )
 
     def test(self):
-        self.volumes_listing.list_volumes.return_value = []
         self.dir_reader.mkdir('/xdg')
         self.dir_reader.mkdir('/xdg/Trash')
         self.dir_reader.mkdir('/xdg/Trash/info')
@@ -55,7 +55,6 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
         ]
 
     def test_with_dry_run(self):
-        self.volumes_listing.list_volumes.return_value = []
         self.dir_reader.mkdir('/xdg')
         self.dir_reader.mkdir('/xdg/Trash')
         self.dir_reader.mkdir('/xdg/Trash/info')
