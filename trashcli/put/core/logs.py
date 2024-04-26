@@ -53,18 +53,18 @@ class MessageStr(NamedTuple('Message', [
 
 def log_str(level,  # type: Level
             tag,  # type: LogTag
-            message,  # type: str
+            messages,  # type: List[str]
             ):
-    return LogEntry(level, tag, MessageStr.from_messages([message]))
+    return LogEntry(level, tag, MessageStr.from_messages(messages))
 
 
 def warning_str(message):  # type: (str) -> LogEntry
-    return log_str(Level.WARNING, LogTag.unspecified, message)
+    return log_str(Level.WARNING, LogTag.unspecified, [message])
 
 
 def info_str(message):  # type: (str) -> LogEntry
-    return log_str(Level.INFO, LogTag.unspecified, message)
+    return log_str(Level.INFO, LogTag.unspecified, [message])
 
 
 def debug_str(message):  # type: (str) -> LogEntry
-    return log_str(Level.DEBUG, LogTag.unspecified, message)
+    return log_str(Level.DEBUG, LogTag.unspecified, [message])

@@ -93,7 +93,8 @@ class TestPut:
         result = self.run_cmd(['trash-put', '-i', 'foo'])
 
         assert result.exit_code_and_stderr() + [self.user_input.last_prompt(),
-                                                self.fs.ls_existing(["foo"])] == [
+                                                self.fs.ls_existing(
+                                                    ["foo"])] == [
                    EX_OK, [], "trash-put: trash regular empty file 'foo'? ",
                    ['foo'],
                ]
@@ -105,7 +106,8 @@ class TestPut:
         result = self.run_cmd(['trash-put', '-i', 'foo'])
 
         assert result.exit_code_and_stderr() + [self.user_input.last_prompt(),
-                                                self.fs.ls_existing(["foo"])] == [
+                                                self.fs.ls_existing(
+                                                    ["foo"])] == [
                    EX_OK, [], "trash-put: trash regular empty file 'foo'? ",
                    []
                ]
@@ -142,7 +144,13 @@ class TestPut:
 
         assert (result.exit_code_and_logs(LogTag.trash_failed) ==
                 (74, [
-                    "cannot trash regular empty file 'foo' (from volume '/')"]))
+                    "cannot trash regular empty file 'foo' (from volume '/')",
+                    ' `- failed to trash foo in /.Trash/123, because trash dir '
+                    'cannot be created because its parent does not exists, '
+                    'trash-dir: /.Trash/123, parent: /.Trash',
+                    ' `- failed to trash foo in /.Trash-123, because failed to '
+                    'move foo in /.Trash-123/files: move failed',
+                ]))
 
     def test_exit_code_will_be_0_when_trash_succeeds(self):
         self.fs.touch("pippo")
@@ -192,11 +200,12 @@ class TestPut:
                                '/disk1/pippo'],
                               {'HOME': '/home/user'}, 123)
 
-        assert result.stderr == ["trash-put: cannot trash regular empty file '/disk1/pippo' (from volume '/disk1')",
-                                 'trash-put:  `- failed to trash /disk1/pippo in /home/user/.local/share/Trash, because trash dir and file to be trashed are not in the same volume, trash-dir volume: /, file volume: /disk1',
-                                 'trash-put:  `- failed to trash /disk1/pippo in /disk1/.Trash/123, because trash dir cannot be created because its parent does not exists, trash-dir: /disk1/.Trash/123, parent: /disk1/.Trash',
-                                 "trash-put:  `- failed to trash /disk1/pippo in /disk1/.Trash-123, because error during directory creation: [Errno 13] Permission denied: '/disk1/.Trash-123/files'",
-                                 'trash-put:  `- failed to trash /disk1/pippo in /home/user/.local/share/Trash, because home fallback not enabled']
+        assert result.stderr == [
+            "trash-put: cannot trash regular empty file '/disk1/pippo' (from volume '/disk1')",
+            'trash-put:  `- failed to trash /disk1/pippo in /home/user/.local/share/Trash, because trash dir and file to be trashed are not in the same volume, trash-dir volume: /, file volume: /disk1',
+            'trash-put:  `- failed to trash /disk1/pippo in /disk1/.Trash/123, because trash dir cannot be created because its parent does not exists, trash-dir: /disk1/.Trash/123, parent: /disk1/.Trash',
+            "trash-put:  `- failed to trash /disk1/pippo in /disk1/.Trash-123, because error during directory creation: [Errno 13] Permission denied: '/disk1/.Trash-123/files'",
+            'trash-put:  `- failed to trash /disk1/pippo in /home/user/.local/share/Trash, because home fallback not enabled']
 
     def test_when_it_fails_to_prepare_trash_info_data(self):
         flexmock.flexmock(self.fs).should_receive('parent_realpath2'). \
@@ -207,10 +216,11 @@ class TestPut:
                               {"HOME": "/home/user"}, 123)
         assert result.exit_code_and_stderr() == [
             EX_IOERR,
-            ["trash-put: cannot trash regular empty file 'foo' (from volume '/')",
-             'trash-put:  `- failed to trash foo in /home/user/.local/share/Trash, because failed to generate trashinfo content: Corruption',
-             'trash-put:  `- failed to trash foo in /.Trash/123, because trash dir cannot be created because its parent does not exists, trash-dir: /.Trash/123, parent: /.Trash',
-             'trash-put:  `- failed to trash foo in /.Trash-123, because failed to generate trashinfo content: Corruption']]
+            [
+                "trash-put: cannot trash regular empty file 'foo' (from volume '/')",
+                'trash-put:  `- failed to trash foo in /home/user/.local/share/Trash, because failed to generate trashinfo content: Corruption',
+                'trash-put:  `- failed to trash foo in /.Trash/123, because trash dir cannot be created because its parent does not exists, trash-dir: /.Trash/123, parent: /.Trash',
+                'trash-put:  `- failed to trash foo in /.Trash-123, because failed to generate trashinfo content: Corruption']]
 
     def test_make_file(self):
         self.fs.make_file("pippo", 'content')

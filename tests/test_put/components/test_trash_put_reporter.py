@@ -10,10 +10,9 @@ class TestTrashPutReporter:
     def setup_method(self):
         self.stderr = StringIO()
         self.backend = StreamBackend(self.stderr)
-        self.logger = MyLogger(self.backend)
         describer = Mock()
         describer.describe.return_value = "file-description"
-        self.reporter = TrashPutReporter(self.logger, describer)
+        self.reporter = TrashPutReporter(describer)
 
     def test_it_should_record_failures(self):
         result = "\n".join(

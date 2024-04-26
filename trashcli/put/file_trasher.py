@@ -42,19 +42,21 @@ class FileTrasher:
                                              context.uid, context.home_fallback)
         failures = []
         for candidate in candidates:
-            self.reporter.trash_dir_with_volume(candidate, context.log_data)
+            self.logger.log_put(self.reporter.trash_dir_with_volume(candidate),
+                                context.log_data)
             trashing = self.janitor.trash_file_in(
                 candidate, context.log_data, context.environ, trashee)
             if trashing.succeeded():
-                self.reporter.file_has_been_trashed_in_as(path,
-                                                          candidate,
-                                                          context.log_data,
-                                                          context.environ)
+                self.logger.log_put(
+                    self.reporter.file_has_been_trashed_in_as(path,
+                                                              candidate,
+                                                              context.environ),
+                    context.log_data)
                 return TrashResult.Success
             else:
                 failures.append((candidate, trashing.reason))
-        self.reporter.unable_to_trash_file2(trashee, context.log_data, failures,
-                                            context.environ)
+        self.logger.log_put(self.reporter.unable_to_trash_file(
+            trashee, failures, context.environ), context.log_data)
         return TrashResult.Failure
 
     def _figure_out_volume(self, path, default_volume):

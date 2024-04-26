@@ -55,7 +55,7 @@ def make_cmd(clock,
              ):  # type: (...) -> TrashPutCmd
     logger = MyLogger(backend)
     describer = Describer(fs)
-    reporter = TrashPutReporter(logger, describer)
+    reporter = TrashPutReporter(describer)
     suffix = Suffix(randint)
     persister = InfoFilePersister(fs, logger, suffix)
     original_location = OriginalLocation(fs)
