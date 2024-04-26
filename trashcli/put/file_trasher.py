@@ -8,7 +8,7 @@ from trashcli.put.fs.parent_realpath import ParentRealpathFs
 from trashcli.put.fs.volume_of_parent import VolumeOfParent
 from trashcli.put.janitor import Janitor
 from trashcli.put.my_logger import MyLogger
-from trashcli.put.reporter import TrashPutReporter
+from trashcli.put.reporting.trash_put_reporter import TrashPutReporter
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 
 

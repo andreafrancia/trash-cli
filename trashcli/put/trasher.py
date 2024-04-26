@@ -1,11 +1,10 @@
-from trashcli.compat import Protocol
 from trashcli.put.context import Context
 from trashcli.put.context import SingleTrasher
 from trashcli.put.core.trash_result import TrashResult
 from trashcli.put.core.trashee import should_skipped_by_specs
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.fs.fs import Fs
-from trashcli.put.reporter import TrashPutReporter
+from trashcli.put.reporting.trash_put_reporter import TrashPutReporter
 from trashcli.put.user import User
 from trashcli.put.user import user_replied_no
 

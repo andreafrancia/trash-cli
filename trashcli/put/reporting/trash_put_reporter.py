@@ -1,20 +1,12 @@
-# Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
+# Copyright (C) 2007-2024 Andrea Francia Trivolzio(PV) Italy
 import os
-import re
-from pwd import getpwuid
 from typing import List
-from typing import NamedTuple
 from typing import Tuple
-
-from grp import getgrgid
 
 from trashcli.lib.environ import Environ
 from trashcli.lib.exit_codes import EX_IOERR
 from trashcli.lib.exit_codes import EX_OK
 from trashcli.put.core.candidate import Candidate
-from trashcli.put.core.either import Either
-from trashcli.put.core.either import Left
-from trashcli.put.core.either import Right
 from trashcli.put.core.failure_reason import FailureReason
 from trashcli.put.core.failure_reason import LogContext
 from trashcli.put.core.logs import Level
@@ -28,6 +20,7 @@ from trashcli.put.core.trash_all_result import TrashAllResult
 from trashcli.put.core.trashee import Trashee
 from trashcli.put.describer import Describer
 from trashcli.put.my_logger import MyLogger
+from trashcli.put.reporting.stats_reader import gentle_stat_read
 
 
 class TrashPutReporter:
@@ -46,7 +39,8 @@ class TrashPutReporter:
                                     log_data,  # type: LogData
                                     ):
         self.logger.log_put(log_str(Level.WARNING, LogTag.trash_failed,
-                                    "cannot trash %s '%s'" % (self._describe(file), file)),
+                                    "cannot trash %s '%s'" % (
+                                        self._describe(file), file)),
                             log_data)
 
     def unable_to_trash_file_non_existent(self,
@@ -136,47 +130,3 @@ class TrashPutReporter:
                       ):  # type: (...) -> None
         context = LogContext(trashee_path, candidate, environ)
         self.logger.log_put(info_str(reason.log_entries(context)), log_data)
-
-
-class Stats(NamedTuple('Result', [
-    ('user', str),
-    ('group', str),
-    ('mode', int),
-])):
-    def octal_mode(self):  # () -> str
-        return self._remove_octal_prefix(oct(self.mode & 0o777))
-
-    @staticmethod
-    def _remove_octal_prefix(mode):  # type: (str) -> str
-        remove_new_octal_format = mode.replace('0o', '')
-        remove_old_octal_format = re.sub(r"^0", '', remove_new_octal_format)
-        return remove_old_octal_format
-
-
-class StatReader:
-    def read_stats(self,
-                   path,  # type: str
-                   ):  # type: (...) -> Either[Stats, Exception]
-        try:
-            stats = os.lstat(path)
-            user = getpwuid(stats.st_uid).pw_name
-            group = getgrgid(stats.st_gid).gr_name
-            mode = stats.st_mode
-
-            return Right(Stats(user, group, mode))
-        except (IOError, OSError) as e:
-            return Left(e)
-
-
-def gentle_stat_read(path):
-    def stats_str(stats):  # type: (Either[Stats, Exception]) -> str
-        if isinstance(result, Right):
-            value = result.value()
-            return "%s %s %s" % (value.octal_mode(), value.user, value.group)
-        elif isinstance(result, Left):
-            return str(result.error())
-        else:
-            raise ValueError()
-
-    result = StatReader().read_stats(path)
-    return stats_str(result)

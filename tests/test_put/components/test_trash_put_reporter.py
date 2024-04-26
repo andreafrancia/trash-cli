@@ -6,7 +6,7 @@ from six import StringIO
 from trashcli.put.my_logger import LogData
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.my_logger import StreamBackend
-from trashcli.put.reporter import TrashPutReporter
+from trashcli.put.reporting.trash_put_reporter import TrashPutReporter
 
 
 class TestTrashPutReporter(unittest.TestCase):

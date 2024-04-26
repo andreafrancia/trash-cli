@@ -6,7 +6,7 @@ from trashcli.put.my_logger import LogData
 from trashcli.put.parser import ExitWithCode
 from trashcli.put.parser import Parser
 from trashcli.put.parser import Trash
-from trashcli.put.reporter import TrashPutReporter
+from trashcli.put.reporting.trash_put_reporter import TrashPutReporter
 from trashcli.put.trasher import Trasher
 
 

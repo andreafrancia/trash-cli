@@ -24,7 +24,7 @@ from trashcli.put.my_logger import LoggerBackend
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.my_logger import StreamBackend
 from trashcli.put.original_location import OriginalLocation
-from trashcli.put.reporter import TrashPutReporter
+from trashcli.put.reporting.trash_put_reporter import TrashPutReporter
 from trashcli.put.suffix import Suffix
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_put_cmd import TrashPutCmd

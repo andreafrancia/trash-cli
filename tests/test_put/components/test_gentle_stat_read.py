@@ -3,7 +3,7 @@ import os
 import pwd
 
 from tests.support.files import make_file
-from trashcli.put.reporter import gentle_stat_read
+from trashcli.put.reporting.stats_reader import gentle_stat_read
 from tests.support.dirs.temp_dir import temp_dir
 
 temp_dir = temp_dir
