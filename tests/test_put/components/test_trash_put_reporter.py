@@ -16,7 +16,8 @@ class TestTrashPutReporter:
         self.reporter = TrashPutReporter(self.logger, describer)
 
     def test_it_should_record_failures(self):
-        result = (self.reporter.unable_to_trash_file_non_existent('a file').
-                  message.resolve())
+        result = "\n".join(
+            self.reporter.unable_to_trash_file_non_existent('a file').
+            resolve_messages())
 
         assert (result == "cannot trash file-description 'a file'")

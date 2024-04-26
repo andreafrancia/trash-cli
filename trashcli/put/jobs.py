@@ -15,8 +15,9 @@ R = TypeVar('R')
 
 class JobStatus(Generic[R]):
     def __init__(self, message):  # type: (str) -> None
-        self.log_entries = [LogEntry(Level.DEBUG, MessageStr(message),
-                                     LogTag.unspecified)]
+        self.log_entries = [LogEntry(Level.DEBUG,
+                                     LogTag.unspecified,
+                                     MessageStr.from_messages([message]))]
 
     def has_succeeded(self):
         return isinstance(self, Succeeded)

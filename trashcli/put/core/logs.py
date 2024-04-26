@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from enum import Enum
+from typing import List
 from typing import NamedTuple
 from trashcli.compat import Protocol
 
@@ -30,11 +31,12 @@ class Message(Protocol):
 
 class LogEntry(NamedTuple('LogEntry', [
     ('level', Level),
-    ('message', Message),
-    ('tag', LogTag)
+    ('tag', LogTag),
+    ('messages', List[Message]),
 ])):
-    def resolve_message(self):
-        return self.message.resolve()
+    def resolve_messages(self):
+        for m in self.messages:
+            yield m.resolve()
 
 
 class MessageStr(NamedTuple('Message', [
@@ -43,20 +45,26 @@ class MessageStr(NamedTuple('Message', [
     def resolve(self):
         return self.message
 
+    @staticmethod
+    def from_messages(messages  # type: List[str]
+                      ):
+        return [MessageStr(msg) for msg in messages]
+
 
 def log_str(level,  # type: Level
             tag,  # type: LogTag
             message,  # type: str
             ):
-    return LogEntry(level, MessageStr(message), tag)
+    return LogEntry(level, tag, MessageStr.from_messages([message]))
+
 
 def warning_str(message):  # type: (str) -> LogEntry
-    return LogEntry(Level.WARNING, MessageStr(message), LogTag.unspecified)
+    return log_str(Level.WARNING, LogTag.unspecified, message)
 
 
 def info_str(message):  # type: (str) -> LogEntry
-    return LogEntry(Level.INFO, MessageStr(message), LogTag.unspecified)
+    return log_str(Level.INFO, LogTag.unspecified, message)
 
 
 def debug_str(message):  # type: (str) -> LogEntry
-    return LogEntry(Level.DEBUG, MessageStr(message), LogTag.unspecified)
+    return log_str(Level.DEBUG, LogTag.unspecified, message)

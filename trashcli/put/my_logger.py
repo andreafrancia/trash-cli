@@ -26,8 +26,8 @@ class StreamBackend(LoggerBackend):
                       log_data,  # type: LogData
                       ):
         if is_right_for_level(log_data.verbose, log_entry.level):
-            self.stderr.write("%s: %s\n" % (log_data.program_name,
-                                            log_entry.resolve_message()))
+            for message in log_entry.resolve_messages():
+                self.stderr.write("%s: %s\n" % (log_data.program_name, message))
 
 
 def is_right_for_level(verbose,  # type: int

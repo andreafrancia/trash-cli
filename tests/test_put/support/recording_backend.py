@@ -22,11 +22,12 @@ class RecordingBackend(LoggerBackend):
                       log_data,  # type: LogData
                       ):
         StreamBackend(self.stderr).write_message(log_entry, log_data)
-        self.logs.append(LogLine(log_entry.level,
-                                 log_data.verbose,
-                                 log_data.program_name,
-                                 log_entry.resolve_message(),
-                                 log_entry.tag))
+        for message in log_entry.resolve_messages():
+            self.logs.append(LogLine(log_entry.level,
+                                     log_data.verbose,
+                                     log_data.program_name,
+                                     message,
+                                     log_entry.tag))
 
     def collected(self):
         return Logs(self.logs)
