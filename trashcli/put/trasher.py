@@ -4,6 +4,7 @@ from trashcli.put.core.trash_result import TrashResult
 from trashcli.put.core.trashee import should_skipped_by_specs
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.fs.fs import Fs
+from trashcli.put.my_logger import MyLogger
 from trashcli.put.reporting.trash_put_reporter import TrashPutReporter
 from trashcli.put.user import User
 from trashcli.put.user import user_replied_no
@@ -15,9 +16,11 @@ class Trasher(SingleTrasher):
                  user,  # type: User
                  reporter,  # type: TrashPutReporter
                  fs,  # type: Fs
+                 logger,  # type: MyLogger
                  ):
         self.file_trasher = file_trasher
         self.user = user
+        self.logger = logger
         self.reporter = reporter
         self.fs = fs
 
@@ -41,15 +44,18 @@ class Trasher(SingleTrasher):
         """
 
         if should_skipped_by_specs(path):
-            self.reporter.unable_to_trash_dot_entries(path, context.log_data)
+            self.logger.log_put(
+                self.reporter.unable_to_trash_dot_entries(path),
+                context.log_data)
             return TrashResult.Failure
 
         if not self.fs.lexists(path):
             if context.mode.can_ignore_not_existent_path():
                 return TrashResult.Success
             else:
-                self.reporter.unable_to_trash_file_non_existent(path,
-                                                                context.log_data)
+                self.logger.log_put(
+                    self.reporter.unable_to_trash_file_non_existent(path),
+                    context.log_data)
                 return TrashResult.Failure
 
         if context.mode.should_we_ask_to_the_user(self.fs.is_accessible(path)):

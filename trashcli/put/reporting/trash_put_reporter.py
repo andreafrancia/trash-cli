@@ -11,6 +11,7 @@ from trashcli.put.core.failure_reason import FailureReason
 from trashcli.put.core.failure_reason import LogContext
 from trashcli.put.core.logs import Level
 from trashcli.put.core.logs import LogData
+from trashcli.put.core.logs import LogEntry
 from trashcli.put.core.logs import LogTag
 from trashcli.put.core.logs import debug_str
 from trashcli.put.core.logs import info_str
@@ -34,23 +35,16 @@ class TrashPutReporter:
     def _describe(self, path):
         return self.describer.describe(path)
 
-    def unable_to_trash_dot_entries(self,
-                                    file,
-                                    log_data,  # type: LogData
-                                    ):
-        self.logger.log_put(log_str(Level.WARNING, LogTag.trash_failed,
-                                    "cannot trash %s '%s'" % (
-                                        self._describe(file), file)),
-                            log_data)
+    def unable_to_trash_dot_entries(self, file
+                                    ):  # type: (...) -> LogEntry
+        return log_str(Level.WARNING, LogTag.trash_failed,
+                       "cannot trash %s '%s'" % (self._describe(file), file))
 
     def unable_to_trash_file_non_existent(self,
                                           path,  # type: str
-                                          log_data,  # type: LogData
-                                          ):
-        self.logger.log_put(
-            log_str(Level.WARNING, LogTag.trash_failed,
-                    "cannot trash %s '%s'" % (self._describe(path), path)),
-            log_data)
+                                          ):  # type: (...) -> LogEntry
+        return log_str(Level.WARNING, LogTag.trash_failed,
+                       "cannot trash %s '%s'" % (self._describe(path), path))
 
     # TODO
     def unable_to_trash_file2(self,

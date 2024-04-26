@@ -1,16 +1,13 @@
-import unittest
-
 from mock import Mock
 from six import StringIO
 
-from trashcli.put.my_logger import LogData
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.my_logger import StreamBackend
 from trashcli.put.reporting.trash_put_reporter import TrashPutReporter
 
 
-class TestTrashPutReporter(unittest.TestCase):
-    def setUp(self):
+class TestTrashPutReporter:
+    def setup_method(self):
         self.stderr = StringIO()
         self.backend = StreamBackend(self.stderr)
         self.logger = MyLogger(self.backend)
@@ -19,7 +16,7 @@ class TestTrashPutReporter(unittest.TestCase):
         self.reporter = TrashPutReporter(self.logger, describer)
 
     def test_it_should_record_failures(self):
-        self.reporter.unable_to_trash_file_non_existent('a file', LogData('trash-put', 99))
+        result = (self.reporter.unable_to_trash_file_non_existent('a file').
+                  message.resolve())
 
-        assert (self.stderr.getvalue() ==
-                "trash-put: cannot trash file-description 'a file'\n")
+        assert (result == "cannot trash file-description 'a file'")

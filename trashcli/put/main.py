@@ -77,7 +77,7 @@ def make_cmd(clock,
                                janitor,
                                volume_of_parent)
     user = User(user_input, describer)
-    trasher = Trasher(file_trasher, user, reporter, fs)
+    trasher = Trasher(file_trasher, user, reporter, fs, logger)
     return TrashPutCmd(reporter, trasher)
 
 
