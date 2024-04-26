@@ -1,14 +1,12 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 
 from trashcli.fstab.volume_of import VolumeOf
-from trashcli.lib.environ import Environ
 from trashcli.put.context import Context
 from trashcli.put.core.trash_result import TrashResult
 from trashcli.put.core.trashee import Trashee
 from trashcli.put.fs.parent_realpath import ParentRealpathFs
 from trashcli.put.fs.volume_of_parent import VolumeOfParent
 from trashcli.put.janitor import Janitor
-from trashcli.put.my_logger import LogData
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder

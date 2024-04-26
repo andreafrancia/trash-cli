@@ -3,18 +3,20 @@ from typing import List
 from trashcli.lib.environ import Environ
 from trashcli.put.context import Context
 from trashcli.put.my_logger import LogData
-from trashcli.put.parser import Parser, ExitWithCode, Trash
+from trashcli.put.parser import ExitWithCode
+from trashcli.put.parser import Parser
+from trashcli.put.parser import Trash
 from trashcli.put.reporter import TrashPutReporter
-from trashcli.put.trash_all import TrashAll
+from trashcli.put.trasher import Trasher
 
 
 class TrashPutCmd:
     def __init__(self,
-                 trash_all,  # type: TrashAll
                  reporter,  # type: TrashPutReporter
+                 trasher,  # type: Trasher
                  ):
-        self.trash_all = trash_all
         self.reporter = reporter
+        self.trasher = trasher
 
     def run_put(self,
                 argv,  # type: List[str]
@@ -37,6 +39,6 @@ class TrashPutCmd:
                               log_data=log_data,
                               environ=environ,
                               uid=uid)
-            result = self.trash_all.trash_all(context)
+            result = context.trash_each(self.trasher)
 
             return self.reporter.exit_code(result)

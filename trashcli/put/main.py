@@ -26,7 +26,6 @@ from trashcli.put.my_logger import StreamBackend
 from trashcli.put.original_location import OriginalLocation
 from trashcli.put.reporter import TrashPutReporter
 from trashcli.put.suffix import Suffix
-from trashcli.put.trash_all import TrashAll
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_put_cmd import TrashPutCmd
 from trashcli.put.trasher import Trasher
@@ -79,8 +78,7 @@ def make_cmd(clock,
                                volume_of_parent)
     user = User(user_input, describer)
     trasher = Trasher(file_trasher, user, reporter, fs)
-    trash_all = TrashAll(logger, trasher)
-    return TrashPutCmd(trash_all, reporter)
+    return TrashPutCmd(reporter, trasher)
 
 
 class RandomIntGenerator(IntGenerator):

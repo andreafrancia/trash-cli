@@ -1,4 +1,6 @@
+from trashcli.compat import Protocol
 from trashcli.put.context import Context
+from trashcli.put.context import SingleTrasher
 from trashcli.put.core.trash_result import TrashResult
 from trashcli.put.core.trashee import should_skipped_by_specs
 from trashcli.put.file_trasher import FileTrasher
@@ -8,7 +10,7 @@ from trashcli.put.user import User
 from trashcli.put.user import user_replied_no
 
 
-class Trasher:
+class Trasher(SingleTrasher):
     def __init__(self,
                  file_trasher,  # type: FileTrasher
                  user,  # type: User
