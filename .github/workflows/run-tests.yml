@@ -9,7 +9,8 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  run_tests:
+    name: Run Python Tests
     strategy:
       matrix:
         include:
@@ -46,3 +47,18 @@ jobs:
       if: matrix.python-version != '2.7'
     - name: Run tests
       run: python -m pytest
+  sdist:
+    name: Test sdist creation
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Test sdist
+      run: scripts/test-sdist
