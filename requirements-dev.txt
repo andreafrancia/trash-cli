@@ -3,12 +3,14 @@ pytest
 mock
 flexmock
 parameterized
+tox
 PyYAML
 # build and publish
 build
 setuptools
 twine
 # types
+mypy
 types-six
 types-mock
 types-psutil

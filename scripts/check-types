@@ -1,3 +1,6 @@
 #!/bin/bash
-[ -x "$(command -v mypy)" ] || pip install mypy
+SCRIPT_DIR="$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+"$SCRIPT_DIR/lib/check-python-dep" mypy
+
 mypy trashcli

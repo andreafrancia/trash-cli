@@ -1,13 +1,14 @@
 #!/bin/bash
+SCRIPT_DIR="$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
 set -euo pipefail
 set -x
 
 python -m venv .venv
-export VIRTUAL_ENV="$(pwd)/.venv"
-export PATH="$VIRTUAL_ENV/bin:$PATH"
-pip install -r requirements.txt
-pip install -r requirements-dev.txt
-pip install tox
+source .venv/bin/activate
+
+"$SCRIPT_DIR/lib/install-python-requirements"
+"$SCRIPT_DIR/lib/check-python-dep" tox
 
 tox &&
     scripts/test-sdist &&

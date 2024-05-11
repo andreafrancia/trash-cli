@@ -1,0 +1,14 @@
+#!/bin/bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+COMMAND="$1"
+
+test -x "$VIRTUAL_ENV/bin/$COMMAND" || {
+    >&2 echo "$COMMAND not installed
+Please run:
+
+    pip install -r requirements.txt -r requirements-dev.txt
+"
+}

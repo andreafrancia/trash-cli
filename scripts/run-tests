@@ -1,7 +1,8 @@
 #!/bin/bash
+SCRIPT_DIR="$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 set -euo pipefail
 
 python -m pip install --upgrade pip
-python -m pip install -r requirements-dev.txt
-python -m pip install -r requirements.txt
+"$SCRIPT_DIR/lib/install-python-requirements"
+
 python -m pytest "$@"
