@@ -131,6 +131,9 @@ class FakeFs(Fs, PathExists):
         directory = self.get_entity_at(dirname)
         directory.add_file(basename, content, path)
 
+    def write_file(self, path, content):
+        self.make_file(path, content)
+
     def get_mod(self, path):
         entry = self._find_entry(path)
         return entry.mode
@@ -262,3 +265,8 @@ class FakeFs(Fs, PathExists):
 
     def find_all(self):
         return list(list_all(self, "/"))
+
+    def read_all_files(self):
+        return [(f, self.read(f))
+                for f in list_all(self, "/")
+                if self.isfile(f)]

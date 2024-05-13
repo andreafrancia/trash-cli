@@ -61,6 +61,14 @@ class Fs(RealPathFs, Protocol):
         raise NotImplementedError
 
     @abstractmethod
+    def read(self, path):
+        raise NotImplementedError
+
+    @abstractmethod
+    def write_file(self, path, content):
+        raise NotImplementedError
+
+    @abstractmethod
     def make_file(self, path, content):
         raise NotImplementedError
 
@@ -82,6 +90,7 @@ class Fs(RealPathFs, Protocol):
 
     def list_sorted(self, path):
         return sorted(self.listdir(path))
+
 
 
 def list_all(fs, path):  # type: (Fs, str) -> Iterable[str]

@@ -1,19 +1,12 @@
 #!/usr/bin/env python
 from __future__ import print_function
-import sys
-import os
-import datetime
-root = os.path.realpath(os.path.join(__file__, "..", ".."))
-sys.path.insert(0, root)
-from scripts import bump
 
-# https://unix.stackexchange.com/questions/155046/determine-if-git-working-directory-is-clean-from-a-script/394674#394674
-if os.system("git diff-index --quiet HEAD") != 0:
-    print("Dirty")
-    exit(1)
+if __name__ == '__main__':
+    import os
+    import sys
 
-new_version = bump.version_from_date(datetime.date.today())
-bump.save_new_version(new_version, os.path.join(root, 'trashcli', 'trash.py'))
+    root = os.path.realpath(os.path.join(__file__, "..", ".."))
+    sys.path.insert(0, root)
+    from tests.support.tools.bump_main import main
 
-system = print if '--dry-run' in sys.argv else os.system
-system("git commit -m \"Bump version to '%s'\" -a" % new_version)
+    main()

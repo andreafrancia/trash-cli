@@ -112,5 +112,11 @@ class RealFs(Fs):
     def listdir(self, path):
         return os.listdir(path)
 
-    def lexists(self, path):
+    def read(self, path):
+        return fs.read_file(path)
+
+    def write_file(self, path, content):
+        return fs.write_file(path, content)
+
+    def lexists(selfs, path):
         return os.path.lexists(path)

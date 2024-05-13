@@ -1,30 +1,14 @@
-import datetime
-import os
-import sys
-import unittest
-
-from tests.support.files import make_file
 from tests.support.dirs.my_path import MyPath
-
-from scripts import bump
-from trashcli import base_dir
+from tests.support.files import make_file
+from tests.support.tools.version_saver import VersionSaver
 from trashcli.fs import read_file
+from trashcli.put.fs.real_fs import RealFs
 
 
-sys.path.insert(0, os.path.join(base_dir, 'script'))
-
-
-class Test_version_from_date(unittest.TestCase):
-    def test(self):
-        today = datetime.date(2021, 5, 11)
-        result = bump.version_from_date(today)
-
-        assert result == '0.21.5.11'
-
-
-class Test_save_new_version(unittest.TestCase):
-    def setUp(self):
+class TestSaveNewVersion:
+    def setup_method(self):
         self.tmp_dir = MyPath.make_temp_dir()
+        self.saver = VersionSaver(RealFs())
 
     def test(self):
         make_file(self.tmp_dir / 'trash.py', """\
@@ -34,7 +18,7 @@ somecode after
 dont change this line: version="0.20.1.20"
 """)
 
-        bump.save_new_version('0.21.5.11', self.tmp_dir / 'trash.py')
+        self.saver.save_new_version('0.21.5.11', self.tmp_dir / 'trash.py')
 
         result = read_file(self.tmp_dir / "trash.py")
         assert result == """\
@@ -51,7 +35,7 @@ somecode before
 somecode after
 """)
 
-        bump.save_new_version('0.21.5.11', self.tmp_dir / 'trash.py')
+        self.saver.save_new_version('0.21.5.11', self.tmp_dir / 'trash.py')
 
         result = read_file(self.tmp_dir / "trash.py")
         assert result == """\
@@ -60,5 +44,5 @@ somecode before
 somecode after
 """
 
-    def tearDown(self):
+    def teardown_method(self):
         self.tmp_dir.clean_up()

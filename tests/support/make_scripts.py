@@ -1,7 +1,7 @@
 import os
 from textwrap import dedent
 
-from trashcli import base_dir
+from tests.support.project_root import project_root
 from trashcli.fs import write_file, make_file_executable
 
 
@@ -30,7 +30,7 @@ class Scripts:
 
 
 def script_path_for(name):
-    return os.path.join(base_dir, script_path_without_base_dir_for(name))
+    return os.path.join(project_root(), script_path_without_base_dir_for(name))
 
 
 def script_path_without_base_dir_for(name):
