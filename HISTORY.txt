@@ -1,3 +1,12 @@
+Unreleased:
+Shell Completion:
+- Bugfix in print-completion loop for shells other than zsh by Andrew Davis
+User not visibile changes:
+- Move all the main logic for dev tools from scripts under tests/support.
+- Removing Python 3.7 that is no longer available on GitHub actions
+- Merge sdist and run-tests GitHub workflows
+- Using python -m venv instead of virtualenv
+- Refactor of code in trash-put
 0.24.4.17 (68c34e0a):
 User visible changes:
  - trash-put --help shows also other commands (Joseph Masone)
