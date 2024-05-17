@@ -4,12 +4,10 @@ from trashcli.put.fs.parent_realpath import ParentRealpathFs
 
 class VolumeOfParent:
     def __init__(self,
-                 volumes,  # type: VolumeOf
-                 parent_realpath_fs,  # type: ParentRealpathFs
+                 fs,  # type: VolumeOf
                  ):
-        self.volumes = volumes
-        self.parent_realpath_fs = parent_realpath_fs
+        self.fs = fs
 
     def volume_of_parent(self, path):
-        parent_realpath = self.parent_realpath_fs.parent_realpath(path)
-        return self.volumes.volume_of(parent_realpath)
+        parent_realpath = ParentRealpathFs(self.fs).parent_realpath(path)
+        return self.fs.volume_of(parent_realpath)

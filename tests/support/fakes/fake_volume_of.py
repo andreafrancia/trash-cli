@@ -1,21 +1,19 @@
 import os
-from typing import List, Callable
+from typing import List
 
 from tests.support.fakes.fake_is_mount import FakeIsMount
-from trashcli.fstab.volume_of import VolumeOf, VolumeOfImpl
+from trashcli.fstab.volume_of import VolumeOf
+from trashcli.fstab.volume_of_impl import VolumeOfImpl
 
 
-def fake_volume_of(volumes): # type: (List[str]) -> VolumeOf
-    return VolumeOfImpl(FakeIsMount(volumes), os.path.normpath)
+class FakeVolumeOf(VolumeOf):
+    def __init__(self):  # type: () -> None
+        super(FakeVolumeOf, self).__init__()
+        self.volumes = []  # type: List[str]
 
-
-def volume_of_stub(func=lambda x: "volume_of %s" % x): # type: (Callable[[str], str]) -> VolumeOf
-    return _FakeVolumeOf(func)
-
-
-class _FakeVolumeOf(VolumeOf):
-    def __init__(self, volume_of_impl):
-        self.volume_of_impl = volume_of_impl
+    def add_volume(self, volume):
+        self.volumes.append(volume)
 
     def volume_of(self, path):
-        return self.volume_of_impl(path)
+        impl = VolumeOfImpl(FakeIsMount(self.volumes), os.path.normpath)
+        return impl.volume_of(path)

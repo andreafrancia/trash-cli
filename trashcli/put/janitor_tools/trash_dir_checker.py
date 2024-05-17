@@ -1,10 +1,12 @@
 from typing import NamedTuple
 
-from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.environ import Environ
 from trashcli.put.core.candidate import Candidate
-from trashcli.put.core.either import Either, Right, Left
-from trashcli.put.core.failure_reason import FailureReason, LogContext
+from trashcli.put.core.either import Either
+from trashcli.put.core.either import Left
+from trashcli.put.core.either import Right
+from trashcli.put.core.failure_reason import FailureReason
+from trashcli.put.core.failure_reason import LogContext
 from trashcli.put.core.trashee import Trashee
 from trashcli.put.fs.fs import Fs
 from trashcli.put.gate import Gate
@@ -33,9 +35,10 @@ GateCheckResult = Either[None, FailureReason]
 
 
 class TrashDirChecker:
-    def __init__(self, fs, volumes):  # type: (Fs, VolumeOf) -> None
+    def __init__(self,
+                 fs,  # type: Fs
+                 ):  # type: (...) -> None
         self.fs = fs
-        self.volumes = volumes
 
     def file_could_be_trashed_in(self,
                                  trashee,  # type: Trashee
@@ -45,7 +48,7 @@ class TrashDirChecker:
         if candidate.gate is Gate.HomeFallback:
             return self._can_be_trashed_in_home_trash_dir(environ)
         elif candidate.gate is Gate.SameVolume:
-            return SameVolumeGateImpl(self.volumes, self.fs).can_trash_in(
+            return SameVolumeGateImpl(self.fs).can_trash_in(
                 trashee, candidate)
         else:
             raise ValueError("Unknown gate: %s" % candidate.gate)
@@ -64,10 +67,8 @@ def make_ok():
 
 class SameVolumeGateImpl:
     def __init__(self,
-                 volumes,  # type: VolumeOf
                  fs,  # type: Fs
                  ):
-        self.volumes = volumes
         self.fs = fs
 
     def can_trash_in(self,
@@ -83,5 +84,5 @@ class SameVolumeGateImpl:
         return make_ok()
 
     def _volume_of_trash_dir(self, candidate):  # type: (Candidate) -> str
-        return (TrashDirVolumeReader(self.volumes, self.fs)
+        return (TrashDirVolumeReader(self.fs)
                 .volume_of_trash_dir(candidate.trash_dir_path))

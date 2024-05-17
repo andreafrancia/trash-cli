@@ -7,7 +7,7 @@ from trashcli.empty.main import ContentReader
 from trashcli.file_system_reader import FileSystemReader
 from trashcli.fs import RealContentsOf
 from trashcli.fstab.volume_listing import RealVolumesListing
-from trashcli.fstab.volume_of import RealVolumeOf
+from trashcli.fstab.real_volume_of import RealVolumeOf
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.dir_reader import DirReader, RealDirReader
 from trashcli.lib.print_version import PrintVersionArgs, \

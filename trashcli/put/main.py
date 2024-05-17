@@ -2,7 +2,7 @@ import os
 import random
 import sys
 
-from trashcli.fstab.volume_of import RealVolumeOf
+from trashcli.fstab.real_volume_of import RealVolumeOf
 from trashcli.lib.environ import cast_environ
 from trashcli.lib.my_input import Input
 from trashcli.lib.my_input import RealInput
@@ -37,8 +37,7 @@ def main():
                    fs=RealFs(),
                    user_input=RealInput(),
                    randint=RandomIntGenerator(),
-                   backend=StreamBackend(sys.stderr),
-                   volumes=RealVolumeOf())
+                   backend=StreamBackend(sys.stderr))
     try:
         uid = int(os.environ["TRASH_PUT_FAKE_UID_FOR_TESTING"])
     except KeyError:
@@ -51,33 +50,12 @@ def make_cmd(clock,
              user_input,  # type: Input
              randint,  # type: IntGenerator
              backend,  # type: LoggerBackend
-             volumes,
              ):  # type: (...) -> TrashPutCmd
-    logger = MyLogger(backend)
-    describer = Describer(fs)
-    reporter = TrashPutReporter(describer)
-    suffix = Suffix(randint)
-    persister = InfoFilePersister(fs, logger, suffix)
-    original_location = OriginalLocation(fs)
-    info_dir2 = TrashInfoCreator(persister, original_location, clock)
-    trash_dir = PutTrashDir(fs)
-    trashing_checker = TrashDirChecker(fs, volumes)
-    janitor = Janitor(fs,
-                      trash_dir,
-                      trashing_checker,
-                      info_dir2,
-                      persister,
-                      logger)
-    volume_of_parent = VolumeOfParent(volumes, ParentRealpathFs(fs))
-    file_trasher = FileTrasher(volumes,
-                               TrashDirectoriesFinder(volumes),
-                               ParentRealpathFs(fs),
-                               logger,
-                               reporter,
-                               janitor,
-                               volume_of_parent)
-    user = User(user_input, describer)
-    trasher = Trasher(file_trasher, user, reporter, fs, logger)
+    reporter = TrashPutReporter(fs)
+    janitor = Janitor(fs, clock, backend, randint)
+    file_trasher = FileTrasher(fs, janitor, backend)
+    user = User(user_input, Describer(fs))
+    trasher = Trasher(file_trasher, user, fs, backend)
     return TrashPutCmd(reporter, trasher)
 
 

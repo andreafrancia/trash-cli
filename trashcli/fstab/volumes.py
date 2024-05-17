@@ -4,7 +4,8 @@ import six
 import os
 from trashcli.fstab.mount_points_listing import MountPointsListing, \
     RealMountPointsListing
-from trashcli.fstab.volume_of import VolumeOf, RealVolumeOf
+from trashcli.fstab.volume_of import VolumeOf
+from trashcli.fstab.real_volume_of import RealVolumeOf
 
 
 @six.add_metaclass(ABCMeta)

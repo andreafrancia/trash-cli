@@ -1,12 +1,12 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
-
-from trashcli.fstab.volume_of import VolumeOf
+from trashcli.put.fs.fs import Fs
 from trashcli.put.context import Context
 from trashcli.put.core.trash_result import TrashResult
 from trashcli.put.core.trashee import Trashee
 from trashcli.put.fs.parent_realpath import ParentRealpathFs
 from trashcli.put.fs.volume_of_parent import VolumeOfParent
 from trashcli.put.janitor import Janitor
+from trashcli.put.my_logger import LoggerBackend
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.reporting.trash_put_reporter import TrashPutReporter
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
@@ -15,21 +15,16 @@ from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 class FileTrasher:
 
     def __init__(self,
-                 volumes,  # type: VolumeOf
-                 trash_directories_finder,  # type: TrashDirectoriesFinder
-                 parent_realpath_fs,  # type: ParentRealpathFs
-                 logger,  # type: MyLogger
-                 reporter,  # type: TrashPutReporter
+                 fs,  # type: Fs
                  janitor,  # type: Janitor
-                 volume_of_parent,  # type: VolumeOfParent
+                 backend,  # type: LoggerBackend
                  ):  # type: (...) -> None
-        self.volumes = volumes
-        self.trash_directories_finder = trash_directories_finder
-        self.parent_realpath_fs = parent_realpath_fs
-        self.logger = logger
-        self.reporter = reporter
+        self.trash_directories_finder = TrashDirectoriesFinder(fs)
+        self.parent_realpath_fs = ParentRealpathFs(fs)
+        self.logger = MyLogger(backend)
+        self.reporter = TrashPutReporter(fs)
         self.janitor = janitor
-        self.volume_of_parent = volume_of_parent or volume_of_parent
+        self.volume_of_parent = VolumeOfParent(fs)
 
     def trash_file(self,
                    path,  # type: str

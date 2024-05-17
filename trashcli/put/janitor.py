@@ -1,5 +1,13 @@
 from typing import NamedTuple, TypeVar
 
+from trashcli.put.suffix import Suffix
+
+from trashcli.put.core.int_generator import IntGenerator
+
+from trashcli.put.my_logger import LoggerBackend
+
+from trashcli.put.clock import PutClock
+
 from trashcli.lib.environ import Environ
 from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.either import Left
@@ -26,19 +34,18 @@ class NoLog(FailureReason):
 class Janitor:
     def __init__(self,
                  fs,  # type: Fs
-                 trash_dir,  # type: PutTrashDir
-                 trashing_checker,  # type: TrashDirChecker
-                 info_dir,  # type: TrashInfoCreator
-                 persister,  # type: InfoFilePersister
-                 logger,  # type: MyLogger
+                 clock,  # type: PutClock
+                 backend,  # type: LoggerBackend
+                 randint,  # type: IntGenerator
                  ):
-        self.trash_dir = trash_dir
-        self.trashing_checker = trashing_checker
-        self.info_dir = info_dir
+        self.trash_dir = PutTrashDir(fs)
+        self.trashing_checker = TrashDirChecker(fs)
+        self.info_dir = TrashInfoCreator(fs, clock)
         self.security_check = SecurityCheck(fs)
-        self.persister = persister
+        self.persister = InfoFilePersister(fs, MyLogger(backend), Suffix(randint))
         self.dir_creator = TrashDirCreator(fs)
-        self.executor = JobExecutor(logger, TrashedFile)
+        self.executor = JobExecutor(MyLogger(backend), TrashedFile)
+
 
     class Result(NamedTuple('Result', [
         ('ok', bool),

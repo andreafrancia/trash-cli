@@ -3,6 +3,8 @@ import os
 from typing import List
 from typing import Tuple
 
+from trashcli.put.fs.fs import Fs
+
 from trashcli.lib.environ import Environ
 from trashcli.lib.exit_codes import EX_IOERR
 from trashcli.lib.exit_codes import EX_OK
@@ -23,9 +25,9 @@ from trashcli.put.reporting.stats_reader import gentle_stat_read
 
 class TrashPutReporter:
     def __init__(self,
-                 describer,  # type: Describer
+                 fs,  # type: Fs
                  ):
-        self.describer = describer
+        self.describer = Describer(fs)
 
     def _describe(self, path):
         return self.describer.describe(path)

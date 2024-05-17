@@ -5,8 +5,8 @@ from typing import cast
 from mock import call
 from six import StringIO
 
+from tests.support.fakes.stub_volume_of import StubVolumeOf
 from tests.support.fakes.mock_dir_reader import MockDirReader
-from tests.support.fakes.fake_volume_of import volume_of_stub
 from trashcli.empty.delete_according_date import ContentsOf
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
@@ -37,7 +37,7 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
             content_reader=cast(ContentsOf, self.content_reader),
             dir_reader=cast(DirReader, self.dir_reader),
             version='unused',
-            volumes=volume_of_stub()
+            volumes=StubVolumeOf()
         )
 
     def test(self):

@@ -10,6 +10,7 @@ class User:
         self.input = my_input
         self.describer = describer
 
+
     def ask_user_about_deleting_file(self, program_name, path):
         reply = self.input.read_input(
             "%s: trash %s '%s'? " % (program_name,

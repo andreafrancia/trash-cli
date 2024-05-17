@@ -13,9 +13,9 @@ from trashcli.put.gate import Gate
 
 class TrashDirectoriesFinder:
     def __init__(self,
-                 volumes,  # type: VolumeOf
+                 fs,  # type: VolumeOf
                  ):
-        self.volumes = volumes
+        self.fs = fs
 
     def possible_trash_directories_for(self,
                                        volume,  # type: str
@@ -52,7 +52,7 @@ class TrashDirectoriesFinder:
 
         if specific_trash_dir:
             path = specific_trash_dir
-            volume = self.volumes.volume_of(path)
+            volume = self.fs.volume_of(path)
             trash_dirs.append(
                 Candidate(trash_dir_path=path,
                           volume=volume,
@@ -60,15 +60,13 @@ class TrashDirectoriesFinder:
                           check_type=NoCheck,
                           gate=Gate.SameVolume))
         else:
-            for path, dir_volume in home_trash_dir(environ,
-                                                   self.volumes):
+            for path, dir_volume in home_trash_dir(environ, self.fs):
                 add_home_trash(path, dir_volume, Gate.SameVolume)
             for path, dir_volume in volume_trash_dir1(volume, uid):
                 add_top_trash_dir(path, dir_volume)
             for path, dir_volume in volume_trash_dir2(volume, uid):
                 add_alt_top_trash_dir(path, dir_volume)
             if home_fallback:
-                for path, dir_volume in home_trash_dir(environ,
-                                                       self.volumes):
+                for path, dir_volume in home_trash_dir(environ, self.fs):
                     add_home_trash(path, dir_volume, Gate.HomeFallback)
         return trash_dirs

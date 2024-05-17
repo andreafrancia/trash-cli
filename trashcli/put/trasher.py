@@ -1,3 +1,5 @@
+from trashcli.put.my_logger import LoggerBackend
+
 from trashcli.put.context import Context
 from trashcli.put.context import SingleTrasher
 from trashcli.put.core.trash_result import TrashResult
@@ -14,14 +16,13 @@ class Trasher(SingleTrasher):
     def __init__(self,
                  file_trasher,  # type: FileTrasher
                  user,  # type: User
-                 reporter,  # type: TrashPutReporter
                  fs,  # type: Fs
-                 logger,  # type: MyLogger
+                 backend,  # type: LoggerBackend
                  ):
         self.file_trasher = file_trasher
         self.user = user
-        self.logger = logger
-        self.reporter = reporter
+        self.logger = MyLogger(backend)
+        self.reporter = TrashPutReporter(fs)
         self.fs = fs
 
     def trash_single(self,

@@ -1,13 +1,16 @@
 import os
+
 from typing import NamedTuple
 
 from trashcli.put.clock import PutClock
 from trashcli.put.core.candidate import Candidate
-from trashcli.put.core.either import Either, Right, Left
+from trashcli.put.core.either import Either
+from trashcli.put.core.either import Left
+from trashcli.put.core.either import Right
 from trashcli.put.core.failure_reason import FailureReason
 from trashcli.put.core.failure_reason import LogContext
 from trashcli.put.format_trash_info import format_trashinfo
-from trashcli.put.janitor_tools.info_file_persister import InfoFilePersister
+from trashcli.put.fs.fs import Fs
 from trashcli.put.janitor_tools.info_file_persister import TrashinfoData
 from trashcli.put.original_location import OriginalLocation
 
@@ -23,11 +26,10 @@ class UnableToCreateTrashInfoContent(
 
 class TrashInfoCreator:
     def __init__(self,
-                 persister,  # type: InfoFilePersister
-                 original_location,  # type: OriginalLocation
+                 fs,   # type: Fs
                  clock,  # type: PutClock
                  ):
-        self.original_location = original_location
+        self.original_location = OriginalLocation(fs)
         self.clock = clock
 
     Result = Either[TrashinfoData, UnableToCreateTrashInfoContent]

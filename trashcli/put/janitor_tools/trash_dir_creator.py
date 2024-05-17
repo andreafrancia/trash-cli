@@ -21,7 +21,8 @@ class TrashDirCreator:
         self.dir_maker = DirMaker(fs)
 
     def make_candidate_dirs(self,
-                            candidate):  # type: (Candidate) -> Either[None, TrashDirCannotBeCreated]
+                            candidate,  # type: Candidate
+                            ):  # type: (...) -> Either[None, TrashDirCannotBeCreated]
         try:
             self.dir_maker.mkdir_p(candidate.trash_dir_path, 0o700)
             self.dir_maker.mkdir_p(candidate.files_dir(), 0o700)

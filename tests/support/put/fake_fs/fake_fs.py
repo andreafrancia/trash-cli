@@ -1,6 +1,7 @@
 import errno
 import os
 
+from tests.support.fakes.fake_volume_of import FakeVolumeOf
 from tests.support.put.fake_fs.directory import Directory
 from tests.support.put.fake_fs.directory import make_inode_dir
 from tests.support.put.fake_fs.ent import Ent
@@ -25,8 +26,9 @@ def as_inode(entry):  # type: (Entry) -> INode
     return check_cast(INode, entry)
 
 
-class FakeFs(Fs, PathExists):
+class FakeFs(FakeVolumeOf, Fs, PathExists):
     def __init__(self, cwd='/'):
+        super(FakeFs, self).__init__()
         self.root_inode = make_inode_dir('/', 0o755, None)
         self.root = self.root_inode.directory()
         self.cwd = cwd

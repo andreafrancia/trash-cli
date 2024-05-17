@@ -41,7 +41,6 @@ class FakeRestoreFs(ListingFileSystem,
     def volume_of(self, path):
         return FakeVolumes(self.mount_points).volume_of(path)
 
-
     def make_trashed_file(self, from_path, trash_dir, time,
                           original_file_content):
         content = format_trashinfo(from_path, time)

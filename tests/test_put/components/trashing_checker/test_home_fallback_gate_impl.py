@@ -11,7 +11,7 @@ from trashcli.put.janitor_tools.trash_dir_checker import TrashDirChecker, \
 class TestHomeFallbackGate:
     def setup_method(self):
         self.fake_fs = FakeFs()
-        self.gate_impl = TrashDirChecker(self.fake_fs, "volumes")
+        self.gate_impl = TrashDirChecker(self.fake_fs)
 
     def test_not_enabled(self):
         result = self.gate_impl.file_could_be_trashed_in(

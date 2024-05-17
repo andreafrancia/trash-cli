@@ -1,7 +1,5 @@
 import os
 
-from trashcli.put.fs.real_fs import RealFs
-
 
 class Describer:
     def __init__(self, fs):

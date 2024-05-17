@@ -11,11 +11,10 @@ from tests.support.put.fake_fs.fake_fs import FakeFs
 class TestTrashingChecker:
     def setup_method(self):
         self.fs = FakeFs()
-        self.volumes = FakeVolumes(["/"])
-        self.checker = TrashDirChecker(self.fs, self.volumes)
+        self.checker = TrashDirChecker(self.fs)
 
     def test_trashing_checker_same(self):
-        self.volumes.add_volume('/volume1')
+        self.fs.add_volume('/volume1')
 
         result = self.checker.file_could_be_trashed_in(
             Trashee('/path1', '/volume1'),
@@ -25,7 +24,6 @@ class TestTrashingChecker:
         assert result.is_valid() is True
 
     def test_home_in_same_volume(self):
-
         result = self.checker.file_could_be_trashed_in(
             Trashee('/path1', '/volume1'),
             make_candidate('/home-vol/trash-dir', Gate.HomeFallback),
@@ -34,8 +32,8 @@ class TestTrashingChecker:
         assert result.is_valid() is False
 
     def test_trashing_checker_different(self):
-        self.volumes.add_volume("/vol1")
-        self.volumes.add_volume("/vol2")
+        self.fs.add_volume("/vol1")
+        self.fs.add_volume("/vol2")
 
         result = self.checker.file_could_be_trashed_in(
             Trashee('/path1', '/vol1'),
@@ -43,6 +41,7 @@ class TestTrashingChecker:
             {})
 
         assert result == Left(DifferentVolumes("/vol2", "/vol1"))
+
 
 def make_candidate(trash_dir_path, gate):
     return Candidate(trash_dir_path=trash_dir_path,

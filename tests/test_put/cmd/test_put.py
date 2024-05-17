@@ -12,7 +12,7 @@ from tests.support.put.fake_fs.failing_fake_fs import FailingFakeFs
 from tests.support.put.fake_random import FakeRandomInt
 from tests.test_put.support.recording_backend import RecordingBackend
 from tests.test_put.support.result import Result
-from trashcli.fstab.volume_of import VolumeOfImpl
+from trashcli.fstab.volume_of_impl import VolumeOfImpl
 from trashcli.lib.environ import Environ
 from trashcli.lib.exit_codes import EX_IOERR
 from trashcli.lib.exit_codes import EX_OK
@@ -27,7 +27,9 @@ class TestPut:
         self.fs = FailingFakeFs()
         self.user_input = HardCodedInput('y')
         self.randint = FakeRandomInt([])
-        self.is_mount = FakeIsMount(['/'])
+
+    def add_mount(self, path):
+        self.fs.add_volume(path)
 
     def test_when_needs_a_different_suffix(self):
         self.fs.touch("/foo")
@@ -194,7 +196,7 @@ class TestPut:
         self.fs.makedirs('/disk1', 0o700)
         self.fs.makedirs('/disk1/.Trash-123', 0o000)
         self.fs.make_file("/disk1/pippo")
-        self.is_mount.add_mount_point('/disk1')
+        self.add_mount('/disk1')
 
         result = self.run_cmd(['trash-put', '-v', '--home-fallback',
                                '/disk1/pippo'],
@@ -315,14 +317,12 @@ class TestPut:
         exit_code = None
         stderr = StringIO()
         clock = FixedClock(jan_1st_2024())
-        volumes = VolumeOfImpl(self.is_mount, os.path.normpath)
         backend = RecordingBackend(stderr)
         cmd = make_cmd(clock=clock,
                        fs=self.fs,
                        user_input=self.user_input,
                        randint=self.randint,
-                       backend=backend,
-                       volumes=volumes)
+                       backend=backend)
         try:
             exit_code = cmd.run_put(args, environ, uid)
         except IOError as e:

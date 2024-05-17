@@ -7,6 +7,7 @@ from typing import Optional
 
 from trashcli import fs
 from trashcli.fs import write_file
+from trashcli.fstab.real_volume_of import RealVolumeOf
 from trashcli.put.fs.fs import Fs
 
 
@@ -32,7 +33,10 @@ class Stat(NamedTuple('Stat', [
     pass
 
 
-class RealFs(Fs):
+class RealFs(RealVolumeOf, Fs):
+
+    def __init__(self):
+        super(RealFs, self).__init__()
 
     def readlink(self, path):
         return os.readlink(path)
