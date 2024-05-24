@@ -2,7 +2,6 @@ import os
 import random
 import sys
 
-from trashcli.fstab.real_volume_of import RealVolumeOf
 from trashcli.lib.environ import cast_environ
 from trashcli.lib.my_input import Input
 from trashcli.lib.my_input import RealInput
@@ -11,22 +10,11 @@ from trashcli.put.core.int_generator import IntGenerator
 from trashcli.put.describer import Describer
 from trashcli.put.file_trasher import FileTrasher
 from trashcli.put.fs.fs import Fs
-from trashcli.put.fs.parent_realpath import ParentRealpathFs
 from trashcli.put.fs.real_fs import RealFs
-from trashcli.put.fs.volume_of_parent import VolumeOfParent
 from trashcli.put.janitor import Janitor
-from trashcli.put.janitor_tools.info_creator import \
-    TrashInfoCreator
-from trashcli.put.janitor_tools.info_file_persister import InfoFilePersister
-from trashcli.put.janitor_tools.put_trash_dir import PutTrashDir
-from trashcli.put.janitor_tools.trash_dir_checker import TrashDirChecker
 from trashcli.put.my_logger import LoggerBackend
-from trashcli.put.my_logger import MyLogger
 from trashcli.put.my_logger import StreamBackend
-from trashcli.put.original_location import OriginalLocation
 from trashcli.put.reporting.trash_put_reporter import TrashPutReporter
-from trashcli.put.suffix import Suffix
-from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 from trashcli.put.trash_put_cmd import TrashPutCmd
 from trashcli.put.trasher import Trasher
 from trashcli.put.user import User
