@@ -4,13 +4,14 @@ mock
 flexmock
 parameterized
 tox
-PyYAML
+PyYAML <= 5.3.1; python_version < '3'
+PyYAML; python_version >= '3'
 # build and publish
 build
 setuptools
 twine
 # types
-mypy
+mypy; python_version >= '3'
 types-six
 types-mock
 types-psutil
