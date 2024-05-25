@@ -1,5 +1,7 @@
-from logging import Logger
-from typing import Optional, Iterable, NamedTuple, Union
+from typing import Iterable
+from typing import NamedTuple
+from typing import Optional
+from typing import Union
 
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.parse_trashinfo.parse_deletion_date import parse_deletion_date
@@ -7,12 +9,13 @@ from trashcli.parse_trashinfo.parse_original_location import \
     parse_original_location
 from trashcli.restore.file_system import FileReader
 from trashcli.restore.info_dir_searcher import InfoDirSearcher
+from trashcli.restore.restore_logger import RestoreLogger
 from trashcli.restore.trashed_file import TrashedFile
 
 
 class TrashedFiles:
     def __init__(self,
-                 logger,  # type: Logger
+                 logger,  # type: RestoreLogger
                  file_reader,  # type: FileReader
                  searcher,  # type: InfoDirSearcher
                  ):
@@ -29,7 +32,7 @@ class TrashedFiles:
             elif type(event) is NonParsableTrashInfo:
                 self.logger.warning(
                     "Non parsable trashinfo file: %s, because %s" %
-                    event.path, event.reason)
+                    (event.path, event.reason))
             elif type(event) is IOErrorReadingTrashInfo:
                 self.logger.warning(str(event))
             elif type(event) is TrashedFileFound:

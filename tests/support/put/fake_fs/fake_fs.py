@@ -1,6 +1,8 @@
 import errno
 import os
 
+from typing import cast
+
 from tests.support.fakes.fake_volume_of import FakeVolumeOf
 from tests.support.put.fake_fs.directory import Directory
 from tests.support.put.fake_fs.directory import make_inode_dir
@@ -58,6 +60,9 @@ class FakeFs(FakeVolumeOf, Fs, PathExists):
         directory = self.get_entity_at(dirname)
         directory.add_dir(basename, 0o755, path)
 
+    def mkdir_p(self, path):
+        self.makedirs(path, 0o755)
+
     def get_entity_at(self, path):  # type: (str) -> Ent
         inode = check_cast(INode, self.get_entry_at(path))
         return inode.entity
@@ -104,8 +109,10 @@ class FakeFs(FakeVolumeOf, Fs, PathExists):
         if isinstance(entry, SymLink):
             link_target = self.readlink(path)
             return self.read(os.path.join(dirname, link_target))
+        elif isinstance(as_inode(entry).entity, File):
+            return cast(File, as_inode(entry).entity).content
         else:
-            return as_inode(entry).reg_file().content
+            raise IOError("Unable to read: %s" % path)
 
     def readlink(self, path):
         path = self._join_cwd(path)

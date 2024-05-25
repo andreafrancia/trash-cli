@@ -8,6 +8,7 @@ from .file_system import RealRestoreReadFileSystem, \
     RealListingFileSystem
 from .info_dir_searcher import InfoDirSearcher
 from .info_files import InfoFiles
+from .real_restore_logger import RealRestoreLogger
 from .restore_cmd import RestoreCmd
 from .trash_directories import TrashDirectoriesImpl
 from .trashed_files import TrashedFiles
@@ -23,7 +24,7 @@ def main():
                                              os.getuid(),
                                              os.environ)
     searcher = InfoDirSearcher(trash_directories, info_files)
-    trashed_files = TrashedFiles(my_logger,
+    trashed_files = TrashedFiles(RealRestoreLogger(my_logger),
                                  RealFileReader(),
                                  searcher)
     RestoreCmd.make(

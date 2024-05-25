@@ -28,7 +28,3 @@ class INode:
     def directory(self):
         from tests.support.put.fake_fs.directory import Directory
         return check_cast(Directory, self.entity)
-
-    def reg_file(self):
-        from tests.support.put.fake_fs.file import File
-        return check_cast(File, self.entity)
