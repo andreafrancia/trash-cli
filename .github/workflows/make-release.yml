@@ -13,6 +13,7 @@ jobs:
         python-version: 3.11
     - name: Set version
       run: |
+        pip install --upgrade pip
         scripts/lib/install-python-requirements
         scripts/set-dev-version ${{ github.ref_name }} ${{ github.sha }}
 
