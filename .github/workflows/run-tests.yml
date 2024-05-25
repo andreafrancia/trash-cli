@@ -14,12 +14,12 @@ jobs:
     strategy:
       matrix:
         include:
-          - { os: ubuntu-latest, python_version: '3.4' }
-          - { os: ubuntu-latest, python_version: '3.5' }
-          - { os: ubuntu-latest, python_version: '3.6' }
-          - { os: ubuntu-latest, python_version: '3.7' }
-          - { os: ubuntu-latest, python_version: '3.8' }
-          - { os: ubuntu-latest, python_version: '3.9' }
+          - { os: ubuntu-latest, python_version: '2.7' }
+          - { os: ubuntu-20.04, python_version: '3.5' }
+          - { os: ubuntu-20.04, python_version: '3.6' }
+          - { os: ubuntu-20.04, python_version: '3.7' }
+          - { os: ubuntu-22.04, python_version: '3.8' }
+          - { os: ubuntu-24.04, python_version: '3.9' }
           - { os: ubuntu-latest, python_version: '3.10' }
           - { os: ubuntu-latest, python_version: '3.11' }
           - { os: ubuntu-latest, python_version: '3.12' }
@@ -34,17 +34,27 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up 3.5 Python, ${{ matrix.python_version }}
+      if: ${{ matrix.python_version == '3.5' }}
       uses: actions/setup-python@v5
+      env:
+        # Workaround copied from
+        # https://github.com/ytdl-org/youtube-dl/commit/a08f2b7e4567cdc50c0614ee0a4ffdff49b8b6e6
+        PIP_TRUSTED_HOST: "pypi.python.org pypi.org files.pythonhosted.org"
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ matrix.python_version }}
+    - name: Set up Python ${{ matrix.python_version }}
+      uses: andreafrancia/setup-python@v1
+      if: ${{ matrix.python_version != '3.5' }}
+      with:
+        python-version: ${{ matrix.python_version }}
     - name: Upgrade pip
       run: python -m pip install --upgrade pip
     - name: Install dependencies
       run: python -m pip install -r requirements-dev.txt -r requirements.txt
     - name: Check Types
       run: ./scripts/check-types
-      if: matrix.python-version != '2.7'
+      if: matrix.python_version != '2.7'
     - name: Run tests
       run: python -m pytest
   sdist:
@@ -56,9 +66,9 @@ jobs:
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python ${{ matrix.python_version }}
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ matrix.python_version }}
     - name: Test sdist
       run: scripts/test-sdist

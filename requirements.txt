@@ -2,3 +2,4 @@ psutil
 six
 typing; python_version < '3.8'
 typing_extensions; python_version < '3.8'
+enum34; python_version < '3.4'
