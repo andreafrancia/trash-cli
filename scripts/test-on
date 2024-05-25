@@ -1,0 +1,14 @@
+#!/bin/bash
+SCRIPT_DIR="$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+set -euo pipefail
+
+export PYENV_VERSION="${1?}"
+
+python --version
+python -m venv ".venv-$PYENV_VERSION"
+source ".venv-$PYENV_VERSION/bin/activate"
+"$SCRIPT_DIR/lib/install-python-requirements"
+
+pytest
+
