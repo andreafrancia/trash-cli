@@ -1,8 +1,8 @@
 from typing import List
 from typing import NamedTuple
 from typing import Optional
-from typing import Protocol
 
+from trashcli.compat import Protocol
 from trashcli.lib.environ import Environ
 from trashcli.put.core.logs import LogData
 from trashcli.put.core.mode import Mode
