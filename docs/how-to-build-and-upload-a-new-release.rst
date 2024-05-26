@@ -15,7 +15,7 @@ Load the version in an environment variable::
 
 Run all tests::
 
-    pytest
+    scripts/pre-push
 
 Create the tarball::
 
