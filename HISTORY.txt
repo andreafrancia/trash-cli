@@ -1,7 +1,6 @@
-Unreleased:
+0.24.5.26
 Shell Completion:
 - Bugfix in print-completion loop for shells other than zsh by Andrew Davis
-
 User not visibile changes:
 - Move all the main logic for dev tools from scripts under tests/support to
   solve issue https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1067303
