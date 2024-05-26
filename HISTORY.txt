@@ -1,4 +1,4 @@
-0.24.5.26
+0.24.5.26 (c02fd35):
 Shell Completion:
 - Bugfix in print-completion loop for shells other than zsh by Andrew Davis
 User not visibile changes:
