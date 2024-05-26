@@ -1,13 +1,20 @@
 Unreleased:
 Shell Completion:
 - Bugfix in print-completion loop for shells other than zsh by Andrew Davis
+
 User not visibile changes:
-- Move all the main logic for dev tools from scripts under tests/support.
-- Removing Python 3.7 that is no longer available on GitHub actions
-- Merge sdist and run-tests GitHub workflows
+- Move all the main logic for dev tools from scripts under tests/support to
+  solve issue https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1067303
+- Fixed a problem in GitHub Actions that ran all the tests on the same python
+  version instead of all the python versions specified
+- Reintroducing testing on python 2.7 thanks the custom GitHub action found at
+  https://github.com/ytdl-org/setup-python
+- Fixed regression that would crash trash-restore on non parseable trashinfo,
+  with an error like: "TypeError: not enough arguments for format string"
 - Using python -m venv instead of virtualenv
-- Refactor of code in trash-put
-0.24.4.17 (68c34e0a):
+- Refactor of some code in trash-put and trash-restore
+
+0.24.4.17 (f0136411):
 User visible changes:
  - trash-put --help shows also other commands (Joseph Masone)
  - trash-restore prints a message when no file are restored: "No files were
