@@ -26,7 +26,7 @@ class TestSetDevVersionCmd:
 
     def test_happy_path(self, capsys):
         self.fs.mkdir("trashcli")
-        self.fs.write_file("trashcli/trash.py", "version = ...")
+        self.fs.make_text_file("trashcli/trash.py", "version = ...")
 
         result = self.run.run_cmd(['master', '12345b'], capsys)
 
@@ -40,7 +40,7 @@ class TestSetDevVersionCmd:
 
     def test(self, capsys):
         self.fs.mkdir("trashcli")
-        self.fs.write_file("trashcli/trash.py", "version = ...")
+        self.fs.make_text_file("trashcli/trash.py", "version = ...")
 
         result = self.run.run_cmd(['-', '12345b'], capsys)
 

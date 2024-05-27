@@ -1,17 +1,17 @@
-from tests.support.py2mock import Mock
 
 from tests.support.make_scripts import Scripts
-from tests.support.make_scripts import script_path_without_base_dir_for
+from tests.test_dev_tools.support.null_script_fs import NullScriptFs
+from trashcli.path import Path
 
 
 class TestListOfCreatedScripts:
     def setup_method(self):
-        self.bindir = Scripts(make_file_executable=Mock(), write_file=Mock())
+        fake_fs = NullScriptFs()
+        self.scripts = Scripts(fake_fs, Path("root"))
 
     def test_is_empty_on_start_up(self):
-        assert self.bindir.created_scripts == []
+        assert self.scripts.created_scripts == []
 
     def test_collect_added_script(self):
-        self.bindir.add_script('foo-command', 'foo-module', 'main')
-        assert self.bindir.created_scripts == [
-            script_path_without_base_dir_for('foo-command')]
+        self.scripts.add_script('foo-command', 'foo-module', 'main')
+        assert self.scripts.created_scripts == ["foo-command"]

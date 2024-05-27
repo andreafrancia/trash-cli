@@ -1,12 +1,10 @@
-import unittest
-
 import pytest
 
 from tests.support.run.run_command import run_command
 
 
 @pytest.mark.slow
-class TestRmScript(unittest.TestCase):
+class TestRmScript:
     def test_trash_put_works(self):
         result = run_command('.', 'trash-put')
         assert ("usage: trash-put [OPTION]... FILE..." in

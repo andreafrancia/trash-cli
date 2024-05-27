@@ -3,9 +3,9 @@ import unittest
 import pytest
 import six
 
-from tests.support.files import make_file, require_empty_dir
 from tests.support.dirs.my_path import MyPath
-from trashcli.restore.file_system import RealListingFileSystem
+from tests.support.fs_fixture import FsFixture
+from trashcli.put.fs.real_fs import RealFs
 from trashcli.restore.info_files import InfoFiles
 
 
@@ -13,20 +13,22 @@ from trashcli.restore.info_files import InfoFiles
 class TestTrashDirectory(unittest.TestCase):
     def setUp(self):
         self.temp_dir = MyPath.make_temp_dir()
-        require_empty_dir(self.temp_dir / 'trash-dir')
-        self.info_files = InfoFiles(RealListingFileSystem())
+        fs = RealFs()
+        self.info_files = InfoFiles(fs)
+        self.fx = FsFixture(fs)
+        self.fx.require_empty_dir(self.temp_dir / 'trash-dir')
 
     def test_should_list_a_trashinfo(self):
-        make_file(self.temp_dir / 'trash-dir/info/foo.trashinfo')
+        self.fx.make_empty_file(self.temp_dir / 'trash-dir/info/foo.trashinfo')
 
         result = self.list_trashinfos()
 
         assert [('trashinfo', self.temp_dir / 'trash-dir/info/foo.trashinfo')] == result
 
     def test_should_list_multiple_trashinfo(self):
-        make_file(self.temp_dir / 'trash-dir/info/foo.trashinfo')
-        make_file(self.temp_dir / 'trash-dir/info/bar.trashinfo')
-        make_file(self.temp_dir / 'trash-dir/info/baz.trashinfo')
+        self.fx.make_empty_file(self.temp_dir / 'trash-dir/info/foo.trashinfo')
+        self.fx.make_empty_file(self.temp_dir / 'trash-dir/info/bar.trashinfo')
+        self.fx.make_empty_file(self.temp_dir / 'trash-dir/info/baz.trashinfo')
 
         result = self.list_trashinfos()
 
@@ -37,7 +39,7 @@ class TestTrashDirectory(unittest.TestCase):
                              result)
 
     def test_non_trashinfo_should_reported_as_a_warn(self):
-        make_file(self.temp_dir / 'trash-dir/info/not-a-trashinfo')
+        self.fx.make_empty_file(self.temp_dir / 'trash-dir/info/not-a-trashinfo')
 
         result = self.list_trashinfos()
 

@@ -3,25 +3,22 @@ import os
 import unittest
 
 import pytest
-from trashcli.fs import (
-    atomic_write,
-    open_for_write_in_exclusive_and_create_mode,
-    read_file,
-)
 
 from tests.support.dirs.my_path import MyPath
+from trashcli.put.fs.real_fs import RealFs
 
 
 @pytest.mark.slow
 class Test_atomic_write(unittest.TestCase):
     def setUp(self):
         self.temp_dir = MyPath.make_temp_dir()
+        self.fs = RealFs()
 
     def test_the_second_open_should_fail(self):
         path = self.temp_dir / "a"
-        file_handle = open_for_write_in_exclusive_and_create_mode(path)
+        file_handle = self.fs.open_for_write_in_exclusive_and_create_mode(path)
         try:
-            open_for_write_in_exclusive_and_create_mode(path)
+            self.fs.open_for_write_in_exclusive_and_create_mode(path)
             self.fail()
         except OSError as e:
             assert e.errno == errno.EEXIST
@@ -30,24 +27,24 @@ class Test_atomic_write(unittest.TestCase):
     def test_short_filename(self):
         path = self.temp_dir / 'a'
 
-        atomic_write(path, b'contents')
+        self.fs.atomic_write(path, b'contents')
 
-        assert 'contents' == read_file(path)
+        assert b'contents' == self.fs.read_file(path)
 
     def test_too_long_filename(self):
         path = self.temp_dir / ('a' * 2000)
 
         try:
-            atomic_write(path, b'contents')
+            self.fs.atomic_write(path, b'contents')
             self.fail()
         except OSError as e:
             assert e.errno == errno.ENAMETOOLONG
 
     def test_filename_already_taken(self):
-        atomic_write(self.temp_dir / "a", b'contents')
+        self.fs.atomic_write(self.temp_dir / "a", b'contents')
 
         try:
-            atomic_write(self.temp_dir / "a", b'contents')
+            self.fs.atomic_write(self.temp_dir / "a", b'contents')
             self.fail()
         except OSError as e:
             assert e.errno == errno.EEXIST

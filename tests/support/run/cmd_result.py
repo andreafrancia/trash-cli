@@ -1,17 +1,24 @@
+from typing import Callable
+from typing import NamedTuple
+from typing import Union
+
+from six import StringIO
+from six import text_type
+
 from tests.support.help.help_reformatting import reformat_help_message
 from tests.support.text.last_line_of import last_line_of
 
+ExitCode = Union[str, int, None]
 
-class CmdResult:
-    def __init__(self,
-                 stdout,  # type: str
-                 stderr,  # type: str
-                 exit_code,  # type: int
-                 ):  # (...) -> None
-        self.stdout = stdout
-        self.stderr = stderr
-        self.exit_code = exit_code
-        self.all = (stdout, stderr, exit_code)
+
+class CmdResult(NamedTuple('CmdResult', [
+    ('stdout', text_type),
+    ('stderr', text_type),
+    ('exit_code', ExitCode),
+])):
+    @property
+    def all(self):
+        return self.stdout, self.stderr, self.exit_code
 
     def all_lines(self):
         return set(self.stderr.splitlines() + self.stdout.splitlines())
@@ -35,3 +42,28 @@ class CmdResult:
     def _format(outs):
         outs = [out for out in outs if out != ""]
         return "".join([out.rstrip("\n") + "\n" for out in outs])
+
+    @staticmethod
+    def run_cmd(func,  # type: Callable[[], int]
+                stdout,  # type: StringIO
+                stderr,  # type: StringIO
+                ):  # type: (...) -> CmdResult
+        try:
+            exit_code = func()  # type: ExitCode
+        except SystemExit as e:
+            exit_code = e.code
+
+        return CmdResult(stdout.getvalue(),
+                         stderr.getvalue(), exit_code)
+
+    def check_stderr_is_empty(self):
+        if self.stderr == '':
+            return ''
+        return "stderr is not empty: %s" % self.stderr
+
+    def check_stderr_is(self,
+                        expected,  # type: text_type
+                        ):
+        if self.stderr == expected:
+            return ''
+        return "stderr is not as expected: %s != %s" % (expected, self.stderr)

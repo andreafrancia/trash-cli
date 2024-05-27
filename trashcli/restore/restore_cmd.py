@@ -1,17 +1,18 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
-from typing import TextIO, Callable
+from typing import Callable
+from typing import TextIO
 
+from trashcli.fs import ReadCwd
+from trashcli.fstab.volumes import Volumes
+from trashcli.lib.environ import Environ
 from trashcli.lib.my_input import Input
-from trashcli.lib.print_version import PrintVersionAction, PrintVersionArgs
+from trashcli.lib.print_version import PrintVersionAction
+from trashcli.lib.print_version import PrintVersionArgs
+from trashcli.put.fs.fs import Fs
 from trashcli.restore.args import RunRestoreArgs
-from trashcli.restore.file_system import RestoreReadFileSystem, \
-    RestoreWriteFileSystem, ReadCwd
-from trashcli.restore.handler import HandlerImpl
-from trashcli.restore.real_output import RealOutput
 from trashcli.restore.restore_arg_parser import RestoreArgParser
-from trashcli.restore.restorer import Restorer
-from trashcli.restore.run_restore_action import RunRestoreAction, Handler
-from trashcli.restore.trashed_files import TrashedFiles
+from trashcli.restore.restore_logger import RestoreLogger
+from trashcli.restore.run_restore_action import RunRestoreAction
 
 
 class RestoreCmd(object):
@@ -19,31 +20,30 @@ class RestoreCmd(object):
     def make(stdout,  # type: TextIO
              stderr,  # type: TextIO
              exit,  # type: Callable[[int], None]
-             input,  # type: Input
+             user_input,  # type: Input
              version,  # type: str
-             trashed_files,  # type: TrashedFiles
-             read_fs,  # type: RestoreReadFileSystem
-             write_fs,  # type: RestoreWriteFileSystem
+             volumes,  # type: Volumes
+             uid,  # type: int
+             environ,  # type: Environ
+             logger,  # type: RestoreLogger
              read_cwd,  # type: ReadCwd
+             fs,  # type: Fs
              ):  # type: (...) -> RestoreCmd
-        restorer = Restorer(read_fs, write_fs)
-        output = RealOutput(stdout, stderr, exit)
-        handler = HandlerImpl(input, read_cwd, restorer, output)
-        return RestoreCmd(stdout, version, trashed_files, read_cwd, handler)
+        run_restore_action = RunRestoreAction(stdout, stderr, exit, user_input,
+                                              volumes, uid, environ, logger,
+                                              read_cwd, fs)
+        return RestoreCmd(stdout, version, read_cwd, run_restore_action)
 
     def __init__(self,
                  stdout,  # type: TextIO
                  version,  # type: str
-                 trashed_files,  # type: TrashedFiles
                  read_cwd,  # type: ReadCwd
-                 handler,  # type: Handler
+                 run_restore_action,  # type: RunRestoreAction
                  ):
         self.read_cwd = read_cwd
         self.parser = RestoreArgParser()
-        self.run_restore_action = RunRestoreAction(handler,
-                                                   trashed_files)
-        self.print_version_action = PrintVersionAction(stdout,
-                                                       version)
+        self.run_restore_action = run_restore_action
+        self.print_version_action = PrintVersionAction(stdout, version)
 
     def run(self, argv):
         args = self.parser.parse_restore_args(argv,

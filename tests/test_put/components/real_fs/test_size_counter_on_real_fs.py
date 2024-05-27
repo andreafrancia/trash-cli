@@ -1,38 +1,36 @@
-import unittest
-
 import pytest
 
-from tests.support.dirs.my_path import MyPath
-from trashcli.put.fs.size_counter import SizeCounter
+from tests.support.dirs.temp_dir import temp_dir
 from trashcli.put.fs.real_fs import RealFs
+from trashcli.put.fs.size_counter import SizeCounter
+
+temp_dir = temp_dir
 
 
 @pytest.mark.slow
-class TestSizeCounterOnRealFs(unittest.TestCase):
-    def setUp(self):
-        self.fs = RealFs()
-        self.counter = SizeCounter(self.fs)
-        self.tmp_dir = MyPath.make_temp_dir()
+class TestSizeCounterOnRealFs:
+    @pytest.fixture
+    def counter(self, fs):
+        return SizeCounter(fs)
 
-    def test_a_single_file(self):
-        self.fs.make_file(self.tmp_dir / 'file', 10 * 'a')
+    @pytest.fixture
+    def fs(self, temp_dir):
+        return RealFs()
 
-        assert self.counter.get_size_recursive(self.tmp_dir / 'file') == 10
+    def test_a_single_file(self, fs, counter, temp_dir):
+        fs.make_file(temp_dir / 'file', 10 * b'a')
 
-    def test_two_files(self):
-        self.fs.make_file(self.tmp_dir / 'a', 100 * 'a')
-        self.fs.make_file(self.tmp_dir / 'b', 23 * 'b')
+        assert counter.get_size_recursive(temp_dir / 'file') == 10
 
-        assert self.counter.get_size_recursive(self.tmp_dir) == 123
+    def test_two_files(self, fs, counter, temp_dir):
+        fs.make_file(temp_dir / 'a', 100 * b'a')
+        fs.make_file(temp_dir / 'b', 23 * b'b')
 
-    def test_recursive(self):
-        self.fs.make_file(self.tmp_dir / 'a', 3 * '-')
-        self.fs.makedirs(self.tmp_dir / 'dir', 0o777)
-        self.fs.make_file(self.tmp_dir / 'dir' / 'a', 20 * '-')
-        self.fs.makedirs(self.tmp_dir / 'dir' / 'dir', 0o777)
-        self.fs.make_file(self.tmp_dir / 'dir' / 'dir' / 'b', 100 * '-')
+        assert counter.get_size_recursive(temp_dir) == 123
 
-        assert self.counter.get_size_recursive(self.tmp_dir) == 123
+    def test_recursive(self, fs, counter, temp_dir):
+        fs.make_file_p(temp_dir / 'a', 3 * b'-')
+        fs.make_file_p(temp_dir / 'dir' / 'a', 20 * b'-')
+        fs.make_file_p(temp_dir / 'dir' / 'dir' / 'b', 100 * b'-')
 
-    def tearDown(self):
-        self.tmp_dir.clean_up()
+        assert counter.get_size_recursive(temp_dir) == 123

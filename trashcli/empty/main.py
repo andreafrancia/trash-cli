@@ -3,37 +3,38 @@ import os
 import sys
 from datetime import datetime
 
-from trashcli.compat import Protocol
-
 from trashcli import trash
+from trashcli.compat import Protocol
 from trashcli.empty.empty_cmd import EmptyCmd
-from trashcli.fs import RealContentsOf, ContentsOf
+from trashcli.fs import FileReader
 from .existing_file_remover import ExistingFileRemover
 from .file_system_dir_reader import FileSystemDirReader
 from .top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirRulesReader
-from ..fstab.volume_listing import RealVolumesListing
+from ..fs_impl import RealFileReader
+from ..fstab.mount_points_listing import RealMountPointsListing
 from ..fstab.real_volume_of import RealVolumeOf
-
-
-class ContentReader(ContentsOf, Protocol):
-    pass
 
 
 def main():
     empty_cmd = EmptyCmd(argv0=sys.argv[0],
                          out=sys.stdout,
                          err=sys.stderr,
-                         volumes_listing=RealVolumesListing(),
                          now=datetime.now,
                          file_reader=RealTopTrashDirRulesReader(),
                          file_remover=ExistingFileRemover(),
                          content_reader=FileSystemContentReader(),
                          dir_reader=FileSystemDirReader(),
                          version=trash.version,
-                         volumes=RealVolumeOf())
+                         volumes=RealVolumeOf(),
+                         mount_point_listing=RealMountPointsListing()
+                         )
     return empty_cmd.run_cmd(sys.argv[1:], os.environ, os.getuid())
 
 
-class FileSystemContentReader(ContentReader, RealContentsOf):
+class ContentReader(FileReader, Protocol):
+    pass
+
+
+class FileSystemContentReader(ContentReader, RealFileReader):
     pass

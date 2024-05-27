@@ -4,16 +4,17 @@ import pytest
 from six import StringIO
 
 from tests.support.dirs.my_path import MyPath
-from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.fakes.stub_volume_of import StubVolumeOf
-from tests.support.files import make_empty_dir
+from tests.support.fs_fixture import FsFixture
+from tests.support.trash_dirs.fake_trash_dir import FakeTrashDir
 from trashcli.empty.main import FileSystemContentReader
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirRulesReader
 from trashcli.file_system_reader import FileSystemReader
-from trashcli.fstab.volume_listing import FixedVolumesListing
+from trashcli.fstab.mount_points_listing import FakeMountPointsListing
 from trashcli.lib.dir_reader import RealDirReader
 from trashcli.list.main import ListCmd
+from trashcli.put.fs.real_fs import RealFs
 from .run_result import RunResult
 
 
@@ -38,6 +39,7 @@ class TrashListUser:
         self.fake_uid = None
         self.volumes = []
         self.version = None
+        self.fx = FsFixture(RealFs())
 
     def run_trash_list(self, *args):  # type: (...) -> RunResult
         file_reader = FileSystemReader()
@@ -48,13 +50,13 @@ class TrashListUser:
             out=stdout,
             err=stderr,
             environ=self.environ,
-            volumes_listing=FixedVolumesListing(self.volumes),
             uid=self.fake_uid,
             volumes=StubVolumeOf(),
             dir_reader=RealDirReader(),
             file_reader=RealTopTrashDirRulesReader(),
             content_reader=FileSystemContentReader(),
-            version=self.version
+            version=self.version,
+            mount_points_listing=FakeMountPointsListing(self.volumes),
         ).run(['trash-list'] + list(args))
         return RunResult(clean(stdout.getvalue(), self.root),
                          clean(stderr.getvalue(), self.root))
@@ -64,7 +66,7 @@ class TrashListUser:
 
     def add_disk(self, disk_name):
         top_dir = self.root / adjust_for_root(disk_name)
-        make_empty_dir(top_dir)
+        self.fx.make_empty_dir(top_dir)
         self.volumes.append(top_dir)
 
     def trash_dir1(self, disk_name):

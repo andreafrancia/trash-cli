@@ -1,7 +1,6 @@
 import pytest
 
 from tests.support.dirs.temp_dir import temp_dir
-from tests.support.files import mkdir_p
 from tests.test_put.cmd.e2e.run_trash_put import run_trash_put
 from trashcli.lib.exit_codes import EX_IOERR
 
@@ -28,8 +27,7 @@ class TestWhenFedWithDotArguments:
             "trash-put: cannot trash directory '..'\n", EX_IOERR]
 
     def test_dot_argument_is_skipped_even_in_subdirs(self, temp_dir):
-        sandbox = temp_dir / 'sandbox'
-        mkdir_p(sandbox)
+        sandbox = temp_dir.mkdir_rel('sandbox')
 
         result = run_trash_put(temp_dir, ["%s/." % sandbox])
 
@@ -40,8 +38,7 @@ class TestWhenFedWithDotArguments:
             EX_IOERR, "/sandbox: exists"]
 
     def test_dot_dot_argument_is_skipped_even_in_subdirs(self, temp_dir):
-        sandbox = temp_dir / 'sandbox'
-        mkdir_p(sandbox)
+        sandbox = temp_dir.mkdir_rel('sandbox')
 
         result = run_trash_put(temp_dir, ["%s/.." % sandbox])
 

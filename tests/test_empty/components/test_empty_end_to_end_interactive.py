@@ -3,7 +3,7 @@ import unittest
 
 import pytest
 
-from tests.support.fakes.fake_trash_dir import FakeTrashDir
+from tests.support.trash_dirs.fake_trash_dir import FakeTrashDir
 from tests.support.dirs.my_path import MyPath
 from tests.support.run.run_command import run_command
 
@@ -28,7 +28,8 @@ class TestEmptyEndToEndInteractive(unittest.TestCase):
         self.environ['TRASH_DATE'] = '%sT00:00:00' % yyyy_mm_dd
 
     def test_it_should_keep_files_newer_than_N_days(self):
-        self.fake_trash_dir.add_trashinfo_with_date('foo', datetime.date(2000, 1, 1))
+        self.fake_trash_dir.add_trashinfo_with_date('foo',
+                                                    datetime.date(2000, 1, 1))
         self.set_clock_at('2000-01-01')
 
         result = self.user_run_trash_empty(['-i'])

@@ -10,9 +10,9 @@ class TestRealFsListDir(unittest.TestCase):
         self.tmp_dir = MyPath.make_temp_dir()
 
     def test(self):
-        self.fs.make_file(self.tmp_dir / 'a' , 'content')
-        self.fs.make_file(self.tmp_dir / 'b' , 'content')
-        self.fs.make_file(self.tmp_dir / 'c', 'content')
+        self.fs.make_file(self.tmp_dir / 'a' , b'content')
+        self.fs.make_file(self.tmp_dir / 'b' , b'content')
+        self.fs.make_file(self.tmp_dir / 'c', b'content')
         self.fs.makedirs(self.tmp_dir / 'd', 0o700)
 
         assert sorted(self.fs.listdir(self.tmp_dir)) == ['a', 'b', 'c', 'd']

@@ -2,14 +2,19 @@ import grp
 import os
 import pwd
 
-from tests.support.files import make_file
-from trashcli.put.reporting.stats_reader import gentle_stat_read
 from tests.support.dirs.temp_dir import temp_dir
+from tests.support.fs_fixture import FsFixture
+from trashcli.put.fs.real_fs import RealFs
+from trashcli.put.reporting.stats_reader import gentle_stat_read
 
 temp_dir = temp_dir
 
 
 class TestGentleStatRead:
+    def setup_method(self):
+        self.fs = RealFs()
+        self.fx = FsFixture(self.fs)
+
     def test_file_non_found(self, temp_dir):
         result = gentle_stat_read(temp_dir / 'not-existent')
 
@@ -17,7 +22,7 @@ class TestGentleStatRead:
                 "[Errno 2] No such file or directory: '.../not-existent'")
 
     def test_file(self, temp_dir):
-        make_file(temp_dir / 'pippo.txt')
+        self.fx.make_empty_file(temp_dir / 'pippo.txt')
         os.chmod(temp_dir / 'pippo.txt', 0o531)
 
         result = gentle_stat_read(temp_dir / 'pippo.txt')

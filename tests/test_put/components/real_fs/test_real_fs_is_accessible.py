@@ -18,7 +18,7 @@ class TestRealFsIsAccessible(unittest.TestCase):
         assert result is False
 
     def test_connected_link(self):
-        self.fs.make_file(self.tmp_dir / 'link-target', '')
+        self.fs.make_file(self.tmp_dir / 'link-target', b'')
         os.symlink('link-target', self.tmp_dir / 'link')
 
         result = self.fs.is_accessible(self.tmp_dir / 'link')
@@ -33,7 +33,7 @@ class TestRealFsIsAccessible(unittest.TestCase):
         assert result is True
 
     def test_connected_link_with_lexists(self):
-        self.fs.make_file(self.tmp_dir / 'link-target', '')
+        self.fs.make_file(self.tmp_dir / 'link-target', b'')
         os.symlink('link-target', self.tmp_dir / 'link')
 
         result = self.fs.lexists(self.tmp_dir / 'link')

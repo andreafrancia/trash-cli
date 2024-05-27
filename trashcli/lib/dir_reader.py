@@ -2,8 +2,10 @@ from __future__ import absolute_import
 
 from trashcli.compat import Protocol
 
-from trashcli.fs import EntriesIfDirExists, PathExists, RealEntriesIfDirExists, \
-    RealExists
+from trashcli.fs_impl import RealPathExists
+from trashcli.fs_impl import RealEntriesIfDirExists
+from trashcli.fs import PathExists
+from trashcli.fs import EntriesIfDirExists
 
 
 class DirReader(
@@ -14,5 +16,5 @@ class DirReader(
     pass
 
 
-class RealDirReader(RealEntriesIfDirExists, RealExists):
+class RealDirReader(RealEntriesIfDirExists, RealPathExists):
     pass

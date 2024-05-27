@@ -12,5 +12,3 @@ class FakeRandomInt(IntGenerator):
     def new_int(self, _a, _b):
         return self.values.pop(0)
 
-    def set_reply(self, value):
-        self.values = [value]

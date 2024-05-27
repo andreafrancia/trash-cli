@@ -2,19 +2,22 @@
 import os
 import sys
 
-from trashcli.fs import RealExists, RealIsStickyDir, RealIsSymLink, \
-    RealContentsOf, RealEntriesIfDirExists
-from trashcli.fstab.volume_listing import RealVolumesListing
-from trashcli.rm.rm_cmd import RmCmd, RmFileSystemReader
+from trashcli.fs_impl import RealFileReader
+from trashcli.fs_impl import RealEntriesIfDirExists
+from trashcli.fs_impl import RealPathExists
+from trashcli.fs_impl import RealIsStickyDir
+from trashcli.fs_impl import RealIsSymLink
+from trashcli.fstab.mount_points_listing import RealMountPointsListing
+from trashcli.rm.rm_cmd import RmCmd
+from trashcli.rm.rm_cmd import RmFileSystemReader
 
 
 def main():
-    volumes_listing = RealVolumesListing()
     cmd = RmCmd(environ=os.environ,
                 getuid=os.getuid,
-                volumes_listing=volumes_listing,
                 stderr=sys.stderr,
-                file_reader=RealRmFileSystemReader())
+                file_reader=RealRmFileSystemReader(),
+                mount_points_listing=RealMountPointsListing())
 
     cmd.run(sys.argv, os.getuid())
 
@@ -22,10 +25,10 @@ def main():
 
 
 class RealRmFileSystemReader(RmFileSystemReader,
-                             RealExists,
+                             RealPathExists,
                              RealIsStickyDir,
                              RealIsSymLink,
-                             RealContentsOf,
+                             RealFileReader,
                              RealEntriesIfDirExists,
                              ):
     pass

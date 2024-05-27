@@ -1,4 +1,5 @@
-from typing import NamedTuple, List
+from typing import List
+from typing import NamedTuple
 
 from trashcli.empty.clock import Clock
 from trashcli.empty.console import Console
@@ -11,8 +12,8 @@ from trashcli.empty.guard import Guard
 from trashcli.empty.parse_reply import parse_reply
 from trashcli.empty.prepare_output_message import prepare_output_message
 from trashcli.empty.user import User
-from trashcli.fs import ContentsOf
-from trashcli.fstab.volume_listing import VolumesListing
+from trashcli.fs import FileReader
+from trashcli.fstab.mount_points_listing import MountPointsListing
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.dir_reader import DirReader
 from trashcli.lib.environ import Environ
@@ -40,16 +41,16 @@ class EmptyAction:
     def __init__(self,
                  clock,  # type: Clock
                  file_remover,  # type: ExistingFileRemover
-                 volumes_listing,  # type: VolumesListing
                  file_reader,  # type: TopTrashDirRules.Reader
                  volumes,  # type: VolumeOf
                  dir_reader,  # type: DirReader
-                 content_reader,  # type: ContentsOf
+                 content_reader,  # type: FileReader
                  console,  # type: Console
+                 mount_point_listing,  # type: MountPointsListing
                  ):  # type: (...) -> None
-        self.selector = TrashDirsSelector.make(volumes_listing,
-                                               file_reader,
-                                               volumes)
+        self.selector = TrashDirsSelector.make(file_reader,
+                                               volumes,
+                                               mount_point_listing)
         trash_dir_reader = TrashDirReader(dir_reader)
         delete_mode = DeleteAccordingDate(content_reader,
                                           clock)

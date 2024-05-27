@@ -1,18 +1,24 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
-from typing import List, Dict, Iterator, Tuple
+from typing import Dict
+from typing import Iterator
+from typing import List
+from typing import Tuple
 
+from trashcli.fstab.mount_points_listing import MountPointsListing
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.dir_checker import DirChecker
-from trashcli.lib.user_info import AllUsersInfoProvider, \
-    SingleUserInfoProvider
-from trashcli.trash_dirs_scanner import trash_dir_found, TrashDir, \
-    TopTrashDirRules, TrashDirsScanner
+from trashcli.lib.user_info import AllUsersInfoProvider
+from trashcli.lib.user_info import SingleUserInfoProvider
+from trashcli.trash_dirs_scanner import TopTrashDirRules
+from trashcli.trash_dirs_scanner import TrashDir
+from trashcli.trash_dirs_scanner import TrashDirsScanner
+from trashcli.trash_dirs_scanner import trash_dir_found
 
 
 class TrashDirsSelector:
     def __init__(self,
-                 current_user_dirs,
-                 all_users_dirs,
+                 current_user_dirs,  # type: TrashDirsScanner
+                 all_users_dirs,  # type: TrashDirsScanner
                  volumes  # type: VolumeOf
                  ):
         self.current_user_dirs = current_user_dirs
@@ -37,20 +43,20 @@ class TrashDirsSelector:
                     TrashDir(dir, self.volumes.volume_of(dir)))
 
     @staticmethod
-    def make(volumes_listing,
-             reader,  # type: TopTrashDirRules.Reader
-             volumes  # type: VolumeOf
+    def make(reader,  # type: TopTrashDirRules.Reader
+             volumes,  # type: VolumeOf
+             mount_points_listing,  # type: MountPointsListing
              ):
         user_info_provider = SingleUserInfoProvider()
         user_dir_scanner = TrashDirsScanner(user_info_provider,
-                                            volumes_listing,
                                             TopTrashDirRules(reader),
-                                            DirChecker())
+                                            DirChecker(),
+                                            mount_points_listing)
         all_users_info_provider = AllUsersInfoProvider()
         all_users_scanner = TrashDirsScanner(all_users_info_provider,
-                                             volumes_listing,
                                              TopTrashDirRules(reader),
-                                             DirChecker())
+                                             DirChecker(),
+                                             mount_points_listing)
         return TrashDirsSelector(user_dir_scanner,
                                  all_users_scanner,
                                  volumes)

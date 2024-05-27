@@ -15,6 +15,14 @@ class TestMakeDirs:
                    self.fs.get_mod("/foo/bar/baz"),
                ] == [True, 0o700]
 
+    def test_makedirs_default_permissions(self):
+        self.fs.makedirs("/foo/bar/baz")
+
+        assert [
+                   self.fs.isdir("/foo/bar/baz"),
+                   self.fs.get_mod("/foo/bar/baz"),
+               ] == [True, 0o777]
+
     def test_makedirs_2(self):
         self.fs.makedirs("/foo/bar/baz", 0o700)
 

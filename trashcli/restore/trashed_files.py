@@ -3,25 +3,32 @@ from typing import NamedTuple
 from typing import Optional
 from typing import Union
 
+from trashcli.fstab.volumes import Volumes
+from trashcli.lib.environ import Environ
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.parse_trashinfo.parse_deletion_date import parse_deletion_date
 from trashcli.parse_trashinfo.parse_original_location import \
     parse_original_location
-from trashcli.restore.file_system import FileReader
+from trashcli.put.fs.fs import Fs
 from trashcli.restore.info_dir_searcher import InfoDirSearcher
 from trashcli.restore.restore_logger import RestoreLogger
+from trashcli.restore.trash_directories import TrashDirectoriesImpl
 from trashcli.restore.trashed_file import TrashedFile
 
 
 class TrashedFiles:
     def __init__(self,
+                 volumes,  # type: Volumes
+                 uid,  # type: int
+                 environ,  # type: Environ
+                 fs,  # type: Fs
                  logger,  # type: RestoreLogger
-                 file_reader,  # type: FileReader
-                 searcher,  # type: InfoDirSearcher
                  ):
+        trash_directories = TrashDirectoriesImpl(volumes, uid, environ)
+        info_dir_searcher = InfoDirSearcher(trash_directories, fs)
         self.logger = logger
-        self.file_reader = file_reader
-        self.searcher = searcher
+        self.file_reader = fs
+        self.searcher = info_dir_searcher
 
     def all_trashed_files(self,
                           trash_dir_from_cli,  # type: Optional[str]
@@ -48,7 +55,7 @@ class TrashedFiles:
                 yield NonTrashinfoFileFound(info_file.path)
             elif info_file.type == 'trashinfo':
                 try:
-                    contents = self.file_reader.contents_of(info_file.path)
+                    contents = self.file_reader.read_file(info_file.path)
                     original_location = parse_original_location(contents,
                                                                 info_file.volume)
                     deletion_date = parse_deletion_date(contents)

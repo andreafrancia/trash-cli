@@ -23,7 +23,7 @@ class TestBumpCmd:
     def test_when_clean(self):
         self.system.set_clean()
         self.fs.mkdir('trashcli')
-        self.fs.make_file('trashcli/trash.py', "version=x.y.x")
+        self.fs.make_text_file('trashcli/trash.py', "version=x.y.x")
 
         exit_code = capture_exit_code(lambda: self.cmd.run_bump("/", []))
 
@@ -38,7 +38,7 @@ class TestBumpCmd:
     def test_when_clean_and_dry_run(self):
         self.system.set_clean()
         self.fs.mkdir('trashcli')
-        self.fs.make_file('trashcli/trash.py', "version=x.y.x")
+        self.fs.make_text_file('trashcli/trash.py', "version=x.y.x")
 
         exit_code = capture_exit_code(
             lambda: self.cmd.run_bump("/", ['--dry-run']))

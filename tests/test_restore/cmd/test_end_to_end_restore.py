@@ -6,10 +6,10 @@ from os.path import join as pj
 
 import pytest
 
-from tests.support.fakes.fake_trash_dir import FakeTrashDir
+from tests.support.trash_dirs.fake_trash_dir import FakeTrashDir
 from tests.support.dirs.my_path import MyPath
 from tests.support.run.run_command import run_command
-from trashcli.fs import read_file
+from trashcli.put.fs.real_fs import RealFs
 
 
 @pytest.mark.slow
@@ -20,6 +20,7 @@ class TestEndToEndRestore(unittest.TestCase):
         self.trash_dir = self.tmp_dir / "trash-dir"
         os.makedirs(self.curdir)
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
+        self.fs = RealFs()
 
     def test_no_file_trashed(self):
         result = self.run_command("trash-restore")
@@ -41,9 +42,9 @@ No files trashed from current dir ('%s')
 
     def test_restore_happy_path(self):
         self.fake_trash_dir.add_trashed_file(
-            "file1", pj(self.curdir, "path", "to", "file1"), "contents")
+            "file1", pj(self.curdir, "path", "to", "file1"), b"contents")
         self.fake_trash_dir.add_trashed_file(
-            "file2", pj(self.curdir, "path", "to", "file2"), "contents")
+            "file2", pj(self.curdir, "path", "to", "file2"), b"contents")
         self.assertEqual(True, file_exists(pj(self.trash_dir, "info", "file2.trashinfo")))
         self.assertEqual(True, file_exists(pj(self.trash_dir, "files", "file2")))
 
@@ -55,13 +56,13 @@ No files trashed from current dir ('%s')
 What file to restore [0..1]: """ % { 'curdir': self.curdir},
                          result.stdout)
         self.assertEqual("", result.stderr)
-        self.assertEqual("contents", read_file(pj(self.curdir, "path/to/file2")))
+        self.assertEqual(b"contents", self.fs.read_file(pj(self.curdir, "path/to/file2")))
         self.assertEqual(False, file_exists(pj(self.trash_dir, "info", "file2.trashinfo")))
         self.assertEqual(False, file_exists(pj(self.trash_dir, "files", "file2")))
 
     def test_restore_with_relative_path(self):
         self.fake_trash_dir.add_trashed_file(
-            "file1", pj(self.curdir, "path", "to", "file1"), "contents")
+            "file1", pj(self.curdir, "path", "to", "file1"), b"contents")
         self.assertEqual(True, file_exists(pj(self.trash_dir, "info", "file1.trashinfo")))
         self.assertEqual(True, file_exists(pj(self.trash_dir, "files", "file1")))
 
@@ -74,7 +75,7 @@ What file to restore [0..1]: """ % { 'curdir': self.curdir},
 What file to restore [0..0]: """ % {'curdir': self.curdir},
                          result.stdout)
         self.assertEqual("", result.stderr)
-        self.assertEqual("contents", read_file(pj(self.curdir, "path/to/file1")))
+        self.assertEqual(b"contents", self.fs.read_file(pj(self.curdir, "path/to/file1")))
         self.assertEqual(False, file_exists(pj(self.trash_dir, "info", "file1.trashinfo")))
         self.assertEqual(False, file_exists(pj(self.trash_dir, "files", "file1")))
 

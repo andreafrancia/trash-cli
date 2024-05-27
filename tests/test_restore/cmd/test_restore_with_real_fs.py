@@ -10,10 +10,9 @@ from tests.support.restore.has_been_restored_matcher import \
     has_been_restored
 from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
-from trashcli.fs import RealExists
+from trashcli.fs_impl import RealPathExists
 from trashcli.fstab.volumes import FakeVolumes
-from trashcli.restore.file_system import RealFileReader, \
-    RealRestoreReadFileSystem, RealRestoreWriteFileSystem, RealListingFileSystem
+from trashcli.put.fs.real_fs import RealFs
 
 
 @pytest.mark.slow
@@ -21,18 +20,18 @@ class TestRestoreTrash(unittest.TestCase):
     def setUp(self):
         self.tmp_dir = MyPath.make_temp_dir()
         self.fixture = RestoreFileFixture(self.tmp_dir / 'XDG_DATA_HOME')
-        self.fs = RealExists()
+        self.fs = RealPathExists()
         self.cwd = self.tmp_dir / "cwd"
         XDG_DATA_HOME = self.tmp_dir / 'XDG_DATA_HOME'
         self.trash_dir = XDG_DATA_HOME / 'Trash'
+        restore_fs = RealFs()
+        volumes = FakeVolumes([])
         self.user = RestoreUser(environ={'XDG_DATA_HOME': XDG_DATA_HOME},
                                 uid=os.getuid(),
-                                file_reader=RealFileReader(),
-                                read_fs=RealRestoreReadFileSystem(),
-                                write_fs=RealRestoreWriteFileSystem(),
-                                listing_file_system=RealListingFileSystem(),
                                 version='0.0.0',
-                                volumes=FakeVolumes([]))
+                                volumes=volumes,
+                                fs=self.fs,
+                                restore_fs=restore_fs)
 
     def test_it_does_nothing_when_no_file_have_been_found_in_current_dir(self):
         res = self.user.run_restore(from_dir='/')
@@ -103,9 +102,9 @@ class TestRestoreTrash(unittest.TestCase):
         info_file = self.trash_dir / 'info/path.trashinfo'
 
         self.fixture.make_file(info_file,
-                               '[Trash Info]\n'
-                               'Path=%s\n' % original_location +
-                               'DeletionDate=2000-01-01T00:00:01\n')
+                               b'[Trash Info]\n'
+                               b'Path=%s\n' % original_location.encode('utf-8') +
+                               b'DeletionDate=2000-01-01T00:00:01\n')
         self.fixture.make_empty_file(backup_copy)
 
         return ATrashedFile(

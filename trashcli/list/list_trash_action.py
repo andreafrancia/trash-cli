@@ -117,7 +117,7 @@ class ListTrash:
                          extractor,
                          show_files):
         try:
-            contents = self.content_reader.contents_of(trashinfo_path)
+            contents = self.content_reader.read_file(trashinfo_path)
         except IOError as e:
             yield Error(str(e))
         else:

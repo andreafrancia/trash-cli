@@ -1,18 +1,18 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
-from abc import abstractmethod, ABCMeta
+from abc import abstractmethod
 
-import six
 from typing import Optional
 
+from trashcli.compat import Protocol
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.fstab.volumes import Volumes
 from trashcli.lib.environ import Environ
-from trashcli.lib.trash_dirs import (
-    volume_trash_dir1, volume_trash_dir2, home_trash_dir)
+from trashcli.lib.trash_dirs import home_trash_dir
+from trashcli.lib.trash_dirs import volume_trash_dir1
+from trashcli.lib.trash_dirs import volume_trash_dir2
 
 
-@six.add_metaclass(ABCMeta)
-class TrashDirectories:
+class TrashDirectories(Protocol):
     @abstractmethod
     def list_trash_dirs(self, trash_dir_from_cli):
         raise NotImplementedError()
@@ -22,7 +22,7 @@ class TrashDirectoriesImpl(TrashDirectories):
     def __init__(self,
                  volumes,  # type: Volumes
                  uid,  # type: int
-                 environ,
+                 environ,  # type: Environ
                  ):
         trash_directories1 = TrashDirectories1(volumes, uid, environ)
         self.trash_directories2 = TrashDirectories2(volumes,

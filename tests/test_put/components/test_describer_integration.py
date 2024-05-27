@@ -4,8 +4,8 @@ import unittest
 
 import pytest
 
-from tests.support.files import make_empty_file, make_file, require_empty_dir
 from tests.support.dirs.my_path import MyPath
+from tests.support.fs_fixture import FsFixture
 from trashcli.put.describer import Describer
 from trashcli.put.fs.real_fs import RealFs
 
@@ -13,36 +13,38 @@ from trashcli.put.fs.real_fs import RealFs
 @pytest.mark.slow
 class TestDescriber(unittest.TestCase):
     def setUp(self):
+        fs = RealFs()
         self.temp_dir = MyPath.make_temp_dir()
-        self.describer = Describer(RealFs())
+        self.describer = Describer(fs)
+        self.fx = FsFixture(fs)
 
     def test_on_directories(self):
-        require_empty_dir(self.temp_dir / 'a-dir')
+        self.fx.require_empty_dir(self.temp_dir / 'a-dir')
 
         assert "directory" == self.describer.describe('.')
         assert "directory" == self.describer.describe("..")
         assert "directory" == self.describer.describe(self.temp_dir / 'a-dir')
 
     def test_on_dot_directories(self):
-        require_empty_dir(self.temp_dir / 'a-dir')
+        self.fx.require_empty_dir(self.temp_dir / 'a-dir')
 
         assert "'.' directory" == self.describer.describe(
             self.temp_dir / "a-dir/.")
         assert "'.' directory" == self.describer.describe("./.")
 
     def test_on_dot_dot_directories(self):
-        require_empty_dir(self.temp_dir / 'a-dir')
+        self.fx.require_empty_dir(self.temp_dir / 'a-dir')
 
         assert "'..' directory" == self.describer.describe("./..")
         assert "'..' directory" == self.describer.describe(self.temp_dir / "a-dir/..")
 
     def test_name_for_regular_files_non_empty_files(self):
-        make_file(self.temp_dir / "non-empty", "contents")
+        self.fx.make_file(self.temp_dir / "non-empty", b"contents")
 
         assert "regular file" == self.describer.describe(self.temp_dir / "non-empty")
 
     def test_name_for_empty_file(self):
-        make_empty_file(self.temp_dir / 'empty')
+        self.fx.make_empty_file(self.temp_dir / 'empty')
 
         assert "regular empty file" == self.describer.describe(self.temp_dir / "empty")
 

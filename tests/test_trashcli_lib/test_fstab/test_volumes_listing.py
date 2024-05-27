@@ -1,34 +1,41 @@
-import unittest
-
 from trashcli.fstab.mount_points_listing import FakeMountPointsListing
-from trashcli.fstab.volume_listing import VolumesListingImpl
+from trashcli.fstab.volume_listing import ListingConfig
+from trashcli.fstab.volume_listing import VolumesListing
+from trashcli.lib.environ import Environ
 
 
-class TestVolumesListingImpl(unittest.TestCase):
-    def setUp(self):
-        self.volumes_listing = VolumesListingImpl(FakeMountPointsListing(['/os-vol1', '/os-vol2']))
+class TestVolumesListing:
+    def list_volumes_when_environ(self,
+                                  environ,  # type: Environ
+                                  ):
+        mount_points_listing = FakeMountPointsListing(['/os-vol1', '/os-vol2'])
+        volumes_listing = VolumesListing(mount_points_listing)
+        volumes_listing_config = ListingConfig(environ)
+        return volumes_listing.list_volumes(volumes_listing_config)
 
     def test_os_mount_points(self):
-        result = self.volumes_listing.list_volumes({})
+        result = self.list_volumes_when_environ({})
 
-        assert list(result) == ['/os-vol1', '/os-vol2']
+        assert result == ['/os-vol1', '/os-vol2']
 
     def test_one_vol_from_environ(self):
-        result = self.volumes_listing.list_volumes({'TRASH_VOLUMES': '/fake-vol1'})
+        result = self.list_volumes_when_environ({'TRASH_VOLUMES': '/fake-vol1'})
 
-        assert list(result) == ['/fake-vol1']
+        assert result == ['/fake-vol1']
 
     def test_multiple_vols_from_environ(self):
-        result = self.volumes_listing.list_volumes({'TRASH_VOLUMES': '/fake-vol1:/fake-vol2:/fake-vol3'})
+        result = self.list_volumes_when_environ(
+            {'TRASH_VOLUMES': '/fake-vol1:/fake-vol2:/fake-vol3'})
 
-        assert list(result) == ['/fake-vol1', '/fake-vol2', '/fake-vol3']
+        assert result == ['/fake-vol1', '/fake-vol2', '/fake-vol3']
 
     def test_empty_environ(self):
-        result = self.volumes_listing.list_volumes({'TRASH_VOLUMES': ''})
+        result = self.list_volumes_when_environ({'TRASH_VOLUMES': ''})
 
-        assert list(result) == ['/os-vol1', '/os-vol2']
+        assert result == ['/os-vol1', '/os-vol2']
 
     def test_skip_empty_vol(self):
-        result = self.volumes_listing.list_volumes({'TRASH_VOLUMES': '/vol1::/vol2'})
+        result = self.list_volumes_when_environ(
+            {'TRASH_VOLUMES': '/vol1::/vol2'})
 
-        assert list(result) == ['/vol1', '/vol2']
+        assert result == ['/vol1', '/vol2']

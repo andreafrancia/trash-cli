@@ -2,10 +2,11 @@ from __future__ import print_function
 
 import argparse
 import sys
+from trashcli.path import Path
 
 from six import text_type
 
-from tests.support.project_root import project_root
+from tests.support.project_root import get_project_root
 from tests.support.tools.adapters.real_cal import RealCal
 from tests.support.tools.bump_cmd import trash_py_file
 from tests.support.tools.version_from_date import dev_version_from_date
@@ -15,7 +16,7 @@ from trashcli.put.fs.real_fs import RealFs
 
 def main():
     cmd = SetDevVersionCmd(RealFs(), sys.stdout, sys.stderr, RealCal())
-    cmd.run_set_dev_version(sys.argv, project_root())
+    cmd.run_set_dev_version(sys.argv, get_project_root())
 
 
 class SetDevVersionCmd:
@@ -25,7 +26,10 @@ class SetDevVersionCmd:
         self.cal = cal
         self.version_saver = VersionSaver(fs)
 
-    def run_set_dev_version(self, argv, root):
+    def run_set_dev_version(self,
+                            argv,
+                            root,  # type: Path
+                            ):  # type: (...) -> None
         parser = argparse.ArgumentParser(prog=argv[0])
         parser.add_argument('ref')
         parser.add_argument('sha')

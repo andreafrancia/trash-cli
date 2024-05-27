@@ -5,22 +5,21 @@ from typing import cast
 from tests.support.py2mock import Mock, call
 from six import StringIO
 
-from tests.support.fakes.stub_volume_of import StubVolumeOf
 from tests.support.fakes.mock_dir_reader import MockDirReader
-from trashcli.empty.delete_according_date import ContentsOf
+from tests.support.fakes.stub_volume_of import StubVolumeOf
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
-from trashcli.fstab.volume_listing import FixedVolumesListing
-from trashcli.fstab.volume_listing import VolumesListing
+from trashcli.fs import FileReader
+from trashcli.fstab.mount_points_listing import FakeMountPointsListing
 from trashcli.lib.dir_reader import DirReader
 from trashcli.trash_dirs_scanner import TopTrashDirRules
 
+
 class TestTrashEmptyCmdFs(unittest.TestCase):
     def setUp(self):
-        self.volumes_listing = FixedVolumesListing([])
         self.file_reader = Mock(spec=TopTrashDirRules.Reader)
         self.file_remover = Mock(spec=ExistingFileRemover)
-        self.content_reader = Mock(spec=ContentsOf)
+        self.content_reader = Mock(spec=FileReader)
         self.dir_reader = MockDirReader()
         self.err = StringIO()
         self.out = StringIO()
@@ -29,14 +28,14 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
             argv0='trash-empty',
             out=self.out,
             err=self.err,
-            volumes_listing=cast(VolumesListing, self.volumes_listing),
             now=None,
             file_reader=cast(TopTrashDirRules.Reader, self.file_reader),
             file_remover=cast(ExistingFileRemover, self.file_remover),
-            content_reader=cast(ContentsOf, self.content_reader),
+            content_reader=cast(FileReader, self.content_reader),
             dir_reader=cast(DirReader, self.dir_reader),
             version='unused',
-            volumes=StubVolumeOf()
+            volumes=StubVolumeOf(),
+            mount_point_listing=FakeMountPointsListing([])
         )
 
     def test(self):

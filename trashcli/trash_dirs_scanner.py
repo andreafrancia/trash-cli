@@ -2,7 +2,11 @@ import os
 from typing import Iterable
 from trashcli.compat import Protocol
 
-from trashcli.fs import PathExists, IsStickyDir, IsSymLink
+from trashcli.fs import IsSymLink
+from trashcli.fs import IsStickyDir
+from trashcli.fs import PathExists
+from trashcli.fstab.mount_points_listing import MountPointsListing
+from trashcli.fstab.volume_listing import ListingConfig
 from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.lib.dir_checker import DirChecker
 from trashcli.lib.user_info import UserInfoProvider
@@ -65,20 +69,22 @@ class TopTrashDirRules:
 class TrashDirsScanner:
     def __init__(self,
                  user_info_provider,  # type: UserInfoProvider
-                 volumes_listing,  # type: VolumesListing
                  top_trash_dir_rules,  # type: TopTrashDirRules
                  dir_checker,  # type: DirChecker
+                 mount_points_listing,  # type: MountPointsListing
                  ):
         self.user_info_provider = user_info_provider
-        self.volumes_listing = volumes_listing  # type: VolumesListing
         self.top_trash_dir_rules = top_trash_dir_rules
         self.dir_checker = dir_checker
+        self.mount_points_listing = mount_points_listing
 
     def scan_trash_dirs(self, environ, uid):
         for user_info in self.user_info_provider.get_user_info(environ, uid):
             for path in user_info.home_trash_dir_paths:
                 yield trash_dir_found, TrashDir(path, '/')
-            for volume in self.volumes_listing.list_volumes(environ):
+            volumes_listing_config = ListingConfig(environ)
+            volumes_listing = VolumesListing(self.mount_points_listing)
+            for volume in volumes_listing.list_volumes(volumes_listing_config):
                 top_trash_dir_path = os.path.join(volume, '.Trash',
                                                   str(user_info.uid))
                 result = self.top_trash_dir_rules.valid_to_be_read(

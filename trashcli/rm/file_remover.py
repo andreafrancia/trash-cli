@@ -1,6 +1,6 @@
-from trashcli.fs import FsMethods
+from trashcli.fs_impl import RealRemoveFile2
+from trashcli.fs_impl import RealRemoveFileIfExists
 
 
-class FileRemover:
-    remove_file2 = FsMethods().remove_file2
-    remove_file_if_exists = FsMethods().remove_file_if_exists
+class FileRemover(RealRemoveFile2, RealRemoveFileIfExists):
+    pass

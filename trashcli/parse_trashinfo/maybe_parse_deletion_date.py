@@ -1,11 +1,13 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 from __future__ import absolute_import
 
+from trashcli.lib import TrashInfoContent
 from trashcli.parse_trashinfo.basket import Basket
 from trashcli.parse_trashinfo.parse_trashinfo import ParseTrashInfo
 
 
-def maybe_parse_deletion_date(contents):
+def maybe_parse_deletion_date(contents,  # type: TrashInfoContent
+                              ):  # type: (...) -> str
     result = Basket(unknown_date)
     parser = ParseTrashInfo(
         on_deletion_date=lambda date: result.collect(date),

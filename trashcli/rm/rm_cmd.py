@@ -1,7 +1,7 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 from trashcli.compat import Protocol
-
-from trashcli.fs import ContentsOf
+from trashcli.fs import FileReader
+from trashcli.fstab.mount_points_listing import MountPointsListing
 from trashcli.lib.dir_checker import DirChecker
 from trashcli.lib.dir_reader import DirReader
 from trashcli.lib.user_info import SingleUserInfoProvider
@@ -9,11 +9,12 @@ from trashcli.rm.cleanable_trashcan import CleanableTrashcan
 from trashcli.rm.file_remover import FileRemover
 from trashcli.rm.filter import Filter
 from trashcli.rm.list_trashinfo import ListTrashinfos
-from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
-    trash_dir_found
+from trashcli.trash_dirs_scanner import TopTrashDirRules
+from trashcli.trash_dirs_scanner import TrashDirsScanner
+from trashcli.trash_dirs_scanner import trash_dir_found
 
 
-class RmFileSystemReader(ContentsOf,
+class RmFileSystemReader(FileReader,
                          DirReader,
                          TopTrashDirRules.Reader,
                          Protocol):
@@ -24,13 +25,13 @@ class RmCmd:
     def __init__(self,
                  environ,
                  getuid,
-                 volumes_listing,
                  stderr,
                  file_reader,  # type: RmFileSystemReader
+                 mount_points_listing,  # type: MountPointsListing
                  ):
         self.environ = environ
         self.getuid = getuid
-        self.volumes_listing = volumes_listing
+        self.mount_points_listing = mount_points_listing
         self.stderr = stderr
         self.file_reader = file_reader
 
@@ -54,9 +55,9 @@ class RmCmd:
 
         user_info_provider = SingleUserInfoProvider()
         scanner = TrashDirsScanner(user_info_provider,
-                                   self.volumes_listing,
                                    TopTrashDirRules(self.file_reader),
-                                   DirChecker())
+                                   DirChecker(),
+                                   self.mount_points_listing)
 
         for event, args in scanner.scan_trash_dirs(self.environ, uid):
             if event == trash_dir_found:

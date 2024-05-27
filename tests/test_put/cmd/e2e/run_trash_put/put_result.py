@@ -1,15 +1,16 @@
 from typing import NamedTuple
 
-from tests.support.run.cmd_result import CmdResult
-from tests.support.help.help_reformatting import reformat_help_message
 from tests.support.dirs.my_path import MyPath
+from tests.support.help.help_reformatting import reformat_help_message
+from tests.support.run.cmd_result import CmdResult
+from tests.support.run.cmd_result import ExitCode
 from tests.test_put.cmd.e2e.run_trash_put.stream import Stream
 
 
 class PutResult(NamedTuple('Output', [
     ('stderr', Stream),
     ('stdout', Stream),
-    ('exit_code', int),
+    ('exit_code', ExitCode),
     ('temp_dir', MyPath),
 ])):
     def help_message(self):
@@ -27,6 +28,7 @@ class PutResult(NamedTuple('Output', [
     def both(self):
         return Stream(stream=self.stderr.stream + self.stdout.stream,
                       temp_dir=self.temp_dir)
+
 
 def make_put_result(result,  # type: CmdResult
                     temp_dir,  # type: MyPath

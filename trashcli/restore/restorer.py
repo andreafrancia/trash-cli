@@ -1,17 +1,15 @@
 import os
 
-from trashcli.restore.file_system import RestoreWriteFileSystem, \
-    RestoreReadFileSystem
+from trashcli.restore.fs.restore_fs import RestoreFs
 from trashcli.restore.trashed_file import TrashedFile
 
 
 class Restorer:
     def __init__(self,
-                 read_fs, # type: RestoreReadFileSystem
-                 write_fs, # type: RestoreWriteFileSystem
+                 fs, # type: RestoreFs
                  ):
-        self.read_fs = read_fs
-        self.write_fs = write_fs
+        self.read_fs = fs
+        self.write_fs = fs
 
     def restore_trashed_file(self,
                              trashed_file, # type: TrashedFile
@@ -20,7 +18,7 @@ class Restorer:
         """
         If overwrite is enabled, then the restore functionality will overwrite an existing file
         """
-        if not overwrite and self.read_fs.path_exists(trashed_file.original_location):
+        if not overwrite and self.read_fs.exists(trashed_file.original_location):
             raise IOError(
                 'Refusing to overwrite existing file "%s".' % os.path.basename(
                     trashed_file.original_location))

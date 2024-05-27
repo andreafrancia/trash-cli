@@ -39,7 +39,7 @@ class TestTrashList:
 
     def test_should_output_invalid_dates_using_question_marks(self, user):
         user.home_trash_dir().add_trashinfo_wrong_date('with-invalid-date',
-                                                       'Wrong date')
+                                                       b'Wrong date')
 
         output = user.run_trash_list()
 
@@ -47,7 +47,7 @@ class TestTrashList:
                 "????-??-?? ??:??:?? /with-invalid-date\n")
 
     def test_should_warn_about_empty_trashinfos(self, user):
-        user.home_trash_dir().add_trashinfo_content('empty', '')
+        user.home_trash_dir().add_trashinfo_content('empty', b'')
 
         output = user.run_trash_list()
 

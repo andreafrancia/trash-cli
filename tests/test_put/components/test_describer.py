@@ -30,7 +30,7 @@ class TestDescriber(unittest.TestCase):
         assert "'..' directory" == self.describer.describe("a-dir/..")
 
     def test_name_for_regular_files_non_empty_files(self):
-        self.fs.make_file("non-empty", "contents")
+        self.fs.make_file("non-empty", b"contents")
 
         assert "regular file" == self.describer.describe("non-empty")
 

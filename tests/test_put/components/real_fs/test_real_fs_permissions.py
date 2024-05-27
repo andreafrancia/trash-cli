@@ -13,7 +13,7 @@ class TestRealFsPermissions(unittest.TestCase):
     def test(self):
         self.fs.makedirs(self.tmp_dir / 'dir', 0o000)
         error = capture_error(
-            lambda: self.fs.make_file(self.tmp_dir / 'dir' / 'file', 'content'))
+            lambda: self.fs.make_file(self.tmp_dir / 'dir' / 'file', b'content'))
 
         assert str(error) == "[Errno 13] Permission denied: '%s'" % (
                     self.tmp_dir / 'dir' / 'file')
@@ -21,7 +21,7 @@ class TestRealFsPermissions(unittest.TestCase):
 
     def test_chmod_and_get_mod(self):
         path = self.tmp_dir / 'file'
-        self.fs.make_file(path, 'content')
+        self.fs.make_file(path, b'content')
         self.fs.chmod(path, 0o123)
 
         assert self.fs.get_mod(path) == 0o123

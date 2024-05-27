@@ -36,7 +36,7 @@ class TestFakeFs(unittest.TestCase):
         self.fs.mkdir("/foo/bar")
         self.fs.atomic_write("/foo/bar/baz", "content")
 
-        result = self.fs.read("/foo/bar/baz")
+        result = self.fs.read_file("/foo/bar/baz")
 
         assert result == "content"
 
@@ -88,7 +88,7 @@ class TestFakeFs(unittest.TestCase):
         assert self.fs.ls_a('/fruits') == ['.', '..', 'apple']
 
     def test_islink_on_a_file(self):
-        self.fs.make_file("/foo", "content")
+        self.fs.make_file("/foo", b"content")
 
         assert self.fs.islink("/foo") is False
 
@@ -116,19 +116,19 @@ class TestFakeFs(unittest.TestCase):
 
     def test_absolute_path(self):
         self.fs.make_file('/foo')
-        assert '' == self.fs.get_entity_at('/foo').content
+        assert b'' == self.fs.get_entity_at('/foo').content
 
     def test_relativae_path(self):
-        self.fs.make_file('/foo', 'content')
+        self.fs.make_file('/foo', b'content')
 
-        assert 'content' == self.fs.get_entity_at('foo').content
+        assert b'content' == self.fs.get_entity_at('foo').content
 
     def test_relativae_path_with_cd(self):
         self.fs.makedirs('/foo/bar', 0o755)
-        self.fs.make_file('/foo/bar/baz', 'content')
+        self.fs.make_file('/foo/bar/baz', b'content')
         self.fs.cd('/foo/bar')
 
-        assert 'content' == self.fs.get_entity_at('baz').content
+        assert b'content' == self.fs.get_entity_at('baz').content
 
     def test_isfile_with_file(self):
         self.fs.make_file('/foo')
@@ -143,22 +143,22 @@ class TestFakeFs(unittest.TestCase):
     def test_getsize_with_empty_file(self):
         self.fs.make_file("foo")
 
-        assert 0 == self.fs.getsize("foo")
+        assert 0 == self.fs.get_file_size("foo")
 
-    def test_getsize_with_non_empty_file(self):
-        self.fs.make_file("foo", "1234")
+    def test_get_file_size_with_non_empty_file(self):
+        self.fs.make_file("foo", b"1234")
 
-        assert 4 == self.fs.getsize("foo")
+        assert 4 == self.fs.get_file_size("foo")
 
-    def test_getsize_with_dir(self):
+    def test_get_file_size_with_dir(self):
         self.fs.mkdir("foo")
 
-        self.assertRaises(NotImplementedError, lambda: self.fs.getsize("foo"))
+        self.assertRaises(NotImplementedError, lambda: self.fs.get_file_size("foo"))
 
     def test_mode_lets_create_a_file(self):
         self.fs.makedirs("/foo/bar/baz", 0o755)
 
-        self.fs.make_file("/foo/bar/baz/1", "1")
+        self.fs.make_file("/foo/bar/baz/1", b"1")
 
         assert self.fs.isfile("/foo/bar/baz/1") is True
 
@@ -167,12 +167,12 @@ class TestFakeFs(unittest.TestCase):
         self.fs.chmod("/foo/bar/baz", 0o055)
 
         error = capture_error(
-            lambda: self.fs.make_file("/foo/bar/baz/1", "1"))
+            lambda: self.fs.make_file("/foo/bar/baz/1", b"1"))
 
         assert str(error) == "[Errno 13] Permission denied: '/foo/bar/baz/1'"
 
     def test_get_mod_s_1(self):
-        self.fs.make_file("/foo", "content")
+        self.fs.make_file("/foo", b"content")
 
         assert format_mode(self.fs.get_mod("/foo")) == '0o644'
 

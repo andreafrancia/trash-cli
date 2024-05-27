@@ -2,6 +2,8 @@ from collections import OrderedDict
 from typing import Optional
 from typing import Union
 
+from six import binary_type
+
 from tests.support.put.fake_fs.ent import Ent
 from tests.support.put.fake_fs.inode import INode
 from tests.support.put.fake_fs.inode import Stickiness
@@ -43,7 +45,10 @@ class Directory(Ent):
         inode = make_inode_dir(basename, mode, self._inode())
         self._entries[basename] = inode
 
-    def add_file(self, basename, content, complete_path):
+    def add_file(self,  # type: Directory
+                 basename,
+                 content,  # type: binary_type
+                 complete_path):
         mode = 0o644
         if self._inode().mode & 0o200 == 0:
             raise MyPermissionError(
@@ -58,15 +63,13 @@ class Directory(Ent):
     def get_file(self, basename):
         return self._entries[basename].entity
 
-    def get_entry(self, basename, path, fs):
+    def get_entry(self,
+                  basename,
+                  ):  # type: (...) -> INode
         try:
             return self._entries[basename]
         except KeyError:
-            raise MyFileNotFoundError(
-                "no such file or directory: %s\n%s" % (
-                    path,
-                    "\n".join(fs.find_all()),
-                ))
+            raise MyFileNotFoundError("no such file or directory: %s\n%s")
 
     def add_entry(self, basename, entry):
         self._entries[basename] = entry

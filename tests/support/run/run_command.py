@@ -3,8 +3,8 @@ import subprocess
 import sys
 
 from tests.support.dicts import merge_dicts
-from tests.support.make_scripts import script_path_for
-from tests.support.project_root import project_root
+from tests.support.make_scripts import ScriptPaths
+from tests.support.project_root import get_project_root
 from tests.support.run.cmd_result import CmdResult
 
 
@@ -13,8 +13,8 @@ def run_command(cwd, command, args=None, input='', env=None):
         env = {}
     if args is None:
         args = []
-    command_full_path = script_path_for(command)
-    env['PYTHONPATH'] = project_root()
+    command_full_path = ScriptPaths(get_project_root()).script_path_for(command)
+    env['PYTHONPATH'] = get_project_root()
     process = subprocess.Popen([sys.executable, command_full_path] + args,
                                stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE,

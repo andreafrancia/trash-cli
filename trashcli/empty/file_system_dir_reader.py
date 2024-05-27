@@ -1,9 +1,10 @@
-from trashcli.fs import RealExists, RealEntriesIfDirExists
+from trashcli.fs_impl import RealPathExists
+from trashcli.fs_impl import RealEntriesIfDirExists
 from trashcli.lib.dir_reader import DirReader
 
 
 class FileSystemDirReader(DirReader,
                           RealEntriesIfDirExists,
-                          RealExists,
+                          RealPathExists,
                           ):
     pass

@@ -28,3 +28,7 @@ class INode:
     def directory(self):
         from tests.support.put.fake_fs.directory import Directory
         return check_cast(Directory, self.entity)
+
+    def make_executable(self):
+        self.chmod(self.mode | 0o555)
+

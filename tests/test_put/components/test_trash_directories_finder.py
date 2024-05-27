@@ -21,7 +21,7 @@ class TestTrashDirectoriesFinder(unittest.TestCase):
                                                             self.environ, 123,
                                                             True)
 
-        assert result == [
+        assert list(result) == [
             Candidate(trash_dir_path='~/.local/share/Trash',
                       volume='volume_of(~/.local/share/Trash)',
                       path_maker_type=PathMakerType.AbsolutePaths,
@@ -45,8 +45,8 @@ class TestTrashDirectoriesFinder(unittest.TestCase):
                                                             123,
                                                             True)
 
-        assert result == [('user_dir',
-                           'volume_of(user_dir)',
-                           PathMakerType.RelativePaths,
-                           NoCheck,
-                           Gate.SameVolume)]
+        assert list(result) == [('user_dir',
+                                 'volume_of(user_dir)',
+                                 PathMakerType.RelativePaths,
+                                 NoCheck,
+                                 Gate.SameVolume)]

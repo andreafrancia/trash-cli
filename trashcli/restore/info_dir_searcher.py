@@ -1,5 +1,6 @@
 from typing import NamedTuple, Iterable, Optional
 
+from trashcli.put.fs.fs import Fs
 from trashcli.restore.info_files import InfoFiles
 from trashcli.restore.trash_directories import TrashDirectories
 
@@ -7,10 +8,10 @@ from trashcli.restore.trash_directories import TrashDirectories
 class InfoDirSearcher:
     def __init__(self,
                  trash_directories,  # type: TrashDirectories
-                 info_files, # type: InfoFiles
+                 fs,  # type: Fs
                  ):
         self.trash_directories = trash_directories
-        self.info_files = info_files
+        self.info_files = InfoFiles(fs)
 
     def all_file_in_info_dir(self,
                              trash_dir_from_cli,  # type: Optional[str]

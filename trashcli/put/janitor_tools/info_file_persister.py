@@ -2,6 +2,7 @@ import errno
 import os
 from typing import NamedTuple, Iterator
 
+from trashcli.lib import TrashInfoContent
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.put.fs.fs import Fs
 from trashcli.put.jobs import JobStatus, NeedsMoreAttempts, Succeeded, \
@@ -12,7 +13,7 @@ from trashcli.put.suffix import Suffix
 
 class TrashinfoData(NamedTuple('TrashinfoData', [
     ('basename', str),
-    ('content', str),
+    ('content', TrashInfoContent),
     ('info_dir_path', str),
 ])):
     pass
