@@ -2,7 +2,7 @@
 import unittest
 
 import pytest
-from mock import Mock
+from tests.support.py2mock import Mock
 from six import StringIO
 
 from tests.support.fakes.stub_volume_of import StubVolumeOf

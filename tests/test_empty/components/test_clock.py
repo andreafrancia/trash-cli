@@ -1,7 +1,7 @@
 import datetime
 import unittest
 
-from mock import Mock, call
+from tests.support.py2mock import Mock, call
 from trashcli.empty.clock import Clock
 
 

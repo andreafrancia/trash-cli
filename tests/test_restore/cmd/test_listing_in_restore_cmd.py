@@ -1,6 +1,6 @@
 import unittest
 
-from mock import Mock
+from tests.support.py2mock import Mock
 from six import StringIO
 
 from trashcli.restore.file_system import FakeReadCwd

@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from mock import Mock
+from tests.support.py2mock import Mock
 from six import StringIO
 
 from tests.support.files import make_empty_file

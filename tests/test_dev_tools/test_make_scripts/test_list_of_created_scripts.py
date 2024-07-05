@@ -1,4 +1,4 @@
-from mock import Mock
+from tests.support.py2mock import Mock
 
 from tests.support.make_scripts import Scripts
 from tests.support.make_scripts import script_path_without_base_dir_for

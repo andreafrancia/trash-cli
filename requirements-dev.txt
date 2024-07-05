@@ -1,6 +1,6 @@
 # testing
 pytest
-mock
+mock; python_version < '3.3'
 flexmock
 parameterized
 tox
