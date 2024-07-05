@@ -1,4 +1,4 @@
-from mock import Mock
+from tests.support.mock import Mock
 from six import StringIO
 from trashcli.put.describer import Describer
 

@@ -1,6 +1,6 @@
 import unittest
 
-from mock import Mock
+from tests.support.mock import Mock
 
 from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.check_type import NoCheck, TopTrashDirCheck

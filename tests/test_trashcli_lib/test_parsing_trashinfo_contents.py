@@ -2,7 +2,7 @@
 import unittest
 from datetime import datetime
 
-from mock import MagicMock
+from tests.support.mock import MagicMock
 
 from trashcli.parse_trashinfo.parse_path import parse_path
 from trashcli.parse_trashinfo.parse_trashinfo import ParseTrashInfo

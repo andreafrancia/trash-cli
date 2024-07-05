@@ -2,7 +2,7 @@ import unittest
 
 from six import StringIO
 
-from mock import Mock
+from tests.support.mock import Mock
 
 from tests.support.asserts import assert_starts_with
 from trashcli.rm.rm_cmd import RmCmd
