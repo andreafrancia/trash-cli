@@ -1,7 +1,7 @@
 from textwrap import dedent
 
-import mock
-from mock import Mock
+from tests.support import py2mock as mock
+from tests.support.py2mock import Mock
 
 from tests.support.make_scripts import Scripts
 from tests.support.make_scripts import script_path_for
@@ -43,5 +43,3 @@ class TestMakeScript:
         assert expected == contents, ("Expected:\n---\n%s---\n"
                                       "Actual  :\n---\n%s---\n"
                                       % (expected, contents))
-
-

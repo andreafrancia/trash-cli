@@ -2,7 +2,7 @@
 import unittest
 from typing import cast
 
-from mock import call
+from tests.support.py2mock import Mock, call
 from six import StringIO
 
 from tests.support.fakes.stub_volume_of import StubVolumeOf
@@ -14,7 +14,6 @@ from trashcli.fstab.volume_listing import FixedVolumesListing
 from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.lib.dir_reader import DirReader
 from trashcli.trash_dirs_scanner import TopTrashDirRules
-from mock import Mock
 
 class TestTrashEmptyCmdFs(unittest.TestCase):
     def setUp(self):

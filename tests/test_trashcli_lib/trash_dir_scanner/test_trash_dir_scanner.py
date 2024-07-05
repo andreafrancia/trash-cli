@@ -1,6 +1,6 @@
 import unittest
 
-from mock import Mock
+from tests.support.py2mock import Mock
 
 from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.lib.dir_checker import DirChecker
