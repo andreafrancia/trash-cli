@@ -46,7 +46,7 @@ class RestoreUser:
         stderr = StringIO()
         logger = FakeLogger(stderr)
 
-        cmd = RestoreCmd.make(
+        cmd = RestoreCmd(
             stdout=stdout,
             stderr=stderr,
             exit=sys.exit,

@@ -14,7 +14,7 @@ from ..put.fs.real_fs import RealFs
 
 
 def main():
-    RestoreCmd.make(
+    RestoreCmd(
         stdout=sys.stdout,
         stderr=sys.stderr,
         exit=sys.exit,
