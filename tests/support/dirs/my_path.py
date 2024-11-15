@@ -12,6 +12,7 @@ class MyPath(Path):
         return super(MyPath, cls).__new__(cls, path)
 
     def __init__(self, path):
+        super(MyPath, self).__init__(path)
         self.fs = RealFs()
 
     def existence_of(self, *paths):
