@@ -1,6 +1,7 @@
 from typing import Callable
 from typing import NamedTuple
 from typing import Union
+from typing import Tuple
 
 from six import StringIO
 from six import text_type
@@ -28,6 +29,9 @@ class CmdResult(NamedTuple('CmdResult', [
 
     def output(self):
         return self._format([self.stdout, self.stderr])
+
+    def out_and_err(self):  # type: () -> Tuple[text_type, text_type]
+        return self.stdout, self.stderr
 
     def last_line_of_stderr(self):
         return last_line_of(self.stderr)

@@ -1,5 +1,4 @@
 import os
-import unittest
 
 import pytest
 
@@ -16,8 +15,8 @@ from trashcli.put.fs.real_fs import RealFs
 
 
 @pytest.mark.slow
-class TestRestoreTrash(unittest.TestCase):
-    def setUp(self):
+class TestRestoreTrash:
+    def setup_method(self):
         self.tmp_dir = MyPath.make_temp_dir()
         self.fixture = RestoreFileFixture(self.tmp_dir / 'XDG_DATA_HOME')
         self.fs = RealPathExists()
@@ -36,41 +35,38 @@ class TestRestoreTrash(unittest.TestCase):
     def test_it_does_nothing_when_no_file_have_been_found_in_current_dir(self):
         res = self.user.run_restore(from_dir='/')
 
-        self.assertEqual("No files trashed from current dir ('/')\n",
-                         res.output())
+        assert res.output() == "No files trashed from current dir ('/')\n"
 
     def test_gives_an_error_on_not_a_number_input(self):
         self.fixture.having_a_trashed_file('/foo/bar')
 
         res = self.user.run_restore(reply='+@notanumber', from_dir='/foo')
 
-        self.assertEqual('Invalid entry: not an index: +@notanumber\n',
-                         res.stderr)
+        assert res.stderr == 'Invalid entry: not an index: +@notanumber\n'
 
     def test_it_gives_error_when_user_input_is_too_small(self):
         self.fixture.having_a_trashed_file('/foo/bar')
 
         res = self.user.run_restore(reply='1', from_dir='/foo')
 
-        self.assertEqual('Invalid entry: out of range 0..0: 1\n',
-                         res.stderr)
+        assert res.stderr == 'Invalid entry: out of range 0..0: 1\n'
 
     def test_it_gives_error_when_user_input_is_too_large(self):
         self.fixture.having_a_trashed_file('/foo/bar')
 
         res = self.user.run_restore(reply='1', from_dir='/foo')
 
-        self.assertEqual('Invalid entry: out of range 0..0: 1\n',
-                         res.stderr)
+        assert res.stderr == 'Invalid entry: out of range 0..0: 1\n'
 
     def test_it_shows_the_file_deleted_from_the_current_dir(self):
         self.fixture.having_a_trashed_file('/foo/bar')
 
         res = self.user.run_restore(reply='', from_dir='/foo')
 
-        self.assertEqual('   0 2000-01-01 00:00:01 /foo/bar\n'
-                         'No files were restored\n', res.output())
-        self.assertEqual('', res.stderr)
+        assert (res.out_and_err() ==
+                ('   0 2000-01-01 00:00:01 /foo/bar\n'
+                 'No files were restored\n'),
+                '')
 
     def test_it_restores_the_file_selected_by_the_user(self):
         self.fixture.having_a_trashed_file(self.cwd / 'foo')
@@ -85,8 +81,7 @@ class TestRestoreTrash(unittest.TestCase):
 
         res = self.user.run_restore(reply='0', from_dir=self.cwd)
 
-        self.assertEqual('Refusing to overwrite existing file "foo".\n',
-                         res.stderr)
+        assert res.stderr == 'Refusing to overwrite existing file "foo".\n'
 
     def test_it_restores_the_file_and_delete_the_trash_info(self):
         a_trashed_file = self.make_trashed_file()
@@ -103,7 +98,8 @@ class TestRestoreTrash(unittest.TestCase):
 
         self.fixture.make_file(info_file,
                                b'[Trash Info]\n'
-                               b'Path=%s\n' % original_location.encode('utf-8') +
+                               b'Path=%s\n' % original_location.encode(
+                                   'utf-8') +
                                b'DeletionDate=2000-01-01T00:00:01\n')
         self.fixture.make_empty_file(backup_copy)
 
@@ -113,5 +109,5 @@ class TestRestoreTrash(unittest.TestCase):
             backup_copy=self.trash_dir / 'files/path',
         )
 
-    def tearDown(self):
+    def tear_down(self):
         self.tmp_dir.clean_up()

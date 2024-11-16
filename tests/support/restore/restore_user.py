@@ -38,7 +38,8 @@ class RestoreUser:
     def run_restore(self,
                     args=None,  # type: Optional[List[str]]
                     reply=None,  # type: Optional[text_type]
-                    from_dir=None):
+                    from_dir=None,
+                    ):  # type: (...) -> CmdResult
         args = [] if args is None else args
         cwd = self.cwd if from_dir is None else from_dir
         reply = self.reply if reply is None else reply
