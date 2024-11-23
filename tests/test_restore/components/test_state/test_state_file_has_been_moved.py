@@ -34,7 +34,7 @@ class TestStateFileHasBeenMoved:
         assert (state.check_file_moved("/a/foo.txt", "/b/dest.txt") ==
                 'File not moved because destination contains a different content, '
                 'dest: /b/dest.txt, '
-                'dest content: different content')
+                "dest content: 'different content'")
 
     def test_file_not_moved_because_dest_does_not_exists(self):
         self.restore_fs.add_file("/a/foo.txt", b"content")

@@ -1,4 +1,6 @@
 import os
+from typing import List
+
 from trashcli.path import Path
 from textwrap import dedent
 
@@ -26,7 +28,7 @@ class Scripts:
                  project_root,  # type: Path
                  ):
         self.fs = fs
-        self.created_scripts = []
+        self.created_scripts = []  # type: List[str]
         self.script_paths = ScriptPaths(project_root)
 
     def add_script(self, name, module, main_function):

@@ -16,6 +16,7 @@ from tests.support.put.fake_fs.inode import Stickiness
 from tests.support.put.fake_fs.symlink import SymLink
 from tests.support.put.format_mode import format_mode
 from tests.support.put.my_file_not_found_error import MyFileNotFoundError
+from tests.support.restore.fs.fs_state import FsState
 from trashcli.fs import MakeFileExecutable
 from trashcli.fs import PathExists
 from trashcli.put.check_cast import check_cast
@@ -171,7 +172,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, MakeFileExecutable, ScriptFs):
 
     def _find_entity(self,
                      path
-                     ): # type: (...) -> INode
+                     ): # type: (...) -> Entry
         path = self._join_cwd(path)
         dirname, basename = os.path.split(path)
         directory = self.get_entity_at(dirname)
@@ -322,3 +323,6 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, MakeFileExecutable, ScriptFs):
 
     def find_all_sorted(self):
         return sorted(self.find_all())
+
+    def save_state(self):
+        return FsState(self.fs)

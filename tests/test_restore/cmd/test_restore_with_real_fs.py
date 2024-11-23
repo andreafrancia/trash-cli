@@ -63,10 +63,8 @@ class TestRestoreTrash:
 
         res = self.user.run_restore(reply='', from_dir='/foo')
 
-        assert (res.out_and_err() ==
-                ('   0 2000-01-01 00:00:01 /foo/bar\n'
-                 'No files were restored\n'),
-                '')
+        assert res.out_and_err() == ('   0 2000-01-01 00:00:01 /foo/bar\n'
+                                     'No files were restored\n', '')
 
     def test_it_restores_the_file_selected_by_the_user(self):
         self.fixture.having_a_trashed_file(self.cwd / 'foo')

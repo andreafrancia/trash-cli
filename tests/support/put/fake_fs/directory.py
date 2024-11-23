@@ -13,6 +13,8 @@ from tests.support.put.my_file_not_found_error import MyFileNotFoundError
 from trashcli.lib.my_permission_error import MyPermissionError
 
 
+Entry = Union[INode, SymLink]
+
 def make_inode_dir(directory_path,  # type: str
                    mode,  # type: int
                    parent_inode,  # type: Optional[INode]
@@ -65,7 +67,7 @@ class Directory(Ent):
 
     def get_entry(self,
                   basename,
-                  ):  # type: (...) -> INode
+                  ):  # type: (...) -> Entry
         try:
             return self._entries[basename]
         except KeyError:
