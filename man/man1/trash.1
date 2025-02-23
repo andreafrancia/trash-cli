@@ -1,1 +1,66 @@
-trash-put.1
+TH(1) General Commands Manual
+
+NAME
+    trash - Command line trash utility.
+
+SYNOPSIS
+    trash [OPTIONS] [FILE]...
+
+DESCRIPTION
+    The `trash` command is part of the trash-cli package, which provides a command-line interface
+    for moving files and directories to the trash. It follows the FreeDesktop.org Trash Specification.
+    The utility retains metadata such as the original file path, deletion date, and permissions.
+
+OPTIONS
+    -h, --help
+        Show this help message and exit.
+
+    --version
+        Show program's version number and exit.
+
+    -d, --directory
+        This option is included for compatibility with GNU rm but has no effect in trash-cli.
+
+    -f, --force
+        This option is included for compatibility with GNU rm but has no effect in trash-cli.
+
+    -i, --interactive
+        This option is included for compatibility with GNU rm but has no effect in trash-cli.
+
+    -r, -R, --recursive
+        This option is included for compatibility with GNU rm but has no effect in trash-cli.
+
+    -v, --verbose
+        Explain what is being done.
+
+ARGUMENTS
+    FILE
+        One or more files or directories to move to the trash.
+
+EXAMPLES
+    Move a file to the trash:
+        $ trash foo.txt
+
+    Move multiple files to the trash:
+        $ trash file1.txt file2.txt
+
+    Remove a file whose name starts with '-':
+        $ trash -- -foo
+        $ trash ./-foo
+
+    Display help message:
+        $ trash -h
+
+    Check the version:
+        $ trash --version
+
+BUGS
+    Report bugs at https://github.com/andreafrancia/trash-cli/issues.
+
+SEE ALSO
+    trash-list(1), trash-restore(1), trash-empty(1), trash-rm(1),
+    and the FreeDesktop.org Trash Specification: http://www.ramendik.ru/docs/trashspec.html
+
+AUTHORS
+    Originally written by Andrea Francia <andrea@andreafrancia.it>.
+    Contributions from the open-source community.
