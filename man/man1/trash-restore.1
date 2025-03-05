@@ -22,6 +22,9 @@ trash-restore \- Restore for Command line trash utility.
 
 .SH "SYNOPSIS"
 .B trash-restore
+.RI [ OPTION ]
+\&...
+.RI [ PATH ]
 
 .SH "DESCRIPTION"
 .PP
@@ -31,6 +34,27 @@ line interface trashcan utility compliant with the FreeDesktop.org
 Trash Specification.
 It remembers the name, original path, deletion date, and permissions of
 each trashed file.
+
+.SH "PATH"
+.TP
+Destination file path to restore from the trash. If omitted, an interactive
+selection interface is used.
+
+.SH "OPTIONS"
+.IP "--overwrite"
+Overwrite existing files with files coming out of the trash.
+
+.IP "--sort {date,path,none}"
+Sort list of restore candidates by given field (default: date).
+
+.IP "--trash-dir=TRASHDIR"
+Restore from TRASHDIR, for files that were trashed using a custom TRASHDIR.
+
+.IP "-h, --help"
+Show help message and exit.
+
+.IP "--version"
+Show the program's version number and exit.
 
 .SH "EXAMPLES"
 .nf
