@@ -22,7 +22,7 @@ class TestRestoreAskingTheUser(unittest.TestCase):
         self.input.set_reply('0')
 
         self.asking_user.restore_asking_the_user(['trashed_file1',
-                                                  'trashed_file2'], False)
+                                                  'trashed_file2'], False, False)
 
         self.assertEqual('What file to restore [0..1]: ',
                          self.input.last_prompt())
@@ -34,7 +34,7 @@ class TestRestoreAskingTheUser(unittest.TestCase):
         self.input.raise_exception(KeyboardInterrupt)
 
         self.asking_user.restore_asking_the_user(['trashed_file1',
-                                                  'trashed_file2'], False)
+                                                  'trashed_file2'], False, False)
 
         self.assertEqual('What file to restore [0..1]: ',
                          self.input.last_prompt())

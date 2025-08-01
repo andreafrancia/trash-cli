@@ -51,10 +51,12 @@ class RestoreArgParser:
         if parsed.version:
             return PrintVersionArgs(argv0=sys_argv[0])
         else:
+            path_passed = parsed.path != ""
             path = os.path.normpath(
                 os.path.join(curdir + os.path.sep, parsed.path))
 
             return RunRestoreArgs(path=path,
+                                  path_passed=path_passed,
                                   sort=cast(Sort, {
                                       'path': Sort.ByPath,
                                       'date': Sort.ByDate,

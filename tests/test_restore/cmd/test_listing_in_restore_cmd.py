@@ -70,6 +70,6 @@ class FakeHandler(Handler):
     def __init__(self, original_locations):
         self.original_locations = original_locations
 
-    def handle_trashed_files(self, trashed_files, _overwrite):
+    def handle_trashed_files(self, trashed_files, _overwrite, _no_ask):
         for trashed_file in trashed_files:
             self.original_locations.append(trashed_file.original_location)
