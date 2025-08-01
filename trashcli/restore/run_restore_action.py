@@ -26,7 +26,8 @@ class RunRestoreAction:
         trashed_files = sort_files(args.sort, trashed_files)
 
         self.handler.handle_trashed_files(trashed_files,
-                                          args.overwrite)
+                                          args.overwrite,
+                                          args.path_passed)
 
     def all_files_trashed_from_path(self,
                                     path,  # type: str
@@ -44,6 +45,7 @@ class Handler:
     def handle_trashed_files(self,
                              trashed_files,
                              overwrite,  # type: bool
+                             single_no_ask,  # type: bool
                              ):
         raise NotImplementedError()
 
