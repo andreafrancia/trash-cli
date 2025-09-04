@@ -221,6 +221,12 @@ Fedora (dnf)::
 
     sudo dnf install trash-cli
 
+MacOS (Homebrew)::
+
+    brew install trash-cli
+    echo 'export PATH="~/homebrew/opt/trash-cli/bin:$PATH"' >> ~/.bashrc
+    source ~/.bashrc
+
 Install shell completions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
