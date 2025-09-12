@@ -134,6 +134,12 @@ class RealRemoveFile(RemoveFile):
 
 class RealRemoveFile2(RemoveFile2):
     def remove_file2(self, path):
+        # first ensure everything is writeable
+        for dirpath, dirnames, filenames in os.walk(path):
+            os.chmod(dirpath, 0o755)
+            for filename in filenames:
+                os.chmod(os.path.join(dirpath, filename), 0o755)
+
         try:
             os.remove(path)
         except OSError:
