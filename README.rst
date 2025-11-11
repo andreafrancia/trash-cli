@@ -241,6 +241,18 @@ Then::
       $cmd --print-completion tcsh | sudo tee /etc/profile.d/$cmd.completion.csh
     done
 
+Missing support for BRTFS volumes
+---------------------------------
+trash-cli does not support BRTFS volumes.
+I don't have any system nor time and/or knowledge to implement this kind of support.
+
+If you need a trash implementation that you can checkout the `rmw`_ project.
+
+.. _rmw: https://github.com/theimpossibleastronaut/rmw
+
+If you want, can and know how to add support to BRTFS with sensibile automation
+tests please send a pull request.
+
 Bugs
 ----
 
