@@ -1,9 +1,9 @@
-from parameterized import parameterized  # type: ignore
+import pytest
 
 from tests.support.help.help_reformatting import split_paragraphs
 
 
-@parameterized.expand([
+@pytest.mark.parametrize("text,expected_result", [
     ('one line', ['one line']),
     ('one line\n', ['one line\n']),
     ('one\ntwo\n', ['one\ntwo\n']),

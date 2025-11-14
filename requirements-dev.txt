@@ -2,7 +2,6 @@
 pytest
 mock; python_version < '3.3'
 flexmock
-parameterized
 tox
 PyYAML <= 5.4.1; python_version ~= '2.7'
 PyYAML <= 5.2; python_version ~= '3.4'
