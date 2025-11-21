@@ -26,9 +26,12 @@ class TrashedFiles:
     def all_trashed_files(self,
                           trash_dir_from_cli,  # type: Optional[str]
                           ):  # type: (...) -> Iterable[TrashedFile]
+
+        non_trash = 0
         for event in self.all_trashed_files_internal(trash_dir_from_cli):
             if type(event) is NonTrashinfoFileFound:
-                self.logger.warning("Non .trashinfo file in info dir")
+                # self.logger.warning("Non .trashinfo file in info dir")
+                non_trash+=1
             elif type(event) is NonParsableTrashInfo:
                 self.logger.warning(
                     "Non parsable trashinfo file: %s, because %s" %
@@ -39,6 +42,12 @@ class TrashedFiles:
                 yield event.trashed_file
             else:
                 raise RuntimeError()
+
+            if non_trash:
+                self.logger.warning(
+                        "Found a total of %s non .trashinfo files in trash-dirs. Use `trash-list --find-non-trashinfo` to list them." %
+                        (non_trash))
+            
 
     def all_trashed_files_internal(self,
                                    trash_dir_from_cli,  # type: Optional[str]
