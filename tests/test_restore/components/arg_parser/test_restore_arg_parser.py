@@ -15,7 +15,8 @@ class TestRestoreArgs(unittest.TestCase):
         self.assertEqual(RunRestoreArgs(path='curdir',
                                         sort=Sort.ByDate,
                                         trash_dir=None,
-                                        overwrite=False),
+                                        overwrite=False,
+                                        show_non_trashinfo=False),
                          args)
 
     def test_path_specified_relative_path(self):
@@ -24,7 +25,8 @@ class TestRestoreArgs(unittest.TestCase):
         self.assertEqual(RunRestoreArgs(path='curdir/path',
                                         sort=Sort.ByDate,
                                         trash_dir=None,
-                                        overwrite=False),
+                                        overwrite=False,
+                                        show_non_trashinfo=False),
                          args)
 
     def test_path_specified_fullpath(self):
@@ -33,7 +35,8 @@ class TestRestoreArgs(unittest.TestCase):
         self.assertEqual(RunRestoreArgs(path='/a/path',
                                         sort=Sort.ByDate,
                                         trash_dir=None,
-                                        overwrite=False),
+                                        overwrite=False,
+                                        show_non_trashinfo=False),
                          args)
 
     def test_show_version(self):

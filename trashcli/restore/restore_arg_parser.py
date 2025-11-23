@@ -46,6 +46,11 @@ class RestoreArgParser:
                             default=False,
                             help='Overwrite existing files with files coming out of the trash')
 
+        parser.add_argument('--show-non-trashinfo',
+                            action='store_true',
+                            default=False,
+                            help='Show additional info')
+
         parsed = parser.parse_args(sys_argv[1:])
 
         if parsed.version:
@@ -61,4 +66,5 @@ class RestoreArgParser:
                                       'none': Sort.DoNot
                                   }[parsed.sort]),
                                   trash_dir=parsed.trash_dir,
-                                  overwrite=parsed.overwrite)
+                                  overwrite=parsed.overwrite,
+                                  show_non_trashinfo=parsed.show_non_trashinfo)

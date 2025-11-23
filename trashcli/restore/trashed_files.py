@@ -18,17 +18,24 @@ class TrashedFiles:
                  logger,  # type: RestoreLogger
                  file_reader,  # type: FileReader
                  searcher,  # type: InfoDirSearcher
+                 show_non_trashinfo = False, # type: bool
                  ):
         self.logger = logger
         self.file_reader = file_reader
         self.searcher = searcher
+        self.show_non_trashinfo=show_non_trashinfo
 
     def all_trashed_files(self,
                           trash_dir_from_cli,  # type: Optional[str]
                           ):  # type: (...) -> Iterable[TrashedFile]
+
+        non_trash = 0
         for event in self.all_trashed_files_internal(trash_dir_from_cli):
             if type(event) is NonTrashinfoFileFound:
-                self.logger.warning("Non .trashinfo file in info dir")
+                if self.show_non_trashinfo:
+                    self.logger.warning("Non .trashinfo file in info dir '%s'",event.path)
+                else:
+                    non_trash+=1
             elif type(event) is NonParsableTrashInfo:
                 self.logger.warning(
                     "Non parsable trashinfo file: %s, because %s" %
@@ -39,6 +46,12 @@ class TrashedFiles:
                 yield event.trashed_file
             else:
                 raise RuntimeError()
+
+            if non_trash and not self.show_non_trashinfo:
+                self.logger.warning(
+                        "Found a total of %s non .trashinfo files in trash-dirs. Use `trash-restore --show-non-trashinfo` to list them." %
+                        (non_trash))
+            
 
     def all_trashed_files_internal(self,
                                    trash_dir_from_cli,  # type: Optional[str]
