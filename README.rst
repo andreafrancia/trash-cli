@@ -123,6 +123,11 @@ Can I alias `rm` to `trash-put`?
 You can but you shouldn't. In the early days I thought it was a good idea to do
 that but now I changed my mind. 
 
+Steps ::
+
+    sudo ln -sf "$(command -v trash-put)" /usr/local/bin/rm
+    sudo chmod 755 /usr/local/bin/rm
+
 Although the interface of `trash-put` seems to be compatible with `rm`, it has
 different semantics which will cause you problems. For example, while `rm`
 requires `-R` for deleting directories `trash-put` does not.
