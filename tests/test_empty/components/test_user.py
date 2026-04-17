@@ -18,7 +18,7 @@ class TestUser(unittest.TestCase):
         self.parse_reply.return_value = 'result'
         self.input.set_reply('reply')
 
-        result = self.user.do_you_wanna_empty_trash_dirs(['trash_dirs'])
+        result = self.user.confirm(['trash_dirs'])
 
         assert [
                    result,

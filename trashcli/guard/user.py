@@ -10,6 +10,6 @@ class User:
         self.input = input
         self.parse_reply = parse_reply
 
-    def do_you_wanna_empty_trash_dirs(self, trash_dirs):
-        reply = self.input.read_input(self.prepare_output_message(trash_dirs))
+    def confirm(self, items_to_confirm):
+        reply = self.input.read_input(self.prepare_output_message(items_to_confirm))
         return self.parse_reply(reply)
