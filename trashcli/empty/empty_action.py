@@ -65,8 +65,12 @@ class EmptyAction:
                                           args.user_specified_trash_dirs,
                                           args.environ,
                                           args.uid)
-        delete_pass = self.guard.ask_the_user(args.interactive,
-                                              trash_dirs)
-        if delete_pass.ok_to_empty:
-            self.emptier.do_empty(delete_pass.trash_dirs, args.environ,
-                                  args.days, args.dry_run, args.verbose)
+        trash_dirs = list(trash_dirs)
+        if trash_dirs:  # skip asking the user if there is nothing to delete; avoids being stuck
+            delete_pass = self.guard.ask_the_user(args.interactive,
+                                                trash_dirs)
+            if delete_pass.ok_to_empty:
+                self.emptier.do_empty(delete_pass.trash_dirs, args.environ,
+                                    args.days, args.dry_run, args.verbose)
+        else:
+            print('No trash directories to empty.')

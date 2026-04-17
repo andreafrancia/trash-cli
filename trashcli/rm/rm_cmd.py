@@ -76,11 +76,14 @@ class RmCmd:
                         original_location, info_file = arg
                         if cmd.matches(original_location):
                             info_files.append(info_file)
-                user = User(prepare_output_message, RealInput(), parse_reply)
-                guard = Guard(user)
-                if guard.ask_the_user(is_input_interactive(), info_files):
-                    for info_file in info_files:
-                        trashcan.delete_trash_info_and_backup_copy(info_file)
+                if info_files:  # skip asking the user if there is nothing to delete; avoids being stuck
+                    user = User(prepare_output_message, RealInput(), parse_reply)
+                    guard = Guard(user)
+                    if guard.ask_the_user(is_input_interactive(), info_files):
+                        for info_file in info_files:
+                            trashcan.delete_trash_info_and_backup_copy(info_file)
+                else:
+                    print('No files to be removed in {}'.format(path))
 
     def unable_to_parse_path(self, trashinfo):
         self.report_error('{}: unable to parse \'Path\''.format(trashinfo))
