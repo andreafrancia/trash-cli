@@ -79,7 +79,7 @@ class RmCmd:
                 if info_files:  # skip asking the user if there is nothing to delete; avoids being stuck
                     user = User(prepare_output_message, RealInput(), parse_reply)
                     guard = Guard(user)
-                    if guard.ask_the_user(is_input_interactive(), info_files):
+                    if guard.ask_the_user(is_input_interactive(), info_files).ok_to_empty:
                         for info_file in info_files:
                             trashcan.delete_trash_info_and_backup_copy(info_file)
                 else:
