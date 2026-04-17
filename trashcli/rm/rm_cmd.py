@@ -66,7 +66,7 @@ class RmCmd:
 
         for event, args in scanner.scan_trash_dirs(self.environ, uid):
             if event == trash_dir_found:
-                info_files = []
+                files_to_remove = []
                 path, volume = args
                 for type, arg in listing.list_from_volume_trashdir(path,
                                                                    volume):
@@ -75,13 +75,13 @@ class RmCmd:
                     elif type == 'trashed_file':
                         original_location, info_file = arg
                         if cmd.matches(original_location):
-                            info_files.append(info_file)
-                if info_files:  # skip asking the user if there is nothing to delete; avoids being stuck
+                            files_to_remove.append(arg)
+                if files_to_remove:  # skip asking the user if there is nothing to delete; avoids being stuck
                     user = User(prepare_output_message, RealInput(), parse_reply)
                     guard = Guard(user)
-                    if guard.ask_the_user(is_input_interactive(), info_files).ok_to_empty:
-                        for info_file in info_files:
-                            trashcan.delete_trash_info_and_backup_copy(info_file)
+                    if guard.ask_the_user(is_input_interactive(), files_to_remove).ok_to_empty:
+                        for file in files_to_remove:
+                            trashcan.delete_trash_info_and_backup_copy(file[1])
                 else:
                     print('No files to be removed in {}'.format(path))
 
