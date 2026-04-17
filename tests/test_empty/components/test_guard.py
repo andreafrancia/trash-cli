@@ -6,11 +6,11 @@ from trashcli.guard.guard import Guard, UserIntention
 
 class TestGuard(unittest.TestCase):
     def setUp(self):
-        self.user = Mock(spec=['do_you_wanna_empty_trash_dirs'])
+        self.user = Mock(spec=['confirm'])
         self.guard = Guard(self.user)
 
     def test_user_says_yes(self):
-        self.user.do_you_wanna_empty_trash_dirs.return_value = True
+        self.user.confirm.return_value = True
 
         result = self.guard.ask_the_user(True, ['trash_dirs'])
 
@@ -18,7 +18,7 @@ class TestGuard(unittest.TestCase):
                              trash_dirs=['trash_dirs']) == result
 
     def test_user_says_no(self):
-        self.user.do_you_wanna_empty_trash_dirs.return_value = False
+        self.user.confirm.return_value = False
 
         result = self.guard.ask_the_user(True, ['trash_dirs'])
 
