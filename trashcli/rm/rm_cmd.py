@@ -83,7 +83,7 @@ class RmCmd:
                         for file in files_to_remove:
                             trashcan.delete_trash_info_and_backup_copy(file[1])
                 else:
-                    print('No files to be removed in {}'.format(path))
+                    print('No files / directories to be removed in {}'.format(path))
 
     def unable_to_parse_path(self, trashinfo):
         self.report_error('{}: unable to parse \'Path\''.format(trashinfo))
