@@ -2,13 +2,19 @@
 from trashcli.compat import Protocol
 
 from trashcli.fs import ContentsOf
+from trashcli.guard.guard import Guard
+from trashcli.guard.is_input_interactive import is_input_interactive
+from trashcli.guard.parse_reply import parse_reply
+from trashcli.guard.user import User
 from trashcli.lib.dir_checker import DirChecker
 from trashcli.lib.dir_reader import DirReader
+from trashcli.lib.my_input import RealInput
 from trashcli.lib.user_info import SingleUserInfoProvider
 from trashcli.rm.cleanable_trashcan import CleanableTrashcan
 from trashcli.rm.file_remover import FileRemover
 from trashcli.rm.filter import Filter
 from trashcli.rm.list_trashinfo import ListTrashinfos
+from trashcli.rm.prepare_output_message import prepare_output_message
 from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
     trash_dir_found
 
@@ -60,6 +66,7 @@ class RmCmd:
 
         for event, args in scanner.scan_trash_dirs(self.environ, uid):
             if event == trash_dir_found:
+                info_files = []
                 path, volume = args
                 for type, arg in listing.list_from_volume_trashdir(path,
                                                                    volume):
@@ -68,8 +75,12 @@ class RmCmd:
                     elif type == 'trashed_file':
                         original_location, info_file = arg
                         if cmd.matches(original_location):
-                            trashcan.delete_trash_info_and_backup_copy(
-                                info_file)
+                            info_files.append(info_file)
+                user = User(prepare_output_message, RealInput(), parse_reply)
+                guard = Guard(user)
+                if guard.ask_the_user(is_input_interactive(), info_files):
+                    for info_file in info_files:
+                        trashcan.delete_trash_info_and_backup_copy(info_file)
 
     def unable_to_parse_path(self, trashinfo):
         self.report_error('{}: unable to parse \'Path\''.format(trashinfo))
