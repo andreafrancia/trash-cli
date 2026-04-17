@@ -1,6 +1,6 @@
 from typing import Iterable, NamedTuple
 
-from trashcli.empty.user import User
+from trashcli.guard.user import User
 from trashcli.trash_dirs_scanner import TrashDir
 
 UserIntention = NamedTuple('UserIntention',

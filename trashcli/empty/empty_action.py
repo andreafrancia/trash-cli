@@ -7,10 +7,10 @@ from trashcli.empty.delete_according_date import (
 )
 from trashcli.empty.emptier import Emptier
 from trashcli.empty.existing_file_remover import ExistingFileRemover
-from trashcli.empty.guard import Guard
+from trashcli.guard.guard import Guard
 from trashcli.empty.parse_reply import parse_reply
 from trashcli.empty.prepare_output_message import prepare_output_message
-from trashcli.empty.user import User
+from trashcli.guard.user import User
 from trashcli.fs import ContentsOf
 from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.fstab.volume_of import VolumeOf

@@ -2,7 +2,7 @@ import unittest
 
 from tests.support.py2mock import Mock, call
 
-from trashcli.empty.user import User
+from trashcli.guard.user import User
 from trashcli.lib.my_input import HardCodedInput
 
 

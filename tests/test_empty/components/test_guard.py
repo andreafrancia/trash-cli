@@ -1,7 +1,7 @@
 import unittest
 
 from tests.support.py2mock import Mock, call
-from trashcli.empty.guard import Guard, UserIntention
+from trashcli.guard.guard import Guard, UserIntention
 
 
 class TestGuard(unittest.TestCase):
