@@ -2,6 +2,7 @@ from typing import Iterable
 from typing import NamedTuple
 from typing import Optional
 from typing import Union
+import os
 
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.parse_trashinfo.parse_deletion_date import parse_deletion_date
@@ -47,6 +48,10 @@ class TrashedFiles:
             if info_file.type == 'non_trashinfo':
                 yield NonTrashinfoFileFound(info_file.path)
             elif info_file.type == 'trashinfo':
+                if not _owned_by_current_user(info_file.path):
+                    yield NonParsableTrashInfo(info_file.path,
+                                               ValueError("not owned by current user"))
+                    continue
                 try:
                     contents = self.file_reader.contents_of(info_file.path)
                     original_location = parse_original_location(contents,
@@ -65,6 +70,17 @@ class TrashedFiles:
             else:
                 raise RuntimeError("Unexpected file type: %s: %s",
                                    info_file.type, info_file.path)
+
+
+def _owned_by_current_user(path):
+    # On Windows geteuid is absent; skip the check. Root bypasses so that
+    # `sudo trash-put` followed by an unprivileged restore still works.
+    if not hasattr(os, 'geteuid'):
+        return True
+    try:
+        return os.geteuid() == 0 or os.lstat(path).st_uid == os.geteuid()
+    except OSError:
+        return False
 
 
 class NonTrashinfoFileFound(

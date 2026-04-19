@@ -39,6 +39,11 @@ class Parser:
         program_name = os.path.basename(argv[0])
         arg_parser = make_parser(program_name)
         try:
+            bad = _option_shaped_filenames(argv[1:])
+            if bad:
+                arg_parser.error(
+                    "refusing to treat %s as an option "
+                    "(use './%s' or '--' separator)" % (bad[0], bad[0]))
             options = arg_parser.parse_args(argv[1:])
             if len(options.files) <= 0:
                 arg_parser.error("Please specify the files to trash.")
@@ -60,6 +65,22 @@ def ensure_int(code):
     if not isinstance(code, int):
         raise ValueError("code must be an int, got %s" % pprint.pformat(code))
     return code
+
+
+def _option_shaped_filenames(args):
+    # Detect argv tokens that look like options AND exist as files on disk:
+    # an attacker-named file reaching argparse can hijack options like --trash-dir.
+    result = []
+    stop = False
+    for a in args:
+        if a == '--':
+            stop = True
+            continue
+        if stop:
+            continue
+        if a.startswith('-') and a != '-' and os.path.lexists(a):
+            result.append(a)
+    return result
 
 
 def make_parser(program_name):

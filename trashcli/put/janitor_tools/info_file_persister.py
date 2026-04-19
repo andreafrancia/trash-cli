@@ -50,7 +50,7 @@ class InfoFilePersister:
                     ):  # type: (...) -> Result
         index = 0
         name_too_long = False
-        while True:
+        while index < 1000:
             suffix = self.suffix.suffix_for_index(index)
             trashinfo_basename = create_trashinfo_basename(data.basename,
                                                            suffix,
@@ -64,6 +64,7 @@ class InfoFilePersister:
                 self.fs.atomic_write(trashinfo_path, data.content)
                 yield Succeeded(TrashedFile(trashinfo_path),
                                 ".trashinfo created as %s." % trashinfo_path)
+                return
             except OSError as e:
                 if e.errno == errno.ENAMETOOLONG:
                     name_too_long = True

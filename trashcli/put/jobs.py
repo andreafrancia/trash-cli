@@ -67,8 +67,12 @@ class JobExecutor(Generic[R]):
                 job,  # type: Iterator[JobStatus[R]]
                 log_data,  # type: LogData
                 ):  # type: (...) -> R
+        last = None
         for status in job:
             self.logger.log_multiple(status.logs(), log_data)
             if status.has_succeeded():
                 return status.result()
-        raise ValueError("Should not happen!")
+            last = status
+        raise OSError(
+            "trashinfo creation failed after all retries (last: %s)" %
+            (last.trashinfo_path if last is not None else "?"))

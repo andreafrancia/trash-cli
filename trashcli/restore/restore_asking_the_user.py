@@ -149,7 +149,7 @@ def parse_indexes(user_input,  # type: str
     sequences = []  # type: List[Sequence]
     for index in indexes:
         if "-" in index:
-            first, last = index.split("-", 2)
+            first, last = index.split("-", 1)
             if first == "" or last == "":
                 raise InvalidEntry("open interval: %s" % index)
             split = list(map(parse_int_index, (first, last)))

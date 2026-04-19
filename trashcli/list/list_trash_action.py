@@ -6,10 +6,12 @@ from typing import NamedTuple
 
 from trashcli.lib.dir_reader import DirReader
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
+from trashcli.lib.sanitize import sanitize_for_output
 from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.list.extractors import DeletionDateExtractor
 from trashcli.list.extractors import SizeExtractor
-from trashcli.parse_trashinfo.parse_path import parse_path
+from trashcli.parse_trashinfo.parse_original_location import \
+    parse_original_location
 from trashcli.parse_trashinfo.parser_error import ParseError
 from trashcli.trash_dirs_scanner import trash_dir_found
 from trashcli.trash_dirs_scanner import \
@@ -122,13 +124,12 @@ class ListTrash:
             yield Error(str(e))
         else:
             try:
-                relative_location = parse_path(contents)
+                original_location = parse_original_location(contents, volume)
             except ParseError:
                 yield Error(self.print_parse_path_error(trashinfo_path))
             else:
                 attribute = extractor.extract_attribute(trashinfo_path,
                                                         contents)
-                original_location = os.path.join(volume, relative_location)
 
                 if show_files:
                     original_file = path_of_backup_copy(trashinfo_path)
@@ -163,8 +164,9 @@ class Output(Event):
 
 
 def format_line(attribute, original_location):
-    return "%s %s" % (attribute, original_location)
+    return "%s %s" % (attribute, sanitize_for_output(original_location))
 
 
 def format_line2(attribute, original_location, original_file):
-    return "%s %s -> %s" % (attribute, original_location, original_file)
+    return "%s %s -> %s" % (attribute, sanitize_for_output(original_location),
+                            sanitize_for_output(original_file))
