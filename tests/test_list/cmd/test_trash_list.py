@@ -1,5 +1,7 @@
 # Copyright (C) 2011-2024 Andrea Francia Trivolzio(PV) Italy
 
+import datetime
+
 from tests.test_list.cmd.support.trash_list_user import trash_list_user
 
 user = trash_list_user
@@ -74,3 +76,132 @@ class TestTrashList:
             "Parse Error: /xdg-data-home/Trash/info/foo.trashinfo: "
             "Unable to parse Path.\n",
             '')
+
+    def test_sort_by_date(self, user):
+        user.home_trash_dir().add_trashinfo4('/file_b', "2000-01-01 00:00:03")
+        user.home_trash_dir().add_trashinfo4('/file_a', "2000-01-01 00:00:01")
+        user.home_trash_dir().add_trashinfo4('/file_c', "2000-01-01 00:00:02")
+
+        output = user.run_trash_list('--sort=date')
+
+        assert output.stdout == (
+            "2000-01-01 00:00:01 /file_a\n"
+            "2000-01-01 00:00:02 /file_c\n"
+            "2000-01-01 00:00:03 /file_b\n")
+
+    def test_sort_by_date_same_timestamp_sorts_by_path(self, user):
+        user.home_trash_dir().add_trashinfo4('/file_c', "2000-01-01 00:00:01")
+        user.home_trash_dir().add_trashinfo4('/file_a', "2000-01-01 00:00:01")
+        user.home_trash_dir().add_trashinfo4('/file_b', "2000-01-01 00:00:01")
+
+        output = user.run_trash_list('--sort=date')
+
+        assert output.stdout == (
+            "2000-01-01 00:00:01 /file_a\n"
+            "2000-01-01 00:00:01 /file_b\n"
+            "2000-01-01 00:00:01 /file_c\n")
+
+    def test_sort_by_path(self, user):
+        user.home_trash_dir().add_trashinfo4('/file_c', "2000-01-01 00:00:01")
+        user.home_trash_dir().add_trashinfo4('/file_a', "2000-01-01 00:00:03")
+        user.home_trash_dir().add_trashinfo4('/file_b', "2000-01-01 00:00:02")
+
+        output = user.run_trash_list('--sort=path')
+
+        assert output.stdout == (
+            "2000-01-01 00:00:03 /file_a\n"
+            "2000-01-01 00:00:02 /file_b\n"
+            "2000-01-01 00:00:01 /file_c\n")
+
+    def test_sort_by_path_same_path_sorts_by_date(self, user):
+        user.home_trash_dir().add_trashinfo4('/same_file', "2000-01-01 00:00:03")
+        user.home_trash_dir().add_trashinfo4('/same_file', "2000-01-01 00:00:01")
+        user.home_trash_dir().add_trashinfo4('/same_file', "2000-01-01 00:00:02")
+
+        output = user.run_trash_list('--sort=path')
+
+        assert output.stdout == (
+            "2000-01-01 00:00:01 /same_file\n"
+            "2000-01-01 00:00:02 /same_file\n"
+            "2000-01-01 00:00:03 /same_file\n")
+
+    def test_sort_none_lists_all_entries(self, user):
+        user.home_trash_dir().add_trashinfo4('/file_b', "2000-01-01 00:00:03")
+        user.home_trash_dir().add_trashinfo4('/file_a', "2000-01-01 00:00:01")
+        user.home_trash_dir().add_trashinfo4('/file_c', "2000-01-01 00:00:02")
+
+        output = user.run_trash_list('--sort=none')
+
+        assert output.all_lines() == {"2000-01-01 00:00:01 /file_a",
+                                      "2000-01-01 00:00:02 /file_c",
+                                      "2000-01-01 00:00:03 /file_b"}
+
+    def test_sort_by_date_unknown_dates_sort_last(self, user):
+        user.home_trash_dir().add_trashinfo4('/known', "2000-01-01 00:00:01")
+        user.home_trash_dir().add_trashinfo_without_date('a-no-date')
+        user.home_trash_dir().add_trashinfo_wrong_date('b-bad-date',
+                                                       'Wrong date')
+
+        output = user.run_trash_list('--sort=date')
+
+        assert output.stdout == (
+            "2000-01-01 00:00:01 /known\n"
+            "????-??-?? ??:??:?? /a-no-date\n"
+            "????-??-?? ??:??:?? /b-bad-date\n")
+
+    def test_sort_by_path_with_unknown_dates(self, user):
+        user.home_trash_dir().add_trashinfo_without_date('z-no-date')
+        user.home_trash_dir().add_trashinfo4('/a-known', "2000-01-01 00:00:01")
+
+        output = user.run_trash_list('--sort=path')
+
+        assert output.stdout == (
+            "2000-01-01 00:00:01 /a-known\n"
+            "????-??-?? ??:??:?? /z-no-date\n")
+
+    def test_sort_with_parse_errors_keeps_errors_on_stderr(self, user):
+        user.home_trash_dir().add_trashinfo4('/file_b', "2000-01-01 00:00:02")
+        user.home_trash_dir().add_trashinfo4('/file_a', "2000-01-01 00:00:01")
+        user.home_trash_dir().add_trashinfo_content('broken', '')
+
+        output = user.run_trash_list('--sort=date')
+
+        assert output.stdout == (
+            "2000-01-01 00:00:01 /file_a\n"
+            "2000-01-01 00:00:02 /file_b\n")
+        assert output.stderr == (
+            "Parse Error: /xdg-data-home/Trash/info/broken.trashinfo: "
+            "Unable to parse Path.\n")
+
+    def test_sort_by_path_with_files_flag(self, user):
+        user.home_trash_dir().add_trashinfo4('/file_b', "2000-01-01 00:00:01")
+        user.home_trash_dir().add_trashinfo4('/file_a', "2000-01-01 00:00:01")
+
+        output = user.run_trash_list('--sort=path', '--files')
+
+        lines = output.stdout.splitlines()
+        assert len(lines) == 2
+        assert lines[0].startswith("2000-01-01 00:00:01 /file_a -> ")
+        assert lines[1].startswith("2000-01-01 00:00:01 /file_b -> ")
+
+    def test_sort_by_path_with_size_flag(self, user):
+        user.home_trash_dir().add_trashed_file('big', '/file_a', 'X' * 10000)
+        user.home_trash_dir().add_trashed_file('small', '/file_b', 'X')
+
+        output = user.run_trash_list('--size', '--sort=path')
+
+        assert output.stdout == (
+            "10000 /file_a\n"
+            "1 /file_b\n")
+
+    def test_sort_by_date_with_size_flag(self, user):
+        user.home_trash_dir().add_trashed_file(
+            'a', '/file_a', 'X' * 100, datetime.datetime(2000, 1, 1, 0, 0, 2))
+        user.home_trash_dir().add_trashed_file(
+            'b', '/file_b', 'X', datetime.datetime(2000, 1, 1, 0, 0, 1))
+
+        output = user.run_trash_list('--size', '--sort=date')
+
+        assert output.stdout == (
+            "1 /file_b\n"
+            "100 /file_a\n")

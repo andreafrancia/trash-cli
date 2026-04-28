@@ -45,5 +45,20 @@ class TestTrashListParser(unittest.TestCase):
 
         assert True == args.show_files
 
+    def test_sort_default(self):
+        args = self.parse([])
+
+        assert 'none' == args.sort
+
+    def test_sort_date(self):
+        args = self.parse(['--sort=date'])
+
+        assert 'date' == args.sort
+
+    def test_sort_path(self):
+        args = self.parse(['--sort=path'])
+
+        assert 'path' == args.sort
+
     def parse(self, args):
         return self.parser.parse_list_args(args, 'trash-list')

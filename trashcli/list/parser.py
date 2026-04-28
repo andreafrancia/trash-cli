@@ -69,6 +69,12 @@ class Parser:
                                  action='store_true',
                                  dest='all_users',
                                  help='list trashcans of all the users')
+        self.parser.add_argument('--sort',
+                                 choices=['date', 'path', 'none'],
+                                 default='none',
+                                 dest='sort',
+                                 help="sort trashed files by date, path, "
+                                      "or none (default: 'none')")
         self.parser.add_argument('--python',
                                  dest='action',
                                  action='store_const',
@@ -98,7 +104,8 @@ class Parser:
                 trash_dirs=parsed.trash_dirs,
                 attribute_to_print=parsed.attribute_to_print,
                 show_files=parsed.show_files,
-                all_users=parsed.all_users
+                all_users=parsed.all_users,
+                sort=parsed.sort
             )
         if parsed.action == ListAction.print_python_executable:
             return PrintPythonExecutableArgs()

@@ -9,6 +9,8 @@ from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.list.extractors import DeletionDateExtractor
 from trashcli.list.extractors import SizeExtractor
+from trashcli.parse_trashinfo.maybe_parse_deletion_date import \
+    maybe_parse_deletion_date
 from trashcli.parse_trashinfo.parse_path import parse_path
 from trashcli.parse_trashinfo.parser_error import ParseError
 from trashcli.trash_dirs_scanner import trash_dir_found
@@ -24,6 +26,7 @@ class ListTrashArgs(
         ('attribute_to_print', str),
         ('show_files', bool),
         ('all_users', bool),
+        ('sort', str),
     ])):
     pass
 
@@ -49,12 +52,26 @@ class ListTrashAction:
     def run_action(self,
                    args, # type: ListTrashArgs
                    ):
-        for message in ListTrash(self.environ,
-                                 self.uid,
-                                 self.selector,
-                                 self.dir_reader,
-                                 self.content_reader).list_all_trash(args):
-            self.print_event(message)
+        events = ListTrash(self.environ,
+                           self.uid,
+                           self.selector,
+                           self.dir_reader,
+                           self.content_reader).list_all_trash(args)
+        if args.sort != 'none':
+            events = list(events)
+            output_positions = [i for i, e in enumerate(events)
+                                if isinstance(e, Output)]
+            outputs = [events[i] for i in output_positions]
+            if args.sort == 'date':
+                outputs.sort(key=lambda e: (e.deletion_date,
+                                            e.original_location))
+            elif args.sort == 'path':
+                outputs.sort(key=lambda e: (e.original_location,
+                                            e.deletion_date))
+            for pos, sorted_output in zip(output_positions, outputs):
+                events[pos] = sorted_output
+        for event in events:
+            self.print_event(event)
 
     def print_event(self, event):
         if isinstance(event, Error):
@@ -128,6 +145,7 @@ class ListTrash:
             else:
                 attribute = extractor.extract_attribute(trashinfo_path,
                                                         contents)
+                deletion_date = "%s" % maybe_parse_deletion_date(contents)
                 original_location = os.path.join(volume, relative_location)
 
                 if show_files:
@@ -136,7 +154,7 @@ class ListTrash:
                                         original_file)
                 else:
                     line = format_line(attribute, original_location)
-                yield Output(line)
+                yield Output(line, deletion_date, original_location)
 
     def top_trashdir_skipped_because_parent_is_symlink(self, trashdir):
         return "TrashDir skipped because parent is symlink: %s" % trashdir
@@ -158,8 +176,10 @@ class Error(Event):
 
 
 class Output(Event):
-    def __init__(self, message):
+    def __init__(self, message, deletion_date, original_location):
         self.message = message
+        self.deletion_date = deletion_date
+        self.original_location = original_location
 
 
 def format_line(attribute, original_location):

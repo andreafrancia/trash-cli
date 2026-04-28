@@ -54,7 +54,7 @@ class TestEndToEndList(unittest.TestCase):
         self.assertEqual(reformat_help_message("""\
 usage: trash-list [-h] [--print-completion {bash,zsh,tcsh}] [--version]
                   [--volumes] [--trash-dirs] [--trash-dir TRASH_DIRS]
-                  [--all-users]
+                  [--all-users] [--sort {date,path,none}]
 
 List trashed files
 
@@ -68,6 +68,9 @@ options:
   --trash-dir TRASH_DIRS
                         specify the trash directory to use
   --all-users           list trashcans of all the users
+  --sort {date,path,none}
+                        sort trashed files by date, path, or none (default:
+                        'none')
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues
 """), result.stderr + result.reformatted_help())
