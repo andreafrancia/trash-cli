@@ -32,6 +32,10 @@ class RestoreArgParser:
                             choices=['date', 'path', 'none'],
                             default='date',
                             help='Sort list of restore candidates by given field')
+        parser.add_argument('--desc',
+                            action='store_true',
+                            default=False,
+                            help='Sort restore candidates in descending order')
         complete_with(
             TRASH_DIRS,
             parser.add_argument('--trash-dir',
@@ -61,4 +65,5 @@ class RestoreArgParser:
                                       'none': Sort.DoNot
                                   }[parsed.sort]),
                                   trash_dir=parsed.trash_dir,
-                                  overwrite=parsed.overwrite)
+                                  overwrite=parsed.overwrite,
+                                  desc=parsed.desc)

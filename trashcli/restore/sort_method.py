@@ -7,9 +7,10 @@ from trashcli.restore.trashed_file import TrashedFile
 
 
 def sort_files(sort,  # type: Sort
+               desc,  # type: bool
                trashed_files,  # type: Iterable[TrashedFile]
                ):  # type: (...) -> Iterable[TrashedFile]
-    return sorter_for(sort).sort_files(trashed_files)
+    return sorter_for(sort, desc).sort_files(trashed_files)
 
 
 class Sorter(Protocol):
@@ -27,21 +28,25 @@ class NoSorter(Sorter):
 
 class SortFunction(Sorter):
     def __init__(self,
-                 sort_func):  # type: (Callable[[TrashedFile], Any]) -> None
+                 sort_func,  # type: Callable[[TrashedFile], Any]
+                 reverse,    # type: bool
+                 ): # type: (...) -> None
         self.sort_func = sort_func
+        self.reverse = reverse
 
     def sort_files(self, trashed_files,  # type: Iterable[TrashedFile]
                    ):  # type: (...) -> Iterable[TrashedFile]
-        return sorted(trashed_files, key=self.sort_func)
+        return sorted(trashed_files, key=self.sort_func, reverse=self.reverse)
 
 
 def sorter_for(sort,  # type: Sort
-               ):  # type (...) -> Sorter
+               desc,  # type: bool
+               ):  # type: (...) -> Sorter
 
     path_ranking = lambda x: x.original_location + str(x.deletion_date)
     date_rankking = lambda x: x.deletion_date
     return {
-        Sort.ByPath: SortFunction(path_ranking),
-        Sort.ByDate: SortFunction(date_rankking),
+        Sort.ByPath: SortFunction(path_ranking, desc),
+        Sort.ByDate: SortFunction(date_rankking, desc),
         Sort.DoNot: NoSorter,
     }[sort]

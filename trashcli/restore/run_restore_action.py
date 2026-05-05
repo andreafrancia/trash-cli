@@ -23,7 +23,7 @@ class RunRestoreAction:
         trashed_files = self.all_files_trashed_from_path(args.path,
                                                          args.trash_dir)
 
-        trashed_files = sort_files(args.sort, trashed_files)
+        trashed_files = sort_files(args.sort, args.desc, trashed_files)
 
         self.handler.handle_trashed_files(trashed_files,
                                           args.overwrite)

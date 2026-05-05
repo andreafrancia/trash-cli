@@ -19,5 +19,6 @@ class RunRestoreArgs(
         ('sort', Sort),
         ('trash_dir', Optional[str]),
         ('overwrite', bool),
+        ('desc', bool),
     ])):
     pass
