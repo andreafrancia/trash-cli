@@ -1,6 +1,6 @@
 import datetime
 
-from six.moves.urllib.parse import quote as url_quote
+from trashcli.trashinfo_path import quote_trashinfo_path
 
 
 def format_trashinfo(original_location,  # type: str
@@ -17,4 +17,4 @@ def format_date(deletion_date):  # type: (datetime.datetime) -> str
 
 
 def format_original_location(original_location):  # type: (str) -> str
-    return url_quote(original_location, '/')
+    return quote_trashinfo_path(original_location)
