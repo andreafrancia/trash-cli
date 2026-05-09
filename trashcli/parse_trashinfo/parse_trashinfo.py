@@ -1,7 +1,8 @@
 from __future__ import absolute_import
 
 import datetime
-from six.moves.urllib.parse import unquote
+
+from trashcli.trashinfo_path import unquote_trashinfo_path
 
 
 def do_nothing(*argv, **argvk): pass
@@ -30,5 +31,5 @@ class ParseTrashInfo:
                     self.found_deletion_date(date)
 
             if line.startswith('Path='):
-                path = unquote(line[len('Path='):])
+                path = unquote_trashinfo_path(line[len('Path='):])
                 self.found_path(path)
