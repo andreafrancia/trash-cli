@@ -2,11 +2,20 @@ from __future__ import absolute_import
 
 
 def sanitize_for_output(s):
-    # Map C0 controls (except TAB) and DEL to caret notation to neutralize
-    # terminal escape sequences from attacker-controlled filenames.
+    # Neutralize terminal control sequences in attacker-controlled strings.
     if s is None:
         return s
-    return ''.join(
-        '^?' if ord(c) == 0x7F
-        else '^' + chr(ord(c) ^ 0x40) if ord(c) < 0x20 and ord(c) != 0x09
-        else c for c in s)
+    out = []
+    for c in s:
+        cp = ord(c)
+        if cp == 0x09:
+            out.append(c)
+        elif cp < 0x20:
+            out.append('^' + chr(cp ^ 0x40))
+        elif cp == 0x7F:
+            out.append('^?')
+        elif 0x80 <= cp <= 0x9F or 0xDC80 <= cp <= 0xDCFF:
+            out.append('\\x%02x' % (cp & 0xFF))
+        else:
+            out.append(c)
+    return ''.join(out)
