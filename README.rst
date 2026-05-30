@@ -256,7 +256,7 @@ If you need a trash implementation that you can checkout the `rmw`_ project.
 
 .. _rmw: https://github.com/theimpossibleastronaut/rmw
 
-If you want, can and know how to add support to BRTFS with sensibile automation
+If you want, can and know how to add support to BRTFS with sensible automation
 tests please send a pull request.
 
 Bugs
