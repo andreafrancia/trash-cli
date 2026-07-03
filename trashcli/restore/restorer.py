@@ -17,16 +17,13 @@ class Restorer:
                              trashed_file, # type: TrashedFile
                              overwrite, # type: bool
                              ):
-        """
-        If overwrite is enabled, then the restore functionality will overwrite an existing file
-        """
-        if not overwrite and self.read_fs.path_exists(trashed_file.original_location):
+        """Restore the file, overwriting the destination only when overwrite is set."""
+        dest = trashed_file.original_location
+        # lexists() also sees a dangling symlink, and a file must never be merged onto a directory.
+        if self.read_fs.path_lexists(dest) and (
+                not overwrite or self.read_fs.path_isdir(dest)):
             raise IOError(
-                'Refusing to overwrite existing file "%s".' % os.path.basename(
-                    trashed_file.original_location))
-        else:
-            parent = os.path.dirname(trashed_file.original_location)
-            self.write_fs.mkdirs(parent)
-
-        self.write_fs.move(trashed_file.original_file, trashed_file.original_location)
+                'Refusing to overwrite existing file "%s".' % os.path.basename(dest))
+        self.write_fs.mkdirs(os.path.dirname(dest))
+        self.write_fs.move(trashed_file.original_file, dest)
         self.write_fs.remove_file(trashed_file.info_file)
