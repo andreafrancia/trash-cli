@@ -36,10 +36,22 @@ class RestoreReadFileSystem:
     def path_exists(self, path):  # type: (str) -> bool
         raise NotImplementedError()
 
+    def path_lexists(self, path):  # type: (str) -> bool
+        return self.path_exists(path)
+
+    def path_isdir(self, path):  # type: (str) -> bool
+        return False
+
 
 class RealRestoreReadFileSystem(RestoreReadFileSystem):
     def path_exists(self, path):
         return os.path.exists(path)
+
+    def path_lexists(self, path):
+        return os.path.lexists(path)
+
+    def path_isdir(self, path):
+        return os.path.isdir(path)
 
 
 @six.add_metaclass(ABCMeta)
