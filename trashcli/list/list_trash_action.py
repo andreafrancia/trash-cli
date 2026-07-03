@@ -6,7 +6,7 @@ from typing import NamedTuple
 
 from trashcli.lib.dir_reader import DirReader
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
-from trashcli.lib.sanitize import sanitize_for_stream
+from trashcli.lib.sanitize import shell_escape, quoting_wanted
 from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.list.extractors import DeletionDateExtractor
 from trashcli.list.extractors import SizeExtractor
@@ -50,18 +50,20 @@ class ListTrashAction:
     def run_action(self,
                    args, # type: ListTrashArgs
                    ):
+        quote = shell_escape if quoting_wanted(self.out) else (lambda name: name)
         for message in ListTrash(self.environ,
                                  self.uid,
                                  self.selector,
                                  self.dir_reader,
-                                 self.content_reader).list_all_trash(args):
+                                 self.content_reader,
+                                 quote).list_all_trash(args):
             self.print_event(message)
 
     def print_event(self, event):
         if isinstance(event, Error):
-            print(sanitize_for_stream(event.error, self.err), file=self.err)
+            print(event.error, file=self.err)
         elif isinstance(event, Output):
-            print(sanitize_for_stream(event.message, self.out), file=self.out)
+            print(event.message, file=self.out)
 
 
 class ListTrash:
@@ -71,12 +73,14 @@ class ListTrash:
                  selector,
                  dir_reader,  # type: DirReader
                  content_reader,
+                 quote=lambda name: name,
                  ):
         self.environ = environ
         self.uid = uid
         self.selector = selector
         self.dir_reader = dir_reader
         self.content_reader = content_reader
+        self.quote = quote
 
     def list_all_trash(self,
                        args,  # type: ListTrashArgs
@@ -129,10 +133,12 @@ class ListTrash:
             else:
                 attribute = extractor.extract_attribute(trashinfo_path,
                                                         contents)
-                original_location = os.path.join(volume, relative_location)
+                original_location = self.quote(
+                    os.path.join(volume, relative_location))
 
                 if show_files:
-                    original_file = path_of_backup_copy(trashinfo_path)
+                    original_file = self.quote(
+                        path_of_backup_copy(trashinfo_path))
                     line = format_line2(attribute, original_location,
                                         original_file)
                 else:

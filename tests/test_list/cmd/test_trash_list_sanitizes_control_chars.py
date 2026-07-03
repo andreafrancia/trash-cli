@@ -4,13 +4,12 @@ import unittest
 from six import StringIO
 
 from tests.support.dirs.my_path import MyPath
+from tests.support.fakes.stub_volume_of import StubVolumeOf
 from trashcli.empty.main import FileSystemContentReader
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirRulesReader
-from trashcli.file_system_reader import FileSystemReader
 from trashcli.fstab.volume_listing import FixedVolumesListing
 from trashcli.lib.dir_reader import RealDirReader
-from tests.support.fakes.stub_volume_of import StubVolumeOf
 from trashcli.list.main import ListCmd
 
 
@@ -24,16 +23,16 @@ class Pipe(StringIO):
         return False
 
 
-class TestTrashListSanitizesControlChars(unittest.TestCase):
+class TestTrashListEscapesFilenames(unittest.TestCase):
     def setUp(self):
         self.tmp_dir = MyPath.make_temp_dir()
         self.xdg_data_home = self.tmp_dir / 'xdg-data-home'
         info = self.xdg_data_home / 'Trash' / 'info'
         os.makedirs(info)
-        # ESC is url-encoded as %1B in the stored Path=
-        with open(info / 'evil.trashinfo', 'w') as f:
+        # %0D is a carriage return in the stored Path=
+        with open(info / 'weird.trashinfo', 'w') as f:
             f.write('[Trash Info]\n'
-                    'Path=/tmp/danger%1B%5B31m\n'
+                    'Path=/tmp/weird%0Dname\n'
                     'DeletionDate=2001-01-01T00:00:00\n')
 
     def _run(self, out):
@@ -47,16 +46,16 @@ class TestTrashListSanitizesControlChars(unittest.TestCase):
                 version='0.0.0').run(['trash-list'])
         return out.getvalue()
 
-    def test_on_a_terminal_the_escape_byte_is_removed(self):
+    def test_on_a_terminal_the_name_is_shell_escaped_like_ls(self):
         output = self._run(Tty())
 
-        assert '\x1b' not in output
-        assert '/tmp/danger' in output
+        self.assertIn("'/tmp/weird'$'\\r''name'", output)
+        self.assertNotIn('\r', output)
 
-    def test_when_piped_the_bytes_are_left_untouched(self):
+    def test_when_piped_the_name_is_printed_raw(self):
         output = self._run(Pipe())
 
-        assert '/tmp/danger\x1b[31m' in output
+        self.assertIn('/tmp/weird\rname', output)
 
     def tearDown(self):
         self.tmp_dir.clean_up()

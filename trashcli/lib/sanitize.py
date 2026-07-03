@@ -2,33 +2,50 @@ from __future__ import absolute_import
 
 import os
 
-REPLACEMENT = u'\ufffd'
+# Control codes with a short mnemonic, as used by GNU ls/rm.
+_MNEMONICS = {
+    0x07: 'a', 0x08: 'b', 0x09: 't', 0x0a: 'n',
+    0x0b: 'v', 0x0c: 'f', 0x0d: 'r',
+}
+
+# Characters that never need quoting.
+_SAFE = set(
+    "abcdefghijklmnopqrstuvwxyz"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "0123456789"
+    "%+-./:=@_,")
 
 
-def sanitize_for_output(s):
-    if s is None:
+def _is_printable(cp):
+    return not (cp < 0x20 or cp == 0x7f or 0x80 <= cp <= 0x9f)
+
+
+def shell_escape(s):
+    """Quote a name the way GNU ls and rm do (shell-escape style)."""
+    if s is None or (s != '' and all(c in _SAFE for c in s)):
         return s
-    chars = list(s)
     out = []
-    for i, c in enumerate(chars):
+    in_quotes = False
+    for c in s:
         cp = ord(c)
-        if cp == 0x09 or cp == 0x0A:
-            out.append(c)
-        elif cp == 0x0D:
-            # A carriage return is safe only when it is the CR of a CRLF pair.
-            out.append(c if i + 1 < len(chars) and chars[i + 1] == u'\n' else REPLACEMENT)
-        elif cp < 0x20 or cp == 0x7F or 0x80 <= cp <= 0x9F or 0xDC80 <= cp <= 0xDCFF:
-            out.append(REPLACEMENT)
-        else:
-            out.append(c)
-    return u''.join(out)
+        if not _is_printable(cp):
+            if in_quotes:
+                out.append("'")
+                in_quotes = False
+            out.append("$'\\%s'" % _MNEMONICS[cp] if cp in _MNEMONICS
+                       else "$'\\%03o'" % cp)
+            continue
+        if not in_quotes:
+            out.append("'")
+            in_quotes = True
+        out.append("'\\''" if c == "'" else c)
+    if in_quotes:
+        out.append("'")
+    return ''.join(out)
 
 
-def sanitize_for_stream(s, stream):
-    return sanitize_for_output(s) if filtering_enabled(stream) else s
-
-
-def filtering_enabled(stream):
+def quoting_wanted(stream):
+    # Like ls: quote for a terminal, print names raw when piped or redirected.
     if os.environ.get('TRASH_RAW_OUTPUT'):
         return False
     try:
