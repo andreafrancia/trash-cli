@@ -31,6 +31,14 @@ class NoLog(FailureReason):
         return ""
 
 
+class UnableToPersistTrashinfo(FailureReason):
+    def __init__(self, error):
+        self.error = error
+
+    def log_entries(self, context):  # type: (LogContext) -> str
+        return "failed to create trashinfo file: %s" % self.error
+
+
 class Janitor:
     def __init__(self,
                  fs,  # type: Fs
@@ -79,7 +87,10 @@ class Janitor:
             return make_error(trashinfo_data)
 
         persisting_job = self.persister.try_persist(trashinfo_data.value())
-        trashed_file = self.executor.execute(persisting_job, log_data)
+        try:
+            trashed_file = self.executor.execute(persisting_job, log_data)
+        except OSError as e:
+            return Janitor.Result(False, UnableToPersistTrashinfo(e))
         trashed = self.trash_dir.try_trash(trashee.path, trashed_file)
         if isinstance(trashed, Left):
             return make_error(trashed)

@@ -7,15 +7,24 @@ class FailingOnAtomicWriteFakeFs(FakeFs):
         super(FailingOnAtomicWriteFakeFs, self).__init__()
         self._atomic_write_can_fail = False
         self._atomic_write_failure_stop = None
+        self._atomic_write_errno = None
 
     def fail_atomic_create_unless(self, basename):
         self._atomic_write_can_fail = True
         self._atomic_write_failure_stop = basename
 
+    def fail_atomic_write_with_errno(self, errno_value):
+        self._atomic_write_can_fail = True
+        self._atomic_write_failure_stop = None
+        self._atomic_write_errno = errno_value
+
     def atomic_write(self,
                      path,
                      content):
         if self._atomic_write_is_supposed_to_fail(path):
+            if self._atomic_write_errno is not None:
+                raise OSError(self._atomic_write_errno,
+                              os.strerror(self._atomic_write_errno))
             raise OSError("atomic_write failed")
 
         return super(FailingOnAtomicWriteFakeFs, self).atomic_write(path,
