@@ -2,7 +2,6 @@ from __future__ import print_function
 
 import six
 
-from trashcli.lib.sanitize import sanitize_for_stream
 from trashcli.restore.output import Output
 from trashcli.restore.output_event import Println, Die, Quit, Exiting, \
     OutputEvent
@@ -18,10 +17,10 @@ class RealOutput(Output):
         self.die('')
 
     def printerr(self, msg):
-        print(sanitize_for_stream(six.text_type(msg), self.stderr), file=self.stderr)
+        print(six.text_type(msg), file=self.stderr)
 
     def println(self, line):
-        print(sanitize_for_stream(six.text_type(line), self.stdout), file=self.stdout)
+        print(six.text_type(line), file=self.stdout)
 
     def die(self, error):
         self.printerr(error)

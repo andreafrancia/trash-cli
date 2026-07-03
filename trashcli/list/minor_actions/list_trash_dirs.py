@@ -1,7 +1,5 @@
-import sys
 from typing import List, NamedTuple
 
-from trashcli.lib.sanitize import sanitize_for_stream
 from trashcli.trash_dirs_scanner import trash_dir_found, \
     trash_dir_skipped_because_parent_not_sticky, \
     trash_dir_skipped_because_parent_is_symlink
@@ -31,10 +29,10 @@ class ListTrashDirs:
         for event, event_args in trash_dirs:
             if event == trash_dir_found:
                 path, volume = event_args
-                print("%s" % sanitize_for_stream(path, sys.stdout))
+                print("%s" % path)
             elif event == trash_dir_skipped_because_parent_not_sticky:
                 path = event_args
-                print("parent_not_sticky: %s" % sanitize_for_stream(path, sys.stdout))
+                print("parent_not_sticky: %s" % (path))
             elif event == trash_dir_skipped_because_parent_is_symlink:
                 path = event_args
-                print("parent_is_symlink: %s" % sanitize_for_stream(path, sys.stdout))
+                print("parent_is_symlink: %s" % (path))
