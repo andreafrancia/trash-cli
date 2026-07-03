@@ -2,6 +2,7 @@
 from trashcli.compat import Protocol
 
 from trashcli.fs import ContentsOf
+from trashcli.lib.sanitize import sanitize_for_stream
 from trashcli.lib.dir_checker import DirChecker
 from trashcli.lib.dir_reader import DirReader
 from trashcli.lib.user_info import SingleUserInfoProvider
@@ -78,4 +79,4 @@ class RmCmd:
         self.print_err('trash-rm: {}'.format(error_msg))
 
     def print_err(self, msg):
-        self.stderr.write(msg + '\n')
+        self.stderr.write(sanitize_for_stream(msg, self.stderr) + '\n')
