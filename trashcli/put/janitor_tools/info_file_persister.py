@@ -9,6 +9,12 @@ from trashcli.put.jobs import JobStatus, NeedsMoreAttempts, Succeeded, \
 from trashcli.put.my_logger import LogData, MyLogger
 from trashcli.put.suffix import Suffix
 
+# Errors that retrying with another suffix in the same directory can never fix.
+HARD_ERRNOS = frozenset(
+    code for code in (getattr(errno, name, None)
+                      for name in ('EACCES', 'EPERM', 'ENOSPC', 'EDQUOT', 'EROFS'))
+    if code is not None)
+
 
 class TrashinfoData(NamedTuple('TrashinfoData', [
     ('basename', str),
@@ -50,6 +56,7 @@ class InfoFilePersister:
                     ):  # type: (...) -> Result
         index = 0
         name_too_long = False
+        # No arbitrary cap: a permanent write error (see HARD_ERRNOS) stops the loop.
         while True:
             suffix = self.suffix.suffix_for_index(index)
             trashinfo_basename = create_trashinfo_basename(data.basename,
@@ -64,9 +71,12 @@ class InfoFilePersister:
                 self.fs.atomic_write(trashinfo_path, data.content)
                 yield Succeeded(TrashedFile(trashinfo_path),
                                 ".trashinfo created as %s." % trashinfo_path)
+                return
             except OSError as e:
                 if e.errno == errno.ENAMETOOLONG:
                     name_too_long = True
+                elif e.errno in HARD_ERRNOS:
+                    raise
                 yield NeedsMoreAttempts(trashinfo_path,
                                         "attempt for creating %s failed." % trashinfo_path)
 
