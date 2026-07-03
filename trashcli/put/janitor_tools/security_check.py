@@ -12,6 +12,9 @@ class SecurityCheck:
     def check_trash_dir_is_secure(self,
                                   candidate,  # type: Candidate
                                   ):  # type: (...) -> Either[None, FailureReason]
+        for sub in (candidate.info_dir(), candidate.files_dir()):
+            if self.fs.lexists(sub) and self.fs.islink(sub):
+                return Left(TrashDirIsNotSecureBecauseSymLink())
         if candidate.check_type == NoCheck:
             return Right(None)
         if candidate.check_type == TopTrashDirCheck:

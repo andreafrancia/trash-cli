@@ -2,6 +2,7 @@ from typing import IO
 from typing import List
 
 from trashcli.compat import Protocol
+from trashcli.lib.sanitize import sanitize_for_output
 from trashcli.put.core.logs import Level
 from trashcli.put.core.logs import LogData
 from trashcli.put.core.logs import LogEntry
@@ -27,7 +28,8 @@ class StreamBackend(LoggerBackend):
                       ):
         if is_right_for_level(log_data.verbose, log_entry.level):
             for message in log_entry.resolve_messages():
-                self.stderr.write("%s: %s\n" % (log_data.program_name, message))
+                self.stderr.write("%s: %s\n" % (
+                    log_data.program_name, sanitize_for_output(message)))
 
 
 def is_right_for_level(verbose,  # type: int
