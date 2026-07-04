@@ -8,13 +8,7 @@ from trashcli.put.jobs import JobStatus, NeedsMoreAttempts, Succeeded, \
     JobExecutor
 from trashcli.put.my_logger import LogData, MyLogger
 from trashcli.put.suffix import Suffix
-
-# Errors that retrying with another suffix in the same directory can never fix.
-HARD_ERRNOS = frozenset(
-    code for code in (getattr(errno, name, None)
-                      for name in ('EACCES', 'EPERM', 'ENOSPC', 'EDQUOT', 'EROFS'))
-    if code is not None)
-
+from permanent_write_errnos import HARD_ERRNOS
 
 class TrashinfoData(NamedTuple('TrashinfoData', [
     ('basename', str),
