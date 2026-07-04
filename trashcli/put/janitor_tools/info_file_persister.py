@@ -32,16 +32,27 @@ class InfoFilePersister:
                  logger,  # type: MyLogger
                  suffix,  # type: Suffix
                  ):  # type: (...) -> None
+        self.logger = logger
+        self.persist_loop = PersistLoop(fs, logger, suffix)
+
+    def persist(self,
+                trash_info_data,  # type: TrashinfoData
+                log_data,  # type: LogData
+                ):  # (...) -> TrashedFile
+        persisting_job = self.persist_loop.try_persist(trash_info_data)
+        job_executor = JobExecutor(self.logger, TrashedFile)
+        return job_executor.execute(persisting_job, log_data)
+
+
+class PersistLoop:
+    def __init__(self,
+                 fs,  # type: Fs
+                 logger,  # type: MyLogger
+                 suffix,  # type: Suffix
+                 ):  # type: (...) -> None
         self.fs = fs
         self.logger = logger
         self.suffix = suffix
-
-    def create_trashinfo_file(self,
-                              trashinfo_data,  # type: TrashinfoData
-                              log_data,  # type: LogData
-                              ):  # type: (...) -> TrashedFile
-        return JobExecutor(self.logger, TrashedFile).execute(
-            self.try_persist(trashinfo_data), log_data)
 
     Result = Iterator[JobStatus[TrashedFile]]
 

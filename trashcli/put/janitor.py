@@ -1,29 +1,23 @@
 from typing import NamedTuple, TypeVar
 
-from trashcli.put.suffix import Suffix
-
-from trashcli.put.core.int_generator import IntGenerator
-
-from trashcli.put.my_logger import LoggerBackend
-
-from trashcli.put.clock import PutClock
-
 from trashcli.lib.environ import Environ
+from trashcli.put.clock import PutClock
 from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.either import Left
 from trashcli.put.core.failure_reason import FailureReason, LogContext
+from trashcli.put.core.int_generator import IntGenerator
 from trashcli.put.core.trashee import Trashee
 from trashcli.put.fs.fs import Fs
 from trashcli.put.janitor_tools.info_creator import TrashInfoCreator
-from trashcli.put.janitor_tools.info_file_persister import InfoFilePersister, \
-    TrashedFile
+from trashcli.put.janitor_tools.info_file_persister import InfoFilePersister
 from trashcli.put.janitor_tools.put_trash_dir import PutTrashDir
 from trashcli.put.janitor_tools.security_check import SecurityCheck
 from trashcli.put.janitor_tools.trash_dir_checker import TrashDirChecker
 from trashcli.put.janitor_tools.trash_dir_creator import TrashDirCreator
-from trashcli.put.jobs import JobExecutor
 from trashcli.put.my_logger import LogData
+from trashcli.put.my_logger import LoggerBackend
 from trashcli.put.my_logger import MyLogger
+from trashcli.put.suffix import Suffix
 
 
 class NoLog(FailureReason):
@@ -44,8 +38,7 @@ class Janitor:
         self.security_check = SecurityCheck(fs)
         self.persister = InfoFilePersister(fs, MyLogger(backend), Suffix(randint))
         self.dir_creator = TrashDirCreator(fs)
-        self.executor = JobExecutor(MyLogger(backend), TrashedFile)
-
+        self.logger = MyLogger(backend)
 
     class Result(NamedTuple('Result', [
         ('ok', bool),
@@ -78,8 +71,9 @@ class Janitor:
         if isinstance(trashinfo_data, Left):
             return make_error(trashinfo_data)
 
-        persisting_job = self.persister.try_persist(trashinfo_data.value())
-        trashed_file = self.executor.execute(persisting_job, log_data)
+        trashed_file = self.persister.persist(trashinfo_data.value(),
+                                              log_data)
+
         trashed = self.trash_dir.try_trash(trashee.path, trashed_file)
         if isinstance(trashed, Left):
             return make_error(trashed)
