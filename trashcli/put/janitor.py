@@ -1,29 +1,24 @@
 from typing import NamedTuple, TypeVar
 
-from trashcli.put.suffix import Suffix
-
-from trashcli.put.core.int_generator import IntGenerator
-
-from trashcli.put.my_logger import LoggerBackend
-
-from trashcli.put.clock import PutClock
-
 from trashcli.lib.environ import Environ
+from trashcli.put.clock import PutClock
 from trashcli.put.core.candidate import Candidate
-from trashcli.put.core.either import Left
+from trashcli.put.core.either import Left, Either, Right
 from trashcli.put.core.failure_reason import FailureReason, LogContext
+from trashcli.put.core.int_generator import IntGenerator
 from trashcli.put.core.trashee import Trashee
 from trashcli.put.fs.fs import Fs
 from trashcli.put.janitor_tools.info_creator import TrashInfoCreator
 from trashcli.put.janitor_tools.info_file_persister import InfoFilePersister, \
-    TrashedFile
+    TrashedFile, UnableToPersistTrashinfo
 from trashcli.put.janitor_tools.put_trash_dir import PutTrashDir
 from trashcli.put.janitor_tools.security_check import SecurityCheck
 from trashcli.put.janitor_tools.trash_dir_checker import TrashDirChecker
 from trashcli.put.janitor_tools.trash_dir_creator import TrashDirCreator
-from trashcli.put.jobs import JobExecutor
 from trashcli.put.my_logger import LogData
+from trashcli.put.my_logger import LoggerBackend
 from trashcli.put.my_logger import MyLogger
+from trashcli.put.suffix import Suffix
 
 
 class NoLog(FailureReason):
@@ -31,12 +26,12 @@ class NoLog(FailureReason):
         return ""
 
 
-class UnableToPersistTrashinfo(FailureReason):
-    def __init__(self, error):
-        self.error = error
-
-    def log_entries(self, context):  # type: (LogContext) -> str
-        return "failed to create trashinfo file: %s" % self.error
+class PersistInfoResult(NamedTuple('PersistInfoResult', [
+    ('ok', bool),
+    ('reason', FailureReason)
+])):
+    def succeeded(self):
+        return self.ok
 
 
 class Janitor:
@@ -50,24 +45,16 @@ class Janitor:
         self.trashing_checker = TrashDirChecker(fs)
         self.info_dir = TrashInfoCreator(fs, clock)
         self.security_check = SecurityCheck(fs)
-        self.persister = InfoFilePersister(fs, MyLogger(backend), Suffix(randint))
+        self.persister = InfoFilePersister(fs, MyLogger(backend),
+                                           Suffix(randint))
         self.dir_creator = TrashDirCreator(fs)
-        self.executor = JobExecutor(MyLogger(backend), TrashedFile)
-
-
-    class Result(NamedTuple('Result', [
-        ('ok', bool),
-        ('reason', FailureReason)
-    ])):
-        def succeeded(self):
-            return self.ok
 
     def trash_file_in(self,
                       candidate,  # type: Candidate
                       log_data,  # type: LogData
                       environ,  # type: Environ
                       trashee,  # type: Trashee
-                      ):  # type: (...) -> Result
+                      ):  # type: (...) -> PersistInfoResult
         secure = self.security_check.check_trash_dir_is_secure(candidate)
         if isinstance(secure, Left):
             return make_error(secure)
@@ -86,12 +73,11 @@ class Janitor:
         if isinstance(trashinfo_data, Left):
             return make_error(trashinfo_data)
 
-        persisting_job = self.persister.try_persist(trashinfo_data.value())
-        try:
-            trashed_file = self.executor.execute(persisting_job, log_data)
-        except OSError as e:
-            return Janitor.Result(False, UnableToPersistTrashinfo(e))
-        trashed = self.trash_dir.try_trash(trashee.path, trashed_file)
+        trashed_file = self.persister.persist(trashinfo_data.value(), log_data)
+        if isinstance(trashed_file, Left):
+            return make_error(trashed_file)
+
+        trashed = self.trash_dir.try_trash(trashee.path, trashed_file.value())
         if isinstance(trashed, Left):
             return make_error(trashed)
 
@@ -101,9 +87,9 @@ class Janitor:
 S = TypeVar('S')
 
 
-def make_error(reason):  # type: (Left[S, FailureReason]) -> Janitor.Result
-    return Janitor.Result(False, reason.error())
+def make_error(reason):  # type: (Left[S, FailureReason]) -> PersistInfoResult
+    return PersistInfoResult(False, reason.error())
 
 
-def make_ok():  # type: () -> Janitor.Result
-    return Janitor.Result(True, NoLog())
+def make_ok():  # type: () -> PersistInfoResult
+    return PersistInfoResult(True, NoLog())
