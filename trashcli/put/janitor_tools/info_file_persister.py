@@ -4,11 +4,12 @@ from typing import NamedTuple, Iterator
 
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.put.fs.fs import Fs
+from trashcli.put.janitor_tools.permanent_write_errnos import HARD_ERRNOS
 from trashcli.put.jobs import JobStatus, NeedsMoreAttempts, Succeeded, \
     JobExecutor
 from trashcli.put.my_logger import LogData, MyLogger
 from trashcli.put.suffix import Suffix
-from permanent_write_errnos import HARD_ERRNOS
+
 
 class TrashinfoData(NamedTuple('TrashinfoData', [
     ('basename', str),
