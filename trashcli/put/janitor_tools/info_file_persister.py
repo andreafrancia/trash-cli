@@ -3,6 +3,8 @@ import os
 from typing import NamedTuple, Iterator
 
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
+from trashcli.put.core.either import Right, Left, Either
+from trashcli.put.core.failure_reason import FailureReason, LogContext
 from trashcli.put.fs.fs import Fs
 from trashcli.put.janitor_tools.permanent_write_errnos import HARD_ERRNOS
 from trashcli.put.jobs import JobStatus, NeedsMoreAttempts, Succeeded, \
@@ -26,6 +28,12 @@ class TrashedFile(NamedTuple('TrashedFile', [
     def backup_copy_path(self):  # type: () -> str
         return path_of_backup_copy(self.trashinfo_path)
 
+class UnableToPersistTrashinfo(FailureReason):
+    def __init__(self, error):
+        self.error = error
+
+    def log_entries(self, context):  # type: (LogContext) -> str
+        return "failed to create trashinfo file: %s" % self.error
 
 class InfoFilePersister:
     def __init__(self,
@@ -37,18 +45,32 @@ class InfoFilePersister:
         self.logger = logger
         self.suffix = suffix
 
-    def create_trashinfo_file(self,
-                              trashinfo_data,  # type: TrashinfoData
-                              log_data,  # type: LogData
-                              ):  # type: (...) -> TrashedFile
-        return JobExecutor(self.logger, TrashedFile).execute(
-            self.try_persist(trashinfo_data), log_data)
+    def persist(self,
+                trashinfo_data,  # type: TrashinfoData
+                log_data,  # type: LogData
+                ):  # type: (...) -> Either[TrashedFile, UnableToPersistTrashinfo]
+        try:
+            trashed_file: TrashedFile = self._persist_trash_info(
+                trashinfo_data, log_data
+            )
+            return Right(trashed_file)
+        except OSError as e:
+            return Left(UnableToPersistTrashinfo(e))
+
+
+    def _persist_trash_info(self,
+                            trashinfo_data,  # type: TrashinfoData
+                            log_data,  # type: LogData
+                            ):  # type: (...) -> TrashedFile
+        job_executor = JobExecutor(self.logger, TrashedFile)
+        persisting_job = self._try_persist(trashinfo_data)
+        return job_executor.execute(persisting_job, log_data)
 
     Result = Iterator[JobStatus[TrashedFile]]
 
-    def try_persist(self,
-                    data,  # type: TrashinfoData
-                    ):  # type: (...) -> Result
+    def _try_persist(self,
+                     data,  # type: TrashinfoData
+                     ):  # type: (...) -> Result
         index = 0
         name_too_long = False
         # No arbitrary cap: a permanent write error (see HARD_ERRNOS) stops the loop.

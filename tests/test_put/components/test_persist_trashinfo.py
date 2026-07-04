@@ -25,7 +25,7 @@ class TestPersistTrashInfo(unittest.TestCase):
         self.stderr = StringIO()
         self.backend = StreamBackend(self.stderr)
         self.logger = MyLogger(self.backend)
-        self.suffix = Suffix(FakeRandomInt([0,1]))
+        self.suffix = Suffix(FakeRandomInt([0, 1]))
         self.info_dir = InfoFilePersister(self.fs, self.logger, self.suffix)
 
     def test_persist_trash_info_first_time(self):
@@ -49,4 +49,4 @@ class TestPersistTrashInfo(unittest.TestCase):
     def _persist_trash_info(self, basename, content):
         log_data = LogData('trash-cli', 2)
         data = TrashinfoData(basename, content, self.path)
-        return self.info_dir.create_trashinfo_file(data, log_data).trashinfo_path
+        return self.info_dir.persist(data, log_data).value().trashinfo_path
