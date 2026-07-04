@@ -17,22 +17,16 @@ class Either(Generic[S, E]):
         raise NotImplementedError
 
     def is_error(self):  # type: () -> bool
-        return not self.is_valid()
+        raise NotImplementedError
 
     def is_valid(self):  # type: () -> bool
-        return {Left: False, Right: True}[type(self)]
+        raise NotImplementedError
 
     def error(self):  # type: () -> E
-        if isinstance(self, Left):
-            return self._error
-        else:
-            raise ValueError("Not an error: %s" % self)
+        raise NotImplementedError
 
-    def value(self):
-        if isinstance(self, Right):
-            return self._value
-        else:
-            raise ValueError("Not a value: %s" % self)
+    def value(self):  # type: () -> S
+        raise NotImplementedError
 
 
 class Right(Either[S, E]):
@@ -42,6 +36,18 @@ class Right(Either[S, E]):
     def bind(self,
              func):  # type: (Callable[[S], Either[R, E]]) -> Either[R, E]
         return func(self._value)
+
+    def is_error(self):  # type: () -> bool
+        return not self.is_valid()
+
+    def is_valid(self):  # type: () -> bool
+        return True
+
+    def error(self):  # type: () -> E
+        raise ValueError("Not an error: %s" % self)
+
+    def value(self):  # type: () -> S
+        return self._value
 
     def __eq__(self, other):  # type: (object) -> bool
         return isinstance(other, Right) and self._value == other._value
@@ -57,6 +63,18 @@ class Left(Either[S, E]):
     def bind(self,
              func):  # type: (Callable[[S], Either[R, E]]) -> Either[R, E]
         return Left(self._error)
+
+    def is_error(self):  # type: () -> bool
+        return not self.is_valid()
+
+    def is_valid(self):  # type: () -> bool
+        return False
+
+    def error(self):  # type: () -> E
+        return self._error
+
+    def value(self):  # type: () -> S
+        raise ValueError("Not a value: %s" % self)
 
     def __eq__(self, other):  # type: (object) -> bool
         return isinstance(other, Left) and self._error == other._error
