@@ -15,7 +15,7 @@ commit on red.
 - [x] 3. Scenario 2: no orphans -> empty output.
 - [x] 4. Scenario 3: multiple orphans.
 - [x] 5. Scenario 5: respects `--trash-dir` scoping.
-- [ ] 6. Scenario 6: `--size` alone -> warning.
+- [x] 6. Scenario 6: `--size` alone -> warning.
 - [ ] 7. Scenario 7: `--files` alone -> warning.
 - [ ] 8. Scenario 8: `--files --size` combined -> alphabetical warning.
 - [ ] 9. Scenario 9: swapped argv order -> identical warning text.

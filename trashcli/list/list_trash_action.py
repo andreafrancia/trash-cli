@@ -89,6 +89,9 @@ class ListTrash:
         extractor = extractors[args.attribute_to_print]
         show_files = args.show_files
         all_users = args.all_users
+        if args.show_non_trashinfo and args.attribute_to_print == 'size':
+            yield Error("trash-list: --size is ignored when "
+                        "--show-non-trashinfo is used")
         trash_dirs = self.selector.select(all_users,
                                           user_specified_trash_dirs,
                                           self.environ,

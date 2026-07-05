@@ -64,5 +64,17 @@ class TestShowNonTrashinfo(unittest.TestCase):
 
         assert result.stdout == orphan1 + '\n'
 
+    def test_size_ignored_with_warning(self):
+        orphan_path = self.fake_trash_dir.add_orphan('orphan1')
+
+        result = run_command(self.temp_dir, "trash-list",
+                             ['--show-non-trashinfo', '--size',
+                              '--trash-dir', self.trash_dir])
+
+        assert result.stderr == (
+            "trash-list: --size is ignored when --show-non-trashinfo is "
+            "used\n")
+        assert result.stdout == orphan_path + '\n'
+
     def tearDown(self):
         self.temp_dir.clean_up()
