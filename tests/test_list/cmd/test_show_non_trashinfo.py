@@ -25,5 +25,13 @@ class TestShowNonTrashinfo(unittest.TestCase):
         assert result.stdout == orphan_path + '\n'
         assert result.stderr == ''
 
+    def test_flag_absent_orphan_not_shown(self):
+        self.fake_trash_dir.add_orphan('orphan1')
+
+        result = run_command(self.temp_dir, "trash-list",
+                             ['--trash-dir', self.trash_dir])
+
+        assert 'orphan1' not in result.stdout
+
     def tearDown(self):
         self.temp_dir.clean_up()
