@@ -100,5 +100,17 @@ class TestOrphans(unittest.TestCase):
             "--orphans is used\n")
         assert result.stdout == orphan_path + '\n'
 
+    def test_files_and_size_warning_independent_of_argv_order(self):
+        orphan_path = self.fake_trash_dir.add_orphan('orphan1')
+
+        result = run_command(self.temp_dir, "trash-list",
+                             ['--orphans', '--size', '--files',
+                              '--trash-dir', self.trash_dir])
+
+        assert result.stderr == (
+            "trash-list: --files and --size are ignored when "
+            "--orphans is used\n")
+        assert result.stdout == orphan_path + '\n'
+
     def tearDown(self):
         self.temp_dir.clean_up()
