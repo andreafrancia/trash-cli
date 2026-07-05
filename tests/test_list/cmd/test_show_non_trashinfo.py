@@ -43,5 +43,15 @@ class TestShowNonTrashinfo(unittest.TestCase):
         assert result.stdout == ''
         assert result.exit_code == 0
 
+    def test_multiple_orphans_all_listed(self):
+        orphan1 = self.fake_trash_dir.add_orphan('orphan1')
+        orphan2 = self.fake_trash_dir.add_orphan('orphan2')
+
+        result = run_command(self.temp_dir, "trash-list",
+                             ['--show-non-trashinfo', '--trash-dir',
+                              self.trash_dir])
+
+        assert set(result.stdout.splitlines()) == {orphan1, orphan2}
+
     def tearDown(self):
         self.temp_dir.clean_up()
