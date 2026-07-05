@@ -76,5 +76,17 @@ class TestShowNonTrashinfo(unittest.TestCase):
             "used\n")
         assert result.stdout == orphan_path + '\n'
 
+    def test_files_ignored_with_warning(self):
+        orphan_path = self.fake_trash_dir.add_orphan('orphan1')
+
+        result = run_command(self.temp_dir, "trash-list",
+                             ['--show-non-trashinfo', '--files',
+                              '--trash-dir', self.trash_dir])
+
+        assert result.stderr == (
+            "trash-list: --files is ignored when --show-non-trashinfo is "
+            "used\n")
+        assert result.stdout == orphan_path + '\n'
+
     def tearDown(self):
         self.temp_dir.clean_up()
