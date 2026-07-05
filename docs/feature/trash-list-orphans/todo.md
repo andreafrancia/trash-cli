@@ -16,7 +16,7 @@ commit on red.
 - [x] 4. Scenario 3: multiple orphans.
 - [x] 5. Scenario 5: respects `--trash-dir` scoping.
 - [x] 6. Scenario 6: `--size` alone -> warning.
-- [ ] 7. Scenario 7: `--files` alone -> warning.
+- [x] 7. Scenario 7: `--files` alone -> warning.
 - [ ] 8. Scenario 8: `--files --size` combined -> alphabetical warning.
 - [ ] 9. Scenario 9: swapped argv order -> identical warning text.
 - [ ] 10. Docs: `man/man1/trash-list.1` OPTIONS + EXAMPLES entry.

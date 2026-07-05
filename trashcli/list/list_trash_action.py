@@ -89,6 +89,9 @@ class ListTrash:
         extractor = extractors[args.attribute_to_print]
         show_files = args.show_files
         all_users = args.all_users
+        if args.show_orphans and show_files:
+            yield Error("trash-list: --files is ignored when "
+                        "--orphans is used")
         if args.show_orphans and args.attribute_to_print == 'size':
             yield Error("trash-list: --size is ignored when "
                         "--orphans is used")
