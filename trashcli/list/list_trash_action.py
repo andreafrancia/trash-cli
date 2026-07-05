@@ -89,12 +89,11 @@ class ListTrash:
         extractor = extractors[args.attribute_to_print]
         show_files = args.show_files
         all_users = args.all_users
-        if args.show_orphans and show_files:
-            yield Error("trash-list: --files is ignored when "
-                        "--orphans is used")
-        if args.show_orphans and args.attribute_to_print == 'size':
-            yield Error("trash-list: --size is ignored when "
-                        "--orphans is used")
+        if args.show_orphans:
+            warning = self._ignored_flags_warning(show_files,
+                                                  args.attribute_to_print)
+            if warning:
+                yield Error(warning)
         trash_dirs = self.selector.select(all_users,
                                           user_specified_trash_dirs,
                                           self.environ,
@@ -121,6 +120,18 @@ class ListTrash:
                 msg = Error(
                     self.top_trashdir_skipped_because_parent_is_symlink(path))
                 yield msg
+
+    def _ignored_flags_warning(self, show_files, attribute_to_print):
+        ignored_flags = []
+        if show_files:
+            ignored_flags.append('--files')
+        if attribute_to_print == 'size':
+            ignored_flags.append('--size')
+        if not ignored_flags:
+            return None
+        verb = 'are' if len(ignored_flags) > 1 else 'is'
+        return "trash-list: %s %s ignored when --orphans is used" % (
+            " and ".join(sorted(ignored_flags)), verb)
 
     def _print_trashinfo(self,
                          volume,
