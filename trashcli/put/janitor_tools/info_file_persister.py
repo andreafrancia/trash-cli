@@ -50,7 +50,7 @@ class InfoFilePersister:
                 log_data,  # type: LogData
                 ):  # type: (...) -> Either[TrashedFile, UnableToPersistTrashinfo]
         try:
-            trashed_file: TrashedFile = self._persist_trash_info(
+            trashed_file = self._persist_trash_info(
                 trashinfo_data, log_data
             )
             return Right(trashed_file)

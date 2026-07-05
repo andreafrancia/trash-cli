@@ -29,7 +29,7 @@ class TestPersistTrashInfo(unittest.TestCase):
         self.info_dir = InfoFilePersister(self.fs, self.logger, self.suffix)
 
     def test_persist_trash_info_first_time(self):
-        trash_info_file = self._persist_trash_info('dummy-path', b'content')
+        trash_info_file = self._run_persist('dummy-path', b'content')
 
         assert self.path / 'dummy-path.trashinfo' == trash_info_file
         assert 'content' == read_file(trash_info_file)
@@ -37,7 +37,7 @@ class TestPersistTrashInfo(unittest.TestCase):
     def test_persist_trash_info_first_100_times(self):
         self.test_persist_trash_info_first_time()
 
-        trash_info_file = self._persist_trash_info('dummy-path',
+        trash_info_file = self._run_persist('dummy-path',
                                                    b'content')
 
         assert self.path / 'dummy-path_1.trashinfo' == trash_info_file
@@ -46,7 +46,7 @@ class TestPersistTrashInfo(unittest.TestCase):
     def tearDown(self):
         self.path.clean_up()
 
-    def _persist_trash_info(self, basename, content):
+    def _run_persist(self, basename, content):
         log_data = LogData('trash-cli', 2)
         data = TrashinfoData(basename, content, self.path)
         return self.info_dir.persist(data, log_data).value().trashinfo_path
