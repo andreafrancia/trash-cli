@@ -10,6 +10,7 @@ from typing import Optional
 from typing import Union
 
 from trashcli.put.core.mode import Mode
+from trashcli.put.fs.fs import Fs
 from trashcli.shell_completion import TRASH_DIRS
 from trashcli.shell_completion import TRASH_FILES
 from trashcli.shell_completion import add_argument_to
@@ -34,12 +35,18 @@ Trash = NamedTuple('Trash', [
 
 
 class Parser:
+    def __init__(self,
+                 fs,  # type: Fs
+                 ):
+        self.fs = fs
 
-    def parse_args(self, argv):  # type: (list) -> Union[ExitWithCode, Trash]
+    def parse_args(self,
+                   argv,  # type: List[str]
+                   ):  # type: (...) -> Union[ExitWithCode, Trash]
         program_name = os.path.basename(argv[0])
         arg_parser = make_parser(program_name)
         try:
-            bad = option_shaped_existing_files(argv[1:])
+            bad = option_shaped_existing_files(self.fs, argv[1:])
             if bad:
                 arg_parser.error(
                     "refusing to treat existing file %s as an option "
@@ -61,14 +68,17 @@ class Parser:
                      home_fallback=options.home_fallback)
 
 
-def option_shaped_existing_files(args):
+def option_shaped_existing_files(
+        fs,  # type: Fs
+        args,  # type: List[str]
+):  # type: (...) -> List[str]
     result = []
     after_separator = False
     for arg in args:
         if arg == '--':
             after_separator = True
         elif not after_separator and arg.startswith('-') and arg != '-' \
-                and os.path.lexists(arg):
+                and fs.lexists(arg):
             result.append(arg)
     return result
 

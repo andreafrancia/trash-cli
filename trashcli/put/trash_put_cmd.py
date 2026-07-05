@@ -2,6 +2,7 @@ from typing import List
 
 from trashcli.lib.environ import Environ
 from trashcli.put.context import Context
+from trashcli.put.fs.fs import Fs
 from trashcli.put.my_logger import LogData
 from trashcli.put.parser import ExitWithCode
 from trashcli.put.parser import Parser
@@ -12,9 +13,11 @@ from trashcli.put.trasher import Trasher
 
 class TrashPutCmd:
     def __init__(self,
+                 fs,  # type: Fs
                  reporter,  # type: TrashPutReporter
                  trasher,  # type: Trasher
                  ):
+        self.fs = fs
         self.reporter = reporter
         self.trasher = trasher
 
@@ -23,7 +26,7 @@ class TrashPutCmd:
                 environ,  # type: Environ
                 uid,  # type: int
                 ):  # type: (...) -> int
-        parser = Parser()
+        parser = Parser(self.fs)
         parsed = parser.parse_args(argv)
         if isinstance(parsed, ExitWithCode):
             return parsed.exit_code
