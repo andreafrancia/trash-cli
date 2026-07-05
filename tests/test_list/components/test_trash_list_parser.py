@@ -45,5 +45,15 @@ class TestTrashListParser(unittest.TestCase):
 
         assert True == args.show_files
 
+    def test_orphans_off(self):
+        args = self.parse([])
+
+        assert False == args.show_orphans
+
+    def test_orphans_on(self):
+        args = self.parse(['--orphans'])
+
+        assert True == args.show_orphans
+
     def parse(self, args):
         return self.parser.parse_list_args(args, 'trash-list')

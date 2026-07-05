@@ -24,6 +24,7 @@ class ListTrashArgs(
         ('attribute_to_print', str),
         ('show_files', bool),
         ('all_users', bool),
+        ('show_orphans', bool),
     ])):
     pass
 
