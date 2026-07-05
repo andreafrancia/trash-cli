@@ -19,4 +19,4 @@ commit on red.
 - [x] 7. Scenario 7: `--files` alone -> warning.
 - [x] 8. Scenario 8: `--files --size` combined -> alphabetical warning.
 - [x] 9. Scenario 9: swapped argv order -> identical warning text.
-- [ ] 10. Docs: `man/man1/trash-list.1` OPTIONS + EXAMPLES entry.
+- [x] 10. Docs: `man/man1/trash-list.1` OPTIONS + EXAMPLES entry.

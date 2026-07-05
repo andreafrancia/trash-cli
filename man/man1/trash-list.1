@@ -34,6 +34,11 @@ Show help message and exit.
 .IP "--trash-dir=TRASHDIR"
 Use TRASHDIR as trash folder. Can be used multiple times
 
+.IP "--orphans"
+Show only the orphan files in the trash directory: files that have no
+corresponding .trashinfo file, instead of the normal listing. \-\-files
+and \-\-size are ignored (with a warning) when this option is used.
+
 .IP "--version"
 Show program's version number and exit.
 
@@ -48,6 +53,13 @@ $ trash-list
 $ trash-list | grep foo
 2008-06-23 21:50:41 /home/andrea/foobar
 2008-06-23 21:50:49 /home/andrea/foobar
+.fi
+
+List orphan files (no matching .trashinfo), the ones trash-empty would
+clean up:
+.nf
+$ trash-list --orphans
+/home/andrea/.local/share/Trash/files/orphan1
 .fi
 
 .SH "BUGS"
