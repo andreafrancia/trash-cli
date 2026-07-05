@@ -2,9 +2,8 @@ import os
 import shutil
 import tempfile
 
-from tests.support.files import make_sticky_dir
-from trashcli.put.fs.real_fs import RealFs
 from trashcli.put.fs.fs import list_all
+from trashcli.put.fs.real_fs import RealFs
 
 
 class MyPath(str):
@@ -32,6 +31,9 @@ class MyPath(str):
 
     def mkdir_rel(self, path):
         RealFs().mkdir(self / path)
+
+    def touch(self, path):
+        RealFs().touch(self / path)
 
     def symlink_rel(self, src, dest):
         RealFs().symlink(self / src, self / dest)

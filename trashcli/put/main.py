@@ -44,7 +44,7 @@ def make_cmd(clock,
     file_trasher = FileTrasher(fs, janitor, backend)
     user = User(user_input, Describer(fs))
     trasher = Trasher(file_trasher, user, fs, backend)
-    return TrashPutCmd(reporter, trasher)
+    return TrashPutCmd(fs, reporter, trasher)
 
 
 class RandomIntGenerator(IntGenerator):

@@ -7,3 +7,5 @@ import os
 EX_OK = getattr(os, 'EX_OK', 0)
 EX_USAGE = getattr(os, 'EX_USAGE', 64)
 EX_IOERR = getattr(os, 'EX_IOERR', 74)
+
+BAD_OPTION = 2
