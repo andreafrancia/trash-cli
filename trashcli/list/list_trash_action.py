@@ -24,7 +24,7 @@ class ListTrashArgs(
         ('attribute_to_print', str),
         ('show_files', bool),
         ('all_users', bool),
-        ('show_non_trashinfo', bool),
+        ('show_orphans', bool),
     ])):
     pass
 
@@ -89,7 +89,7 @@ class ListTrash:
         extractor = extractors[args.attribute_to_print]
         show_files = args.show_files
         all_users = args.all_users
-        if args.show_non_trashinfo:
+        if args.show_orphans:
             warning = self._ignored_flags_warning(show_files,
                                                   args.attribute_to_print)
             if warning:
@@ -102,7 +102,7 @@ class ListTrash:
             if event == trash_dir_found:
                 path, volume = event_args
                 trash_dir = TrashDirReader(self.dir_reader)
-                if args.show_non_trashinfo:
+                if args.show_orphans:
                     for orphan_path in trash_dir.list_orphans(path):
                         yield Output(orphan_path)
                 else:
@@ -130,7 +130,7 @@ class ListTrash:
         if not ignored_flags:
             return None
         verb = 'are' if len(ignored_flags) > 1 else 'is'
-        return "trash-list: %s %s ignored when --show-non-trashinfo is used" % (
+        return "trash-list: %s %s ignored when --orphans is used" % (
             " and ".join(sorted(ignored_flags)), verb)
 
     def _print_trashinfo(self,

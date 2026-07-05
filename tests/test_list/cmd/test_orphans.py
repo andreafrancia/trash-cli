@@ -8,7 +8,7 @@ from tests.support.run.run_command import run_command
 
 
 @pytest.mark.slow
-class TestShowNonTrashinfo(unittest.TestCase):
+class TestOrphans(unittest.TestCase):
     def setUp(self):
         self.temp_dir = MyPath.make_temp_dir()
         self.trash_dir = self.temp_dir / 'trash-dir'
@@ -19,7 +19,7 @@ class TestShowNonTrashinfo(unittest.TestCase):
         orphan_path = self.fake_trash_dir.add_orphan('orphan1')
 
         result = run_command(self.temp_dir, "trash-list",
-                             ['--show-non-trashinfo', '--trash-dir',
+                             ['--orphans', '--trash-dir',
                               self.trash_dir])
 
         assert result.stdout == orphan_path + '\n'
@@ -37,7 +37,7 @@ class TestShowNonTrashinfo(unittest.TestCase):
         self.fake_trash_dir.add_trashinfo4("/file1", '2000-01-01 00:00:01')
 
         result = run_command(self.temp_dir, "trash-list",
-                             ['--show-non-trashinfo', '--trash-dir',
+                             ['--orphans', '--trash-dir',
                               self.trash_dir])
 
         assert result.stdout == ''
@@ -48,7 +48,7 @@ class TestShowNonTrashinfo(unittest.TestCase):
         orphan2 = self.fake_trash_dir.add_orphan('orphan2')
 
         result = run_command(self.temp_dir, "trash-list",
-                             ['--show-non-trashinfo', '--trash-dir',
+                             ['--orphans', '--trash-dir',
                               self.trash_dir])
 
         assert set(result.stdout.splitlines()) == {orphan1, orphan2}
@@ -59,7 +59,7 @@ class TestShowNonTrashinfo(unittest.TestCase):
         other_trash_dir.add_orphan('orphan2')
 
         result = run_command(self.temp_dir, "trash-list",
-                             ['--show-non-trashinfo', '--trash-dir',
+                             ['--orphans', '--trash-dir',
                               self.trash_dir])
 
         assert result.stdout == orphan1 + '\n'
@@ -68,48 +68,46 @@ class TestShowNonTrashinfo(unittest.TestCase):
         orphan_path = self.fake_trash_dir.add_orphan('orphan1')
 
         result = run_command(self.temp_dir, "trash-list",
-                             ['--show-non-trashinfo', '--size',
+                             ['--orphans', '--size',
                               '--trash-dir', self.trash_dir])
 
         assert result.stderr == (
-            "trash-list: --size is ignored when --show-non-trashinfo is "
-            "used\n")
+            "trash-list: --size is ignored when --orphans is used\n")
         assert result.stdout == orphan_path + '\n'
 
     def test_files_ignored_with_warning(self):
         orphan_path = self.fake_trash_dir.add_orphan('orphan1')
 
         result = run_command(self.temp_dir, "trash-list",
-                             ['--show-non-trashinfo', '--files',
+                             ['--orphans', '--files',
                               '--trash-dir', self.trash_dir])
 
         assert result.stderr == (
-            "trash-list: --files is ignored when --show-non-trashinfo is "
-            "used\n")
+            "trash-list: --files is ignored when --orphans is used\n")
         assert result.stdout == orphan_path + '\n'
 
     def test_files_and_size_ignored_with_warning_alphabetical(self):
         orphan_path = self.fake_trash_dir.add_orphan('orphan1')
 
         result = run_command(self.temp_dir, "trash-list",
-                             ['--show-non-trashinfo', '--files', '--size',
+                             ['--orphans', '--files', '--size',
                               '--trash-dir', self.trash_dir])
 
         assert result.stderr == (
             "trash-list: --files and --size are ignored when "
-            "--show-non-trashinfo is used\n")
+            "--orphans is used\n")
         assert result.stdout == orphan_path + '\n'
 
     def test_files_and_size_warning_independent_of_argv_order(self):
         orphan_path = self.fake_trash_dir.add_orphan('orphan1')
 
         result = run_command(self.temp_dir, "trash-list",
-                             ['--show-non-trashinfo', '--size', '--files',
+                             ['--orphans', '--size', '--files',
                               '--trash-dir', self.trash_dir])
 
         assert result.stderr == (
             "trash-list: --files and --size are ignored when "
-            "--show-non-trashinfo is used\n")
+            "--orphans is used\n")
         assert result.stdout == orphan_path + '\n'
 
     def tearDown(self):

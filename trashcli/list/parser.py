@@ -69,12 +69,13 @@ class Parser:
                                  action='store_true',
                                  dest='all_users',
                                  help='list trashcans of all the users')
-        self.parser.add_argument('--show-non-trashinfo',
+        self.parser.add_argument('--orphans',
                                  action='store_true',
                                  default=False,
-                                 dest='show_non_trashinfo',
-                                 help='show only files in the trash dir that '
-                                      'have no corresponding .trashinfo file')
+                                 dest='show_orphans',
+                                 help='show only orphan files: files in the '
+                                      'trash dir that have no corresponding '
+                                      '.trashinfo file')
         self.parser.add_argument('--python',
                                  dest='action',
                                  action='store_const',
@@ -105,7 +106,7 @@ class Parser:
                 attribute_to_print=parsed.attribute_to_print,
                 show_files=parsed.show_files,
                 all_users=parsed.all_users,
-                show_non_trashinfo=parsed.show_non_trashinfo
+                show_orphans=parsed.show_orphans
             )
         if parsed.action == ListAction.print_python_executable:
             return PrintPythonExecutableArgs()

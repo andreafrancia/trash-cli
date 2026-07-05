@@ -1,4 +1,4 @@
-# Todo: `trash-list --show-non-trashinfo`
+# Todo: `trash-list --orphans`
 
 See `scenarios.md` for the full acceptance scenarios this checklist implements.
 
@@ -7,7 +7,7 @@ Process: for each item, write the test (red) -> minimal implementation change (g
 as part of that same commit. Never move to the next item with a failing test. Never
 commit on red.
 
-- [x] 0. Parser groundwork: `--show-non-trashinfo` flag + `ListTrashArgs` field +
+- [x] 0. Parser groundwork: `--orphans` flag + `ListTrashArgs` field +
       parser tests + updated `--help` text.
 - [x] 1. Scenario 1 (happy path): exclusive orphan listing branch in
       `ListTrash.list_all_trash` + `FakeTrashDir.add_orphan` helper + new test file.
