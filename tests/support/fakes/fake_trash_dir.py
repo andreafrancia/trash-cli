@@ -37,6 +37,12 @@ class FakeTrashDir:
     def file_path(self, basename):
         return os.path.join(self.files_path, basename)
 
+    def add_orphan(self, basename):
+        path = self.file_path(basename)
+        make_parent_for(path)
+        make_file(path, '')
+        return path
+
     def add_trashinfo_basename_path(self, basename, path):
         self.add_trashinfo3(basename, path, a_default_datetime())
 
