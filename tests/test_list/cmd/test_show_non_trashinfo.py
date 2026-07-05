@@ -53,5 +53,16 @@ class TestShowNonTrashinfo(unittest.TestCase):
 
         assert set(result.stdout.splitlines()) == {orphan1, orphan2}
 
+    def test_respects_trash_dir_selection(self):
+        other_trash_dir = FakeTrashDir(self.temp_dir / 'other-trash-dir')
+        orphan1 = self.fake_trash_dir.add_orphan('orphan1')
+        other_trash_dir.add_orphan('orphan2')
+
+        result = run_command(self.temp_dir, "trash-list",
+                             ['--show-non-trashinfo', '--trash-dir',
+                              self.trash_dir])
+
+        assert result.stdout == orphan1 + '\n'
+
     def tearDown(self):
         self.temp_dir.clean_up()
