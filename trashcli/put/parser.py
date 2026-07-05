@@ -39,6 +39,11 @@ class Parser:
         program_name = os.path.basename(argv[0])
         arg_parser = make_parser(program_name)
         try:
+            bad = option_shaped_existing_files(argv[1:])
+            if bad:
+                arg_parser.error(
+                    "refusing to treat existing file %s as an option "
+                    "(use './%s' or a '--' separator)" % (bad[0], bad[0]))
             options = arg_parser.parse_args(argv[1:])
             if len(options.files) <= 0:
                 arg_parser.error("Please specify the files to trash.")
@@ -54,6 +59,18 @@ class Parser:
                      forced_volume=options.forced_volume,
                      verbose=options.verbose,
                      home_fallback=options.home_fallback)
+
+
+def option_shaped_existing_files(args):
+    result = []
+    after_separator = False
+    for arg in args:
+        if arg == '--':
+            after_separator = True
+        elif not after_separator and arg.startswith('-') and arg != '-' \
+                and os.path.lexists(arg):
+            result.append(arg)
+    return result
 
 
 def ensure_int(code):
