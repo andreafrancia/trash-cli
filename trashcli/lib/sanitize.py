@@ -1,7 +1,5 @@
 from __future__ import absolute_import
 
-import os
-
 # Control codes with a short mnemonic, as used by GNU ls/rm.
 _MNEMONICS = {
     0x07: 'a', 0x08: 'b', 0x09: 't', 0x0a: 'n',
@@ -44,9 +42,9 @@ def shell_escape(s):
     return ''.join(out)
 
 
-def quoting_wanted(stream):
+def quoting_wanted(stream, env):
     # Like ls: quote for a terminal, print names raw when piped or redirected.
-    if os.environ.get('TRASH_RAW_OUTPUT'):
+    if env.get('TRASH_RAW_OUTPUT'):
         return False
     try:
         return bool(stream.isatty())

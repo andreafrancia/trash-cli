@@ -19,6 +19,10 @@ from trashcli.trash_dirs_scanner import \
     trash_dir_skipped_because_parent_not_sticky
 
 
+def quote_nothing(name):
+    return name
+
+
 class ListTrashArgs(
     NamedTuple('ListTrashArgs', [
         ('trash_dirs', List[str]),
@@ -50,7 +54,8 @@ class ListTrashAction:
     def run_action(self,
                    args, # type: ListTrashArgs
                    ):
-        quote = shell_escape if quoting_wanted(self.out) else (lambda name: name)
+        quote = shell_escape if quoting_wanted(self.out, self.environ) \
+            else quote_nothing
         for message in ListTrash(self.environ,
                                  self.uid,
                                  self.selector,
@@ -73,7 +78,7 @@ class ListTrash:
                  selector,
                  dir_reader,  # type: DirReader
                  content_reader,
-                 quote=lambda name: name,
+                 quote,
                  ):
         self.environ = environ
         self.uid = uid
