@@ -1,16 +1,6 @@
-import os
-import unittest
-
 from six import StringIO
 
-from tests.support.dirs.my_path import MyPath
-from tests.support.fakes.stub_volume_of import StubVolumeOf
-from trashcli.empty.main import FileSystemContentReader
-from trashcli.empty.top_trash_dir_rules_file_system_reader import \
-    RealTopTrashDirRulesReader
-from trashcli.fstab.volume_listing import FixedVolumesListing
-from trashcli.lib.dir_reader import RealDirReader
-from trashcli.list.main import ListCmd
+from tests.test_list.cmd.support.trash_list_user import trash_list_user
 
 
 class Tty(StringIO):
@@ -23,39 +13,25 @@ class Pipe(StringIO):
         return False
 
 
-class TestTrashListEscapesFilenames(unittest.TestCase):
-    def setUp(self):
-        self.tmp_dir = MyPath.make_temp_dir()
-        self.xdg_data_home = self.tmp_dir / 'xdg-data-home'
-        info = self.xdg_data_home / 'Trash' / 'info'
-        os.makedirs(info)
-        # %0D is a carriage return in the stored Path=
-        with open(info / 'weird.trashinfo', 'w') as f:
-            f.write('[Trash Info]\n'
-                    'Path=/tmp/weird%0Dname\n'
-                    'DeletionDate=2001-01-01T00:00:00\n')
+def test_on_a_terminal_the_name_is_shell_escaped(trash_list_user):
+    trash_list_user.home_trash_dir().add_trashinfo4('/tmp/weird\rname',
+                                                    "2001-01-01 00:00:00")
+    out = Tty()
+    trash_list_user.stdout = out
 
-    def _run(self, out):
-        ListCmd(out=out, err=StringIO(),
-                environ={'XDG_DATA_HOME': self.xdg_data_home},
-                volumes_listing=FixedVolumesListing([]),
-                uid=None, volumes=StubVolumeOf(),
-                dir_reader=RealDirReader(),
-                file_reader=RealTopTrashDirRulesReader(),
-                content_reader=FileSystemContentReader(),
-                version='0.0.0').run(['trash-list'])
-        return out.getvalue()
+    trash_list_user.run_trash_list()
 
-    def test_on_a_terminal_the_name_is_shell_escaped_like_ls(self):
-        output = self._run(Tty())
+    output = out.getvalue()
+    assert "'/tmp/weird'$'\\r''name'" in output
+    assert '\r' not in output
 
-        self.assertIn("'/tmp/weird'$'\\r''name'", output)
-        self.assertNotIn('\r', output)
 
-    def test_when_piped_the_name_is_printed_raw(self):
-        output = self._run(Pipe())
+def test_when_piped_the_name_is_printed_raw(trash_list_user):
+    trash_list_user.home_trash_dir().add_trashinfo4('/tmp/weird\rname',
+                                                    "2001-01-01 00:00:00")
+    out = Pipe()
+    trash_list_user.stdout = out
 
-        self.assertIn('/tmp/weird\rname', output)
+    trash_list_user.run_trash_list()
 
-    def tearDown(self):
-        self.tmp_dir.clean_up()
+    assert '/tmp/weird\rname' in out.getvalue()

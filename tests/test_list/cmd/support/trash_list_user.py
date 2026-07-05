@@ -38,11 +38,12 @@ class TrashListUser:
         self.fake_uid = None
         self.volumes = []
         self.version = None
+        self.stdout = None
 
     def run_trash_list(self, *args):  # type: (...) -> RunResult
         file_reader = FileSystemReader()
         file_reader.list_volumes = lambda: self.volumes
-        stdout = StringIO()
+        stdout = self.stdout if self.stdout is not None else StringIO()
         stderr = StringIO()
         ListCmd(
             out=stdout,
