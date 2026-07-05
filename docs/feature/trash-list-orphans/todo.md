@@ -12,7 +12,7 @@ commit on red.
 - [x] 1. Scenario 1 (happy path): exclusive orphan listing branch in
       `ListTrash.list_all_trash` + `FakeTrashDir.add_orphan` helper + new test file.
 - [x] 2. Scenario 4: regression guard (flag absent -> orphan invisible).
-- [ ] 3. Scenario 2: no orphans -> empty output.
+- [x] 3. Scenario 2: no orphans -> empty output.
 - [ ] 4. Scenario 3: multiple orphans.
 - [ ] 5. Scenario 5: respects `--trash-dir` scoping.
 - [ ] 6. Scenario 6: `--size` alone -> warning.

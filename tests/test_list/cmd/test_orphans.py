@@ -33,5 +33,15 @@ class TestOrphans(unittest.TestCase):
 
         assert 'orphan1' not in result.stdout
 
+    def test_no_orphans_yields_empty_output(self):
+        self.fake_trash_dir.add_trashinfo4("/file1", '2000-01-01 00:00:01')
+
+        result = run_command(self.temp_dir, "trash-list",
+                             ['--orphans', '--trash-dir',
+                              self.trash_dir])
+
+        assert result.stdout == ''
+        assert result.exit_code == 0
+
     def tearDown(self):
         self.temp_dir.clean_up()
