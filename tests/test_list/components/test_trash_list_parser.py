@@ -45,5 +45,15 @@ class TestTrashListParser(unittest.TestCase):
 
         assert True == args.show_files
 
+    def test_show_non_trashinfo_off(self):
+        args = self.parse([])
+
+        assert False == args.show_non_trashinfo
+
+    def test_show_non_trashinfo_on(self):
+        args = self.parse(['--show-non-trashinfo'])
+
+        assert True == args.show_non_trashinfo
+
     def parse(self, args):
         return self.parser.parse_list_args(args, 'trash-list')

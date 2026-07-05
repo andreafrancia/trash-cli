@@ -54,7 +54,7 @@ class TestEndToEndList(unittest.TestCase):
         self.assertEqual(reformat_help_message("""\
 usage: trash-list [-h] [--print-completion {bash,zsh,tcsh}] [--version]
                   [--volumes] [--trash-dirs] [--trash-dir TRASH_DIRS]
-                  [--all-users]
+                  [--all-users] [--show-non-trashinfo]
 
 List trashed files
 
@@ -68,6 +68,8 @@ options:
   --trash-dir TRASH_DIRS
                         specify the trash directory to use
   --all-users           list trashcans of all the users
+  --show-non-trashinfo  show only files in the trash dir that have no
+                        corresponding .trashinfo file
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues
 """), result.stderr + result.reformatted_help())
