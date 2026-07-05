@@ -97,10 +97,14 @@ class ListTrash:
             if event == trash_dir_found:
                 path, volume = event_args
                 trash_dir = TrashDirReader(self.dir_reader)
-                for trash_info in trash_dir.list_trashinfo(path):
-                    for msg in self._print_trashinfo(volume, trash_info,
-                                                     extractor, show_files):
-                        yield msg
+                if args.show_orphans:
+                    for orphan_path in trash_dir.list_orphans(path):
+                        yield Output(orphan_path)
+                else:
+                    for trash_info in trash_dir.list_trashinfo(path):
+                        for msg in self._print_trashinfo(volume, trash_info,
+                                                         extractor, show_files):
+                            yield msg
             elif event == trash_dir_skipped_because_parent_not_sticky:
                 path, = event_args
                 msg = Error(

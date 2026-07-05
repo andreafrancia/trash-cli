@@ -9,7 +9,7 @@ commit on red.
 
 - [x] 0. Parser groundwork: `--orphans` flag + `ListTrashArgs` field +
       parser tests + updated `--help` text.
-- [ ] 1. Scenario 1 (happy path): exclusive orphan listing branch in
+- [x] 1. Scenario 1 (happy path): exclusive orphan listing branch in
       `ListTrash.list_all_trash` + `FakeTrashDir.add_orphan` helper + new test file.
 - [ ] 2. Scenario 4: regression guard (flag absent -> orphan invisible).
 - [ ] 3. Scenario 2: no orphans -> empty output.
