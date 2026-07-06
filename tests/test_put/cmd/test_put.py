@@ -1,18 +1,15 @@
-import os
 from typing import List
 from typing import Optional
 
 import flexmock
 from six import StringIO
 
-from tests.support.fakes.fake_is_mount import FakeIsMount
 from tests.support.put.dummy_clock import FixedClock
 from tests.support.put.dummy_clock import jan_1st_2024
 from tests.support.put.fake_fs.failing_fake_fs import FailingFakeFs
 from tests.support.put.fake_random import FakeRandomInt
 from tests.test_put.support.recording_backend import RecordingBackend
 from tests.test_put.support.result import Result
-from trashcli.fstab.volume_of_impl import VolumeOfImpl
 from trashcli.lib.environ import Environ
 from trashcli.lib.exit_codes import EX_IOERR
 from trashcli.lib.exit_codes import EX_OK
