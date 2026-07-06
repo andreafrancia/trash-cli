@@ -60,8 +60,9 @@ class TestTrashedFiles(unittest.TestCase):
                    'trashed_files': trashed_files,
                    'out': self.out.getvalue()} == {
                    'trashed_files': [],
-                   'out': 'WARN: Non .trashinfo file in info dir\n'
+                   'out': 'WARN: Found a total of 1 non .trashinfo files in trash-dirs. Use `trash-restore --show-non-trashinfo` to list them.\n'
                }
+    
 
     def test_on_non_parsable_trashinfo(self):
         self.fs.write_file('/trash-dir/info/info_path.trashinfo',
