@@ -7,10 +7,10 @@ from trashcli.empty.delete_according_date import (
 )
 from trashcli.empty.emptier import Emptier
 from trashcli.empty.existing_file_remover import ExistingFileRemover
-from trashcli.empty.guard import Guard
-from trashcli.empty.parse_reply import parse_reply
+from trashcli.guard.guard import Guard
+from trashcli.guard.parse_reply import parse_reply
 from trashcli.empty.prepare_output_message import prepare_output_message
-from trashcli.empty.user import User
+from trashcli.guard.user import User
 from trashcli.fs import ContentsOf
 from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.fstab.volume_of import VolumeOf
@@ -65,8 +65,12 @@ class EmptyAction:
                                           args.user_specified_trash_dirs,
                                           args.environ,
                                           args.uid)
-        delete_pass = self.guard.ask_the_user(args.interactive,
-                                              trash_dirs)
-        if delete_pass.ok_to_empty:
-            self.emptier.do_empty(delete_pass.trash_dirs, args.environ,
-                                  args.days, args.dry_run, args.verbose)
+        trash_dirs = list(trash_dirs)
+        if trash_dirs:  # skip asking the user if there is nothing to delete; avoids being stuck
+            delete_pass = self.guard.ask_the_user(args.interactive,
+                                                trash_dirs)
+            if delete_pass.ok_to_empty:
+                self.emptier.do_empty(delete_pass.trash_dirs, args.environ,
+                                    args.days, args.dry_run, args.verbose)
+        else:
+            print('No trash directories to empty.')

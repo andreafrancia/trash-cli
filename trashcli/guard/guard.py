@@ -1,6 +1,6 @@
 from typing import Iterable, NamedTuple
 
-from trashcli.empty.user import User
+from trashcli.guard.user import User
 from trashcli.trash_dirs_scanner import TrashDir
 
 UserIntention = NamedTuple('UserIntention',
@@ -26,7 +26,7 @@ class Guard:
                      ):  # type:  (...) -> UserIntention
         trash_dirs_list = list(trash_dirs)  # type: Iterable[TrashDir]
         ok_to_empty = \
-            self.user.do_you_wanna_empty_trash_dirs(trash_dirs_list)
+            self.user.confirm(trash_dirs_list)
         list_result = trash_dirs_list if ok_to_empty else []
         return UserIntention(ok_to_empty=ok_to_empty,
                              trash_dirs=list_result)
