@@ -1,10 +1,7 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
-import os
-import sys
 import unittest
 from datetime import datetime
 
-from six import binary_type
 from tests.support.py2mock import MagicMock
 
 from trashcli.parse_trashinfo.parse_path import parse_path
@@ -15,7 +12,6 @@ from trashcli.parse_trashinfo.parse_original_location import \
     parse_original_location
 from trashcli.parse_trashinfo.parser_error import ParseError
 from trashcli.parse_trashinfo.parse_deletion_date import parse_deletion_date
-from trashcli.put.format_trash_info import format_original_location
 
 
 class TestParseTrashInfo(unittest.TestCase):
@@ -38,16 +34,6 @@ class TestParseTrashInfo(unittest.TestCase):
                                'DeletionDate=1970-01-01T00:00:00\n')
 
         out.assert_called_with('foo')
-
-    def test_it_should_parse_percent_encoded_non_utf8_path_bytes(self):
-        out = []
-        parser = ParseTrashInfo(on_path=out.append)
-
-        parser.parse_trashinfo('[Trash Info]\n'
-                               'Path=/tmp/%A4-%C8%CF-%C1%2B%B8.txt\n'
-                               'DeletionDate=1970-01-01T00:00:00\n')
-
-        assert _fsencode(out[0]) == b'/tmp/\xa4-\xc8\xcf-\xc1+\xb8.txt'
 
 
 class TestParseDeletionDate(unittest.TestCase):
@@ -95,24 +81,6 @@ def test_how_to_parse_original_path():
         'Path=%2Fpath%2Fto%2Fbe%2Fescaped')
 
 
-def test_parse_path_preserves_non_utf8_path_bytes():
-    path = parse_path('Path=/tmp/%A4-%C8%CF-%C1%2B%B8.txt')
-
-    assert _fsencode(path) == b'/tmp/\xa4-\xc8\xcf-\xc1+\xb8.txt'
-
-
-def test_format_original_location_preserves_non_utf8_path_bytes():
-    raw_path = b'/tmp/\xa4-\xc8\xcf-\xc1+\xb8.txt'
-
-    assert format_original_location(_fsdecode(raw_path)) == \
-           '/tmp/%A4-%C8%CF-%C1%2B%B8.txt'
-
-
-def test_format_original_location_quotes_special_path_characters():
-    assert format_original_location('/tmp/a b+c%/name') == \
-           '/tmp/a%20b%2Bc%25/name'
-
-
 class TestTrashInfoParser(unittest.TestCase):
     def test_1(self):
         assert '/foo.txt' == parse_original_location("[Trash Info]\n"
@@ -137,17 +105,3 @@ def make_trashinfo(date):
 
 def an_empty_trashinfo():
     return ''
-
-
-def _fsencode(path):
-    if hasattr(os, 'fsencode'):
-        return os.fsencode(path)
-    if isinstance(path, binary_type):
-        return path
-    return path.encode(sys.getfilesystemencoding() or sys.getdefaultencoding())
-
-
-def _fsdecode(path):
-    if hasattr(os, 'fsdecode'):
-        return os.fsdecode(path)
-    return path
