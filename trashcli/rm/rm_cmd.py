@@ -38,7 +38,7 @@ class RmCmd:
         args = argv[1:]
         self.exit_code = 0
 
-        if not args:
+        if not args or args[0] == '':
             self.print_err('Usage:\n'
                            '    trash-rm PATTERN\n'
                            '\n'

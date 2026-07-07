@@ -31,6 +31,12 @@ class TestFilter(unittest.TestCase):
         assert self.cmd.matches('/foo/bar.baz') == True
         assert self.cmd.matches('/foo/bar') == False
 
+    def test_empty_pattern_matches_nothing_and_does_not_crash(self):
+        self.cmd = Filter('')
+
+        assert self.cmd.matches('foo') == False
+        assert self.cmd.matches('/foo/bar') == False
+
     def test(self):
         self.cmd = Filter('/foo/*.baz')
 
