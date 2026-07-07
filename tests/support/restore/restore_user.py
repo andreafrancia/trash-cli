@@ -12,6 +12,9 @@ from trashcli.restore.info_dir_searcher import InfoDirSearcher
 from trashcli.restore.info_files import InfoFiles
 from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.trash_directories import TrashDirectoriesImpl
+from trashcli.empty.top_trash_dir_rules_file_system_reader import \
+    RealTopTrashDirRulesReader
+from trashcli.trash_dirs_scanner import TopTrashDirRules
 from trashcli.restore.trashed_files import TrashedFiles
 
 
@@ -53,7 +56,9 @@ class RestoreUser:
         logger = MemoLogger()
         trash_directories = TrashDirectoriesImpl(self.volumes,
                                                  self.uid,
-                                                 self.environ)
+                                                 self.environ,
+                                                 TopTrashDirRules(
+                                                     RealTopTrashDirRulesReader()))
         searcher = InfoDirSearcher(trash_directories,
                                    InfoFiles(self.listing_file_system))
         trashed_files = TrashedFiles(logger,

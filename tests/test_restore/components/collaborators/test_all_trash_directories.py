@@ -2,13 +2,27 @@ import unittest
 
 from trashcli.fstab.volumes import FakeVolumes2
 from trashcli.restore.trash_directories import TrashDirectories1
+from trashcli.trash_dirs_scanner import top_trash_dir_valid
+
+
+class NoSymlinks:
+    def is_symlink(self, path):
+        return False
+
+
+class AlwaysValid:
+    reader = NoSymlinks()
+
+    def valid_to_be_read(self, path):
+        return top_trash_dir_valid
 
 
 class TestTrashDirectories(unittest.TestCase):
     def setUp(self):
         environ = {'HOME': '~'}
         self.volumes = FakeVolumes2("volume_of(%s)", [])
-        self.trash_directories = TrashDirectories1(self.volumes, 123, environ)
+        self.trash_directories = TrashDirectories1(self.volumes, 123, environ,
+                                                   AlwaysValid())
 
     def test_list_all_directories(self):
         self.volumes.set_volumes(['/', '/mnt'])

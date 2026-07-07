@@ -11,6 +11,9 @@ from .info_files import InfoFiles
 from .real_restore_logger import RealRestoreLogger
 from .restore_cmd import RestoreCmd
 from .trash_directories import TrashDirectoriesImpl
+from ..empty.top_trash_dir_rules_file_system_reader import \
+    RealTopTrashDirRulesReader
+from ..trash_dirs_scanner import TopTrashDirRules
 from .trashed_files import TrashedFiles
 from ..fstab.volumes import RealVolumes
 from ..lib.logger import my_logger
@@ -22,7 +25,9 @@ def main():
     volumes = RealVolumes()
     trash_directories = TrashDirectoriesImpl(volumes,
                                              os.getuid(),
-                                             os.environ)
+                                             os.environ,
+                                             TopTrashDirRules(
+                                                 RealTopTrashDirRulesReader()))
     searcher = InfoDirSearcher(trash_directories, info_files)
     trashed_files = TrashedFiles(RealRestoreLogger(my_logger),
                                  RealFileReader(),
