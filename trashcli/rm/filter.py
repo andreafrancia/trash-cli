@@ -9,5 +9,7 @@ class Filter:
 
     def matches(self, original_location):
         basename = os.path.basename(original_location)
-        subject = original_location if self.pattern[0] == '/' else basename
+        # a pattern that starts with / matches the full original path
+        subject = original_location if self.pattern.startswith('/') \
+            else basename
         return fnmatch.fnmatchcase(subject, self.pattern)

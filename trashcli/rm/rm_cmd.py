@@ -38,12 +38,19 @@ class RmCmd:
         args = argv[1:]
         self.exit_code = 0
 
-        if not args:
+        if not args or args[0] == '':
             self.print_err('Usage:\n'
                            '    trash-rm PATTERN\n'
                            '\n'
                            'Please specify PATTERN.\n'
                            'trash-rm uses fnmatch.fnmatchcase to match patterns, see https://docs.python.org/3/library/fnmatch.html for more details.')
+            self.exit_code = 8
+            return
+
+        if len(args) > 1:
+            # more than one argument usually means the shell expanded the pattern
+            self.print_err('trash-rm: too many arguments\n'
+                           'Note: quote the pattern to stop the shell from expanding it, e.g. trash-rm "*.o"')
             self.exit_code = 8
             return
 
