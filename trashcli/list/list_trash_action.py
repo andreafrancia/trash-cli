@@ -6,6 +6,7 @@ from typing import NamedTuple
 
 from trashcli.lib.dir_reader import DirReader
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
+from trashcli.lib.printable import printable
 from trashcli.lib.sanitize import shell_escape, quoting_wanted
 from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.list.extractors import DeletionDateExtractor
@@ -66,9 +67,9 @@ class ListTrashAction:
 
     def print_event(self, event):
         if isinstance(event, Error):
-            print(event.error, file=self.err)
+            print(printable(event.error), file=self.err)
         elif isinstance(event, Output):
-            print(event.message, file=self.out)
+            print(printable(event.message), file=self.out)
 
 
 class ListTrash:

@@ -2,6 +2,8 @@ import datetime
 
 from six.moves.urllib.parse import quote as url_quote
 
+from trashcli.compat import fsencode
+
 
 def format_trashinfo(original_location,  # type: str
                      deletion_date,  # type: datetime.datetime
@@ -17,4 +19,5 @@ def format_date(deletion_date):  # type: (datetime.datetime) -> str
 
 
 def format_original_location(original_location):  # type: (str) -> str
-    return url_quote(original_location, '/')
+    # quote the raw bytes so any file name can be stored
+    return url_quote(fsencode(original_location), '/')
