@@ -58,9 +58,12 @@ class RestoreAskingTheUser(object):
                 return Right(
                     InputRead(user_input, args.trashed_files, args.overwrite))
 
-    def restore_asking_the_user(self, trashed_files, overwrite):
+    def restore_asking_the_user(self, trashed_files, overwrite, no_ask):
         input = Right(Context(trashed_files, overwrite))
         compose(input, [
+            select_all,
+            self.restore_selected_files,
+        ] if no_ask else [
             self.read_user_input,
             trashed_files_to_restore,
             self.restore_selected_files,
@@ -136,6 +139,12 @@ def trashed_files_to_restore(input_read,  # type: InputRead
         return Right(selected_files)
     except InvalidEntry as e:
         return Left(Die("Invalid entry: %s" % e))
+
+
+def select_all(input_read,  # type: InputRead
+               ):  # type: (...) -> Either[Die, SelectedFiles]
+    selected_files = SelectedFiles(input_read.trashed_files, input_read.overwrite)
+    return Right(selected_files)
 
 
 class InvalidEntry(Exception):

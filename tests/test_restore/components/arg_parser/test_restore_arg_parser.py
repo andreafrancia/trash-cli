@@ -13,6 +13,7 @@ class TestRestoreArgs(unittest.TestCase):
         args = self.parser.parse_restore_args([''], "curdir")
 
         self.assertEqual(RunRestoreArgs(path='curdir',
+                                        path_passed=False,
                                         sort=Sort.ByDate,
                                         trash_dir=None,
                                         overwrite=False),
@@ -22,6 +23,7 @@ class TestRestoreArgs(unittest.TestCase):
         args = self.parser.parse_restore_args(['', 'path'], "curdir")
 
         self.assertEqual(RunRestoreArgs(path='curdir/path',
+                                        path_passed=True,
                                         sort=Sort.ByDate,
                                         trash_dir=None,
                                         overwrite=False),
@@ -31,6 +33,7 @@ class TestRestoreArgs(unittest.TestCase):
         args = self.parser.parse_restore_args(['', '/a/path'], "ignored")
 
         self.assertEqual(RunRestoreArgs(path='/a/path',
+                                        path_passed=True,
                                         sort=Sort.ByDate,
                                         trash_dir=None,
                                         overwrite=False),

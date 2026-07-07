@@ -28,23 +28,31 @@ class HandlerImpl(Handler):
     def handle_trashed_files(self,
                              trashed_files,  # type: List[TrashedFile]
                              overwrite,  # type: bool
+                             single_no_ask,  # type: bool
                              ):
         if not trashed_files:
             self.report_no_files_found(self.cwd.getcwd_as_realpath())
         else:
-            for i, trashed_file in enumerate(trashed_files):
-                self.output.println("%4d %s %s" % (i,
-                                                   trashed_file.deletion_date,
-                                                   trashed_file.original_location))
-            self.restore_asking_the_user(trashed_files, overwrite)
+            if single_no_ask and len(trashed_files) == 1:
+                trashed_file = trashed_files[0]
+                self.output.println("%s %s" % (trashed_file.deletion_date,
+                                               trashed_file.original_location))
+                self.restore_asking_the_user(trashed_files, overwrite, no_ask=True)
+            else:
+                for i, trashed_file in enumerate(trashed_files):
+                    self.output.println("%4d %s %s" % (i,
+                                                       trashed_file.deletion_date,
+                                                       trashed_file.original_location))
+                self.restore_asking_the_user(trashed_files, overwrite)
 
-    def restore_asking_the_user(self, trashed_files, overwrite=False):
+    def restore_asking_the_user(self, trashed_files, overwrite=False, no_ask=False):
         my_output = OutputRecorder()
         restore_asking_the_user = RestoreAskingTheUser(self.input,
                                                        self.restorer,
                                                        my_output)
         restore_asking_the_user.restore_asking_the_user(trashed_files,
-                                                        overwrite)
+                                                        overwrite,
+                                                        no_ask)
         my_output.apply_to(self.output)
 
     def report_no_files_found(self, directory):  # type: (str) -> None

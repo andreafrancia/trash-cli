@@ -16,6 +16,7 @@ class Sort(Enum):
 class RunRestoreArgs(
     NamedTuple('RunRestoreArgs', [
         ('path', str),
+        ('path_passed', bool),
         ('sort', Sort),
         ('trash_dir', Optional[str]),
         ('overwrite', bool),
