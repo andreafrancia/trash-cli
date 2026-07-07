@@ -23,13 +23,15 @@ from ..lib.my_input import RealInput
 def main():
     info_files = InfoFiles(RealListingFileSystem())
     volumes = RealVolumes()
+    logger = RealRestoreLogger(my_logger)
     trash_directories = TrashDirectoriesImpl(volumes,
                                              os.getuid(),
                                              os.environ,
                                              TopTrashDirRules(
-                                                 RealTopTrashDirRulesReader()))
+                                                 RealTopTrashDirRulesReader()),
+                                             logger)
     searcher = InfoDirSearcher(trash_directories, info_files)
-    trashed_files = TrashedFiles(RealRestoreLogger(my_logger),
+    trashed_files = TrashedFiles(logger,
                                  RealFileReader(),
                                  searcher)
     RestoreCmd.make(

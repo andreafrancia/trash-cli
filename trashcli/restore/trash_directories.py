@@ -11,6 +11,7 @@ from trashcli.fstab.volumes import Volumes
 from trashcli.lib.environ import Environ
 from trashcli.lib.trash_dirs import (
     volume_trash_dir1, volume_trash_dir2, home_trash_dir)
+from trashcli.restore.restore_logger import RestoreLogger
 from trashcli.trash_dirs_scanner import top_trash_dir_valid
 
 
@@ -27,9 +28,10 @@ class TrashDirectoriesImpl(TrashDirectories):
                  uid,  # type: int
                  environ,
                  top_trash_dir_rules,
+                 logger,  # type: RestoreLogger
                  ):
         trash_directories1 = TrashDirectories1(volumes, uid, environ,
-                                               top_trash_dir_rules)
+                                               top_trash_dir_rules, logger)
         self.trash_directories2 = TrashDirectories2(volumes,
                                                     trash_directories1)
 
@@ -64,11 +66,13 @@ class TrashDirectories1:
                  uid,  # type: int
                  environ,  # type: Environ
                  top_trash_dir_rules,
+                 logger,  # type: RestoreLogger
                  ):
         self.volumes = volumes
         self.uid = uid
         self.environ = environ
         self.top_trash_dir_rules = top_trash_dir_rules
+        self.logger = logger
 
     def all_trash_directories(self):
         volumes_to_check = self.volumes.list_mount_points()
@@ -90,9 +94,12 @@ class TrashDirectories1:
         info = os.path.join(trash_dir, 'info')
         files = os.path.join(trash_dir, 'files')
         reader = self.top_trash_dir_rules.reader
-        if reader.is_symlink(info) or reader.is_symlink(files):
+        if reader.is_symlink(info) or reader.is_symlink(files) \
+                or self._world_writable(info) or self._world_writable(files):
+            self.logger.warning("TrashDir skipped because it is not secure: %s"
+                                 % trash_dir)
             return False
-        return not self._world_writable(info)
+        return True
 
     @staticmethod
     def _world_writable(path):

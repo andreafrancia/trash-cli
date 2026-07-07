@@ -9,6 +9,14 @@ from trashcli.restore.trash_directories import TrashDirectories1
 from trashcli.trash_dirs_scanner import TopTrashDirRules
 
 
+class RecordingLogger:
+    def __init__(self):
+        self.warnings = []
+
+    def warning(self, message):
+        self.warnings.append(message)
+
+
 class TestRestoreDistrustsUnsafeTrashDirs(unittest.TestCase):
     def setUp(self):
         self.tmp_dir = MyPath.make_temp_dir()
@@ -16,9 +24,11 @@ class TestRestoreDistrustsUnsafeTrashDirs(unittest.TestCase):
         self.volumes = FakeVolumes2("volume_of(%s)", [])
         self.rules = TopTrashDirRules(RealTopTrashDirRulesReader())
         self.home_trash = self.tmp_dir / '.local' / 'share' / 'Trash'
+        self.logger = RecordingLogger()
 
     def _dirs(self):
-        td = TrashDirectories1(self.volumes, 123, self.environ, self.rules)
+        td = TrashDirectories1(self.volumes, 123, self.environ, self.rules,
+                               self.logger)
         return [p for p, v in td.all_trash_directories()]
 
     def test_a_normal_home_trash_is_kept(self):
@@ -37,6 +47,22 @@ class TestRestoreDistrustsUnsafeTrashDirs(unittest.TestCase):
         os.chmod(self.home_trash / 'info', 0o0777)
 
         assert self._dirs() == []
+
+    def test_a_world_writable_files_dir_is_skipped(self):
+        os.makedirs(self.home_trash / 'info')
+        os.makedirs(self.home_trash / 'files')
+        os.chmod(self.home_trash / 'files', 0o0777)
+
+        assert self._dirs() == []
+
+    def test_a_skipped_dir_is_reported(self):
+        os.makedirs(self.home_trash / 'info')
+        os.chmod(self.home_trash / 'info', 0o0777)
+
+        self._dirs()
+
+        assert self.logger.warnings == [
+            "TrashDir skipped because it is not secure: %s" % self.home_trash]
 
     def tearDown(self):
         self.tmp_dir.clean_up()

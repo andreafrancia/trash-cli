@@ -11,6 +11,11 @@ class NoSymlinks:
         return False
 
 
+class NullLogger:
+    def warning(self, message):
+        pass
+
+
 class FakeRules:
     reader = NoSymlinks()
 
@@ -28,7 +33,8 @@ class TestRestoreSkipsUntrustedSharedDir(unittest.TestCase):
         self.volumes.set_volumes(['/'])
 
     def _dirs(self, rules):
-        td = TrashDirectories1(self.volumes, 123, self.environ, rules)
+        td = TrashDirectories1(self.volumes, 123, self.environ, rules,
+                               NullLogger())
         return [path for path, volume in td.all_trash_directories()]
 
     def test_a_valid_shared_trash_dir_is_read(self):

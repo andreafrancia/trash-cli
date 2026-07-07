@@ -58,7 +58,8 @@ class RestoreUser:
                                                  self.uid,
                                                  self.environ,
                                                  TopTrashDirRules(
-                                                     RealTopTrashDirRulesReader()))
+                                                     RealTopTrashDirRulesReader()),
+                                                 logger)
         searcher = InfoDirSearcher(trash_directories,
                                    InfoFiles(self.listing_file_system))
         trashed_files = TrashedFiles(logger,

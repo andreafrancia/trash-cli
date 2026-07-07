@@ -17,12 +17,17 @@ class AlwaysValid:
         return top_trash_dir_valid
 
 
+class NullLogger:
+    def warning(self, message):
+        pass
+
+
 class TestTrashDirectories(unittest.TestCase):
     def setUp(self):
         environ = {'HOME': '~'}
         self.volumes = FakeVolumes2("volume_of(%s)", [])
         self.trash_directories = TrashDirectories1(self.volumes, 123, environ,
-                                                   AlwaysValid())
+                                                   AlwaysValid(), NullLogger())
 
     def test_list_all_directories(self):
         self.volumes.set_volumes(['/', '/mnt'])
