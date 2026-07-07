@@ -47,6 +47,13 @@ class RmCmd:
             self.exit_code = 8
             return
 
+        if len(args) > 1:
+            # more than one argument usually means the shell expanded the pattern
+            self.print_err('trash-rm: too many arguments\n'
+                           'Note: quote the pattern to stop the shell from expanding it, e.g. trash-rm "*.o"')
+            self.exit_code = 8
+            return
+
         trashcan = CleanableTrashcan(FileRemover())
         cmd = Filter(args[0])
 

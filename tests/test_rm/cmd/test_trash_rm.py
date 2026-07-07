@@ -36,6 +36,13 @@ class TestTrashRmCmdRun(unittest.TestCase):
                            'Usage:\n    trash-rm PATTERN\n')
         assert self.cmd.exit_code == 8
 
+    def test_with_too_many_arguments(self):
+        self.cmd.run([None, '*.o', 'other.o'], uid=None)
+
+        assert_starts_with(self.stderr.getvalue(),
+                           'trash-rm: too many arguments\n')
+        assert self.cmd.exit_code == 8
+
     def test_without_pattern_argument(self):
         self.volumes_listing.list_volumes.return_value = ['/vol1']
 
