@@ -7,14 +7,33 @@ from trashcli.restore.args import RunRestoreArgs
 from trashcli.restore.file_system import RestoreReadFileSystem, \
     RestoreWriteFileSystem, ReadCwd
 from trashcli.restore.handler import HandlerImpl
+from trashcli.restore.info_dir_searcher import InfoDirSearcher
+from trashcli.restore.info_files import InfoFiles
 from trashcli.restore.real_output import RealOutput
 from trashcli.restore.restore_arg_parser import RestoreArgParser
 from trashcli.restore.restorer import Restorer
 from trashcli.restore.run_restore_action import RunRestoreAction, Handler
+from trashcli.restore.trash_directories import TrashDirectoriesImpl
 from trashcli.restore.trashed_files import TrashedFiles
+from trashcli.trash_dirs_scanner import TopTrashDirRules
 
 
 class RestoreCmd(object):
+    @staticmethod
+    def make_from_environment(stdout, stderr, exit, input, version,
+                              listing_file_system, volumes, logger, uid,
+                              environ, top_trash_dir_rules_reader, file_reader,
+                              read_fs, write_fs, read_cwd):
+        # build the trash-directory pipeline from environment dependencies here so test and production share the same wiring
+        trash_directories = TrashDirectoriesImpl(
+            volumes, uid, environ,
+            TopTrashDirRules(top_trash_dir_rules_reader), logger)
+        searcher = InfoDirSearcher(trash_directories,
+                                   InfoFiles(listing_file_system))
+        trashed_files = TrashedFiles(logger, file_reader, searcher)
+        return RestoreCmd.make(stdout, stderr, exit, input, version,
+                               trashed_files, read_fs, write_fs, read_cwd)
+
     @staticmethod
     def make(stdout,  # type: TextIO
              stderr,  # type: TextIO

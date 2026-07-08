@@ -6,41 +6,29 @@ import trashcli.trash
 from .file_system import RealRestoreReadFileSystem, \
     RealRestoreWriteFileSystem, RealReadCwd, RealFileReader, \
     RealListingFileSystem
-from .info_dir_searcher import InfoDirSearcher
-from .info_files import InfoFiles
 from .real_restore_logger import RealRestoreLogger
 from .restore_cmd import RestoreCmd
-from .trash_directories import TrashDirectoriesImpl
 from ..empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirRulesReader
-from ..trash_dirs_scanner import TopTrashDirRules
-from .trashed_files import TrashedFiles
 from ..fstab.volumes import RealVolumes
 from ..lib.logger import my_logger
 from ..lib.my_input import RealInput
 
 
 def main():
-    info_files = InfoFiles(RealListingFileSystem())
-    volumes = RealVolumes()
-    logger = RealRestoreLogger(my_logger)
-    trash_directories = TrashDirectoriesImpl(volumes,
-                                             os.getuid(),
-                                             os.environ,
-                                             TopTrashDirRules(
-                                                 RealTopTrashDirRulesReader()),
-                                             logger)
-    searcher = InfoDirSearcher(trash_directories, info_files)
-    trashed_files = TrashedFiles(logger,
-                                 RealFileReader(),
-                                 searcher)
-    RestoreCmd.make(
+    RestoreCmd.make_from_environment(
         stdout=sys.stdout,
         stderr=sys.stderr,
         exit=sys.exit,
         input=RealInput(),
         version=trashcli.trash.version,
-        trashed_files=trashed_files,
+        listing_file_system=RealListingFileSystem(),
+        volumes=RealVolumes(),
+        logger=RealRestoreLogger(my_logger),
+        uid=os.getuid(),
+        environ=os.environ,
+        top_trash_dir_rules_reader=RealTopTrashDirRulesReader(),
+        file_reader=RealFileReader(),
         read_fs=RealRestoreReadFileSystem(),
         write_fs=RealRestoreWriteFileSystem(),
         read_cwd=RealReadCwd()

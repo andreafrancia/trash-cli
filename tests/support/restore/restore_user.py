@@ -8,13 +8,9 @@ from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.file_system import FakeReadCwd, FileReader, \
     RestoreReadFileSystem, \
     RestoreWriteFileSystem, ListingFileSystem
-from trashcli.restore.info_dir_searcher import InfoDirSearcher
-from trashcli.restore.info_files import InfoFiles
 from trashcli.restore.restore_cmd import RestoreCmd
-from trashcli.restore.trash_directories import TrashDirectoriesImpl
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirRulesReader
-from trashcli.trash_dirs_scanner import TopTrashDirRules
 from trashcli.restore.trashed_files import TrashedFiles
 
 
@@ -36,6 +32,7 @@ class RestoreUser:
                  listing_file_system,  # type: ListingFileSystem
                  version,  # type: str
                  volumes,  # type: Volumes
+                 top_trash_dir_rules_reader=None,
                  ):
         self.environ = environ
         self.uid = uid
@@ -45,6 +42,8 @@ class RestoreUser:
         self.listing_file_system = listing_file_system
         self.version = version
         self.volumes = volumes
+        self.top_trash_dir_rules_reader = \
+            top_trash_dir_rules_reader or RealTopTrashDirRulesReader()
 
     no_args = object()
 
@@ -54,26 +53,22 @@ class RestoreUser:
         stderr = StringIO()
         read_cwd = FakeReadCwd(from_dir)
         logger = MemoLogger()
-        trash_directories = TrashDirectoriesImpl(self.volumes,
-                                                 self.uid,
-                                                 self.environ,
-                                                 TopTrashDirRules(
-                                                     RealTopTrashDirRulesReader()),
-                                                 logger)
-        searcher = InfoDirSearcher(trash_directories,
-                                   InfoFiles(self.listing_file_system))
-        trashed_files = TrashedFiles(logger,
-                                     self.file_reader,
-                                     searcher)
-        cmd = RestoreCmd.make(stdout=stdout,
-                              stderr=stderr,
-                              exit=sys.exit,
-                              input=HardCodedInput(reply),
-                              version=self.version,
-                              trashed_files=trashed_files,
-                              read_fs=self.read_fs,
-                              write_fs=self.write_fs,
-                              read_cwd=read_cwd)
+        cmd = RestoreCmd.make_from_environment(
+            stdout=stdout,
+            stderr=stderr,
+            exit=sys.exit,
+            input=HardCodedInput(reply),
+            version=self.version,
+            listing_file_system=self.listing_file_system,
+            volumes=self.volumes,
+            logger=logger,
+            uid=self.uid,
+            environ=self.environ,
+            top_trash_dir_rules_reader=self.top_trash_dir_rules_reader,
+            file_reader=self.file_reader,
+            read_fs=self.read_fs,
+            write_fs=self.write_fs,
+            read_cwd=read_cwd)
 
         try:
             exit_code = cmd.run(args)
