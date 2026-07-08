@@ -1,3 +1,4 @@
+import errno
 import os.path
 from tests.support.put.fake_fs.fake_fs import FakeFs
 
@@ -42,14 +43,21 @@ class FailOnMoveFakeFs(FakeFs):
     def __init__(self):
         super(FailOnMoveFakeFs, self).__init__()
         self._fail_move_on_path = None
+        self._fail_move_leaving_copy_on_path = None
 
     def move(self, src, dest):
         if src == self._fail_move_on_path:
             raise OSError("move failed")
+        if src == self._fail_move_leaving_copy_on_path:
+            self.make_file(dest, self.read(src))
+            raise OSError(errno.EACCES, os.strerror(errno.EACCES), src)
         return super(FailOnMoveFakeFs, self).move(src, dest)
 
     def fail_move_on(self, path):
         self._fail_move_on_path = path
+
+    def fail_move_leaving_copy_on(self, path):
+        self._fail_move_leaving_copy_on_path = path
 
 
 class FailingFakeFs(FailingOnAtomicWriteFakeFs,
