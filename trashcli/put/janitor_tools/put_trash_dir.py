@@ -35,9 +35,6 @@ class PutTrashDir:
             move_file(self.fs, path, paths.backup_copy_path)
             return Right(None)
         except (IOError, OSError) as error:
-            # the move can copy the file before failing to delete the original; drop the copy so no unremovable file is left in the trash
-            if self.fs.lexists(paths.backup_copy_path):
-                self.fs.remove_file(paths.backup_copy_path)
             self.fs.remove_file(paths.trashinfo_path)
             return Left(UnableToMoveFileToTrash(error))
 

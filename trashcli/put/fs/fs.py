@@ -61,6 +61,10 @@ class Fs(RealPathFs, Protocol):
         raise NotImplementedError
 
     @abstractmethod
+    def has_delete_permission(self, path):
+        raise NotImplementedError
+
+    @abstractmethod
     def read(self, path):
         raise NotImplementedError
 
