@@ -1,4 +1,6 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
+import os
+import stat
 import unittest
 
 import pytest
@@ -50,4 +52,38 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
 
     def tearDown(self):
         make_readable(self.unreadable_dir)
+        self.tmp_dir.clean_up()
+
+
+class TestTrashEmptyRemovesReadonlyDir:
+    def setup_method(self):
+        self.tmp_dir = MyPath.make_temp_dir()
+        self.trash_files = self.tmp_dir / 'data/Trash/files'
+        volumes_listing = Mock(spec=VolumesListing)
+        volumes_listing.list_volumes.return_value = [self.trash_files]
+        self.err = StringIO()
+        self.environ = {'XDG_DATA_HOME': self.tmp_dir / 'data'}
+        self.empty = EmptyCmd(
+            argv0='trash-empty', out=StringIO(), err=self.err,
+            volumes_listing=volumes_listing, now=None,
+            file_reader=RealTopTrashDirRulesReader(),
+            file_remover=ExistingFileRemover(),
+            content_reader=FileSystemContentReader(),
+            dir_reader=FileSystemDirReader(), version='unused',
+            volumes=StubVolumeOf())
+
+    def test_a_directory_without_write_permission_is_removed(self):
+        target = self.trash_files / 'proj'
+        os.makedirs(target / 'sub')
+        with open(target / 'sub' / 'f', 'w') as f:
+            f.write('x')
+        os.chmod(target / 'sub', stat.S_IRUSR | stat.S_IXUSR)
+        os.chmod(target, stat.S_IRUSR | stat.S_IXUSR)
+
+        self.empty.run_cmd([], self.environ, uid=123)
+
+        assert not os.path.exists(target)
+        assert self.err.getvalue() == ""
+
+    def teardown_method(self):
         self.tmp_dir.clean_up()
