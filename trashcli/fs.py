@@ -137,7 +137,20 @@ class RealRemoveFile2(RemoveFile2):
         try:
             os.remove(path)
         except OSError:
-            shutil.rmtree(path)
+            try:
+                shutil.rmtree(path)
+            except OSError:
+                _add_write_permission(path)
+                shutil.rmtree(path)
+
+
+def _add_write_permission(path):
+    # add write and search bits to owned directories so their entries can be removed; an unreadable directory is left as is and still reported
+    for root, dirs, files in os.walk(path):
+        try:
+            os.chmod(root, os.stat(root).st_mode | stat.S_IWUSR | stat.S_IXUSR)
+        except OSError:
+            pass
 
 
 class RealRemoveFileIfExists(RemoveFileIfExists, RemoveFile2):
