@@ -1,3 +1,4 @@
+import datetime
 from abc import abstractmethod
 from typing import Callable, Any, Iterable
 
@@ -22,7 +23,8 @@ class Sorter(Protocol):
 class NoSorter(Sorter):
     def sort_files(self, trashed_files,  # type: Iterable[TrashedFile]
                    ):  # type: (...) -> Iterable[TrashedFile]
-        return trashed_files
+        # materialise, like SortFunction: the caller len()s and re-iterates it
+        return list(trashed_files)
 
 
 class SortFunction(Sorter):
@@ -38,10 +40,13 @@ class SortFunction(Sorter):
 def sorter_for(sort,  # type: Sort
                ):  # type (...) -> Sorter
 
-    path_ranking = lambda x: x.original_location + str(x.deletion_date)
-    date_rankking = lambda x: x.deletion_date
+    def date_ranking(x):
+        # a missing/unparsable date is None; sort it first instead of crashing
+        return x.deletion_date or datetime.datetime.min
+
+    path_ranking = lambda x: (x.original_location, date_ranking(x))
     return {
         Sort.ByPath: SortFunction(path_ranking),
-        Sort.ByDate: SortFunction(date_rankking),
-        Sort.DoNot: NoSorter,
+        Sort.ByDate: SortFunction(date_ranking),
+        Sort.DoNot: NoSorter(),
     }[sort]
