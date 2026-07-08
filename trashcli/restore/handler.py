@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from typing import List
 
 from trashcli.lib.my_input import Input
+from trashcli.parse_trashinfo.maybe_parse_deletion_date import unknown_date
 from trashcli.restore.file_system import ReadCwd
 from trashcli.restore.output import Output
 from trashcli.restore.output_recorder import OutputRecorder
@@ -33,8 +34,11 @@ class HandlerImpl(Handler):
             self.report_no_files_found(self.cwd.getcwd_as_realpath())
         else:
             for i, trashed_file in enumerate(trashed_files):
+                deletion_date = trashed_file.deletion_date
+                if deletion_date is None:
+                    deletion_date = unknown_date  # avoid printing literal "None"
                 self.output.println("%4d %s %s" % (i,
-                                                   trashed_file.deletion_date,
+                                                   deletion_date,
                                                    trashed_file.original_location))
             self.restore_asking_the_user(trashed_files, overwrite)
 
