@@ -1,12 +1,28 @@
-import os
-import unittest
-
-from tests.support.dirs.my_path import MyPath
-from trashcli.empty.top_trash_dir_rules_file_system_reader import \
-    RealTopTrashDirRulesReader
 from trashcli.fstab.volumes import FakeVolumes2
 from trashcli.restore.trash_directories import TrashDirectories1
 from trashcli.trash_dirs_scanner import TopTrashDirRules
+
+HOME = '/home/user'
+HOME_TRASH = '/home/user/.local/share/Trash'
+
+
+class FakeReader:
+    # a reader that never touches the disk; unlisted paths are trusted
+    def __init__(self, symlinks=(), world_writable=()):
+        self.symlinks = set(symlinks)
+        self.world_writable = set(world_writable)
+
+    def exists(self, path):
+        return True
+
+    def is_sticky_dir(self, path):
+        return True
+
+    def is_symlink(self, path):
+        return path in self.symlinks
+
+    def is_world_writable(self, path):
+        return path in self.world_writable
 
 
 class RecordingLogger:
@@ -17,52 +33,35 @@ class RecordingLogger:
         self.warnings.append(message)
 
 
-class TestRestoreDistrustsUnsafeTrashDirs(unittest.TestCase):
-    def setUp(self):
-        self.tmp_dir = MyPath.make_temp_dir()
-        self.environ = {'HOME': self.tmp_dir}
+class TestRestoreDistrustsUnsafeTrashDirs:
+    def setup_method(self):
         self.volumes = FakeVolumes2("volume_of(%s)", [])
-        self.rules = TopTrashDirRules(RealTopTrashDirRulesReader())
-        self.home_trash = self.tmp_dir / '.local' / 'share' / 'Trash'
         self.logger = RecordingLogger()
 
-    def _dirs(self):
-        td = TrashDirectories1(self.volumes, 123, self.environ, self.rules,
+    def trusted_home_trash_dirs(self, reader):
+        rules = TopTrashDirRules(reader)
+        td = TrashDirectories1(self.volumes, 123, {'HOME': HOME}, rules,
                                self.logger)
-        return [p for p, v in td.all_trash_directories()]
+        return [path for path, volume in td.all_trash_directories()]
 
     def test_a_normal_home_trash_is_kept(self):
-        os.makedirs(self.home_trash / 'info')
-
-        assert str(self.home_trash) in self._dirs()
+        assert HOME_TRASH in self.trusted_home_trash_dirs(FakeReader())
 
     def test_a_symlinked_info_dir_is_skipped(self):
-        os.makedirs(self.home_trash)
-        os.symlink('/tmp', self.home_trash / 'info')
+        reader = FakeReader(symlinks=[HOME_TRASH + '/info'])
 
-        assert self._dirs() == []
-
-    def test_a_world_writable_info_dir_is_skipped(self):
-        os.makedirs(self.home_trash / 'info')
-        os.chmod(self.home_trash / 'info', 0o0777)
-
-        assert self._dirs() == []
+        assert self.trusted_home_trash_dirs(reader) == []
 
     def test_a_world_writable_files_dir_is_skipped(self):
-        os.makedirs(self.home_trash / 'info')
-        os.makedirs(self.home_trash / 'files')
-        os.chmod(self.home_trash / 'files', 0o0777)
+        reader = FakeReader(world_writable=[HOME_TRASH + '/files'])
 
-        assert self._dirs() == []
+        assert self.trusted_home_trash_dirs(reader) == []
 
-    def test_a_skipped_dir_is_reported(self):
-        os.makedirs(self.home_trash / 'info')
-        os.chmod(self.home_trash / 'info', 0o0777)
+    def test_the_reason_a_dir_is_skipped_is_reported(self):
+        reader = FakeReader(world_writable=[HOME_TRASH + '/info'])
 
-        self._dirs()
+        self.trusted_home_trash_dirs(reader)
 
         assert self.logger.warnings == [
-            "TrashDir skipped because it is not secure: %s" % self.home_trash]
-
-    def tearDown(self):
-        self.tmp_dir.clean_up()
+            "TrashDir skipped because its info dir is world writable: %s"
+            % HOME_TRASH]

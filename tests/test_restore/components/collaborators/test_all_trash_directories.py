@@ -9,6 +9,9 @@ class NoSymlinks:
     def is_symlink(self, path):
         return False
 
+    def is_world_writable(self, path):
+        return False
+
 
 class AlwaysValid:
     reader = NoSymlinks()

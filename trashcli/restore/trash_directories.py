@@ -2,7 +2,6 @@
 from abc import abstractmethod, ABCMeta
 
 import os
-import stat
 import six
 from typing import Optional
 
@@ -91,19 +90,19 @@ class TrashDirectories1:
 
     def _is_trusted(self, trash_dir):
         # Distrust a trash dir if others could plant or redirect its entries.
-        info = os.path.join(trash_dir, 'info')
-        files = os.path.join(trash_dir, 'files')
-        reader = self.top_trash_dir_rules.reader
-        if reader.is_symlink(info) or reader.is_symlink(files) \
-                or self._world_writable(info) or self._world_writable(files):
-            self.logger.warning("TrashDir skipped because it is not secure: %s"
-                                 % trash_dir)
+        reason = self._distrust_reason(trash_dir)
+        if reason is not None:
+            self.logger.warning(
+                "TrashDir skipped because %s: %s" % (reason, trash_dir))
             return False
         return True
 
-    @staticmethod
-    def _world_writable(path):
-        try:
-            return bool(os.stat(path).st_mode & stat.S_IWOTH)
-        except OSError:
-            return False
+    def _distrust_reason(self, trash_dir):
+        reader = self.top_trash_dir_rules.reader
+        for sub_dir in ('info', 'files'):
+            path = os.path.join(trash_dir, sub_dir)
+            if reader.is_symlink(path):
+                return "its %s dir is a symbolic link" % sub_dir
+            if reader.is_world_writable(path):
+                return "its %s dir is world writable" % sub_dir
+        return None

@@ -85,6 +85,12 @@ class IsSymLink(Protocol):
         raise NotImplementedError
 
 
+class IsWorldWritable(Protocol):
+    @abstractmethod
+    def is_world_writable(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+
 class ContentsOf(Protocol):
     @abstractmethod
     def contents_of(self, path):
@@ -116,6 +122,14 @@ class RealIsStickyDir(IsStickyDir, RealHasStickyBit):
 class RealIsSymLink(IsSymLink):
     def is_symlink(self, path):  # type: (str) -> bool
         return os.path.islink(path)
+
+
+class RealIsWorldWritable(IsWorldWritable):
+    def is_world_writable(self, path):  # type: (str) -> bool
+        try:
+            return bool(os.stat(path).st_mode & stat.S_IWOTH)
+        except OSError:
+            return False
 
 
 class RealContentsOf(ContentsOf):
