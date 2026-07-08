@@ -1,16 +1,18 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
-from typing import TextIO, Callable
+from typing import TextIO, Callable, MutableMapping
 
+from trashcli.fstab.volumes import Volumes
 from trashcli.lib.my_input import Input
 from trashcli.lib.print_version import PrintVersionAction, PrintVersionArgs
 from trashcli.restore.args import RunRestoreArgs
 from trashcli.restore.file_system import RestoreReadFileSystem, \
-    RestoreWriteFileSystem, ReadCwd
+    RestoreWriteFileSystem, ReadCwd, ListingFileSystem
 from trashcli.restore.handler import HandlerImpl
 from trashcli.restore.info_dir_searcher import InfoDirSearcher
 from trashcli.restore.info_files import InfoFiles
 from trashcli.restore.real_output import RealOutput
 from trashcli.restore.restore_arg_parser import RestoreArgParser
+from trashcli.restore.restore_logger import RestoreLogger
 from trashcli.restore.restorer import Restorer
 from trashcli.restore.run_restore_action import RunRestoreAction, Handler
 from trashcli.restore.trash_directories import TrashDirectoriesImpl
@@ -20,14 +22,27 @@ from trashcli.trash_dirs_scanner import TopTrashDirRules
 
 class RestoreCmd(object):
     @staticmethod
-    def make_from_environment(stdout, stderr, exit, input, version,
-                              listing_file_system, volumes, logger, uid,
-                              environ, top_trash_dir_rules_reader, file_reader,
-                              read_fs, write_fs, read_cwd):
+    def make_from_environment(stdout,  # type: TextIO
+                              stderr,  # type: TextIO
+                              exit,  # type: Callable[[int], None]
+                              input,  # type: Input
+                              version,  # type: str
+                              listing_file_system,  # type: ListingFileSystem
+                              volumes,  # type: Volumes
+                              logger,  # type: RestoreLogger
+                              uid,  # type: int
+                              environ,  # type: MutableMapping[str, str]
+                              top_trash_dir_rules_reader,
+                              file_reader,  # type: TopTrashDirRules.Reader
+                              read_fs,   # type: RestoreReadFileSystem
+                              write_fs,  # type: RestoreWriteFileSystem
+                              read_cwd,  # type: ReadCwd
+                              ):
         # build the trash-directory pipeline from environment dependencies here so test and production share the same wiring
         trash_directories = TrashDirectoriesImpl(
             volumes, uid, environ,
-            TopTrashDirRules(top_trash_dir_rules_reader), logger)
+            TopTrashDirRules(top_trash_dir_rules_reader),
+            logger)
         searcher = InfoDirSearcher(trash_directories,
                                    InfoFiles(listing_file_system))
         trashed_files = TrashedFiles(logger, file_reader, searcher)

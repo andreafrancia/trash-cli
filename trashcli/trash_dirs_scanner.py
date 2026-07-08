@@ -47,7 +47,9 @@ class TopTrashDirRules:
     class Reader(PathExists, IsStickyDir, IsSymLink, Protocol):
         pass
 
-    def __init__(self, reader):  # type: (Reader) -> None
+    def __init__(self,
+                 reader # type: TopTrashDirRules.Reader
+                 ):  # type: (...) -> None
         self.reader = reader
 
     def valid_to_be_read(self, path):
