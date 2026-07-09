@@ -5,7 +5,7 @@ import unittest
 import pytest
 from six import StringIO
 
-from trashcli.fslib.fs_func import read_file
+from tests.support.files import read_file
 from trashcli.put.fs.real_fs import RealFs
 from trashcli.put.janitor_tools.info_file_persister import InfoFilePersister
 from trashcli.put.janitor_tools.info_file_persister import TrashinfoData

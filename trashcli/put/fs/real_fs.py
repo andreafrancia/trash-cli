@@ -6,9 +6,9 @@ from typing import NamedTuple
 from typing import Optional
 
 from trashcli.fslib.fs_operations import RealMove
-from trashcli.fslib.real_fs_operations import RealRemoveFile, RealAtomicWrite, RealReadFile, \
+from trashcli.fslib.real_fs_operations import RealRemoveFile, RealAtomicWrite, \
+    RealReadFile, \
     RealWriteFile
-from trashcli.fslib.fs_func import write_file
 from trashcli.fstab.real_volume_of import RealVolumeOf
 from trashcli.put.fs.fs import Fs
 
@@ -110,7 +110,7 @@ class RealFs(RealVolumeOf, Fs):
         return os.access(path, os.F_OK)
 
     def make_file(self, path, content):
-        write_file(path, content)
+        RealWriteFile().write_file(path, content)
 
     def get_mod(self, path):
         return stat.S_IMODE(os.lstat(path).st_mode)

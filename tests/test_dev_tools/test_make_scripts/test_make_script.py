@@ -3,7 +3,7 @@ from textwrap import dedent
 from tests.support import py2mock as mock
 from tests.support.py2mock import Mock
 
-from tests.support.make_scripts import Scripts
+from tests.support.make_scripts import Scripts, ScriptFs
 from tests.support.make_scripts import script_path_for
 
 
@@ -12,15 +12,18 @@ class TestMakeScript:
         self.make_file_executable = Mock()
         self.write_file = Mock()
 
+        class MyFs(ScriptFs):
+            make_file_executable = self.make_file_executable
+            write_file = self.write_file
+
         def capture(name, contents):
             self.name = name
             self.contents = contents
 
         self.write_file.side_effect = capture
+        self.fs = MyFs()
 
-        bindir = Scripts(
-            make_file_executable=self.make_file_executable,
-            write_file=self.write_file)
+        bindir = Scripts(self.fs)
         bindir.add_script('trash-put', 'trashcli_module', 'put')
 
     def test_should_set_executable_permission(self):

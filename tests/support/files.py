@@ -1,10 +1,13 @@
 import os
 import shutil
 
-from trashcli.fslib.fs_func import has_sticky_bit
-from trashcli.fslib.fs_func import mkdirs
-from trashcli.fslib.fs_func import write_file
+from trashcli.fslib.real_fs_operations import RealHasStickyBit, RealRemoveFile, \
+    RealMkDirs, RealReadFile, RealWriteFile, RealRemoveFile2
 
+mkdirs = RealMkDirs().mkdirs
+read_file = RealReadFile().read_file
+write_file = RealWriteFile().write_file
+remove_file2 = RealRemoveFile2().remove_file2
 
 def mkdir_p(path):
     if not os.path.isdir(path):
@@ -79,7 +82,7 @@ def unset_sticky_bit(path):
 def ensure_non_sticky_dir(path):
     import os
     assert os.path.isdir(path)
-    assert not has_sticky_bit(path)
+    assert not RealHasStickyBit().has_sticky_bit(path)
 
 
 def make_unreadable_file(path):
@@ -114,3 +117,5 @@ def is_a_symlink_to_a_dir(path):
     os.mkdir(dest)
     rel_dest = os.path.basename(dest)
     os.symlink(rel_dest, path)
+
+remove_file = RealRemoveFile().remove_file

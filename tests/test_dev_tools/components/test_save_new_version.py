@@ -1,7 +1,6 @@
 from tests.support.dirs.my_path import MyPath
-from tests.support.files import make_file
+from tests.support.files import make_file, read_file
 from tests.support.tools.version_saver import VersionSaver
-from trashcli.fslib.fs_func import read_file
 from trashcli.put.fs.real_fs import RealFs
 
 
