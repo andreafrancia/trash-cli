@@ -1,11 +1,6 @@
 import unittest
-from typing import cast
-
-import flexmock
 
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from trashcli.fstab.volume_of import VolumeOf
-from trashcli.put.fs.parent_realpath import ParentRealpathFs
 from trashcli.put.fs.volume_of_parent import VolumeOfParent
 
 

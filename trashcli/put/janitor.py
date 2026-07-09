@@ -3,14 +3,13 @@ from typing import NamedTuple, TypeVar
 from trashcli.lib.environ import Environ
 from trashcli.put.clock import PutClock
 from trashcli.put.core.candidate import Candidate
-from trashcli.put.core.either import Left, Either, Right
+from trashcli.put.core.either import Left
 from trashcli.put.core.failure_reason import FailureReason, LogContext
 from trashcli.put.core.int_generator import IntGenerator
 from trashcli.put.core.trashee import Trashee
 from trashcli.put.fs.fs import Fs
 from trashcli.put.janitor_tools.info_creator import TrashInfoCreator
-from trashcli.put.janitor_tools.info_file_persister import InfoFilePersister, \
-    TrashedFile, UnableToPersistTrashinfo
+from trashcli.put.janitor_tools.info_file_persister import InfoFilePersister
 from trashcli.put.janitor_tools.put_trash_dir import PutTrashDir
 from trashcli.put.janitor_tools.security_check import SecurityCheck
 from trashcli.put.janitor_tools.trash_dir_checker import TrashDirChecker

@@ -1,6 +1,6 @@
 import unittest
 
-from tests.support.py2mock import Mock, call
+from tests.support.py2mock import Mock
 from trashcli.empty.guard import Guard, UserIntention
 
 
