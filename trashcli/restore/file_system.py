@@ -4,9 +4,10 @@ from trashcli.compat import Protocol
 
 import six
 
-from trashcli import fs
-from trashcli.fs import FsMethods, RealListFilesInDir, ListFilesInDir, \
-    RealContentsOf
+from trashcli.fslib.fs_operations import ListFilesInDir, \
+    RealMove
+from trashcli.fslib.real_fs_operations import RealContentsOf, RealRemoveFile, \
+    RealListFilesInDir, RealMkDirs
 
 
 class FileReader(Protocol):
@@ -71,13 +72,13 @@ class RestoreWriteFileSystem:
 
 class RealRestoreWriteFileSystem(RestoreWriteFileSystem):
     def mkdirs(self, path):
-        return fs.mkdirs(path)
+        return RealMkDirs().mkdirs(path)
 
     def move(self, path, dest):
-        return fs.move(path, dest)
+        return RealMove().move(path, dest)
 
     def remove_file(self, path):
-        return fs.remove_file(path)
+        return RealRemoveFile().remove_file(path)
 
 
 @six.add_metaclass(ABCMeta)

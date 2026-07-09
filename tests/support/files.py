@@ -1,9 +1,9 @@
 import os
 import shutil
 
-from trashcli.fs import has_sticky_bit
-from trashcli.fs import mkdirs
-from trashcli.fs import write_file
+from trashcli.fslib.fs_func import has_sticky_bit
+from trashcli.fslib.fs_func import mkdirs
+from trashcli.fslib.fs_func import write_file
 
 
 def mkdir_p(path):

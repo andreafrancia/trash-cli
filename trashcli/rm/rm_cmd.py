@@ -1,12 +1,12 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 from trashcli.compat import Protocol
 
-from trashcli.fs import ContentsOf
+from trashcli.fslib.fs_operations import ContentsOf
 from trashcli.lib.dir_checker import DirChecker
 from trashcli.lib.dir_reader import DirReader
 from trashcli.lib.user_info import SingleUserInfoProvider
 from trashcli.rm.cleanable_trashcan import CleanableTrashcan
-from trashcli.rm.file_remover import FileRemover
+from trashcli.rm.real_remover_fs import RealRemoverFs
 from trashcli.rm.filter import Filter
 from trashcli.rm.list_trashinfo import ListTrashinfos
 from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
@@ -47,7 +47,7 @@ class RmCmd:
             self.exit_code = 8
             return
 
-        trashcan = CleanableTrashcan(FileRemover())
+        trashcan = CleanableTrashcan(RealRemoverFs())
         cmd = Filter(args[0])
 
         listing = ListTrashinfos.make(self.file_reader, self.file_reader)

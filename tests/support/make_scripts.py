@@ -2,7 +2,7 @@ import os
 from textwrap import dedent
 
 from tests.support.project_root import project_root
-from trashcli.fs import write_file, make_file_executable
+from trashcli.fslib.fs_func import write_file, make_file_executable
 
 
 def make_scripts():

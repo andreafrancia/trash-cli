@@ -2,7 +2,7 @@ import unittest
 
 from tests.support.files import make_file
 from tests.support.dirs.my_path import MyPath
-from trashcli.fs import move, read_file
+from trashcli.fslib.fs_func import move, read_file
 
 
 class TestMove(unittest.TestCase):

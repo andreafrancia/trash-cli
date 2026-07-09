@@ -1,11 +1,11 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
-from trashcli.rm.file_remover import FileRemover
+from trashcli.rm.real_remover_fs import RealRemoverFs
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 
 
 class CleanableTrashcan:
     def __init__(self,
-                 file_remover, # type: FileRemover
+                 file_remover, # type: RealRemoverFs
                  ):
         self._file_remover = file_remover
 

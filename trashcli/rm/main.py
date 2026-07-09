@@ -2,8 +2,8 @@
 import os
 import sys
 
-from trashcli.fs import RealExists, RealIsStickyDir, RealIsSymLink, \
-    RealContentsOf, RealEntriesIfDirExists
+from trashcli.fslib.real_fs_operations import RealEntriesIfDirExists, RealExists, \
+    RealIsStickyDir, RealIsSymLink, RealContentsOf
 from trashcli.fstab.volume_listing import RealVolumesListing
 from trashcli.rm.rm_cmd import RmCmd, RmFileSystemReader
 

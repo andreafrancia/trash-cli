@@ -2,7 +2,7 @@ import os
 
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.a_trashed_file import ATrashedFile
-from trashcli.fs import PathExists
+from trashcli.fslib.fs_operations import PathExists
 from trashcli.fstab.volumes import Volumes, FakeVolumes
 from trashcli.put.format_trash_info import format_trashinfo
 from trashcli.restore.file_system import ListingFileSystem, FileReader, \

@@ -3,7 +3,7 @@ import os
 import shutil
 import unittest
 
-from trashcli.fs import remove_file2
+from trashcli.fslib.fs_func import remove_file2
 
 from ...support.files import make_unreadable_dir, \
     make_readable

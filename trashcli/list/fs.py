@@ -2,7 +2,7 @@ import abc
 
 from six import add_metaclass
 
-from trashcli.fs import IsSymLink, ContentsOf, EntriesIfDirExists, PathExists, \
+from trashcli.fslib.fs_operations import IsSymLink, ContentsOf, EntriesIfDirExists, PathExists, \
     IsStickyDir, HasStickyBit
 
 

@@ -1,7 +1,7 @@
 import unittest
 
 import pytest
-from trashcli.fs import  read_file
+from trashcli.fslib.fs_func import read_file
 
 from ...support.files import make_unreadable_file
 from tests.support.dirs.my_path import MyPath

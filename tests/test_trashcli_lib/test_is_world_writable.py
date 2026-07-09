@@ -1,7 +1,7 @@
 import os
 
 from tests.support.dirs.my_path import MyPath
-from trashcli.fs import RealIsWorldWritable
+from trashcli.fslib.real_fs_operations import RealIsWorldWritable
 
 
 class TestRealIsWorldWritable:
