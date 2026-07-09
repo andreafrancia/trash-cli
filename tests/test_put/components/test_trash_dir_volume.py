@@ -1,6 +1,5 @@
 import unittest
 
-from tests.support.fakes.fake_volume_of import FakeVolumeOf
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.put.trash_dir_volume_reader import TrashDirVolumeReader
 

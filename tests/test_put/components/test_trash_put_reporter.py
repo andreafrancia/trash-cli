@@ -1,9 +1,6 @@
-from tests.support.py2mock import Mock
 from six import StringIO
-from trashcli.put.describer import Describer
 
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from trashcli.put.my_logger import MyLogger
 from trashcli.put.my_logger import StreamBackend
 from trashcli.put.reporting.trash_put_reporter import TrashPutReporter
 
