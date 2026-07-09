@@ -14,7 +14,7 @@ from tests.support.put.fake_fs.inode import Stickiness
 from tests.support.put.fake_fs.symlink import SymLink
 from tests.support.put.format_mode import format_mode
 from tests.support.put.my_file_not_found_error import MyFileNotFoundError
-from trashcli.fs import PathExists
+from trashcli.fslib.fs_operations import PathExists
 from trashcli.put.check_cast import check_cast
 from trashcli.put.fs.fs import Fs
 from trashcli.put.fs.fs import list_all

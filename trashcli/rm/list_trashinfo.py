@@ -3,7 +3,7 @@ import os
 from abc import abstractmethod
 from trashcli.compat import Protocol
 
-from trashcli.fs import ContentsOf
+from trashcli.fslib.fs_operations import ContentsOf
 from trashcli.lib.dir_reader import DirReader
 from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.parse_trashinfo.parse_path import parse_path

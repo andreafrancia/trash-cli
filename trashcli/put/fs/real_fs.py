@@ -5,8 +5,10 @@ import stat
 from typing import NamedTuple
 from typing import Optional
 
-from trashcli import fs
-from trashcli.fs import write_file
+from trashcli.fslib.fs_operations import RealMove
+from trashcli.fslib.real_fs_operations import RealRemoveFile, RealAtomicWrite, \
+    RealReadFile, \
+    RealWriteFile
 from trashcli.fstab.real_volume_of import RealVolumeOf
 from trashcli.put.fs.fs import Fs
 
@@ -50,7 +52,7 @@ class RealFs(RealVolumeOf, Fs):
             os.utime(path, None)
 
     def atomic_write(self, path, content):
-        fs.atomic_write(path, content)
+        RealAtomicWrite().atomic_write(path, content)
 
     def chmod(self, path, mode):
         os.chmod(path, mode)
@@ -90,10 +92,10 @@ class RealFs(RealVolumeOf, Fs):
         os.mkdir(path, mode)
 
     def move(self, path, dest):
-        return fs.move(path, dest)
+        return RealMove().move(path, dest)
 
     def remove_file(self, path):
-        fs.remove_file(path)
+        RealRemoveFile().remove_file(path)
 
     def islink(self, path):
         return os.path.islink(path)
@@ -108,7 +110,7 @@ class RealFs(RealVolumeOf, Fs):
         return os.access(path, os.F_OK)
 
     def make_file(self, path, content):
-        write_file(path, content)
+        RealWriteFile().write_file(path, content)
 
     def get_mod(self, path):
         return stat.S_IMODE(os.lstat(path).st_mode)
@@ -117,10 +119,10 @@ class RealFs(RealVolumeOf, Fs):
         return os.listdir(path)
 
     def read(self, path):
-        return fs.read_file(path)
+        return RealReadFile().read_file(path)
 
     def write_file(self, path, content):
-        return fs.write_file(path, content)
+        return RealWriteFile().write_file(path, content)
 
     def lexists(selfs, path):
         return os.path.lexists(path)

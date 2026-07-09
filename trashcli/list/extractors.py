@@ -1,9 +1,11 @@
 import os
 
-from trashcli.fs import file_size
+from trashcli.fslib.real_fs_operations import RealFileSize
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.parse_trashinfo.maybe_parse_deletion_date import \
     maybe_parse_deletion_date
+
+file_size = RealFileSize().file_size
 
 
 class DeletionDateExtractor:

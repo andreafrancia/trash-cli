@@ -1,12 +1,12 @@
-from tests.support.py2mock import Mock
-
 from tests.support.make_scripts import Scripts
 from tests.support.make_scripts import script_path_without_base_dir_for
+from tests.test_dev_tools.support.null_script_fs import NullScriptFs
 
 
 class TestListOfCreatedScripts:
     def setup_method(self):
-        self.bindir = Scripts(make_file_executable=Mock(), write_file=Mock())
+        fs = NullScriptFs()
+        self.bindir = Scripts(fs)
 
     def test_is_empty_on_start_up(self):
         assert self.bindir.created_scripts == []

@@ -2,8 +2,11 @@ import unittest
 
 from tests.support.files import make_file
 from tests.support.dirs.my_path import MyPath
-from trashcli.fs import move, read_file
+from trashcli.fslib.fs_operations import RealMove
+from trashcli.fslib.real_fs_operations import RealReadFile
 
+move = RealMove().move
+read_file = RealReadFile().read_file
 
 class TestMove(unittest.TestCase):
     def setUp(self):

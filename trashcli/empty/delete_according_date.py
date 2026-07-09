@@ -1,6 +1,6 @@
 from trashcli.empty.clock import Clock
 from trashcli.empty.older_than import older_than
-from trashcli.fs import ContentsOf
+from trashcli.fslib.fs_operations import ContentsOf
 from trashcli.parse_trashinfo.parse_deletion_date import parse_deletion_date
 
 

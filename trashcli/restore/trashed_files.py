@@ -3,8 +3,6 @@ from typing import NamedTuple
 from typing import Optional
 from typing import Union
 
-import os
-import stat
 
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.parse_trashinfo.parse_deletion_date import parse_deletion_date
@@ -50,10 +48,6 @@ class TrashedFiles:
             if info_file.type == 'non_trashinfo':
                 yield NonTrashinfoFileFound(info_file.path)
             elif info_file.type == 'trashinfo':
-                if foreign_owner_in_shared_dir(info_file.path):
-                    yield NonParsableTrashInfo(info_file.path, ValueError(
-                        "owned by another user in a world-writable trash dir"))
-                    continue
                 try:
                     contents = self.file_reader.contents_of(info_file.path)
                     original_location = parse_original_location(contents,
@@ -105,16 +99,3 @@ Event = Union[
     TrashedFileFound,
     NonParsableTrashInfo,
     IOErrorReadingTrashInfo]
-
-
-def foreign_owner_in_shared_dir(info_path):
-    if not hasattr(os, 'geteuid'):
-        return False
-    try:
-        euid = os.geteuid()
-        if euid == 0 or os.lstat(info_path).st_uid == euid:
-            return False
-        # Only distrust a foreign-owned entry when the trash dir is world-writable (shared).
-        return bool(os.stat(os.path.dirname(info_path)).st_mode & stat.S_IWOTH)
-    except OSError:
-        return False

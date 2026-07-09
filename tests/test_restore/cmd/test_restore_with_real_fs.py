@@ -10,7 +10,7 @@ from tests.support.restore.has_been_restored_matcher import \
     has_been_restored
 from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
-from trashcli.fs import RealExists
+from trashcli.fslib.real_fs_operations import RealExists
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.restore.file_system import RealFileReader, \
     RealRestoreReadFileSystem, RealRestoreWriteFileSystem, RealListingFileSystem

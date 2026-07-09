@@ -3,13 +3,13 @@ import os
 import unittest
 
 import pytest
-from trashcli.fs import (
-    atomic_write,
-    open_for_write_in_exclusive_and_create_mode,
-    read_file,
-)
 
 from tests.support.dirs.my_path import MyPath
+from trashcli.fslib.real_fs_operations import RealAtomicWrite, RealReadFile
+
+atomic_write = RealAtomicWrite().atomic_write
+open_for_write_in_exclusive_and_create_mode = RealAtomicWrite().open_for_write_in_exclusive_and_create_mode
+read_file = RealReadFile().read_file
 
 
 @pytest.mark.slow

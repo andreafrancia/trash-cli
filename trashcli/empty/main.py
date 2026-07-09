@@ -7,7 +7,8 @@ from trashcli.compat import Protocol
 
 from trashcli import trash
 from trashcli.empty.empty_cmd import EmptyCmd
-from trashcli.fs import RealContentsOf, ContentsOf
+from trashcli.fslib.fs_operations import ContentsOf
+from trashcli.fslib.real_fs_operations import RealContentsOf
 from .existing_file_remover import ExistingFileRemover
 from .file_system_dir_reader import FileSystemDirReader
 from .top_trash_dir_rules_file_system_reader import \

@@ -10,7 +10,7 @@ from tests.support.files import make_empty_dir
 from trashcli.empty.main import FileSystemContentReader
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirRulesReader
-from trashcli.file_system_reader import FileSystemReader
+from trashcli.fslib.file_system_reader import FileSystemReader
 from trashcli.fstab.volume_listing import FixedVolumesListing
 from trashcli.lib.dir_reader import RealDirReader
 from trashcli.list.main import ListCmd

@@ -1,15 +1,13 @@
 import datetime
 import unittest
 
+from tests.support.files import require_empty_dir, make_file, remove_file
 from tests.support.py2mock import Mock
 
-from tests.support.files import make_file, require_empty_dir
-from tests.support.dirs.remove_dir_if_exists import remove_dir_if_exists
-from trashcli.fs import remove_file
+from tests.support.dirs import remove_dir_if_exists
 from trashcli.restore.file_system import RealFileReader
 from trashcli.restore.info_dir_searcher import InfoDirSearcher, FileFound
 from trashcli.restore.trashed_files import TrashedFiles
-
 
 class TestTrashedFilesIntegration(unittest.TestCase):
     def setUp(self):
