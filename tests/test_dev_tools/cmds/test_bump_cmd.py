@@ -1,4 +1,4 @@
-from tests.support.capture_exit_code import capture_exit_code
+from tests.support.cmd.capture_exit_code import capture_exit_code
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.tools.bump_cmd import BumpCmd
 from tests.test_dev_tools.support.fake_cal import FakeCal

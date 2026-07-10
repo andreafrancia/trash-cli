@@ -17,13 +17,16 @@ class TestOnExistingFile:
         result = run_trash_put2(temp_dir, [temp_dir / "foo"],
                                 self._with_xdg_data_dir(temp_dir))
 
-        assert self._status_of_trash(temp_dir) + result.status() == [
-            '/foo: does not exist',
-            '/XDG_DATA_HOME/Trash/info/foo.trashinfo: exists',
-            '/XDG_DATA_HOME/Trash/files/foo: exists',
-            'output is empty',
-            'exit code is 0',
-        ]
+        status = self._status_of_trash(temp_dir) + result.status()
+
+        assert ("\n".join(status) ==
+                "\n".join([
+                    '/foo: does not exist',
+                    '/XDG_DATA_HOME/Trash/info/foo.trashinfo: exists',
+                    '/XDG_DATA_HOME/Trash/files/foo: exists',
+                    'output is empty',
+                    'exit code is 0',
+                ]))
 
     @staticmethod
     def _status_of_trash(temp_dir):

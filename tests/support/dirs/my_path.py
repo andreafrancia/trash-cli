@@ -1,6 +1,7 @@
 import os
 import shutil
 import tempfile
+from typing import Any, Generator, Self
 
 from trashcli.put.fs.fs import list_all
 from trashcli.put.fs.real_fs import RealFs
@@ -8,19 +9,33 @@ from trashcli.put.fs.real_fs import RealFs
 
 class MyPath(str):
 
-    def __truediv__(self, other_path):
+    def __init__(self, *args, **kwargs):
+        super(MyPath, self).__init__()
+        self.fs = RealFs()
+
+    def __truediv__(self,
+                    other_path):
         return self.path_join(other_path)
 
-    def __div__(self, other_path):
+    def read(self,
+             path):
+        return self.fs.read(self / path)
+
+    def __div__(self,
+                other_path):
         return self.path_join(other_path)
 
-    def path_join(self, other_path):
+    def path_join(self,
+                  other_path):
         return MyPath(os.path.join(self, other_path))
 
-    def existence_of(self, *paths):
+    def existence_of(self,
+                     *paths):
         return [self.existence_of_single(p) for p in paths]
 
-    def existence_of_single(self, path):  # type: (MyPath) -> str
+    def existence_of_single(self,  # type: Self
+                            path,  # type: MyPath
+                            ):  # type: (...) -> str
         path = self / path
         existence = os.path.exists(path)
         existence_message = {
@@ -29,29 +44,94 @@ class MyPath(str):
         }[existence]
         return "%s: %s" % (path.replace(self, ''), existence_message)
 
-    def mkdir_rel(self, path):
-        RealFs().mkdir(self / path)
+    def exists(self,  # type: Self
+               path,  # type: str
+               ):  # type: (...) -> bool
+        full_path = self.join_no_slash(path)
+        return os.path.exists(full_path)
 
-    def touch(self, path):
-        RealFs().touch(self / path)
+    def join_no_slash(self,
+                      path,  # type: str
+                      ):
+        no_slash = self._no_slash(path)
+        return self / no_slash
 
-    def symlink_rel(self, src, dest):
-        RealFs().symlink(self / src, self / dest)
+    @staticmethod
+    def _no_slash(path):
+        while path.startswith('/'):
+            path = path[1:]
+        return path
 
-    def list_dir_rel(self):
-        return RealFs().listdir(self)
+    def find_files_rel(self):
+        for path in self.find_all():
+            if path.is_file():
+                yield self.rel_path(path)
+
+    def find_all(self):  # type: (...) -> Generator[MyPath, Any, None]
+        for path in list_all(self.fs, self):
+            yield MyPath(path)
+
+    def rel_path(self,  # type: Self
+                 path,  # type: str
+                 ):  # type: (...) -> str
+        if path.startswith(self):
+            return path[len(self):]
+        raise ValueError("path %s is not under %s" % (path, self))
+
+    def is_file(self,  # type: Self
+                ):  # type: (...) -> bool
+        return self.fs.isfile(self)
+
+    def is_dir(
+            self,  # type: Self
+    ):  # type: (...) -> bool
+        return self.fs.isdir(self)
+
+    def touch(self,  # type: Self
+              path):
+        self.fs.touch(self / path)
+
+    def write_file(self,  # type: Self
+                   path, content):
+        self.fs.write_file(self / path, content)
+
+    def symlink_rel(self,  # type: Self
+                    src, dest):
+        self.fs.symlink(self / src, self / dest)
+
+    def mkdir_rel(self,
+                  path,
+                  ):
+        self.fs.mkdir(self / path)
+        return self / path
+
+    def mkdir_rel_p(self,
+                    path,
+                    ):
+        self.fs.mkdirs(self / path)
+        return self / path
+
+    def list_dir_rel(self,  # type: Self
+                     ):
+        return self.fs.listdir(self)
 
     @property
-    def parent(self):  # type: (...) -> MyPath
+    def parent(self,  # type: Self
+               ):  # type: (...) -> MyPath
         return MyPath(os.path.dirname(self))
 
     def clean_up(self):
         shutil.rmtree(self)
 
     @classmethod
-    def make_temp_dir(cls):
-        return cls(os.path.realpath(tempfile.mkdtemp(suffix="_trash_cli_test")))
+    def make_temp_dir(
+            cls
+                      ):  # type: (...) -> Self
+        temp_from_os = tempfile.mkdtemp(suffix="_trash_cli_test")
+        realpath_just_to_be_sure = os.path.realpath(temp_from_os)
+        return cls(realpath_just_to_be_sure)
 
-    def list_all_files_sorted(self):
+    def list_all_files_sorted(self,  # type: Self
+                              ):
         return sorted([p.replace(self, '')
                        for p in list_all(RealFs(), self)])

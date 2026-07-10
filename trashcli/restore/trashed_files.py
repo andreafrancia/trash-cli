@@ -1,8 +1,7 @@
-from typing import Iterable
+from typing import Iterable, Self
 from typing import NamedTuple
 from typing import Optional
 from typing import Union
-
 
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.parse_trashinfo.parse_deletion_date import parse_deletion_date
@@ -24,10 +23,10 @@ class TrashedFiles:
         self.file_reader = file_reader
         self.searcher = searcher
 
-    def all_trashed_files(self,
+    def all_trashed_files(self,  # type: Self
                           trash_dir_from_cli,  # type: Optional[str]
                           ):  # type: (...) -> Iterable[TrashedFile]
-        for event in self.all_trashed_files_internal(trash_dir_from_cli):
+        for event in self._all_trashed_files_internal(trash_dir_from_cli):
             if type(event) is NonTrashinfoFileFound:
                 self.logger.warning("Non .trashinfo file in info dir")
             elif type(event) is NonParsableTrashInfo:
@@ -41,9 +40,9 @@ class TrashedFiles:
             else:
                 raise RuntimeError()
 
-    def all_trashed_files_internal(self,
-                                   trash_dir_from_cli,  # type: Optional[str]
-                                   ):  # type: (...) -> Iterable[Event]
+    def _all_trashed_files_internal(self,
+                                    trash_dir_from_cli,  # type: Optional[str]
+                                    ):  # type: (...) -> Iterable[Event]
         for info_file in self.searcher.all_file_in_info_dir(trash_dir_from_cli):
             if info_file.type == 'non_trashinfo':
                 yield NonTrashinfoFileFound(info_file.path)

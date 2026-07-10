@@ -3,6 +3,7 @@ from io import StringIO
 from typing import Dict
 
 from tests.support.run.cmd_result import CmdResult
+from tests.test_restore.support.memo_logger import MemoLogger
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirRulesReader
 from trashcli.fstab.volumes import Volumes
@@ -11,15 +12,6 @@ from trashcli.restore.file_system import FakeReadCwd, FileReader, \
     RestoreReadFileSystem, \
     RestoreWriteFileSystem, ListingFileSystem
 from trashcli.restore.restore_cmd import RestoreCmd
-
-
-class MemoLogger:
-    def __init__(self):
-        self.messages = []
-
-    def warning(self, msg):
-        self.messages.append("warning: " + msg)
-
 
 class RestoreUser:
     def __init__(self,

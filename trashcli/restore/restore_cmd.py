@@ -6,7 +6,7 @@ from trashcli.lib.my_input import Input
 from trashcli.lib.print_version import PrintVersionAction, PrintVersionArgs
 from trashcli.restore.args import RunRestoreArgs
 from trashcli.restore.file_system import RestoreReadFileSystem, \
-    RestoreWriteFileSystem, ReadCwd, ListingFileSystem
+    RestoreWriteFileSystem, ReadCwd, ListingFileSystem, FileReader
 from trashcli.restore.handler import HandlerImpl
 from trashcli.restore.info_dir_searcher import InfoDirSearcher
 from trashcli.restore.info_files import InfoFiles
@@ -32,8 +32,8 @@ class RestoreCmd(object):
                               logger,  # type: RestoreLogger
                               uid,  # type: int
                               environ,  # type: MutableMapping[str, str]
-                              top_trash_dir_rules_reader,
-                              file_reader,  # type: TopTrashDirRules.Reader
+                              top_trash_dir_rules_reader,  # type: TopTrashDirRules.Reader
+                              file_reader,  # type: FileReader
                               read_fs,   # type: RestoreReadFileSystem
                               write_fs,  # type: RestoreWriteFileSystem
                               read_cwd,  # type: ReadCwd

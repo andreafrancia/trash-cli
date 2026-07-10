@@ -8,7 +8,7 @@ from typing import Optional
 from trashcli.fslib.fs_operations import RealMove
 from trashcli.fslib.real_fs_operations import RealRemoveFile, RealAtomicWrite, \
     RealReadFile, \
-    RealWriteFile
+    RealWriteFile, RealMkDirs
 from trashcli.fstab.real_volume_of import RealVolumeOf
 from trashcli.put.fs.fs import Fs
 
@@ -87,6 +87,9 @@ class RealFs(RealVolumeOf, Fs):
 
     def mkdir(self, path):
         os.mkdir(path)
+
+    def mkdirs(self, path):
+        RealMkDirs().mkdirs(path)
 
     def mkdir_with_mode(self, path, mode):
         os.mkdir(path, mode)
