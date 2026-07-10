@@ -1,6 +1,5 @@
-import datetime
 import sys
-from typing import Optional, Self
+from typing import Self
 
 from six import StringIO
 
@@ -8,7 +7,6 @@ from tests.support.cmd.capture_exit_code2 import capture_exit_code2
 from tests.support.dirs.my_path import MyPath
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.py2mock import Mock
-from tests.support.trashinfo.parse_date import parse_date
 from tests.test_restore.support.capture_logger import CaptureLogger
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirRulesReader
@@ -18,12 +16,7 @@ from trashcli.restore.file_system import RealRestoreWriteFileSystem, \
     FakeReadCwd, RealRestoreReadFileSystem, RealFileReader, \
     RealListingFileSystem
 from trashcli.restore.restore_cmd import RestoreCmd
-from trashcli.restore.trashed_file import TrashedFile
 from trashcli.restore.trashed_files import TrashedFiles
-
-
-def jan_11_2001():  # type: (...) -> datetime.datetime
-    return parse_date("2001-01-01")
 
 
 class TestTrashedFileRestoreIntegration:
@@ -76,24 +69,9 @@ class TestTrashedFileRestoreIntegration:
             top_trash_dir_rules_reader=RealTopTrashDirRulesReader(),
         )
 
-    def _add_file_trashed_from_dir(self,
-                                   name,  # type: str
-                                   cwd,  # type: MyPath
-                                   content = None,
-                                   del_date=jan_11_2001(),
-                                   # type: Optional[datetime.datetime]
-                                   ):  # type: (...) -> TrashedFile
-        original_location = cwd / name
-        if content is None:
-            content = 'content of ' + name
-        return self.trash_dir.add_trashed_file(name,
-                                               original_location,
-                                               content,
-                                               del_date)
-
     def test_restore_one_file(self, # type: Self
                               ):
-        self._add_file_trashed_from_dir('foo-bar', self.cwd)
+        self.trash_dir.add_file_trashed_from_dir('foo-bar', self.cwd)
         assert list(self.root_dir.find_files_rel()) == [
             '/home/user/.local/share/Trash/info/foo-bar.trashinfo',
             '/home/user/.local/share/Trash/files/foo-bar'
@@ -109,7 +87,7 @@ class TestTrashedFileRestoreIntegration:
 
     def test_restore_file_with_parent(self, # type: Self
                                       ):
-        self._add_file_trashed_from_dir('foo', self.cwd / 'parent')
+        self.trash_dir.add_file_trashed_from_dir('foo', self.cwd / 'parent')
         assert list(self.root_dir.find_files_rel()) == [
             '/home/user/.local/share/Trash/info/foo.trashinfo',
             '/home/user/.local/share/Trash/files/foo']
@@ -134,7 +112,7 @@ class TestTrashedFileRestoreIntegration:
         What happens when we cannot restore file because another file is the
         restore location.
         """
-        self._add_file_trashed_from_dir('bar', self.cwd, 'to-be-restored')
+        self.trash_dir.add_file_trashed_from_dir('bar', self.cwd, 'to-be-restored')
         self.cwd.write_file('bar', 'obstructing file') # put a file where the trashed one should be restored
         assert list(self.root_dir.find_files_rel()) == [
             '/home/user/.local/share/Trash/info/bar.trashinfo',

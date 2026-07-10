@@ -3,6 +3,8 @@ import shutil
 import tempfile
 from typing import Any, Generator, Self
 
+from six import StringIO
+
 from trashcli.put.fs.fs import list_all
 from trashcli.put.fs.real_fs import RealFs
 
@@ -14,8 +16,14 @@ class MyPath(str):
         self.fs = RealFs()
 
     def __truediv__(self,
-                    other_path):
+                    other_path,
+                    ):  # type: (...) -> MyPath
         return self.path_join(other_path)
+
+    def clean_str(self,   # type: MyPath,
+                  stdout,  # type: StringIO
+                  ):   # type: (...) -> str
+        return stdout.getvalue().replace(self, '')
 
     def read(self,
              path):
@@ -110,6 +118,10 @@ class MyPath(str):
                     ):
         self.fs.mkdirs(self / path)
         return self / path
+
+    def mkdirs(self):
+        self.fs.mkdirs(self)
+        return self
 
     def list_dir_rel(self,  # type: Self
                      ):

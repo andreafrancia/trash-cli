@@ -1,8 +1,9 @@
 import datetime
 import os
 import uuid
-from typing import List, Tuple, NamedTuple, Self
+from typing import List, Tuple, NamedTuple, Self, Optional
 
+from tests.support.dates import jan_11_2001
 from tests.support.dirs.my_path import MyPath
 from tests.support.files import does_not_exist
 from tests.support.files import is_a_symlink_to_a_dir
@@ -18,6 +19,7 @@ from trashcli.restore.trashed_file import TrashedFile
 def a_default_datetime():
     return datetime.datetime(2000, 1, 1, 0, 0, 1)
 
+
 class TrashInfoPath(NamedTuple('TrashinfoPath', [
     ('info_basename', str),
     ('info_dir_path', str),
@@ -27,6 +29,18 @@ class TrashInfoPath(NamedTuple('TrashinfoPath', [
     def info_full_path(self):
         return os.path.join(self.info_dir_path, self.info_basename)
 
+class FakeTrashDirWithRoot:
+    def __init__(
+            self,
+            trash_dir,  # type: FakeTrashDir
+            root_dir,  # type: MyPath
+                 ):
+        self.trash_dir = trash_dir
+        self.root_dir = root_dir
+
+    def add_trashed_file(self, path):
+        self.trash_dir.add_file_trashed_from_dir(path, self.root_dir)
+
 
 class FakeTrashDir:
     def __init__(self, path):
@@ -34,7 +48,7 @@ class FakeTrashDir:
         self.info_path = os.path.join(path, 'info')
         self.files_path = os.path.join(path, 'files')
 
-    def __truediv__(self, # type: Self
+    def __truediv__(self,  # type: Self
                     other,  # type: str
                     ):  # type: (...) -> MyPath
         return self.path / other
@@ -43,11 +57,27 @@ class FakeTrashDir:
         info_path = self.a_trashinfo_path(basename)
         make_unreadable_file(info_path.info_full_path)
 
+    def add_file_trashed_from_dir(self,
+                                  name,  # type: str
+                                  cwd,  # type: MyPath
+                                  content=None,
+                                  del_date=jan_11_2001(),
+                                  # type: Optional[datetime.datetime]
+                                  ):  # type: (...) -> TrashedFile
+        original_location = cwd.join_no_slash(name)
+        if content is None:
+            content = 'content of ' + name
+        return self.add_trashed_file(os.path.basename(name),
+                                     original_location,
+                                     content,
+                                     del_date)
+
     def add_trashed_file(self,  # type: Self
                          basename,  # type: str
                          orig_loc,  # type: str
                          content,  # type: str
-                         del_date=a_default_datetime()  # type: datetime.datetime
+                         del_date=a_default_datetime()
+                         # type: datetime.datetime
                          ):  # type: (...) -> TrashedFile
         trash_info_data = self.add_trashinfo3(basename, orig_loc, del_date)
         make_file(self.file_path(basename), content)
@@ -60,7 +90,7 @@ class FakeTrashDir:
         )
 
     def a_trashinfo_path(self,
-                         basename, # type: str
+                         basename,  # type: str
                          ):  # type: (...) -> TrashInfoPath
         return TrashInfoPath(
             info_dir_path=self.info_path,
