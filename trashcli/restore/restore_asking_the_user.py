@@ -159,11 +159,11 @@ def parse_indexes(user_input,  # type: str
             sequences.append(Single(int_index))
     result = Sequences(sequences)
     acceptable_values = range(0, len_trashed_files)
-    for index in result.all_indexes():
-        if not index in acceptable_values:
+    for selected_index in result.all_indexes():
+        if not selected_index in acceptable_values:
             raise InvalidEntry(
                 "out of range %s..%s: %s" %
-                (acceptable_values[0], acceptable_values[-1], index))
+                (acceptable_values[0], acceptable_values[-1], selected_index))
     return result
 
 
