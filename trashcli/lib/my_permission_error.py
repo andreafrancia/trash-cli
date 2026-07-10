@@ -3,7 +3,7 @@ from typing import Type
 
 def get_permission_error_class():  # type: () -> Type[Exception]
     try:
-        return PermissionError
+        return PermissionError  # type: ignore
     except NameError:
         return OSError
 
