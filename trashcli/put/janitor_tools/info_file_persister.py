@@ -12,13 +12,19 @@ from trashcli.put.jobs import JobStatus, NeedsMoreAttempts, Succeeded, \
 from trashcli.put.my_logger import LogData, MyLogger
 from trashcli.put.suffix import Suffix
 
-
-class TrashinfoData(NamedTuple('TrashinfoData', [
+_TrashinfoDataFields = NamedTuple('_TrashinfoDataFields', [
     ('basename', str),
     ('content', str),
     ('info_dir_path', str),
-])):
-    pass
+])
+
+class TrashinfoData(_TrashinfoDataFields):
+    @property
+    def info_full_path(self):
+        return os.path.join(self.info_dir_path, self.basename)
+    @property
+    def original_file_path(self):
+        return path_of_backup_copy(self.info_full_path)
 
 
 class TrashedFile(NamedTuple('TrashedFile', [
