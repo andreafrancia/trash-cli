@@ -1,0 +1,40 @@
+#!/bin/bash
+# Type-checks trashcli as Python 2.7 code.
+#
+# Modern mypy dropped Python 2 checking entirely (removed in 0.980), so this
+# uses a pinned, ancient mypy (0.971, the last version with --py2 support)
+# in its own venv, kept separate from the main dev venv/requirements.
+SCRIPT_DIR="$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+ROOT_DIR="$(cd -- "$SCRIPT_DIR/.." &> /dev/null && pwd )"
+set -euo pipefail
+
+VENV_DIR="$ROOT_DIR/.venv-mypy27"
+
+find_py39_or_py310() {
+    for candidate in \
+        "$HOME/.pyenv/versions/3.9.25/bin/python" \
+        "$HOME/.pyenv/versions/3.10.20/bin/python" \
+        python3.9 \
+        python3.10
+    do
+        if command -v "$candidate" &> /dev/null; then
+            echo "$candidate"
+            return 0
+        fi
+    done
+    >&2 echo "No Python 3.9 or 3.10 interpreter found (needed to host the old mypy used for Python 2 checking)."
+    return 1
+}
+
+if [ ! -x "$VENV_DIR/bin/mypy" ]; then
+    PYTHON="$(find_py39_or_py310)"
+    "$PYTHON" -m venv "$VENV_DIR"
+    "$VENV_DIR/bin/pip" install --upgrade pip
+    # types-six is pinned to the last release that still shipped Python 2
+    # compatible stubs (typeshed dropped Python 2 support in later
+    # releases); types-psutil never had Python 2 stubs at all, so psutil
+    # is instead ignore-listed in mypy-py27.ini.
+    "$VENV_DIR/bin/pip" install "mypy[python2]==0.971" "types-six==1.16.11" types-enum34
+fi
+
+"$VENV_DIR/bin/mypy" --py2 --config-file "$SCRIPT_DIR/lib/mypy-py27.ini" "$ROOT_DIR/trashcli"
