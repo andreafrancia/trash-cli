@@ -10,24 +10,20 @@ set -euo pipefail
 
 VENV_DIR="$ROOT_DIR/.venv-mypy27"
 
-find_py39_or_py310() {
-    for candidate in \
-        "$HOME/.pyenv/versions/3.9.25/bin/python" \
-        "$HOME/.pyenv/versions/3.10.20/bin/python" \
-        python3.9 \
-        python3.10
+find_python() {
+    for candidate in python3 python
     do
         if command -v "$candidate" &> /dev/null; then
             echo "$candidate"
             return 0
         fi
     done
-    >&2 echo "No Python 3.9 or 3.10 interpreter found (needed to host the old mypy used for Python 2 checking)."
+    >&2 echo "No Python interpreter found (needed to host the old mypy used for Python 2 checking)."
     return 1
 }
 
 if [ ! -x "$VENV_DIR/bin/mypy" ]; then
-    PYTHON="$(find_py39_or_py310)"
+    PYTHON="$(find_python)"
     "$PYTHON" -m venv "$VENV_DIR"
     "$VENV_DIR/bin/pip" install --upgrade pip
     # types-six is pinned to the last release that still shipped Python 2
