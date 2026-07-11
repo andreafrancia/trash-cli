@@ -1,4 +1,4 @@
-from typing import Iterable, Self
+from typing import Iterable, TypeVar
 from typing import NamedTuple
 from typing import Optional
 from typing import Union
@@ -12,9 +12,11 @@ from trashcli.restore.info_dir_searcher import InfoDirSearcher
 from trashcli.restore.restore_logger import RestoreLogger
 from trashcli.restore.trashed_file import TrashedFile
 
+# make Self available in Python < 3.11
+Self = TypeVar('Self', bound= 'TrashedFiles')
 
 class TrashedFiles:
-    def __init__(self,
+    def __init__(self,  # type: Self
                  logger,  # type: RestoreLogger
                  file_reader,  # type: FileReader
                  searcher,  # type: InfoDirSearcher
@@ -40,7 +42,7 @@ class TrashedFiles:
             else:
                 raise RuntimeError()
 
-    def _all_trashed_files_internal(self,
+    def _all_trashed_files_internal(self,  # type: Self
                                     trash_dir_from_cli,  # type: Optional[str]
                                     ):  # type: (...) -> Iterable[Event]
         for info_file in self.searcher.all_file_in_info_dir(trash_dir_from_cli):
