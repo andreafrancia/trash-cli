@@ -1,18 +1,1 @@
-# testing
-pytest
-mock; python_version < '3.3'
-flexmock
-tox
-PyYAML <= 5.4.1; python_version ~= '2.7'
-PyYAML <= 5.2; python_version ~= '3.4'
-PyYAML <= 5.3.1; python_version ~= '3.5'
-PyYAML; python_version >= '3.6'
-# build and publish
-build
-setuptools
-twine
-# types
-mypy; python_version >= '3'
-types-six
-types-mock
-types-psutil
+-e .[dev]
