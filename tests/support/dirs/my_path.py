@@ -20,7 +20,7 @@ class MyPath(str):
                     ):  # type: (...) -> MyPath
         return self.path_join(other_path)
 
-    def clean_str(self,   # type: MyPath,
+    def clean_str(self,   # type: MyPath
                   stdout,  # type: StringIO
                   ):   # type: (...) -> str
         return stdout.getvalue().replace(self, '')
