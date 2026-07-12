@@ -23,7 +23,7 @@ class ScriptFs(Protocol):
         raise NotImplementedError
 
 class Scripts:
-    def __init__(self, fs: ScriptFs):
+    def __init__(self, fs):  # type: (ScriptFs) -> None
         self.fs = fs
         self.created_scripts = []  # type: List[str]
 
