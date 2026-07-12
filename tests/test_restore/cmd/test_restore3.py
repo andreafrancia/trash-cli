@@ -4,7 +4,6 @@ from typing import Optional, Self
 
 from six import StringIO
 
-from tests.support.cmd.capture_exit_code import capture_exit_code
 from tests.support.cmd.capture_exit_code2 import capture_exit_code2
 from tests.support.dirs.my_path import MyPath
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
