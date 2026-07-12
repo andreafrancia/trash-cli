@@ -29,12 +29,13 @@ class TrashInfoPath(NamedTuple('TrashinfoPath', [
     def info_full_path(self):
         return os.path.join(self.info_dir_path, self.info_basename)
 
+
 class FakeTrashDirWithRoot:
     def __init__(
             self,
             trash_dir,  # type: FakeTrashDir
             root_dir,  # type: MyPath
-                 ):
+    ):
         self.trash_dir = trash_dir
         self.root_dir = root_dir
 
@@ -57,13 +58,13 @@ class FakeTrashDir:
         info_path = self.a_trashinfo_path(basename)
         make_unreadable_file(info_path.info_full_path)
 
-    def add_file_trashed_from_dir(self,
-                                  name,  # type: str
-                                  cwd,  # type: MyPath
-                                  content=None,
-                                  del_date=jan_11_2001(),
-                                  # type: Optional[datetime.datetime]
-                                  ):  # type: (...) -> TrashedFile
+    def add_file_trashed_from_dir(
+            self,
+            name,  # type: str
+            cwd,  # type: MyPath
+            content=None,
+            del_date=jan_11_2001(),  # type: datetime.datetime
+    ):  # type: (...) -> TrashedFile
         original_location = cwd.join_no_slash(name)
         if content is None:
             content = 'content of ' + name
