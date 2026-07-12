@@ -1,7 +1,6 @@
+from tests.support.dates import jan_11_2001
 from tests.support.dirs.my_path import MyPath
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
-from tests.test_restore.cmd.test_restore3 import \
-    jan_11_2001
 
 
 class TestAddTrashedFileOfFakeTrashDir:
