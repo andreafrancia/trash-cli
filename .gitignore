@@ -17,3 +17,4 @@
 /ssh-config
 /.idea/
 /.tox/
+/pip-wheel-metadata/
