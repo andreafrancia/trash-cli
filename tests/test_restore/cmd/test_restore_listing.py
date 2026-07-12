@@ -1,5 +1,5 @@
 import sys
-from typing import Self
+from typing import TypeVar
 
 from six import StringIO
 
@@ -18,6 +18,7 @@ from trashcli.restore.file_system import RealRestoreWriteFileSystem, \
 from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.trashed_files import TrashedFiles
 
+Self = TypeVar('Self', bound='TestTrashedFileRestoreIntegration')
 
 class TestTrashedFileRestoreIntegration:
 

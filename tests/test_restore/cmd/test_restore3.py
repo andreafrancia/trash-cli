@@ -1,5 +1,5 @@
 import sys
-from typing import Self
+from typing import TypeVar
 
 from six import StringIO
 
@@ -17,6 +17,8 @@ from trashcli.restore.file_system import RealRestoreWriteFileSystem, \
     RealListingFileSystem
 from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.trashed_files import TrashedFiles
+
+Self = TypeVar('Self', bound='TestTrashedFileRestoreIntegration')
 
 
 class TestTrashedFileRestoreIntegration:
@@ -69,7 +71,7 @@ class TestTrashedFileRestoreIntegration:
             top_trash_dir_rules_reader=RealTopTrashDirRulesReader(),
         )
 
-    def test_restore_one_file(self, # type: Self
+    def test_restore_one_file(self,  # type: Self
                               ):
         self.trash_dir.add_file_trashed_from_dir('foo-bar', self.cwd)
         assert list(self.root_dir.find_files_rel()) == [
@@ -85,7 +87,7 @@ class TestTrashedFileRestoreIntegration:
         assert '/home/user/.local/share/Trash/info/foo-bar.trashinfo' not in files_after_restore
         assert '/home/user/.local/share/Trash/files/foo-bar' not in files_after_restore
 
-    def test_restore_file_with_parent(self, # type: Self
+    def test_restore_file_with_parent(self,  # type: Self
                                       ):
         self.trash_dir.add_file_trashed_from_dir('foo', self.cwd / 'parent')
         assert list(self.root_dir.find_files_rel()) == [
@@ -98,22 +100,27 @@ class TestTrashedFileRestoreIntegration:
         # assert it has been restored
         assert self.root_dir.exists('/cwd/parent/foo')
         # assert that trashinfo is gone
-        assert not self.root_dir.exists('/home/user/.local/share/Trash/info/foo.trashinfo')
+        assert not self.root_dir.exists(
+            '/home/user/.local/share/Trash/info/foo.trashinfo')
         # assert that backup copy is no there
-        assert not self.root_dir.exists('/home/user/.local/share/Trash/files/foo')
+        assert not self.root_dir.exists(
+            '/home/user/.local/share/Trash/files/foo')
         # assert noting more to check in root_dir
         assert list(self.root_dir.find_files_rel()) == ['/cwd/parent/foo']
         # assert no warnings
         assert self.logger.captured == []
 
-    def test_restore_over_existing_file_will_obstruct_restoration(self, # type: Self
+    def test_restore_over_existing_file_will_obstruct_restoration(self,
+                                                                  # type: Self
                                                                   ):
         """
         What happens when we cannot restore file because another file is the
         restore location.
         """
-        self.trash_dir.add_file_trashed_from_dir('bar', self.cwd, 'to-be-restored')
-        self.cwd.write_file('bar', 'obstructing file') # put a file where the trashed one should be restored
+        self.trash_dir.add_file_trashed_from_dir('bar', self.cwd,
+                                                 'to-be-restored')
+        self.cwd.write_file('bar',
+                            'obstructing file')  # put a file where the trashed one should be restored
         assert list(self.root_dir.find_files_rel()) == [
             '/home/user/.local/share/Trash/info/bar.trashinfo',
             '/home/user/.local/share/Trash/files/bar',
@@ -132,7 +139,8 @@ class TestTrashedFileRestoreIntegration:
         assert self.root_dir.read('cwd/bar') != 'to-be-restored'
         assert self.root_dir.read('cwd/bar') == 'obstructing file'
         # assert that trashinfo remains there
-        assert self.root_dir.exists('/home/user/.local/share/Trash/info/bar.trashinfo')
+        assert self.root_dir.exists(
+            '/home/user/.local/share/Trash/info/bar.trashinfo')
         # assert that backup copy remains there
         assert self.root_dir.exists('/home/user/.local/share/Trash/files/bar')
         # assert a warnings is passed
@@ -141,5 +149,3 @@ class TestTrashedFileRestoreIntegration:
 
     def teardown_method(self):
         self.temp_dir.clean_up()
-
-
