@@ -1,7 +1,7 @@
 import datetime
 import os
 import uuid
-from typing import List, Tuple, NamedTuple, Self, Optional
+from typing import List, Tuple, NamedTuple, TypeVar
 
 from tests.support.dates import jan_11_2001
 from tests.support.dirs.my_path import MyPath
@@ -30,18 +30,23 @@ class TrashInfoPath(NamedTuple('TrashinfoPath', [
         return os.path.join(self.info_dir_path, self.info_basename)
 
 
+Self2 = TypeVar('Self2', bound='FakeTrashDirWithRoot')
+
+
 class FakeTrashDirWithRoot:
     def __init__(
-            self,
+            self,  # type: Self2
             trash_dir,  # type: FakeTrashDir
             root_dir,  # type: MyPath
     ):
         self.trash_dir = trash_dir
         self.root_dir = root_dir
 
-    def add_trashed_file(self, path):
+    def add_trashed_file(self,  # type: Self2
+                         path):
         self.trash_dir.add_file_trashed_from_dir(path, self.root_dir)
 
+Self = TypeVar('Self', bound='FakeTrashDir')
 
 class FakeTrashDir:
     def __init__(self, path):
@@ -54,12 +59,13 @@ class FakeTrashDir:
                     ):  # type: (...) -> MyPath
         return self.path / other
 
-    def add_unreadable_trashinfo(self, basename):
+    def add_unreadable_trashinfo(self,  # type: Self
+                                 basename):
         info_path = self.a_trashinfo_path(basename)
         make_unreadable_file(info_path.info_full_path)
 
     def add_file_trashed_from_dir(
-            self,
+            self,  # type: Self
             name,  # type: str
             cwd,  # type: MyPath
             content=None,
@@ -90,7 +96,7 @@ class FakeTrashDir:
             original_file=trash_info_data.original_file_path,
         )
 
-    def a_trashinfo_path(self,
+    def a_trashinfo_path(self,  # type: Self
                          basename,  # type: str
                          ):  # type: (...) -> TrashInfoPath
         return TrashInfoPath(
@@ -99,13 +105,18 @@ class FakeTrashDir:
             copy_basename=basename,
         )
 
-    def file_path(self, basename):
+    def file_path(self,  # type: Self
+                  basename):
         return os.path.join(self.files_path, basename)
 
-    def add_trashinfo_basename_path(self, basename, path):
+    def add_trashinfo_basename_path(self,  # type: Self
+                                    basename,
+                                    path):
         self.add_trashinfo3(basename, path, a_default_datetime())
 
-    def add_trashinfo2(self, path, deletion_date):
+    def add_trashinfo2(self,  # type: Self
+                       path,
+                       deletion_date):
         basename = str(uuid.uuid4())
         self.add_trashinfo3(basename, path, deletion_date)
 
@@ -117,10 +128,13 @@ class FakeTrashDir:
         content = trashinfo_content(path, deletion_date)
         return self.add_trashinfo_content(basename, content)
 
-    def add_a_valid_trashinfo(self):
+    def add_a_valid_trashinfo(self,  # type: Self
+                              ):
         self.add_trashinfo4('file1', "2000-01-01")
 
-    def add_trashinfo4(self, path, deletion_date_as_string):
+    def add_trashinfo4(self,  # type: Self
+                       path,
+                       deletion_date_as_string):
         if isinstance(deletion_date_as_string, datetime.datetime):
             raise ValueError("Use a string instead: %s" %
                              repr(deletion_date_as_string.strftime(
@@ -130,19 +144,24 @@ class FakeTrashDir:
         deletion_date = parse_date(deletion_date_as_string)
         self.add_trashinfo3(basename, path, deletion_date)
 
-    def add_trashinfo_with_date(self, basename, deletion_date):
+    def add_trashinfo_with_date(self,  # type: Self
+                                basename,
+                                deletion_date):
         content = trashinfo_content2([
             ("DeletionDate", deletion_date.strftime('%Y-%m-%dT%H:%M:%S')),
         ])
         self.add_trashinfo_content(basename, content)
 
-    def add_trashinfo_with_invalid_date(self, basename, invalid_date):
+    def add_trashinfo_with_invalid_date(self,  # type: Self
+                                        basename,
+                                        invalid_date):
         content = trashinfo_content2([
             ("DeletionDate", invalid_date),
         ])
         self.add_trashinfo_content(basename, content)
 
-    def add_trashinfo_without_path(self, basename):
+    def add_trashinfo_without_path(self,  # type: Self
+                                   basename):
         deletion_date = a_default_datetime()
         content = trashinfo_content2([
             ("DeletionDate", deletion_date.strftime('%Y-%m-%dT%H:%M:%S')),
@@ -150,7 +169,8 @@ class FakeTrashDir:
 
         self.add_trashinfo_content(basename, content)
 
-    def add_trashinfo_without_date(self, path):
+    def add_trashinfo_without_date(self,  # type: Self
+                                   path):
         basename = str(uuid.uuid4())
         content = trashinfo_content2([
             ('Path', format_original_location(path)),
@@ -158,7 +178,9 @@ class FakeTrashDir:
 
         self.add_trashinfo_content(basename, content)
 
-    def add_trashinfo_wrong_date(self, path, wrong_date):
+    def add_trashinfo_wrong_date(self,  # type: Self
+                                 path,
+                                 wrong_date):
         basename = str(uuid.uuid4())
         content = trashinfo_content2([
             ('Path', format_original_location(path)),
