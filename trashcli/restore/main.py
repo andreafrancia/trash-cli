@@ -16,7 +16,7 @@ from ..lib.my_input import RealInput
 
 
 def main():
-    RestoreCmd.make_from_environment(
+    RestoreCmd(
         stdout=sys.stdout,
         stderr=sys.stderr,
         exit=sys.exit,

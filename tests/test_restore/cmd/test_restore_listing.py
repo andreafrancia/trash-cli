@@ -56,7 +56,7 @@ class TestTrashedFileRestoreIntegration:
 
         self.logger = CaptureLogger()
         self.trashed_files = Mock(spec=TrashedFiles)
-        self.cmd = RestoreCmd.make_from_environment(
+        self.cmd = RestoreCmd(
             stdout=self.stdout,
             stderr=self.stderr,
             exit=sys.exit,

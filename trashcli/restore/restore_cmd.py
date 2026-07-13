@@ -21,23 +21,23 @@ from trashcli.trash_dirs_scanner import TopTrashDirRules, TopTrashDirRulesFs
 
 
 class RestoreCmd(object):
-    @staticmethod
-    def make_from_environment(stdout,  # type: TextIO
-                              stderr,  # type: TextIO
-                              exit,  # type: Callable[[int], None]
-                              input,  # type: Input
-                              version,  # type: str
-                              listing_file_system,  # type: ListingFileSystem
-                              volumes,  # type: Volumes
-                              logger,  # type: RestoreLogger
-                              uid,  # type: int
-                              environ,  # type: MutableMapping[str, str]
-                              top_trash_dir_rules_fs,  # type: TopTrashDirRulesFs
-                              file_reader,  # type: FileReader
-                              read_fs,  # type: RestoreReadFileSystem
-                              write_fs,  # type: RestoreWriteFileSystem
-                              read_cwd,  # type: ReadCwd
-                              ):  # type: (...) -> RestoreCmd
+    def __init__(self,
+                 stdout,  # type: TextIO
+                 stderr,  # type: TextIO
+                 exit,  # type: Callable[[int], None]
+                 input,  # type: Input
+                 version,  # type: str
+                 listing_file_system,  # type: ListingFileSystem
+                 volumes,  # type: Volumes
+                 logger,  # type: RestoreLogger
+                 uid,  # type: int
+                 environ,  # type: MutableMapping[str, str]
+                 top_trash_dir_rules_fs,  # type: TopTrashDirRulesFs
+                 file_reader,  # type: FileReader
+                 read_fs,  # type: RestoreReadFileSystem
+                 write_fs,  # type: RestoreWriteFileSystem
+                 read_cwd,  # type: ReadCwd
+                 ):  # type: (...) -> None
         # build the trash-directory pipeline from environment dependencies here so test and production share the same wiring
         trash_directories = TrashDirectoriesImpl(
             volumes, uid, environ,
@@ -49,15 +49,6 @@ class RestoreCmd(object):
         restorer = Restorer(read_fs, write_fs)
         output = RealOutput(stdout, stderr, exit)
         handler = HandlerImpl(input, read_cwd, restorer, output)
-        return RestoreCmd(stdout, version, trashed_files, read_cwd, handler)
-
-    def __init__(self,
-                 stdout,  # type: TextIO
-                 version,  # type: str
-                 trashed_files,  # type: TrashedFiles
-                 read_cwd,  # type: ReadCwd
-                 handler,  # type: Handler
-                 ):
         self.read_cwd = read_cwd
         self.parser = RestoreArgParser()
         self.run_restore_action = RunRestoreAction(handler,
