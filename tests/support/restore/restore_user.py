@@ -55,7 +55,7 @@ class RestoreUser:
             logger=logger,
             uid=self.uid,
             environ=self.environ,
-            top_trash_dir_rules_reader=self.top_trash_dir_rules_reader,
+            top_trash_dir_rules_fs=self.top_trash_dir_rules_reader,
             file_reader=self.file_reader,
             read_fs=self.read_fs,
             write_fs=self.write_fs,

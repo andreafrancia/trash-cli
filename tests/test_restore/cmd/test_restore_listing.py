@@ -71,7 +71,7 @@ class TestTrashedFileRestoreIntegration:
             logger=self.logger,
             uid=uid,
             environ=self.env,
-            top_trash_dir_rules_reader=RealTopTrashDirFs(),
+            top_trash_dir_rules_fs=RealTopTrashDirFs(),
         )
 
     def teardown_method(self):

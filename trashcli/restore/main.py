@@ -27,7 +27,7 @@ def main():
         logger=RealRestoreLogger(my_logger),
         uid=os.getuid(),
         environ=os.environ,
-        top_trash_dir_rules_reader=RealTopTrashDirFs(),
+        top_trash_dir_rules_fs=RealTopTrashDirFs(),
         file_reader=RealFileReader(),
         read_fs=RealRestoreReadFileSystem(),
         write_fs=RealRestoreWriteFileSystem(),
