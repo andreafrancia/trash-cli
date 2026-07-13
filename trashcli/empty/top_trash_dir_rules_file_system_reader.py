@@ -1,10 +1,10 @@
 from trashcli.fslib.real_fs_operations import RealExists, RealIsStickyDir, RealIsSymLink, \
     RealIsWorldWritable
-from trashcli.trash_dirs_scanner import TopTrashDirRules
+from trashcli.trash_dirs_scanner import TopTrashDirRulesFs
 
 
 class RealTopTrashDirFs(
-    TopTrashDirRules.Reader,
+    TopTrashDirRulesFs,
     RealExists,
     RealIsStickyDir,
     RealIsSymLink,

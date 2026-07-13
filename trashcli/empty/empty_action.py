@@ -19,7 +19,7 @@ from trashcli.lib.environ import Environ
 from trashcli.lib.my_input import RealInput
 from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.list.trash_dir_selector import TrashDirsSelector
-from trashcli.trash_dirs_scanner import TopTrashDirRules
+from trashcli.trash_dirs_scanner import TopTrashDirRulesFs
 
 
 class EmptyActionArgs(
@@ -41,7 +41,7 @@ class EmptyAction:
                  clock,  # type: Clock
                  file_remover,  # type: ExistingFileRemover
                  volumes_listing,  # type: VolumesListing
-                 file_reader,  # type: TopTrashDirRules.Reader
+                 file_reader,  # type: TopTrashDirRulesFs
                  volumes,  # type: VolumeOf
                  dir_reader,  # type: DirReader
                  content_reader,  # type: ContentsOf

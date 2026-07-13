@@ -15,7 +15,7 @@ from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
 
 class RmFileSystemReader(ContentsOf,
                          DirReader,
-                         TopTrashDirRules.Reader,
+                         TopTrashDirRulesFs,
                          Protocol):
     pass
 

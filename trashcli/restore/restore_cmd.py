@@ -17,7 +17,7 @@ from trashcli.restore.restorer import Restorer
 from trashcli.restore.run_restore_action import RunRestoreAction, Handler
 from trashcli.restore.trash_directories import TrashDirectoriesImpl
 from trashcli.restore.trashed_files import TrashedFiles
-from trashcli.trash_dirs_scanner import TopTrashDirRules
+from trashcli.trash_dirs_scanner import TopTrashDirRules, TopTrashDirRulesFs
 
 
 class RestoreCmd(object):
@@ -32,7 +32,7 @@ class RestoreCmd(object):
                               logger,  # type: RestoreLogger
                               uid,  # type: int
                               environ,  # type: MutableMapping[str, str]
-                              top_trash_dir_rules_reader,  # type: TopTrashDirRules.Reader
+                              top_trash_dir_rules_reader,  # type: TopTrashDirRulesFs
                               file_reader,  # type: FileReader
                               read_fs,   # type: RestoreReadFileSystem
                               write_fs,  # type: RestoreWriteFileSystem

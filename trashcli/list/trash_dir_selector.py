@@ -6,7 +6,7 @@ from trashcli.lib.dir_checker import DirChecker
 from trashcli.lib.user_info import AllUsersInfoProvider, \
     SingleUserInfoProvider
 from trashcli.trash_dirs_scanner import trash_dir_found, TrashDir, \
-    TopTrashDirRules, TrashDirsScanner
+    TopTrashDirRules, TrashDirsScanner, TopTrashDirRulesFs
 
 
 class TrashDirsSelector:
@@ -38,7 +38,7 @@ class TrashDirsSelector:
 
     @staticmethod
     def make(volumes_listing,
-             reader,  # type: TopTrashDirRules.Reader
+             reader,  # type: TopTrashDirRulesFs
              volumes  # type: VolumeOf
              ):
         user_info_provider = SingleUserInfoProvider()
