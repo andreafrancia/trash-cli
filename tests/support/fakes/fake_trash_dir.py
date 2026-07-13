@@ -46,7 +46,9 @@ class FakeTrashDirWithRoot:
                          path):
         self.trash_dir.add_file_trashed_from_dir(path, self.root_dir)
 
+
 Self = TypeVar('Self', bound='FakeTrashDir')
+
 
 class FakeTrashDir:
     def __init__(self, path):
@@ -57,7 +59,20 @@ class FakeTrashDir:
     def __truediv__(self,  # type: Self
                     other,  # type: str
                     ):  # type: (...) -> MyPath
+        """
+        Implement path join that be called using / operator.
+        Note: the __truediv__ is called by the / operator only in python 3.0+.
+        """
         return self.path / other
+
+    def __div__(self,  # type: Self
+                other,  # type: str
+                ):  # type: (...) -> MyPath
+        """
+        Implement path join that be called using / operator for python 2.x.
+        It delegates to __truediv__ (the python 3 method).
+        """
+        return self.__truediv__(other)
 
     def add_unreadable_trashinfo(self,  # type: Self
                                  basename):
