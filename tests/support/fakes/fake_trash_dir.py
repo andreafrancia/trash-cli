@@ -48,7 +48,7 @@ class FakeTrashDirWithRoot:
 
 Self = TypeVar('Self', bound='FakeTrashDir')
 
-class FakeTrashDir:
+class FakeTrashDir(object):
     def __init__(self, path):
         self.path = path
         self.info_path = os.path.join(path, 'info')
@@ -58,6 +58,12 @@ class FakeTrashDir:
                     other,  # type: str
                     ):  # type: (...) -> MyPath
         return self.path / other
+
+    def __div__(self, other):
+        """
+        For python 2 that does not support __truediv__.
+        """
+        return self.__truediv__(other)
 
     def add_unreadable_trashinfo(self,  # type: Self
                                  basename):
