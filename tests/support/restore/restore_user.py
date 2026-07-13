@@ -44,7 +44,7 @@ class RestoreUser:
         stderr = StringIO()
         read_cwd = FakeReadCwd(from_dir)
         logger = MemoLogger()
-        cmd = RestoreCmd.make_from_environment(
+        cmd = RestoreCmd(
             stdout=stdout,
             stderr=stderr,
             exit=sys.exit,
