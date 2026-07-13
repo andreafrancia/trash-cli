@@ -5,7 +5,7 @@ from typing import Dict
 from tests.support.run.cmd_result import CmdResult
 from tests.test_restore.support.memo_logger import MemoLogger
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
-    RealTopTrashDirRulesReader
+    RealTopTrashDirFs
 from trashcli.fstab.volumes import Volumes
 from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.file_system import FakeReadCwd, FileReader, \
@@ -34,7 +34,7 @@ class RestoreUser:
         self.version = version
         self.volumes = volumes
         self.top_trash_dir_rules_reader = \
-            top_trash_dir_rules_reader or RealTopTrashDirRulesReader()
+            top_trash_dir_rules_reader or RealTopTrashDirFs()
 
     no_args = object()
 

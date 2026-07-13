@@ -9,7 +9,7 @@ from .file_system import RealRestoreReadFileSystem, \
 from .real_restore_logger import RealRestoreLogger
 from .restore_cmd import RestoreCmd
 from ..empty.top_trash_dir_rules_file_system_reader import \
-    RealTopTrashDirRulesReader
+    RealTopTrashDirFs
 from ..fstab.volumes import RealVolumes
 from ..lib.logger import my_logger
 from ..lib.my_input import RealInput
@@ -27,7 +27,7 @@ def main():
         logger=RealRestoreLogger(my_logger),
         uid=os.getuid(),
         environ=os.environ,
-        top_trash_dir_rules_reader=RealTopTrashDirRulesReader(),
+        top_trash_dir_rules_reader=RealTopTrashDirFs(),
         file_reader=RealFileReader(),
         read_fs=RealRestoreReadFileSystem(),
         write_fs=RealRestoreWriteFileSystem(),

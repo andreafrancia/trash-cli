@@ -3,7 +3,7 @@ from trashcli.fslib.real_fs_operations import RealExists, RealIsStickyDir, RealI
 from trashcli.trash_dirs_scanner import TopTrashDirRules
 
 
-class RealTopTrashDirRulesReader(
+class RealTopTrashDirFs(
     TopTrashDirRules.Reader,
     RealExists,
     RealIsStickyDir,
