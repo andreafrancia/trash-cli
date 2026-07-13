@@ -43,12 +43,15 @@ class TrashDir(tuple):
         return 'TrashDir(%r, %r)' % (self.path, self.volume)
 
 
+class TopTrashDirRulesFs(PathExists, IsStickyDir, IsSymLink, Protocol):
+    pass
+
 class TopTrashDirRules:
     class Reader(PathExists, IsStickyDir, IsSymLink, Protocol):
         pass
 
     def __init__(self,
-                 reader # type: TopTrashDirRules.Reader
+                 reader # type: TopTrashDirRulesFs
                  ):  # type: (...) -> None
         self.reader = reader
 

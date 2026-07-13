@@ -9,7 +9,7 @@ from tests.support.fakes.fake_trash_dir import FakeTrashDir, \
 from tests.support.py2mock import Mock
 from tests.test_restore.support.capture_logger import CaptureLogger
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
-    RealTopTrashDirRulesReader
+    RealTopTrashDirFs
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.file_system import RealRestoreWriteFileSystem, \
@@ -71,7 +71,7 @@ class TestTrashedFileRestoreIntegration:
             logger=self.logger,
             uid=uid,
             environ=self.env,
-            top_trash_dir_rules_reader=RealTopTrashDirRulesReader(),
+            top_trash_dir_rules_fs=RealTopTrashDirFs(),
         )
 
     def teardown_method(self):

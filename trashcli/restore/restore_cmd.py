@@ -17,7 +17,7 @@ from trashcli.restore.restorer import Restorer
 from trashcli.restore.run_restore_action import RunRestoreAction, Handler
 from trashcli.restore.trash_directories import TrashDirectoriesImpl
 from trashcli.restore.trashed_files import TrashedFiles
-from trashcli.trash_dirs_scanner import TopTrashDirRules
+from trashcli.trash_dirs_scanner import TopTrashDirRules, TopTrashDirRulesFs
 
 
 class RestoreCmd(object):
@@ -32,34 +32,20 @@ class RestoreCmd(object):
                               logger,  # type: RestoreLogger
                               uid,  # type: int
                               environ,  # type: MutableMapping[str, str]
-                              top_trash_dir_rules_reader,  # type: TopTrashDirRules.Reader
+                              top_trash_dir_rules_fs,  # type: TopTrashDirRulesFs
                               file_reader,  # type: FileReader
-                              read_fs,   # type: RestoreReadFileSystem
+                              read_fs,  # type: RestoreReadFileSystem
                               write_fs,  # type: RestoreWriteFileSystem
                               read_cwd,  # type: ReadCwd
-                              ):
+                              ):  # type: (...) -> RestoreCmd
         # build the trash-directory pipeline from environment dependencies here so test and production share the same wiring
         trash_directories = TrashDirectoriesImpl(
             volumes, uid, environ,
-            TopTrashDirRules(top_trash_dir_rules_reader),
+            TopTrashDirRules(top_trash_dir_rules_fs),
             logger)
         searcher = InfoDirSearcher(trash_directories,
                                    InfoFiles(listing_file_system))
         trashed_files = TrashedFiles(logger, file_reader, searcher)
-        return RestoreCmd.make(stdout, stderr, exit, input, version,
-                               trashed_files, read_fs, write_fs, read_cwd)
-
-    @staticmethod
-    def make(stdout,  # type: TextIO
-             stderr,  # type: TextIO
-             exit,  # type: Callable[[int], None]
-             input,  # type: Input
-             version,  # type: str
-             trashed_files,  # type: TrashedFiles
-             read_fs,  # type: RestoreReadFileSystem
-             write_fs,  # type: RestoreWriteFileSystem
-             read_cwd,  # type: ReadCwd
-             ):  # type: (...) -> RestoreCmd
         restorer = Restorer(read_fs, write_fs)
         output = RealOutput(stdout, stderr, exit)
         handler = HandlerImpl(input, read_cwd, restorer, output)

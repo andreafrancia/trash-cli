@@ -10,12 +10,12 @@ from trashcli.rm.real_remover_fs import RealRemoverFs
 from trashcli.rm.filter import Filter
 from trashcli.rm.list_trashinfo import ListTrashinfos
 from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
-    trash_dir_found
+    trash_dir_found, TopTrashDirRulesFs
 
 
 class RmFileSystemReader(ContentsOf,
                          DirReader,
-                         TopTrashDirRules.Reader,
+                         TopTrashDirRulesFs,
                          Protocol):
     pass
 

@@ -16,7 +16,7 @@ from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.dir_reader import DirReader
 from trashcli.lib.exit_codes import EX_OK
 from trashcli.lib.print_version import PrintVersionAction, PrintVersionArgs
-from trashcli.trash_dirs_scanner import TopTrashDirRules
+from trashcli.trash_dirs_scanner import TopTrashDirRulesFs
 
 
 class EmptyCmd:
@@ -26,7 +26,7 @@ class EmptyCmd:
                  err,  # type: TextIO
                  volumes_listing,  # type: VolumesListing
                  now,  # type: Callable[[], datetime]
-                 file_reader,  # type: TopTrashDirRules.Reader
+                 file_reader,  # type: TopTrashDirRulesFs
                  dir_reader,  # type: DirReader
                  content_reader,  # type: ContentsOf
                  file_remover,  # type: ExistingFileRemover

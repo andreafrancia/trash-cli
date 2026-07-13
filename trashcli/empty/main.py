@@ -12,7 +12,7 @@ from trashcli.fslib.real_fs_operations import RealContentsOf
 from .existing_file_remover import ExistingFileRemover
 from .file_system_dir_reader import FileSystemDirReader
 from .top_trash_dir_rules_file_system_reader import \
-    RealTopTrashDirRulesReader
+    RealTopTrashDirFs
 from ..fstab.volume_listing import RealVolumesListing
 from ..fstab.real_volume_of import RealVolumeOf
 
@@ -27,7 +27,7 @@ def main():
                          err=sys.stderr,
                          volumes_listing=RealVolumesListing(),
                          now=datetime.now,
-                         file_reader=RealTopTrashDirRulesReader(),
+                         file_reader=RealTopTrashDirFs(),
                          file_remover=ExistingFileRemover(),
                          content_reader=FileSystemContentReader(),
                          dir_reader=FileSystemDirReader(),
