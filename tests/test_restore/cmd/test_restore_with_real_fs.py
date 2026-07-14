@@ -10,10 +10,10 @@ from tests.support.restore.has_been_restored_matcher import \
     has_been_restored
 from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
-from trashcli.fslib.real_fs_operations import RealExists
+from trashcli.fslib.real_fs_operations import RealExists, RealListFilesInDir
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.restore.real_restore_fs import RealFileReaderFs, \
-    RealRestoreReaderFs, RealRestoreWriterFs, RealListingFs
+    RealPathReaderFs, RealRestoreWriterFs
 
 
 @pytest.mark.slow
@@ -28,9 +28,10 @@ class TestRestoreTrash(unittest.TestCase):
         self.user = RestoreUser(environ={'XDG_DATA_HOME': XDG_DATA_HOME},
                                 uid=os.getuid(),
                                 file_reader=RealFileReaderFs(),
-                                read_fs=RealRestoreReaderFs(),
+                                path_read_fs=RealPathReaderFs(),
+                                read_fs=RealPathReaderFs(),
                                 write_fs=RealRestoreWriterFs(),
-                                listing_file_system=RealListingFs(),
+                                listing_fs=RealListFilesInDir(),
                                 version='0.0.0',
                                 volumes=FakeVolumes([]))
 

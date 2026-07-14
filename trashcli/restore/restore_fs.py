@@ -1,24 +1,14 @@
-from abc import abstractmethod, ABCMeta
-
-import six
-
 from trashcli.compat import Protocol
 from trashcli.fslib.fs_operations import ListFilesInDir
-
-
-class ListingFs(ListFilesInDir, Protocol):
-    pass
+from trashcli.fstab.volumes import Volumes
 
 
 class FileReaderFs(Protocol):
-    @abstractmethod
     def contents_of(self, path):
         raise NotImplementedError()
 
 
-@six.add_metaclass(ABCMeta)
-class RestoreReaderFs:
-    @abstractmethod
+class PathReaderFs(Protocol):
     def path_exists(self, path):  # type: (str) -> bool
         raise NotImplementedError()
 
@@ -29,23 +19,26 @@ class RestoreReaderFs:
         return False
 
 
-@six.add_metaclass(ABCMeta)
-class RestoreWriterFs:
-    @abstractmethod
+class ReadCwdFs(Protocol):
+    def getcwd_as_realpath(self):  # type: () -> str
+        raise NotImplementedError()
+
+
+class RestoreReadFs(ListFilesInDir,
+                    FileReaderFs,
+                    PathReaderFs,
+                    ReadCwdFs,
+                    Volumes,
+                    Protocol):
+    pass
+
+
+class RestoreWriterFs(Protocol):
     def mkdirs(self, path):  # type: (str) -> None
         raise NotImplementedError()
 
-    @abstractmethod
     def move(self, path, dest):  # type: (str, str) -> None
         raise NotImplementedError()
 
-    @abstractmethod
     def remove_file(self, path):  # type: (str) -> None
-        raise NotImplementedError()
-
-
-@six.add_metaclass(ABCMeta)
-class ReadCwdFs:
-    @abstractmethod
-    def getcwd_as_realpath(self):  # type: () -> str
         raise NotImplementedError()

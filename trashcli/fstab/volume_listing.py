@@ -3,8 +3,8 @@ from abc import ABCMeta, abstractmethod
 
 import six
 
-from trashcli.fstab.mount_points_listing import MountPointsListing, \
-    RealMountPointsListing
+from trashcli.fstab.mount_points_listing import MountPointListFs, \
+    RealMountPointListFs
 
 
 @six.add_metaclass(ABCMeta)
@@ -24,13 +24,13 @@ class FixedVolumesListing(VolumesListing):
 
 class RealVolumesListing(VolumesListing):
     def list_volumes(self, environ):
-        return VolumesListingImpl(RealMountPointsListing()).list_volumes(
+        return VolumesListingImpl(RealMountPointListFs()).list_volumes(
             environ)
 
 
 class VolumesListingImpl:
     def __init__(self,
-                 mount_points_listing,  # type: MountPointsListing
+                 mount_points_listing,  # type: MountPointListFs
                  ):
         self.mount_points_listing = mount_points_listing
 

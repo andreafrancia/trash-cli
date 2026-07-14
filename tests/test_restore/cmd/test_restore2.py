@@ -3,7 +3,7 @@ import unittest
 
 from tests.support.py2mock import Mock, call
 
-from tests.support.restore.fake_restore_fs import FakeRestoreFs
+from tests.support.restore.fake_restore_fs import FakePathFs
 from tests.support.restore.restore_user import RestoreUser
 from trashcli.restore.restore_fs import RestoreWriterFs
 
@@ -11,16 +11,17 @@ from trashcli.restore.restore_fs import RestoreWriterFs
 class TestRestore2(unittest.TestCase):
     def setUp(self):
         self.write_fs = Mock(spec=RestoreWriterFs)
-        self.fs = FakeRestoreFs()
+        self.fs = FakePathFs()
         self.user = RestoreUser(
             environ={'XDG_DATA_HOME': '/data_home'},
             uid=1000,
             file_reader=self.fs,
-            read_fs=self.fs,
+            path_read_fs=self.fs,
             write_fs=self.write_fs,
-            listing_file_system=self.fs,
+            listing_fs=self.fs,
             version='1.2.3',
             volumes=self.fs,
+            # fs=self.fs,
         )
 
     def test_should_print_version(self):

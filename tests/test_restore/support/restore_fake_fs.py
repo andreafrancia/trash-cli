@@ -2,11 +2,11 @@ import os
 
 from typing import Iterable
 
+from trashcli.fslib.fs_operations import ListFilesInDir
 from trashcli.restore.restore_fs import FileReaderFs
-from trashcli.restore.real_restore_fs import ListingFs
 
 
-class RestoreFakeFs(FileReaderFs, ListingFs):
+class RestoreFakeFs(FileReaderFs, ListFilesInDir):
     def __init__(self,
                  fs,  # type FakeFs
                  ):

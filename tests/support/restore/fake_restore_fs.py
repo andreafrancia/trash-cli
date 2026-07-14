@@ -2,17 +2,16 @@ import os
 
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.a_trashed_file import ATrashedFile
-from trashcli.fslib.fs_operations import PathExists
+from trashcli.fslib.fs_operations import PathExists, ListFilesInDir
 from trashcli.fstab.volumes import Volumes, FakeVolumes
 from trashcli.put.format_trash_info import format_trashinfo
-from trashcli.restore.real_restore_fs import ListingFs
-from trashcli.restore.restore_fs import FileReaderFs, RestoreReaderFs, \
+from trashcli.restore.restore_fs import FileReaderFs, PathReaderFs, \
     RestoreWriterFs
 
 
-class FakeRestoreFs(ListingFs,
-                    Volumes, FileReaderFs, RestoreWriterFs,
-                    RestoreReaderFs, PathExists):
+class FakePathFs(ListFilesInDir,
+                 Volumes, FileReaderFs, RestoreWriterFs,
+                 PathReaderFs, PathExists):
 
     def exists(self, path):
         return self.path_exists(path)

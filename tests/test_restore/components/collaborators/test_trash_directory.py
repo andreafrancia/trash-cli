@@ -5,7 +5,7 @@ import six
 
 from tests.support.files import make_file, require_empty_dir
 from tests.support.dirs.my_path import MyPath
-from trashcli.restore.real_restore_fs import RealListingFs
+from trashcli.fslib.real_fs_operations import RealListFilesInDir
 from trashcli.restore.info_files import InfoFiles
 
 
@@ -14,7 +14,7 @@ class TestTrashDirectory(unittest.TestCase):
     def setUp(self):
         self.temp_dir = MyPath.make_temp_dir()
         require_empty_dir(self.temp_dir / 'trash-dir')
-        self.info_files = InfoFiles(RealListingFs())
+        self.info_files = InfoFiles(RealListFilesInDir())
 
     def test_should_list_a_trashinfo(self):
         make_file(self.temp_dir / 'trash-dir/info/foo.trashinfo')

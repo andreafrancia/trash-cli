@@ -1,15 +1,17 @@
 import os
 
-from trashcli.restore.real_restore_fs import ListingFs
+from trashcli.fslib.fs_operations import ListFilesInDir
 
 
 class InfoFiles:
     def __init__(self,
-                 fs,  # type: ListingFs
+                 fs,  # type: ListFilesInDir
                  ):
         self.fs = fs
 
-    def all_info_files(self, path):
+    def all_info_files(self,
+                       path,  # type: str
+                       ):
         norm_path = os.path.normpath(path)
         info_dir = os.path.join(norm_path, 'info')
         try:

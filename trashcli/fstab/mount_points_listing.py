@@ -4,20 +4,20 @@ from abc import ABCMeta, abstractmethod
 
 import six
 
+from trashcli.compat import Protocol
 
-@six.add_metaclass(ABCMeta)
-class MountPointsListing:
-    @abstractmethod
+
+class MountPointListFs(Protocol):
     def list_mount_points(self):
         raise NotImplementedError()
 
 
-class RealMountPointsListing(MountPointsListing):
+class RealMountPointListFs(MountPointListFs):
     def list_mount_points(self):
         return os_mount_points()
 
 
-class FakeMountPointsListing(MountPointsListing):
+class FakeMountPointListFs(MountPointListFs):
     def __init__(self, mount_points):
         self.mount_points = mount_points
 

@@ -5,6 +5,7 @@ import os
 import six
 from typing import Optional
 
+from trashcli.fstab.mount_points_listing import MountPointListFs
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.fstab.volumes import Volumes
 from trashcli.lib.environ import Environ

@@ -1,7 +1,6 @@
 from textwrap import dedent
 
-from tests.support import py2mock as mock
-from tests.support.py2mock import Mock
+from tests.support.py2mock import Mock, ANY
 
 from tests.support.make_scripts import Scripts, ScriptFs
 from tests.support.make_scripts import script_path_for
@@ -31,7 +30,7 @@ class TestMakeScript:
 
     def test_should_write_the_script(self):
         self.write_file.assert_called_with(script_path_for('trash-put'),
-                                           mock.ANY)
+                                           ANY)
 
     def test_the_script_should_call_the_right_function_from_the_right_module(self):
         args, kwargs = self.write_file.call_args
