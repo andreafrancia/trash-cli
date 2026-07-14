@@ -101,7 +101,6 @@ class RealMove(Move):
 
 
 class ListFilesInDir(Protocol):
-    @abstractmethod
     def list_files_in_dir(self, path):  # type: (str) -> Iterable[str]
         raise NotImplementedError()
 

@@ -6,9 +6,10 @@ import pytest
 from tests.support.dirs.my_path import MyPath
 from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
+from trashcli.fslib.real_fs_operations import RealListFilesInDir
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.restore.real_restore_fs import RealFileReaderFs, \
-    RealRestoreReaderFs, RealRestoreWriterFs, RealListingFs
+    RealPathReaderFs, RealRestoreWriterFs, RealRestoreReadFs
 
 
 @pytest.mark.slow
@@ -22,9 +23,10 @@ class TestRestoreOverwriteGuard(unittest.TestCase):
             environ={'XDG_DATA_HOME': self.tmp_dir / 'XDG_DATA_HOME'},
             uid=os.getuid(),
             file_reader=RealFileReaderFs(),
-            read_fs=RealRestoreReaderFs(),
+            path_read_fs=RealPathReaderFs(),
+            read_fs=RealRestoreReadFs(),
             write_fs=RealRestoreWriterFs(),
-            listing_file_system=RealListingFs(),
+            listing_fs=RealListFilesInDir(),
             version='0.0.0',
             volumes=FakeVolumes([]))
 

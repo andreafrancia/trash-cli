@@ -2,14 +2,15 @@ from abc import ABCMeta
 
 import six
 import os
-from trashcli.fstab.mount_points_listing import MountPointsListing, \
-    RealMountPointsListing
+
+from trashcli.compat import Protocol
+from trashcli.fstab.mount_points_listing import MountPointListFs, \
+    RealMountPointListFs
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.fstab.real_volume_of import RealVolumeOf
 
 
-@six.add_metaclass(ABCMeta)
-class Volumes(VolumeOf, MountPointsListing):
+class Volumes(VolumeOf, MountPointListFs, Protocol):
     pass
 
 
@@ -18,13 +19,13 @@ class RealVolumes(Volumes):
         return RealVolumeOf().volume_of(path)
 
     def list_mount_points(self):
-        return RealMountPointsListing().list_mount_points()
+        return RealMountPointListFs().list_mount_points()
 
 
 class VolumesImpl(Volumes):
     def __init__(self,
                  volumes,  # type: VolumeOf
-                 mount_point_listing,  # type: MountPointsListing
+                 mount_point_listing,  # type: MountPointListFs
                  ):
         self.volumes = volumes
         self.mount_point_listing = mount_point_listing

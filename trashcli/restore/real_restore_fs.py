@@ -3,16 +3,16 @@ import os
 from trashcli.fslib.fs_operations import RealMove
 from trashcli.fslib.real_fs_operations import RealContentsOf, RealRemoveFile, \
     RealListFilesInDir, RealMkDirs
-from trashcli.restore.restore_fs import FileReaderFs, RestoreReaderFs, \
-    RestoreWriterFs, ReadCwdFs, ListingFs
+from trashcli.fstab.volumes import RealVolumes
+from trashcli.restore.restore_fs import FileReaderFs, PathReaderFs, \
+    RestoreWriterFs, ReadCwdFs, RestoreReadFs
 
 
 class RealFileReaderFs(RealContentsOf, FileReaderFs):
     pass
 
 
-
-class RealRestoreReaderFs(RestoreReaderFs):
+class RealPathReaderFs(PathReaderFs):
     def path_exists(self, path):
         return os.path.exists(path)
 
@@ -39,5 +39,12 @@ class RealReadCwdFs(ReadCwdFs):
         return os.path.realpath(os.curdir)
 
 
-class RealListingFs(ListingFs, RealListFilesInDir):
+
+class RealRestoreReadFs(RestoreReadFs,
+                        RealListFilesInDir,
+                        RealFileReaderFs,
+                        RealPathReaderFs,
+                        RealVolumes,
+                        RealReadCwdFs,
+                        ):
     pass
