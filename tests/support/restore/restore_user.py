@@ -8,19 +8,20 @@ from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
 from trashcli.fstab.volumes import Volumes
 from trashcli.lib.my_input import HardCodedInput
-from trashcli.restore.file_system import FakeReadCwd, FileReader, \
-    RestoreReadFileSystem, \
-    RestoreWriteFileSystem, ListingFileSystem
+from trashcli.restore.real_restore_fs import ListingFs
+from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
+from trashcli.restore.restore_fs import FileReaderFs, RestoreReaderFs, \
+    RestoreWriterFs
 from trashcli.restore.restore_cmd import RestoreCmd
 
 class RestoreUser:
     def __init__(self,
                  environ,  # type: Dict[str, str]
                  uid,  # type: int
-                 file_reader,  # type: FileReader
-                 read_fs,  # type: RestoreReadFileSystem
-                 write_fs,  # type: RestoreWriteFileSystem
-                 listing_file_system,  # type: ListingFileSystem
+                 file_reader,  # type: FileReaderFs
+                 read_fs,  # type: RestoreReaderFs
+                 write_fs,  # type: RestoreWriterFs
+                 listing_file_system,  # type: ListingFs
                  version,  # type: str
                  volumes,  # type: Volumes
                  top_trash_dir_rules_reader=None,
@@ -42,7 +43,7 @@ class RestoreUser:
         args = [] if args is self.no_args else args
         stdout = StringIO()
         stderr = StringIO()
-        read_cwd = FakeReadCwd(from_dir)
+        read_cwd = FakeReadCwdFs(from_dir)
         logger = MemoLogger()
         cmd = RestoreCmd(
             stdout=stdout,
@@ -50,7 +51,7 @@ class RestoreUser:
             exit=sys.exit,
             input=HardCodedInput(reply),
             version=self.version,
-            listing_file_system=self.listing_file_system,
+            listing_fs=self.listing_file_system,
             volumes=self.volumes,
             logger=logger,
             uid=self.uid,

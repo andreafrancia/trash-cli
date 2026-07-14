@@ -3,14 +3,14 @@ import os
 import unittest
 
 from tests.support.dirs.my_path import MyPath
-from trashcli.restore.file_system import FileReader
+from trashcli.restore.restore_fs import FileReaderFs
 from trashcli.restore.trashed_files import TrashedFiles
 
 
 InfoFile = collections.namedtuple('InfoFile', 'path type volume')
 
 
-class FakeReader(FileReader):
+class FakeReaderFs(FileReaderFs):
     def contents_of(self, path):
         return open(path).read()
 
@@ -40,7 +40,7 @@ class TestRestoreRejectsOutOfVolumePath(unittest.TestCase):
         self.info_dir = self.volume / '.Trash-1000' / 'info'
         os.makedirs(self.info_dir)
         self.logger = MemoLogger()
-        self.trashed_files = TrashedFiles(self.logger, FakeReader(),
+        self.trashed_files = TrashedFiles(self.logger, FakeReaderFs(),
                                           FakeSearcher(self.info_dir,
                                                        self.volume))
 

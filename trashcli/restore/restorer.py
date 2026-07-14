@@ -1,14 +1,14 @@
 import os
 
-from trashcli.restore.file_system import RestoreWriteFileSystem, \
-    RestoreReadFileSystem
+from trashcli.restore.restore_fs import RestoreReaderFs, \
+    RestoreWriterFs
 from trashcli.restore.trashed_file import TrashedFile
 
 
 class Restorer:
     def __init__(self,
-                 read_fs, # type: RestoreReadFileSystem
-                 write_fs, # type: RestoreWriteFileSystem
+                 read_fs, # type: RestoreReaderFs
+                 write_fs, # type: RestoreWriterFs
                  ):
         self.read_fs = read_fs
         self.write_fs = write_fs

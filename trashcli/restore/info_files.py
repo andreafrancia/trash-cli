@@ -1,11 +1,11 @@
 import os
 
-from trashcli.restore.file_system import ListingFileSystem
+from trashcli.restore.real_restore_fs import ListingFs
 
 
 class InfoFiles:
     def __init__(self,
-                 fs,  # type: ListingFileSystem
+                 fs,  # type: ListingFs
                  ):
         self.fs = fs
 

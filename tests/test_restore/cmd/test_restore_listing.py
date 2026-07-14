@@ -12,9 +12,10 @@ from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.lib.my_input import HardCodedInput
-from trashcli.restore.file_system import RealRestoreWriteFileSystem, \
-    FakeReadCwd, RealRestoreReadFileSystem, RealFileReader, \
-    RealListingFileSystem
+from trashcli.restore.real_restore_fs import RealRestoreWriterFs, \
+    RealRestoreReaderFs, RealFileReaderFs, \
+    RealListingFs
+from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
 from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.trashed_files import TrashedFiles
 
@@ -52,7 +53,7 @@ class TestTrashedFileRestoreIntegration:
         self.env = {'HOME': self.home_dir}
         # end of unix-like env
 
-        self.cur_dir = FakeReadCwd(self.cwd)
+        self.cur_dir = FakeReadCwdFs(self.cwd)
 
         self.logger = CaptureLogger()
         self.trashed_files = Mock(spec=TrashedFiles)
@@ -62,11 +63,11 @@ class TestTrashedFileRestoreIntegration:
             exit=sys.exit,
             input=self.input,
             version="0.0.0",
-            listing_file_system=RealListingFileSystem(),
-            read_fs=RealRestoreReadFileSystem(),
-            write_fs=RealRestoreWriteFileSystem(),
+            listing_fs=RealListingFs(),
+            read_fs=RealRestoreReaderFs(),
+            write_fs=RealRestoreWriterFs(),
             read_cwd=self.cur_dir,
-            file_reader=RealFileReader(),
+            file_reader=RealFileReaderFs(),
             volumes=FakeVolumes([]),
             logger=self.logger,
             uid=uid,
