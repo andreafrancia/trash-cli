@@ -7,7 +7,7 @@ from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.parse_trashinfo.parse_deletion_date import parse_deletion_date
 from trashcli.parse_trashinfo.parse_original_location import \
     parse_original_location
-from trashcli.restore.file_system import FileReader
+from trashcli.restore.restore_fs import FileReaderFs
 from trashcli.restore.info_dir_searcher import InfoDirSearcher
 from trashcli.restore.restore_logger import RestoreLogger
 from trashcli.restore.trashed_file import TrashedFile
@@ -18,7 +18,7 @@ Self = TypeVar('Self', bound= 'TrashedFiles')
 class TrashedFiles:
     def __init__(self,  # type: Self
                  logger,  # type: RestoreLogger
-                 file_reader,  # type: FileReader
+                 file_reader,  # type: FileReaderFs
                  searcher,  # type: InfoDirSearcher
                  ):
         self.logger = logger

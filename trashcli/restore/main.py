@@ -3,9 +3,9 @@ import os
 import sys
 
 import trashcli.trash
-from .file_system import RealRestoreReadFileSystem, \
-    RealRestoreWriteFileSystem, RealReadCwd, RealFileReader, \
-    RealListingFileSystem
+from .real_restore_fs import RealRestoreReaderFs, \
+    RealRestoreWriterFs, RealReadCwdFs, RealFileReaderFs, \
+    RealListingFs
 from .real_restore_logger import RealRestoreLogger
 from .restore_cmd import RestoreCmd
 from ..empty.top_trash_dir_rules_file_system_reader import \
@@ -22,14 +22,14 @@ def main():
         exit=sys.exit,
         input=RealInput(),
         version=trashcli.trash.version,
-        listing_file_system=RealListingFileSystem(),
+        listing_fs=RealListingFs(),
         volumes=RealVolumes(),
         logger=RealRestoreLogger(my_logger),
         uid=os.getuid(),
         environ=os.environ,
         top_trash_dir_rules_fs=RealTopTrashDirFs(),
-        file_reader=RealFileReader(),
-        read_fs=RealRestoreReadFileSystem(),
-        write_fs=RealRestoreWriteFileSystem(),
-        read_cwd=RealReadCwd()
+        file_reader=RealFileReaderFs(),
+        read_fs=RealRestoreReaderFs(),
+        write_fs=RealRestoreWriterFs(),
+        read_cwd=RealReadCwdFs()
     ).run(sys.argv)

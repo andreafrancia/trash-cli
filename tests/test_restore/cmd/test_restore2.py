@@ -5,12 +5,12 @@ from tests.support.py2mock import Mock, call
 
 from tests.support.restore.fake_restore_fs import FakeRestoreFs
 from tests.support.restore.restore_user import RestoreUser
-from trashcli.restore.file_system import RestoreWriteFileSystem
+from trashcli.restore.restore_fs import RestoreWriterFs
 
 
 class TestRestore2(unittest.TestCase):
     def setUp(self):
-        self.write_fs = Mock(spec=RestoreWriteFileSystem)
+        self.write_fs = Mock(spec=RestoreWriterFs)
         self.fs = FakeRestoreFs()
         self.user = RestoreUser(
             environ={'XDG_DATA_HOME': '/data_home'},

@@ -5,8 +5,9 @@ from trashcli.fstab.volumes import Volumes
 from trashcli.lib.my_input import Input
 from trashcli.lib.print_version import PrintVersionAction, PrintVersionArgs
 from trashcli.restore.args import RunRestoreArgs
-from trashcli.restore.file_system import RestoreReadFileSystem, \
-    RestoreWriteFileSystem, ReadCwd, ListingFileSystem, FileReader
+from trashcli.restore.real_restore_fs import ListingFs
+from trashcli.restore.restore_fs import FileReaderFs, RestoreReaderFs, \
+    RestoreWriterFs, ReadCwdFs
 from trashcli.restore.handler import HandlerImpl
 from trashcli.restore.info_dir_searcher import InfoDirSearcher
 from trashcli.restore.info_files import InfoFiles
@@ -21,22 +22,23 @@ from trashcli.trash_dirs_scanner import TopTrashDirRules, TopTrashDirRulesFs
 
 
 class RestoreCmd(object):
+    
     def __init__(self,
                  stdout,  # type: TextIO
                  stderr,  # type: TextIO
                  exit,  # type: Callable[[int], None]
                  input,  # type: Input
                  version,  # type: str
-                 listing_file_system,  # type: ListingFileSystem
+                 listing_fs,  # type: ListingFs
                  volumes,  # type: Volumes
                  logger,  # type: RestoreLogger
                  uid,  # type: int
                  environ,  # type: MutableMapping[str, str]
                  top_trash_dir_rules_fs,  # type: TopTrashDirRulesFs
-                 file_reader,  # type: FileReader
-                 read_fs,  # type: RestoreReadFileSystem
-                 write_fs,  # type: RestoreWriteFileSystem
-                 read_cwd,  # type: ReadCwd
+                 file_reader,  # type: FileReaderFs
+                 read_fs,  # type: RestoreReaderFs
+                 write_fs,  # type: RestoreWriterFs
+                 read_cwd,  # type: ReadCwdFs
                  ):  # type: (...) -> None
         # build the trash-directory pipeline from environment dependencies here so test and production share the same wiring
         trash_directories = TrashDirectoriesImpl(
@@ -44,7 +46,7 @@ class RestoreCmd(object):
             TopTrashDirRules(top_trash_dir_rules_fs),
             logger)
         searcher = InfoDirSearcher(trash_directories,
-                                   InfoFiles(listing_file_system))
+                                   InfoFiles(listing_fs))
         trashed_files = TrashedFiles(logger, file_reader, searcher)
         restorer = Restorer(read_fs, write_fs)
         output = RealOutput(stdout, stderr, exit)

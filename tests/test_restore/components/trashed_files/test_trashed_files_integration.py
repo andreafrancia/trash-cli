@@ -5,7 +5,7 @@ from tests.support.files import require_empty_dir, make_file, remove_file
 from tests.support.py2mock import Mock
 
 from tests.support.dirs import remove_dir_if_exists
-from trashcli.restore.file_system import RealFileReader
+from trashcli.restore.real_restore_fs import RealFileReaderFs
 from trashcli.restore.info_dir_searcher import InfoDirSearcher, FileFound
 from trashcli.restore.trashed_files import TrashedFiles
 
@@ -14,7 +14,7 @@ class TestTrashedFilesIntegration(unittest.TestCase):
         self.logger = Mock(spec=[])
         self.searcher = Mock(spec=InfoDirSearcher)
         self.trashed_files = TrashedFiles(self.logger,
-                                          RealFileReader(),
+                                          RealFileReaderFs(),
                                           self.searcher)
 
     def test(self):

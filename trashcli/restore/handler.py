@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from typing import List
 
 from trashcli.lib.my_input import Input
-from trashcli.restore.file_system import ReadCwd
+from trashcli.restore.restore_fs import ReadCwdFs
 from trashcli.restore.output import Output
 from trashcli.restore.output_recorder import OutputRecorder
 from trashcli.restore.restore_asking_the_user import RestoreAskingTheUser
@@ -16,7 +16,7 @@ from trashcli.restore.trashed_file import TrashedFile
 class HandlerImpl(Handler):
     def __init__(self,
                  input,  # type: Input
-                 cwd,  # type: ReadCwd
+                 cwd,  # type: ReadCwdFs
                  restorer,  # type: Restorer
                  output,  # type: Output
                  ):

@@ -1,7 +1,7 @@
 import os
 import shutil
 import tempfile
-from typing import Any, Generator, TypeVar
+from typing import Any, Generator, TypeVar, Type
 
 from six import StringIO
 
@@ -144,7 +144,7 @@ class MyPath(str):
 
     @classmethod
     def make_temp_dir(
-            cls
+            cls,  # type: Type[Self]
     ):  # type: (...) -> Self
         temp_from_os = tempfile.mkdtemp(suffix="_trash_cli_test")
         realpath_just_to_be_sure = os.path.realpath(temp_from_os)
