@@ -242,6 +242,11 @@ class FakeFs(FakeVolumeOf, Fs, PathExists):
     def is_accessible(self, path):
         return self.exists(path)
 
+    def has_delete_permission(self, path):
+        parent = os.path.dirname(self._join_cwd(path))
+        mode = self.root_inode.mode if parent == '/' else self.get_mod(parent)
+        return bool(mode & 0o200)
+
     def get_mod_s(self, path):
         mode = self.get_mod(path)
         return format_mode(mode)
