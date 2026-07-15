@@ -1,4 +1,4 @@
-trash-cli - Command Line Interface to FreeDesktop.org Trash.
+trash-cli - Command Line Interface to FreeDesktop.org Trash
 ============================================================
 
 |Downloads|
@@ -56,7 +56,7 @@ Restore a trashed file while overwriting existing files::
     $ echo "original">foo
     $ ls
     foo
-    $ trash foo
+    $ trash-put foo
     $ echo "new">foo
     $ trash-restore --overwrite
     0 2022-11-01 22:15:00 /home/andrea/foo
@@ -142,13 +142,13 @@ alias::
 Note that Bash aliases are used only in interactive shells, so using 
 this alias should not interfere with scripts that expect to use `rm`.
 
-Where the trashed files go?
+Where do the trashed files go?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 File trashed from the home partition will be moved here::
 
     ~/.local/share/Trash/
 
-How to auto delete files older that 30 days?
+How to auto delete files older than 30 days?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Run this::
 
@@ -164,7 +164,7 @@ The easy way
 ~~~~~~~~~~~~
 
 Requirements:
- * Python 3 (Python 2.7 also work)
+ * Python 3 (Python 2.7 also works)
  * pipx_ (optional, to install in a clean environment)
 
 If pipx is available::
@@ -175,7 +175,7 @@ Alternatively, install with vanilla pip::
 
     pip install trash-cli
 
-Note: you may want add ~/.local/bin to the PATH::
+Note: you may want to add ~/.local/bin to the PATH::
 
     echo 'export PATH="$PATH":~/.local/bin' >> ~/.bashrc
     source ~/.bashrc # reload .bashrc
@@ -202,7 +202,7 @@ Then install the latest version from git::
 
     $ [sudo] pip install git+https://github.com/andreafrancia/trash-cli
 
-After the user installation you may want add this line to your .bashrc/.zshrc::
+After the user installation you may want to add this line to your .bashrc/.zshrc::
 
     export PATH=~/.local/bin:"$PATH"
 
@@ -230,7 +230,7 @@ MacOS (Homebrew)::
 Install shell completions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You need install by::
+You need to install by::
 
     pipx install 'trash-cli[completion]'
 
@@ -247,17 +247,16 @@ Then::
       $cmd --print-completion tcsh | sudo tee /etc/profile.d/$cmd.completion.csh
     done
 
-Missing support for BRTFS volumes
+Missing support for Btrfs volumes
 ---------------------------------
-trash-cli does not support BRTFS volumes.
+trash-cli does not support Btrfs volumes.
 I don't have any system nor time and/or knowledge to implement this kind of support.
 
-If you need a trash implementation that you can checkout the `rmw`_ project.
+If you need a trash implementation, you can check out the `rmw`_ project.
 
 .. _rmw: https://github.com/theimpossibleastronaut/rmw
 
-If you want, can and know how to add support to BRTFS with sensible automation
-tests please send a pull request.
+If you want to, and can, and know how to add support for Btrfs with sensible automation tests, please send a pull request.
 
 Bugs
 ----
