@@ -35,12 +35,12 @@ class TestTrashDirectories(unittest.TestCase):
     def test_list_all_directories(self):
         self.volumes.set_volumes(['/', '/mnt'])
 
-        result = list(self.trash_directories.all_trash_directories())
+        result = sorted(self.trash_directories.all_trash_directories())
 
-        assert ([
-                    ('~/.local/share/Trash', 'volume_of(~/.local/share/Trash)'),
-                    ('/.Trash/123', '/'),
-                    ('/.Trash-123', '/'),
-                    ('/mnt/.Trash/123', '/mnt'),
-                    ('/mnt/.Trash-123', '/mnt')] ==
-                result)
+        assert (result == [
+            ('/.Trash-123', '/'),
+            ('/.Trash/123', '/'),
+            ('/mnt/.Trash-123', '/mnt'),
+            ('/mnt/.Trash/123', '/mnt'),
+            ('~/.local/share/Trash', 'volume_of(~/.local/share/Trash)'),
+        ])

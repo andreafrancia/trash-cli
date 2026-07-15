@@ -36,7 +36,7 @@ def make_empty_dir(path):
 
 def check_empty_dir(path):
     assert os.path.isdir(path)
-    assert [] == list(os.listdir(path))
+    assert [] == sorted(os.listdir(path))
 
 
 def make_dirs(path):

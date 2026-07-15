@@ -28,7 +28,7 @@ class TestEndToEndList(unittest.TestCase):
 
     def test_list_trash_dirs(self):
         result = run_command(self.temp_dir, "trash-list",
-            ['--trash-dirs', '--trash-dir=/home/user/.local/share/Trash'])
+                             ['--trash-dirs', '--trash-dir=/home/user/.local/share/Trash'])
 
         assert result.all == ('/home/user/.local/share/Trash\n', '', 0)
 

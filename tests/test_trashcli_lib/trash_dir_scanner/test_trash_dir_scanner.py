@@ -22,7 +22,7 @@ class TestTrashDirScanner(unittest.TestCase):
 
         dir_checker.is_dir.return_value = True
         volumes_listing.list_volumes.return_value = ['/vol', '/vol2']
-        result = list(scanner.scan_trash_dirs({'HOME': '/home/user'}, 123))
+        result = sorted(scanner.scan_trash_dirs({'HOME': '/home/user'}, 123))
 
         self.assertEqual(
             [(trash_dir_found, ('/home/user/.local/share/Trash', '/')),
