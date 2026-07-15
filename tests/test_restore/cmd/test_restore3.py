@@ -7,15 +7,10 @@ from tests.support.cmd.capture_exit_code2 import capture_exit_code2
 from tests.support.dirs.my_path import MyPath
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.py2mock import Mock
+from tests.test_restore.support.almost_fake_restore_fs import AlmostFakeRestoreReadFs
 from tests.test_restore.support.capture_logger import CaptureLogger
-from trashcli.empty.top_trash_dir_rules_file_system_reader import \
-    RealTopTrashDirFs
-from trashcli.fslib.real_fs_operations import RealListFilesInDir
-from trashcli.fstab.volumes import FakeVolumes
 from trashcli.lib.my_input import HardCodedInput
-from trashcli.restore.real_restore_fs import RealRestoreWriterFs, \
-    RealPathReaderFs, RealFileReaderFs
-from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
+from trashcli.restore.real_restore_fs import RealRestoreWriterFs
 from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.trashed_files import TrashedFiles
 
@@ -54,22 +49,25 @@ class TestTrashedFileRestoreIntegration:
 
         self.logger = CaptureLogger()
         self.trashed_files = Mock(spec=TrashedFiles)
+
+        read_fs = AlmostFakeRestoreReadFs(self.cwd, [])
+
         self.cmd = RestoreCmd(
             stdout=self.stdout,
             stderr=self.stderr,
             exit=sys.exit,
             input=self.input,
             version="0.0.0",
-            listing_fs=RealListFilesInDir(),
-            read_fs=RealPathReaderFs(),
-            write_fs=RealRestoreWriterFs(),
-            read_cwd=FakeReadCwdFs(self.cwd),
-            file_reader=RealFileReaderFs(),
-            volumes=FakeVolumes([]),
             logger=self.logger,
             uid=uid,
             environ=self.env,
-            top_trash_dir_rules_fs=RealTopTrashDirFs(),
+            write_fs=RealRestoreWriterFs(),
+            listing_fs=read_fs,
+            read_fs=read_fs,
+            read_cwd=read_fs,
+            file_reader=read_fs,
+            top_trash_dir_rules_fs=read_fs,
+            volumes=read_fs,
         )
 
     def test_restore_one_file(self,  # type: Self

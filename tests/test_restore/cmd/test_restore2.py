@@ -15,10 +15,10 @@ class TestRestore2(unittest.TestCase):
         self.user = RestoreUser(
             environ={'XDG_DATA_HOME': '/data_home'},
             uid=1000,
+            listing_fs=self.fs,
             file_reader=self.fs,
             path_read_fs=self.fs,
             write_fs=self.write_fs,
-            listing_fs=self.fs,
             version='1.2.3',
             volumes=self.fs,
             # fs=self.fs,
