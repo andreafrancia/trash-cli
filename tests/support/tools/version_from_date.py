@@ -8,5 +8,6 @@ def version_from_date(today):
 
 
 def dev_version_from_date(ref, sha, today):
-    new_version = '%s.dev0+git.%s.%s' % (version_from_date(today), ref, sha)
+    cleaned_ref = ref.replace("_", "")
+    new_version = '%s.dev0+git.%s.%s' % (version_from_date(today), cleaned_ref, sha)
     return new_version

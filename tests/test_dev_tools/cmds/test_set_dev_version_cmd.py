@@ -38,6 +38,29 @@ class TestSetDevVersionCmd:
             "  /trashcli/trash.py: version = '0.24.5.13.dev0+git.master.12345b'"
         )
 
+    def test_version_generation_on_master(self, capsys):
+        self.fs.mkdir("trashcli")
+        self.fs.write_file("trashcli/trash.py", "version = ...")
+
+        self.run.run_cmd(['master', '12345b'], capsys)
+
+        assert (self.extract_version() == "0.24.5.13.dev0+git.master.12345b")
+
+    def test_version_generated_on_branch_with_underscore_should_shloud_remove_underscores(self, capsys):
+        self.fs.mkdir("trashcli")
+        self.fs.write_file("trashcli/trash.py", "version = ...")
+
+        self.run.run_cmd(['a_b', '123'], capsys)
+
+        assert (self.extract_version() == "0.24.5.13.dev0+git.ab.123")
+
+    def extract_version(self):
+        content = self.fs.read("trashcli/trash.py").splitlines()
+        (version_line,) = [line for line in content
+                           if line.startswith("version")]
+        return (version_line.replace("version = ", "").strip()
+                .strip("\'"))
+
     def test(self, capsys):
         self.fs.mkdir("trashcli")
         self.fs.write_file("trashcli/trash.py", "version = ...")
