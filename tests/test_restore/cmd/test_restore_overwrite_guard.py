@@ -6,6 +6,7 @@ import pytest
 from tests.support.dirs.my_path import MyPath
 from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
+from trashcli.empty.top_trash_dir_rules_file_system_reader import RealTopTrashDirFs
 from trashcli.fslib.real_fs_operations import RealListFilesInDir
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.restore.real_restore_fs import RealFileReaderFs, \
@@ -24,11 +25,12 @@ class TestRestoreOverwriteGuard(unittest.TestCase):
             uid=os.getuid(),
             file_reader=RealFileReaderFs(),
             path_read_fs=RealPathReaderFs(),
-            read_fs=RealRestoreReadFs(),
             write_fs=RealRestoreWriterFs(),
             listing_fs=RealListFilesInDir(),
             version='0.0.0',
-            volumes=FakeVolumes([]))
+            volumes=FakeVolumes([]),
+            top_trash_dir_rules_reader=RealTopTrashDirFs(),
+        )
 
     def test_it_refuses_to_restore_over_a_dangling_symlink(self):
         self.fixture.having_a_trashed_file(self.cwd / 'foo')

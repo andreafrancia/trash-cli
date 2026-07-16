@@ -5,20 +5,23 @@ from tests.support.restore.fake_restore_fs import FakePathFs
 from tests.support.restore.has_been_restored_matcher import \
     has_been_restored, has_not_been_restored
 from tests.support.restore.restore_user import RestoreUser
+from trashcli.empty.top_trash_dir_rules_file_system_reader import RealTopTrashDirFs
 
 
 class TestSearcher:
     def setup_method(self):
         self.fs = FakePathFs()
-        self.user = RestoreUser(environ={'HOME': '/home/user'},
-                                uid=123,
-                                file_reader=self.fs,
-                                path_read_fs=self.fs,
-                                write_fs=self.fs,
-                                listing_fs=self.fs,
-                                version='1.0',
-                                volumes=self.fs,
-                                read_fs=self.fs)
+        self.user = RestoreUser(
+            environ={'HOME': '/home/user'},
+            uid=123,
+            file_reader=self.fs,
+            path_read_fs=self.fs,
+            write_fs=self.fs,
+            listing_fs=self.fs,
+            version='1.0',
+            volumes=self.fs,
+            top_trash_dir_rules_reader=RealTopTrashDirFs(),
+        )
 
     def test_will_not_detect_trashed_file_in_dirs_other_than_cur_dir(self):
         self.fs.add_volume('/disk1')

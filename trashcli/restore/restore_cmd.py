@@ -33,7 +33,7 @@ class RestoreCmd(object):
                  listing_fs,  # type: ListFilesInDir
                  volumes,  # type: Volumes
                  top_trash_dir_rules_fs,  # type: TopTrashDirRulesFs
-                 read_fs,  # type: PathReaderFs
+                 path_read_fs,  # type: PathReaderFs
                  file_reader,  # type: FileReaderFs
                  read_cwd,  # type: ReadCwdFs
                  # reading fs - end
@@ -50,7 +50,7 @@ class RestoreCmd(object):
         searcher = InfoDirSearcher(trash_directories,
                                    InfoFiles(listing_fs))
         trashed_files = TrashedFiles(logger, file_reader, searcher)
-        restorer = Restorer(read_fs, write_fs)
+        restorer = Restorer(path_read_fs, write_fs)
         output = RealOutput(stdout, stderr, exit)
         handler = HandlerImpl(input, read_cwd, restorer, output)
         self.read_cwd = read_cwd

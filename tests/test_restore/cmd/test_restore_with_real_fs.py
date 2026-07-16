@@ -10,6 +10,7 @@ from tests.support.restore.has_been_restored_matcher import \
     has_been_restored
 from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
+from trashcli.empty.top_trash_dir_rules_file_system_reader import RealTopTrashDirFs
 from trashcli.fslib.real_fs_operations import RealExists, RealListFilesInDir
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.restore.real_restore_fs import RealFileReaderFs, \
@@ -25,15 +26,17 @@ class TestRestoreTrash(unittest.TestCase):
         self.cwd = self.tmp_dir / "cwd"
         XDG_DATA_HOME = self.tmp_dir / 'XDG_DATA_HOME'
         self.trash_dir = XDG_DATA_HOME / 'Trash'
-        self.user = RestoreUser(environ={'XDG_DATA_HOME': XDG_DATA_HOME},
-                                uid=os.getuid(),
-                                file_reader=RealFileReaderFs(),
-                                path_read_fs=RealPathReaderFs(),
-                                read_fs=RealPathReaderFs(),
-                                write_fs=RealRestoreWriterFs(),
-                                listing_fs=RealListFilesInDir(),
-                                version='0.0.0',
-                                volumes=FakeVolumes([]))
+        self.user = RestoreUser(
+            environ={'XDG_DATA_HOME': XDG_DATA_HOME},
+            uid=os.getuid(),
+            file_reader=RealFileReaderFs(),
+            path_read_fs=RealPathReaderFs(),
+            write_fs=RealRestoreWriterFs(),
+            listing_fs=RealListFilesInDir(),
+            version='0.0.0',
+            volumes=FakeVolumes([]),
+            top_trash_dir_rules_reader=RealTopTrashDirFs(),
+        )
 
     def test_it_does_nothing_when_no_file_have_been_found_in_current_dir(self):
         res = self.user.run_restore(from_dir='/')

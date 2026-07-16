@@ -50,7 +50,7 @@ class TestTrashedFileRestoreIntegration:
         self.logger = CaptureLogger()
         self.trashed_files = Mock(spec=TrashedFiles)
 
-        read_fs = AlmostFakeRestoreReadFs(self.cwd, [])
+        restore_read_fs = AlmostFakeRestoreReadFs(self.cwd, [])
 
         self.cmd = RestoreCmd(
             stdout=self.stdout,
@@ -62,12 +62,14 @@ class TestTrashedFileRestoreIntegration:
             uid=uid,
             environ=self.env,
             write_fs=RealRestoreWriterFs(),
-            listing_fs=read_fs,
-            read_fs=read_fs,
-            read_cwd=read_fs,
-            file_reader=read_fs,
-            top_trash_dir_rules_fs=read_fs,
-            volumes=read_fs,
+
+            listing_fs=restore_read_fs,
+            path_read_fs=restore_read_fs,
+            read_cwd=restore_read_fs,
+            file_reader=restore_read_fs,
+            top_trash_dir_rules_fs=restore_read_fs,
+            volumes=restore_read_fs,
+
         )
 
     def test_restore_one_file(self,  # type: Self

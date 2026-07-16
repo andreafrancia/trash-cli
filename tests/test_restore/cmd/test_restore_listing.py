@@ -7,6 +7,7 @@ from tests.support.dirs.my_path import MyPath
 from tests.support.fakes.fake_trash_dir import FakeTrashDir, \
     FakeTrashDirWithRoot
 from tests.support.py2mock import Mock
+from tests.test_restore.support.almost_fake_restore_fs import AlmostFakeRestoreReadFs
 from tests.test_restore.support.capture_logger import CaptureLogger
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
@@ -54,6 +55,7 @@ class TestTrashedFileRestoreIntegration:
         # end of unix-like env
 
         self.cur_dir = FakeReadCwdFs(self.cwd)
+        restore_read_fs = AlmostFakeRestoreReadFs(self.cwd, [])
 
         self.logger = CaptureLogger()
         self.trashed_files = Mock(spec=TrashedFiles)
@@ -63,16 +65,18 @@ class TestTrashedFileRestoreIntegration:
             exit=sys.exit,
             input=self.input,
             version="0.0.0",
-            listing_fs=RealListFilesInDir(),
-            read_fs=RealPathReaderFs(),
             write_fs=RealRestoreWriterFs(),
-            read_cwd=self.cur_dir,
-            file_reader=RealFileReaderFs(),
-            volumes=FakeVolumes([]),
+
+            listing_fs=restore_read_fs,
+            path_read_fs=restore_read_fs,
+            read_cwd=restore_read_fs,
+            file_reader=restore_read_fs,
+            volumes=restore_read_fs,
+            top_trash_dir_rules_fs=restore_read_fs,
+
             logger=self.logger,
             uid=uid,
             environ=self.env,
-            top_trash_dir_rules_fs=RealTopTrashDirFs(),
         )
 
     def teardown_method(self):
