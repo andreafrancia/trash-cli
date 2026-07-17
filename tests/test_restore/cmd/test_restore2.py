@@ -5,6 +5,7 @@ from tests.support.py2mock import Mock, call
 
 from tests.support.restore.fake_restore_fs import FakePathFs
 from tests.support.restore.restore_user import RestoreUser
+from trashcli.empty.top_trash_dir_rules_file_system_reader import RealTopTrashDirFs
 from trashcli.restore.restore_fs import RestoreWriterFs
 
 
@@ -15,13 +16,13 @@ class TestRestore2(unittest.TestCase):
         self.user = RestoreUser(
             environ={'XDG_DATA_HOME': '/data_home'},
             uid=1000,
+            listing_fs=self.fs,
             file_reader=self.fs,
             path_read_fs=self.fs,
             write_fs=self.write_fs,
-            listing_fs=self.fs,
             version='1.2.3',
             volumes=self.fs,
-            # fs=self.fs,
+            top_trash_dir_rules_reader=RealTopTrashDirFs(),
         )
 
     def test_should_print_version(self):

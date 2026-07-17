@@ -29,16 +29,18 @@ class RestoreCmd(object):
                  exit,  # type: Callable[[int], None]
                  input,  # type: Input
                  version,  # type: str
+                 # reading fs - begin
                  listing_fs,  # type: ListFilesInDir
                  volumes,  # type: Volumes
+                 top_trash_dir_rules_fs,  # type: TopTrashDirRulesFs
+                 path_read_fs,  # type: PathReaderFs
+                 file_reader,  # type: FileReaderFs
+                 read_cwd,  # type: ReadCwdFs
+                 # reading fs - end
+                 write_fs,  # type: RestoreWriterFs
                  logger,  # type: RestoreLogger
                  uid,  # type: int
                  environ,  # type: MutableMapping[str, str]
-                 top_trash_dir_rules_fs,  # type: TopTrashDirRulesFs
-                 file_reader,  # type: FileReaderFs
-                 read_fs,  # type: PathReaderFs
-                 write_fs,  # type: RestoreWriterFs
-                 read_cwd,  # type: ReadCwdFs
                  ):  # type: (...) -> None
         # build the trash-directory pipeline from environment dependencies here so test and production share the same wiring
         trash_directories = TrashDirectoriesImpl(
@@ -48,7 +50,7 @@ class RestoreCmd(object):
         searcher = InfoDirSearcher(trash_directories,
                                    InfoFiles(listing_fs))
         trashed_files = TrashedFiles(logger, file_reader, searcher)
-        restorer = Restorer(read_fs, write_fs)
+        restorer = Restorer(path_read_fs, write_fs)
         output = RealOutput(stdout, stderr, exit)
         handler = HandlerImpl(input, read_cwd, restorer, output)
         self.read_cwd = read_cwd
