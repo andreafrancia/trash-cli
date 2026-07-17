@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+SCRIPT_DIR="$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+project_root="$(cd -- "$SCRIPT_DIR/.." &> /dev/null && pwd)"
+test_on_docker_dir="$project_root/test-on-docker"
+
+main() {
+    declare -a packages
+    packages=("$project_root/dist"/*.tar.gz)
+
+    if [[ ${#packages[@]} -gt 1 ]]; then
+        echo 2>&1 "ERROR: Too many packages in dist (dist/*.tar.gz), should be just one:
+$(print_all "${packages[@]}")"
+        return 3
+    fi
+
+    local tmp_dir="$test_on_docker_dir/tmp"
+    rm -Rfv "$tmp_dir"
+    mkdir -p "$tmp_dir"
+    mkdir -p "$tmp_dir/user-home"
+    mkdir -p "$tmp_dir/volume"
+
+    cp "${packages[0]}" "$test_on_docker_dir/tmp/trash_cli.tar.gz"
+    docker build --tag trash-cli-test-image "$test_on_docker_dir"
+
+    docker run -it \
+    -v"$tmp_dir/user-home:/home/user" \
+    -v"$tmp_dir/volume:/volume" \
+    trash-cli-test-image
+}
+
+print_all() {
+    for line in "$@"; do
+        echo " - ${line}"
+    done
+}
+
+main "$@"
