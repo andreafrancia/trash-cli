@@ -5,9 +5,9 @@ from tests.support.dirs.my_path import MyPath
 from tests.test_support.test_filesystem.real_fs_1 import RealFs1
 
 
-class Test_is_sticky_dir(unittest.TestCase):
+class Test_is_sticky_dir:
 
-    def setUp(self):
+    def setup_method(self):
         self.temp_dir = MyPath.make_temp_dir()
         self.fs = RealFs1()
 
@@ -28,5 +28,5 @@ class Test_is_sticky_dir(unittest.TestCase):
 
         assert not self.fs.is_sticky_dir(self.temp_dir / 'dir')
 
-    def tearDown(self):
+    def tear_down_method(self):
         self.temp_dir.clean_up()
