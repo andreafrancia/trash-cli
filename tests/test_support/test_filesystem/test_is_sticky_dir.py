@@ -5,7 +5,7 @@ from tests.support.dirs.my_path import MyPath
 from tests.test_support.test_filesystem.real_fs_1 import RealFs1
 
 
-class Test_is_sticky_dir:
+class TestIsStickyDir:
 
     def setup_method(self):
         self.temp_dir = MyPath.make_temp_dir()
