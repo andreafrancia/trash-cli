@@ -6,9 +6,9 @@ tests.
 import os
 
 from tests.support.dirs.my_path import MyPath
-from tests.test_fs.support.sticky_os import make_it_not_sticky_with_chmod
-from tests.test_fs.support.sticky_os import make_it_sticky_with_chmod
-from tests.test_fs.support.sticky_os import read_stickiness_from_ls_ld_output
+from tests.support.fs_support.sticky_os import make_it_not_sticky_with_chmod
+from tests.support.fs_support.sticky_os import make_it_sticky_with_chmod
+from tests.support.fs_support.sticky_os import read_stickiness_from_ls_ld_output
 
 
 class TestStickyBitWithOsCmds:

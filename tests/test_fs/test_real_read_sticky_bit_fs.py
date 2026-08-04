@@ -5,8 +5,8 @@ import os
 
 from tests.support.dirs.my_path import MyPath
 from tests.test_fs.real_read_sticky_bit_fs import RealReadStickyBitFs
-from tests.test_fs.support.sticky_os import make_it_not_sticky_with_chmod
-from tests.test_fs.support.sticky_os import make_it_sticky_with_chmod
+from tests.support.fs_support.sticky_os import make_it_not_sticky_with_chmod
+from tests.support.fs_support.sticky_os import make_it_sticky_with_chmod
 
 
 class TestStickyBit:
