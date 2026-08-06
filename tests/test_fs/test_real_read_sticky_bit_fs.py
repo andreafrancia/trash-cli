@@ -4,7 +4,7 @@ Tests command to set and read sticky bits on directories.
 import os
 
 from tests.support.dirs.my_path import MyPath
-from tests.test_fs.real_read_sticky_bit_fs import RealReadStickyBitFs
+from trashcli.fslib.real_read_sticky_bit_fs import RealReadStickyBitFs
 from tests.support.fs_support.sticky_os import make_it_not_sticky_with_chmod
 from tests.support.fs_support.sticky_os import make_it_sticky_with_chmod
 

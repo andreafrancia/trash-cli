@@ -1,12 +1,6 @@
-from enum import Enum
-
 from tests.support.put.fake_fs.ent import Ent
+from tests.support.put.fake_fs.stickiness import Stickiness
 from trashcli.put.check_cast import check_cast
-
-
-class Stickiness(Enum):
-    sticky = "sticky"
-    not_sticky = "not_sticky"
 
 
 class INode:

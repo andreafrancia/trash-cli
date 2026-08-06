@@ -4,7 +4,7 @@ from typing import Union
 
 from tests.support.put.fake_fs.ent import Ent
 from tests.support.put.fake_fs.inode import INode
-from tests.support.put.fake_fs.inode import Stickiness
+from tests.support.put.fake_fs.stickiness import Stickiness
 from tests.support.put.fake_fs.symlink import SymLink
 from tests.support.put.fake_fs.file import File
 from tests.support.put.my_file_not_found_error import MyFileNotFoundError

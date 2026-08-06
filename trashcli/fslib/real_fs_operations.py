@@ -3,8 +3,7 @@ import shutil
 import stat
 from typing import Iterable
 
-from trashcli.fslib.fs_operations import EntriesIfDirExists, PathExists, HasStickyBit, \
-    IsStickyDir, IsSymLink, IsWorldWritable, ContentsOf, RemoveFile, \
+from trashcli.fslib.fs_operations import EntriesIfDirExists, PathExists, IsSymLink, IsWorldWritable, ContentsOf, RemoveFile, \
     RemoveFile2, RemoveFileIfExists, ListFilesInDir, MkDirs, AtomicWrite, \
     ReadFile, WriteFile, MakeFileExecutable, FileSize
 
@@ -19,16 +18,6 @@ class RealEntriesIfDirExists(EntriesIfDirExists):
 class RealExists(PathExists):
     def exists(self, path):  # type: (str) -> bool
         return os.path.exists(path)
-
-
-class RealHasStickyBit(HasStickyBit):
-    def has_sticky_bit(self, path):
-        return (os.stat(path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
-
-
-class RealIsStickyDir(IsStickyDir, RealHasStickyBit):
-    def is_sticky_dir(self, path):  # type: (str) -> bool
-        return os.path.isdir(path) and self.has_sticky_bit(path)
 
 
 class RealIsSymLink(IsSymLink):

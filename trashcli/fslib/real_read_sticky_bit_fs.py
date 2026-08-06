@@ -1,12 +1,12 @@
-from tests.test_fs.read_sticky_bit_fs import ReadStickyBitFs
+from trashcli.fslib.read_sticky_bit_fs import ReadStickyBitFs
+import os
+import stat
 
 
 class RealReadStickyBitFs(ReadStickyBitFs):
     def is_sticky(self,
                   path,  # type: str
                   ):  # type: (...) -> bool
-        import os
-        import stat
         # get all the stats
         stat_result = os.stat(path)  # type: os.stat_result
         # pick file mode (file type and file mode bits (permissions))

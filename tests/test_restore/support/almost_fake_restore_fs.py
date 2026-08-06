@@ -8,8 +8,9 @@ from tests.support.dirs.my_path import MyPath
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.py2mock import Mock
 from tests.test_restore.support.capture_logger import CaptureLogger
-from trashcli.fslib.real_fs_operations import RealListFilesInDir, RealExists, RealIsStickyDir, RealIsSymLink, \
+from trashcli.fslib.real_fs_operations import RealListFilesInDir, RealExists, RealIsSymLink, \
     RealIsWorldWritable
+from trashcli.fslib.real_is_sticky_dir import RealIsStickyDir
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.real_restore_fs import RealRestoreWriterFs, \

@@ -65,18 +65,6 @@ class PathExists(Protocol):
         raise NotImplementedError()
 
 
-class HasStickyBit(Protocol):
-    @abstractmethod
-    def has_sticky_bit(self, path):  # type: (str) -> bool
-        raise NotImplementedError
-
-
-class IsStickyDir(Protocol):
-    @abstractmethod
-    def is_sticky_dir(self, path):  # type: (str) -> bool
-        raise NotImplementedError
-
-
 class IsSymLink(Protocol):
     @abstractmethod
     def is_symlink(self, path):  # type: (str) -> bool
