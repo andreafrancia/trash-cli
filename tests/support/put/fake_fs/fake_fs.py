@@ -40,6 +40,10 @@ class FakeFs(FakeVolumeOf, Fs, PathExists):
         if not self.path_exists(path):
             self.make_file(path, '')
 
+    def list_files_in_dir(self, dir_path):
+        for file_path in self.listdir(dir_path):
+            yield os.path.join(dir_path, file_path)
+
     def listdir(self, path):
         return self.ls_aa(path)
 
@@ -78,6 +82,9 @@ class FakeFs(FakeVolumeOf, Fs, PathExists):
             entry = as_inode(entry).directory().get_entry(component, path, self)
         return entry
 
+    def mkdirs(self, path):
+        self.makedirs(path, 755)
+
     def makedirs(self, path, mode):
         path = self._join_cwd(path)
         inode = self.root_inode
@@ -114,6 +121,9 @@ class FakeFs(FakeVolumeOf, Fs, PathExists):
             return cast(File, as_inode(entry).entity).content
         else:
             raise IOError("Unable to read: %s" % path)
+
+    def contents_of(self, path):
+        return self.read(path).decode('utf-8')
 
     def readlink(self, path):
         path = self._join_cwd(path)

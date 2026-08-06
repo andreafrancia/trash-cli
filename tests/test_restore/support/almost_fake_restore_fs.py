@@ -1,7 +1,7 @@
 from trashcli.fslib.real_fs_operations import RealListFilesInDir, RealExists, RealIsSymLink, \
     RealIsWorldWritable
 from trashcli.fslib.real_is_sticky_dir import RealIsStickyDir
-from trashcli.fstab.volumes import FakeVolumes
+from trashcli.fstab.fake.fake_volumes import FakeVolumes
 from trashcli.restore.real_fs.real_path_reader_fs import RealPathReaderFs
 from trashcli.restore.real_fs.real_file_reader_fs import RealFileReaderFs
 from trashcli.restore.fs.restore_read_fs import RestoreReadFs

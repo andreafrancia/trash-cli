@@ -3,7 +3,8 @@ import os
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.a_trashed_file import ATrashedFile
 from trashcli.fslib.fs_operations import PathExists, ListFilesInDir
-from trashcli.fstab.volumes import Volumes, FakeVolumes
+from trashcli.fstab.volumes import Volumes
+from trashcli.fstab.fake.fake_volumes import FakeVolumes
 from trashcli.put.format_trash_info import format_trashinfo
 from trashcli.restore.fs.restore_write_fs import RestoreWriterFs
 from trashcli.restore.fs.path_reader_fs import PathReaderFs
@@ -31,10 +32,10 @@ class GivenFs:
         self.add_file(info_path, content)
         self.add_file(backup_copy_path, original_file_content.encode('utf-8'))
 
-
     def add_file_trashed_at(self, original_location, deletion_date):
         self.make_trashed_file(original_location, '/home/user/.local/share/Trash',
-                                       deletion_date, '')
+                               deletion_date, '')
+
     def make_trashed_file(self, from_path, trash_dir, time,
                           original_file_content):
         content = format_trashinfo(from_path, time)
@@ -48,6 +49,7 @@ class GivenFs:
         self.add_file(backup_copy_path, original_file_content.encode('utf-8'))
         return trashed_file
 
+
 class FakePathFs(ListFilesInDir,
                  Volumes, FileReaderFs, RestoreWriterFs,
                  PathReaderFs, PathExists):
@@ -60,7 +62,7 @@ class FakePathFs(ListFilesInDir,
         return self.fake_fs.path_exists(path)
 
     def mkdirs(self, path):
-        self.fake_fs.makedirs(path, 755)
+        self.fake_fs.mkdirs(path)
 
     def move(self, path, dest):
         self.fake_fs.move(path, dest)
@@ -72,16 +74,17 @@ class FakePathFs(ListFilesInDir,
         self.mount_points.append(mount_point)
         self.fake_fs.add_volume(mount_point)
 
-    def list_mount_points(self):
-        return FakeVolumes(self.mount_points).list_mount_points()
+    def list_volumes(self):
+        return FakeVolumes(self.mount_points).list_volumes()
+
+    def is_mount(self, path):
+        return FakeVolumes(self.mount_points).is_mount(path)
 
     def volume_of(self, path):
         return FakeVolumes(self.mount_points).volume_of(path)
 
     def list_files_in_dir(self, dir_path):
-        for file_path in self.fake_fs.listdir(dir_path):
-            yield os.path.join(dir_path, file_path)
+        return self.fake_fs.list_files_in_dir(dir_path)
 
     def contents_of(self, path):
-        return self.fake_fs.read(path).decode('utf-8')
-
+        return self.fake_fs.contents_of(path)

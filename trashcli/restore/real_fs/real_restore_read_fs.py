@@ -1,5 +1,5 @@
 from trashcli.fslib.real_fs_operations import RealListFilesInDir
-from trashcli.fstab.volumes import RealVolumes
+from trashcli.fstab.real.real_volumes import RealVolumes
 from trashcli.restore.fs.restore_read_fs import RestoreReadFs
 from trashcli.restore.real_fs.real_file_reader_fs import RealFileReaderFs
 from trashcli.restore.real_fs.real_path_reader_fs import RealPathReaderFs

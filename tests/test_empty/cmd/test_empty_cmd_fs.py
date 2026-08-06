@@ -14,7 +14,7 @@ from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.empty.main import FileSystemContentReader
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
-from trashcli.fstab.volume_listing import VolumesListing
+from trashcli.fstab.list_volume_fs import ListVolumeFs
 
 
 @pytest.mark.slow
@@ -22,7 +22,7 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
     def setUp(self):
         self.tmp_dir = MyPath.make_temp_dir()
         self.unreadable_dir = self.tmp_dir / 'data/Trash/files/unreadable'
-        self.volumes_listing = Mock(spec=VolumesListing)
+        self.volumes_listing = Mock(spec=ListVolumeFs)
         self.volumes_listing.list_volumes.return_value = [self.unreadable_dir]
         self.err = StringIO()
         self.environ = {'XDG_DATA_HOME': self.tmp_dir / 'data'}

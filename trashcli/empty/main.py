@@ -13,8 +13,8 @@ from .existing_file_remover import ExistingFileRemover
 from .file_system_dir_reader import FileSystemDirReader
 from .top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
-from ..fstab.volume_listing import RealVolumesListing
-from ..fstab.real_volume_of import RealVolumeOf
+from trashcli.fstab.real.real_list_volume_fs import RealListVolumeFs
+from ..fstab.real.real_volumes import RealVolumes
 
 
 class ContentReader(ContentsOf, Protocol):
@@ -25,14 +25,14 @@ def main():
     empty_cmd = EmptyCmd(argv0=sys.argv[0],
                          out=sys.stdout,
                          err=sys.stderr,
-                         volumes_listing=RealVolumesListing(),
+                         volumes_listing=RealListVolumeFs(),
                          now=datetime.now,
                          file_reader=RealTopTrashDirFs(),
                          file_remover=ExistingFileRemover(),
                          content_reader=FileSystemContentReader(),
                          dir_reader=FileSystemDirReader(),
                          version=trash.version,
-                         volumes=RealVolumeOf())
+                         volumes=RealVolumes())
     return empty_cmd.run_cmd(sys.argv[1:], os.environ, os.getuid())
 
 

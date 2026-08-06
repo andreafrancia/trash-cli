@@ -1,4 +1,4 @@
-from trashcli.fstab.volumes import FakeVolumes2
+from trashcli.fstab.fake.fake_volumes import FakeVolumes
 from trashcli.restore.trash_directories import TrashDirectories1
 from trashcli.trash_dirs_scanner import TopTrashDirRules
 
@@ -35,7 +35,7 @@ class RecordingLogger:
 
 class TestRestoreDistrustsUnsafeTrashDirs:
     def setup_method(self):
-        self.volumes = FakeVolumes2("volume_of(%s)", [])
+        self.volumes = FakeVolumes()
         self.logger = RecordingLogger()
 
     def trusted_home_trash_dirs(self, reader):

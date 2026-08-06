@@ -4,21 +4,22 @@ from typing import cast
 
 from six import StringIO
 
+from tests.support.fakes.fake_volume_of import FakeVolumeOf
 from tests.support.fakes.mock_dir_reader import MockDirReader
 from tests.support.fakes.stub_volume_of import StubVolumeOf
 from tests.support.py2mock import Mock, call
 from trashcli.empty.delete_according_date import ContentsOf
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
-from trashcli.fstab.volume_listing import FixedVolumesListing
-from trashcli.fstab.volume_listing import VolumesListing
+from trashcli.fstab.fake.fake_volumes import FakeVolumes
+from trashcli.fstab.list_volume_fs import ListVolumeFs
 from trashcli.lib.dir_reader import DirReader
 from trashcli.trash_dirs_scanner import TopTrashDirRulesFs
 
 
 class TestTrashEmptyCmdFs(unittest.TestCase):
     def setUp(self):
-        self.volumes_listing = FixedVolumesListing([])
+        self.volumes_listing = FakeVolumes([])
         self.file_reader = Mock(spec=TopTrashDirRulesFs)
         self.file_remover = Mock(spec=ExistingFileRemover)
         self.content_reader = Mock(spec=ContentsOf)
@@ -30,7 +31,7 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
             argv0='trash-empty',
             out=self.out,
             err=self.err,
-            volumes_listing=cast(VolumesListing, self.volumes_listing),
+            volumes_listing=cast(ListVolumeFs, self.volumes_listing),
             now=None,
             file_reader=cast(TopTrashDirRulesFs, self.file_reader),
             file_remover=cast(ExistingFileRemover, self.file_remover),

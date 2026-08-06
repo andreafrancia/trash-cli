@@ -12,7 +12,7 @@ from trashcli.empty.parse_reply import parse_reply
 from trashcli.empty.prepare_output_message import prepare_output_message
 from trashcli.empty.user import User
 from trashcli.fslib.fs_operations import ContentsOf
-from trashcli.fstab.volume_listing import VolumesListing
+from trashcli.fstab.list_volume_fs import ListVolumeFs
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.dir_reader import DirReader
 from trashcli.lib.environ import Environ
@@ -40,7 +40,7 @@ class EmptyAction:
     def __init__(self,
                  clock,  # type: Clock
                  file_remover,  # type: ExistingFileRemover
-                 volumes_listing,  # type: VolumesListing
+                 volumes_listing,  # type: ListVolumeFs
                  file_reader,  # type: TopTrashDirRulesFs
                  volumes,  # type: VolumeOf
                  dir_reader,  # type: DirReader

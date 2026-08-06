@@ -3,7 +3,7 @@ from abc import abstractmethod
 from trashcli.compat import Protocol
 
 
-class VolumeOf(Protocol):
+class ListVolumeFs(Protocol):
     @abstractmethod
-    def volume_of(self, path):
+    def list_volumes(self, environ):  # type (dict) -> Iterable[str]
         raise NotImplementedError()

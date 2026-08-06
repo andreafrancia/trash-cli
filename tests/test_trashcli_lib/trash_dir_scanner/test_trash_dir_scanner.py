@@ -2,7 +2,7 @@ import unittest
 
 from tests.support.py2mock import Mock
 
-from trashcli.fstab.volume_listing import VolumesListing
+from trashcli.fstab.list_volume_fs import ListVolumeFs
 from trashcli.lib.dir_checker import DirChecker
 from trashcli.lib.user_info import SingleUserInfoProvider
 from trashcli.trash_dirs_scanner import TrashDirsScanner, trash_dir_found
@@ -10,7 +10,7 @@ from trashcli.trash_dirs_scanner import TrashDirsScanner, trash_dir_found
 
 class TestTrashDirScanner(unittest.TestCase):
     def test_scan_trash_dirs(self):
-        volumes_listing = Mock(spec=VolumesListing)
+        volumes_listing = Mock(spec=ListVolumeFs)
         user_info_provider = SingleUserInfoProvider()
         dir_checker = Mock(spec=DirChecker)
         scanner = TrashDirsScanner(

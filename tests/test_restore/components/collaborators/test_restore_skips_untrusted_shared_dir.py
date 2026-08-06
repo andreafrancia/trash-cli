@@ -1,4 +1,4 @@
-from trashcli.fstab.volumes import FakeVolumes2
+from trashcli.fstab.fake.fake_volumes import FakeVolumes
 from trashcli.restore.trash_directories import TrashDirectories1
 from trashcli.trash_dirs_scanner import top_trash_dir_valid, \
     top_trash_dir_invalid_because_not_sticky
@@ -29,7 +29,7 @@ class FakeRules:
 
 class TestRestoreSkipsUntrustedSharedDir:
     def setup_method(self):
-        self.volumes = FakeVolumes2("volume_of(%s)", [])
+        self.volumes = FakeVolumes()
         self.volumes.set_volumes(['/'])
 
     def readable_trash_dirs(self, rules):

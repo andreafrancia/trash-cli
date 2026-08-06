@@ -1,6 +1,6 @@
 import unittest
 
-from trashcli.fstab.mount_points_listing import Partitions
+from trashcli.fstab.os.partitions import Partitions
 
 
 class MockPartition:

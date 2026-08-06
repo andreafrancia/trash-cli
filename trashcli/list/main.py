@@ -6,8 +6,8 @@ import trashcli.trash
 from trashcli.empty.main import ContentReader
 from trashcli.fslib.file_system_reader import FileSystemReader
 from trashcli.fslib.real_fs_operations import RealContentsOf
-from trashcli.fstab.real_volume_of import RealVolumeOf
-from trashcli.fstab.volume_listing import RealVolumesListing
+from trashcli.fstab.real.real_list_volume_fs import RealListVolumeFs
+from trashcli.fstab.real.real_volumes import RealVolumes
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.dir_reader import DirReader, RealDirReader
 from trashcli.lib.print_version import PrintVersionArgs, \
@@ -31,9 +31,9 @@ def main():
         out=sys.stdout,
         err=sys.stderr,
         environ=os.environ,
-        volumes_listing=RealVolumesListing(),
+        volumes_listing=RealListVolumeFs(),
         uid=os.getuid(),
-        volumes=RealVolumeOf(),
+        volumes=RealVolumes(),
         dir_reader=RealDirReader(),
         file_reader=FileSystemReader(),
         content_reader=RealContentsOf(),

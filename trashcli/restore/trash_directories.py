@@ -5,7 +5,6 @@ import os
 import six
 from typing import Optional
 
-from trashcli.fstab.mount_points_listing import MountPointListFs
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.fstab.volumes import Volumes
 from trashcli.lib.environ import Environ
@@ -75,7 +74,7 @@ class TrashDirectories1:
         self.logger = logger
 
     def all_trash_directories(self):
-        volumes_to_check = self.volumes.list_mount_points()
+        volumes_to_check = self.volumes.list_volumes()
         for path1, volume1 in home_trash_dir(self.environ, self.volumes):
             if self._is_trusted(path1):
                 yield path1, volume1

@@ -1,7 +1,7 @@
 from tests.test_restore.components.collaborators.\
     test_restore_distrusts_unsafe_trash_dirs import (
         FakeReader, RecordingLogger, HOME, HOME_TRASH)
-from trashcli.fstab.volumes import FakeVolumes2
+from trashcli.fstab.fake.fake_volumes import FakeVolumes
 from trashcli.restore.trash_directories import TrashDirectories1
 from trashcli.trash_dirs_scanner import TopTrashDirRules
 
@@ -9,7 +9,7 @@ from trashcli.trash_dirs_scanner import TopTrashDirRules
 # the per-owner uid check was replaced by a per-directory rule: a trash dir is distrusted when its info or files sub-directory is a symlink or world writable
 class TestRestoreOwnerCheck:
     def setup_method(self):
-        self.volumes = FakeVolumes2("volume_of(%s)", [])
+        self.volumes = FakeVolumes([])
         self.logger = RecordingLogger()
 
     def home_trash_dirs(self, reader):

@@ -5,12 +5,12 @@ import sys
 from trashcli.fslib.real_fs_operations import RealEntriesIfDirExists, RealExists, \
     RealIsSymLink, RealContentsOf
 from trashcli.fslib.real_is_sticky_dir import RealIsStickyDir
-from trashcli.fstab.volume_listing import RealVolumesListing
+from trashcli.fstab.real.real_list_volume_fs import RealListVolumeFs
 from trashcli.rm.rm_cmd import RmCmd, RmFileSystemReader
 
 
 def main():
-    volumes_listing = RealVolumesListing()
+    volumes_listing = RealListVolumeFs()
     cmd = RmCmd(environ=os.environ,
                 getuid=os.getuid,
                 volumes_listing=volumes_listing,

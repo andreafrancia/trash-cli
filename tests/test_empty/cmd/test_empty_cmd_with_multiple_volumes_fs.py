@@ -15,14 +15,14 @@ from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.empty.main import FileSystemContentReader
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
-from trashcli.fstab.volume_listing import VolumesListing
+from trashcli.fstab.list_volume_fs import ListVolumeFs
 
 
 class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
     def setUp(self):
         self.temp_dir = MyPath.make_temp_dir()
         self.top_dir = self.temp_dir / 'topdir'
-        self.volumes_listing = Mock(spec=VolumesListing)
+        self.volumes_listing = Mock(spec=ListVolumeFs)
         self.volumes_listing.list_volumes.return_value = [self.top_dir]
         require_empty_dir(self.top_dir)
         self.environ = {}

@@ -11,7 +11,7 @@ from trashcli.empty.is_input_interactive import is_input_interactive
 from trashcli.empty.parser import Parser
 from trashcli.empty.print_time_action import PrintTimeAction, PrintTimeArgs
 from trashcli.fslib.fs_operations import ContentsOf
-from trashcli.fstab.volume_listing import VolumesListing
+from trashcli.fstab.list_volume_fs import ListVolumeFs
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.lib.dir_reader import DirReader
 from trashcli.lib.exit_codes import EX_OK
@@ -24,7 +24,7 @@ class EmptyCmd:
                  argv0,  # type: str
                  out,  # type: TextIO
                  err,  # type: TextIO
-                 volumes_listing,  # type: VolumesListing
+                 volumes_listing,  # type: ListVolumeFs
                  now,  # type: Callable[[], datetime]
                  file_reader,  # type: TopTrashDirRulesFs
                  dir_reader,  # type: DirReader

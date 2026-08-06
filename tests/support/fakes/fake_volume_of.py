@@ -3,7 +3,7 @@ from typing import List
 
 from tests.support.fakes.fake_is_mount import FakeIsMount
 from trashcli.fstab.volume_of import VolumeOf
-from trashcli.fstab.volume_of_impl import VolumeOfImpl
+from trashcli.fstab.impl.volume_of_impl import VolumeOfImpl
 
 
 class FakeVolumeOf(VolumeOf):

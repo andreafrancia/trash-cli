@@ -3,7 +3,7 @@ from abc import abstractmethod
 from trashcli.compat import Protocol
 
 
-class VolumeOf(Protocol):
+class OsMountPointsFs(Protocol):
     @abstractmethod
-    def volume_of(self, path):
+    def list_os_mount_points(self):
         raise NotImplementedError()

@@ -4,7 +4,7 @@ from trashcli.compat import Protocol
 
 from trashcli.fslib.fs_operations import PathExists, IsSymLink
 from trashcli.fslib.is_sticky_dir import IsStickyDir
-from trashcli.fstab.volume_listing import VolumesListing
+from trashcli.fstab.list_volume_fs import ListVolumeFs
 from trashcli.lib.dir_checker import DirChecker
 from trashcli.lib.user_info import UserInfoProvider
 
@@ -71,12 +71,12 @@ class TopTrashDirRules:
 class TrashDirsScanner:
     def __init__(self,
                  user_info_provider,  # type: UserInfoProvider
-                 volumes_listing,  # type: VolumesListing
+                 volumes_listing,  # type: ListVolumeFs
                  top_trash_dir_rules,  # type: TopTrashDirRules
                  dir_checker,  # type: DirChecker
                  ):
         self.user_info_provider = user_info_provider
-        self.volumes_listing = volumes_listing  # type: VolumesListing
+        self.volumes_listing = volumes_listing  # type: ListVolumeFs
         self.top_trash_dir_rules = top_trash_dir_rules
         self.dir_checker = dir_checker
 

@@ -10,7 +10,7 @@ from trashcli.fslib.real_fs_operations import RealRemoveFile, RealAtomicWrite, \
     RealReadFile, \
     RealWriteFile, RealMkDirs
 from trashcli.fslib.real_read_sticky_bit_fs import RealReadStickyBitFs
-from trashcli.fstab.real_volume_of import RealVolumeOf
+from trashcli.fstab.real.real_volumes import RealVolumes
 from trashcli.put.fs.fs import Fs
 
 
@@ -36,7 +36,7 @@ class Stat(NamedTuple('Stat', [
     pass
 
 
-class RealFs(RealVolumeOf, Fs):
+class RealFs(RealVolumes, Fs):
 
     def __init__(self):
         super(RealFs, self).__init__()
