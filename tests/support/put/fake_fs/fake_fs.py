@@ -214,7 +214,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists):
         directory = as_directory(self.get_entity_at(dirname))
         directory.add_link(basename, src)
 
-    def has_sticky_bit(self, path):
+    def is_sticky(self, path):
         return self._find_entry(path).stickiness is Stickiness.sticky
 
     def set_sticky_bit(self, path):

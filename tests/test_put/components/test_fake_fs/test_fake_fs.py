@@ -100,13 +100,13 @@ class TestFakeFs(unittest.TestCase):
     def test_set_sticky_bit_when_unset(self):
         self.fs.make_file("/foo")
 
-        assert self.fs.has_sticky_bit("/foo") is False
+        assert self.fs.is_sticky("/foo") is False
 
     def test_set_sticky_bit_when_set(self):
         self.fs.make_file("/foo")
         self.fs.set_sticky_bit("/foo")
 
-        assert self.fs.has_sticky_bit("/foo") is True
+        assert self.fs.is_sticky("/foo") is True
 
     def test_islink_when_not_found(self):
         assert self.fs.islink("/foo") is False

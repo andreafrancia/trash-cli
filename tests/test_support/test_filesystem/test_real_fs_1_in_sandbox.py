@@ -19,18 +19,18 @@ class TestWithInSandbox(unittest.TestCase):
 
         assert os.path.isdir(self.temp_dir / "test-dir/sub-dir")
 
-    def test_has_sticky_bit_returns_true(self):
+    def test_is_sticky_returns_true(self):
         self.fs.make_empty_file(self.temp_dir / "sticky")
         self.fs.set_sticky_bit(self.temp_dir / "sticky")
 
-        assert self.fs.has_sticky_bit(self.temp_dir / 'sticky')
+        assert self.fs.is_sticky(self.temp_dir / 'sticky')
 
-    def test_has_sticky_bit_returns_false(self):
+    def test_is_sticky_returns_false(self):
         self.fs.make_empty_file(self.temp_dir / "non-sticky")
         self.fs.set_sticky_bit(self.temp_dir / "non-sticky")
         self.fs.unset_sticky_bit(self.temp_dir / "non-sticky")
 
-        assert not self.fs.has_sticky_bit(self.temp_dir / "non-sticky")
+        assert not self.fs.is_sticky(self.temp_dir / "non-sticky")
 
     def tearDown(self):
         self.temp_dir.clean_up()

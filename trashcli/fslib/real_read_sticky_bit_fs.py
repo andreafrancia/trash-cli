@@ -4,6 +4,7 @@ import stat
 
 
 class RealReadStickyBitFs(ReadStickyBitFs):
+
     def is_sticky(self,
                   path,  # type: str
                   ):  # type: (...) -> bool

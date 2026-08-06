@@ -2,6 +2,7 @@ from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.check_type import NoCheck, TopTrashDirCheck
 from trashcli.put.core.either import Either, Right, Left
 from trashcli.put.core.failure_reason import FailureReason, LogContext
+from trashcli.put.fs.fs import Fs
 
 
 class SecurityCheck:
@@ -25,7 +26,7 @@ class SecurityCheck:
                 return Left(TrashDirCannotBeCreatedBecauseParentIsFile())
             if self.fs.islink(parent):
                 return Left(TrashDirIsNotSecureBecauseSymLink())
-            if not self.fs.has_sticky_bit(parent):
+            if not self.fs.is_sticky(parent):
                 return Left(TrashDirIsNotSecureBecauseNotSticky())
             return Right(None)
         raise Exception("Unknown check type: %s" % candidate.check_type)

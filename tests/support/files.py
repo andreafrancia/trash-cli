@@ -3,7 +3,6 @@ import shutil
 
 from trashcli.fslib.real_fs_operations import RealRemoveFile, \
     RealMkDirs, RealReadFile, RealWriteFile, RealRemoveFile2
-from trashcli.fslib.real_has_sticky_bit import RealHasStickyBit
 from trashcli.fslib.real_read_sticky_bit_fs import RealReadStickyBitFs
 from trashcli.fslib.real_set_sticky_bit_fs import RealSetStickyBitFs
 

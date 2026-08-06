@@ -9,6 +9,7 @@ from trashcli.fslib.fs_operations import RealMove
 from trashcli.fslib.real_fs_operations import RealRemoveFile, RealAtomicWrite, \
     RealReadFile, \
     RealWriteFile, RealMkDirs
+from trashcli.fslib.real_read_sticky_bit_fs import RealReadStickyBitFs
 from trashcli.fstab.real_volume_of import RealVolumeOf
 from trashcli.put.fs.fs import Fs
 
@@ -103,8 +104,8 @@ class RealFs(RealVolumeOf, Fs):
     def islink(self, path):
         return os.path.islink(path)
 
-    def has_sticky_bit(self, path):
-        return (os.stat(path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
+    def is_sticky(self, path):
+        return RealReadStickyBitFs().is_sticky(path)
 
     def realpath(self, path):
         return os.path.realpath(path)

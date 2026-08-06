@@ -3,15 +3,11 @@ import os
 from trashcli.fslib.real_fs_operations import RealMkDirs, \
     RealWriteFile
 from trashcli.fslib.real_is_sticky_dir import RealIsStickyDir
-from trashcli.fslib.real_has_sticky_bit import RealHasStickyBit
 from trashcli.fslib.real_read_sticky_bit_fs import RealReadStickyBitFs
 from trashcli.fslib.real_set_sticky_bit_fs import RealSetStickyBitFs
 
 
 class RealFs1:
-    def has_sticky_bit(self, path):
-        return RealReadStickyBitFs().is_sticky(path)
-
     def mkdirs(self, path):
         RealMkDirs().mkdirs(path)
 
@@ -33,6 +29,7 @@ class RealFs1:
 
     set_sticky_bit = RealSetStickyBitFs().set_sticky_bit
     unset_sticky_bit = RealSetStickyBitFs().unset_sticky_bit
+    is_sticky = RealReadStickyBitFs().is_sticky
 
     def make_empty_file(self, path):
         self.make_file(path, '')

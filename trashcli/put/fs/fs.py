@@ -53,7 +53,7 @@ class Fs(RealPathFs, Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def has_sticky_bit(self, path):
+    def is_sticky(self, path):
         raise NotImplementedError
 
     @abstractmethod
