@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from typing import List
 
 from trashcli.lib.my_input import Input
-from trashcli.restore.restore_fs import ReadCwdFs
+from trashcli.restore.fs.read_cwd_fs import ReadCwdFs
 from trashcli.restore.output import Output
 from trashcli.restore.output_recorder import OutputRecorder
 from trashcli.restore.restore_asking_the_user import RestoreAskingTheUser

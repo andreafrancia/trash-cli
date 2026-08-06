@@ -9,8 +9,9 @@ from tests.support.restore.restore_user import RestoreUser
 from trashcli.empty.top_trash_dir_rules_file_system_reader import RealTopTrashDirFs
 from trashcli.fslib.real_fs_operations import RealListFilesInDir
 from trashcli.fstab.volumes import FakeVolumes
-from trashcli.restore.real_restore_fs import RealFileReaderFs, \
-    RealPathReaderFs, RealRestoreWriterFs, RealRestoreReadFs
+from trashcli.restore.real_fs.real_restore_write_fs import RealRestoreWriterFs
+from trashcli.restore.real_fs.real_path_reader_fs import RealPathReaderFs
+from trashcli.restore.real_fs.real_file_reader_fs import RealFileReaderFs
 
 
 @pytest.mark.slow

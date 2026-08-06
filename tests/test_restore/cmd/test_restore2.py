@@ -6,7 +6,7 @@ from tests.support.py2mock import Mock, call
 from tests.support.restore.fake_restore_fs import FakePathFs
 from tests.support.restore.restore_user import RestoreUser
 from trashcli.empty.top_trash_dir_rules_file_system_reader import RealTopTrashDirFs
-from trashcli.restore.restore_fs import RestoreWriterFs
+from trashcli.restore.fs.restore_write_fs import RestoreWriterFs
 
 
 class TestRestore2(unittest.TestCase):

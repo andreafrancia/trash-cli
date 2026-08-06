@@ -3,8 +3,11 @@ import os
 import sys
 
 import trashcli.trash
-from .real_restore_fs import RealPathReaderFs, \
-    RealRestoreWriterFs, RealReadCwdFs, RealFileReaderFs, RealRestoreReadFs
+from trashcli.restore.real_fs.real_restore_read_fs import RealRestoreReadFs
+from trashcli.restore.real_fs.real_read_cwd_fs import RealReadCwdFs
+from trashcli.restore.real_fs.real_restore_write_fs import RealRestoreWriterFs
+from trashcli.restore.real_fs.real_path_reader_fs import RealPathReaderFs
+from trashcli.restore.real_fs.real_file_reader_fs import RealFileReaderFs
 from .real_restore_logger import RealRestoreLogger
 from .restore_cmd import RestoreCmd
 from ..empty.top_trash_dir_rules_file_system_reader import \

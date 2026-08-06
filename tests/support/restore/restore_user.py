@@ -1,18 +1,17 @@
 import sys
 from io import StringIO
-from typing import Dict, Optional
+from typing import Dict
 
 from tests.support.run.cmd_result import CmdResult
 from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
 from tests.test_restore.support.memo_logger import MemoLogger
-from trashcli.empty.top_trash_dir_rules_file_system_reader import \
-    RealTopTrashDirFs
 from trashcli.fslib.fs_operations import ListFilesInDir
 from trashcli.fstab.volumes import Volumes
 from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.restore_cmd import RestoreCmd
-from trashcli.restore.restore_fs import FileReaderFs, RestoreWriterFs, \
-    RestoreReadFs
+from trashcli.restore.fs.restore_write_fs import RestoreWriterFs
+from trashcli.restore.fs.restore_read_fs import RestoreReadFs
+from trashcli.restore.fs.file_reader_fs import FileReaderFs
 from trashcli.trash_dirs_scanner import TopTrashDirRulesFs
 
 

@@ -9,13 +9,8 @@ from tests.support.fakes.fake_trash_dir import FakeTrashDir, \
 from tests.support.py2mock import Mock
 from tests.test_restore.support.almost_fake_restore_fs import AlmostFakeRestoreReadFs
 from tests.test_restore.support.capture_logger import CaptureLogger
-from trashcli.empty.top_trash_dir_rules_file_system_reader import \
-    RealTopTrashDirFs
-from trashcli.fslib.real_fs_operations import RealListFilesInDir
-from trashcli.fstab.volumes import FakeVolumes
 from trashcli.lib.my_input import HardCodedInput
-from trashcli.restore.real_restore_fs import RealRestoreWriterFs, \
-    RealPathReaderFs, RealFileReaderFs
+from trashcli.restore.real_fs.real_restore_write_fs import RealRestoreWriterFs
 from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
 from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.trashed_files import TrashedFiles

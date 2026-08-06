@@ -1,23 +1,10 @@
-import sys
-from typing import TypeVar
-
-from six import StringIO
-
-from tests.support.cmd.capture_exit_code2 import capture_exit_code2
-from tests.support.dirs.my_path import MyPath
-from tests.support.fakes.fake_trash_dir import FakeTrashDir
-from tests.support.py2mock import Mock
-from tests.test_restore.support.capture_logger import CaptureLogger
 from trashcli.fslib.real_fs_operations import RealListFilesInDir, RealExists, RealIsSymLink, \
     RealIsWorldWritable
 from trashcli.fslib.real_is_sticky_dir import RealIsStickyDir
 from trashcli.fstab.volumes import FakeVolumes
-from trashcli.lib.my_input import HardCodedInput
-from trashcli.restore.real_restore_fs import RealRestoreWriterFs, \
-    RealPathReaderFs, RealFileReaderFs
-from trashcli.restore.restore_cmd import RestoreCmd
-from trashcli.restore.restore_fs import RestoreReadFs
-from trashcli.restore.trashed_files import TrashedFiles
+from trashcli.restore.real_fs.real_path_reader_fs import RealPathReaderFs
+from trashcli.restore.real_fs.real_file_reader_fs import RealFileReaderFs
+from trashcli.restore.fs.restore_read_fs import RestoreReadFs
 from trashcli.trash_dirs_scanner import TopTrashDirRulesFs
 
 

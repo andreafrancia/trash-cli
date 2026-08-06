@@ -5,8 +5,9 @@ from tests.support.restore.a_trashed_file import ATrashedFile
 from trashcli.fslib.fs_operations import PathExists, ListFilesInDir
 from trashcli.fstab.volumes import Volumes, FakeVolumes
 from trashcli.put.format_trash_info import format_trashinfo
-from trashcli.restore.restore_fs import FileReaderFs, PathReaderFs, \
-    RestoreWriterFs
+from trashcli.restore.fs.restore_write_fs import RestoreWriterFs
+from trashcli.restore.fs.path_reader_fs import PathReaderFs
+from trashcli.restore.fs.file_reader_fs import FileReaderFs
 
 
 class FakePathFs(ListFilesInDir,

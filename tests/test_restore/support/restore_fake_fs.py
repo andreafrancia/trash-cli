@@ -3,7 +3,7 @@ import os
 from typing import Iterable
 
 from trashcli.fslib.fs_operations import ListFilesInDir
-from trashcli.restore.restore_fs import FileReaderFs
+from trashcli.restore.fs.file_reader_fs import FileReaderFs
 
 
 class RestoreFakeFs(FileReaderFs, ListFilesInDir):

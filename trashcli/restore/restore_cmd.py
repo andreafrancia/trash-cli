@@ -6,8 +6,10 @@ from trashcli.fstab.volumes import Volumes
 from trashcli.lib.my_input import Input
 from trashcli.lib.print_version import PrintVersionAction, PrintVersionArgs
 from trashcli.restore.args import RunRestoreArgs
-from trashcli.restore.restore_fs import FileReaderFs, PathReaderFs, \
-    RestoreWriterFs, ReadCwdFs
+from trashcli.restore.fs.restore_write_fs import RestoreWriterFs
+from trashcli.restore.fs.path_reader_fs import PathReaderFs
+from trashcli.restore.fs.file_reader_fs import FileReaderFs
+from trashcli.restore.fs.read_cwd_fs import ReadCwdFs
 from trashcli.restore.handler import HandlerImpl
 from trashcli.restore.info_dir_searcher import InfoDirSearcher
 from trashcli.restore.info_files import InfoFiles

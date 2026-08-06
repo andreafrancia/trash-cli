@@ -3,7 +3,7 @@ import os
 import unittest
 
 from tests.support.dirs.my_path import MyPath
-from trashcli.restore.restore_fs import FileReaderFs
+from trashcli.restore.fs.file_reader_fs import FileReaderFs
 from trashcli.restore.trashed_files import TrashedFiles
 
 

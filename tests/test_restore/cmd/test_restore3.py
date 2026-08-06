@@ -10,7 +10,7 @@ from tests.support.py2mock import Mock
 from tests.test_restore.support.almost_fake_restore_fs import AlmostFakeRestoreReadFs
 from tests.test_restore.support.capture_logger import CaptureLogger
 from trashcli.lib.my_input import HardCodedInput
-from trashcli.restore.real_restore_fs import RealRestoreWriterFs
+from trashcli.restore.real_fs.real_restore_write_fs import RealRestoreWriterFs
 from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.trashed_files import TrashedFiles
 

@@ -1,4 +1,4 @@
-from trashcli.restore.restore_fs import ReadCwdFs
+from trashcli.restore.fs.read_cwd_fs import ReadCwdFs
 
 
 class FakeReadCwdFs(ReadCwdFs):
