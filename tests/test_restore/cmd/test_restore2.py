@@ -3,7 +3,7 @@ import unittest
 
 from tests.support.py2mock import Mock, call
 
-from tests.support.restore.fake_restore_fs import FakePathFs
+from tests.support.restore.fake_restore_fs import FakePathFs, GivenFs
 from tests.support.restore.restore_user import RestoreUser
 from trashcli.empty.top_trash_dir_rules_file_system_reader import RealTopTrashDirFs
 from trashcli.restore.fs.restore_write_fs import RestoreWriterFs
@@ -13,6 +13,7 @@ class TestRestore2(unittest.TestCase):
     def setUp(self):
         self.write_fs = Mock(spec=RestoreWriterFs)
         self.fs = FakePathFs()
+        self.given = GivenFs(self.fs)
         self.user = RestoreUser(
             environ={'XDG_DATA_HOME': '/data_home'},
             uid=1000,
@@ -37,8 +38,8 @@ class TestRestore2(unittest.TestCase):
                 res.stdout)
 
     def test_restore_operation(self):
-        self.fs.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
-                               datetime.datetime(2016, 1, 1), 'boo')
+        self.given.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
+                                  datetime.datetime(2016, 1, 1), 'boo')
 
         res = self.cmd_run(['trash-restore'], reply='0', from_dir='/cwd')
 
@@ -50,9 +51,9 @@ class TestRestore2(unittest.TestCase):
                 == self.write_fs.mock_calls)
 
     def test_restore_operation_when_dest_exists(self):
-        self.fs.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
+        self.given.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
                                datetime.datetime(2016, 1, 1), 'boo')
-        self.fs.add_file('/cwd/parent/foo.txt')
+        self.given.add_file('/cwd/parent/foo.txt')
 
         res = self.cmd_run(['trash-restore'], reply='0', from_dir='/cwd')
 
@@ -60,7 +61,7 @@ class TestRestore2(unittest.TestCase):
         assert ([] == self.write_fs.mock_calls)
 
     def test_when_user_reply_with_empty_string(self):
-        self.fs.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
+        self.given.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
                                datetime.datetime(2016, 1, 1), 'boo')
 
         res = self.cmd_run(['trash-restore'], reply='', from_dir='/cwd')
@@ -68,7 +69,7 @@ class TestRestore2(unittest.TestCase):
         assert res.last_line_of_stdout() == 'No files were restored'
 
     def test_when_user_reply_with_not_number(self):
-        self.fs.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
+        self.given.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
                                datetime.datetime(2016, 1, 1), 'boo')
 
         res = self.cmd_run(['trash-restore'], reply='non numeric', from_dir='/cwd')

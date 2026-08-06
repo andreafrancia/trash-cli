@@ -10,38 +10,31 @@ from trashcli.restore.fs.path_reader_fs import PathReaderFs
 from trashcli.restore.fs.file_reader_fs import FileReaderFs
 
 
-class FakePathFs(ListFilesInDir,
-                 Volumes, FileReaderFs, RestoreWriterFs,
-                 PathReaderFs, PathExists):
-
-    def exists(self, path):
-        return self.path_exists(path)
-
-    def path_exists(self, path):
-        return self.fake_fs.exists(path)
-
-    def __init__(self):
-        self.fake_fs = FakeFs()
-        self.mount_points = []
-
-    def mkdirs(self, path):
-        self.fake_fs.makedirs(path, 755)
-
-    def move(self, path, dest):
-        self.fake_fs.move(path, dest)
-
-    def remove_file(self, path):
-        self.fake_fs.remove_file(path)
+class GivenFs:
+    def __init__(self,
+                 fake_fs,  # type: FakePathFs
+                 ):
+        self.fake_fs = fake_fs
 
     def add_volume(self, mount_point):
-        self.mount_points.append(mount_point)
+        self.fake_fs.add_volume(mount_point)
 
-    def list_mount_points(self):
-        return FakeVolumes(self.mount_points).list_mount_points()
+    def add_file(self, path, content=b''):
+        self.fake_fs.fake_fs.makedirs(os.path.dirname(path), 755)
+        self.fake_fs.fake_fs.make_file(path, content)
 
-    def volume_of(self, path):
-        return FakeVolumes(self.mount_points).volume_of(path)
+    def add_trash_file(self, from_path, trash_dir, time, original_file_content):
+        content = format_trashinfo(from_path, time)
+        basename = os.path.basename(from_path)
+        info_path = os.path.join(trash_dir, 'info', "%s.trashinfo" % basename)
+        backup_copy_path = os.path.join(trash_dir, 'files', basename)
+        self.add_file(info_path, content)
+        self.add_file(backup_copy_path, original_file_content.encode('utf-8'))
 
+
+    def add_file_trashed_at(self, original_location, deletion_date):
+        self.make_trashed_file(original_location, '/home/user/.local/share/Trash',
+                                       deletion_date, '')
     def make_trashed_file(self, from_path, trash_dir, time,
                           original_file_content):
         content = format_trashinfo(from_path, time)
@@ -55,17 +48,38 @@ class FakePathFs(ListFilesInDir,
         self.add_file(backup_copy_path, original_file_content.encode('utf-8'))
         return trashed_file
 
-    def add_trash_file(self, from_path, trash_dir, time, original_file_content):
-        content = format_trashinfo(from_path, time)
-        basename = os.path.basename(from_path)
-        info_path = os.path.join(trash_dir, 'info', "%s.trashinfo" % basename)
-        backup_copy_path = os.path.join(trash_dir, 'files', basename)
-        self.add_file(info_path, content)
-        self.add_file(backup_copy_path, original_file_content.encode('utf-8'))
+class FakePathFs(ListFilesInDir,
+                 Volumes, FileReaderFs, RestoreWriterFs,
+                 PathReaderFs, PathExists):
 
-    def add_file(self, path, content=b''):
-        self.fake_fs.makedirs(os.path.dirname(path), 755)
-        self.fake_fs.make_file(path, content)
+    def __init__(self):
+        self.fake_fs = FakeFs()
+        self.mount_points = []
+
+    def exists(self, path):
+        return self.path_exists(path)
+
+    def path_exists(self, path):
+        return self.fake_fs.exists(path)
+
+    def mkdirs(self, path):
+        self.fake_fs.makedirs(path, 755)
+
+    def move(self, path, dest):
+        self.fake_fs.move(path, dest)
+
+    def remove_file(self, path):
+        self.fake_fs.remove_file(path)
+
+    def add_volume(self, mount_point):
+        self.mount_points.append(mount_point)
+        self.fake_fs.add_volume(mount_point)
+
+    def list_mount_points(self):
+        return FakeVolumes(self.mount_points).list_mount_points()
+
+    def volume_of(self, path):
+        return FakeVolumes(self.mount_points).volume_of(path)
 
     def list_files_in_dir(self, dir_path):
         for file_path in self.fake_fs.listdir(dir_path):
@@ -73,3 +87,4 @@ class FakePathFs(ListFilesInDir,
 
     def contents_of(self, path):
         return self.fake_fs.read(path).decode('utf-8')
+

@@ -34,6 +34,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists):
         self.root_inode = make_inode_dir('/', 0o755, None)
         self.root = self.root_inode.directory()
         self.cwd = cwd
+        self.mount_points = []
 
     def touch(self, path):
         if not self.exists(path):

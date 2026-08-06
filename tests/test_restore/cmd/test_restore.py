@@ -1,7 +1,7 @@
 import datetime
 
 from tests.support.asserts.assert_that import assert_that
-from tests.support.restore.fake_restore_fs import FakePathFs
+from tests.support.restore.fake_restore_fs import FakePathFs, GivenFs
 from tests.support.restore.has_been_restored_matcher import \
     has_been_restored, has_not_been_restored
 from tests.support.restore.restore_user import RestoreUser
@@ -11,6 +11,7 @@ from trashcli.empty.top_trash_dir_rules_file_system_reader import RealTopTrashDi
 class TestSearcher:
     def setup_method(self):
         self.fs = FakePathFs()
+        self.given = GivenFs(self.fs)
         self.user = RestoreUser(
             environ={'HOME': '/home/user'},
             uid=123,
@@ -24,12 +25,12 @@ class TestSearcher:
         )
 
     def test_will_not_detect_trashed_file_in_dirs_other_than_cur_dir(self):
-        self.fs.add_volume('/disk1')
-        self.fs.add_file('/disk1/.Trash-123/info/not_a_trashinfo')
-        self.fs.add_trash_file("/foo", '/home/user/.local/share/Trash',
-                               date_at(2018, 1, 1), '')
-        self.fs.add_trash_file("/disk1/bar", '/disk1/.Trash-123',
-                               date_at(2018, 1, 1), '')
+        self.given.add_volume('/disk1')
+        self.given.add_file('/disk1/.Trash-123/info/not_a_trashinfo')
+        self.given.add_trash_file("/foo", '/home/user/.local/share/Trash',
+                                  date_at(2018, 1, 1), '')
+        self.given.add_trash_file("/disk1/bar", '/disk1/.Trash-123',
+                                  date_at(2018, 1, 1), '')
 
         res = self.run_restore([], from_dir='/home/user')
 
@@ -37,9 +38,9 @@ class TestSearcher:
                 "No files trashed from current dir ('/home/user')\n")
 
     def test_will_show_file_in_cur_dir(self):
-        self.fs.add_trash_file("/home/user/foo",
-                               '/home/user/.local/share/Trash',
-                               date_at(2018, 1, 1), '')
+        self.given.add_trash_file("/home/user/foo",
+                                  '/home/user/.local/share/Trash',
+                                  date_at(2018, 1, 1), '')
 
         res = self.run_restore([], from_dir='/home/user')
 
@@ -48,7 +49,7 @@ class TestSearcher:
                 'No files were restored\n')
 
     def test_actual_restore(self):
-        trashed_file = self.fs.make_trashed_file("/home/user/foo",
+        trashed_file = self.given.make_trashed_file("/home/user/foo",
                                                  '/home/user/.local/share/Trash',
                                                  date_at(2018, 1, 1),
                                                  "contents of foo\n")
@@ -62,9 +63,9 @@ class TestSearcher:
         assert (self.fs.contents_of('/home/user/foo') == "contents of foo\n")
 
     def test_will_sort_by_date_by_default(self):
-        self.add_file_trashed_at("/home/user/third", date_at(2013, 1, 1))
-        self.add_file_trashed_at("/home/user/second", date_at(2012, 1, 1))
-        self.add_file_trashed_at("/home/user/first", date_at(2011, 1, 1))
+        self.given.add_file_trashed_at("/home/user/third", date_at(2013, 1, 1))
+        self.given.add_file_trashed_at("/home/user/second", date_at(2012, 1, 1))
+        self.given.add_file_trashed_at("/home/user/first", date_at(2011, 1, 1))
 
         res = self.run_restore([], from_dir='/home/user')
 
@@ -75,9 +76,9 @@ class TestSearcher:
                 'No files were restored\n')
 
     def test_will_sort_by_path(self):
-        self.add_file_trashed_at("/home/user/ccc", date_at(2011, 1, 1))
-        self.add_file_trashed_at("/home/user/bbb", date_at(2011, 1, 1))
-        self.add_file_trashed_at("/home/user/aaa", date_at(2011, 1, 1))
+        self.given.add_file_trashed_at("/home/user/ccc", date_at(2011, 1, 1))
+        self.given.add_file_trashed_at("/home/user/bbb", date_at(2011, 1, 1))
+        self.given.add_file_trashed_at("/home/user/aaa", date_at(2011, 1, 1))
 
         res = self.run_restore(['trash-restore', '--sort=path'], from_dir='/home/user')
 
@@ -89,10 +90,6 @@ class TestSearcher:
 
     def run_restore(self, args, reply='', from_dir=None):
         return self.user.run_restore(args, reply, from_dir)
-
-    def add_file_trashed_at(self, original_location, deletion_date):
-        self.fs.make_trashed_file(original_location, '/home/user/.local/share/Trash',
-                                  deletion_date, '')
 
 
 def date_at(year, month, day):
