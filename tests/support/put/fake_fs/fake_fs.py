@@ -37,14 +37,14 @@ class FakeFs(FakeVolumeOf, Fs, PathExists):
         self.mount_points = []
 
     def touch(self, path):
-        if not self.exists(path):
+        if not self.path_exists(path):
             self.make_file(path, '')
 
     def listdir(self, path):
         return self.ls_aa(path)
 
     def ls_existing(self, paths):
-        return [p for p in paths if self.exists(p)]
+        return [p for p in paths if self.path_exists(p)]
 
     def ls_aa(self, path):
         all_entries = self.ls_a(path)
@@ -98,7 +98,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists):
         return path.split('/')[1:]
 
     def atomic_write(self, path, content):
-        if self.exists(path):
+        if self.path_exists(path):
             raise OSError("already exists: %s" % path)
         self.make_file(path, content)
 
@@ -169,7 +169,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists):
             file = entry.entity
             return isinstance(file, Directory)
 
-    def exists(self, path):
+    def path_exists(self, path):
         try:
             self.get_entity_at(path)
             return True
@@ -184,7 +184,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists):
     def move(self, src, dest):
         basename, entry = self._pop_entry_from_dir(src)
 
-        if self.exists(dest) and self.isdir(dest):
+        if self.path_exists(dest) and self.isdir(dest):
             dest_dir = self.get_directory_at(dest)
             dest_dir.add_entry(basename, entry)
         else:
@@ -241,7 +241,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists):
         return file.getsize()
 
     def is_accessible(self, path):
-        return self.exists(path)
+        return self.path_exists(path)
 
     def get_mod_s(self, path):
         mode = self.get_mod(path)

@@ -33,7 +33,7 @@ class Fs(RealPathFs, Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def exists(self, path):
+    def path_exists(self, path):
         raise NotImplementedError
 
     @abstractmethod

@@ -60,25 +60,25 @@ class TestFakeFs(unittest.TestCase):
         assert self.fs.isdir("/does-not-exists") is False
 
     def test_exists_false(self):
-        assert self.fs.exists("/foo") is False
+        assert self.fs.path_exists("/foo") is False
 
     def test_exists_true(self):
         self.fs.make_file("/foo")
 
-        assert self.fs.exists("/foo") is True
+        assert self.fs.path_exists("/foo") is True
 
     def test_remove_file(self):
         self.fs.make_file("/foo")
         self.fs.remove_file("/foo")
 
-        assert self.fs.exists("/foo") is False
+        assert self.fs.path_exists("/foo") is False
 
     def test_move(self):
         self.fs.make_file("/foo")
         self.fs.move("/foo", "/bar")
 
-        assert self.fs.exists("/foo") is False
-        assert self.fs.exists("/bar") is True
+        assert self.fs.path_exists("/foo") is False
+        assert self.fs.path_exists("/bar") is True
 
     def test_move_dir(self):
         self.fs.mkdir("/fruits")

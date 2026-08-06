@@ -61,7 +61,7 @@ class EntriesIfDirExists(Protocol):
 
 class PathExists(Protocol):
     @abstractmethod
-    def exists(self, path):
+    def path_exists(self, path):
         raise NotImplementedError()
 
 

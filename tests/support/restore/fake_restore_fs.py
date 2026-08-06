@@ -56,11 +56,8 @@ class FakePathFs(ListFilesInDir,
         self.fake_fs = FakeFs()
         self.mount_points = []
 
-    def exists(self, path):
-        return self.path_exists(path)
-
     def path_exists(self, path):
-        return self.fake_fs.exists(path)
+        return self.fake_fs.path_exists(path)
 
     def mkdirs(self, path):
         self.fake_fs.makedirs(path, 755)

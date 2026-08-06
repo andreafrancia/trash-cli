@@ -23,11 +23,11 @@ class TestFakeFileSystem(unittest.TestCase):
         assert 'two' == self.fs.contents_of('/path/to/file2')
 
     def test_no_file_exists_at_beginning(self):
-        assert not self.fs.exists('/filename')
+        assert not self.fs.path_exists('/filename')
 
     def test_after_a_creation_the_file_exists(self):
         self.fs.create_fake_file('/filename')
-        assert self.fs.exists('/filename')
+        assert self.fs.path_exists('/filename')
 
     def test_create_fake_dir(self):
         self.fs.create_fake_dir('/etc', 'passwd', 'shadow', 'hosts')

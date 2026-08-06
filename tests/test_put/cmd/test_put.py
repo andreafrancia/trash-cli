@@ -223,7 +223,7 @@ class TestPut:
 
     def test_make_file(self):
         self.fs.make_file("pippo", 'content')
-        assert True == self.fs.exists("pippo")
+        assert True == self.fs.path_exists("pippo")
 
     def test_when_file_exists(self):
         self.fs.make_file("pippo", 'content')
@@ -232,7 +232,7 @@ class TestPut:
                               {"HOME": "/home/user"}, 123)
 
         actual = {
-            'file_pippo_exists': self.fs.exists("pippo"),
+            'file_pippo_exists': self.fs.path_exists("pippo"),
             'exit_code': result.exit_code,
             'files_in_info_dir': self.fs.ls_aa(
                 '/home/user/.local/share/Trash/info'),
@@ -260,7 +260,7 @@ class TestPut:
                               {"HOME": "/home/user"}, 123)
 
         actual = {
-            'file_pippo_exists': self.fs.exists("pippo"),
+            'file_pippo_exists': self.fs.path_exists("pippo"),
             'exit_code': result.exit_code,
             'stderr': result.stderr,
             'files_in_info_dir': self.fs.ls_aa(
@@ -290,7 +290,7 @@ class TestPut:
         result = self.run_cmd(['trash-put', 'pippo'],
                               {"HOME": "/home/user"}, 123)
 
-        assert False == self.fs.exists("pippo")
+        assert False == self.fs.path_exists("pippo")
         assert EX_OK == result.exit_code
         assert ['pippo.trashinfo'] == self.fs.ls_aa(
             '/home/user/.local/share/Trash/info')

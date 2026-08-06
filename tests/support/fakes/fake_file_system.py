@@ -7,7 +7,7 @@ class FakeFileSystem:
     def contents_of(self, path):
         return self.files[path]
 
-    def exists(self, path):
+    def path_exists(self, path):
         return path in self.files
 
     def entries_if_dir_exists(self, path):

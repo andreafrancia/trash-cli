@@ -35,7 +35,7 @@ class TestPutUnwritableTrashDir:
 
         self.run_cmd(['trash-put', '/foo'])
 
-        assert self.fs.exists("/foo")
+        assert self.fs.path_exists("/foo")
 
     def test_it_does_not_move_the_file_into_the_trash_on_failure(self):
         self.fs.touch("/foo")

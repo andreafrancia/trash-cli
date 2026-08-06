@@ -24,7 +24,7 @@ class AlmostFakeRestoreReadFs(FakeVolumes,
     path_lexists = RealPathReaderFs().path_lexists
     path_isdir = RealPathReaderFs().path_isdir
     contents_of = RealFileReaderFs().contents_of
-    exists = RealExists().exists
+    exists = RealExists().path_exists
     is_sticky_dir = RealIsStickyDir().is_sticky_dir
     is_symlink = RealIsSymLink().is_symlink
     is_world_writable = RealIsWorldWritable().is_world_writable

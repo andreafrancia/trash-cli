@@ -16,7 +16,7 @@ class RealEntriesIfDirExists(EntriesIfDirExists):
 
 
 class RealExists(PathExists):
-    def exists(self, path):  # type: (str) -> bool
+    def path_exists(self, path):  # type: (str) -> bool
         return os.path.exists(path)
 
 

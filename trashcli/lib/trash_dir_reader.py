@@ -18,7 +18,7 @@ class TrashDirReader:
         for entry in self.dir_reader.entries_if_dir_exists(files_dir):
             trashinfo_path = os.path.join(info_dir, entry + '.trashinfo')
             file_path = os.path.join(files_dir, entry)
-            if not self.dir_reader.exists(trashinfo_path):
+            if not self.dir_reader.path_exists(trashinfo_path):
                 yield file_path
 
     def list_trashinfo(self, path):

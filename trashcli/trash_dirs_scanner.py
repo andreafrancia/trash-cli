@@ -58,7 +58,7 @@ class TopTrashDirRules:
 
     def valid_to_be_read(self, path):
         parent_trashdir = os.path.dirname(path)
-        if not self.reader.exists(path):
+        if not self.reader.path_exists(path):
             return top_trash_dir_does_not_exist
         if not self.reader.is_sticky_dir(parent_trashdir):
             return top_trash_dir_invalid_because_not_sticky

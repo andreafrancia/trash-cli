@@ -118,7 +118,7 @@ class HasBeenRestoredBaseMatcher:
 
     def _expectations_satisfactions(self, a_trashed_file, focus_on=None):
         return [
-            Satisfaction(e, self.fs.exists(e.path)) for e in
+            Satisfaction(e, self.fs.path_exists(e.path)) for e in
             self._expectations_for(a_trashed_file, focus_on)]
 
     def _expectations_for(self, a_trashed_file, focus_on=None):

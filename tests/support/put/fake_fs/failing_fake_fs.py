@@ -58,6 +58,6 @@ class FailingFakeFs(FailingOnAtomicWriteFakeFs,
         super(FailingFakeFs, self).__init__()
 
     def assert_does_not_exist(self, path):
-        if self.exists(path):
+        if self.path_exists(path):
             raise AssertionError(
                 "expected path to not exists but it does: %s" % path)

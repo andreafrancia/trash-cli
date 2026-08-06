@@ -12,7 +12,7 @@ class MockDirReader(DirReader):
     def entries_if_dir_exists(self, path):  # type: (str) -> List[str]
         return list(self.pick_dir(path).keys())
 
-    def exists(self, path):  # type: (str) -> bool
+    def path_exists(self, path):  # type: (str) -> bool
         raise NotImplementedError()
 
     def add_file(self, path):

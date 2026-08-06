@@ -12,7 +12,7 @@ class FakeReader:
         self.symlinks = set(symlinks)
         self.world_writable = set(world_writable)
 
-    def exists(self, path):
+    def path_exists(self, path):
         return True
 
     def is_sticky_dir(self, path):
