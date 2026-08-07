@@ -1,6 +1,15 @@
 repos:
   - repo: local
     hooks:
+      - id: check-types
+        name: mypy (trashcli Python 3)
+        description: >-
+          Runs scripts/check-types, which type-checks trashcli with mypy
+          under the active Python 3 environment.
+        entry: scripts/check-types
+        language: system
+        pass_filenames: false
+        files: ^trashcli/.*\.py$
       - id: check-types-py27
         name: mypy --py2 (trashcli Python 2.7 compatibility)
         description: >-
