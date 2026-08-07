@@ -1,6 +1,7 @@
 import datetime
 
 from tests.support.asserts.assert_that import assert_that
+from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.fake_restore_fs import FakePathFs, GivenFs
 from tests.support.restore.has_been_restored_matcher import \
     has_been_restored, has_not_been_restored

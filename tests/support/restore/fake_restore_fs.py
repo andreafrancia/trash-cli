@@ -22,8 +22,8 @@ class GivenFs:
         self.fake_fs.add_volume(mount_point)
 
     def add_file(self, path, content=b''):
-        self.fake_fs.fake_fs.makedirs(os.path.dirname(path), 755)
-        self.fake_fs.fake_fs.make_file(path, content)
+        self.fake_fs.makedirs(os.path.dirname(path), 755)
+        self.fake_fs.make_file(path, content)
 
     def add_trash_file(self, from_path, trash_dir, time, original_file_content):
         content = format_trashinfo(from_path, time)
@@ -60,6 +60,12 @@ class FakePathFs(ListFilesInDir,
 
     def path_exists(self, path):
         return self.fake_fs.path_exists(path)
+
+    def makedirs(self, path, mode):
+        return self.fake_fs.makedirs(path, mode)
+
+    def make_file(self, path, content):
+        return self.fake_fs.make_file(path, content)
 
     def mkdirs(self, path):
         self.fake_fs.mkdirs(path)
