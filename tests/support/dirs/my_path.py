@@ -23,10 +23,16 @@ class MyPath(str):
                     ):  # type: (...) -> MyPath
         return self.path_join(other_path)
 
-    def clean_str(self,  # type: Self
+    def _clean_str(self,  # type: Self
                   stdout,  # type: StringIO
                   ):  # type: (...) -> str
         return stdout.getvalue().replace(self, '')
+
+    def clean_and_sort(self,  # type: Self
+                       stdout,  # type: StringIO
+                       ):  # type: (...) -> str
+        lines = self._clean_str(stdout).splitlines(keepends=True)
+        return ''.join(sorted(lines))
 
     def read(self,  # type: Self
              path):
