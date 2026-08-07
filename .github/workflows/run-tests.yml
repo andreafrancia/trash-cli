@@ -14,16 +14,23 @@ jobs:
     strategy:
       matrix:
         include:
-          - { os: ubuntu-latest, python_version: '2.7' }
-          - { os: ubuntu-latest, python_version: '3.8' }
-          - { os: ubuntu-latest, python_version: '3.14' }
+          - { os: ubuntu-22.04, python_version: '2.7' }
+          - { os: ubuntu-22.04, python_version: '3.8' }
+          - { os: ubuntu-22.04, python_version: '3.14' }
           - { os: macos-latest, python_version: '3.13' }
 
     runs-on: ${{ matrix.os }}
 
     steps:
+    - name: prepare linux
+      if: ${{ startswith(matrix.os, 'ubuntu') }}
+      shell: bash
+      run: |
+        # apt in runner, if needed, may not be up-to-date
+        sudo apt-get update
     - uses: actions/checkout@v4
     - name: Set up 3.5 Python, ${{ matrix.python_version }}
+      id: setup-python-35
       if: ${{ matrix.python_version == '3.5' }}
       uses: actions/setup-python@v5
       env:
@@ -32,21 +39,26 @@ jobs:
         PIP_TRUSTED_HOST: "pypi.python.org pypi.org files.pythonhosted.org"
       with:
         python-version: ${{ matrix.python_version }}
+    # Step "Set up Python 2.7" inspired/copied from
+    # https://github.com/ytdl-org/youtube-dl/blob/1e109aaee13a30e2a23f982410ffb3e4f73913df/.github/workflows/ci.yml
+    # licensed under the "The Unlicense" license (http://unlicense.org/)
+    - name: Set up Python 2.7
+      id: setup-python-27
+      if: ${{ matrix.python-version == '2.7' }}
+      shell: bash
+      run: |
+        # Ubuntu 22.04 no longer has python-is-python2: fetch it
+        curl -L "http://launchpadlibrarian.net/474693132/python-is-python2_2.7.17-4_all.deb" -o python-is-python2.deb
+        sudo apt-get install -y python2
+        sudo dpkg --force-breaks -i python-is-python2.deb
+        echo "PYTHONHOME=/usr" >> "$GITHUB_ENV"
     - name: Set up Python ${{ matrix.python_version }}
       id: setup-python
       uses: andreafrancia/setup-python@v1
-      if: ${{ matrix.python_version != '3.5' }}
-      continue-on-error: true
+      if: ${{ matrix.python_version != '3.5' && matrix.python_version != '2.7'}}
       with:
         python-version: ${{ matrix.python_version }}
-    - name: Set up Python ${{ matrix.python_version }} (retry after apt mirror flake)
-      # andreafrancia/setup-python builds Python 2.7 from source via apt, which
-      # occasionally 404s on a stale Azure mirror package (e.g. libc6-dbg).
-      # That's a transient infra issue, not a build failure, so retry once.
-      uses: andreafrancia/setup-python@v1
-      if: ${{ matrix.python_version != '3.5' && steps.setup-python.outcome == 'failure' }}
-      with:
-        python-version: ${{ matrix.python_version }}
+    # -------- pip ---------
     - name: Upgrade pip
       run: python -m pip install --upgrade pip
     - name: Install dependencies
@@ -54,6 +66,9 @@ jobs:
     - name: Check Types
       run: ./scripts/check-types
       if: matrix.python_version != '2.7'
+    - name: Check Types 2.7
+      run: ./scripts/check-types-py27
+      if: matrix.python_version == '2.7'
     - name: Run tests
       run: python -m pytest
   sdist:
