@@ -279,11 +279,18 @@ Environment setup::
     source .venv/bin/activate
     pip install -r requirements-dev.txt -r requirements.txt
 
+    # this will install pre-commit hooks
+    pre-commit install
+
 Running tests::
 
     pytest -m 'not slow'        # run only fast tests
     pytest -m 'slow'            # run slow tests
     pytest                      # run all tests
+
+Checking types via git hooks::
+
+    pre-commit run --all-files  # run the hook manually
 
 Thanks
 ------
