@@ -11,7 +11,10 @@ set -euo pipefail
 VENV_DIR="$ROOT_DIR/.venv-mypy27"
 
 find_python() {
-    for candidate in python3 python
+    # mypy[python2]==0.971 pulls in typed-ast, which is unmaintained and has
+    # no wheels (and doesn't build from source) past CPython 3.11, so prefer
+    # a slightly older interpreter here rather than whatever "python3" is.
+    for candidate in python3.11 python3.10 python3.9 python3.8 python3 python
     do
         if command -v "$candidate" &> /dev/null; then
             echo "$candidate"
