@@ -1,0 +1,12 @@
+repos:
+  - repo: local
+    hooks:
+      - id: check-types-py27
+        name: mypy --py2 (trashcli Python 2.7 compatibility)
+        description: >-
+          Runs scripts/check-types-py27, which type-checks trashcli as
+          Python 2.7 code using a pinned, ancient mypy in its own venv.
+        entry: scripts/check-types-py27
+        language: system
+        pass_filenames: false
+        files: ^trashcli/.*\.py$
