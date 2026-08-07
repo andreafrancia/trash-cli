@@ -89,7 +89,7 @@ class RealMove(Move):
 
 
 class ListFilesInDir(Protocol):
-    def list_files_in_dir(self, path):  # type: (str) -> Iterable[str]
+    def list_files_in_dir(self, dir_path):  # type: (str) -> Iterable[str]
         raise NotImplementedError()
 
 

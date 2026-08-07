@@ -15,7 +15,7 @@ class RestoreFakeFs(FileReaderFs, ListFilesInDir):
     def contents_of(self, path):
         return self.fs.read(path)
 
-    def list_files_in_dir(self, path):  # type: (str) -> Iterable[str]
-        for entry in self.fs.listdir(path):
-            result = os.path.join(path, entry)
+    def list_files_in_dir(self, dir_path):  # type: (str) -> Iterable[str]
+        for entry in self.fs.listdir(dir_path):
+            result = os.path.join(dir_path, entry)
             yield result

@@ -1,9 +1,12 @@
+from typing import Iterable
+
+
 class Dirs:
-    def list_files_in_dir(self, path):
+    def list_files_in_dir(self, dir_path):  # type: (str) -> Iterable[str]
         import os
-        if not os.path.isdir(path):
+        if not os.path.isdir(dir_path):
             return []
-        return os.listdir(path)
+        return os.listdir(dir_path)
 
     def list_files_in_subdir(self, path, subdir):
         return ["%s/%s" % (subdir, f) for f in

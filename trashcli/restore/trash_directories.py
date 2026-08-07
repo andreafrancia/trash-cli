@@ -74,7 +74,7 @@ class TrashDirectories1:
         self.logger = logger
 
     def all_trash_directories(self):
-        volumes_to_check = self.volumes.list_volumes()
+        volumes_to_check = self.volumes.list_volumes(environ={})
         for path1, volume1 in home_trash_dir(self.environ, self.volumes):
             if self._is_trusted(path1):
                 yield path1, volume1

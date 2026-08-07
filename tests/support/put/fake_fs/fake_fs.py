@@ -1,7 +1,7 @@
 import errno
 import os
 
-from typing import cast
+from typing import cast, Iterable
 
 from tests.support.fakes.fake_volume_of import FakeVolumeOf
 from tests.support.put.fake_fs.directory import Directory
@@ -15,6 +15,8 @@ from tests.support.put.fake_fs.symlink import SymLink
 from tests.support.put.format_mode import format_mode
 from tests.support.put.my_file_not_found_error import MyFileNotFoundError
 from trashcli.fslib.fs_operations import PathExists
+from trashcli.fstab.fake.fake_volumes import FakeVolumes
+from trashcli.fstab.volumes import Volumes
 from trashcli.put.check_cast import check_cast
 from trashcli.put.fs.fs import Fs
 from trashcli.put.fs.fs import list_all
@@ -28,19 +30,18 @@ def as_inode(entry):  # type: (Entry) -> INode
     return check_cast(INode, entry)
 
 
-class FakeFs(FakeVolumeOf, Fs, PathExists):
+class FakeFs(FakeVolumes, Fs, PathExists):
     def __init__(self, cwd='/'):
         super(FakeFs, self).__init__()
         self.root_inode = make_inode_dir('/', 0o755, None)
         self.root = self.root_inode.directory()
         self.cwd = cwd
-        self.mount_points = []
 
     def touch(self, path):
         if not self.path_exists(path):
             self.make_file(path, '')
 
-    def list_files_in_dir(self, dir_path):
+    def list_files_in_dir(self, dir_path):  # type: (str) -> Iterable[str]
         for file_path in self.listdir(dir_path):
             yield os.path.join(dir_path, file_path)
 

@@ -1,4 +1,5 @@
 import os
+from typing import Iterable
 
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.a_trashed_file import ATrashedFile
@@ -56,7 +57,6 @@ class FakePathFs(ListFilesInDir,
 
     def __init__(self):
         self.fake_fs = FakeFs()
-        self.mount_points = []
 
     def path_exists(self, path):
         return self.fake_fs.path_exists(path)
@@ -71,19 +71,18 @@ class FakePathFs(ListFilesInDir,
         self.fake_fs.remove_file(path)
 
     def add_volume(self, mount_point):
-        self.mount_points.append(mount_point)
-        self.fake_fs.add_volume(mount_point)
+        return self.fake_fs.add_volume(mount_point)
 
-    def list_volumes(self):
-        return FakeVolumes(self.mount_points).list_volumes()
+    def list_volumes(self, environ):
+        return self.fake_fs.list_volumes(environ)
 
     def is_mount(self, path):
-        return FakeVolumes(self.mount_points).is_mount(path)
+        return self.fake_fs.is_mount(path)
 
     def volume_of(self, path):
-        return FakeVolumes(self.mount_points).volume_of(path)
+        return self.fake_fs.volume_of(path)
 
-    def list_files_in_dir(self, dir_path):
+    def list_files_in_dir(self, dir_path):  # type: (str) -> Iterable[str]
         return self.fake_fs.list_files_in_dir(dir_path)
 
     def contents_of(self, path):
