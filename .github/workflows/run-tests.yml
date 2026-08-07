@@ -33,8 +33,18 @@ jobs:
       with:
         python-version: ${{ matrix.python_version }}
     - name: Set up Python ${{ matrix.python_version }}
+      id: setup-python
       uses: andreafrancia/setup-python@v1
       if: ${{ matrix.python_version != '3.5' }}
+      continue-on-error: true
+      with:
+        python-version: ${{ matrix.python_version }}
+    - name: Set up Python ${{ matrix.python_version }} (retry after apt mirror flake)
+      # andreafrancia/setup-python builds Python 2.7 from source via apt, which
+      # occasionally 404s on a stale Azure mirror package (e.g. libc6-dbg).
+      # That's a transient infra issue, not a build failure, so retry once.
+      uses: andreafrancia/setup-python@v1
+      if: ${{ matrix.python_version != '3.5' && steps.setup-python.outcome == 'failure' }}
       with:
         python-version: ${{ matrix.python_version }}
     - name: Upgrade pip
