@@ -1,0 +1,39 @@
+name: Bump version
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          scripts/lib/install-python-requirements
+
+      - name: Bump version
+        run: scripts/bump
+
+      - name: Tag new version
+        run: |
+          version="$(python -c 'import setuptools; setuptools.setup()' --version)"
+          git tag "$version"
+
+      - name: Push commit and tag
+        run: git push origin "HEAD:${{ github.ref_name }}" --follow-tags
