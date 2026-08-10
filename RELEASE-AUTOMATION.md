@@ -171,3 +171,32 @@ confirm it matches the workflow YAML files exactly (no drift).
 
 **Definition of done:** one source of truth for the release process, and it's
 accurate.
+
+---
+
+## [ ] Story 8 — Write a manual for the one-time website setup
+
+Story 5 is a terse checklist written for whoever's already deep in this
+conversation's context. This story is a standalone, human-facing runbook you
+can follow cold, months from now, without remembering any of this design
+discussion.
+
+**Implementation:** new file `docs/release-setup-manual.md`, written for a
+human clicking through pypi.org and github.com, not for an LLM. Covers, in
+order:
+1. Creating the PyPI Trusted Publisher entry — exact URL
+   (`https://pypi.org/manage/project/trash-cli/settings/publishing/`), exact
+   field values (owner, repo, workflow filename, environment name).
+2. Creating the GitHub `pypi` Environment — exact Settings path
+   (repo -> Settings -> Environments -> New environment), exact field values
+   (name, required reviewers, optional deployment tag policy).
+3. How to verify both sides afterward (same checks as Story 5's "how to
+   test": `gh api .../environments/pypi`, and the Publishing page on PyPI).
+
+**How to test after implementing:** follow the document literally, with no
+other context than what's written in it, and confirm each step lands on the
+right settings page with the right fields — this is also how you'll actually
+perform Story 5.
+
+**Definition of done:** the manual is accurate against the current PyPI/
+GitHub UI, and Story 5 can be executed from it alone.
