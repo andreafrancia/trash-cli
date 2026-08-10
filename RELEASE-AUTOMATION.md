@@ -166,7 +166,7 @@ after explicit manual approval, with zero stored secrets involved.
 
 ---
 
-## [ ] Story 7 — Finalize AGENTS.md, retire the old manual doc
+## [x] Story 7 — Finalize AGENTS.md, retire the old manual doc
 
 **Implementation:** rewrite AGENTS.md's "Release process" section to describe
 the final flow end-to-end (run `bump-version.yml` -> draft+publish a Release

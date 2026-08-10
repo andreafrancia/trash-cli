@@ -32,31 +32,47 @@ runs never collide with a real release version.
 
 ## Release process
 
-This section describes the process as it exists today. Release automation is
-in progress — see `RELEASE-AUTOMATION.md` at the repo root for the target
-process and current status; treat that file as more current than this one
-until it says the migration is done.
+Cutting a release takes three actions, none of them local commands, in this
+order:
 
-Current (manual) steps:
+1. **Bump the version.** On GitHub: Actions -> "Bump version" ->
+   Run workflow (on `master`). This runs `scripts/bump` in CI, commits
+   `Bump version to 'X'`, tags it `X` (bare version string, no `v` prefix,
+   e.g. `0.24.8.10`), and pushes both. Workflow:
+   `.github/workflows/bump-version.yml`.
+2. **Draft and publish a GitHub Release** on that new tag, via the normal
+   GitHub web UI ("Draft a new release" -> choose the tag just pushed).
+   Publishing the release (the `release: published` event) triggers
+   `.github/workflows/publish-release.yml`, which builds the sdist,
+   `twine check`s it, and attaches it to the Release as a downloadable asset.
+   That workflow also uploads the sdist as a build artifact for the next
+   step.
+3. **Approve the PyPI publish.** The same workflow has a second job,
+   `publish-pypi`, gated behind the `pypi` GitHub Environment (required
+   reviewer + a tag-name policy limited to `0.[0-9]*.[0-9]*.[0-9]*`). The
+   workflow run pauses at "Review deployments"; approving it publishes the
+   already-built sdist to PyPI via `pypa/gh-action-pypi-publish`, using PyPI
+   Trusted Publishing (OIDC) — there is no PyPI API token stored anywhere in
+   this repo, and this job is never reachable from a `pull_request`-triggered
+   run, so approving a fork PR's workflow run can never trigger a PyPI
+   publish.
 
-1. `scripts/bump` locally to bump the version and commit it.
-2. `git push origin master`.
-3. Build the sdist locally (`python -m build --sdist`), `twine check` it,
-   upload to TestPyPI, test-install from there.
-4. `twine upload` the sdist to real PyPI.
-5. `git tag <version>` and push the tag — this happens *after* the PyPI
-   upload, and no GitHub Release object is ever created.
+No TestPyPI step: `run-tests.yml`'s `sdist` job already builds, installs, and
+exercises every CLI command on every push, which was TestPyPI's only real
+value here.
 
-Full manual walkthrough: `docs/how-to-build-and-upload-a-new-release.rst`.
+One-time setup required before this works (not part of the workflows
+themselves): a PyPI Trusted Publisher entry for this repo/workflow/
+environment, and the `pypi` GitHub Environment's protection rules. See
+`docs/release-setup-manual.md` for the exact steps, and `RELEASE-AUTOMATION.md`
+for how each piece was built and verified.
 
-Two GitHub Actions workflows exist:
+Workflows involved:
 
 - `.github/workflows/run-tests.yml` — runs on every push and PR: the test
   matrix (Python 2.7-3.14, Linux/macOS), type checks, and an `sdist` job that
   builds the sdist and pip-installs it to confirm packaging works.
-- `.github/workflows/make-release.yml` — runs on *every push to any branch*
-  (not just tags/master). It sets a dev version and builds an sdist, then
-  uploads it as a plain CI artifact via `actions/upload-artifact`. Despite the
-  name, this does not create a GitHub Release and does not touch PyPI — it's
-  effectively a duplicate of the `sdist` job above with a different version
-  string.
+- `.github/workflows/bump-version.yml` — manual (`workflow_dispatch` only):
+  bump, commit, tag, push.
+- `.github/workflows/publish-release.yml` — triggered by `release: published`:
+  build sdist + attach to Release, then (gated) publish to PyPI.
