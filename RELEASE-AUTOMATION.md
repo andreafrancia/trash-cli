@@ -18,6 +18,10 @@ Design decided 2026-08-10:
   builds, installs, and exercises the CLI on every push, which was TestPyPI's
   only real value here.
 
+Status legend: `[ ]` todo, `[~]` implemented and locally verified but the
+story's own live/on-GitHub test hasn't run yet (everything so far is
+committed locally, not pushed), `[x]` fully done including the live test.
+
 Each story below: implement -> verify using its "how to test" section ->
 commit locally (no push) -> check the box.
 
@@ -36,7 +40,7 @@ Commit: `0de3cf9`
 
 ---
 
-## [ ] Story 2 — `bump-version.yml`: manual workflow to bump + tag + push
+## [~] Story 2 — `bump-version.yml`: manual workflow to bump + tag + push
 
 As Andrea, I want a manually-triggered workflow that computes today's
 version, commits it, tags it, and pushes both, so I don't run anything
@@ -62,7 +66,7 @@ commit and matching pushed tag with no local commands.
 
 ---
 
-## [ ] Story 3 — Delete the redundant `make-release.yml`
+## [~] Story 3 — Delete the redundant `make-release.yml`
 
 It runs on every push to every branch and only duplicates what the `sdist`
 job in `run-tests.yml` already checks, uploading a dev-version tarball nobody
@@ -78,7 +82,7 @@ appears), and its `sdist` job still passes.
 
 ---
 
-## [ ] Story 4 — `publish-release.yml`: build sdist and attach to the Release
+## [~] Story 4 — `publish-release.yml`: build sdist and attach to the Release
 
 As Andrea, when I publish a GitHub Release for a tag, I want the sdist built
 from that tag and attached as a downloadable asset automatically.
@@ -137,7 +141,7 @@ repo/org secrets for PyPI.
 
 ---
 
-## [ ] Story 6 — Gated `publish-pypi` job in `publish-release.yml`
+## [~] Story 6 — Gated `publish-pypi` job in `publish-release.yml`
 
 As Andrea, after the sdist is built, I want a second job that publishes it to
 PyPI, gated behind my approval, using OIDC only.
@@ -183,7 +187,7 @@ accurate.
 
 ---
 
-## [ ] Story 8 — Write a manual for the one-time website setup
+## [x] Story 8 — Write a manual for the one-time website setup
 
 Story 5 is a terse checklist written for whoever's already deep in this
 conversation's context. This story is a standalone, human-facing runbook you
