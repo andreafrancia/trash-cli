@@ -104,24 +104,33 @@ a couple of minutes, no PyPI interaction yet.
 
 ---
 
-## [ ] Story 5 — One-time setup: PyPI Trusted Publisher + `pypi` Environment
+## [~] Story 5 — One-time setup: PyPI Trusted Publisher + `pypi` Environment
 
-Manual configuration, not a code change — done by Andrea, not committed.
+Manual configuration, not a code change.
 
 **Steps:**
-1. On https://pypi.org/manage/project/trash-cli/settings/publishing/ , add a
+1. ~~On https://pypi.org/manage/project/trash-cli/settings/publishing/ , add a
    Trusted Publisher: owner `andreafrancia`, repo `trash-cli`, workflow
-   `publish-release.yml`, environment name `pypi`.
-2. On GitHub: Settings -> Environments -> New environment -> name it `pypi`.
+   `publish-release.yml`, environment name `pypi`.~~ **Still to do by Andrea**
+   — requires your pypi.org login, no tool here has access to it.
+2. ~~On GitHub: Settings -> Environments -> New environment -> name it `pypi`.
    Add a "Required reviewers" protection rule with Andrea as reviewer.
    Optionally add a deployment tag policy restricting it to tags matching the
-   version pattern.
+   version pattern.~~ **Done 2026-08-10** via `gh api`: environment `pypi`
+   created with required reviewer `andreafrancia`, and a tag-name deployment
+   policy limited to `0.[0-9]*.[0-9]*.[0-9]*`.
 
-**How to test after implementing:**
-- `gh api repos/andreafrancia/trash-cli/environments/pypi` shows the
-  environment with `protection_rules` containing a `required_reviewers` rule.
-- The PyPI project's "Publishing" settings page lists the trusted publisher
-  entry.
+**How it was verified (GitHub side):**
+```
+gh api repos/andreafrancia/trash-cli/environments/pypi
+gh api repos/andreafrancia/trash-cli/environments/pypi/deployment-branch-policies
+```
+confirmed the `required_reviewers` rule lists `andreafrancia` and the tag
+policy is `0.[0-9]*.[0-9]*.[0-9]*`.
+
+**Still needed to close this story:** the PyPI Trusted Publisher entry (step
+1) — do this via Story 8's manual, then re-check the "Publishing" settings
+page on the PyPI project lists it.
 
 **Definition of done:** both sides configured; no secret exists in GitHub
 repo/org secrets for PyPI.
