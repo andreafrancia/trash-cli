@@ -1,0 +1,44 @@
+name: Publish release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Install build tools
+        run: |
+          pip install --upgrade pip
+          pip install --upgrade build twine
+
+      - name: Build sdist
+        run: python -m build --sdist
+
+      - name: Check sdist
+        run: twine check --strict dist/*.tar.gz
+
+      - name: Attach sdist to the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.event.release.tag_name }}" dist/*.tar.gz
+
+      - name: Upload sdist as build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*.tar.gz
+          if-no-files-found: error
