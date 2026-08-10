@@ -4,19 +4,86 @@ Goal: fewer manual commands, a real downloadable GitHub Release with the
 sdist attached, and PyPI publishing that never requires a secret stored in
 GitHub and can never be triggered by approving a fork PR's workflow run.
 
-Design decided 2026-08-10:
+## Decisions (2026-08-10)
 
-- Trigger for version bump: manual `workflow_dispatch` (`bump-version.yml`) —
-  no local commands needed.
-- Trigger for build+publish: publishing a GitHub Release via the web UI
-  (`release: published` event) on the tag created by the bump workflow.
-- PyPI publishing: Trusted Publishing (OIDC, no stored secret), gated behind
-  a GitHub Environment (`pypi`) with required reviewers. Neither new workflow
-  is ever triggered by `pull_request`, so there is no path from "approve this
-  PR's workflow run" to a PyPI publish.
-- TestPyPI step dropped: `run-tests.yml`'s existing `sdist` job already
-  builds, installs, and exercises the CLI on every push, which was TestPyPI's
-  only real value here.
+Each entry: the question, what was decided, why, and what was considered but
+not chosen.
+
+**Version bump trigger.** Decided: a manual `workflow_dispatch` workflow
+(`bump-version.yml`) that computes the version, commits, tags, and pushes.
+Why: removes the local `scripts/bump` + `git push` step entirely — you
+trigger it from the Actions tab and nothing runs on your machine.
+Considered and rejected: keeping `scripts/bump` local and only automating
+what happens after the tag is pushed — rejected because it still requires a
+local command every release, which is exactly what "fewer commands" was
+asking to remove.
+
+**Build+publish trigger.** Decided: publishing a GitHub Release through the
+web UI (`release: published` event), on the tag the bump workflow created.
+Why: this is the one release-time action that's inherently manual anyway
+(writing release notes), so it doubles as the trigger — no separate "kick off
+the pipeline" step. Considered and rejected: triggering on tag push directly
+— would fire before you've had a chance to write release notes, and
+conflates "a tag exists" with "I want to ship this."
+
+**PyPI publishing mechanism.** Decided: PyPI Trusted Publishing (OIDC-based
+— GitHub proves its identity to PyPI per run via a short-lived token; no API
+token or password stored in GitHub at all). Why: this directly answers the
+original concern — there is no secret in GitHub that could leak or be
+misused, because there is no secret. Considered and rejected: a PyPI API
+token stored as a GitHub Actions secret — works, but is exactly the kind of
+long-lived credential that can be exfiltrated by a malicious workflow change
+or a compromised Action; Trusted Publishing removes that risk class
+entirely rather than mitigating it.
+
+**Gating the PyPI publish.** Decided: the `publish-pypi` job runs under a
+GitHub Environment (`pypi`) with a required-reviewer protection rule, so
+every publish needs an explicit human approval click, plus a deployment tag
+policy (`0.[0-9]*.[0-9]*.[0-9]*`) so only version-shaped tags can even reach
+that environment. Why: two independent layers — even if the trigger design
+changes later, a human still has to approve the specific PyPI-touching job,
+and even an approved run can't publish from an unexpected ref.
+
+**Keeping "approve workflow run" out of the PyPI path.** Decided: neither
+`bump-version.yml` nor `publish-release.yml` is ever triggered by
+`pull_request`. Why: GitHub's "approve and run workflow" button (used to let
+first-time/fork contributors' CI run) only exists for `pull_request`-triggered
+runs. Since the PyPI-publishing job isn't reachable from that trigger type at
+all, there is no code path from "I approved a stranger's PR to run CI" to "a
+release got published to PyPI" — this was the original worry driving the
+whole approval-safety question, and it's solved structurally rather than by
+a setting that could be misconfigured later.
+
+**TestPyPI step.** Decided: dropped from the automated flow. Why: its only
+real value — confirming the sdist actually installs and the CLI runs — is
+already covered by `run-tests.yml`'s existing `sdist` job on every push,
+before a release is ever drafted. Keeping it would have added a second
+Trusted Publisher + upload step for no new coverage.
+
+**Old `make-release.yml`.** Decided: deleted rather than repurposed. Why: it
+ran on every push to every branch and only uploaded a dev-version CI
+artifact nobody downloaded — fully redundant with `run-tests.yml`'s `sdist`
+job, which does the same build/install check without the misleading name.
+
+**Tag format.** Decided: kept the existing bare version string (e.g.
+`0.24.8.10`, no `v` prefix) rather than switching conventions. Why: matches
+every existing tag in the repo's history; no reason to break that for
+tooling that doesn't require a prefix.
+
+**GitHub Environment created immediately vs. left as a manual step.**
+Decided: created via `gh api` during this session (with explicit go-ahead),
+rather than deferred entirely to the Story 8 manual. Why: it's a repo
+setting, not a file — nothing to commit, and doing it once now means Story 5
+is only blocked on the one piece that genuinely requires your own pypi.org
+login. Considered and rejected: leaving both halves of Story 5 for later —
+would have meant redoing analysis/parameters (user id, tag pattern syntax)
+from scratch in a future session.
+
+**Push policy for this session's work.** Decided: everything stayed
+committed locally on `release`, nothing pushed to `origin`. Why: explicit
+instruction — workflow files and process changes going live unattended,
+while you're stepping away, wasn't something to do without a review pass
+first.
 
 Status legend: `[ ]` todo, `[~]` implemented and locally verified but the
 story's own live/on-GitHub test hasn't run yet (everything so far is
