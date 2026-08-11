@@ -6,6 +6,7 @@ from six import StringIO
 from tests.support.dirs.my_path import MyPath
 from tests.support.fakes.fake_trash_dir import FakeTrashDir, \
     FakeTrashDirWithRoot
+from tests.support.fs.sorting_list_files_in_dir import SortingListFilesInDir
 from tests.support.py2mock import Mock
 from tests.test_restore.support.capture_logger import CaptureLogger
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
@@ -63,7 +64,7 @@ class TestTrashedFileRestoreIntegration:
             exit=sys.exit,
             input=self.input,
             version="0.0.0",
-            listing_fs=RealListFilesInDir(),
+            listing_fs=SortingListFilesInDir(RealListFilesInDir()),
             read_fs=RealPathReaderFs(),
             write_fs=RealRestoreWriterFs(),
             read_cwd=self.cur_dir,
@@ -100,9 +101,9 @@ class TestTrashedFileRestoreIntegration:
         assert 'fileC' not in output
         # only files from the cwd are listed
         assert (output ==
-                '   0 2001-01-01 00:00:00 /cwd/file2\n'
-                '   1 2001-01-01 00:00:00 /cwd/file3\n'
-                '   2 2001-01-01 00:00:00 /cwd/file1\n'
+                '   0 2001-01-01 00:00:00 /cwd/file1\n'
+                '   1 2001-01-01 00:00:00 /cwd/file2\n'
+                '   2 2001-01-01 00:00:00 /cwd/file3\n'
                 'No files were restored\n')
 
     def test_with_a_specific_path_as_arg_should_show_only_the_file_with_specific_path(
