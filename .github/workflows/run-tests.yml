@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - { os: ubuntu-latest, python_version: '2.7' }
+          - { os: ubuntu-22.04, python_version: '2.7' }
           - { os: ubuntu-latest, python_version: '3.8' }
           - { os: ubuntu-latest, python_version: '3.14' }
           - { os: macos-latest, python_version: '3.13' }
@@ -32,6 +32,19 @@ jobs:
         PIP_TRUSTED_HOST: "pypi.python.org pypi.org files.pythonhosted.org"
       with:
         python-version: ${{ matrix.python_version }}
+    # Step "Set up Python 2.7" inspired/copied from
+    # https://github.com/ytdl-org/youtube-dl/blob/1e109aaee13a30e2a23f982410ffb3e4f73913df/.github/workflows/ci.yml
+    # licensed under the "The Unlicense" license (http://unlicense.org/)
+    - name: Set up Python 2.7
+      id: setup-python-27
+      if: ${{ matrix.python-version == '2.7' }}
+      shell: bash
+      run: |
+        # Ubuntu 22.04 no longer has python-is-python2: fetch it
+        curl -L "http://launchpadlibrarian.net/474693132/python-is-python2_2.7.17-4_all.deb" -o python-is-python2.deb
+        sudo apt-get install -y python2
+        sudo dpkg --force-breaks -i python-is-python2.deb
+        echo "PYTHONHOME=/usr" >> "$GITHUB_ENV"
     - name: Set up Python ${{ matrix.python_version }}
       uses: andreafrancia/setup-python@v1
       if: ${{ matrix.python_version != '3.5' }}
