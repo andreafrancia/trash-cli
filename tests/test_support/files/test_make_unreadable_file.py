@@ -1,21 +1,12 @@
-import unittest
-
 import pytest
-
-from ...support.files import make_unreadable_file, read_file
-from tests.support.dirs.my_path import MyPath
-
+from tests.support.dirs.temp_dir import temp_dir
+from tests.support.files import make_unreadable_file, read_file
 
 @pytest.mark.slow
-class Test_make_unreadable_file(unittest.TestCase):
-    def setUp(self):
-        self.tmp_dir = MyPath.make_temp_dir()
+class TestMakeUnreadableFile:
 
-    def test(self):
-        path = self.tmp_dir / "unreadable"
-        make_unreadable_file(self.tmp_dir / "unreadable")
-        with self.assertRaises(IOError):
-            read_file(path)
-
-    def tearDown(self):
-        self.tmp_dir.clean_up()
+    def test(self, temp_dir):
+        un_readable_path = temp_dir / "unreadable"
+        make_unreadable_file(un_readable_path)
+        with pytest.raises((OSError, IOError)):
+            read_file(un_readable_path)
