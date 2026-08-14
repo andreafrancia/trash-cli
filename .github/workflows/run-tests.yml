@@ -16,6 +16,10 @@ jobs:
     - uses: actions/checkout@v7
     - name: Build Docker Image for Python 2.7
       run: |
+        id -a
+        pwd
+        ls
+        ls suppor*/pyt*
         ls -al support/python2.7
         docker build -t python-tester:local support/python2.7
   run_test27:
