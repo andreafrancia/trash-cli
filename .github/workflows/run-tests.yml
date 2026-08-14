@@ -15,7 +15,9 @@ jobs:
     steps:
     - uses: actions/checkout@v7
     - name: Build Docker Image for Python 2.7
-      run: docker build -t python-tester:local support/docker/python2.7
+      run: |
+        ls -al support/python2.7
+        docker build -t python-tester:local support/python2.7
   run_test27:
     name: Run Python Tests on 2.7
     runs-on: ubuntu-latest
