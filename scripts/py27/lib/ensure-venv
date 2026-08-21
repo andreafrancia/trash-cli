@@ -1,0 +1,24 @@
+#!/bin/bash
+# Creates (if missing) an isolated virtualenv hosted by pyenv's Python 2.7,
+# at $ROOT_DIR/<name>, and prints its absolute path.
+#
+# Built by pip-installing `virtualenv` directly under python2.7 itself
+# (not python3), so pip's own resolver correctly picks an old,
+# py2.7-compatible virtualenv release. This sidesteps modern
+# virtualenv/tox's removal of Python 2 *target* support entirely, since
+# there's no cross-version interpreter discovery involved -- the tool runs
+# under the same interpreter it's building an environment for.
+SCRIPT_DIR="$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+ROOT_DIR="$(cd -- "$SCRIPT_DIR/../../.." &> /dev/null && pwd )"
+set -euo pipefail
+
+NAME="${1?usage: ensure-venv <venv-dir-name>}"
+VENV_DIR="$ROOT_DIR/$NAME"
+
+if [ ! -x "$VENV_DIR/bin/python" ]; then
+    PYTHON27="$("$SCRIPT_DIR/find-python27")"
+    "$PYTHON27" -m pip install --quiet virtualenv
+    "$PYTHON27" -m virtualenv --quiet "$VENV_DIR"
+fi
+
+echo "$VENV_DIR"

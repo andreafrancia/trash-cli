@@ -1,0 +1,33 @@
+#!/bin/bash
+# Resolves a Python 2.7 interpreter and prints its absolute path. Used by
+# other scripts/py27/* scripts.
+#
+# pyenv is just the default discovery mechanism, not a hard requirement:
+# set $PYTHON27 to point straight at any python2.7 binary (system package,
+# Homebrew, manually built, another version manager, ...) to skip pyenv
+# entirely.
+set -euo pipefail
+
+if [ -n "${PYTHON27:-}" ]; then
+    if [ ! -x "$PYTHON27" ]; then
+        >&2 echo "\$PYTHON27 is set to '$PYTHON27' but that's not an executable file."
+        exit 1
+    fi
+    echo "$PYTHON27"
+    exit 0
+fi
+
+if ! command -v pyenv &> /dev/null; then
+    >&2 echo "pyenv not found on PATH, and \$PYTHON27 isn't set."
+    >&2 echo "Either install pyenv (pyenv install 2.7.18), or set PYTHON27=/path/to/python2.7"
+    exit 1
+fi
+
+PYENV_ROOT="$(pyenv root)"
+PY27_VERSION="$(cd "$PYENV_ROOT/versions" && ls -d 2.7.* 2>/dev/null | sort -V | tail -1)"
+if [ -z "$PY27_VERSION" ]; then
+    >&2 echo "No Python 2.7.x found under $PYENV_ROOT/versions. Run: pyenv install 2.7.18"
+    exit 1
+fi
+
+echo "$PYENV_ROOT/versions/$PY27_VERSION/bin/python"

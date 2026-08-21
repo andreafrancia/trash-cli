@@ -1,0 +1,17 @@
+#!/bin/bash
+# Builds trashcli's sdist and installs + smoke-tests it under Python 2.7.
+#
+# Reuses scripts/test-sdist's recipe unmodified -- it just needs a
+# python2.7 interpreter active on PATH (PyPI still has an old `build`
+# release compatible with 2.7). Runs in its own venv, separate from
+# scripts/py27/test's, so installing the built sdist here never disturbs
+# that venv's editable install.
+SCRIPT_DIR="$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+ROOT_DIR="$(cd -- "$SCRIPT_DIR/../.." &> /dev/null && pwd )"
+set -euo pipefail
+
+VENV_DIR="$("$SCRIPT_DIR/lib/ensure-venv" .venv-py27-sdist)"
+export PATH="$VENV_DIR/bin:$PATH"
+
+cd "$ROOT_DIR"
+scripts/test-sdist

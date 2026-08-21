@@ -1,0 +1,11 @@
+#!/bin/bash
+# Runs every Python-2.7-specific check for trashcli: unit tests, mypy type
+# checks, and an sdist install/smoke-test -- the three things
+# python-27-support.md calls out as needing verification against 2.7.
+# Wired into scripts/pre-push.
+SCRIPT_DIR="$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+set -euo pipefail
+
+"$SCRIPT_DIR/test"
+"$SCRIPT_DIR/check-types"
+"$SCRIPT_DIR/test-sdist"

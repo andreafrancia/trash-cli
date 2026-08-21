@@ -5,13 +5,25 @@
 # uses a pinned, ancient mypy (0.971, the last version with --py2 support)
 # in its own venv, kept separate from the main dev venv/requirements.
 SCRIPT_DIR="$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-ROOT_DIR="$(cd -- "$SCRIPT_DIR/.." &> /dev/null && pwd )"
+ROOT_DIR="$(cd -- "$SCRIPT_DIR/../.." &> /dev/null && pwd )"
 set -euo pipefail
 
 VENV_DIR="$ROOT_DIR/.venv-mypy27"
 
 find_python() {
-    for candidate in python3 python
+    # Deliberately Python 3, not 2.7: mypy is a static analyzer, so it
+    # never executes trashcli's code -- it only needs a host interpreter
+    # to run the mypy program itself, and even this old mypy[python2]
+    # release only runs hosted by Python 3. `--py2` below just tells it
+    # to *parse* trashcli's source as Python-2-flavored syntax (via
+    # typed-ast) and check it against Python 2 typeshed stubs -- that's
+    # independent of which interpreter is running mypy.
+    #
+    # typed-ast (a mypy[python2]==0.971 dependency) builds a C extension
+    # against internal CPython APIs that newer CPython versions removed
+    # (confirmed broken on 3.14; fine through at least 3.11), so prefer a
+    # known-good version before falling back to whatever's on PATH.
+    for candidate in python3.10 python3.9 python3.8 python3.11 python3 python
     do
         if command -v "$candidate" &> /dev/null; then
             echo "$candidate"
@@ -29,8 +41,8 @@ if [ ! -x "$VENV_DIR/bin/mypy" ]; then
     # types-six is pinned to the last release that still shipped Python 2
     # compatible stubs (typeshed dropped Python 2 support in later
     # releases); types-psutil never had Python 2 stubs at all, so psutil
-    # is instead ignore-listed in mypy-py27.ini.
+    # is instead ignore-listed in mypy.ini.
     "$VENV_DIR/bin/pip" install "mypy[python2]==0.971" "types-six==1.16.11" types-enum34
 fi
 
-"$VENV_DIR/bin/mypy" --py2 --config-file "$SCRIPT_DIR/lib/mypy-py27.ini" "$ROOT_DIR/trashcli"
+"$VENV_DIR/bin/mypy" --py2 --config-file "$SCRIPT_DIR/mypy.ini" "$ROOT_DIR/trashcli"
