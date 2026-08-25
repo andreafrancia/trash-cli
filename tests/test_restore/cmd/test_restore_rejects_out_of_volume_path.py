@@ -59,10 +59,12 @@ class TestRestoreRejectsOutOfVolumePath(unittest.TestCase):
 
         self.assertEqual(['good.trashinfo'], self._restorable())
 
-    def test_an_absolute_path_is_not_restorable(self):
-        self._add('evil', '/etc/passwd')
+    def test_an_absolute_path_is_restorable(self):
+        # the home trash stores absolute paths by design, and the volume
+        # that contains it is not necessarily "/" (e.g. a /home partition)
+        self._add('home-entry', '/home/user/document.txt')
 
-        self.assertEqual([], self._restorable())
+        self.assertEqual(['home-entry.trashinfo'], self._restorable())
 
     def test_a_path_escaping_the_volume_is_not_restorable(self):
         self._add('evil', '../../../etc/shadow')
