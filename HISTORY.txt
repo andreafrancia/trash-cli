@@ -1,3 +1,50 @@
+UNRELEASED (60d7fdf):
+User visible changes:
+- trash-restore now trusts a shared trash directory (.Trash/$uid) with the
+  same rule as trash-put/trash-list (sticky bit, non-symlink), instead of an
+  unreliable uid comparison (curious-rabbit)
+  [693f568, cee9ab1, e47ac5b, b1cf321]
+- Prevented trash-restore from restoring a file outside the trash volume when
+  a .trashinfo's Path= contains a path-traversal sequence (curious-rabbit)
+  [6cd261c, d9e1a38]
+- Sanitized control characters in filenames before printing them to a
+  terminal, blocking ANSI escape injection via trash-list (curious-rabbit,
+  Andrea Francia) [c6f260c, f2f3a17, 183b2cc, ba41913, a437d64]
+- Hardened trash-put against unwritable trash directories: no more infinite
+  retry loop on EACCES/ENOSPC/EROFS, refuses option-shaped filenames, refuses
+  a symlinked info/files (curious-rabbit, Andrea Francia)
+  [e62b15d, 6f8e489, b5119db, f03e96c]
+- Homebrew install instructions (zai1208) [b696d31]
+- Added arguments to the trash-restore man page (Andrew Davis) [dba2afa]
+- Fixed a typo in the README (Tim Stewart) [e5732ba]
+- Fixed syntax errors in the README, synced the Chinese README with the
+  English one (Andy Wade) [673552d]
+- Documented that trash-cli does not support BTRFS [abec42a]
+Work on the tools:
+- Split trashcli/fs.py into trashcli/fslib/ (abstract interfaces + real
+  implementations) [bba948d]
+- Refactored janitor.py and either.py, removed fs_func in favor of fakeable
+  classes in tests [5ca895f, 98d9405, b032e47]
+- Refactored the restore filesystem classes
+  [2751f55, 5138296, 583eae4, 06089bd, 32b4e9f]
+- Moved Python 2.7 testing out of tox into scripts/py27/, assorted Python 2.7
+  / mypy compatibility fixes
+  [921a074, 89835b1, 7c7e64f, 2b86d02, 40e21b7, 959cd7f, and ~10 more]
+- Replaced parameterized with built-in pytest functionality
+  (Benjamin A. Beasley) [6a0884e]
+- Used unittest.mock from the stdlib instead of an external dependency
+  (Eli Schwartz) [73e5892]
+- Relaxed the virtualenv version requirement (David Auer) [864b13e]
+- Made tests independent of filesystem directory-listing order
+  [d2416d5, e0165ee]
+- Cache the built Python 2.7 interpreter in CI [60d7fdf]
+- Cleaned up dependencies in setup.cfg [05a8298, 2506628, bd83d57]
+
+Note: a fix to preserve raw bytes of non-UTF-8 filenames in a .trashinfo's
+Path= (SOV710) was merged [e361439, 0ded2af] and then reverted the same day
+[2c69ac4, 4b1b3a7] with no reason given -- not included in this release, the
+underlying bug is still present.
+
 0.24.5.26 (c02fd35):
 Shell Completion:
 - Bugfix in print-completion loop for shells other than zsh by Andrew Davis

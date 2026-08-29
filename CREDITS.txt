@@ -28,6 +28,95 @@ Thanks to
  - Massimo "Submax82" Cavalleri: Packaged on Slackware
  - Steve Stalcup: for maintaining the Debian and Ubuntu packages
  - Lee Yeoh for donating to trash-cli
+ - a1346054: typo/spelling fixes, removed the executable bit from text
+   files, added a missing final newline
+   [d9c7e19, 7175358, ed4528f, 236c195]
+ - abactel: fixed a spelling mistake in the README [0241e58]
+ - Alan (Pound-Hash): README update [89e1f1b]
+ - Ameise: fixed typos [23545cf]
+ - Andrew Davis: trash-restore man page improvements, fixed a
+   print-completion bug for shells other than zsh [dba2afa, 7bdaf96]
+ - Andy Wade: fixed README syntax errors, synced the Chinese README
+   [673552d]
+ - Benjamin A. Beasley: replaced parameterized with built-in pytest
+   functionality [6a0884e]
+ - Brottweiler: fixed inconsistent apostrophes [7b76dc6]
+ - bryango: recommended pipx in the README [a2b282c]
+ - Chris Kankiewicz: made 'date' the default sort argument [255c403]
+ - curious-rabbit: security hardening of trash-put, trash-restore and
+   trash-list (unwritable trash dirs, shared trash dir trust check,
+   path-traversal in restore, control-character sanitization in output)
+   [e62b15d, 8ea03d8, cee9ab1, e47ac5b, b1cf321, c6f260c, f2f3a17,
+   183b2cc, ba41913, 693f568, 6cd261c, d9e1a38]
+ - Cyrus Yip: added and maintained the simplified Chinese README,
+   recommended APT for install [90c2d21, 911d59e, 4820f90, 63a0c45,
+   64ac395]
+ - David Auer: relaxed the virtualenv version requirement, fixed typos
+   and a dead link, removed an empty file
+   [864b13e, 0a608b3, 402474c, f8c030d, b3e35f4]
+ - Devon Sawatsky Burnham: fixed a typo [f008c78]
+ - Don Cross: improved the trash-put man page, made 'trash-put -f' ignore
+   files/dirs that don't exist [13b2847, c9a3fd1]
+ - Eli Schwartz: use unittest.mock from the stdlib instead of an external
+   dependency [73e5892]
+ - Francois Marier: updated the upstream URL for safe-rm [96ad27d]
+ - Frank Ebel: added an Arch Linux installation guide [9cd6070]
+ - Giuseppe Stelluto: fixed trash-list --trash-dirs being invoked at
+   shell-completion eval time [1cb2be1]
+ - Ian Kelling: renamed restore-trash to trash-restore [771f1ba]
+ - Ikem Krueger: fixed a typo [6b12f65]
+ - Jakub Kuczys (jack1142): fixed trash directory permissions, only yield
+   alternate top directories that actually exist [12cb40c, 3969bef]
+ - James Cherti: fixed an unhandled FileNotFoundError in
+   SizeExtractor.extract_attribute() [ba85d11]
+ - Jan Beran: Python 3 porting (raw_input -> input, tabs -> spaces,
+   open() -> file(), absolute imports, octal literals, except...as,
+   print as a function) [fad24e9, bf0c83a, d9882aa, d2a0ec4, d6ee00b,
+   c8f5065, 69e7b5b, 75571c4]
+ - Joel Pereira: copyedited docs and man pages, added the trash location
+   to trash-put.1 [39fa684, f420117]
+ - jonpas: added fuse.mergerfs to the filesystem whitelist [2793f9c]
+ - Joseph Masone: added a command list to the help menu [7becc28]
+ - laggardkernel: restored the '--' command-line ending indicator
+   [e8c33b9]
+ - LSChyi: added range-select and multi-file restore support [54d9508]
+ - lucagiove: added a downloads badge [3c2f9d2]
+ - lukasvrenner: added trash-empty confirmation, improved restore
+   messages and default-choice clarity [3797f1a, 98b9751, 04c6db4]
+ - masgouri: added 'nfs' to the recognized mountpoint filesystem types
+   [9dabfec]
+ - Matt London: added the --overwrite flag, with tests, docs and help
+   text [ea0c0c4, a99bb6c, 72e4591, d5ba8b5]
+ - Matthew Toohey: handled EOF in the restore input prompt [5ed5d78]
+ - Maxim Baz: added fuse.gocryptfs to the fstype whitelist [2edce1e]
+ - Michael Giuffrida: fixed error message spacing [d3c7d1d]
+ - Mohammed Eshan: added Fedora install instructions [ff882bf]
+ - Nathaniel M. Beaver: fixed a typo in a man page [1c523ba]
+ - Ola Jeppsson: validated input in trash-rm [5b8773a]
+ - qadzek: fixed typos/grammar [4fb0b0c]
+ - Self-Perfection: sorted trash-restore choices [b552bb2]
+ - Siddhant Saraf: updated the README [1e2e732]
+ - SOV710: attempted a fix for non-UTF-8 filenames in .trashinfo Path=
+   (merged, then reverted pending a more complete fix) [e361439, 0ded2af]
+ - Stefano Karapetsas: fixed a man page URL [759eeb9]
+ - Stefano Rivera: Python 3 compatibility fix in list_mount_points
+   [dad0c59]
+ - Tim Stewart: fixed a typo in the README [e5732ba]
+ - Tin Lai: added a check for a non-existent info target trash folder
+   [5f3854a]
+ - Waldir Pimenta: various README adjustments [0a72e06]
+ - Wu Zhenyu: added shell completions (shtab), documented completions,
+   switched optparse to argparse, fixed issue #264 for bash [a5f2d57,
+   f48948f, 302accd, 88f6a10, 97cd5fe, 8cdb571]
+ - yasuda: made trash-list show all partitions, not just physical ones
+   [4e676c8]
+ - yssmcl: README fixes [d40952c, 382fc62]
+ - ytoku: added 'nfs4' to the fstype whitelist [5fb1131]
+ - Yuri Goikhman: fall back to os.path.expanduser('~') when HOME is
+   unset, useful when running from cron [cdb673e]
+ - zai1208: Homebrew install instructions [b696d31]
+ - Zoltan Puskas: test and lint fixes [49807b3, df66695, 54c3c20,
+   00d10cf, e467ae0, 196144f]
 
 If you think you should appear in this page please tell me.
 
