@@ -66,6 +66,47 @@ class TestRestore2(unittest.TestCase):
 
         assert res.last_line_of_stdout() == 'No files were restored'
 
+    def test_batch_restore_continues_after_conflicts(self):
+        for name in ['a.txt', 'b.txt', 'c.txt', 'd.txt']:
+            self.fs.add_trash_file('/cwd/' + name, '/data_home/Trash',
+                                   datetime.datetime(2016, 1, 1), 'trashed')
+        self.fs.add_file('/cwd/b.txt')
+        self.fs.add_file('/cwd/d.txt')
+
+        res = self.cmd_run(['trash-restore', '--sort=path'],
+                           reply='0-3', from_dir='/cwd')
+
+        assert 1 == res.exit_code
+        assert ('Refusing to overwrite existing file "b.txt".\n'
+                'Refusing to overwrite existing file "d.txt".\n') == res.stderr
+        assert [
+            call.mkdirs('/cwd'),
+            call.move('/data_home/Trash/files/a.txt', '/cwd/a.txt'),
+            call.remove_file('/data_home/Trash/info/a.txt.trashinfo'),
+            call.mkdirs('/cwd'),
+            call.move('/data_home/Trash/files/c.txt', '/cwd/c.txt'),
+            call.remove_file('/data_home/Trash/info/c.txt.trashinfo'),
+        ] == self.write_fs.mock_calls
+
+    def test_batch_restore_continues_after_move_error(self):
+        for name in ['a.txt', 'b.txt']:
+            self.fs.add_trash_file('/cwd/' + name, '/data_home/Trash',
+                                   datetime.datetime(2016, 1, 1), 'trashed')
+        self.write_fs.move.side_effect = [IOError('move failed'), None]
+
+        res = self.cmd_run(['trash-restore', '--sort=path'],
+                           reply='0,1', from_dir='/cwd')
+
+        assert 1 == res.exit_code
+        assert 'move failed\n' == res.stderr
+        assert [
+            call.mkdirs('/cwd'),
+            call.move('/data_home/Trash/files/a.txt', '/cwd/a.txt'),
+            call.mkdirs('/cwd'),
+            call.move('/data_home/Trash/files/b.txt', '/cwd/b.txt'),
+            call.remove_file('/data_home/Trash/info/b.txt.trashinfo'),
+        ] == self.write_fs.mock_calls
+
     def test_when_user_reply_with_not_number(self):
         self.fs.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
                                datetime.datetime(2016, 1, 1), 'boo')

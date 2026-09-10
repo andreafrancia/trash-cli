@@ -1,6 +1,7 @@
 from typing import TypeVar, Generic, List, NamedTuple, Callable
 
 from six.moves import range
+from six import text_type
 
 from trashcli.lib.my_input import Input
 from trashcli.restore.index import Sequence
@@ -70,13 +71,16 @@ class RestoreAskingTheUser(object):
     def restore_selected_files(self,
                                selected_files,  # type: SelectedFiles
                                ):  # type: (...) -> Either[Die, None]
-        try:
-            for trashed_file in selected_files.files_to_restore:
+        errors = []
+        for trashed_file in selected_files.files_to_restore:
+            try:
                 self.restorer.restore_trashed_file(trashed_file,
                                                    selected_files.overwrite)
-            return Right(None)
-        except IOError as e:
-            return Left(Die(e))
+            except IOError as e:
+                errors.append(text_type(e))
+        if errors:
+            return Left(Die(u'\n'.join(errors)))
+        return Right(None)
 
 
 Error = TypeVar('Error')
