@@ -1,6 +1,8 @@
 trash-cli - Command Line Interface to FreeDesktop.org Trash
 ============================================================
 
+test2
+
 |Downloads|
 
 |Donate|_
