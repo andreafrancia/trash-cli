@@ -143,7 +143,7 @@ Note that Bash aliases are used only in interactive shells, so using
 this alias should not interfere with scripts that expect to use `rm`.
 
 Where do the trashed files go?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 File trashed from the home partition will be moved here::
 
     ~/.local/share/Trash/
