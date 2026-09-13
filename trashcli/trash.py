@@ -1,3 +1,3 @@
 # Copyright (C) 2007-2011 Andrea Francia Trivolzio(PV) Italy
 
-version = '0.24.5.26'
+version = '0.26.9.13'
