@@ -72,13 +72,23 @@ class Janitor:
         if isinstance(trashinfo_data, Left):
             return make_error(trashinfo_data)
 
-        trashed_file = self.persister.persist(trashinfo_data.value(), log_data)
+        # The file move must happen before the trashinfo write: if the
+        # process dies between the two steps, the trash is left with a file
+        # without its trashinfo (invisible to trash-list) rather than a
+        # trashinfo without its file (which makes every later trash-list
+        # report a parse error). See #414.
+        trashed_file = self.persister.reserve_name(trashinfo_data.value())
         if isinstance(trashed_file, Left):
             return make_error(trashed_file)
 
         trashed = self.trash_dir.try_trash(trashee.path, trashed_file.value())
         if isinstance(trashed, Left):
             return make_error(trashed)
+
+        persisted = self.persister.persist(trashed_file.value(),
+                                           trashinfo_data.value(), log_data)
+        if isinstance(persisted, Left):
+            return make_error(persisted)
 
         return make_ok()
 
