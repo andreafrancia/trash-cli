@@ -1,0 +1,28 @@
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Python 2.7 test
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  run_tests_27:
+    name: Run Python Tests (2.7)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run tests in python:2.7 container as a non-root user
+      run: |
+        docker run --rm -v "$PWD:/repo:ro" python:2.7 bash -c '
+          set -e
+          useradd -m tester
+          cp -r /repo /home/tester/app
+          cd /home/tester/app
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt -r requirements.txt
+          chown -R tester:tester /home/tester
+          su tester -c "cd /home/tester/app && python -m pytest"
+        '
