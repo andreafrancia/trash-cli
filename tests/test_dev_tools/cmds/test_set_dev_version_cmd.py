@@ -38,19 +38,17 @@ class TestSetDevVersionCmd:
             "  /trashcli/trash.py: version = '0.24.5.13.dev0+git.master.12345b'"
         )
 
-    def test(self, capsys):
+    def test_ref_with_hyphens_is_sanitized(self, capsys):
         self.fs.mkdir("trashcli")
         self.fs.write_file("trashcli/trash.py", "version = ...")
 
-        result = self.run.run_cmd(['-', '12345b'], capsys)
+        result = self.run.run_cmd(['fix-build-failure-27', '12345b'], capsys)
 
         assert result == (
-            'exit code: 1\n'
-            "stderr: Ref cannot contain '-': -\n"
-            "The reason is because any '-' will be converted to '.' by "
-            "setuptools during the egg_info phase that will result in an "
-            "error in scripts/make-scripts because it will be not able to "
-            "find the .tar.gz file\n\n"
+            'exit code: None\n'
+            'stderr: \n'
             'stdout: \n'
             'filesystem:\n'
-            '  /trashcli/trash.py: version = ...')
+            "  /trashcli/trash.py: version = "
+            "'0.24.5.13.dev0+git.fix.build.failure.27.12345b'"
+        )
