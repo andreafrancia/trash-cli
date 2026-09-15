@@ -29,21 +29,22 @@ class TestPutUnwritableTrashDir:
         assert any('Permission denied' in line for line in result.stderr), \
             result.stderr
 
-    def test_it_leaves_the_original_file_in_place_on_failure(self):
+    def test_it_leaves_the_file_in_the_trash_files_dir_on_failure(self):
         self.fs.touch("/foo")
         self.fs.fail_atomic_write_with_errno(errno.EACCES)
 
         self.run_cmd(['trash-put', '/foo'])
 
-        assert self.fs.exists("/foo")
+        assert not self.fs.exists("/foo")
+        assert self.fs.ls_aa('/.Trash-123/files') == ['foo']
 
-    def test_it_does_not_move_the_file_into_the_trash_on_failure(self):
+    def test_it_does_not_leave_a_trashinfo_without_its_file_on_failure(self):
         self.fs.touch("/foo")
         self.fs.fail_atomic_write_with_errno(errno.EROFS)
 
         self.run_cmd(['trash-put', '/foo'])
 
-        assert self.fs.ls_aa('/.Trash-123/files') == []
+        assert self.fs.ls_aa('/.Trash-123/info') == []
 
     def run_cmd(self, args):
         stderr = StringIO()
