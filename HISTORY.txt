@@ -1,4 +1,4 @@
-UNRELEASED (60d7fdf):
+0.26.9.14 (1905f167):
 User visible changes:
 - trash-restore now trusts a shared trash directory (.Trash/$uid) with the
   same rule as trash-put/trash-list (sticky bit, non-symlink), instead of an
