@@ -26,5 +26,32 @@ class TestRealFsPermissions(unittest.TestCase):
 
         assert self.fs.get_mod(path) == 0o123
 
+    def test_seems_to_have_delete_permissions_when_parent_is_writable_and_searchable(self):
+        self.fs.make_file(self.tmp_dir / 'file', 'content')
+
+        assert self.fs.seems_to_have_delete_permissions(self.tmp_dir / 'file') is True
+
+    def test_seems_to_have_delete_permissions_when_parent_has_no_write_permission(self):
+        self.fs.mkdir(self.tmp_dir / 'dir')
+        self.fs.make_file(self.tmp_dir / 'dir' / 'file', 'content')
+        self.fs.chmod(self.tmp_dir / 'dir', 0o500)
+
+        try:
+            assert self.fs.seems_to_have_delete_permissions(
+                self.tmp_dir / 'dir' / 'file') is False
+        finally:
+            self.fs.chmod(self.tmp_dir / 'dir', 0o755)
+
+    def test_seems_to_have_delete_permissions_when_parent_has_no_search_permission(self):
+        self.fs.mkdir(self.tmp_dir / 'dir')
+        self.fs.make_file(self.tmp_dir / 'dir' / 'file', 'content')
+        self.fs.chmod(self.tmp_dir / 'dir', 0o600)
+
+        try:
+            assert self.fs.seems_to_have_delete_permissions(
+                self.tmp_dir / 'dir' / 'file') is False
+        finally:
+            self.fs.chmod(self.tmp_dir / 'dir', 0o755)
+
     def tearDown(self):
         self.tmp_dir.clean_up()

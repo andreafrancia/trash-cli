@@ -8,7 +8,7 @@ from trashcli.lib.my_input import HardCodedInput
 from trashcli.put.main import make_cmd
 
 
-class TestPutRefusesUndeletableFile:
+class TestPutUndeletableFileIsRefused:
     def setup_method(self):
         self.fs = FakeFs()
         self.user_input = HardCodedInput('y')

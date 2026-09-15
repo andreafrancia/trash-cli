@@ -65,7 +65,7 @@ class Trasher(SingleTrasher):
             if reply == user_replied_no:
                 return TrashResult.Success
 
-        if not self.fs.has_delete_permission(path):
+        if not self.fs.seems_to_have_delete_permissions(path):
             self.logger.log_put(
                 self.reporter.unable_to_trash_file_without_delete_permission(path),
                 context.log_data)

@@ -1,3 +1,7 @@
+UNRELEASED:
+User visible changes:
+- trash-put do not longer leave a copy of the trashed file in TrashDir when the
+  move crosses FileSystem boundaries and is blocked by an error (curius-rabbit).
 0.26.9.14 (1905f167):
 User visible changes:
 - trash-restore now trusts a shared trash directory (.Trash/$uid) with the

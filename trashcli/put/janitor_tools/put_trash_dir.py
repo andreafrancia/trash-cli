@@ -35,6 +35,13 @@ class PutTrashDir:
             move_file(self.fs, path, paths.backup_copy_path)
             return Right(None)
         except (IOError, OSError) as error:
+            # seems_to_have_delete_permissions() is only a best-effort prediction (it
+            # cannot see sticky bits, ancestor permissions, ACLs, or races);
+            # the move can still copy the file before failing to delete the
+            # original, so drop the copy here to guarantee no unremovable
+            # file is left in the trash.
+            if self.fs.lexists(paths.backup_copy_path):
+                self.fs.remove_file(paths.backup_copy_path)
             self.fs.remove_file(paths.trashinfo_path)
             return Left(UnableToMoveFileToTrash(error))
 

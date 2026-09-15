@@ -112,7 +112,7 @@ class RealFs(RealVolumeOf, Fs):
     def is_accessible(self, path):
         return os.access(path, os.F_OK)
 
-    def has_delete_permission(self, path):
+    def seems_to_have_delete_permissions(self, path):
         # a file can be deleted only if its parent directory allows writing and searching
         parent = os.path.realpath(os.path.dirname(path) or os.curdir)
         return os.access(parent, os.W_OK | os.X_OK)
