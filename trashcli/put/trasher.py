@@ -65,4 +65,10 @@ class Trasher(SingleTrasher):
             if reply == user_replied_no:
                 return TrashResult.Success
 
+        if not self.fs.has_delete_permission(path):
+            self.logger.log_put(
+                self.reporter.unable_to_trash_file_without_delete_permission(path),
+                context.log_data)
+            return TrashResult.Failure
+
         return self.file_trasher.trash_file(path, context)

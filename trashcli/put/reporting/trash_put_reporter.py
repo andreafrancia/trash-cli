@@ -43,6 +43,13 @@ class TrashPutReporter:
         return log_str(Level.WARNING, LogTag.trash_failed,
                        ["cannot trash %s '%s'" % (self._describe(path), path)])
 
+    def unable_to_trash_file_without_delete_permission(self,
+                                                       path,  # type: str
+                                                       ):  # type: (...) -> LogEntry
+        return log_str(Level.WARNING, LogTag.trash_failed,
+                       ["cannot trash %s '%s' because deleting it is not allowed"
+                        % (self._describe(path), path)])
+
     def unable_to_trash_file(
             self,
             trashee,  # type: Trashee
