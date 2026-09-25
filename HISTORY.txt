@@ -44,11 +44,6 @@ Work on the tools:
 - Cache the built Python 2.7 interpreter in CI [60d7fdf]
 - Cleaned up dependencies in setup.cfg [05a8298, 2506628, bd83d57]
 
-Note: a fix to preserve raw bytes of non-UTF-8 filenames in a .trashinfo's
-Path= (SOV710) was merged [e361439, 0ded2af] and then reverted the same day
-[2c69ac4, 4b1b3a7] with no reason given -- not included in this release, the
-underlying bug is still present.
-
 0.24.5.26 (c02fd35):
 Shell Completion:
 - Bugfix in print-completion loop for shells other than zsh by Andrew Davis
