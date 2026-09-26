@@ -1,8 +1,6 @@
 trash-cli——FreeDesktop.org 回收站的命令行界面
 =============================================
 
-|Donate|_
-
 `English`_
 
 trash-cli
@@ -345,8 +343,6 @@ Bugs
 
 感谢 `JetBrains`_  为开源开发提供的许可证。
 
-.. |Donate| image:: https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif
-.. _Donate: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=93L6PYT4WBN5A
 .. _English: https://github.com/andreafrancia/trash-cli/blob/master/README.rst
 .. _pipx: https://pypa.github.io/pipx
 .. _项目贡献者: https://github.com/andreafrancia/trash-cli/graphs/contributors
