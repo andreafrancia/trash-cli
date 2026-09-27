@@ -14,8 +14,7 @@ from trashcli.fslib.file_system_reader import FileSystemReader
 from trashcli.fstab.volume_listing import FixedVolumesListing
 from trashcli.lib.dir_reader import RealDirReader
 from trashcli.list.main import ListCmd
-from .run_result import RunResult
-
+from tests.test_list.cmd.support.run_result import RunResult
 
 @pytest.fixture
 def trash_list_user():
@@ -42,7 +41,7 @@ class TrashListUser:
 
     def run_trash_list(self, *args):  # type: (...) -> RunResult
         file_reader = FileSystemReader()
-        file_reader.list_volumes = lambda: self.volumes
+#        file_reader.list_volumes = lambda: self.volumes
         stdout = self.stdout if self.stdout is not None else StringIO()
         stderr = StringIO()
         ListCmd(
