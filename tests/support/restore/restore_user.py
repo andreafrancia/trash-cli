@@ -14,6 +14,7 @@ from trashcli.put.fs.volume_path_fs import VolumePathFs
 from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.restore_fs import FileReaderFs, RestoreWriterFs, \
     RestoreReadFs
+from trashcli.restore.restore_logger import RestoreLogger
 
 
 class RestoreUser:
@@ -29,6 +30,7 @@ class RestoreUser:
                  volume_path_fs,  # type: VolumePathFs
                  top_trash_dir_rules_reader=None,
                  read_fs=None,  # type: Optional[RestoreReadFs]
+                 logger=None,  # type: Optional[RestoreLogger]
                  ):
         self.environ = environ
         self.uid = uid
@@ -41,6 +43,7 @@ class RestoreUser:
         self.volume_path_fs = volume_path_fs
         self.top_trash_dir_rules_reader = \
             top_trash_dir_rules_reader or RealTopTrashDirFs()
+        self.logger = logger or MemoLogger()
 
     no_args = object()
 
@@ -49,7 +52,6 @@ class RestoreUser:
         stdout = StringIO()
         stderr = StringIO()
         read_cwd = FakeReadCwdFs(from_dir)
-        logger = MemoLogger()
         cmd = RestoreCmd(
             stdout=stdout,
             stderr=stderr,
@@ -58,7 +60,7 @@ class RestoreUser:
             version=self.version,
             listing_fs=self.listing_fs,
             volumes=self.volumes,
-            logger=logger,
+            logger=self.logger,
             uid=self.uid,
             environ=self.environ,
             top_trash_dir_rules_fs=self.top_trash_dir_rules_reader,
