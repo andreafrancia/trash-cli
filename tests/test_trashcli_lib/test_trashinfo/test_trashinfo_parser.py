@@ -1,5 +1,6 @@
 import pytest
 
+from tests.support.trashinfo.trashinfos import an_empty_trashinfo
 from trashcli.parse_trashinfo.parse_original_location import OriginalLocationParser
 from trashcli.parse_trashinfo.parser_error import ParseError
 
@@ -16,7 +17,3 @@ class TestTrashInfoParser:
         with pytest.raises(ParseError) as exc_info:
             parser.parse_original_location(an_empty_trashinfo(), '/')
         assert str(exc_info.value) == 'Unable to parse Path'
-
-
-def an_empty_trashinfo():
-    return ''

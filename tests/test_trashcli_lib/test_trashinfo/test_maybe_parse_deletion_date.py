@@ -1,10 +1,9 @@
-import unittest
-
-from tests.test_trashcli_lib.test_parsing_trashinfo_contents import a_trashinfo_without_deletion_date, make_trashinfo
+from tests.support.trashinfo.trashinfos import \
+    a_trashinfo_without_deletion_date, make_trashinfo
 from trashcli.parse_trashinfo.maybe_parse_deletion_date import unknown_date, maybe_parse_deletion_date
 
 
-class Test_maybe_parse_deletion_date(unittest.TestCase):
+class TestMaybeParseDeletionDate:
     def test_on_trashinfo_without_date_parse_to_unknown_date(self):
         assert (unknown_date ==
                 maybe_parse_deletion_date(a_trashinfo_without_deletion_date()))
