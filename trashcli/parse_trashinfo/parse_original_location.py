@@ -6,6 +6,10 @@ from trashcli.parse_trashinfo.parse_path import parse_path
 from trashcli.parse_trashinfo.parser_error import ParseError
 
 
+class OriginalLocationParser:
+    def parse_original_location(self, contents, volume_path):
+        return parse_original_location(contents, volume_path)
+
 def parse_original_location(contents, volume_path):
     path = parse_path(contents)
     resolved = os.path.normpath(os.path.join(volume_path, path))
