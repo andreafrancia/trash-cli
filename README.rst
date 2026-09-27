@@ -275,7 +275,7 @@ Environment setup::
 
     python -m venv .venv
     source .venv/bin/activate
-    pip install -r requirements-dev.txt -r requirements.txt
+    pip install . '.[dev]'
 
 Running tests::
 
