@@ -18,12 +18,13 @@ class InfoDirSearcher:
         for trash_dir_path, volume in self.trash_directories.list_trash_dirs(
                 trash_dir_from_cli):
             for type, path in self.info_files.all_info_files(trash_dir_path):
-                yield FileFound(type, path, volume)
+                yield FileFound(type, path, volume, trash_dir_path)
 
 
 class FileFound(NamedTuple('Info', [
     ('type', 'str'),
     ('path', 'str'),
     ('volume', 'str'),
+    ('trash_dir', 'str'),
 ])):
     pass

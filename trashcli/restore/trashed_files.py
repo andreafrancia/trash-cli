@@ -55,7 +55,8 @@ class TrashedFiles:
                 try:
                     contents = self.file_reader.contents_of(info_file.path)
                     original_location = self.original_location_parser \
-                        .parse_original_location(contents, info_file.volume)
+                        .parse_original_location(contents, info_file.volume,
+                                                 info_file.trash_dir)
                     deletion_date = parse_deletion_date(contents)
                     backup_file_path = path_of_backup_copy(info_file.path)
                     trashedfile = TrashedFile(original_location,

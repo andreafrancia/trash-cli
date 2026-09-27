@@ -34,3 +34,11 @@ def volume_trash_dir1(volume, uid):
 def volume_trash_dir2(volume, uid):
     path = os.path.join(volume, ".Trash-%s" % uid)
     yield path, volume
+
+
+def is_volume_trash_dir(trash_dir, volume):  # type: (str, str) -> bool
+    # $topdir/.Trash/$uid or $topdir/.Trash-$uid: the only trash dirs whose Path= must be relative to the volume
+    parent, name = os.path.split(os.path.normpath(trash_dir))
+    volume = os.path.normpath(volume)
+    return ((parent == volume and name.startswith('.Trash-')) or
+            parent == os.path.join(volume, '.Trash'))
