@@ -1,0 +1,6 @@
+.git
+.venv*
+.tox
+dist
+*.pyc
+.idea
