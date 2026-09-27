@@ -1,0 +1,22 @@
+import pytest
+
+from trashcli.parse_trashinfo.parse_original_location import OriginalLocationParser
+from trashcli.parse_trashinfo.parser_error import ParseError
+
+
+class TestTrashInfoParser:
+    def test_1(self):
+        parser = OriginalLocationParser()
+        assert '/foo.txt' == parser.parse_original_location("[Trash Info]\n"
+                                                            "Path=/foo.txt\n",
+                                                            '/')
+
+    def test_it_raises_error_on_parsing_original_location(self):
+        parser = OriginalLocationParser()
+        with pytest.raises(ParseError) as exc_info:
+            parser.parse_original_location(an_empty_trashinfo(), '/')
+        assert str(exc_info.value) == 'Unable to parse Path'
+
+
+def an_empty_trashinfo():
+    return ''
