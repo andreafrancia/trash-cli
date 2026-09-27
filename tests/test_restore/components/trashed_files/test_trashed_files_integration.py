@@ -9,6 +9,9 @@ from trashcli.restore.real_restore_fs import RealFileReaderFs
 from trashcli.restore.info_dir_searcher import InfoDirSearcher, FileFound
 from trashcli.restore.trashed_files import TrashedFiles
 
+# Integration test of TrashedFiles with the real file reader (the searcher
+# is mocked). The .trashinfo is written for real under ./info (relative to
+# the current working directory of the test run).
 class TestTrashedFilesIntegration:
     def setup_method(self):
         self.logger = Mock(spec=[])
@@ -18,6 +21,11 @@ class TestTrashedFilesIntegration:
                                           self.searcher,
                                           RealVolumePathFs())
 
+    # Purpose: in a trash dir on a volume other than '/' ('/volume') a
+    # relative Path= is resolved against that volume ('/volume/name'); the
+    # deletion date, the info file path and the backup copy path
+    # ('files/info_path', derived from the relative info path) are filled in
+    # reading the file through the real filesystem.
     def test(self):
         require_empty_dir('info')
         self.searcher.all_file_in_info_dir.return_value = [

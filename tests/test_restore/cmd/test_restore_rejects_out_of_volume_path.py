@@ -34,6 +34,13 @@ class MemoLogger:
         self.messages.append(msg)
 
 
+# Security tests of TrashedFiles (see commit 6cd261cd "Prevent restore from
+# escaping the trash volume"). The trash dir is a volume trash
+# (<volume>/.Trash-1000) on a volume that is not '/', so by the freedesktop
+# trash spec its Path= entries must be relative to the volume. A .trashinfo
+# that would restore a file outside of the volume must not be offered for
+# restore, otherwise anybody able to write in a trash dir on a removable or
+# shared volume could make the user overwrite arbitrary files.
 class TestRestoreRejectsOutOfVolumePath:
     def setup_method(self):
         self.volume = MyPath.make_temp_dir()
@@ -55,16 +62,22 @@ class TestRestoreRejectsOutOfVolumePath:
         return [os.path.basename(tf.info_file)
                 for tf in self.trashed_files.all_trashed_files(None)]
 
+    # Purpose: the legitimate case still works: a relative Path= inside the
+    # volume is listed as restorable.
     def test_a_relative_path_inside_the_volume_is_restorable(self):
         self._add('good', 'docs/report.txt')
 
         assert ['good.trashinfo'] == self._restorable()
 
+    # Purpose: an absolute Path= in a volume trash is refused (it could point
+    # anywhere, e.g. /etc/passwd).
     def test_an_absolute_path_is_not_restorable(self):
         self._add('evil', '/etc/passwd')
 
         assert [] == self._restorable()
 
+    # Purpose: a relative Path= that climbs out of the volume with '..' is
+    # refused as well.
     def test_a_path_escaping_the_volume_is_not_restorable(self):
         self._add('evil', '../../../etc/shadow')
 

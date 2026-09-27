@@ -12,6 +12,10 @@ from trashcli.restore.trashed_file import TrashedFile
 from trashcli.restore.trashed_files import TrashedFiles
 
 
+# Unit tests of TrashedFiles on a fake filesystem.
+# The trash directories are stubbed to a single trash dir '/trash-dir' living
+# on the root volume '/', so these tests focus on how TrashedFiles turns each
+# entry of the info dir into either a TrashedFile or a warning.
 class TestTrashedFiles:
     def setup_method(self):
         self.fs = FakeFs()
@@ -30,6 +34,12 @@ class TestTrashedFiles:
                                           RestoreFakeFs(self.fs))
         self.fs.mkdir_p("/trash-dir/info")
 
+    # Purpose: happy path. A well formed .trashinfo becomes a TrashedFile:
+    # - the relative Path= is resolved against the volume ('/' -> '/name'),
+    # - DeletionDate= is parsed into a datetime,
+    # - the info file path is kept as is,
+    # - the backup copy is computed as <trash-dir>/files/<name without .trashinfo>,
+    # and no warning is logged.
     def test(self):
         self.fs.write_file('/trash-dir/info/info_path.trashinfo',
                            'Path=name\n'
@@ -51,6 +61,8 @@ class TestTrashedFiles:
                    'out': ''
                }
 
+    # Purpose: a file in the info dir without the .trashinfo extension is
+    # not a trashed file: it is skipped and a warning is logged.
     def test_on_non_trashinfo(self):
         self.fs.touch('/trash-dir/info/info_path.non-trashinfo')
 
@@ -63,6 +75,8 @@ class TestTrashedFiles:
                    'out': 'WARN: Non .trashinfo file in info dir\n'
                }
 
+    # Purpose: a .trashinfo that cannot be parsed (here: empty, so no Path=)
+    # is skipped; the warning reports both the file path and the reason.
     def test_on_non_parsable_trashinfo(self):
         self.fs.write_file('/trash-dir/info/info_path.trashinfo',
                            '')
@@ -78,6 +92,9 @@ class TestTrashedFiles:
                           'Unable to parse Path\n'
                }
 
+    # Purpose: a .trashinfo that cannot be read (here it is a directory, so
+    # reading it raises an IOError) is skipped and the error is logged as a
+    # warning instead of crashing the whole listing.
     def test_on_io_error(self):
         self.fs.mkdir_p('/trash-dir/info/info_path.trashinfo')
 
