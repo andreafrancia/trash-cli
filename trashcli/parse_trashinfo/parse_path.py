@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 import sys
 
-from trashcli.compat import fsdecode
+from trashcli.compat import fsdecode, TextType
 from trashcli.parse_trashinfo.parser_error import ParseError
 
 if sys.version_info[0] >= 3:
@@ -13,7 +13,7 @@ else:
     from urllib import unquote as unquote_to_bytes
 
 
-def unquote_path(quoted_path):  # type: (str) -> str
+def unquote_path(quoted_path):  # type: (str) -> TextType
     # go through bytes so any file name comes back unchanged
     return fsdecode(unquote_to_bytes(quoted_path))
 
