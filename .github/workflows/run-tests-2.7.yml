@@ -22,7 +22,7 @@ jobs:
           cp -r /repo /home/tester/app
           cd /home/tester/app
           python -m pip install --upgrade pip
-          python -m pip install -r requirements-dev.txt -r requirements.txt
+          python -m pip install . '.[dev]'
           chown -R tester:tester /home/tester
           su tester -c "cd /home/tester/app && python -m pytest"
         '
