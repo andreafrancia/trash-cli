@@ -13,6 +13,7 @@ from ..fslib.real_fs_operations import RealListFilesInDir
 from ..fstab.volumes import RealVolumes
 from ..lib.logger import my_logger
 from ..lib.my_input import RealInput
+from ..put.fs.real_volume_path_fs import RealVolumePathFs
 
 
 def main():
@@ -31,5 +32,6 @@ def main():
         file_reader=RealFileReaderFs(),
         read_fs=RealPathReaderFs(),
         write_fs=RealRestoreWriterFs(),
-        read_cwd=RealReadCwdFs()
+        read_cwd=RealReadCwdFs(),
+        volume_path_fs=RealVolumePathFs(),
     ).run(sys.argv)

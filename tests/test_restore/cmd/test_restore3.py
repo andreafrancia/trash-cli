@@ -12,6 +12,7 @@ from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
 from trashcli.fslib.real_fs_operations import RealListFilesInDir
 from trashcli.fstab.volumes import FakeVolumes
+from trashcli.put.fs.real_volume_path_fs import RealVolumePathFs
 from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.real_restore_fs import RealRestoreWriterFs, \
     RealPathReaderFs, RealFileReaderFs
@@ -70,6 +71,7 @@ class TestTrashedFileRestoreIntegration:
             uid=uid,
             environ=self.env,
             top_trash_dir_rules_fs=RealTopTrashDirFs(),
+            volume_path_fs=RealVolumePathFs(),
         )
 
     def test_restore_one_file(self,  # type: Self

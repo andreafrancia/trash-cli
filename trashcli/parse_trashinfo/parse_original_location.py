@@ -4,13 +4,14 @@ import os
 
 from trashcli.parse_trashinfo.parse_path import parse_path
 from trashcli.parse_trashinfo.parser_error import ParseError
-from trashcli.put.fs.real_volume_path_fs import RealVolumePathFs
 from trashcli.put.fs.volume_path_fs import VolumePathFs
 
 
 class OriginalLocationParser:
-    def __init__(self):
-        self.volume_paths = RealVolumePathFs()  # type: VolumePathFs
+    def __init__(self,
+                 volume_paths,  # type: VolumePathFs
+                 ):
+        self.volume_paths = volume_paths
 
     def parse_original_location(self, contents, volume_path):
         path = parse_path(contents)

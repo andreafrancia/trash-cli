@@ -21,7 +21,7 @@ class TestRestore2(unittest.TestCase):
             listing_fs=self.fs,
             version='1.2.3',
             volumes=self.fs,
-            # fs=self.fs,
+            volume_path_fs=self.fs,
         )
 
     def test_should_print_version(self):

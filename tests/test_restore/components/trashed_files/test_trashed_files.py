@@ -26,7 +26,8 @@ class TestTrashedFiles:
                                         InfoFiles(RestoreFakeFs(self.fs)))
         self.trashed_files = TrashedFiles(self.logger,
                                           RestoreFakeFs(self.fs),
-                                          self.searcher)
+                                          self.searcher,
+                                          RestoreFakeFs(self.fs))
         self.fs.mkdir_p("/trash-dir/info")
 
     def test(self):

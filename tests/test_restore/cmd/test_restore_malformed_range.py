@@ -8,6 +8,7 @@ from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
 from trashcli.fslib.real_fs_operations import RealListFilesInDir
 from trashcli.fstab.volumes import FakeVolumes
+from trashcli.put.fs.real_volume_path_fs import RealVolumePathFs
 from trashcli.restore.real_restore_fs import RealFileReaderFs, \
     RealPathReaderFs, RealRestoreWriterFs, RealRestoreReadFs
 
@@ -26,7 +27,8 @@ class TestRestoreMalformedRange(unittest.TestCase):
             write_fs=RealRestoreWriterFs(),
             listing_fs=RealListFilesInDir(),
             version='0.0.0',
-            volumes=FakeVolumes([]))
+            volumes=FakeVolumes([]),
+            volume_path_fs=RealVolumePathFs())
 
     def test_a_range_with_two_dashes_gives_an_error_instead_of_crashing(self):
         self.fixture.having_a_trashed_file('/foo/bar')

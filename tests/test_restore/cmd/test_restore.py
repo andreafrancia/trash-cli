@@ -18,6 +18,7 @@ class TestSearcher:
                                 listing_fs=self.fs,
                                 version='1.0',
                                 volumes=self.fs,
+                                volume_path_fs=self.fs,
                                 read_fs=self.fs)
 
     def test_will_not_detect_trashed_file_in_dirs_other_than_cur_dir(self):
