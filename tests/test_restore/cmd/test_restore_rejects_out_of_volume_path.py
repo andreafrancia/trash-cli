@@ -1,6 +1,5 @@
 import collections
 import os
-import unittest
 
 from tests.support.dirs.my_path import MyPath
 from trashcli.restore.restore_fs import FileReaderFs
@@ -34,8 +33,8 @@ class MemoLogger:
         self.messages.append(msg)
 
 
-class TestRestoreRejectsOutOfVolumePath(unittest.TestCase):
-    def setUp(self):
+class TestRestoreRejectsOutOfVolumePath:
+    def setup_method(self):
         self.volume = MyPath.make_temp_dir()
         self.info_dir = self.volume / '.Trash-1000' / 'info'
         os.makedirs(self.info_dir)
@@ -57,17 +56,17 @@ class TestRestoreRejectsOutOfVolumePath(unittest.TestCase):
     def test_a_relative_path_inside_the_volume_is_restorable(self):
         self._add('good', 'docs/report.txt')
 
-        self.assertEqual(['good.trashinfo'], self._restorable())
+        assert ['good.trashinfo'] == self._restorable()
 
     def test_an_absolute_path_is_not_restorable(self):
         self._add('evil', '/etc/passwd')
 
-        self.assertEqual([], self._restorable())
+        assert [] == self._restorable()
 
     def test_a_path_escaping_the_volume_is_not_restorable(self):
         self._add('evil', '../../../etc/shadow')
 
-        self.assertEqual([], self._restorable())
+        assert [] == self._restorable()
 
-    def tearDown(self):
+    def teardown_method(self):
         self.volume.clean_up()

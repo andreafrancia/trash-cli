@@ -1,5 +1,4 @@
 import datetime
-import unittest
 
 from six import StringIO
 
@@ -13,8 +12,8 @@ from trashcli.restore.trashed_file import TrashedFile
 from trashcli.restore.trashed_files import TrashedFiles
 
 
-class TestTrashedFiles(unittest.TestCase):
-    def setUp(self):
+class TestTrashedFiles:
+    def setup_method(self):
         self.fs = FakeFs()
         self.out = StringIO()
         self.logger = FakeLogger(self.out)

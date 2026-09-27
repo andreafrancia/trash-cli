@@ -1,5 +1,4 @@
 import datetime
-import unittest
 
 from tests.support.files import require_empty_dir, make_file, remove_file
 from tests.support.py2mock import Mock
@@ -9,8 +8,8 @@ from trashcli.restore.real_restore_fs import RealFileReaderFs
 from trashcli.restore.info_dir_searcher import InfoDirSearcher, FileFound
 from trashcli.restore.trashed_files import TrashedFiles
 
-class TestTrashedFilesIntegration(unittest.TestCase):
-    def setUp(self):
+class TestTrashedFilesIntegration:
+    def setup_method(self):
         self.logger = Mock(spec=[])
         self.searcher = Mock(spec=InfoDirSearcher)
         self.trashed_files = TrashedFiles(self.logger,
@@ -34,6 +33,6 @@ class TestTrashedFilesIntegration(unittest.TestCase):
         assert 'info/info_path.trashinfo' == trashed_file.info_file
         assert 'files/info_path' == trashed_file.original_file
 
-    def tearDown(self):
+    def teardown_method(self):
         remove_file('info/info_path.trashinfo')
         remove_dir_if_exists('info')
