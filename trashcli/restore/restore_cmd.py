@@ -5,6 +5,7 @@ from trashcli.fslib.fs_operations import ListFilesInDir
 from trashcli.fstab.volumes import Volumes
 from trashcli.lib.my_input import Input
 from trashcli.lib.print_version import PrintVersionAction, PrintVersionArgs
+from trashcli.put.fs.volume_path_fs import VolumePathFs
 from trashcli.restore.args import RunRestoreArgs
 from trashcli.restore.restore_fs import FileReaderFs, PathReaderFs, \
     RestoreWriterFs, ReadCwdFs
@@ -39,6 +40,7 @@ class RestoreCmd(object):
                  read_fs,  # type: PathReaderFs
                  write_fs,  # type: RestoreWriterFs
                  read_cwd,  # type: ReadCwdFs
+                 volume_path_fs,  # type: VolumePathFs
                  ):  # type: (...) -> None
         # build the trash-directory pipeline from environment dependencies here so test and production share the same wiring
         trash_directories = TrashDirectoriesImpl(
@@ -47,7 +49,8 @@ class RestoreCmd(object):
             logger)
         searcher = InfoDirSearcher(trash_directories,
                                    InfoFiles(listing_fs))
-        trashed_files = TrashedFiles(logger, file_reader, searcher)
+        trashed_files = TrashedFiles(logger, file_reader, searcher,
+                                     volume_path_fs)
         restorer = Restorer(read_fs, write_fs)
         output = RealOutput(stdout, stderr, exit)
         handler = HandlerImpl(input, read_cwd, restorer, output)

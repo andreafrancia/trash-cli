@@ -2,6 +2,7 @@ import collections
 import os
 
 from tests.support.dirs.my_path import MyPath
+from trashcli.put.fs.real_volume_path_fs import RealVolumePathFs
 from trashcli.restore.restore_fs import FileReaderFs
 from trashcli.restore.trashed_files import TrashedFiles
 
@@ -41,7 +42,8 @@ class TestRestoreRejectsOutOfVolumePath:
         self.logger = MemoLogger()
         self.trashed_files = TrashedFiles(self.logger, FakeReaderFs(),
                                           FakeSearcher(self.info_dir,
-                                                       self.volume))
+                                                       self.volume),
+                                          RealVolumePathFs())
 
     def _add(self, name, path_line):
         with open(self.info_dir / ('%s.trashinfo' % name), 'w') as f:

@@ -10,6 +10,7 @@ from trashcli.empty.top_trash_dir_rules_file_system_reader import \
 from trashcli.fslib.fs_operations import ListFilesInDir
 from trashcli.fstab.volumes import Volumes
 from trashcli.lib.my_input import HardCodedInput
+from trashcli.put.fs.volume_path_fs import VolumePathFs
 from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.restore_fs import FileReaderFs, RestoreWriterFs, \
     RestoreReadFs
@@ -25,6 +26,7 @@ class RestoreUser:
                  listing_fs,  # type: ListFilesInDir
                  version,  # type: str
                  volumes,  # type: Volumes
+                 volume_path_fs,  # type: VolumePathFs
                  top_trash_dir_rules_reader=None,
                  read_fs=None,  # type: Optional[RestoreReadFs]
                  ):
@@ -36,6 +38,7 @@ class RestoreUser:
         self.listing_fs = listing_fs
         self.version = version
         self.volumes = volumes
+        self.volume_path_fs = volume_path_fs
         self.top_trash_dir_rules_reader = \
             top_trash_dir_rules_reader or RealTopTrashDirFs()
 
@@ -62,7 +65,8 @@ class RestoreUser:
             file_reader=self.file_reader,
             read_fs=self.path_read_fs,
             write_fs=self.write_fs,
-            read_cwd=read_cwd)
+            read_cwd=read_cwd,
+            volume_path_fs=self.volume_path_fs)
 
         try:
             exit_code = cmd.run(args)
