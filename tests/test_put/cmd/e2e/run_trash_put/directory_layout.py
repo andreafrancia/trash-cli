@@ -1,5 +1,6 @@
 from tests.test_put.cmd.e2e.run_trash_put import PutResult
 from tests.test_put.cmd.e2e.run_trash_put import run_trash_put4
+from typing import List
 
 
 class Result:
@@ -35,7 +36,7 @@ class DirectoriesLayout:
         self.fs.mkdir(self.cur_dir)
 
     def run_trash_put(self,
-                      args,  # type: list[str]
+                      args,  # type: List[str]
                       ):  # type: (...) -> Result
         output = run_trash_put4(self.root_dir, self.cur_dir, self.trash_dir,
                                 args,

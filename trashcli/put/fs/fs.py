@@ -3,6 +3,7 @@ from abc import abstractmethod
 from typing import Iterable
 
 from trashcli.compat import Protocol
+from trashcli.fstab.volume_of import VolumeOf
 
 
 class RealPathFs(Protocol):
@@ -11,7 +12,7 @@ class RealPathFs(Protocol):
         raise NotImplementedError
 
 
-class Fs(RealPathFs, Protocol):
+class Fs(RealPathFs, VolumeOf, Protocol):
     @abstractmethod
     def atomic_write(self, path, content):
         raise NotImplementedError

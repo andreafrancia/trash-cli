@@ -30,7 +30,7 @@ class PutTrashDir:
     def try_trash(self,
                   path,  # type: str
                   paths,  # type: TrashedFile
-                  ):  # type: (...) -> Either[None, Exception]
+                  ):  # type: (...) -> Either[None, FailureReason]
         try:
             move_file(self.fs, path, paths.backup_copy_path)
             return Right(None)
@@ -43,7 +43,8 @@ class PutTrashDir:
             if self.fs.lexists(paths.backup_copy_path):
                 self.fs.remove_file(paths.backup_copy_path)
             self.fs.remove_file(paths.trashinfo_path)
-            return Left(UnableToMoveFileToTrash(error))
+            unable = UnableToMoveFileToTrash(error) # type: FailureReason
+            return Left(unable)
 
 
 def move_file(fs,  # type: Fs

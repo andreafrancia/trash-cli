@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from typing import Optional
 from typing import Union
+from typing import Dict
 
 from tests.support.put.fake_fs.ent import Ent
 from tests.support.put.fake_fs.inode import INode
@@ -24,7 +25,7 @@ def make_inode_dir(directory_path,  # type: str
 class Directory(Ent):
     def __init__(self, name):  # type: (str) -> None
         self.name = name
-        self._entries = OrderedDict()  # type: dict[str, Union[INode, SymLink]]
+        self._entries = OrderedDict()  # type: Dict[str, Union[INode, SymLink]]
 
     def __repr__(self):
         return "Directory(%r)" % self.name
