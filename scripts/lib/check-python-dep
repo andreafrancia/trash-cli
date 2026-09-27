@@ -3,7 +3,7 @@ set -euo pipefail
 
 COMMAND="$1"
 
-test -x "$VIRTUAL_ENV/bin/$COMMAND" || {
+command -v ls >/dev/null || {
     >&2 echo "$COMMAND not installed
 Please run:
 
