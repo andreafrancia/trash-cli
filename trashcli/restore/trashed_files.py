@@ -6,7 +6,7 @@ from typing import Union
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.parse_trashinfo.parse_deletion_date import parse_deletion_date
 from trashcli.parse_trashinfo.parse_original_location import \
-    parse_original_location
+    OriginalLocationParser
 from trashcli.restore.restore_fs import FileReaderFs
 from trashcli.restore.info_dir_searcher import InfoDirSearcher
 from trashcli.restore.restore_logger import RestoreLogger
@@ -51,8 +51,8 @@ class TrashedFiles:
             elif info_file.type == 'trashinfo':
                 try:
                     contents = self.file_reader.contents_of(info_file.path)
-                    original_location = parse_original_location(contents,
-                                                                info_file.volume)
+                    original_location = OriginalLocationParser() \
+                        .parse_original_location(contents, info_file.volume)
                     deletion_date = parse_deletion_date(contents)
                     backup_file_path = path_of_backup_copy(info_file.path)
                     trashedfile = TrashedFile(original_location,
