@@ -1,16 +1,12 @@
-def printable(text):  # type: (str) -> str
-    # make a text safe to print on any terminal
-    if isinstance(text, bytes):
-        # python 2 byte strings go out unchanged
-        return text
-    try:
-        text.encode('utf-8')
-        return text
-    except UnicodeEncodeError:
-        text = ''.join(_escape_raw_byte(c) for c in text)
-        # last resort for any other char the stream can not take
-        return text.encode('utf-8', 'backslashreplace').decode('utf-8')
+from trashcli.compat import TextType
 
+
+def printable(text):  # type: (str) -> TextType
+    text = ''.join(_escape_raw_byte(c) for c in text)
+    # last resort for any other char the stream can not take
+    encode_result = text.encode('utf-8', 'backslashreplace')  # type: bytes
+    result = encode_result.decode('utf-8')  # type: TextType
+    return result
 
 def _escape_raw_byte(c):  # type: (str) -> str
     cp = ord(c)
