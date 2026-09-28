@@ -84,6 +84,77 @@ class TestRestoreReadingTrashinfoFiles:
             "error='Unable to read: "
             "/home/user/.local/share/Trash/info/info_path.trashinfo')"]
 
+    def test_after_a_non_trashinfo_error_continue(self):
+        # not a trashinfo
+        self.fs.add_file(HOME_TRASH + '/info/info_path.non-trashinfo')
+
+        # trashinfo + original copy
+        self.fs.add_file(HOME_TRASH + '/info/info_path.trashinfo',
+                         b'[Trash Info]\n'
+                         b'Path=name\n'
+                         b'DeletionDate=2001-01-01T10:10:10\n')
+        self.fs.add_file(HOME_TRASH + '/files/info_path', b'contents')
+
+        res = self.user.run_restore(['trash-restore', '/'], reply='0',
+                                    from_dir='/')
+
+        assert res.output() == '   0 2001-01-01 10:10:10 /name\n'
+        assert self.fs.contents_of('/name') == 'contents'
+        assert not self.fs.exists(HOME_TRASH + '/info/info_path.trashinfo')
+        assert not self.fs.exists(HOME_TRASH + '/files/info_path')
+        assert self.logger.captured == ['WARN: Non .trashinfo file in info dir']
+        assert len(self.logger.captured) == 1
+
+    def test_after_a_non_parsable_trashinfo_error_continue(self):
+        # add non parsable
+        self.fs.add_file(HOME_TRASH + '/info/not-parseable.trashinfo', b'')
+
+        # trashinfo + original copy
+        self.fs.add_file(HOME_TRASH + '/info/info_path.trashinfo',
+                         b'[Trash Info]\n'
+                         b'Path=name\n'
+                         b'DeletionDate=2001-01-01T10:10:10\n')
+        self.fs.add_file(HOME_TRASH + '/files/info_path', b'contents')
+
+        res = self.user.run_restore(['trash-restore', '/'], reply='0',
+                                    from_dir='/')
+
+        assert res.output() == '   0 2001-01-01 10:10:10 /name\n'
+        assert self.fs.contents_of('/name') == 'contents'
+        assert not self.fs.exists(HOME_TRASH + '/info/info_path.trashinfo')
+        assert not self.fs.exists(HOME_TRASH + '/files/info_path')
+        assert self.logger.captured == ['WARN: Non parsable trashinfo file: '
+                                        '/home/user/.local/share/Trash/info/'
+                                        'not-parseable.trashinfo, '
+                                        'because Unable to parse Path']
+        assert len(self.logger.captured) == 1
+
+    def test_after_unreadable_trashinfo_error_continue(self):
+        self.fs.fake_fs.makedirs(HOME_TRASH + '/info/not_parseable.trashinfo',
+                                 0o755)
+
+        # trashinfo + original copy
+        self.fs.add_file(HOME_TRASH + '/info/info_path.trashinfo',
+                         b'[Trash Info]\n'
+                         b'Path=name\n'
+                         b'DeletionDate=2001-01-01T10:10:10\n')
+        self.fs.add_file(HOME_TRASH + '/files/info_path', b'contents')
+
+        res = self.user.run_restore(['trash-restore', '/'], reply='0',
+                                    from_dir='/')
+
+
+        assert res.output() == '   0 2001-01-01 10:10:10 /name\n'
+        assert self.fs.contents_of('/name') == 'contents'
+        assert not self.fs.exists(HOME_TRASH + '/info/info_path.trashinfo')
+        assert not self.fs.exists(HOME_TRASH + '/files/info_path')
+        assert self.logger.captured == [
+            "WARN: IOErrorReadingTrashInfo("
+            "path='/home/user/.local/share/Trash/info/not_parseable.trashinfo', "
+            "error='Unable to read: "
+            "/home/user/.local/share/Trash/info/not_parseable.trashinfo')"]
+        assert len(self.logger.captured) == 1
+
     # Purpose: in a volume trash (<volume>/.Trash-$uid) on a volume other
     # than '/', a relative Path= is resolved against that volume.
     def test_a_relative_path_in_a_volume_trash_is_resolved_against_the_volume(self):
