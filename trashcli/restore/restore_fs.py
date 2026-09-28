@@ -4,7 +4,9 @@ from trashcli.fstab.volumes import Volumes
 
 
 class FileReaderFs(Protocol):
-    def contents_of(self, path):
+    def contents_of(self,
+                    path,  # type: str
+                    ):  # type: (...) -> str
         raise NotImplementedError()
 
 

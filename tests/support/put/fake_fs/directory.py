@@ -14,7 +14,7 @@ from trashcli.lib.my_permission_error import MyPermissionError
 
 def make_inode_dir(directory_path,  # type: str
                    mode,  # type: int
-                   parent_inode,  # type: Optional[INode]
+                   parent_inode,  # type: Optional[INode|SymLink]
                    ):  # type: (...)->INode
     directory = Directory(directory_path)
     inode = INode(directory, mode, Stickiness.not_sticky)
@@ -37,14 +37,22 @@ class Directory(Ent):
     def entries(self):
         return self._entries.keys()
 
-    def add_dir(self, basename, mode, complete_path):
+    def add_dir(self,
+                basename,  # type: str
+                mode,
+                complete_path,  # type: str
+                ):
         if self._inode().mode & 0o200 == 0:
             raise MyPermissionError(
                 "[Errno 13] Permission denied: '%s'" % complete_path)
         inode = make_inode_dir(basename, mode, self._inode())
         self._entries[basename] = inode
 
-    def add_file(self, basename, content, complete_path):
+    def add_file(self,
+                 basename,  # type: str
+                 content,  # type: str
+                 complete_path,  # type: str
+                 ):
         mode = 0o644
         if self._inode().mode & 0o200 == 0:
             raise MyPermissionError(

@@ -2,7 +2,9 @@ from tests.support.put.fake_fs.ent import Ent
 
 
 class File(Ent):
-    def __init__(self, content):
+    def __init__(self,
+                 content,  # type: str
+                 ):
         self.content = content
 
     def getsize(self):

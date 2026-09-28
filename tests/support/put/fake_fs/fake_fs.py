@@ -103,7 +103,9 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
             raise OSError("already exists: %s" % path)
         self.make_file(path, content)
 
-    def read(self, path):
+    def read(self,
+             path,  # type: str
+             ):  # type: (...) -> str
         path = self._join_cwd(path)
         dirname, basename = os.path.split(os.path.normpath(path))
         directory = as_directory(self.get_entity_at(dirname))
@@ -136,10 +138,13 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
         self.makedirs(dirname, 0o755)
         self.make_file(path, content)
 
-    def make_file(self, path, content=''):
+    def make_file(self,
+                  path,  # type: str
+                  content='',  # type: str
+                  ):
         path = self._join_cwd(path)
         dirname, basename = os.path.split(path)
-        directory = self.get_entity_at(dirname)
+        directory = self.get_directory_at(dirname)
         directory.add_file(basename, content, path)
 
     def write_file(self, path, content):
