@@ -1,5 +1,4 @@
-from tests.test_restore.components.collaborators.\
-    test_restore_distrusts_unsafe_trash_dirs import (
+from tests.test_restore.cmd.test_restore_distrusts_unsafe_trash_dirs import (
         FakeReader, RecordingLogger, HOME, HOME_TRASH)
 from trashcli.fstab.volumes import FakeVolumes2
 from trashcli.restore.trash_directories import TrashDirectories1
