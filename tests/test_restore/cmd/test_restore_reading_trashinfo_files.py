@@ -153,13 +153,20 @@ class TestRestoreReadingTrashinfoFiles:
     # volume is offered for restore.
     def test_a_relative_path_inside_the_volume_is_restorable(self):
         self.fs.add_volume('/volume')
-        self.trash.has_a_volume_trashinfo('good', 'docs/report.txt')
+        self.trash.has_a_volume_trashinfo('report.txt.trashinfo',
+                                          'docs/report.txt',
+                                          'report-content')
 
-        res = self.user.run_restore(['trash-restore', '/'], from_dir='/')
+        res = self.user.run_restore(['trash-restore', '/'], from_dir='/', reply='0')
 
         assert res.output() == (
-            '   0 2000-01-01 00:00:00 /volume/docs/report.txt\n'
-            'No files were restored\n')
+            '   0 2000-01-01 00:00:00 /volume/docs/report.txt\n')
+        assert self.fs.contents_of('/volume/docs/report.txt') == 'report-content'
+        assert self.trash.remaining_trashinfo(self.volume_trash) == []
+        assert self.trash.remaining_original_copies(self.volume_trash) == []
+        assert self.fs.exists(self.home_trash) is False
+        assert self.logger.captured == []
+
 
     # Purpose: an absolute Path= in a volume trash is refused (it could point
     # anywhere, e.g. /etc/passwd).
