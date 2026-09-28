@@ -7,7 +7,7 @@ from tests.support.cmd.capture_exit_code2 import capture_exit_code2
 from tests.support.dirs.my_path import MyPath
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.py2mock import Mock
-from tests.test_restore.support.capture_logger import CaptureLogger
+from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
 from trashcli.fslib.real_fs_operations import RealListFilesInDir
@@ -53,7 +53,7 @@ class TestTrashedFileRestoreIntegration:
         self.env = {'HOME': self.home_dir}
         # end of unix-like env
 
-        self.logger = CaptureLogger()
+        self.logger = RecordingLogger()
         self.trashed_files = Mock(spec=TrashedFiles)
         self.cmd = RestoreCmd(
             stdout=self.stdout,

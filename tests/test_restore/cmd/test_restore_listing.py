@@ -8,7 +8,7 @@ from tests.support.fakes.fake_trash_dir import FakeTrashDir, \
     FakeTrashDirWithRoot
 from tests.support.fs.sorting_list_file_in_dir_fs import SortingListFilesInDir
 from tests.support.py2mock import Mock
-from tests.test_restore.support.capture_logger import CaptureLogger
+from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
 from trashcli.fslib.real_fs_operations import RealListFilesInDir
@@ -57,7 +57,7 @@ class TestTrashedFileRestoreIntegration:
 
         self.cur_dir = FakeReadCwdFs(self.cwd)
 
-        self.logger = CaptureLogger()
+        self.logger = RecordingLogger()
         self.trashed_files = Mock(spec=TrashedFiles)
         self.cmd = RestoreCmd(
             stdout=self.stdout,

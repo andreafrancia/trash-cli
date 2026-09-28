@@ -1,7 +1,7 @@
 from tests.support.restore.fake_restore_fs import FakePathFs
 from tests.support.restore.restore_user import RestoreUser
 from tests.support.trash_dirs.trash_dir_has_trashinfo import TrashDirHasTrashInfo
-from tests.test_restore.support.capture_logger import CaptureLogger
+from tests.test_restore.support.recording_logger import RecordingLogger
 
 # How trash-restore turns each entry of the info dirs into either a file
 # offered for restore or a warning.
@@ -10,7 +10,7 @@ from tests.test_restore.support.capture_logger import CaptureLogger
 class TestRestoreReadingTrashinfoFiles:
     def setup_method(self):
         self.fs = FakePathFs()
-        self.logger = CaptureLogger()
+        self.logger = RecordingLogger()
         self.user = RestoreUser(environ={'HOME': '/home/user'},
                                 uid=123,
                                 file_reader=self.fs,
