@@ -72,4 +72,7 @@ class FakePathFs(ListFilesInDir,
             yield os.path.join(dir_path, file_path)
 
     def contents_of(self, path):
-        return self.fake_fs.read(path).decode('utf-8')
+        content = self.fake_fs.read(path)
+        if type(content) is bytes:
+            content = content.decode('utf-8')
+        return content

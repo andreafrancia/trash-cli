@@ -1,5 +1,12 @@
+from tests.support.restore.fake_restore_fs import FakePathFs
+from trashcli.put.fs.fs import Fs
+
+
 class TrashDirHasTrashInfo:
-    def __init__(self, fs, home_trash, volume_trash):
+    def __init__(self,
+                 fs,  # type: FakePathFs
+                 home_trash,
+                 volume_trash):
         self.fs = fs
         self.home_trash = home_trash
         self.volume_trash = volume_trash
@@ -30,7 +37,8 @@ class TrashDirHasTrashInfo:
                                          home_trash=self.home_trash),
                                  0o755)
 
-    def has_a_volume_trashinfo(self, name, path_line):
+    def has_a_volume_trashinfo(self, name, path_line, content=None):
+        content = content if content is not None else ''
         self.fs.add_file('{volume_path}/info/{name}.trashinfo'
                          .format(name=name, volume_path=self.volume_trash),
                          ('[Trash Info]\n'
@@ -38,4 +46,13 @@ class TrashDirHasTrashInfo:
                           'DeletionDate=2000-01-01T00:00:00\n' % path_line
                           ).encode('utf-8'))
         self.fs.add_file('{volume_path}/files/{name}'
-                         .format(name=name, volume_path=self.volume_trash))
+                         .format(name=name, volume_path=self.volume_trash),
+                         content)
+
+    def remaining_trashinfo(self, trash_dir):
+        return list(self.fs.list_files_in_dir(
+            "{trash_dir}/info".format(trash_dir=trash_dir)))
+
+    def remaining_original_copies(self, trash_dir):
+        return list(self.fs.list_files_in_dir(
+            "{trash_dir}/files".format(trash_dir=trash_dir)))
