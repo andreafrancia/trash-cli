@@ -1,19 +1,24 @@
+from typing import Optional
+
 from tests.support.restore.fake_restore_fs import FakePathFs
-from trashcli.put.fs.fs import Fs
 
 
 class TrashDirHasTrashInfo:
     def __init__(self,
                  fs,  # type: FakePathFs
-                 home_trash,
-                 volume_trash):
+                 home_trash,  # type: str
+                 volume_trash,  # type: str
+                 ):
         self.fs = fs
         self.home_trash = home_trash
         self.volume_trash = volume_trash
 
-    def has_a_well_formed_trashinfo(self, basename):
-        self.fs.add_file('{home_trash}/info/{basename}'.format(basename=basename,
-                                                               home_trash=self.home_trash),
+    def has_a_well_formed_trashinfo(self,
+                                    basename,  # type: str
+                                    ):
+        self.fs.add_file('{home_trash}/info/{basename}'
+                         .format(basename=basename,
+                                 home_trash=self.home_trash),
                          b'[Trash Info]\n'
                          b'Path=name\n'
                          b'DeletionDate=2001-01-01T10:10:10\n')
@@ -21,23 +26,33 @@ class TrashDirHasTrashInfo:
                          .format(home_trash=self.home_trash),
                          b'contents')
 
-    def has_a_non_trashinfo(self, basename):
+    def has_a_non_trashinfo(self,
+                            basename,  # type: str
+                            ):
         self.fs.add_file('{home_trash}/info/{basename}'
                          .format(basename=basename,
                                  home_trash=self.home_trash))
 
-    def has_a_non_parseable_trashinfo(self, basename):
+    def has_a_non_parseable_trashinfo(self,
+                                      basename,  # type: str
+                                      ):
         self.fs.add_file('{home_trash}/info/{basename}'
                          .format(basename=basename,
                                  home_trash=self.home_trash), b'')
 
-    def has_a_unreadable_trashinfo(self, basename):
+    def has_a_unreadable_trashinfo(self,
+                                   basename,  # type: str
+                                   ):
         self.fs.fake_fs.makedirs('{home_trash}/info/{basename}'
                                  .format(basename=basename,
                                          home_trash=self.home_trash),
                                  0o755)
 
-    def has_a_volume_trashinfo(self, name, path_line, content=None):
+    def has_a_volume_trashinfo(self,
+                               name,  # type: str
+                               path_line,  # type: str
+                               content=None,  # type: Optional[str]
+                               ):
         content = content if content is not None else ''
         self.fs.add_file('{volume_path}/info/{name}.trashinfo'
                          .format(name=name, volume_path=self.volume_trash),
@@ -49,10 +64,14 @@ class TrashDirHasTrashInfo:
                          .format(name=name, volume_path=self.volume_trash),
                          content)
 
-    def remaining_trashinfo(self, trash_dir):
+    def remaining_trashinfo(self,
+                            trash_dir,  # type: str
+                            ):
         return list(self.fs.list_files_in_dir(
             "{trash_dir}/info".format(trash_dir=trash_dir)))
 
-    def remaining_original_copies(self, trash_dir):
+    def remaining_original_copies(self,
+                                  trash_dir,  # type: str
+                                  ):
         return list(self.fs.list_files_in_dir(
             "{trash_dir}/files".format(trash_dir=trash_dir)))
