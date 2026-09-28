@@ -2,7 +2,7 @@ from __future__ import print_function
 from trashcli.restore.trashed_files import RestoreLogger
 
 
-class CaptureLogger(RestoreLogger):
+class RecordingLogger(RestoreLogger):
     def __init__(self, capturing = None):
         self.captured = capturing or []
 

@@ -25,16 +25,6 @@ class FakeReader:
         return path in self.world_writable
 
 
-class RecordingLogger:
-    # kept for tests/test_restore/cmd/test_restore_owner_check.py, which
-    # still exercises TrashDirectories1 directly
-    def __init__(self):
-        self.warnings = []
-
-    def warning(self, message):
-        self.warnings.append(message)
-
-
 class TestRestoreDistrustsUnsafeTrashDirs:
     def setup_method(self):
         self.fs = FakePathFs()
