@@ -15,6 +15,7 @@ from tests.support.put.fake_fs.symlink import SymLink
 from tests.support.put.format_mode import format_mode
 from tests.support.put.my_file_not_found_error import MyFileNotFoundError
 from trashcli.fslib.fs_operations import IsStickyDir
+from trashcli.fslib.fs_operations import IsSymLink
 from trashcli.fslib.fs_operations import PathExists
 from trashcli.put.check_cast import check_cast
 from trashcli.put.fs.fs import Fs
@@ -29,7 +30,7 @@ def as_inode(entry):  # type: (Entry) -> INode
     return check_cast(INode, entry)
 
 
-class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir):
+class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
     def __init__(self, cwd='/'):
         super(FakeFs, self).__init__()
         self.root_inode = make_inode_dir('/', 0o755, None)
@@ -206,6 +207,9 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir):
             return False
         else:
             return isinstance(entry, SymLink)
+
+    def is_symlink(self, path):  # type: (str) -> bool
+        return self.islink(path)
 
     def symlink(self, src, dest):
         dest = os.path.join(self.cwd, dest)
