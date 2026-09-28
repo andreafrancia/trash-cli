@@ -1,6 +1,6 @@
-from trashcli.fstab.volumes import FakeVolumes2
-from trashcli.restore.trash_directories import TrashDirectories1
-from trashcli.trash_dirs_scanner import TopTrashDirRules
+from tests.support.dates import date_at
+from tests.support.restore.fake_restore_fs import FakePathFs
+from tests.support.restore.restore_user import RestoreUser
 
 HOME = '/home/user'
 HOME_TRASH = '/home/user/.local/share/Trash'
@@ -26,6 +26,8 @@ class FakeReader:
 
 
 class RecordingLogger:
+    # kept for tests/test_restore/cmd/test_restore_owner_check.py, which
+    # still exercises TrashDirectories1 directly
     def __init__(self):
         self.warnings = []
 
@@ -35,33 +37,50 @@ class RecordingLogger:
 
 class TestRestoreDistrustsUnsafeTrashDirs:
     def setup_method(self):
-        self.volumes = FakeVolumes2("volume_of(%s)", [])
-        self.logger = RecordingLogger()
+        self.fs = FakePathFs()
+        self.fs.add_trash_file(HOME + "/foo", HOME_TRASH,
+                               date_at(2018, 1, 1), '')
 
-    def trusted_home_trash_dirs(self, reader):
-        rules = TopTrashDirRules(reader)
-        td = TrashDirectories1(self.volumes, 123, {'HOME': HOME}, rules,
-                               self.logger)
-        return [path for path, volume in td.all_trash_directories()]
+    def make_user(self, reader):
+        return RestoreUser(environ={'HOME': HOME},
+                           uid=123,
+                           file_reader=self.fs,
+                           path_read_fs=self.fs,
+                           write_fs=self.fs,
+                           listing_fs=self.fs,
+                           version='1.0',
+                           volumes=self.fs,
+                           volume_path_fs=self.fs,
+                           top_trash_dir_rules_reader=reader)
+
+    def restore_output(self, reader):
+        user = self.make_user(reader)
+        res = user.run_restore([], from_dir=HOME)
+        return res.output()
 
     def test_a_normal_home_trash_is_kept(self):
-        assert HOME_TRASH in self.trusted_home_trash_dirs(FakeReader())
+        assert HOME + "/foo" in self.restore_output(FakeReader())
 
     def test_a_symlinked_info_dir_is_skipped(self):
         reader = FakeReader(symlinks=[HOME_TRASH + '/info'])
 
-        assert self.trusted_home_trash_dirs(reader) == []
+        assert (self.restore_output(reader) ==
+               "No files trashed from current dir ('%s')\n" % HOME)
 
     def test_a_world_writable_files_dir_is_skipped(self):
         reader = FakeReader(world_writable=[HOME_TRASH + '/files'])
 
-        assert self.trusted_home_trash_dirs(reader) == []
+        assert (self.restore_output(reader) ==
+               "No files trashed from current dir ('%s')\n" % HOME)
 
     def test_the_reason_a_dir_is_skipped_is_reported(self):
         reader = FakeReader(world_writable=[HOME_TRASH + '/info'])
+        user = self.make_user(reader)
 
-        self.trusted_home_trash_dirs(reader)
+        user.run_restore([], from_dir=HOME)
 
-        assert self.logger.warnings == [
-            "TrashDir skipped because its info dir is world writable: %s"
+        assert user.logger.messages == [
+            "warning: TrashDir skipped because its info dir is world writable: %s"
             % HOME_TRASH]
+
+
