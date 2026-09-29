@@ -1,6 +1,8 @@
 # How to create a new release
 
 ```shell
+echo "Before continuing check if HISTORY.txt is updated!"
+
 main_trash_cli_dir="$(pwd)"
 # Open a branch in a new worktree
 git worktree add ../trash-cli-new-release && cd ../trash-cli-new-release 
