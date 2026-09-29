@@ -1,7 +1,27 @@
-UNRELEASED:
+0.26.9.29 (82646023):
 User visible changes:
-- trash-put do not longer leave a copy of the trashed file in TrashDir when the
-  move crosses FileSystem boundaries and is blocked by an error (curius-rabbit).
+- trash-put no longer leaves a copy of the trashed file in the trash dir when
+  a move across filesystem boundaries is blocked by an error (curious-rabbit,
+  andreafrancia) [f6bac80d, 562ddaec, 9295e9f4]
+- Support for file names that are not valid UTF-8 (curious-rabbit)
+  [7d94945f], plus a Python 2.7 fix for them [819f5e36] (andreafrancia)
+- trash-restore now accepts absolute paths in trash directories that are
+  not volume trashes [a761c9cb]
+- Removed the "Donate" button [9a880444]
+- Deleted trashcli/put/same_volume_gate.py [4a05b2a6]
+Work on the tools:
+- Rewrote trash-restore tests (TrashedFiles, unsafe trash dirs) to run through
+  RestoreUser, converted them from unittest to pytest, and added tests for
+  trashinfo reading and volume-trashed files
+  [86c2ef70, e0e441a9, 0e45e701, 82ea70a7, a3ed47be, 64d52a89, c335272c]
+- Test fakes: added IsSymLink and IsStickyDir to FakeFs, added the
+  TrashDirHasTrashInfo fixture, and merged RecordingLogger into CaptureLogger
+  [75035443, 65e8d1a9, 972a1d6e, 1063d356]
+- Type hints, mypy now also runs on the tests [bb4736de, 9e37e77e, d0030059, 801fa420]
+- Dev setup: Docker setup to run the tests on Python 2.7, `pip install -e '.[dev]'`,
+  PyYAML dev requirements pinned per Python version
+  [b80b00c2, 959079f1, 6a055a9a, 73f4c99d]
+- Release docs converted to Markdown [1340cb8d]
 0.26.9.14 (1905f167):
 User visible changes:
 - trash-restore now trusts a shared trash directory (.Trash/$uid) with the
