@@ -20,12 +20,24 @@ class FakePathFs(ListFilesInDir,
     def path_exists(self, path):
         return self.fake_fs.exists(path)
 
+    def is_sticky_dir(self, path):
+        return self.fake_fs.is_sticky_dir(path)
+
+    def is_symlink(self, path):
+        return self.fake_fs.is_symlink(path)
+
+    def is_world_writable(self, path):
+        return self.fake_fs.is_world_writable(path)
+
+    def set_sticky_bit(self, path):
+        self.fake_fs.set_sticky_bit(path)
+
     def __init__(self):
         self.fake_fs = FakeFs()
         self.mount_points = []
 
     def mkdirs(self, path):
-        self.fake_fs.makedirs(path, 755)
+        self.fake_fs.makedirs(path, 0o755)
 
     def move(self, path, dest):
         self.fake_fs.move(path, dest)
@@ -55,7 +67,8 @@ class FakePathFs(ListFilesInDir,
         self.add_file(backup_copy_path, original_file_content.encode('utf-8'))
         return trashed_file
 
-    def add_trash_file(self, from_path, trash_dir, time, original_file_content):
+    def add_trash_file(self, from_path, trash_dir, time,
+                       original_file_content = ''):
         content = format_trashinfo(from_path, time)
         basename = os.path.basename(from_path)
         info_path = os.path.join(trash_dir, 'info', "%s.trashinfo" % basename)
@@ -63,8 +76,11 @@ class FakePathFs(ListFilesInDir,
         self.add_file(info_path, content)
         self.add_file(backup_copy_path, original_file_content.encode('utf-8'))
 
+    def add_trash_empty_file(self, from_path, trash_dir, time):
+        self.add_trash_file(from_path, trash_dir, time, '')
+
     def add_file(self, path, content=b''):
-        self.fake_fs.makedirs(os.path.dirname(path), 755)
+        self.fake_fs.makedirs(os.path.dirname(path), 0o755)
         self.fake_fs.make_file(path, content)
 
     def list_files_in_dir(self, dir_path):

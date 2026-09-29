@@ -234,6 +234,9 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
     def is_sticky_dir(self, path):  # type: (str) -> bool
         return self.isdir(path) and self.has_sticky_bit(path)
 
+    def is_world_writable(self, path):  # type: (str) -> bool
+        return bool(self.get_mod(path) & 0o002)
+
     def realpath(self, path):
         path = self._join_cwd(path)
         return os.path.join("/", path)
