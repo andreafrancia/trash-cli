@@ -1,24 +1,21 @@
 import datetime
-import unittest
 
-from tests.support.py2mock import Mock, call
-
+from tests.support.dates import jan_11_2001
 from tests.support.restore.fake_restore_fs import FakePathFs
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
-from trashcli.restore.restore_fs import RestoreWriterFs
 
+a_date = jan_11_2001()
 
-class TestRestore2(unittest.TestCase):
-    def setUp(self):
-        self.write_fs = Mock(spec=RestoreWriterFs)
+class TestRestore2:
+    def setup_method(self):
         self.fs = FakePathFs()
         self.user = RestoreUser(
             environ={'XDG_DATA_HOME': '/data_home'},
             uid=1000,
             file_reader=self.fs,
             path_read_fs=self.fs,
-            write_fs=self.write_fs,
+            write_fs=self.fs,
             listing_fs=self.fs,
             version='1.2.3',
             volumes=self.fs,
@@ -40,25 +37,32 @@ class TestRestore2(unittest.TestCase):
     def test_restore_operation(self):
         self.fs.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
                                datetime.datetime(2016, 1, 1), 'boo')
+        assert '/cwd/parent/foo.txt' not in self.fs.fake_fs.find_all()
+        assert '/data_home/Trash/info/foo.txt.trashinfo' in self.fs.fake_fs.find_all()
+        assert '/data_home/Trash/files/foo.txt' in self.fs.fake_fs.find_all()
 
         res = self.cmd_run(['trash-restore'], reply='0', from_dir='/cwd')
 
         assert '' == res.stderr
-        assert ([call.mkdirs('/cwd/parent'),
-                 call.move('/data_home/Trash/files/foo.txt',
-                           '/cwd/parent/foo.txt'),
-                 call.remove_file('/data_home/Trash/info/foo.txt.trashinfo')]
-                == self.write_fs.mock_calls)
+        assert '/data_home/Trash/info/foo.txt.trashinfo' not in self.fs.fake_fs.find_all()
+        assert '/data_home/Trash/files/foo.txt' not in self.fs.fake_fs.find_all()
+        assert '/cwd/parent/foo.txt' in self.fs.fake_fs.find_all()
 
     def test_restore_operation_when_dest_exists(self):
         self.fs.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
                                datetime.datetime(2016, 1, 1), 'boo')
         self.fs.add_file('/cwd/parent/foo.txt')
+        assert '/cwd/parent/foo.txt' in self.fs.fake_fs.find_all()
+        assert '/data_home/Trash/info/foo.txt.trashinfo' in self.fs.fake_fs.find_all()
+        assert '/data_home/Trash/files/foo.txt' in self.fs.fake_fs.find_all()
 
         res = self.cmd_run(['trash-restore'], reply='0', from_dir='/cwd')
 
-        assert 'Refusing to overwrite existing file "foo.txt".\n' == res.stderr
-        assert ([] == self.write_fs.mock_calls)
+        assert res.stderr == 'Refusing to overwrite existing file "foo.txt".\n'
+        assert '/cwd/parent/foo.txt' in self.fs.fake_fs.find_all()
+        assert '/data_home/Trash/info/foo.txt.trashinfo' in self.fs.fake_fs.find_all()
+        assert '/data_home/Trash/files/foo.txt' in self.fs.fake_fs.find_all()
+
 
     def test_when_user_reply_with_empty_string(self):
         self.fs.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
@@ -69,11 +73,12 @@ class TestRestore2(unittest.TestCase):
         assert res.last_line_of_stdout() == 'No files were restored'
 
     def test_batch_restore_continues_after_conflicts(self):
-        for name in ['a.txt', 'b.txt', 'c.txt', 'd.txt']:
-            self.fs.add_trash_file('/cwd/' + name, '/data_home/Trash',
-                                   datetime.datetime(2016, 1, 1), 'trashed')
-        self.fs.add_file('/cwd/b.txt')
-        self.fs.add_file('/cwd/d.txt')
+        self.fs.add_trash_file('/cwd/a.txt', '/data_home/Trash', a_date, 'trash-a')
+        self.fs.add_trash_file('/cwd/b.txt', '/data_home/Trash', a_date, 'trash-b')
+        self.fs.add_trash_file('/cwd/c.txt', '/data_home/Trash', a_date, 'trash-c')
+        self.fs.add_trash_file('/cwd/d.txt', '/data_home/Trash', a_date, 'trash-d')
+        self.fs.add_file('/cwd/b.txt', 'already-there-b')
+        self.fs.add_file('/cwd/d.txt', 'already-there-d')
 
         res = self.cmd_run(['trash-restore', '--sort=path'],
                            reply='0-3', from_dir='/cwd')
@@ -81,37 +86,28 @@ class TestRestore2(unittest.TestCase):
         assert 1 == res.exit_code
         assert ('Refusing to overwrite existing file "b.txt".\n'
                 'Refusing to overwrite existing file "d.txt".\n') == res.stderr
-        assert [
-            call.mkdirs('/cwd'),
-            call.move('/data_home/Trash/files/a.txt', '/cwd/a.txt'),
-            call.remove_file('/data_home/Trash/info/a.txt.trashinfo'),
-            call.mkdirs('/cwd'),
-            call.move('/data_home/Trash/files/c.txt', '/cwd/c.txt'),
-            call.remove_file('/data_home/Trash/info/c.txt.trashinfo'),
-        ] == self.write_fs.mock_calls
+        assert 'trash-a' == self.fs.contents_of('/cwd/a.txt')
+        assert 'trash-c' == self.fs.contents_of('/cwd/c.txt')
+        assert 'already-there-b' == self.fs.contents_of('/cwd/b.txt')
+        assert 'already-there-d' == self.fs.contents_of('/cwd/d.txt')
+        assert ['b.txt.trashinfo', 'd.txt.trashinfo'] == self.fs.fake_fs.listdir('/data_home/Trash/info')
 
     def test_batch_restore_continues_after_move_error(self):
-        for name in ['a.txt', 'b.txt']:
-            self.fs.add_trash_file('/cwd/' + name, '/data_home/Trash',
-                                   datetime.datetime(2016, 1, 1), 'trashed')
-        self.write_fs.move.side_effect = [IOError('move failed'), None]
+        self.fs.add_trash_file('/cwd/a.txt', '/data_home/Trash', a_date, 'trash-a')
+        self.fs.add_trash_file('/cwd/b.txt', '/data_home/Trash', a_date, 'trash-b')
+        self.fs.fake_fs.fail_move_on('/data_home/Trash/files/a.txt')
 
         res = self.cmd_run(['trash-restore', '--sort=path'],
                            reply='0,1', from_dir='/cwd')
 
         assert 1 == res.exit_code
         assert 'move failed\n' == res.stderr
-        assert [
-            call.mkdirs('/cwd'),
-            call.move('/data_home/Trash/files/a.txt', '/cwd/a.txt'),
-            call.mkdirs('/cwd'),
-            call.move('/data_home/Trash/files/b.txt', '/cwd/b.txt'),
-            call.remove_file('/data_home/Trash/info/b.txt.trashinfo'),
-        ] == self.write_fs.mock_calls
+        assert ['b.txt'] == self.fs.fake_fs.listdir('/cwd')
+        assert ['a.txt.trashinfo'] == self.fs.fake_fs.listdir('/data_home/Trash/info')
 
     def test_when_user_reply_with_not_number(self):
         self.fs.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
-                               datetime.datetime(2016, 1, 1), 'boo')
+                               a_date, 'boo')
 
         res = self.cmd_run(['trash-restore'], reply='non numeric',
                            from_dir='/cwd')

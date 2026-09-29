@@ -1,6 +1,8 @@
 import os
 
 from tests.support.fakes.fake_volume_path_fs import FakeVolumePathFs
+from tests.support.put.fake_fs.failing_fake_fs import FailingFakeFs, \
+    FailOnMoveFakeFs
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.a_trashed_file import ATrashedFile
 from trashcli.fslib.fs_operations import PathExists, ListFilesInDir
@@ -13,6 +15,10 @@ from trashcli.restore.restore_fs import FileReaderFs, PathReaderFs, \
 class FakePathFs(ListFilesInDir,
                  Volumes, FileReaderFs, RestoreWriterFs,
                  PathReaderFs, PathExists, FakeVolumePathFs):
+
+    def __init__(self):
+        self.fake_fs = FailOnMoveFakeFs()
+        self.mount_points = []
 
     def exists(self, path):
         return self.path_exists(path)
@@ -31,10 +37,6 @@ class FakePathFs(ListFilesInDir,
 
     def set_sticky_bit(self, path):
         self.fake_fs.set_sticky_bit(path)
-
-    def __init__(self):
-        self.fake_fs = FakeFs()
-        self.mount_points = []
 
     def mkdirs(self, path):
         self.fake_fs.makedirs(path, 0o755)

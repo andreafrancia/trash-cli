@@ -76,7 +76,7 @@ class RestoreAskingTheUser(object):
             try:
                 self.restorer.restore_trashed_file(trashed_file,
                                                    selected_files.overwrite)
-            except IOError as e:
+            except (IOError, OSError) as e:
                 errors.append(text_type(e))
         if errors:
             return Left(Die(u'\n'.join(errors)))

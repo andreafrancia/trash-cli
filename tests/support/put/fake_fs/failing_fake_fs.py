@@ -42,11 +42,11 @@ class FailingOnAtomicWriteFakeFs(FakeFs):
 class FailOnMoveFakeFs(FakeFs):
     def __init__(self):
         super(FailOnMoveFakeFs, self).__init__()
-        self._fail_move_on_path = None
+        self._fail_move_on_paths = []
         self._fail_move_leaving_copy_on_path = None
 
     def move(self, src, dest):
-        if src == self._fail_move_on_path:
+        if src in self._fail_move_on_paths:
             raise OSError("move failed")
         if src == self._fail_move_leaving_copy_on_path:
             self.make_file(dest, self.read(src))
@@ -54,7 +54,7 @@ class FailOnMoveFakeFs(FakeFs):
         return super(FailOnMoveFakeFs, self).move(src, dest)
 
     def fail_move_on(self, path):
-        self._fail_move_on_path = path
+        self._fail_move_on_paths.append(path)
 
     def fail_move_leaving_copy_on(self, path):
         self._fail_move_leaving_copy_on_path = path
