@@ -1,6 +1,7 @@
 from tests.support.dates import date_at
 from tests.support.restore.fake_restore_fs import FakePathFs
 from tests.support.restore.restore_user import RestoreUser
+from tests.test_restore.support.recording_logger import RecordingLogger
 
 HOME = '/home/user'
 HOME_TRASH = '/home/user/.local/share/Trash'
@@ -49,7 +50,8 @@ class TestRestoreSkipsUntrustedSharedDir:
                            version='1.0',
                            volumes=self.fs,
                            volume_path_fs=self.fs,
-                           top_trash_dir_rules_reader=reader)
+                           top_trash_dir_rules_reader=reader,
+                           logger=RecordingLogger())
         res = user.run_restore(['trash-restore', '/'], from_dir=HOME)
         return res.output()
 

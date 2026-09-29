@@ -5,6 +5,7 @@ from tests.support.py2mock import Mock, call
 
 from tests.support.restore.fake_restore_fs import FakePathFs
 from tests.support.restore.restore_user import RestoreUser
+from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.restore.restore_fs import RestoreWriterFs
 
 
@@ -22,6 +23,7 @@ class TestRestore2(unittest.TestCase):
             version='1.2.3',
             volumes=self.fs,
             volume_path_fs=self.fs,
+            logger=RecordingLogger()
         )
 
     def test_should_print_version(self):
@@ -111,7 +113,8 @@ class TestRestore2(unittest.TestCase):
         self.fs.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
                                datetime.datetime(2016, 1, 1), 'boo')
 
-        res = self.cmd_run(['trash-restore'], reply='non numeric', from_dir='/cwd')
+        res = self.cmd_run(['trash-restore'], reply='non numeric',
+                           from_dir='/cwd')
 
         assert res.last_line_of_stderr() == \
                'Invalid entry: not an index: non numeric'

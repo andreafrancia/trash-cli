@@ -28,9 +28,9 @@ class RestoreUser:
                  version,  # type: str
                  volumes,  # type: Volumes
                  volume_path_fs,  # type: VolumePathFs
+                 logger,  # type: RestoreLogger
                  top_trash_dir_rules_reader=None,
                  read_fs=None,  # type: Optional[RestoreReadFs]
-                 logger=None,  # type: Optional[RestoreLogger]
                  ):
         self.environ = environ
         self.uid = uid
@@ -43,7 +43,7 @@ class RestoreUser:
         self.volume_path_fs = volume_path_fs
         self.top_trash_dir_rules_reader = \
             top_trash_dir_rules_reader or RealTopTrashDirFs()
-        self.logger = logger or RecordingLogger()
+        self.logger = logger
 
     no_args = object()
 

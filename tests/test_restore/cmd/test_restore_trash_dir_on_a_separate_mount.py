@@ -1,5 +1,6 @@
 import datetime
 
+from tests.support.dates import date_at
 from tests.support.restore.fake_restore_fs import FakePathFs
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
@@ -15,7 +16,7 @@ from tests.test_restore.support.recording_logger import RecordingLogger
 class TestRestoreTrashDirOnASeparateMount:
     def setup_method(self):
         self.fs = FakePathFs()
-        self.logger = RecordingLogger()
+        self.log_messages = []
         self.user = RestoreUser(environ={'HOME': '/home/user'},
                                 uid=123,
                                 file_reader=self.fs,
@@ -25,7 +26,7 @@ class TestRestoreTrashDirOnASeparateMount:
                                 version='1.0',
                                 volumes=self.fs,
                                 volume_path_fs=self.fs,
-                                logger=self.logger)
+                                logger=RecordingLogger(self.log_messages))
 
     # Issue #420: /home is a separate mount point.
     def test_home_trash_on_a_separate_mount_is_restorable(self):
@@ -37,7 +38,7 @@ class TestRestoreTrashDirOnASeparateMount:
 
         res = self.user.run_restore([], reply='0', from_dir='/home/user')
 
-        assert (res.output(), self.logger.captured) == (
+        assert (res.output(), self.log_messages) == (
             '   0 2018-01-01 00:00:00 /home/user/foo\n', [])
         assert self.fs.contents_of('/home/user/foo') == 'contents of foo'
         assert not self.fs.exists(trashed_file.info_file)
@@ -53,7 +54,7 @@ class TestRestoreTrashDirOnASeparateMount:
                                      '/tmp/xyz/trash-dir', '/'],
                                     from_dir='/cwd')
 
-        assert (res.output(), self.logger.captured) == (
+        assert (res.output(), self.log_messages) == (
             '   0 2018-01-01 00:00:00 /cwd/foo\n'
             'No files were restored\n', [])
 
@@ -68,7 +69,7 @@ class TestRestoreTrashDirOnASeparateMount:
                                      '/tmp/.Trash-123', '/'],
                                     from_dir='/cwd')
 
-        assert (res.output(), self.logger.captured) == (
+        assert (res.output(), self.log_messages) == (
             "No files trashed from current dir ('/cwd')\n",
             ['WARN: Non parsable trashinfo file: '
              '/tmp/.Trash-123/info/passwd.trashinfo, '
@@ -83,12 +84,8 @@ class TestRestoreTrashDirOnASeparateMount:
                                      '/tmp/.Trash/123', '/'],
                                     from_dir='/cwd')
 
-        assert (res.output(), self.logger.captured) == (
+        assert (res.output(), self.log_messages) == (
             "No files trashed from current dir ('/cwd')\n",
             ['WARN: Non parsable trashinfo file: '
              '/tmp/.Trash/123/info/passwd.trashinfo, '
              'because Path= must be relative for volume trashes'])
-
-
-def date_at(year, month, day):
-    return datetime.datetime(year, month, day, 0, 0)

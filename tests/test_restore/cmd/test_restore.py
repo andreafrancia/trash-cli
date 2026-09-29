@@ -1,10 +1,12 @@
 import datetime
 
 from tests.support.asserts.assert_that import assert_that
+from tests.support.dates import date_at
 from tests.support.restore.fake_restore_fs import FakePathFs
 from tests.support.restore.has_been_restored_matcher import \
     has_been_restored, has_not_been_restored
 from tests.support.restore.restore_user import RestoreUser
+from tests.test_restore.support.recording_logger import RecordingLogger
 
 
 class TestSearcher:
@@ -19,7 +21,8 @@ class TestSearcher:
                                 version='1.0',
                                 volumes=self.fs,
                                 volume_path_fs=self.fs,
-                                read_fs=self.fs)
+                                read_fs=self.fs,
+                                logger=RecordingLogger())
 
     def test_will_not_detect_trashed_file_in_dirs_other_than_cur_dir(self):
         self.fs.add_volume('/disk1')
@@ -77,7 +80,8 @@ class TestSearcher:
         self.add_file_trashed_at("/home/user/bbb", date_at(2011, 1, 1))
         self.add_file_trashed_at("/home/user/aaa", date_at(2011, 1, 1))
 
-        res = self.run_restore(['trash-restore', '--sort=path'], from_dir='/home/user')
+        res = self.run_restore(['trash-restore', '--sort=path'],
+                               from_dir='/home/user')
 
         assert (res.output() ==
                 '   0 2011-01-01 00:00:00 /home/user/aaa\n'
@@ -89,9 +93,6 @@ class TestSearcher:
         return self.user.run_restore(args, reply, from_dir)
 
     def add_file_trashed_at(self, original_location, deletion_date):
-        self.fs.make_trashed_file(original_location, '/home/user/.local/share/Trash',
+        self.fs.make_trashed_file(original_location,
+                                  '/home/user/.local/share/Trash',
                                   deletion_date, '')
-
-
-def date_at(year, month, day):
-    return datetime.datetime(year, month, day, 0, 0)

@@ -14,7 +14,7 @@ class TestRestoreUsesAllTheTrashDirectories:
         self.fs = FakePathFs()
         self.fs.add_volume('/')
         self.fs.add_volume('/mnt')
-        self.logger = RecordingLogger()
+        self.log_messages = []
         self.user = RestoreUser(environ={'HOME': '/home/user'},
                                 uid=123,
                                 file_reader=self.fs,
@@ -25,7 +25,7 @@ class TestRestoreUsesAllTheTrashDirectories:
                                 volumes=self.fs,
                                 volume_path_fs=self.fs,
                                 top_trash_dir_rules_reader=self.fs,
-                                logger=self.logger)
+                                logger=RecordingLogger(self.log_messages))
         self.home_trash = '/home/user/.local/share/Trash'
 
     def test_files_from_every_trash_directory_are_listed(self):
@@ -64,4 +64,4 @@ class TestRestoreUsesAllTheTrashDirectories:
         assert '/mnt/mnt_shared_file' in output
         assert '/mnt/mnt_private_file' in output
         assert len(output.splitlines()) == 6  # 5 listed files + prompt result
-        assert self.logger.captured == []
+        assert self.log_messages == []

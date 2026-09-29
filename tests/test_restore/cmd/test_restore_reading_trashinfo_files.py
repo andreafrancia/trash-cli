@@ -1,6 +1,7 @@
 from tests.support.restore.fake_restore_fs import FakePathFs
 from tests.support.restore.restore_user import RestoreUser
-from tests.support.trash_dirs.trash_dir_has_trashinfo import TrashDirHasTrashInfo
+from tests.support.trash_dirs.trash_dir_has_trashinfo import \
+    TrashDirHasTrashInfo
 from tests.test_restore.support.recording_logger import RecordingLogger
 
 
@@ -11,7 +12,7 @@ from tests.test_restore.support.recording_logger import RecordingLogger
 class TestRestoreReadingTrashinfoFiles:
     def setup_method(self):
         self.fs = FakePathFs()
-        self.logger = RecordingLogger()
+        self.log_messages = []
         self.user = RestoreUser(environ={'HOME': '/home/user'},
                                 uid=123,
                                 file_reader=self.fs,
@@ -21,7 +22,7 @@ class TestRestoreReadingTrashinfoFiles:
                                 version='1.0',
                                 volumes=self.fs,
                                 volume_path_fs=self.fs,
-                                logger=self.logger)
+                                logger=RecordingLogger(self.log_messages))
         self.home_trash = '/home/user/.local/share/Trash'
         self.volume_trash = '/volume/.Trash-123'
         self.trash = TrashDirHasTrashInfo(self.fs,
@@ -42,7 +43,7 @@ class TestRestoreReadingTrashinfoFiles:
         assert self.fs.contents_of('/name') == 'contents'
         assert not self.fs.exists(self.home_trash + '/info/info_path.trashinfo')
         assert not self.fs.exists(self.home_trash + '/files/info_path')
-        assert self.logger.captured == []
+        assert self.log_messages == []
 
     # Purpose: a file in the info dir without the .trashinfo extension is
     # not a trashed file: it is not offered and a warning is logged.
@@ -52,7 +53,7 @@ class TestRestoreReadingTrashinfoFiles:
         res = self.user.run_restore(['trash-restore', '/'], from_dir='/')
 
         assert res.output() == "No files trashed from current dir ('/')\n"
-        assert self.logger.captured == [
+        assert self.log_messages == [
             'WARN: Non .trashinfo file in info dir']
 
     # Purpose: a .trashinfo that cannot be parsed (here: empty, so no Path=)
@@ -63,7 +64,7 @@ class TestRestoreReadingTrashinfoFiles:
         res = self.user.run_restore(['trash-restore', '/'], from_dir='/')
 
         assert res.output() == "No files trashed from current dir ('/')\n"
-        assert self.logger.captured == [
+        assert self.log_messages == [
             'WARN: Non parsable trashinfo file: '
             '/home/user/.local/share/Trash/info/info_path.trashinfo, '
             'because Unable to parse Path']
@@ -75,7 +76,7 @@ class TestRestoreReadingTrashinfoFiles:
         res = self.user.run_restore(['trash-restore', '/'], from_dir='/')
 
         assert res.output() == "No files trashed from current dir ('/')\n"
-        assert self.logger.captured == [
+        assert self.log_messages == [
             "WARN: IOErrorReadingTrashInfo("
             "path='/home/user/.local/share/Trash/info/info_path.trashinfo', "
             "error='Unable to read: "
@@ -90,10 +91,10 @@ class TestRestoreReadingTrashinfoFiles:
 
         assert res.output() == '   0 2001-01-01 10:10:10 /name\n'
         assert self.fs.contents_of('/name') == 'contents'
-        assert not self.fs.exists(self.home_trash  + '/info/info_path.trashinfo')
-        assert not self.fs.exists(self.home_trash  + '/files/info_path')
-        assert self.logger.captured == ['WARN: Non .trashinfo file in info dir']
-        assert len(self.logger.captured) == 1
+        assert not self.fs.exists(self.home_trash + '/info/info_path.trashinfo')
+        assert not self.fs.exists(self.home_trash + '/files/info_path')
+        assert self.log_messages == ['WARN: Non .trashinfo file in info dir']
+        assert len(self.log_messages) == 1
 
     def test_after_a_non_parsable_trashinfo_error_continue(self):
         self.trash.has_a_non_parseable_trashinfo('not-parseable.trashinfo')
@@ -106,12 +107,12 @@ class TestRestoreReadingTrashinfoFiles:
         assert self.fs.contents_of('/name') == 'contents'
         assert not self.fs.exists(self.home_trash + '/info/info_path.trashinfo')
         assert not self.fs.exists(self.home_trash + '/files/info_path')
-        assert self.logger.captured == ['WARN: Non parsable trashinfo file: '
-                                        '{home_trash}/info/'
-                                        'not-parseable.trashinfo, '
-                                        'because Unable to parse Path'
-                                        .format(home_trash=self.home_trash)]
-        assert len(self.logger.captured) == 1
+        assert self.log_messages == ['WARN: Non parsable trashinfo file: '
+                                     '{home_trash}/info/'
+                                     'not-parseable.trashinfo, '
+                                     'because Unable to parse Path'
+                                     .format(home_trash=self.home_trash)]
+        assert len(self.log_messages) == 1
 
     def test_after_unreadable_trashinfo_error_continue(self):
         self.trash.has_a_unreadable_trashinfo('not-readable.trashinfo')
@@ -124,16 +125,17 @@ class TestRestoreReadingTrashinfoFiles:
         assert self.fs.contents_of('/name') == 'contents'
         assert not self.fs.exists(self.home_trash + '/info/info_path.trashinfo')
         assert not self.fs.exists(self.home_trash + '/files/info_path')
-        assert self.logger.captured == [
+        assert self.log_messages == [
             "WARN: IOErrorReadingTrashInfo("
             "path='/home/user/.local/share/Trash/info/not-readable.trashinfo', "
             "error='Unable to read: "
             "/home/user/.local/share/Trash/info/not-readable.trashinfo')"]
-        assert len(self.logger.captured) == 1
+        assert len(self.log_messages) == 1
 
     # Purpose: in a volume trash (<volume>/.Trash-$uid) on a volume other
     # than '/', a relative Path= is resolved against that volume.
-    def test_a_relative_path_in_a_volume_trash_is_resolved_against_the_volume(self):
+    def test_a_relative_path_in_a_volume_trash_is_resolved_against_the_volume(
+            self):
         self.fs.add_volume('/volume')
         self.trash.has_a_volume_trashinfo('info_path', 'name')
 
@@ -141,7 +143,7 @@ class TestRestoreReadingTrashinfoFiles:
 
         assert res.output() == ('   0 2000-01-01 00:00:00 /volume/name\n'
                                 'No files were restored\n')
-        assert self.logger.captured == []
+        assert self.log_messages == []
 
     # Security (see commit 6cd261cd "Prevent restore from escaping the trash
     # volume"). By the freedesktop trash spec, Path= in a volume trash must be
@@ -158,16 +160,17 @@ class TestRestoreReadingTrashinfoFiles:
                                           'docs/report.txt',
                                           'report-content')
 
-        res = self.user.run_restore(['trash-restore', '/'], from_dir='/', reply='0')
+        res = self.user.run_restore(['trash-restore', '/'], from_dir='/',
+                                    reply='0')
 
         assert res.output() == (
             '   0 2000-01-01 00:00:00 /volume/docs/report.txt\n')
-        assert self.fs.contents_of('/volume/docs/report.txt') == 'report-content'
+        assert self.fs.contents_of(
+            '/volume/docs/report.txt') == 'report-content'
         assert self.trash.remaining_trashinfo(self.volume_trash) == []
         assert self.trash.remaining_original_copies(self.volume_trash) == []
         assert self.fs.exists(self.home_trash) is False
-        assert self.logger.captured == []
-
+        assert self.log_messages == []
 
     # Purpose: an absolute Path= in a volume trash is refused (it could point
     # anywhere, e.g. /etc/passwd).
@@ -178,7 +181,7 @@ class TestRestoreReadingTrashinfoFiles:
         res = self.user.run_restore(['trash-restore', '/'], from_dir='/')
 
         assert res.output() == "No files trashed from current dir ('/')\n"
-        assert self.logger.captured == [
+        assert self.log_messages == [
             'WARN: Non parsable trashinfo file: '
             '/volume/.Trash-123/info/evil.trashinfo, '
             'because Path= must be relative for volume trashes']
@@ -192,7 +195,7 @@ class TestRestoreReadingTrashinfoFiles:
         res = self.user.run_restore(['trash-restore', '/'], from_dir='/')
 
         assert res.output() == "No files trashed from current dir ('/')\n"
-        assert self.logger.captured == [
+        assert self.log_messages == [
             'WARN: Non parsable trashinfo file: '
             '/volume/.Trash-123/info/evil.trashinfo, '
             'because Path= escapes the volume root']

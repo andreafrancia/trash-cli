@@ -1,6 +1,7 @@
 from tests.support.dates import date_at
 from tests.support.restore.fake_restore_fs import FakePathFs
 from tests.support.restore.restore_user import RestoreUser
+from tests.test_restore.support.recording_logger import RecordingLogger
 
 HOME = '/home/user'
 HOME_TRASH = '/home/user/.local/share/Trash'
@@ -41,7 +42,8 @@ class TestRestoreDistrustsUnsafeTrashDirs:
                            version='1.0',
                            volumes=self.fs,
                            volume_path_fs=self.fs,
-                           top_trash_dir_rules_reader=reader)
+                           top_trash_dir_rules_reader=reader,
+                           logger=RecordingLogger())
 
     def restore_output(self, reader):
         user = self.make_user(reader)
@@ -55,13 +57,13 @@ class TestRestoreDistrustsUnsafeTrashDirs:
         reader = FakeReader(symlinks=[HOME_TRASH + '/info'])
 
         assert (self.restore_output(reader) ==
-               "No files trashed from current dir ('%s')\n" % HOME)
+                "No files trashed from current dir ('%s')\n" % HOME)
 
     def test_a_world_writable_files_dir_is_skipped(self):
         reader = FakeReader(world_writable=[HOME_TRASH + '/files'])
 
         assert (self.restore_output(reader) ==
-               "No files trashed from current dir ('%s')\n" % HOME)
+                "No files trashed from current dir ('%s')\n" % HOME)
 
     def test_the_reason_a_dir_is_skipped_is_reported(self):
         reader = FakeReader(world_writable=[HOME_TRASH + '/info'])
@@ -72,5 +74,3 @@ class TestRestoreDistrustsUnsafeTrashDirs:
         assert user.logger.captured == [
             "WARN: TrashDir skipped because its info dir is world writable: %s"
             % HOME_TRASH]
-
-

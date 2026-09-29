@@ -7,6 +7,7 @@ from tests.support.dirs.my_path import MyPath
 from tests.support.fakes.fake_trash_dir import trashinfo_content_default_date
 from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
+from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.fslib.real_fs_operations import RealListFilesInDir
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.put.fs.real_volume_path_fs import RealVolumePathFs
@@ -31,7 +32,8 @@ class TestRestoreOverwriteGuard(unittest.TestCase):
             listing_fs=RealListFilesInDir(),
             version='0.0.0',
             volumes=FakeVolumes([]),
-            volume_path_fs=RealVolumePathFs())
+            volume_path_fs=RealVolumePathFs(),
+            logger=RecordingLogger())
 
     def test_it_refuses_to_restore_over_a_dangling_symlink(self):
         self.fixture.having_a_trashed_file(self.cwd / 'foo')
