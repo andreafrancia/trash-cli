@@ -4,7 +4,7 @@ from typing import Dict, Optional
 
 from tests.support.run.cmd_result import CmdResult
 from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
-from tests.test_restore.support.memo_logger import MemoLogger
+from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
 from trashcli.fslib.fs_operations import ListFilesInDir
@@ -43,7 +43,7 @@ class RestoreUser:
         self.volume_path_fs = volume_path_fs
         self.top_trash_dir_rules_reader = \
             top_trash_dir_rules_reader or RealTopTrashDirFs()
-        self.logger = logger or MemoLogger()
+        self.logger = logger or RecordingLogger()
 
     no_args = object()
 

@@ -3,6 +3,7 @@ from tests.support.restore.restore_user import RestoreUser
 from tests.support.trash_dirs.trash_dir_has_trashinfo import TrashDirHasTrashInfo
 from tests.test_restore.support.recording_logger import RecordingLogger
 
+
 # How trash-restore turns each entry of the info dirs into either a file
 # offered for restore or a warning.
 # These tests were previously unit tests of TrashedFiles (see commit

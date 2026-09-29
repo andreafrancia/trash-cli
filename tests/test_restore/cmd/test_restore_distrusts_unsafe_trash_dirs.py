@@ -69,8 +69,8 @@ class TestRestoreDistrustsUnsafeTrashDirs:
 
         user.run_restore([], from_dir=HOME)
 
-        assert user.logger.messages == [
-            "warning: TrashDir skipped because its info dir is world writable: %s"
+        assert user.logger.captured == [
+            "WARN: TrashDir skipped because its info dir is world writable: %s"
             % HOME_TRASH]
 
 
