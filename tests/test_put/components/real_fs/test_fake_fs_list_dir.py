@@ -11,9 +11,9 @@ class TestFakeFsListDir(unittest.TestCase):
         self.fs.makedirs(self.tmp_dir, 0o700)
 
     def test(self):
-        self.fs.make_file(self.tmp_dir / 'a', 'content')
-        self.fs.make_file(self.tmp_dir / 'b', 'content')
-        self.fs.make_file(self.tmp_dir / 'c', 'content')
+        self.fs.write_file(self.tmp_dir / 'a', 'content')
+        self.fs.write_file(self.tmp_dir / 'b', 'content')
+        self.fs.write_file(self.tmp_dir / 'c', 'content')
         self.fs.makedirs(self.tmp_dir / 'd', 0o700)
 
         assert sorted(self.fs.listdir(self.tmp_dir)) == ['a', 'b', 'c', 'd']

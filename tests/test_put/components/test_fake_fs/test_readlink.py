@@ -16,7 +16,7 @@ class TestReadLinkOnRealFs:
         assert self.fs.readlink(temp_dir / "link") == "target"
 
     def test_readlink_on_regular_file(self, temp_dir):
-        self.fs.make_file(temp_dir / "regular-file", 'contents')
+        self.fs.write_file(temp_dir / "regular-file", 'contents')
 
         exc = capture_error(lambda: self.fs.readlink(temp_dir / "regular-file"))
 
@@ -39,7 +39,7 @@ class TestReadLink:
         assert self.fs.readlink("link") == "target"
 
     def test_readlink_for_non_links(self):
-        self.fs.make_file("regular-file")
+        self.fs.write_file("regular-file")
 
         exc = capture_error(lambda: self.fs.readlink("regular-file"))
 
@@ -47,12 +47,12 @@ class TestReadLink:
                 (OSError, "[Errno 22] Invalid argument: '/regular-file'"))
 
     def test_read_file(self):
-        self.fs.make_file("regular_file", "contents")
+        self.fs.write_file("regular_file", "contents")
 
         assert self.fs.read_file("regular_file") == "contents"
 
     def test_read_linked_file(self):
-        self.fs.make_file("regular_file", "contents")
+        self.fs.write_file("regular_file", "contents")
         self.fs.symlink("regular_file", "link")
 
         assert self.fs.read_file("link") == "contents"
@@ -64,7 +64,7 @@ class TestReadLink:
 
     def test_read_linked_file_with_relative_path(self):
         self.fs.makedirs("/a/b/c/d", 0o777)
-        self.fs.make_file("/a/b/c/d/regular_file", "contents")
+        self.fs.write_file("/a/b/c/d/regular_file", "contents")
 
         self.fs.symlink("c/d/regular_file", "/a/b/link")
 

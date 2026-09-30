@@ -7,7 +7,7 @@ class TestWalkNoFollow:
         self.fs = FakeFs()
 
     def test(self):
-        self.fs.make_file("pippo")
+        self.fs.write_file("pippo")
         self.fs.makedirs("/a/b/c/d", 0o700)
 
         assert "\n".join(list_all(self.fs, "/")) == '/a\n' \

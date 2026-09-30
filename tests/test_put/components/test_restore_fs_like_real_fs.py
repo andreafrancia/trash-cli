@@ -18,21 +18,21 @@ class TestRestoreFsLikeRealFs:
     @real_and_fake()
     def test_list_files_in_dir_returns_full_paths(self, env):
         env.fs.mkdirs(env.path('dir'))
-        env.fs.make_file(env.path('dir/a'), 'a')
-        env.fs.make_file(env.path('dir/b'), 'b')
+        env.fs.write_file(env.path('dir/a'), 'a')
+        env.fs.write_file(env.path('dir/b'), 'b')
 
         assert sorted(env.fs.list_files_in_dir(env.path('dir'))) == [
             env.path('dir/a'), env.path('dir/b')]
 
     @real_and_fake()
     def test_contents_of_returns_the_text(self, env):
-        env.fs.make_file(env.path('file'), 'contents')
+        env.fs.write_file(env.path('file'), 'contents')
 
         assert env.fs.read_file(env.path('file')) == 'contents'
 
     @real_and_fake()
     def test_path_exists_follows_symlinks_path_lexists_does_not(self, env):
-        env.fs.make_file(env.path('file'), 'contents')
+        env.fs.write_file(env.path('file'), 'contents')
         env.fs.symlink('file', env.path('connected'))
         env.fs.symlink('missing', env.path('dangling'))
 
@@ -46,7 +46,7 @@ class TestRestoreFsLikeRealFs:
     @real_and_fake()
     def test_path_isdir(self, env):
         env.fs.mkdirs(env.path('dir'))
-        env.fs.make_file(env.path('file'), 'contents')
+        env.fs.write_file(env.path('file'), 'contents')
         env.fs.symlink('dir', env.path('to-dir'))
         env.fs.symlink('missing', env.path('dangling'))
 
@@ -63,7 +63,7 @@ class TestRestoreFsLikeRealFs:
 
     @real_and_fake()
     def test_move_and_remove_file(self, env):
-        env.fs.make_file(env.path('file'), 'contents')
+        env.fs.write_file(env.path('file'), 'contents')
 
         env.fs.move(env.path('file'), env.path('moved'))
 

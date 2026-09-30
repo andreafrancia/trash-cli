@@ -95,9 +95,6 @@ class RealFs(RealVolumeOf, Fs, RestoreFs):
         parent = os.path.realpath(os.path.dirname(path) or os.curdir)
         return os.access(parent, os.W_OK | os.X_OK)
 
-    def make_file(self, path, content):
-        RealWriteFile().write_file(path, content)
-
     def get_mod(self, path):
         return stat.S_IMODE(os.lstat(path).st_mode)
 

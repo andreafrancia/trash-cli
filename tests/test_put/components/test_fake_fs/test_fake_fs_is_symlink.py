@@ -10,7 +10,7 @@ def fake_fs():
 class TestFakeFsIsSymlink:
 
     def test_is_symlink_on_a_file(self, fake_fs):
-        fake_fs.make_file("/foo", "content")
+        fake_fs.write_file("/foo", "content")
 
         assert fake_fs.is_symlink("/foo") is False
 

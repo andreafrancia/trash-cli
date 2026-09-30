@@ -21,7 +21,7 @@ class RestoreFileFixture:
         parent = os.path.dirname(self.fs.realpath(filename))
         if not self.fs.path_exists(parent):
             self.fs.makedirs(parent, 0o755)
-        self.fs.make_file(filename, contents)
+        self.fs.write_file(filename, contents)
 
     def make_empty_file(self, filename):
         return self.make_file(filename)

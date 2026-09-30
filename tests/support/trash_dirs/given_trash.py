@@ -19,7 +19,7 @@ class GivenTrash:
 
     def has_file(self, path, content=b''):
         self.fs.makedirs(os.path.dirname(path), 0o755)
-        self.fs.make_file(path, content)
+        self.fs.write_file(path, content)
 
     def has_trashed_file(self, from_path, trash_dir, time,
                        original_file_content=''):

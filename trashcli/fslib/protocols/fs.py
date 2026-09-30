@@ -68,10 +68,6 @@ class Fs(RealPathFs, VolumeOf, Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def make_file(self, path, content):
-        raise NotImplementedError
-
-    @abstractmethod
     def get_mod(self, path):
         raise NotImplementedError
 

@@ -14,7 +14,7 @@ class TestSymlinksLikeRealFs:
 
     @real_and_fake()
     def test_islink_is_false_for_files_dirs_and_missing_paths(self, env):
-        env.fs.make_file(env.path('file'), 'contents')
+        env.fs.write_file(env.path('file'), 'contents')
         env.fs.makedirs(env.path('dir'), 0o755)
 
         assert env.fs.is_symlink(env.path('file')) is False
@@ -30,7 +30,7 @@ class TestSymlinksLikeRealFs:
     @real_and_fake()
     def test_exists_follows_the_symlink(self, env):
         env.fs.symlink('missing-target', env.path('dangling'))
-        env.fs.make_file(env.path('file'), 'contents')
+        env.fs.write_file(env.path('file'), 'contents')
         env.fs.symlink('file', env.path('connected'))
 
         assert env.fs.path_exists(env.path('dangling')) is False
@@ -47,7 +47,7 @@ class TestSymlinksLikeRealFs:
 
     @real_and_fake()
     def test_isfile_follows_the_symlink(self, env):
-        env.fs.make_file(env.path('file'), 'contents')
+        env.fs.write_file(env.path('file'), 'contents')
         env.fs.symlink('file', env.path('to-file'))
         env.fs.symlink('missing-target', env.path('dangling'))
 
@@ -65,28 +65,28 @@ class TestSymlinksLikeRealFs:
     @real_and_fake()
     def test_read_follows_a_relative_symlink(self, env):
         env.fs.makedirs(env.path('a/b'), 0o755)
-        env.fs.make_file(env.path('a/b/file'), 'contents')
+        env.fs.write_file(env.path('a/b/file'), 'contents')
         env.fs.symlink('b/file', env.path('a/link'))
 
         assert env.fs.read_file(env.path('a/link')) == 'contents'
 
     @real_and_fake()
     def test_read_follows_an_absolute_symlink(self, env):
-        env.fs.make_file(env.path('file'), 'contents')
+        env.fs.write_file(env.path('file'), 'contents')
         env.fs.symlink(env.path('file'), env.path('link'))
 
         assert env.fs.read_file(env.path('link')) == 'contents'
 
     @real_and_fake()
     def test_getsize_follows_the_symlink(self, env):
-        env.fs.make_file(env.path('file'), 'contents')
+        env.fs.write_file(env.path('file'), 'contents')
         env.fs.symlink('file', env.path('link'))
 
         assert env.fs.file_size(env.path('link')) == len('contents')
 
     @real_and_fake()
     def test_remove_file_removes_the_link_and_not_the_target(self, env):
-        env.fs.make_file(env.path('file'), 'contents')
+        env.fs.write_file(env.path('file'), 'contents')
         env.fs.symlink('file', env.path('link'))
 
         env.fs.remove_file(env.path('link'))
@@ -96,7 +96,7 @@ class TestSymlinksLikeRealFs:
 
     @real_and_fake()
     def test_move_moves_the_link_itself(self, env):
-        env.fs.make_file(env.path('file'), 'contents')
+        env.fs.write_file(env.path('file'), 'contents')
         env.fs.symlink('file', env.path('link'))
 
         env.fs.move(env.path('link'), env.path('moved'))
@@ -107,7 +107,7 @@ class TestSymlinksLikeRealFs:
 
     @real_and_fake()
     def test_listdir_lists_symlinks(self, env):
-        env.fs.make_file(env.path('file'), 'contents')
+        env.fs.write_file(env.path('file'), 'contents')
         env.fs.symlink('file', env.path('link'))
 
         assert sorted(env.fs.listdir(env.base)) == ['file', 'link']
@@ -116,10 +116,10 @@ class TestSymlinksLikeRealFs:
     def test_walk_lists_a_symlink_to_a_dir_as_a_dir_but_does_not_follow_it(
             self, env):
         env.fs.makedirs(env.path('dir'), 0o755)
-        env.fs.make_file(env.path('dir/inner'), 'contents')
+        env.fs.write_file(env.path('dir/inner'), 'contents')
         env.fs.symlink('dir', env.path('to-dir'))
         env.fs.symlink('missing-target', env.path('dangling'))
-        env.fs.make_file(env.path('file'), 'contents')
+        env.fs.write_file(env.path('file'), 'contents')
 
         walked = [(top[len(env.base):], sorted(dirs), sorted(non_dirs))
                   for top, dirs, non_dirs in env.fs.walk_no_follow(env.base)]

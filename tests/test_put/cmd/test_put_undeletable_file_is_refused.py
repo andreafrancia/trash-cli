@@ -16,7 +16,7 @@ class TestPutUndeletableFileIsRefused:
 
     def test_a_file_that_cannot_be_deleted_is_not_trashed_or_copied(self):
         self.fs.makedirs('/readonly', 0o755)
-        self.fs.make_file('/readonly/foo', '')
+        self.fs.write_file('/readonly/foo', '')
         # the parent is not writable, so foo cannot be deleted by the user
         self.fs.chmod('/readonly', 0o500)
 

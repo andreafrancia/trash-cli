@@ -20,7 +20,7 @@ class TestHasBeenRestored:
         )
 
     def test_ok_if_original_location_does_not_exists(self):
-        self.fs.make_file('/original_location')
+        self.fs.write_file('/original_location')
         result = has_been_restored(self.fs).describe_mismatch(self.trashed_file,
                                                               focus_on='original_location')
         assert result == (
@@ -29,7 +29,7 @@ class TestHasBeenRestored:
         )
 
     def test_fail_if_info_file_exists(self):
-        self.fs.make_file('/info_path.trashinfo')
+        self.fs.write_file('/info_path.trashinfo')
         result = has_been_restored(self.fs).describe_mismatch(self.trashed_file,
                                                               focus_on='info_file')
         assert result == (
@@ -46,7 +46,7 @@ class TestHasBeenRestored:
         )
 
     def test_fail_if_backup_copy_exists(self):
-        self.fs.make_file('/backup_copy')
+        self.fs.write_file('/backup_copy')
         result = has_been_restored(self.fs).describe_mismatch(self.trashed_file,
                                                               focus_on='backup_copy')
         assert result == (
@@ -63,8 +63,8 @@ class TestHasBeenRestored:
         )
 
     def test_fail_if_not_yet_restored(self):
-        self.fs.make_file('/info_path.trashinfo')
-        self.fs.make_file('/backup_copy')
+        self.fs.write_file('/info_path.trashinfo')
+        self.fs.write_file('/backup_copy')
         result = has_been_restored(self.fs).describe_mismatch(self.trashed_file)
         assert result == (
             "Expected file to be restore but it has not:\n"
@@ -74,7 +74,7 @@ class TestHasBeenRestored:
         )
 
     def test_ok_if_restored(self):
-        self.fs.make_file('/original_location')
+        self.fs.write_file('/original_location')
         result = has_been_restored(self.fs).describe_mismatch(self.trashed_file)
         assert result == (
             "Expected file to be restore but it has not:\n"

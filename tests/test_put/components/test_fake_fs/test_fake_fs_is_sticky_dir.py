@@ -21,13 +21,13 @@ class TestFakeFsIsStickyDir:
         assert fake_fs.is_sticky_dir("/foo") is True
 
     def test_is_sticky_dir_when_file_with_sticky_bit(self, fake_fs):
-        fake_fs.make_file("/foo")
+        fake_fs.write_file("/foo")
         fake_fs.set_sticky_bit("/foo")
 
         assert fake_fs.is_sticky_dir("/foo") is False
 
     def test_is_sticky_dir_when_file_without_sticky_bit(self, fake_fs):
-        fake_fs.make_file("/foo")
+        fake_fs.write_file("/foo")
 
         assert fake_fs.is_sticky_dir("/foo") is False
 

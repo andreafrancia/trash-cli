@@ -40,7 +40,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
 
     def touch(self, path):
         if not self.path_exists(path):
-            self.make_file(path, '')
+            self.write_file(path, '')
 
     def listdir(self, path):
         return self.ls_aa(path)
@@ -152,7 +152,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
     def atomic_write(self, path, content):
         if self.path_exists(path):
             raise OSError("already exists: %s" % path)
-        self.make_file(path, content)
+        self.write_file(path, content)
 
     def read_file(self,
                   path,  # type: str
@@ -184,19 +184,16 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
         path = self._join_cwd(path)
         dirname, basename = os.path.split(path)
         self.makedirs(dirname, 0o755)
-        self.make_file(path, content)
+        self.write_file(path, content)
 
-    def make_file(self,
-                  path,  # type: str
-                  content='',  # type: str
-                  ):
+    def write_file(self,
+                   path,  # type: str
+                   content='',  # type: str
+                   ):
         path = self._join_cwd(path)
         dirname, basename = os.path.split(path)
         directory = self._get_directory_at(dirname)
         directory.add_file(basename, content, path)
-
-    def write_file(self, path, content):
-        self.make_file(path, content)
 
     def get_mod(self, path):
         entry = self._find_entry(path)

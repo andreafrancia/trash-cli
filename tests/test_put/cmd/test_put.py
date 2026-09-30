@@ -175,7 +175,7 @@ class TestPut:
         assert result.exit_code == EX_IOERR
 
     def test_when_there_is_no_working_trash_dir(self):
-        self.fs.make_file("pippo")
+        self.fs.write_file("pippo")
         self.fs.makedirs('/.Trash-123', 0o000)
 
         result = self.run_cmd(['trash-put', '-v', 'pippo'], {}, 123)
@@ -192,7 +192,7 @@ class TestPut:
     def test_multiple_volumes(self):
         self.fs.makedirs('/disk1', 0o700)
         self.fs.makedirs('/disk1/.Trash-123', 0o000)
-        self.fs.make_file("/disk1/pippo")
+        self.fs.write_file("/disk1/pippo")
         self.add_mount('/disk1')
 
         result = self.run_cmd(['trash-put', '-v', '--home-fallback',
@@ -209,7 +209,7 @@ class TestPut:
     def test_when_it_fails_to_prepare_trash_info_data(self):
         flexmock.flexmock(self.fs).should_receive('parent_realpath2'). \
             and_raise(IOError, 'Corruption')
-        self.fs.make_file("foo")
+        self.fs.write_file("foo")
 
         result = self.run_cmd(['trash-put', '-v', 'foo'],
                               {"HOME": "/home/user"}, 123)
@@ -222,11 +222,11 @@ class TestPut:
                 'trash-put:  `- failed to trash foo in /.Trash-123, because failed to generate trashinfo content: Corruption']]
 
     def test_make_file(self):
-        self.fs.make_file("pippo", 'content')
+        self.fs.write_file("pippo", 'content')
         assert True == self.fs.path_exists("pippo")
 
     def test_when_file_exists(self):
-        self.fs.make_file("pippo", 'content')
+        self.fs.write_file("pippo", 'content')
 
         result = self.run_cmd(['trash-put', 'pippo'],
                               {"HOME": "/home/user"}, 123)
@@ -254,7 +254,7 @@ class TestPut:
     def test_when_file_move_fails(self):
         flexmock.flexmock(self.fs).should_receive('move'). \
             and_raise(IOError, 'No space left on device')
-        self.fs.make_file("pippo", 'content')
+        self.fs.write_file("pippo", 'content')
 
         result = self.run_cmd(['trash-put', 'pippo'],
                               {"HOME": "/home/user"}, 123)
@@ -285,7 +285,7 @@ class TestPut:
                           'files_in_info_dir': []}
 
     def test_when_a_error_during_move(self):
-        self.fs.make_file("pippo", 'content')
+        self.fs.write_file("pippo", 'content')
 
         result = self.run_cmd(['trash-put', 'pippo'],
                               {"HOME": "/home/user"}, 123)

@@ -41,13 +41,13 @@ class TestFakeFs(unittest.TestCase):
         assert result == "content"
 
     def test_chmod(self):
-        self.fs.make_file("/foo")
+        self.fs.write_file("/foo")
         self.fs.chmod("/foo", 0o755)
 
         assert oct(self.fs.get_mod("/foo")) == oct(0o755)
 
     def test_is_dir_when_file(self):
-        self.fs.make_file("/foo")
+        self.fs.write_file("/foo")
 
         assert self.fs.path_isdir("/foo") is False
 
@@ -63,18 +63,18 @@ class TestFakeFs(unittest.TestCase):
         assert self.fs.path_exists("/foo") is False
 
     def test_exists_true(self):
-        self.fs.make_file("/foo")
+        self.fs.write_file("/foo")
 
         assert self.fs.path_exists("/foo") is True
 
     def test_remove_file(self):
-        self.fs.make_file("/foo")
+        self.fs.write_file("/foo")
         self.fs.remove_file("/foo")
 
         assert self.fs.path_exists("/foo") is False
 
     def test_move(self):
-        self.fs.make_file("/foo")
+        self.fs.write_file("/foo")
         self.fs.move("/foo", "/bar")
 
         assert self.fs.path_exists("/foo") is False
@@ -82,13 +82,13 @@ class TestFakeFs(unittest.TestCase):
 
     def test_move_dir(self):
         self.fs.mkdir("/fruits")
-        self.fs.make_file("/apple")
+        self.fs.write_file("/apple")
         self.fs.move("/apple", "/fruits")
 
         assert self.fs.ls_a('/fruits') == ['.', '..', 'apple']
 
     def test_islink_on_a_file(self):
-        self.fs.make_file("/foo", "content")
+        self.fs.write_file("/foo", "content")
 
         assert self.fs.is_symlink("/foo") is False
 
@@ -98,12 +98,12 @@ class TestFakeFs(unittest.TestCase):
         assert self.fs.is_symlink("/foo") is True
 
     def test_set_sticky_bit_when_unset(self):
-        self.fs.make_file("/foo")
+        self.fs.write_file("/foo")
 
         assert self.fs.has_sticky_bit("/foo") is False
 
     def test_set_sticky_bit_when_set(self):
-        self.fs.make_file("/foo")
+        self.fs.write_file("/foo")
         self.fs.set_sticky_bit("/foo")
 
         assert self.fs.has_sticky_bit("/foo") is True
@@ -115,23 +115,23 @@ class TestFakeFs(unittest.TestCase):
         assert self.fs.is_symlink("/foo/bar/baz") is False
 
     def test_absolute_path(self):
-        self.fs.make_file('/foo')
+        self.fs.write_file('/foo')
         assert '' == self.fs.get_entity_at('/foo').content
 
     def test_relativae_path(self):
-        self.fs.make_file('/foo', 'content')
+        self.fs.write_file('/foo', 'content')
 
         assert 'content' == self.fs.get_entity_at('foo').content
 
     def test_relativae_path_with_cd(self):
         self.fs.makedirs('/foo/bar', 0o755)
-        self.fs.make_file('/foo/bar/baz', 'content')
+        self.fs.write_file('/foo/bar/baz', 'content')
         self.fs.cd('/foo/bar')
 
         assert 'content' == self.fs.get_entity_at('baz').content
 
     def test_isfile_with_file(self):
-        self.fs.make_file('/foo')
+        self.fs.write_file('/foo')
 
         assert self.fs.isfile("/foo") is True
 
@@ -141,12 +141,12 @@ class TestFakeFs(unittest.TestCase):
         assert self.fs.isfile("/foo") is False
 
     def test_getsize_with_empty_file(self):
-        self.fs.make_file("foo")
+        self.fs.write_file("foo")
 
         assert 0 == self.fs.file_size("foo")
 
     def test_getsize_with_non_empty_file(self):
-        self.fs.make_file("foo", "1234")
+        self.fs.write_file("foo", "1234")
 
         assert 4 == self.fs.file_size("foo")
 
@@ -158,7 +158,7 @@ class TestFakeFs(unittest.TestCase):
     def test_mode_lets_create_a_file(self):
         self.fs.makedirs("/foo/bar/baz", 0o755)
 
-        self.fs.make_file("/foo/bar/baz/1", "1")
+        self.fs.write_file("/foo/bar/baz/1", "1")
 
         assert self.fs.isfile("/foo/bar/baz/1") is True
 
@@ -167,12 +167,12 @@ class TestFakeFs(unittest.TestCase):
         self.fs.chmod("/foo/bar/baz", 0o055)
 
         error = capture_error(
-            lambda: self.fs.make_file("/foo/bar/baz/1", "1"))
+            lambda: self.fs.write_file("/foo/bar/baz/1", "1"))
 
         assert str(error) == "[Errno 13] Permission denied: '/foo/bar/baz/1'"
 
     def test_get_mod_s_1(self):
-        self.fs.make_file("/foo", "content")
+        self.fs.write_file("/foo", "content")
 
         assert format_mode(self.fs.get_mod("/foo")) == '0o644'
 
