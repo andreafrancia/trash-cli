@@ -65,7 +65,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
     def get_entity_at(self, path):  # type: (str) -> Ent
         return self._lookup(path, follow_last_link=True).entity
 
-    def get_directory_at(self, path):
+    def _get_directory_at(self, path):
         return as_directory(self.get_entity_at(path))
 
     def get_entry_at(self, path):  # type: (str) -> INode
@@ -172,7 +172,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
                   ):
         path = self._join_cwd(path)
         dirname, basename = os.path.split(path)
-        directory = self.get_directory_at(dirname)
+        directory = self._get_directory_at(dirname)
         directory.add_file(basename, content, path)
 
     def write_file(self, path, content):
@@ -215,16 +215,16 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
         basename, entry = self._pop_entry_from_dir(src)
 
         if self.exists(dest) and self.isdir(dest):
-            dest_dir = self.get_directory_at(dest)
+            dest_dir = self._get_directory_at(dest)
             dest_dir.add_entry(basename, entry)
         else:
             dest_dirname, dest_basename = os.path.split(dest)
-            dest_dir = self.get_directory_at(dest_dirname)
+            dest_dir = self._get_directory_at(dest_dirname)
             dest_dir.add_entry(dest_basename, entry)
 
     def _pop_entry_from_dir(self, path):
         dirname, basename = os.path.split(path)
-        directory = self.get_directory_at(dirname)
+        directory = self._get_directory_at(dirname)
         entry = directory.get_entry(basename, path, self)
         directory.remove(basename)
         return basename, entry
