@@ -33,7 +33,7 @@ class GivenTrash:
     def add_trash_empty_file(self, from_path, trash_dir, time):
         self.has_trashed_file(from_path, trash_dir, time, '')
 
-    def make_trashed_file(self, from_path, trash_dir, time,
+    def has_trashed_file2(self, from_path, trash_dir, time,
                           original_file_content):
         content = format_trashinfo(from_path, time)
         basename = os.path.basename(from_path)

@@ -35,7 +35,7 @@ class TestRestoreTrashDirOnASeparateMount:
     # Issue #420: /home is a separate mount point.
     def test_home_trash_on_a_separate_mount_is_restorable(self):
         self.fs.add_volume('/home')
-        trashed_file = self.trash.make_trashed_file('/home/user/foo',
+        trashed_file = self.trash.has_trashed_file2('/home/user/foo',
                                                  '/home/user/.local/share/Trash',
                                                  date_at(2018, 1, 1),
                                                  'contents of foo')
@@ -51,7 +51,7 @@ class TestRestoreTrashDirOnASeparateMount:
     # a temp dir under /tmp, and /tmp is a separate mount point (tmpfs).
     def test_trash_dir_from_cli_on_a_separate_mount_is_restorable(self):
         self.fs.add_volume('/tmp')
-        self.trash.make_trashed_file('/cwd/foo', '/tmp/xyz/trash-dir',
+        self.trash.has_trashed_file2('/cwd/foo', '/tmp/xyz/trash-dir',
                                   date_at(2018, 1, 1), '')
 
         res = self.user.run_restore(['trash-restore', '--trash-dir',
@@ -66,7 +66,7 @@ class TestRestoreTrashDirOnASeparateMount:
     # when they are passed with --trash-dir.
     def test_volume_trash_from_cli_still_refuses_absolute_paths(self):
         self.fs.add_volume('/tmp')
-        self.trash.make_trashed_file('/etc/passwd', '/tmp/.Trash-123',
+        self.trash.has_trashed_file2('/etc/passwd', '/tmp/.Trash-123',
                                   date_at(2018, 1, 1), '')
 
         res = self.user.run_restore(['trash-restore', '--trash-dir',
@@ -81,7 +81,7 @@ class TestRestoreTrashDirOnASeparateMount:
 
     def test_shared_volume_trash_still_refuses_absolute_paths(self):
         self.fs.add_volume('/tmp')
-        self.trash.make_trashed_file('/etc/passwd', '/tmp/.Trash/123',
+        self.trash.has_trashed_file2('/etc/passwd', '/tmp/.Trash/123',
                                   date_at(2018, 1, 1), '')
 
         res = self.user.run_restore(['trash-restore', '--trash-dir',
