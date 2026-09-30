@@ -1,7 +1,9 @@
 import errno
 import os
+from typing import Iterable
 
 from tests.support.fakes.fake_volume_of import FakeVolumeOf
+from tests.support.fakes.fake_volume_path_fs import FakeVolumePathFs
 from tests.support.put.fake_fs.directory import Directory
 from tests.support.put.fake_fs.directory import make_inode_dir
 from tests.support.put.fake_fs.ent import Ent
@@ -17,6 +19,7 @@ from trashcli.fslib.protocols.path_exists import PathExists
 from trashcli.put.check_cast import check_cast
 from trashcli.put.fs.fs import Fs
 from trashcli.put.fs.fs import list_all
+from trashcli.restore.fs.protocols.restore_fs import RestoreFs
 
 
 def as_directory(ent):  # type: (Ent) -> Directory
@@ -26,7 +29,8 @@ def as_directory(ent):  # type: (Ent) -> Directory
 MAX_SYMLINKS_TO_FOLLOW = 40
 
 
-class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
+class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
+             FakeVolumePathFs):
     def __init__(self, cwd='/'):
         super(FakeFs, self).__init__()
         self.root_inode = make_inode_dir('/', 0o755, None)
@@ -40,6 +44,34 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
 
     def listdir(self, path):
         return self.ls_aa(path)
+
+    def list_files_in_dir(self, path):  # type: (str) -> Iterable[str]
+        for entry in self.listdir(path):
+            yield os.path.join(path, entry)
+
+    def contents_of(self, path):  # type: (str) -> str
+        content = self.read(path)
+        if isinstance(content, bytes):
+            content = content.decode('utf-8')
+        return content
+
+    def path_exists(self, path):  # type: (str) -> bool
+        return self.exists(path)
+
+    def path_lexists(self, path):  # type: (str) -> bool
+        return self.lexists(path)
+
+    def path_isdir(self, path):  # type: (str) -> bool
+        return self.isdir(path)
+
+    def mkdirs(self, path):  # type: (str) -> None
+        self.makedirs(path, 0o755)
+
+    def getcwd_as_realpath(self):  # type: () -> str
+        return os.path.join('/', self.cwd)
+
+    def list_mount_points(self):
+        return self.volumes
 
     def ls_existing(self, paths):
         return [p for p in paths if self.exists(p)]
