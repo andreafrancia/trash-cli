@@ -2,17 +2,24 @@ import grp
 import os
 import pwd
 import stat
+from typing import Iterable
 from typing import NamedTuple
 from typing import Optional
 
+from trashcli.fslib.real.real_contents_of import RealContentsOf
+from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from trashcli.fslib.real.real_move import RealMove
 from trashcli.fslib.real.real_remove_file import RealRemoveFile
 from trashcli.fslib.real.real_atomic_write import RealAtomicWrite
 from trashcli.fslib.real.real_read_file import RealReadFile
 from trashcli.fslib.real.real_write_file import RealWriteFile
 from trashcli.fslib.real.real_mk_dirs import RealMkDirs
+from trashcli.fstab.mount_points_listing import RealMountPointListFs
 from trashcli.fstab.real_volume_of import RealVolumeOf
 from trashcli.put.fs.fs import Fs
+from trashcli.restore.fs.protocols.restore_fs import RestoreFs
+from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
+from trashcli.restore.fs.real.real_read_cwd_fs import RealReadCwdFs
 
 
 class Names:
@@ -37,7 +44,7 @@ class Stat(NamedTuple('Stat', [
     pass
 
 
-class RealFs(RealVolumeOf, Fs):
+class RealFs(RealVolumeOf, Fs, RestoreFs):
 
     def __init__(self):
         super(RealFs, self).__init__()
@@ -136,3 +143,24 @@ class RealFs(RealVolumeOf, Fs):
 
     def lexists(selfs, path):
         return os.path.lexists(path)
+
+    def list_files_in_dir(self, path):  # type: (str) -> Iterable[str]
+        return RealListFilesInDir().list_files_in_dir(path)
+
+    def contents_of(self, path):  # type: (str) -> str
+        return RealContentsOf().contents_of(path)
+
+    def path_exists(self, path):  # type: (str) -> bool
+        return RealPathReaderFs().path_exists(path)
+
+    def path_lexists(self, path):  # type: (str) -> bool
+        return RealPathReaderFs().path_lexists(path)
+
+    def path_isdir(self, path):  # type: (str) -> bool
+        return RealPathReaderFs().path_isdir(path)
+
+    def getcwd_as_realpath(self):  # type: () -> str
+        return RealReadCwdFs().getcwd_as_realpath()
+
+    def list_mount_points(self):
+        return RealMountPointListFs().list_mount_points()
