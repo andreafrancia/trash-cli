@@ -1,13 +1,13 @@
 import os
 
 from tests.support.restore.a_trashed_file import ATrashedFile
-from tests.support.put.fake_fs.fake_fs import FakeFs
+from trashcli.fslib.protocols.fs import Fs
 from trashcli.put.format_trash_info import format_trashinfo
 
 
 class RestoreFixture:
     def __init__(self,
-                 fs,  # type: FakeFs
+                 fs,  # type: Fs
                  ):
         self.fs = fs
 
