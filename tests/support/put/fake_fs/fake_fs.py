@@ -55,9 +55,6 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
             content = content.decode('utf-8')
         return content
 
-    def path_lexists(self, path):  # type: (str) -> bool
-        return self.lexists(path)
-
     def path_isdir(self, path):  # type: (str) -> bool
         return self.isdir(path)
 
@@ -345,7 +342,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
                 for x in self.walk_no_follow(new_path):
                     yield x
 
-    def lexists(self, path):
+    def path_lexists(self, path):
         path = self._join_cwd(path)
         try:
             self._get_entry_at(path)

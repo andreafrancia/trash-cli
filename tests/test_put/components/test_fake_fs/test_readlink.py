@@ -26,7 +26,7 @@ class TestReadLinkOnRealFs:
     def test_lexists(self, temp_dir):
         self.fs.symlink("target", temp_dir / "link")
 
-        assert self.fs.lexists(temp_dir / "link") is True
+        assert self.fs.path_lexists(temp_dir / "link") is True
 
 
 class TestReadLink:
@@ -73,4 +73,4 @@ class TestReadLink:
     def test_lexists(self):
         self.fs.symlink("target", "link")
 
-        assert self.fs.lexists("link") is True
+        assert self.fs.path_lexists("link") is True

@@ -50,7 +50,7 @@ class Trasher(SingleTrasher):
                 context.log_data)
             return TrashResult.Failure
 
-        if not self.fs.lexists(path):
+        if not self.fs.path_lexists(path):
             if context.mode.can_ignore_not_existent_path():
                 return TrashResult.Success
             else:

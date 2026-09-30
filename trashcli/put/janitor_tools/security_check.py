@@ -13,13 +13,13 @@ class SecurityCheck:
                                   candidate,  # type: Candidate
                                   ):  # type: (...) -> Either[None, FailureReason]
         for sub_dir in (candidate.info_dir(), candidate.files_dir()):
-            if self.fs.lexists(sub_dir) and self.fs.islink(sub_dir):
+            if self.fs.path_lexists(sub_dir) and self.fs.islink(sub_dir):
                 return Left(TrashDirIsNotSecureBecauseSymLink())
         if candidate.check_type == NoCheck:
             return Right(None)
         if candidate.check_type == TopTrashDirCheck:
             parent = candidate.parent_dir()
-            if not self.fs.lexists(parent):
+            if not self.fs.path_lexists(parent):
                 return Left(TrashDirDoesNotHaveParent())
             if not self.fs.isdir(parent):
                 return Left(TrashDirCannotBeCreatedBecauseParentIsFile())

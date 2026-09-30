@@ -113,9 +113,6 @@ class RealFs(RealVolumeOf, Fs, RestoreFs):
     def write_file(self, path, content):
         return RealWriteFile().write_file(path, content)
 
-    def lexists(selfs, path):
-        return os.path.lexists(path)
-
     def list_files_in_dir(self, path):  # type: (str) -> Iterable[str]
         return RealListFilesInDir().list_files_in_dir(path)
 

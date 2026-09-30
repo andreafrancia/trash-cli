@@ -28,7 +28,7 @@ class TestRealFsIsAccessible(unittest.TestCase):
     def test_dangling_link_with_lexists(self):
         os.symlink('non-existent', self.tmp_dir / 'link')
 
-        result = self.fs.lexists(self.tmp_dir / 'link')
+        result = self.fs.path_lexists(self.tmp_dir / 'link')
 
         assert result is True
 
@@ -36,6 +36,6 @@ class TestRealFsIsAccessible(unittest.TestCase):
         self.fs.make_file(self.tmp_dir / 'link-target', '')
         os.symlink('link-target', self.tmp_dir / 'link')
 
-        result = self.fs.lexists(self.tmp_dir / 'link')
+        result = self.fs.path_lexists(self.tmp_dir / 'link')
 
         assert result is True

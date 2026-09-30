@@ -78,7 +78,7 @@ def option_shaped_existing_files(
         if arg == '--':
             after_separator = True
         elif not after_separator and arg.startswith('-') and arg != '-' \
-                and fs.lexists(arg):
+                and fs.path_lexists(arg):
             result.append(arg)
     return result
 

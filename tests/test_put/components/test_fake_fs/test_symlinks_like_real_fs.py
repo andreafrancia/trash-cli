@@ -25,7 +25,7 @@ class TestSymlinksLikeRealFs:
     def test_lexists_is_true_for_a_dangling_symlink(self, env):
         env.fs.symlink('missing-target', env.path('link'))
 
-        assert env.fs.lexists(env.path('link')) is True
+        assert env.fs.path_lexists(env.path('link')) is True
 
     @real_and_fake()
     def test_exists_follows_the_symlink(self, env):
@@ -91,7 +91,7 @@ class TestSymlinksLikeRealFs:
 
         env.fs.remove_file(env.path('link'))
 
-        assert env.fs.lexists(env.path('link')) is False
+        assert env.fs.path_lexists(env.path('link')) is False
         assert env.fs.read(env.path('file')) == 'contents'
 
     @real_and_fake()
@@ -101,7 +101,7 @@ class TestSymlinksLikeRealFs:
 
         env.fs.move(env.path('link'), env.path('moved'))
 
-        assert env.fs.lexists(env.path('link')) is False
+        assert env.fs.path_lexists(env.path('link')) is False
         assert env.fs.islink(env.path('moved')) is True
         assert env.fs.readlink(env.path('moved')) == 'file'
 

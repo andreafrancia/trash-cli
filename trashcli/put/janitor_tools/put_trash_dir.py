@@ -40,7 +40,7 @@ class PutTrashDir:
             # the move can still copy the file before failing to delete the
             # original, so drop the copy here to guarantee no unremovable
             # file is left in the trash.
-            if self.fs.lexists(paths.backup_copy_path):
+            if self.fs.path_lexists(paths.backup_copy_path):
                 self.fs.remove_file(paths.backup_copy_path)
             self.fs.remove_file(paths.trashinfo_path)
             unable = UnableToMoveFileToTrash(error) # type: FailureReason
