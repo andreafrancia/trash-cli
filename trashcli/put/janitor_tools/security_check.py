@@ -13,7 +13,7 @@ class SecurityCheck:
                                   candidate,  # type: Candidate
                                   ):  # type: (...) -> Either[None, FailureReason]
         for sub_dir in (candidate.info_dir(), candidate.files_dir()):
-            if self.fs.path_lexists(sub_dir) and self.fs.islink(sub_dir):
+            if self.fs.path_lexists(sub_dir) and self.fs.is_symlink(sub_dir):
                 return Left(TrashDirIsNotSecureBecauseSymLink())
         if candidate.check_type == NoCheck:
             return Right(None)
@@ -23,7 +23,7 @@ class SecurityCheck:
                 return Left(TrashDirDoesNotHaveParent())
             if not self.fs.path_isdir(parent):
                 return Left(TrashDirCannotBeCreatedBecauseParentIsFile())
-            if self.fs.islink(parent):
+            if self.fs.is_symlink(parent):
                 return Left(TrashDirIsNotSecureBecauseSymLink())
             if not self.fs.has_sticky_bit(parent):
                 return Left(TrashDirIsNotSecureBecauseNotSticky())

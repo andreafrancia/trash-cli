@@ -18,7 +18,7 @@ class Describer:
          - "non existent"
          - "entry"
         """
-        if self.fs.islink(path):
+        if self.fs.is_symlink(path):
             return 'symbolic link'
         elif self.fs.path_isdir(path):
             if path == '.':

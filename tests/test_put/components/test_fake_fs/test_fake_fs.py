@@ -90,12 +90,12 @@ class TestFakeFs(unittest.TestCase):
     def test_islink_on_a_file(self):
         self.fs.make_file("/foo", "content")
 
-        assert self.fs.islink("/foo") is False
+        assert self.fs.is_symlink("/foo") is False
 
     def test_islink_on_a_link(self):
         self.fs.symlink("dest", "/foo")
 
-        assert self.fs.islink("/foo") is True
+        assert self.fs.is_symlink("/foo") is True
 
     def test_set_sticky_bit_when_unset(self):
         self.fs.make_file("/foo")
@@ -109,10 +109,10 @@ class TestFakeFs(unittest.TestCase):
         assert self.fs.has_sticky_bit("/foo") is True
 
     def test_islink_when_not_found(self):
-        assert self.fs.islink("/foo") is False
+        assert self.fs.is_symlink("/foo") is False
 
     def test_islink_when_directory_not_exisiting(self):
-        assert self.fs.islink("/foo/bar/baz") is False
+        assert self.fs.is_symlink("/foo/bar/baz") is False
 
     def test_absolute_path(self):
         self.fs.make_file('/foo')

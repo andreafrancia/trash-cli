@@ -252,16 +252,13 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
         directory.remove(basename)
         return basename, entry
 
-    def islink(self, path):
+    def is_symlink(self, path):
         try:
             entry = self._find_entry(path)
         except MyFileNotFoundError:
             return False
         else:
             return isinstance(entry.entity, SymLink)
-
-    def is_symlink(self, path):  # type: (str) -> bool
-        return self.islink(path)
 
     def symlink(self, src, dest):
         dest = os.path.join(self.cwd, dest)
@@ -335,7 +332,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
         yield top, dirs, nondirs
         for name in dirs:
             new_path = os.path.join(top, name)
-            if not self.islink(new_path):
+            if not self.is_symlink(new_path):
                 for x in self.walk_no_follow(new_path):
                     yield x
 

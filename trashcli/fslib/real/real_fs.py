@@ -78,7 +78,7 @@ class RealFs(RealVolumeOf, Fs, RestoreFs):
     def remove_file(self, path):
         RealRemoveFile().remove_file(path)
 
-    def islink(self, path):
+    def is_symlink(self, path):
         return os.path.islink(path)
 
     def has_sticky_bit(self, path):

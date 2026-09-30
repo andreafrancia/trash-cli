@@ -44,7 +44,7 @@ class Fs(RealPathFs, VolumeOf, Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def islink(self, path):
+    def is_symlink(self, path):
         raise NotImplementedError
 
     @abstractmethod
