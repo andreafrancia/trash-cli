@@ -321,8 +321,26 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
             return True
 
     def find_all(self):
-        # find_all() is also used to build the message of MyFileNotFoundError,
-        # and walking a dangling symlink raises it again: stop the recursion.
+        """Lists the paths of everything in the fake file system.
+
+        It is used by the tests and also by Directory.get_entry() to put the
+        whole content of the fs in the message of MyFileNotFoundError, to ease
+        debugging.
+
+        That makes it re-entrant: walking the fs calls isdir() on every entry
+        and, with a dangling symlink (or a loop of symlinks), isdir() does a
+        lookup that fails. Building the message of that failure calls
+        find_all() again, which walks the fs again, meets the same symlink,
+        and so on until RecursionError.
+
+        _finding_all is the guard against that: while a find_all() is running,
+        the nested calls (the ones made to build an error message) return []
+        instead of walking again. The error is raised all the same, isdir()
+        catches it and returns False, and the outer walk goes on; the only
+        difference is that such a message does not list the fs.
+        The flag is reset in a finally, so a failing walk does not leave the
+        guard on.
+        """
         if self._finding_all:
             return []
         self._finding_all = True
