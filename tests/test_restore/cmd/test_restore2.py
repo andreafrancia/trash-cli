@@ -3,6 +3,8 @@ import datetime
 from tests.support.dates import jan_11_2001
 from tests.support.put.fake_fs.failing_fake_fs import FailOnMoveFakeFs
 from tests.support.restore.restore_fixture import RestoreFixture
+from tests.support.trash_dirs.trash_dir_has_trashinfo import \
+    TrashDirHasTrashInfo
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 
@@ -12,6 +14,7 @@ class TestRestore2:
     def setup_method(self):
         self.fs = FailOnMoveFakeFs()
         self.fixture = RestoreFixture(self.fs)
+        self.trash = TrashDirHasTrashInfo(self.fs, self.fixture)
         self.user = RestoreUser(
             environ={'XDG_DATA_HOME': '/data_home'},
             uid=1000,
@@ -54,7 +57,7 @@ class TestRestore2:
     def test_restore_operation_when_dest_exists(self):
         self.fixture.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
                                datetime.datetime(2016, 1, 1), 'boo')
-        self.fixture.add_file('/cwd/parent/foo.txt')
+        self.trash.add_file('/cwd/parent/foo.txt')
         assert '/cwd/parent/foo.txt' in self.fs.find_all()
         assert '/data_home/Trash/info/foo.txt.trashinfo' in self.fs.find_all()
         assert '/data_home/Trash/files/foo.txt' in self.fs.find_all()
@@ -80,8 +83,8 @@ class TestRestore2:
         self.fixture.add_trash_file('/cwd/b.txt', '/data_home/Trash', a_date, 'trash-b')
         self.fixture.add_trash_file('/cwd/c.txt', '/data_home/Trash', a_date, 'trash-c')
         self.fixture.add_trash_file('/cwd/d.txt', '/data_home/Trash', a_date, 'trash-d')
-        self.fixture.add_file('/cwd/b.txt', 'already-there-b')
-        self.fixture.add_file('/cwd/d.txt', 'already-there-d')
+        self.trash.add_file('/cwd/b.txt', 'already-there-b')
+        self.trash.add_file('/cwd/d.txt', 'already-there-d')
 
         res = self.cmd_run(['trash-restore', '--sort=path'],
                            reply='0-3', from_dir='/cwd')
