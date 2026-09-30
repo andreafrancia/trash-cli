@@ -97,7 +97,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
         """
         path = self._join_cwd(path)
         for _ in range(MAX_SYMLINKS_TO_FOLLOW):
-            components = self.components_for(path)
+            components = self._components_for(path)
             inode = self.root_inode
             for index, component in enumerate(components):
                 inode = inode.directory().get_entry(component, path, self)
@@ -116,7 +116,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
     def makedirs(self, path, mode):
         path = self._join_cwd(path)
         inode = self.root_inode
-        for component in self.components_for(path):
+        for component in self._components_for(path):
             try:
                 inode = inode.directory().get_entry(component, path, self)
             except MyFileNotFoundError:
@@ -127,7 +127,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
     def _join_cwd(self, path):
         return os.path.join(os.path.join("/", self.cwd), path)
 
-    def components_for(self, path):
+    def _components_for(self, path):
         if path == '/':
             return []
         return path.split('/')[1:]
