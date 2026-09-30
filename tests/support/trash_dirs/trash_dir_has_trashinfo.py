@@ -3,6 +3,7 @@ import os
 from typing import Optional
 
 from tests.support.put.fake_fs.fake_fs import FakeFs
+from tests.support.restore.a_trashed_file import ATrashedFile
 from trashcli.put.format_trash_info import format_trashinfo
 from tests.support.restore.restore_fixture import RestoreFixture
 
@@ -37,8 +38,16 @@ class TrashDirHasTrashInfo:
 
     def make_trashed_file(self, from_path, trash_dir, time,
                           original_file_content):
-        return self.fixture.make_trashed_file(from_path, trash_dir, time,
-                                         original_file_content)
+        content = format_trashinfo(from_path, time)
+        basename = os.path.basename(from_path)
+        info_path = os.path.join(trash_dir, 'info', "%s.trashinfo" % basename)
+        backup_copy_path = os.path.join(trash_dir, 'files', basename)
+        trashed_file = ATrashedFile(trashed_from=from_path,
+                                    info_file=info_path,
+                                    backup_copy=backup_copy_path)
+        self.add_file(info_path, content)
+        self.add_file(backup_copy_path, original_file_content.encode('utf-8'))
+        return trashed_file
 
     def has_a_well_formed_trashinfo(self,
                                     basename,  # type: str
