@@ -30,14 +30,6 @@ def real_and_fake():
     return pytest.mark.parametrize('env', ['real', 'fake'], indirect=True)
 
 
-def real_and_fake_but_fake_diverges(reason):
-    return pytest.mark.parametrize(
-        'env',
-        ['real', pytest.param('fake', marks=pytest.mark.xfail(strict=True,
-                                                               reason=reason))],
-        indirect=True)
-
-
 # FakeFs must answer about symlinks exactly like RealFs (which works on the
 # real file system): every test runs against both.
 class TestSymlinksLikeRealFs:
@@ -62,8 +54,7 @@ class TestSymlinksLikeRealFs:
 
         assert env.fs.lexists(env.path('link')) is True
 
-    @real_and_fake_but_fake_diverges(
-        'FakeFs.exists crashes on symlinks')
+    @real_and_fake()
     def test_exists_follows_the_symlink(self, env):
         env.fs.symlink('missing-target', env.path('dangling'))
         env.fs.make_file(env.path('file'), 'contents')
@@ -72,8 +63,7 @@ class TestSymlinksLikeRealFs:
         assert env.fs.exists(env.path('dangling')) is False
         assert env.fs.exists(env.path('connected')) is True
 
-    @real_and_fake_but_fake_diverges(
-        'FakeFs.isdir is False for a symlink to a dir')
+    @real_and_fake()
     def test_isdir_follows_the_symlink(self, env):
         env.fs.makedirs(env.path('dir'), 0o755)
         env.fs.symlink('dir', env.path('to-dir'))
@@ -82,8 +72,7 @@ class TestSymlinksLikeRealFs:
         assert env.fs.isdir(env.path('to-dir')) is True
         assert env.fs.isdir(env.path('dangling')) is False
 
-    @real_and_fake_but_fake_diverges(
-        'FakeFs.isfile crashes on symlinks')
+    @real_and_fake()
     def test_isfile_follows_the_symlink(self, env):
         env.fs.make_file(env.path('file'), 'contents')
         env.fs.symlink('file', env.path('to-file'))
@@ -115,8 +104,7 @@ class TestSymlinksLikeRealFs:
 
         assert env.fs.read(env.path('link')) == 'contents'
 
-    @real_and_fake_but_fake_diverges(
-        'FakeFs.getsize crashes on symlinks')
+    @real_and_fake()
     def test_getsize_follows_the_symlink(self, env):
         env.fs.make_file(env.path('file'), 'contents')
         env.fs.symlink('file', env.path('link'))
@@ -151,8 +139,7 @@ class TestSymlinksLikeRealFs:
 
         assert sorted(env.fs.listdir(env.base)) == ['file', 'link']
 
-    @real_and_fake_but_fake_diverges(
-        'FakeFs.walk_no_follow lists a symlink to a dir as a non dir')
+    @real_and_fake()
     def test_walk_lists_a_symlink_to_a_dir_as_a_dir_but_does_not_follow_it(
             self, env):
         env.fs.makedirs(env.path('dir'), 0o755)

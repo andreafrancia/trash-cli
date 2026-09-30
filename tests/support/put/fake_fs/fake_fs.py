@@ -1,13 +1,10 @@
 import errno
 import os
 
-from typing import cast
-
 from tests.support.fakes.fake_volume_of import FakeVolumeOf
 from tests.support.put.fake_fs.directory import Directory
 from tests.support.put.fake_fs.directory import make_inode_dir
 from tests.support.put.fake_fs.ent import Ent
-from tests.support.put.fake_fs.entry import Entry
 from tests.support.put.fake_fs.file import File
 from tests.support.put.fake_fs.inode import INode
 from tests.support.put.fake_fs.inode import Stickiness
@@ -26,8 +23,7 @@ def as_directory(ent):  # type: (Ent) -> Directory
     return check_cast(Directory, ent)
 
 
-def as_inode(entry):  # type: (Entry) -> INode
-    return check_cast(INode, entry)
+MAX_SYMLINKS_TO_FOLLOW = 40
 
 
 class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
@@ -36,6 +32,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
         self.root_inode = make_inode_dir('/', 0o755, None)
         self.root = self.root_inode.directory()
         self.cwd = cwd
+        self._finding_all = False
 
     def touch(self, path):
         if not self.exists(path):
@@ -66,18 +63,35 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
         self.makedirs(path, 0o755)
 
     def get_entity_at(self, path):  # type: (str) -> Ent
-        inode = check_cast(INode, self.get_entry_at(path))
-        return inode.entity
+        return self._lookup(path, follow_last_link=True).entity
 
     def get_directory_at(self, path):
         return as_directory(self.get_entity_at(path))
 
-    def get_entry_at(self, path):  # type: (str) -> Entry
+    def get_entry_at(self, path):  # type: (str) -> INode
+        return self._lookup(path, follow_last_link=False)
+
+    def _lookup(self,
+                path,  # type: str
+                follow_last_link,  # type: bool
+                ):  # type: (...) -> INode
         path = self._join_cwd(path)
-        entry = self.root_inode
-        for component in self.components_for(path):
-            entry = as_inode(entry).directory().get_entry(component, path, self)
-        return entry
+        for _ in range(MAX_SYMLINKS_TO_FOLLOW):
+            components = self.components_for(path)
+            inode = self.root_inode
+            for index, component in enumerate(components):
+                inode = inode.directory().get_entry(component, path, self)
+                is_last = index == len(components) - 1
+                if isinstance(inode.entity, SymLink) and (
+                        follow_last_link or not is_last):
+                    parent = '/' + '/'.join(components[:index])
+                    rest = components[index + 1:]
+                    path = os.path.normpath(
+                        os.path.join(parent, inode.entity.dest, *rest))
+                    break
+            else:
+                return inode
+        raise MyFileNotFoundError("too many levels of symbolic links: %s" % path)
 
     def makedirs(self, path, mode):
         path = self._join_cwd(path)
@@ -107,22 +121,16 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
              path,  # type: str
              ):  # type: (...) -> str
         path = self._join_cwd(path)
-        dirname, basename = os.path.split(os.path.normpath(path))
-        directory = as_directory(self.get_entity_at(dirname))
-        entry = directory.get_entry(basename, path, self)
-        if isinstance(entry, SymLink):
-            link_target = self.readlink(path)
-            return self.read(os.path.join(dirname, link_target))
-        elif isinstance(as_inode(entry).entity, File):
-            return cast(File, as_inode(entry).entity).content
-        else:
-            raise IOError("Unable to read: %s" % path)
+        entity = self.get_entity_at(os.path.normpath(path))
+        if isinstance(entity, File):
+            return entity.content
+        raise IOError("Unable to read: %s" % path)
 
     def readlink(self, path):
         path = self._join_cwd(path)
-        maybe_link = self.get_entry_at(path)
-        if isinstance(maybe_link, SymLink):
-            return maybe_link.dest
+        entity = self.get_entry_at(path).entity
+        if isinstance(entity, SymLink):
+            return entity.dest
         else:
             raise OSError(errno.EINVAL, "Invalid argument", path)
 
@@ -166,14 +174,10 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
 
     def isdir(self, path):
         try:
-            entry = self.get_entry_at(path)
+            entity = self.get_entity_at(path)
         except MyFileNotFoundError:
             return False
-        else:
-            if isinstance(entry, SymLink):
-                return False
-            file = entry.entity
-            return isinstance(file, Directory)
+        return isinstance(entity, Directory)
 
     def exists(self, path):
         try:
@@ -211,7 +215,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
         except MyFileNotFoundError:
             return False
         else:
-            return isinstance(entry, SymLink)
+            return isinstance(entry.entity, SymLink)
 
     def is_symlink(self, path):  # type: (str) -> bool
         return self.islink(path)
@@ -297,7 +301,15 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
             return True
 
     def find_all(self):
-        return list(list_all(self, "/"))
+        # find_all() is also used to build the message of MyFileNotFoundError,
+        # and walking a dangling symlink raises it again: stop the recursion.
+        if self._finding_all:
+            return []
+        self._finding_all = True
+        try:
+            return list(list_all(self, "/"))
+        finally:
+            self._finding_all = False
 
     def read_all_files(self):
         return [(f, self.read(f))

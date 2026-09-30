@@ -1,6 +1,5 @@
 from collections import OrderedDict
 from typing import Optional
-from typing import Union
 from typing import Dict
 
 from tests.support.put.fake_fs.ent import Ent
@@ -14,7 +13,7 @@ from trashcli.lib.my_permission_error import MyPermissionError
 
 def make_inode_dir(directory_path,  # type: str
                    mode,  # type: int
-                   parent_inode,  # type: Optional[INode|SymLink]
+                   parent_inode,  # type: Optional[INode]
                    ):  # type: (...)->INode
     directory = Directory(directory_path)
     inode = INode(directory, mode, Stickiness.not_sticky)
@@ -25,7 +24,7 @@ def make_inode_dir(directory_path,  # type: str
 class Directory(Ent):
     def __init__(self, name):  # type: (str) -> None
         self.name = name
-        self._entries = OrderedDict()  # type: Dict[str, Union[INode, SymLink]]
+        self._entries = OrderedDict()  # type: Dict[str, INode]
 
     def __repr__(self):
         return "Directory(%r)" % self.name
@@ -61,7 +60,7 @@ class Directory(Ent):
         inode = INode(file, mode, Stickiness.not_sticky)
         self._entries[basename] = inode
 
-    def _inode(self):  # type: ()->Union[INode, SymLink]
+    def _inode(self):  # type: () -> INode
         return self._entries["."]
 
     def get_file(self, basename):
@@ -81,7 +80,8 @@ class Directory(Ent):
         self._entries[basename] = entry
 
     def add_link(self, basename, src):
-        self._entries[basename] = SymLink(src)
+        self._entries[basename] = INode(SymLink(src), 0o777,
+                                        Stickiness.not_sticky)
 
     def remove(self, basename):
         self._entries.pop(basename)
