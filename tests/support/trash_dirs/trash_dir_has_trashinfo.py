@@ -1,3 +1,5 @@
+import os
+
 from typing import Optional
 
 from tests.support.put.fake_fs.fake_fs import FakeFs
@@ -17,7 +19,8 @@ class TrashDirHasTrashInfo:
         self.volume_trash = volume_trash
 
     def add_file(self, path, content=b''):
-        return self.fixture.add_file(path, content)
+        self.fs.makedirs(os.path.dirname(path), 0o755)
+        self.fs.make_file(path, content)
 
     def has_a_well_formed_trashinfo(self,
                                     basename,  # type: str
