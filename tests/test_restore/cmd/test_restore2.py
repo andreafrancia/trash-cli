@@ -130,8 +130,8 @@ class TestRestore2:
 
         assert res.stderr == 'Refusing to overwrite existing file "foo.txt".\n'
         assert self.fs.readlink('/cwd/foo.txt') == '/nowhere'
-        assert self.fs.exists('/data_home/Trash/files/foo.txt')
-        assert self.fs.exists('/data_home/Trash/info/foo.txt.trashinfo')
+        assert self.fs.path_exists('/data_home/Trash/files/foo.txt')
+        assert self.fs.path_exists('/data_home/Trash/info/foo.txt.trashinfo')
 
     def test_restore_refuses_to_overwrite_a_directory_even_with_overwrite(self):
         self.trash.has_trashed_file('/cwd/foo.txt', '/data_home/Trash',
@@ -143,7 +143,7 @@ class TestRestore2:
 
         assert res.stderr == 'Refusing to overwrite existing file "foo.txt".\n'
         assert self.fs.listdir('/cwd/foo.txt') == []
-        assert self.fs.exists('/data_home/Trash/files/foo.txt')
+        assert self.fs.path_exists('/data_home/Trash/files/foo.txt')
 
     def cmd_run(self, args, reply=None, from_dir=None):
         return self.user.run_restore(args, reply=reply, from_dir=from_dir)

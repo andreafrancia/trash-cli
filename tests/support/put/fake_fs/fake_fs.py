@@ -39,7 +39,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
         self._finding_all = False
 
     def touch(self, path):
-        if not self.exists(path):
+        if not self.path_exists(path):
             self.make_file(path, '')
 
     def listdir(self, path):
@@ -54,9 +54,6 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
         if isinstance(content, bytes):
             content = content.decode('utf-8')
         return content
-
-    def path_exists(self, path):  # type: (str) -> bool
-        return self.exists(path)
 
     def path_lexists(self, path):  # type: (str) -> bool
         return self.lexists(path)
@@ -74,7 +71,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
         return self.volumes
 
     def ls_existing(self, paths):
-        return [p for p in paths if self.exists(p)]
+        return [p for p in paths if self.path_exists(p)]
 
     def ls_aa(self, path):
         all_entries = self.ls_a(path)
@@ -165,7 +162,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
         return path.split('/')[1:]
 
     def atomic_write(self, path, content):
-        if self.exists(path):
+        if self.path_exists(path):
             raise OSError("already exists: %s" % path)
         self.make_file(path, content)
 
@@ -231,7 +228,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
             return False
         return isinstance(entity, Directory)
 
-    def exists(self, path):
+    def path_exists(self, path):
         try:
             self.get_entity_at(path)
             return True
@@ -246,7 +243,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
     def move(self, src, dest):
         basename, entry = self._pop_entry_from_dir(src)
 
-        if self.exists(dest) and self.isdir(dest):
+        if self.path_exists(dest) and self.isdir(dest):
             dest_dir = self._get_directory_at(dest)
             dest_dir.add_entry(basename, entry)
         else:
@@ -320,7 +317,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
         return file.getsize()
 
     def is_accessible(self, path):
-        return self.exists(path)
+        return self.path_exists(path)
 
     def seems_to_have_delete_permissions(self, path):
         parent = os.path.dirname(self._join_cwd(path))

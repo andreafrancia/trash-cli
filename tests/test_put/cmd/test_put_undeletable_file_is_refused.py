@@ -22,9 +22,9 @@ class TestPutUndeletableFileIsRefused:
 
         self.run_cmd(['trash-put', '/readonly/foo'])
 
-        assert self.fs.exists('/readonly/foo')
-        assert not self.fs.exists('/.Trash-123/files/foo')
-        assert not self.fs.exists('/.Trash-123/info/foo.trashinfo')
+        assert self.fs.path_exists('/readonly/foo')
+        assert not self.fs.path_exists('/.Trash-123/files/foo')
+        assert not self.fs.path_exists('/.Trash-123/info/foo.trashinfo')
 
     def run_cmd(self, args):
         cmd = make_cmd(clock=FixedClock(jan_1st_2024()), fs=self.fs,

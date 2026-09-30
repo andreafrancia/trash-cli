@@ -59,9 +59,6 @@ class RealFs(RealVolumeOf, Fs, RestoreFs):
 
         return walk(path, followlinks=False)
 
-    def exists(self, path):
-        return os.path.exists(path)
-
     def makedirs(self, path, mode):
         os.makedirs(path, mode)
 

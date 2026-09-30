@@ -37,7 +37,7 @@ class Describer:
                 return 'regular empty file'
             else:
                 return 'regular file'
-        elif not self.fs.exists(path):
+        elif not self.fs.path_exists(path):
             return 'non existent'
         else:
             return 'entry'

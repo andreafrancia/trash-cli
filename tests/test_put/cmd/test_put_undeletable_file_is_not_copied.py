@@ -27,7 +27,7 @@ class TestPutUndeletableFileIsNotCopied:
 
         self.run_cmd(['trash-put', '/foo'])
 
-        assert self.fs.exists("/foo")
+        assert self.fs.path_exists("/foo")
         assert self.fs.ls_aa('/.Trash-123/files') == []
         assert self.fs.ls_aa('/.Trash-123/info') == []
 

@@ -23,8 +23,8 @@ class TestPutSymlinkedTrashDir:
 
         self.run_cmd(['trash-put', '/foo'])
 
-        assert self.fs.exists("/foo")
-        assert not self.fs.exists('/.Trash-123/files')
+        assert self.fs.path_exists("/foo")
+        assert not self.fs.path_exists('/.Trash-123/files')
 
     def run_cmd(self, args):
         stderr = StringIO()

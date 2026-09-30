@@ -45,7 +45,7 @@ class TestRestoreTrashDirOnASeparateMount:
         assert (res.output(), self.log_messages) == (
             '   0 2018-01-01 00:00:00 /home/user/foo\n', [])
         assert self.fs.read_file('/home/user/foo') == 'contents of foo'
-        assert not self.fs.exists(trashed_file.info_file)
+        assert not self.fs.path_exists(trashed_file.info_file)
 
     # Issue #419: the test suite uses --trash-dir with a trash dir created in
     # a temp dir under /tmp, and /tmp is a separate mount point (tmpfs).

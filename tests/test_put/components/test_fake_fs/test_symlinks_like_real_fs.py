@@ -33,8 +33,8 @@ class TestSymlinksLikeRealFs:
         env.fs.make_file(env.path('file'), 'contents')
         env.fs.symlink('file', env.path('connected'))
 
-        assert env.fs.exists(env.path('dangling')) is False
-        assert env.fs.exists(env.path('connected')) is True
+        assert env.fs.path_exists(env.path('dangling')) is False
+        assert env.fs.path_exists(env.path('connected')) is True
 
     @real_and_fake()
     def test_isdir_follows_the_symlink(self, env):

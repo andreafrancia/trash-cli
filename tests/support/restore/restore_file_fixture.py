@@ -19,7 +19,7 @@ class RestoreFileFixture:
 
     def make_file(self, filename, contents=''):
         parent = os.path.dirname(self.fs.realpath(filename))
-        if not self.fs.exists(parent):
+        if not self.fs.path_exists(parent):
             self.fs.makedirs(parent, 0o755)
         self.fs.make_file(filename, contents)
 
@@ -30,4 +30,4 @@ class RestoreFileFixture:
         return "%s/Trash" % self.XDG_DATA_HOME
 
     def file_should_have_been_restored(self, filename):
-        assert self.fs.exists(filename)
+        assert self.fs.path_exists(filename)

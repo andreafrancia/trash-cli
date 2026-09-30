@@ -4,5 +4,5 @@ from trashcli.fslib.protocols.path_exists import PathExists
 
 
 class RealExists(PathExists):
-    def exists(self, path):  # type: (str) -> bool
+    def path_exists(self, path):  # type: (str) -> bool
         return os.path.exists(path)
