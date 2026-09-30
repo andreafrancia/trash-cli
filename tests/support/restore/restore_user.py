@@ -2,6 +2,7 @@ import sys
 from io import StringIO
 from typing import Dict, Optional
 
+from tests.support.restore.fake_path_fs import FakePathFs
 from tests.support.run.cmd_result import CmdResult
 from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
 from tests.test_restore.support.recording_logger import RecordingLogger
@@ -50,7 +51,11 @@ class RestoreUser:
         args = [] if args is self.no_args else args
         stdout = StringIO()
         stderr = StringIO()
-        read_cwd = FakeReadCwdFs(from_dir)
+        if isinstance(self.path_read_fs, FakePathFs):
+            self.path_read_fs.fake_fs.cd(from_dir or '/')
+            read_cwd = self.path_read_fs
+        else:
+            read_cwd = FakeReadCwdFs(from_dir)
         cmd = RestoreCmd(
             stdout=stdout,
             stderr=stderr,

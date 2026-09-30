@@ -15,6 +15,9 @@ class FakePathFs(RestoreFs, PathExists, FakeVolumePathFs):
         self.fake_fs = FailOnMoveFakeFs()
         self.mount_points = []
 
+    def getcwd_as_realpath(self):
+        return os.path.join('/', self.fake_fs.cwd)
+
     def exists(self, path):
         return self.path_exists(path)
 

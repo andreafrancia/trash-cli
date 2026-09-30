@@ -32,9 +32,9 @@ class TestRestore2:
         assert 'trash-restore 1.2.3\n' == res.stdout
 
     def test_with_no_args_and_no_files_in_trashcan(self):
-        res = self.cmd_run(['trash-restore'], from_dir='cwd')
+        res = self.cmd_run(['trash-restore'], from_dir='/cwd')
 
-        assert ("No files trashed from current dir ('cwd')\n" ==
+        assert ("No files trashed from current dir ('/cwd')\n" ==
                 res.stdout)
 
     def test_restore_operation(self):
