@@ -55,7 +55,7 @@ class TestSearcher:
                 'No files were restored\n')
 
     def test_actual_restore(self):
-        trashed_file = self.fixture.make_trashed_file("/home/user/foo",
+        trashed_file = self.trash.make_trashed_file("/home/user/foo",
                                                  '/home/user/.local/share/Trash',
                                                  date_at(2018, 1, 1),
                                                  "contents of foo\n")
@@ -99,6 +99,6 @@ class TestSearcher:
         return self.user.run_restore(args, reply, from_dir)
 
     def add_file_trashed_at(self, original_location, deletion_date):
-        self.fixture.make_trashed_file(original_location,
+        self.trash.make_trashed_file(original_location,
                                   '/home/user/.local/share/Trash',
                                   deletion_date, '')

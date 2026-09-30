@@ -35,6 +35,11 @@ class TrashDirHasTrashInfo:
     def add_trash_empty_file(self, from_path, trash_dir, time):
         self.add_trash_file(from_path, trash_dir, time, '')
 
+    def make_trashed_file(self, from_path, trash_dir, time,
+                          original_file_content):
+        return self.fixture.make_trashed_file(from_path, trash_dir, time,
+                                         original_file_content)
+
     def has_a_well_formed_trashinfo(self,
                                     basename,  # type: str
                                     ):
