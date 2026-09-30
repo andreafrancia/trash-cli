@@ -44,3 +44,9 @@ class RestoreWriterFs(Protocol):
 
     def remove_file(self, path):  # type: (str) -> None
         raise NotImplementedError()
+
+
+class RestoreFs(RestoreReadFs,
+                RestoreWriterFs,
+                Protocol):
+    pass
