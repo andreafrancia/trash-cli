@@ -3,7 +3,6 @@ import datetime
 from tests.support.asserts.assert_that import assert_that
 from tests.support.dates import date_at
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from tests.support.restore.restore_fixture import RestoreFixture
 from tests.support.trash_dirs.trash_dir_has_trashinfo import \
     TrashDirHasTrashInfo
 from tests.support.restore.has_been_restored_matcher import \
@@ -15,8 +14,7 @@ from tests.test_restore.support.recording_logger import RecordingLogger
 class TestSearcher:
     def setup_method(self):
         self.fs = FakeFs()
-        self.fixture = RestoreFixture(self.fs)
-        self.trash = TrashDirHasTrashInfo(self.fs, self.fixture)
+        self.trash = TrashDirHasTrashInfo(self.fs)
         self.user = RestoreUser(environ={'HOME': '/home/user'},
                                 uid=123,
                                 file_reader=self.fs,

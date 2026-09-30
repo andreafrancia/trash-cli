@@ -5,18 +5,15 @@ from typing import Optional
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.a_trashed_file import ATrashedFile
 from trashcli.put.format_trash_info import format_trashinfo
-from tests.support.restore.restore_fixture import RestoreFixture
 
 
 class TrashDirHasTrashInfo:
     def __init__(self,
                  fs,  # type: FakeFs
-                 fixture,  # type: RestoreFixture
                  home_trash=None,  # type: Optional[str]
                  volume_trash=None,  # type: Optional[str]
                  ):
         self.fs = fs
-        self.fixture = fixture
         self.home_trash = home_trash
         self.volume_trash = volume_trash
 

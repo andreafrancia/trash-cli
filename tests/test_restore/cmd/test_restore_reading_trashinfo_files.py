@@ -1,5 +1,4 @@
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from tests.support.restore.restore_fixture import RestoreFixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.support.trash_dirs.trash_dir_has_trashinfo import \
     TrashDirHasTrashInfo
@@ -13,7 +12,6 @@ from tests.test_restore.support.recording_logger import RecordingLogger
 class TestRestoreReadingTrashinfoFiles:
     def setup_method(self):
         self.fs = FakeFs()
-        self.fixture = RestoreFixture(self.fs)
         self.log_messages = []
         self.user = RestoreUser(environ={'HOME': '/home/user'},
                                 uid=123,
@@ -29,7 +27,6 @@ class TestRestoreReadingTrashinfoFiles:
         self.home_trash = '/home/user/.local/share/Trash'
         self.volume_trash = '/volume/.Trash-123'
         self.trash = TrashDirHasTrashInfo(self.fs,
-                                          self.fixture,
                                           home_trash=self.home_trash,
                                           volume_trash=self.volume_trash)
 

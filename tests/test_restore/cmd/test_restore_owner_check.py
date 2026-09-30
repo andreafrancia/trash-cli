@@ -1,6 +1,5 @@
 from tests.support.dates import date_at
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from tests.support.restore.restore_fixture import RestoreFixture
 from tests.support.trash_dirs.trash_dir_has_trashinfo import \
     TrashDirHasTrashInfo
 from tests.test_restore.cmd.test_restore_distrusts_unsafe_trash_dirs import (
@@ -17,8 +16,7 @@ class TestRestoreOwnerCheck:
         self.volumes = FakeVolumes2("volume_of(%s)", [])
         self.logger = RecordingLogger()
         self.fs = FakeFs()
-        self.fixture = RestoreFixture(self.fs)
-        self.trash = TrashDirHasTrashInfo(self.fs, self.fixture)
+        self.trash = TrashDirHasTrashInfo(self.fs)
         self.trash.add_trash_file(HOME + "/foo", HOME_TRASH,
                                     date_at(2018, 1, 1), '')
 
