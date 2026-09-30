@@ -25,8 +25,17 @@ into `master` keeping the history linear (no merge commits).
    Untracked directories such as `.venv` are not shared between worktrees:
    either create one in the new worktree or run the main checkout's
    `.venv/bin/python` from inside it.
-2. Commit on the task branch, then run the checks (see the development
-   environment above).
+2. Before committing the work of the task, always run `scripts/pre-push` from
+   the task worktree and fix what it reports. It runs the tests (tox), the sdist
+   smoke test, and the type checks for Python 3 and Python 2.7.
+
+   `scripts/pre-push` runs the real `trash-put` and `trash-empty`, which would
+   empty the real trash of the user: point `XDG_DATA_HOME` to a temporary
+   directory first:
+
+       XDG_DATA_HOME="$(mktemp -d)" scripts/pre-push
+
+   Then commit on the task branch.
 3. Integrate into `master`:
 
        git rebase master                # in the task worktree
