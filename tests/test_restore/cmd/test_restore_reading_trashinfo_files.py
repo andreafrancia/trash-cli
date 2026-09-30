@@ -22,6 +22,7 @@ class TestRestoreReadingTrashinfoFiles:
                                 version='1.0',
                                 volumes=self.fs,
                                 volume_path_fs=self.fs,
+                                top_trash_dir_rules_reader=self.fs,
                                 logger=RecordingLogger(self.log_messages))
         self.home_trash = '/home/user/.local/share/Trash'
         self.volume_trash = '/volume/.Trash-123'

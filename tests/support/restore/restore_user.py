@@ -5,8 +5,6 @@ from typing import Dict, Optional
 from tests.support.run.cmd_result import CmdResult
 from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
 from tests.test_restore.support.recording_logger import RecordingLogger
-from trashcli.empty.top_trash_dir_rules_file_system_reader import \
-    RealTopTrashDirFs
 from trashcli.fslib.fs_operations import ListFilesInDir
 from trashcli.fstab.volumes import Volumes
 from trashcli.lib.my_input import HardCodedInput
@@ -15,6 +13,7 @@ from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.restore_fs import FileReaderFs, RestoreWriterFs, \
     RestoreReadFs
 from trashcli.restore.restore_logger import RestoreLogger
+from trashcli.trash_dirs_scanner import TopTrashDirRulesFs
 
 
 class RestoreUser:
@@ -29,7 +28,7 @@ class RestoreUser:
                  volumes,  # type: Volumes
                  volume_path_fs,  # type: VolumePathFs
                  logger,  # type: RestoreLogger
-                 top_trash_dir_rules_reader=None,
+                 top_trash_dir_rules_reader,  # type: TopTrashDirRulesFs
                  read_fs=None,  # type: Optional[RestoreReadFs]
                  ):
         self.environ = environ
@@ -41,8 +40,7 @@ class RestoreUser:
         self.version = version
         self.volumes = volumes
         self.volume_path_fs = volume_path_fs
-        self.top_trash_dir_rules_reader = \
-            top_trash_dir_rules_reader or RealTopTrashDirFs()
+        self.top_trash_dir_rules_reader = top_trash_dir_rules_reader
         self.logger = logger
 
     no_args = object()

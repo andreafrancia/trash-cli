@@ -22,6 +22,7 @@ class TestSearcher:
                                 volumes=self.fs,
                                 volume_path_fs=self.fs,
                                 read_fs=self.fs,
+                                top_trash_dir_rules_reader=self.fs,
                                 logger=RecordingLogger())
 
     def test_will_not_detect_trashed_file_in_dirs_other_than_cur_dir(self):
