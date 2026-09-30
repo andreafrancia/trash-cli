@@ -1,5 +1,6 @@
 from tests.support.dates import date_at
 from tests.support.restore.fake_path_fs import FakePathFs
+from tests.support.restore.restore_fixture import RestoreFixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 
@@ -10,7 +11,8 @@ HOME_TRASH = '/home/user/.local/share/Trash'
 class TestRestoreDistrustsUnsafeTrashDirs:
     def setup_method(self):
         self.fs = FakePathFs()
-        self.fs.add_trash_file(HOME + "/foo", HOME_TRASH,
+        self.fixture = RestoreFixture(self.fs)
+        self.fixture.add_trash_file(HOME + "/foo", HOME_TRASH,
                                date_at(2018, 1, 1), '')
         self.user = RestoreUser(environ={'HOME': HOME},
                                 uid=123,

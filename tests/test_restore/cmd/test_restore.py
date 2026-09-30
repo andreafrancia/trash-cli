@@ -3,6 +3,7 @@ import datetime
 from tests.support.asserts.assert_that import assert_that
 from tests.support.dates import date_at
 from tests.support.restore.fake_path_fs import FakePathFs
+from tests.support.restore.restore_fixture import RestoreFixture
 from tests.support.restore.has_been_restored_matcher import \
     has_been_restored, has_not_been_restored
 from tests.support.restore.restore_user import RestoreUser
@@ -12,6 +13,7 @@ from tests.test_restore.support.recording_logger import RecordingLogger
 class TestSearcher:
     def setup_method(self):
         self.fs = FakePathFs()
+        self.fixture = RestoreFixture(self.fs)
         self.user = RestoreUser(environ={'HOME': '/home/user'},
                                 uid=123,
                                 file_reader=self.fs,
@@ -27,10 +29,10 @@ class TestSearcher:
 
     def test_will_not_detect_trashed_file_in_dirs_other_than_cur_dir(self):
         self.fs.add_volume('/disk1')
-        self.fs.add_file('/disk1/.Trash-123/info/not_a_trashinfo')
-        self.fs.add_trash_file("/foo", '/home/user/.local/share/Trash',
+        self.fixture.add_file('/disk1/.Trash-123/info/not_a_trashinfo')
+        self.fixture.add_trash_file("/foo", '/home/user/.local/share/Trash',
                                date_at(2018, 1, 1), '')
-        self.fs.add_trash_file("/disk1/bar", '/disk1/.Trash-123',
+        self.fixture.add_trash_file("/disk1/bar", '/disk1/.Trash-123',
                                date_at(2018, 1, 1), '')
 
         res = self.run_restore([], from_dir='/home/user')
@@ -39,7 +41,7 @@ class TestSearcher:
                 "No files trashed from current dir ('/home/user')\n")
 
     def test_will_show_file_in_cur_dir(self):
-        self.fs.add_trash_file("/home/user/foo",
+        self.fixture.add_trash_file("/home/user/foo",
                                '/home/user/.local/share/Trash',
                                date_at(2018, 1, 1), '')
 
@@ -50,7 +52,7 @@ class TestSearcher:
                 'No files were restored\n')
 
     def test_actual_restore(self):
-        trashed_file = self.fs.make_trashed_file("/home/user/foo",
+        trashed_file = self.fixture.make_trashed_file("/home/user/foo",
                                                  '/home/user/.local/share/Trash',
                                                  date_at(2018, 1, 1),
                                                  "contents of foo\n")
@@ -94,6 +96,6 @@ class TestSearcher:
         return self.user.run_restore(args, reply, from_dir)
 
     def add_file_trashed_at(self, original_location, deletion_date):
-        self.fs.make_trashed_file(original_location,
+        self.fixture.make_trashed_file(original_location,
                                   '/home/user/.local/share/Trash',
                                   deletion_date, '')

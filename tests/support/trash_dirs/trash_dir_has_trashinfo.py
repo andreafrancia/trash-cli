@@ -1,42 +1,45 @@
 from typing import Optional
 
 from tests.support.restore.fake_path_fs import FakePathFs
+from tests.support.restore.restore_fixture import RestoreFixture
 
 
 class TrashDirHasTrashInfo:
     def __init__(self,
                  fs,  # type: FakePathFs
+                 fixture,  # type: RestoreFixture
                  home_trash,  # type: str
                  volume_trash,  # type: str
                  ):
         self.fs = fs
+        self.fixture = fixture
         self.home_trash = home_trash
         self.volume_trash = volume_trash
 
     def has_a_well_formed_trashinfo(self,
                                     basename,  # type: str
                                     ):
-        self.fs.add_file('{home_trash}/info/{basename}'
+        self.fixture.add_file('{home_trash}/info/{basename}'
                          .format(basename=basename,
                                  home_trash=self.home_trash),
                          b'[Trash Info]\n'
                          b'Path=name\n'
                          b'DeletionDate=2001-01-01T10:10:10\n')
-        self.fs.add_file('{home_trash}/files/info_path'
+        self.fixture.add_file('{home_trash}/files/info_path'
                          .format(home_trash=self.home_trash),
                          b'contents')
 
     def has_a_non_trashinfo(self,
                             basename,  # type: str
                             ):
-        self.fs.add_file('{home_trash}/info/{basename}'
+        self.fixture.add_file('{home_trash}/info/{basename}'
                          .format(basename=basename,
                                  home_trash=self.home_trash))
 
     def has_a_non_parseable_trashinfo(self,
                                       basename,  # type: str
                                       ):
-        self.fs.add_file('{home_trash}/info/{basename}'
+        self.fixture.add_file('{home_trash}/info/{basename}'
                          .format(basename=basename,
                                  home_trash=self.home_trash), b'')
 
@@ -54,13 +57,13 @@ class TrashDirHasTrashInfo:
                                content=None,  # type: Optional[str]
                                ):
         content = content if content is not None else ''
-        self.fs.add_file('{volume_path}/info/{name}.trashinfo'
+        self.fixture.add_file('{volume_path}/info/{name}.trashinfo'
                          .format(name=name, volume_path=self.volume_trash),
                          ('[Trash Info]\n'
                           'Path=%s\n'
                           'DeletionDate=2000-01-01T00:00:00\n' % path_line
                           ).encode('utf-8'))
-        self.fs.add_file('{volume_path}/files/{name}'
+        self.fixture.add_file('{volume_path}/files/{name}'
                          .format(name=name, volume_path=self.volume_trash),
                          content)
 
