@@ -1,13 +1,13 @@
 import os
 
 from tests.support.restore.a_trashed_file import ATrashedFile
-from tests.support.restore.fake_path_fs import FakePathFs
+from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.put.format_trash_info import format_trashinfo
 
 
 class RestoreFixture:
     def __init__(self,
-                 fs,  # type: FakePathFs
+                 fs,  # type: FakeFs
                  ):
         self.fs = fs
 
@@ -37,5 +37,5 @@ class RestoreFixture:
         self.add_trash_file(from_path, trash_dir, time, '')
 
     def add_file(self, path, content=b''):
-        self.fs.fake_fs.makedirs(os.path.dirname(path), 0o755)
-        self.fs.fake_fs.make_file(path, content)
+        self.fs.makedirs(os.path.dirname(path), 0o755)
+        self.fs.make_file(path, content)

@@ -2,7 +2,7 @@ import datetime
 
 from tests.support.asserts.assert_that import assert_that
 from tests.support.dates import date_at
-from tests.support.restore.fake_path_fs import FakePathFs
+from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.restore_fixture import RestoreFixture
 from tests.support.restore.has_been_restored_matcher import \
     has_been_restored, has_not_been_restored
@@ -12,7 +12,7 @@ from tests.test_restore.support.recording_logger import RecordingLogger
 
 class TestSearcher:
     def setup_method(self):
-        self.fs = FakePathFs()
+        self.fs = FakeFs()
         self.fixture = RestoreFixture(self.fs)
         self.user = RestoreUser(environ={'HOME': '/home/user'},
                                 uid=123,

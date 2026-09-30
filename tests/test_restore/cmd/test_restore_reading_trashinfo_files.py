@@ -1,4 +1,4 @@
-from tests.support.restore.fake_path_fs import FakePathFs
+from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.restore_fixture import RestoreFixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.support.trash_dirs.trash_dir_has_trashinfo import \
@@ -12,7 +12,7 @@ from tests.test_restore.support.recording_logger import RecordingLogger
 # c4a2c055 for their documented purpose), now rewritten against the command.
 class TestRestoreReadingTrashinfoFiles:
     def setup_method(self):
-        self.fs = FakePathFs()
+        self.fs = FakeFs()
         self.fixture = RestoreFixture(self.fs)
         self.log_messages = []
         self.user = RestoreUser(environ={'HOME': '/home/user'},

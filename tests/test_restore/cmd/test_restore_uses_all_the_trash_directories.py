@@ -1,5 +1,5 @@
 from tests.support.put.dummy_clock import jan_1st_2024
-from tests.support.restore.fake_path_fs import FakePathFs
+from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.restore_fixture import RestoreFixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
@@ -12,7 +12,7 @@ class TestRestoreUsesAllTheTrashDirectories:
     #   - volume trash dirs (method 1)
     #   - volume trash dirs (method 2)
     def setup_method(self):
-        self.fs = FakePathFs()
+        self.fs = FakeFs()
         self.fixture = RestoreFixture(self.fs)
         self.fs.add_volume('/')
         self.fs.add_volume('/mnt')

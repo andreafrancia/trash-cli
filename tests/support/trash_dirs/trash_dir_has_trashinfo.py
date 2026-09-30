@@ -1,12 +1,12 @@
 from typing import Optional
 
-from tests.support.restore.fake_path_fs import FakePathFs
+from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.restore_fixture import RestoreFixture
 
 
 class TrashDirHasTrashInfo:
     def __init__(self,
-                 fs,  # type: FakePathFs
+                 fs,  # type: FakeFs
                  fixture,  # type: RestoreFixture
                  home_trash,  # type: str
                  volume_trash,  # type: str
@@ -46,7 +46,7 @@ class TrashDirHasTrashInfo:
     def has_a_unreadable_trashinfo(self,
                                    basename,  # type: str
                                    ):
-        self.fs.fake_fs.makedirs('{home_trash}/info/{basename}'
+        self.fs.makedirs('{home_trash}/info/{basename}'
                                  .format(basename=basename,
                                          home_trash=self.home_trash),
                                  0o755)

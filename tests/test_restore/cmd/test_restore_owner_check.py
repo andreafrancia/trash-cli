@@ -1,5 +1,5 @@
 from tests.support.dates import date_at
-from tests.support.restore.fake_path_fs import FakePathFs
+from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.restore_fixture import RestoreFixture
 from tests.test_restore.cmd.test_restore_distrusts_unsafe_trash_dirs import (
         HOME, HOME_TRASH)
@@ -14,7 +14,7 @@ class TestRestoreOwnerCheck:
     def setup_method(self):
         self.volumes = FakeVolumes2("volume_of(%s)", [])
         self.logger = RecordingLogger()
-        self.fs = FakePathFs()
+        self.fs = FakeFs()
         self.fixture = RestoreFixture(self.fs)
         self.fixture.add_trash_file(HOME + "/foo", HOME_TRASH,
                                     date_at(2018, 1, 1), '')
@@ -30,6 +30,6 @@ class TestRestoreOwnerCheck:
 
     def test_a_world_writable_dir_is_skipped_regardless_of_owner(self):
         # the whole world-writable dir is skipped; ownership is not consulted
-        self.fs.fake_fs.chmod(HOME_TRASH + '/info', 0o777)
+        self.fs.chmod(HOME_TRASH + '/info', 0o777)
 
         assert self.home_trash_dirs() == []

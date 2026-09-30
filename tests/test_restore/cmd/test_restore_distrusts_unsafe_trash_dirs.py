@@ -1,5 +1,5 @@
 from tests.support.dates import date_at
-from tests.support.restore.fake_path_fs import FakePathFs
+from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.restore_fixture import RestoreFixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
@@ -10,7 +10,7 @@ HOME_TRASH = '/home/user/.local/share/Trash'
 
 class TestRestoreDistrustsUnsafeTrashDirs:
     def setup_method(self):
-        self.fs = FakePathFs()
+        self.fs = FakeFs()
         self.fixture = RestoreFixture(self.fs)
         self.fixture.add_trash_file(HOME + "/foo", HOME_TRASH,
                                date_at(2018, 1, 1), '')
@@ -31,8 +31,8 @@ class TestRestoreDistrustsUnsafeTrashDirs:
 
     def make_symlink_to_the_content_of(self, path):
         # the content of path is moved elsewhere and path becomes a symlink to it
-        self.fs.fake_fs.move(path, '/elsewhere')
-        self.fs.fake_fs.symlink('/elsewhere', path)
+        self.fs.move(path, '/elsewhere')
+        self.fs.symlink('/elsewhere', path)
 
     def test_a_normal_home_trash_is_kept(self):
         assert HOME + "/foo" in self.restore_output()
@@ -44,13 +44,13 @@ class TestRestoreDistrustsUnsafeTrashDirs:
                 "No files trashed from current dir ('%s')\n" % HOME)
 
     def test_a_world_writable_files_dir_is_skipped(self):
-        self.fs.fake_fs.chmod(HOME_TRASH + '/files', 0o777)
+        self.fs.chmod(HOME_TRASH + '/files', 0o777)
 
         assert (self.restore_output() ==
                 "No files trashed from current dir ('%s')\n" % HOME)
 
     def test_the_reason_a_dir_is_skipped_is_reported(self):
-        self.fs.fake_fs.chmod(HOME_TRASH + '/info', 0o777)
+        self.fs.chmod(HOME_TRASH + '/info', 0o777)
 
         self.user.run_restore([], from_dir=HOME)
 

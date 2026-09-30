@@ -1,7 +1,7 @@
 import pytest
 from tests.support.py2mock import Mock, call
 
-from tests.support.restore.fake_path_fs import FakePathFs
+from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.restore.trash_directories import TrashDirectories2
 
 
@@ -9,7 +9,7 @@ from trashcli.restore.trash_directories import TrashDirectories2
 class TestTrashDirectories2:
     def setup_method(self):
         self.trash_directories = Mock(spec=['all_trash_directories'])
-        self.volumes = FakePathFs()
+        self.volumes = FakeFs()
         self.volumes.add_volume('/')
         self.volumes.add_volume('/mnt')
         self.trash_directories2 = TrashDirectories2(
