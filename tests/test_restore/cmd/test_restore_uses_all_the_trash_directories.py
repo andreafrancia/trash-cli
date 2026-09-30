@@ -1,7 +1,7 @@
 from tests.support.put.dummy_clock import jan_1st_2024
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from tests.support.trash_dirs.trash_dir_has_trashinfo import \
-    TrashDirHasTrashInfo
+from tests.support.trash_dirs.given_trash import \
+    GivenTrash
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 
@@ -14,7 +14,7 @@ class TestRestoreUsesAllTheTrashDirectories:
     #   - volume trash dirs (method 2)
     def setup_method(self):
         self.fs = FakeFs()
-        self.trash = TrashDirHasTrashInfo(self.fs)
+        self.trash = GivenTrash(self.fs)
         self.fs.add_volume('/')
         self.fs.add_volume('/mnt')
         self.log_messages = []

@@ -2,8 +2,8 @@ import datetime
 
 from tests.support.dates import jan_11_2001
 from tests.support.put.fake_fs.failing_fake_fs import FailOnMoveFakeFs
-from tests.support.trash_dirs.trash_dir_has_trashinfo import \
-    TrashDirHasTrashInfo
+from tests.support.trash_dirs.given_trash import \
+    GivenTrash
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 
@@ -12,7 +12,7 @@ a_date = jan_11_2001()
 class TestRestore2:
     def setup_method(self):
         self.fs = FailOnMoveFakeFs()
-        self.trash = TrashDirHasTrashInfo(self.fs)
+        self.trash = GivenTrash(self.fs)
         self.user = RestoreUser(
             environ={'XDG_DATA_HOME': '/data_home'},
             uid=1000,

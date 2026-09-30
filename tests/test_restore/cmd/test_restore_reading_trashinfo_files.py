@@ -1,7 +1,7 @@
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.restore_user import RestoreUser
-from tests.support.trash_dirs.trash_dir_has_trashinfo import \
-    TrashDirHasTrashInfo
+from tests.support.trash_dirs.given_trash import \
+    GivenTrash
 from tests.test_restore.support.recording_logger import RecordingLogger
 
 
@@ -26,7 +26,7 @@ class TestRestoreReadingTrashinfoFiles:
                                 logger=RecordingLogger(self.log_messages))
         self.home_trash = '/home/user/.local/share/Trash'
         self.volume_trash = '/volume/.Trash-123'
-        self.trash = TrashDirHasTrashInfo(self.fs,
+        self.trash = GivenTrash(self.fs,
                                           home_trash=self.home_trash,
                                           volume_trash=self.volume_trash)
 

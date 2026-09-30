@@ -7,7 +7,7 @@ from tests.support.restore.a_trashed_file import ATrashedFile
 from trashcli.put.format_trash_info import format_trashinfo
 
 
-class TrashDirHasTrashInfo:
+class GivenTrash:
     def __init__(self,
                  fs,  # type: FakeFs
                  home_trash=None,  # type: Optional[str]

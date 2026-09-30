@@ -1,7 +1,7 @@
 from tests.support.dates import date_at
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from tests.support.trash_dirs.trash_dir_has_trashinfo import \
-    TrashDirHasTrashInfo
+from tests.support.trash_dirs.given_trash import \
+    GivenTrash
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 
@@ -14,7 +14,7 @@ PRIVATE_TRASH = '/.Trash-123'
 class TestRestoreSkipsUntrustedSharedDir:
     def setup_method(self):
         self.fs = FakeFs()
-        self.trash = TrashDirHasTrashInfo(self.fs)
+        self.trash = GivenTrash(self.fs)
         self.fs.add_volume('/')
         self.trash.add_trash_file(HOME + "/from-home", HOME_TRASH,
                                date_at(2018, 1, 1), '')
