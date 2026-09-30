@@ -1,13 +1,11 @@
-import unittest
-
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.a_trashed_file import a_trashed_file
 from tests.support.restore.has_been_restored_matcher import \
     has_been_restored
 
 
-class TestHasBeenRestored(unittest.TestCase):
-    def setUp(self):
+class TestHasBeenRestored:
+    def setup_method(self):
         self.fs = FakeFs()
         self.trashed_file = a_trashed_file(trashed_from='/original_location',
                                            info_file='/info_path.trashinfo',
