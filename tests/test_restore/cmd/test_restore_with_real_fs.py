@@ -1,5 +1,4 @@
 import os
-import unittest
 
 import pytest
 
