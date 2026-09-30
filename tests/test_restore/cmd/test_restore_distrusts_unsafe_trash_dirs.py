@@ -7,70 +7,51 @@ HOME = '/home/user'
 HOME_TRASH = '/home/user/.local/share/Trash'
 
 
-class FakeReader:
-    # a reader that never touches the disk; unlisted paths are trusted
-    def __init__(self, symlinks=(), world_writable=()):
-        self.symlinks = set(symlinks)
-        self.world_writable = set(world_writable)
-
-    def exists(self, path):
-        return True
-
-    def is_sticky_dir(self, path):
-        return True
-
-    def is_symlink(self, path):
-        return path in self.symlinks
-
-    def is_world_writable(self, path):
-        return path in self.world_writable
-
-
 class TestRestoreDistrustsUnsafeTrashDirs:
     def setup_method(self):
         self.fs = FakePathFs()
         self.fs.add_trash_file(HOME + "/foo", HOME_TRASH,
                                date_at(2018, 1, 1), '')
+        self.user = RestoreUser(environ={'HOME': HOME},
+                                uid=123,
+                                file_reader=self.fs,
+                                path_read_fs=self.fs,
+                                write_fs=self.fs,
+                                listing_fs=self.fs,
+                                version='1.0',
+                                volumes=self.fs,
+                                volume_path_fs=self.fs,
+                                top_trash_dir_rules_reader=self.fs,
+                                logger=RecordingLogger())
 
-    def make_user(self, reader):
-        return RestoreUser(environ={'HOME': HOME},
-                           uid=123,
-                           file_reader=self.fs,
-                           path_read_fs=self.fs,
-                           write_fs=self.fs,
-                           listing_fs=self.fs,
-                           version='1.0',
-                           volumes=self.fs,
-                           volume_path_fs=self.fs,
-                           top_trash_dir_rules_reader=reader,
-                           logger=RecordingLogger())
+    def restore_output(self):
+        return self.user.run_restore([], from_dir=HOME).output()
 
-    def restore_output(self, reader):
-        user = self.make_user(reader)
-        res = user.run_restore([], from_dir=HOME)
-        return res.output()
+    def make_symlink_to_the_content_of(self, path):
+        # the content of path is moved elsewhere and path becomes a symlink to it
+        self.fs.fake_fs.move(path, '/elsewhere')
+        self.fs.fake_fs.symlink('/elsewhere', path)
 
     def test_a_normal_home_trash_is_kept(self):
-        assert HOME + "/foo" in self.restore_output(FakeReader())
+        assert HOME + "/foo" in self.restore_output()
 
     def test_a_symlinked_info_dir_is_skipped(self):
-        reader = FakeReader(symlinks=[HOME_TRASH + '/info'])
+        self.make_symlink_to_the_content_of(HOME_TRASH + '/info')
 
-        assert (self.restore_output(reader) ==
+        assert (self.restore_output() ==
                 "No files trashed from current dir ('%s')\n" % HOME)
 
     def test_a_world_writable_files_dir_is_skipped(self):
-        reader = FakeReader(world_writable=[HOME_TRASH + '/files'])
+        self.fs.fake_fs.chmod(HOME_TRASH + '/files', 0o777)
 
-        assert (self.restore_output(reader) ==
+        assert (self.restore_output() ==
                 "No files trashed from current dir ('%s')\n" % HOME)
 
     def test_the_reason_a_dir_is_skipped_is_reported(self):
-        reader = FakeReader(world_writable=[HOME_TRASH + '/info'])
-        user = self.make_user(reader)
+        self.fs.fake_fs.chmod(HOME_TRASH + '/info', 0o777)
 
-        user.run_restore([], from_dir=HOME)
+        self.user.run_restore([], from_dir=HOME)
 
-        assert user.logger.captured == [
+        assert self.user.logger.captured == [
             "WARN: TrashDir skipped because its info dir is world writable: %s"
             % HOME_TRASH]
