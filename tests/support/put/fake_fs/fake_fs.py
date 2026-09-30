@@ -76,9 +76,6 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
         directory = self.get_entity_at(dirname)
         directory.add_dir(basename, 0o755, path)
 
-    def mkdir_p(self, path):
-        self.makedirs(path, 0o755)
-
     def get_entity_at(self, path):  # type: (str) -> Ent
         return self._lookup(path, follow_last_link=True).entity
 
