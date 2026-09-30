@@ -4,7 +4,7 @@ import pytest
 
 from tests.support.dirs.my_path import MyPath
 from trashcli.put.fs.size_counter import SizeCounter
-from trashcli.put.fs.real_fs import RealFs
+from trashcli.fslib.real.real_fs import RealFs
 
 
 @pytest.mark.slow

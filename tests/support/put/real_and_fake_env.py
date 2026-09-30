@@ -4,7 +4,7 @@ import pytest
 
 from tests.support.dirs.my_path import MyPath
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from trashcli.put.fs.real_fs import RealFs
+from trashcli.fslib.real.real_fs import RealFs
 
 
 class Env:

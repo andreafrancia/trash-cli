@@ -2,7 +2,7 @@ from typing import List
 
 from trashcli.lib.environ import Environ
 from trashcli.put.context import Context
-from trashcli.put.fs.fs import Fs
+from trashcli.fslib.protocols.fs import Fs
 from trashcli.put.my_logger import LogData
 from trashcli.put.parser import ExitWithCode
 from trashcli.put.parser import Parser

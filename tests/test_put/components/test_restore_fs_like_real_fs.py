@@ -1,7 +1,7 @@
 import os
 
 from tests.support.put.real_and_fake_env import env, real_and_fake
-from trashcli.put.fs.real_fs import RealFs
+from trashcli.fslib.real.real_fs import RealFs
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.restore.fs.protocols.restore_fs import RestoreFs
 

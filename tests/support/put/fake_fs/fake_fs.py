@@ -17,8 +17,8 @@ from trashcli.fslib.protocols.is_sticky_dir import IsStickyDir
 from trashcli.fslib.protocols.is_sym_link import IsSymLink
 from trashcli.fslib.protocols.path_exists import PathExists
 from trashcli.put.check_cast import check_cast
-from trashcli.put.fs.fs import Fs
-from trashcli.put.fs.fs import list_all
+from trashcli.fslib.protocols.fs import Fs
+from trashcli.fslib.protocols.fs import list_all
 from trashcli.restore.fs.protocols.restore_fs import RestoreFs
 
 

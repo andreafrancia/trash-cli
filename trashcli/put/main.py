@@ -9,8 +9,8 @@ from trashcli.put.clock import RealClock
 from trashcli.put.core.int_generator import IntGenerator
 from trashcli.put.describer import Describer
 from trashcli.put.file_trasher import FileTrasher
-from trashcli.put.fs.fs import Fs
-from trashcli.put.fs.real_fs import RealFs
+from trashcli.fslib.protocols.fs import Fs
+from trashcli.fslib.real.real_fs import RealFs
 from trashcli.put.janitor import Janitor
 from trashcli.put.my_logger import LoggerBackend
 from trashcli.put.my_logger import StreamBackend

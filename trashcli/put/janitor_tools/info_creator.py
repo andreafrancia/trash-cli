@@ -10,7 +10,7 @@ from trashcli.put.core.either import Right
 from trashcli.put.core.failure_reason import FailureReason
 from trashcli.put.core.failure_reason import LogContext
 from trashcli.put.format_trash_info import format_trashinfo
-from trashcli.put.fs.fs import Fs
+from trashcli.fslib.protocols.fs import Fs
 from trashcli.put.janitor_tools.info_file_persister import TrashinfoData
 from trashcli.put.original_location import OriginalLocation
 

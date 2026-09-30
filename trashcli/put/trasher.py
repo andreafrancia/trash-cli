@@ -5,7 +5,7 @@ from trashcli.put.context import SingleTrasher
 from trashcli.put.core.trash_result import TrashResult
 from trashcli.put.core.trashee import should_skipped_by_specs
 from trashcli.put.file_trasher import FileTrasher
-from trashcli.put.fs.fs import Fs
+from trashcli.fslib.protocols.fs import Fs
 from trashcli.put.my_logger import MyLogger
 from trashcli.put.reporting.trash_put_reporter import TrashPutReporter
 from trashcli.put.user import User

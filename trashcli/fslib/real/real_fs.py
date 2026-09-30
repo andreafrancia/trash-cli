@@ -13,7 +13,7 @@ from trashcli.fslib.real.real_mk_dirs import RealMkDirs
 from trashcli.fstab.mount_points_listing import RealMountPointListFs
 from trashcli.fstab.real_volume_of import RealVolumeOf
 from trashcli.put.fs.file_stat import Stat
-from trashcli.put.fs.fs import Fs
+from trashcli.fslib.protocols.fs import Fs
 from trashcli.restore.fs.protocols.restore_fs import RestoreFs
 from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
 from trashcli.restore.fs.real.real_read_cwd_fs import RealReadCwdFs

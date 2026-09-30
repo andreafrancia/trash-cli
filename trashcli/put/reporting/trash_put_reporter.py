@@ -3,7 +3,7 @@ import os
 from typing import List
 from typing import Tuple
 
-from trashcli.put.fs.fs import Fs
+from trashcli.fslib.protocols.fs import Fs
 
 from trashcli.lib.environ import Environ
 from trashcli.lib.exit_codes import EX_IOERR

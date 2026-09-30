@@ -1,6 +1,6 @@
 from tests.support.capture_error import capture_error
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from trashcli.put.fs.real_fs import RealFs
+from trashcli.fslib.real.real_fs import RealFs
 from tests.support.dirs.temp_dir import temp_dir
 
 temp_dir = temp_dir

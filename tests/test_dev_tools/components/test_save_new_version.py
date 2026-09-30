@@ -1,7 +1,7 @@
 from tests.support.dirs.my_path import MyPath
 from tests.support.files import make_file, read_file
 from tests.support.tools.version_saver import VersionSaver
-from trashcli.put.fs.real_fs import RealFs
+from trashcli.fslib.real.real_fs import RealFs
 
 
 class TestSaveNewVersion:

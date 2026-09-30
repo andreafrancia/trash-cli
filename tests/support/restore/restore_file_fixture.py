@@ -1,7 +1,7 @@
 import os
 
 from tests.support.fakes.fake_trash_dir import trashinfo_content_default_date
-from trashcli.put.fs.fs import Fs
+from trashcli.fslib.protocols.fs import Fs
 
 
 class RestoreFileFixture:

@@ -10,7 +10,7 @@ from typing import Optional
 from typing import Union
 
 from trashcli.put.core.mode import Mode
-from trashcli.put.fs.fs import Fs
+from trashcli.fslib.protocols.fs import Fs
 from trashcli.shell_completion import TRASH_DIRS
 from trashcli.shell_completion import TRASH_FILES
 from trashcli.shell_completion import add_argument_to

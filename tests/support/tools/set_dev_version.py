@@ -8,7 +8,7 @@ from tests.support.tools.adapters.real_cal import RealCal
 from tests.support.tools.bump_cmd import trash_py_file
 from tests.support.tools.version_from_date import dev_version_from_date
 from tests.support.tools.version_saver import VersionSaver
-from trashcli.put.fs.real_fs import RealFs
+from trashcli.fslib.real.real_fs import RealFs
 
 
 def main():

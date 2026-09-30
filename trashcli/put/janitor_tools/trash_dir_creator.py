@@ -4,7 +4,7 @@ from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.either import Either, Right, Left
 from trashcli.put.core.failure_reason import FailureReason, LogContext
 from trashcli.put.dir_maker import DirMaker
-from trashcli.put.fs.fs import Fs
+from trashcli.fslib.protocols.fs import Fs
 
 
 class TrashDirCannotBeCreated(

@@ -2,7 +2,7 @@ import unittest
 
 from trashcli.lib.exit_codes import BAD_OPTION
 from tests.support.dirs.my_path import MyPath
-from trashcli.put.fs.real_fs import RealFs
+from trashcli.fslib.real.real_fs import RealFs
 from trashcli.put.parser import Parser, ExitWithCode, Trash
 
 

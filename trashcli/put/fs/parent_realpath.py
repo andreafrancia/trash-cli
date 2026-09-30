@@ -1,6 +1,6 @@
 import os
 
-from trashcli.put.fs.fs import RealPathFs
+from trashcli.fslib.protocols.fs import RealPathFs
 
 
 class ParentRealpathFs:

@@ -1,6 +1,6 @@
 import os
 
-from trashcli.put.fs.real_fs import RealFs
+from trashcli.fslib.real.real_fs import RealFs
 from trashcli.put.octal import octal
 from tests.support.dirs.temp_dir import temp_dir
 

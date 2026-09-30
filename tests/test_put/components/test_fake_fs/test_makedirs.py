@@ -1,6 +1,6 @@
 from tests.support.capture_error import capture_error
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from trashcli.put.fs.fs import list_all
+from trashcli.fslib.protocols.fs import list_all
 
 
 class TestMakeDirs:

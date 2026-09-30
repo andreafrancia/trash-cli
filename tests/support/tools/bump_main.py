@@ -6,7 +6,7 @@ import sys
 from tests.support.project_root import project_root
 from tests.support.tools.adapters.real_cal import RealCal
 from tests.support.tools.bump_cmd import BumpCmd
-from trashcli.put.fs.real_fs import RealFs
+from trashcli.fslib.real.real_fs import RealFs
 
 
 def main():

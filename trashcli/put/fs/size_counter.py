@@ -2,7 +2,7 @@ import os
 
 from six.moves import map as imap
 
-from trashcli.put.fs.fs import Fs
+from trashcli.fslib.protocols.fs import Fs
 
 
 class SizeCounter:

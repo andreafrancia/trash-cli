@@ -6,7 +6,7 @@ import pytest
 from six import StringIO
 
 from tests.support.files import read_file
-from trashcli.put.fs.real_fs import RealFs
+from trashcli.fslib.real.real_fs import RealFs
 from trashcli.put.janitor_tools.info_file_persister import InfoFilePersister
 from trashcli.put.janitor_tools.info_file_persister import TrashinfoData
 from trashcli.put.my_logger import LogData

@@ -1,5 +1,5 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
-from trashcli.put.fs.fs import Fs
+from trashcli.fslib.protocols.fs import Fs
 from trashcli.put.context import Context
 from trashcli.put.core.trash_result import TrashResult
 from trashcli.put.core.trashee import Trashee

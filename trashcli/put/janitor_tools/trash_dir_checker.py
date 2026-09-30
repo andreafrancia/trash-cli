@@ -8,7 +8,7 @@ from trashcli.put.core.either import Right
 from trashcli.put.core.failure_reason import FailureReason
 from trashcli.put.core.failure_reason import LogContext
 from trashcli.put.core.trashee import Trashee
-from trashcli.put.fs.fs import Fs
+from trashcli.fslib.protocols.fs import Fs
 from trashcli.put.gate import Gate
 from trashcli.put.trash_dir_volume_reader import TrashDirVolumeReader
 

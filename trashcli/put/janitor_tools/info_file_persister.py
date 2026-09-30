@@ -5,7 +5,7 @@ from typing import NamedTuple, Iterator
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.put.core.either import Right, Left, Either
 from trashcli.put.core.failure_reason import FailureReason, LogContext
-from trashcli.put.fs.fs import Fs
+from trashcli.fslib.protocols.fs import Fs
 from trashcli.put.janitor_tools.permanent_write_errnos import HARD_ERRNOS
 from trashcli.put.jobs import JobStatus, NeedsMoreAttempts, Succeeded, \
     JobExecutor
