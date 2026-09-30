@@ -1,5 +1,4 @@
 import os
-import unittest
 
 import pytest
 
@@ -18,8 +17,8 @@ from trashcli.restore.real_restore_fs import RealFileReaderFs, \
 
 
 @pytest.mark.slow
-class TestRestoreOverwriteGuard(unittest.TestCase):
-    def setUp(self):
+class TestRestoreOverwriteGuard:
+    def setup_method(self):
         self.tmp_dir = MyPath.make_temp_dir()
         self.fixture = RestoreFileFixture(self.tmp_dir / 'XDG_DATA_HOME')
         self.cwd = self.tmp_dir / 'cwd'
@@ -44,8 +43,7 @@ class TestRestoreOverwriteGuard(unittest.TestCase):
 
         res = self.user.run_restore(reply='0', from_dir=self.cwd)
 
-        self.assertEqual('Refusing to overwrite existing file "foo".\n',
-                         res.stderr)
+        assert res.stderr == 'Refusing to overwrite existing file "foo".\n'
 
     def test_it_refuses_to_restore_onto_a_directory_even_with_overwrite(self):
         self.fixture.having_a_trashed_file(self.cwd / 'foo')
@@ -54,10 +52,9 @@ class TestRestoreOverwriteGuard(unittest.TestCase):
         res = self.user.run_restore(args=['trash-restore', '--overwrite'],
                                     reply='0', from_dir=self.cwd)
 
-        self.assertEqual('Refusing to overwrite existing file "foo".\n',
-                         res.stderr)
+        assert res.stderr == 'Refusing to overwrite existing file "foo".\n'
 
-    def tearDown(self):
+    def teardown_method(self):
         self.tmp_dir.clean_up()
 
     def test_batch_keeps_conflicting_entry_and_restores_the_next_file(self):
@@ -71,14 +68,14 @@ class TestRestoreOverwriteGuard(unittest.TestCase):
         res = self.user.run_restore(args=['trash-restore', '--sort=path'],
                                     reply='0-1', from_dir=self.cwd)
 
-        self.assertEqual(1, res.exit_code)
-        self.assertEqual('Refusing to overwrite existing file "a".\n', res.stderr)
+        assert res.exit_code == 1
+        assert res.stderr == 'Refusing to overwrite existing file "a".\n'
         with open(self.cwd / 'a') as restored:
-            self.assertEqual('existing a', restored.read())
+            assert restored.read() == 'existing a'
         with open(self.cwd / 'b') as restored:
-            self.assertEqual('trashed b', restored.read())
+            assert restored.read() == 'trashed b'
         with open(trash / 'files/a') as remaining:
-            self.assertEqual('trashed a', remaining.read())
-        self.assertTrue(os.path.exists(trash / 'info/a.trashinfo'))
-        self.assertFalse(os.path.exists(trash / 'files/b'))
-        self.assertFalse(os.path.exists(trash / 'info/b.trashinfo'))
+            assert remaining.read() == 'trashed a'
+        assert os.path.exists(trash / 'info/a.trashinfo')
+        assert not os.path.exists(trash / 'files/b')
+        assert not os.path.exists(trash / 'info/b.trashinfo')
