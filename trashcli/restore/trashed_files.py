@@ -8,7 +8,7 @@ from trashcli.parse_trashinfo.parse_deletion_date import parse_deletion_date
 from trashcli.parse_trashinfo.parse_original_location import \
     OriginalLocationParser
 from trashcli.put.fs.volume_path_fs import VolumePathFs
-from trashcli.restore.restore_fs import FileReaderFs
+from trashcli.restore.fs.protocols.file_reader_fs import FileReaderFs
 from trashcli.restore.info_dir_searcher import InfoDirSearcher
 from trashcli.restore.restore_logger import RestoreLogger
 from trashcli.restore.trashed_file import TrashedFile

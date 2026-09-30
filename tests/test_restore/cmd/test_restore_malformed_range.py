@@ -12,8 +12,10 @@ from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.put.fs.real_fs import RealFs
 from trashcli.put.fs.real_volume_path_fs import RealVolumePathFs
-from trashcli.restore.real_restore_fs import RealFileReaderFs, \
-    RealPathReaderFs, RealRestoreWriterFs, RealRestoreReadFs
+from trashcli.restore.fs.real.real_file_reader_fs import RealFileReaderFs
+from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
+from trashcli.restore.fs.real.real_restore_writer_fs import RealRestoreWriterFs
+from trashcli.restore.fs.real.real_restore_read_fs import RealRestoreReadFs
 
 
 @pytest.mark.slow

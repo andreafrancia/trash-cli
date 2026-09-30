@@ -4,7 +4,7 @@ from typing import Iterable
 
 from tests.support.fakes.fake_volume_path_fs import FakeVolumePathFs
 from trashcli.fslib.protocols.list_files_in_dir import ListFilesInDir
-from trashcli.restore.restore_fs import FileReaderFs
+from trashcli.restore.fs.protocols.file_reader_fs import FileReaderFs
 
 
 class RestoreFakeFs(FileReaderFs, ListFilesInDir, FakeVolumePathFs):

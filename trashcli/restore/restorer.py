@@ -1,7 +1,7 @@
 import os
 
-from trashcli.restore.restore_fs import PathReaderFs, \
-    RestoreWriterFs
+from trashcli.restore.fs.protocols.path_reader_fs import PathReaderFs
+from trashcli.restore.fs.protocols.restore_writer_fs import RestoreWriterFs
 from trashcli.restore.trashed_file import TrashedFile
 
 

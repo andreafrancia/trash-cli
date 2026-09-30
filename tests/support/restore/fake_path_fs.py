@@ -6,7 +6,7 @@ from tests.support.put.fake_fs.failing_fake_fs import FailingFakeFs, \
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.fslib.protocols.path_exists import PathExists
 from trashcli.fstab.volumes import FakeVolumes
-from trashcli.restore.restore_fs import RestoreFs
+from trashcli.restore.fs.protocols.restore_fs import RestoreFs
 
 
 class FakePathFs(RestoreFs, PathExists, FakeVolumePathFs):
