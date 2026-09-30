@@ -5,7 +5,7 @@ from typing import Any, Generator, TypeVar, Type
 
 from six import StringIO
 
-from trashcli.fslib.protocols.fs import list_all
+from trashcli.fslib.list_all import list_all
 from trashcli.fslib.real.real_fs import RealFs
 
 Self = TypeVar('Self', bound='MyPath')

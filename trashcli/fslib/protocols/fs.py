@@ -1,6 +1,5 @@
 import os
 from abc import abstractmethod
-from typing import Iterable
 
 from trashcli.compat import Protocol
 from trashcli.fslib.protocols.real_path_fs import RealPathFs
@@ -90,13 +89,3 @@ class Fs(RealPathFs, VolumeOf, Protocol):
 
     def list_sorted(self, path):
         return sorted(self.listdir(path))
-
-
-
-def list_all(fs, path):  # type: (Fs, str) -> Iterable[str]
-    result = fs.walk_no_follow(path)
-    for top, dirs, non_dirs in result:
-        for d in dirs:
-            yield os.path.join(top, d)
-        for f in non_dirs:
-            yield os.path.join(top, f)

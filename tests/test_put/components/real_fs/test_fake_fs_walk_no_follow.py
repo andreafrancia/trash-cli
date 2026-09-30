@@ -1,5 +1,5 @@
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from trashcli.fslib.protocols.fs import list_all
+from trashcli.fslib.list_all import list_all
 
 
 class TestWalkNoFollow:
