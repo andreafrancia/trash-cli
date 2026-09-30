@@ -30,7 +30,7 @@ class GivenTrash:
         self.add_file(info_path, content)
         self.add_file(backup_copy_path, original_file_content.encode('utf-8'))
 
-    def add_trash_empty_file(self, from_path, trash_dir, time):
+    def has_trashed_empty_file(self, from_path, trash_dir, time):
         self.has_trashed_file(from_path, trash_dir, time, '')
 
     def has_trashed_file2(self, from_path, trash_dir, time,
