@@ -75,6 +75,26 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
                 path,  # type: str
                 follow_last_link,  # type: bool
                 ):  # type: (...) -> INode
+        """Finds the INode that path refers to, walking down from the root.
+
+        This is the path resolution of the fake file system, the counterpart
+        of what the kernel does for stat() and lstat().
+
+        Symbolic links met in the intermediate components are always
+        followed. The last component is followed only if follow_last_link is
+        True (stat() semantic: exists, isdir, isfile, read, ...); otherwise
+        the INode of the link itself is returned (lstat() semantic: islink,
+        lexists, readlink, remove_file, ...).
+
+        To follow a link the path is rewritten, replacing the components up to
+        and including the link with its target (resolved against the link's
+        directory if relative), and the walk restarts from the root. After
+        MAX_SYMLINKS_TO_FOLLOW rewrites (e.g. a link pointing to itself) it
+        gives up, like ELOOP.
+
+        Raises MyFileNotFoundError if a component does not exist, which
+        includes a dangling link that has to be followed.
+        """
         path = self._join_cwd(path)
         for _ in range(MAX_SYMLINKS_TO_FOLLOW):
             components = self.components_for(path)
