@@ -104,7 +104,7 @@ class RealFs(RealVolumeOf, Fs, RestoreFs):
     def listdir(self, path):
         return os.listdir(path)
 
-    def read(self, path):
+    def read_file(self, path):
         return RealReadFile().read_file(path)
 
     def write_file(self, path, content):
@@ -112,9 +112,6 @@ class RealFs(RealVolumeOf, Fs, RestoreFs):
 
     def list_files_in_dir(self, path):  # type: (str) -> Iterable[str]
         return RealListFilesInDir().list_files_in_dir(path)
-
-    def read_file(self, path):  # type: (str) -> str
-        return RealReadFile().read_file(path)
 
     def path_exists(self, path):  # type: (str) -> bool
         return RealPathReaderFs().path_exists(path)

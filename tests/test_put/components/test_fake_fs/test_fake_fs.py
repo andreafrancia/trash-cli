@@ -36,7 +36,7 @@ class TestFakeFs(unittest.TestCase):
         self.fs.mkdir("/foo/bar")
         self.fs.atomic_write("/foo/bar/baz", "content")
 
-        result = self.fs.read("/foo/bar/baz")
+        result = self.fs.read_file("/foo/bar/baz")
 
         assert result == "content"
 

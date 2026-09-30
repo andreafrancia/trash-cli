@@ -30,7 +30,7 @@ class MyPath(str):
 
     def read(self,  # type: Self
              path):
-        return self.fs.read(self / path)
+        return self.fs.read_file(self / path)
 
     def __div__(self,  # type: Self
                 other_path):

@@ -49,7 +49,7 @@ class FailOnMoveFakeFs(FakeFs):
         if src in self._fail_move_on_paths:
             raise OSError("move failed")
         if src == self._fail_move_leaving_copy_on_path:
-            self.make_file(dest, self.read(src))
+            self.make_file(dest, self.read_file(src))
             raise OSError(errno.EACCES, os.strerror(errno.EACCES), src)
         return super(FailOnMoveFakeFs, self).move(src, dest)
 

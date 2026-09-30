@@ -236,12 +236,12 @@ class TestPut:
             'exit_code': result.exit_code,
             'files_in_info_dir': self.fs.ls_aa(
                 '/home/user/.local/share/Trash/info'),
-            "content_of_trashinfo": self.fs.read(
+            "content_of_trashinfo": self.fs.read_file(
                 '/home/user/.local/share/Trash/info/pippo.trashinfo'
-            ).decode('utf-8'),
+            ),
             'files_in_files_dir': self.fs.ls_aa(
                 '/home/user/.local/share/Trash/files'),
-            "content_of_trashed_file": self.fs.read(
+            "content_of_trashed_file": self.fs.read_file(
                 '/home/user/.local/share/Trash/files/pippo'),
         }
         assert actual == {'content_of_trashed_file': 'content',
@@ -294,13 +294,13 @@ class TestPut:
         assert EX_OK == result.exit_code
         assert ['pippo.trashinfo'] == self.fs.ls_aa(
             '/home/user/.local/share/Trash/info')
-        trash_info = self.fs.read(
+        trash_info = self.fs.read_file(
             '/home/user/.local/share/Trash/info/pippo.trashinfo'
-        ).decode('utf-8')
+        )
         assert trash_info == '[Trash Info]\nPath=/pippo\nDeletionDate=2014-01-01T00:00:00\n'
         assert ['pippo'] == self.fs.ls_aa(
             '/home/user/.local/share/Trash/files')
-        assert self.fs.read('/home/user/.local/share/Trash/files/pippo') \
+        assert self.fs.read_file('/home/user/.local/share/Trash/files/pippo') \
                == 'content'
 
     def run_cmd(self,

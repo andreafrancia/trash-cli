@@ -60,7 +60,7 @@ class Fs(RealPathFs, VolumeOf, Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def read(self, path):
+    def read_file(self, path):
         raise NotImplementedError
 
     @abstractmethod

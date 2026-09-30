@@ -68,14 +68,14 @@ class TestSymlinksLikeRealFs:
         env.fs.make_file(env.path('a/b/file'), 'contents')
         env.fs.symlink('b/file', env.path('a/link'))
 
-        assert env.fs.read(env.path('a/link')) == 'contents'
+        assert env.fs.read_file(env.path('a/link')) == 'contents'
 
     @real_and_fake()
     def test_read_follows_an_absolute_symlink(self, env):
         env.fs.make_file(env.path('file'), 'contents')
         env.fs.symlink(env.path('file'), env.path('link'))
 
-        assert env.fs.read(env.path('link')) == 'contents'
+        assert env.fs.read_file(env.path('link')) == 'contents'
 
     @real_and_fake()
     def test_getsize_follows_the_symlink(self, env):
@@ -92,7 +92,7 @@ class TestSymlinksLikeRealFs:
         env.fs.remove_file(env.path('link'))
 
         assert env.fs.path_lexists(env.path('link')) is False
-        assert env.fs.read(env.path('file')) == 'contents'
+        assert env.fs.read_file(env.path('file')) == 'contents'
 
     @real_and_fake()
     def test_move_moves_the_link_itself(self, env):

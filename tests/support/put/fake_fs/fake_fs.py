@@ -49,12 +49,6 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
         for entry in self.listdir(path):
             yield os.path.join(path, entry)
 
-    def read_file(self, path):  # type: (str) -> str
-        content = self.read(path)
-        if isinstance(content, bytes):
-            content = content.decode('utf-8')
-        return content
-
     def mkdirs(self, path):  # type: (str) -> None
         self.makedirs(path, 0o755)
 
@@ -160,13 +154,16 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
             raise OSError("already exists: %s" % path)
         self.make_file(path, content)
 
-    def read(self,
-             path,  # type: str
-             ):  # type: (...) -> str
+    def read_file(self,
+                  path,  # type: str
+                  ):  # type: (...) -> str
         path = self._join_cwd(path)
         entity = self.get_entity_at(os.path.normpath(path))
         if isinstance(entity, File):
-            return entity.content
+            content = entity.content
+            if isinstance(content, bytes):
+                content = content.decode('utf-8')
+            return content
         raise IOError("Unable to read: %s" % path)
 
     def readlink(self, path):
@@ -375,6 +372,6 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
             self._finding_all = False
 
     def read_all_files(self):
-        return [(f, self.read(f))
+        return [(f, self.read_file(f))
                 for f in list_all(self, "/")
                 if self.isfile(f)]

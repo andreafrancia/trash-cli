@@ -49,13 +49,13 @@ class TestReadLink:
     def test_read_file(self):
         self.fs.make_file("regular_file", "contents")
 
-        assert self.fs.read("regular_file") == "contents"
+        assert self.fs.read_file("regular_file") == "contents"
 
     def test_read_linked_file(self):
         self.fs.make_file("regular_file", "contents")
         self.fs.symlink("regular_file", "link")
 
-        assert self.fs.read("link") == "contents"
+        assert self.fs.read_file("link") == "contents"
 
     def test_is_dir_for_links(self):
         self.fs.symlink("target", "link")
@@ -68,7 +68,7 @@ class TestReadLink:
 
         self.fs.symlink("c/d/regular_file", "/a/b/link")
 
-        assert self.fs.read("/a/b/link") == "contents"
+        assert self.fs.read_file("/a/b/link") == "contents"
 
     def test_lexists(self):
         self.fs.symlink("target", "link")
