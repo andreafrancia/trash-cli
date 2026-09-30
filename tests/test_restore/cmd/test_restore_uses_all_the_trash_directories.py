@@ -1,5 +1,5 @@
 from tests.support.put.dummy_clock import jan_1st_2024
-from tests.support.restore.fake_restore_fs import FakePathFs
+from tests.support.restore.fake_path_fs import FakePathFs
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 

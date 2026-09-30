@@ -2,7 +2,7 @@ import datetime
 
 from tests.support.asserts.assert_that import assert_that
 from tests.support.dates import date_at
-from tests.support.restore.fake_restore_fs import FakePathFs
+from tests.support.restore.fake_path_fs import FakePathFs
 from tests.support.restore.has_been_restored_matcher import \
     has_been_restored, has_not_been_restored
 from tests.support.restore.restore_user import RestoreUser

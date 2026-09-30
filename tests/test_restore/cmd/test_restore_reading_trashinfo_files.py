@@ -1,4 +1,4 @@
-from tests.support.restore.fake_restore_fs import FakePathFs
+from tests.support.restore.fake_path_fs import FakePathFs
 from tests.support.restore.restore_user import RestoreUser
 from tests.support.trash_dirs.trash_dir_has_trashinfo import \
     TrashDirHasTrashInfo

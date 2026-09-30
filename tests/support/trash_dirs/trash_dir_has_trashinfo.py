@@ -1,6 +1,6 @@
 from typing import Optional
 
-from tests.support.restore.fake_restore_fs import FakePathFs
+from tests.support.restore.fake_path_fs import FakePathFs
 
 
 class TrashDirHasTrashInfo:

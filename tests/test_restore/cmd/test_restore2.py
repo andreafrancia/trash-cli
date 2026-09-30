@@ -1,7 +1,7 @@
 import datetime
 
 from tests.support.dates import jan_11_2001
-from tests.support.restore.fake_restore_fs import FakePathFs
+from tests.support.restore.fake_path_fs import FakePathFs
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 
