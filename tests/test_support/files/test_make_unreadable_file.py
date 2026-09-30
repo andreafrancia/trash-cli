@@ -2,7 +2,7 @@ import unittest
 
 import pytest
 
-from ...support.files import make_unreadable_file, read_file
+from tests.support.files import make_unreadable_file, read_file
 from tests.support.dirs.my_path import MyPath
 
 

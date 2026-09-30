@@ -3,17 +3,17 @@ import os
 import sys
 
 import trashcli.trash
-from .real_restore_fs import RealPathReaderFs, \
-    RealRestoreWriterFs, RealReadCwdFs, RealFileReaderFs
-from .real_restore_logger import RealRestoreLogger
-from .restore_cmd import RestoreCmd
-from ..empty.top_trash_dir_rules_file_system_reader import \
+from trashcli.restore.real_restore_fs import \
+    RealPathReaderFs, RealRestoreWriterFs, RealReadCwdFs, RealFileReaderFs
+from trashcli.restore.real_restore_logger import RealRestoreLogger
+from trashcli.restore.restore_cmd import RestoreCmd
+from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
 from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
-from ..fstab.volumes import RealVolumes
-from ..lib.logger import my_logger
-from ..lib.my_input import RealInput
-from ..put.fs.real_volume_path_fs import RealVolumePathFs
+from trashcli.fstab.volumes import RealVolumes
+from trashcli.lib.logger import my_logger
+from trashcli.lib.my_input import RealInput
+from trashcli.put.fs.real_volume_path_fs import RealVolumePathFs
 
 
 def main():

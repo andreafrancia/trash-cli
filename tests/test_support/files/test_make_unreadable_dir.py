@@ -4,8 +4,8 @@ import shutil
 import unittest
 
 
-from ...support.files import make_unreadable_dir, \
-    make_readable, remove_file2
+from tests.support.files import \
+    make_unreadable_dir, make_readable, remove_file2
 from tests.support.dirs.my_path import MyPath
 
 

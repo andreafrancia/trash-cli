@@ -9,12 +9,12 @@ from trashcli import trash
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.fslib.protocols.contents_of import ContentsOf
 from trashcli.fslib.real.real_contents_of import RealContentsOf
-from .existing_file_remover import ExistingFileRemover
-from .file_system_dir_reader import FileSystemDirReader
-from .top_trash_dir_rules_file_system_reader import \
+from trashcli.empty.existing_file_remover import ExistingFileRemover
+from trashcli.empty.file_system_dir_reader import FileSystemDirReader
+from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
-from ..fstab.volume_listing import RealVolumesListing
-from ..fstab.real_volume_of import RealVolumeOf
+from trashcli.fstab.volume_listing import RealVolumesListing
+from trashcli.fstab.real_volume_of import RealVolumeOf
 
 
 class ContentReader(ContentsOf, Protocol):
