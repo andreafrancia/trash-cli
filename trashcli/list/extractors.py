@@ -1,6 +1,6 @@
 import os
 
-from trashcli.fslib.real_fs_operations import RealFileSize
+from trashcli.fslib.real.real_file_size import RealFileSize
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.parse_trashinfo.maybe_parse_deletion_date import \
     maybe_parse_deletion_date

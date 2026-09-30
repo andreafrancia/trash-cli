@@ -1,8 +1,10 @@
 import os
 
-from trashcli.fslib.fs_operations import RealMove
-from trashcli.fslib.real_fs_operations import RealContentsOf, RealRemoveFile, \
-    RealListFilesInDir, RealMkDirs
+from trashcli.fslib.real.real_move import RealMove
+from trashcli.fslib.real.real_contents_of import RealContentsOf
+from trashcli.fslib.real.real_remove_file import RealRemoveFile
+from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
+from trashcli.fslib.real.real_mk_dirs import RealMkDirs
 from trashcli.fstab.volumes import RealVolumes
 from trashcli.restore.restore_fs import FileReaderFs, PathReaderFs, \
     RestoreWriterFs, ReadCwdFs, RestoreReadFs

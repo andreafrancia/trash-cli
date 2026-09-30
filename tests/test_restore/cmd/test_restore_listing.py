@@ -11,7 +11,7 @@ from tests.support.py2mock import Mock
 from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
-from trashcli.fslib.real_fs_operations import RealListFilesInDir
+from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.put.fs.real_volume_path_fs import RealVolumePathFs
 from trashcli.lib.my_input import HardCodedInput

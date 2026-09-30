@@ -5,7 +5,8 @@ import unittest
 import pytest
 
 from tests.support.dirs.my_path import MyPath
-from trashcli.fslib.real_fs_operations import RealAtomicWrite, RealReadFile
+from trashcli.fslib.real.real_atomic_write import RealAtomicWrite
+from trashcli.fslib.real.real_read_file import RealReadFile
 
 atomic_write = RealAtomicWrite().atomic_write
 open_for_write_in_exclusive_and_create_mode = RealAtomicWrite().open_for_write_in_exclusive_and_create_mode

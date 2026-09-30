@@ -1,7 +1,7 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 from typing import TextIO, Callable, MutableMapping
 
-from trashcli.fslib.fs_operations import ListFilesInDir
+from trashcli.fslib.protocols.list_files_in_dir import ListFilesInDir
 from trashcli.fstab.volumes import Volumes
 from trashcli.lib.my_input import Input
 from trashcli.lib.print_version import PrintVersionAction, PrintVersionArgs

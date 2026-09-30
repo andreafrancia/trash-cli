@@ -9,7 +9,7 @@ from .real_restore_logger import RealRestoreLogger
 from .restore_cmd import RestoreCmd
 from ..empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
-from ..fslib.real_fs_operations import RealListFilesInDir
+from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from ..fstab.volumes import RealVolumes
 from ..lib.logger import my_logger
 from ..lib.my_input import RealInput

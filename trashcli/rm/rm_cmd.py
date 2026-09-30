@@ -1,7 +1,7 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 from trashcli.compat import Protocol
 
-from trashcli.fslib.fs_operations import ContentsOf
+from trashcli.fslib.protocols.contents_of import ContentsOf
 from trashcli.lib.dir_checker import DirChecker
 from trashcli.lib.dir_reader import DirReader
 from trashcli.lib.user_info import SingleUserInfoProvider

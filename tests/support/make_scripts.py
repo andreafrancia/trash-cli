@@ -4,8 +4,8 @@ from typing import List
 
 from tests.support.project_root import project_root
 from trashcli.compat import Protocol
-from trashcli.fslib.real_fs_operations import RealWriteFile, \
-    RealMakeFileExecutable
+from trashcli.fslib.real.real_write_file import RealWriteFile
+from trashcli.fslib.real.real_make_file_executable import RealMakeFileExecutable
 
 
 def make_scripts():

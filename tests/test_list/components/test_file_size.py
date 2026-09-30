@@ -1,7 +1,7 @@
 from tests.support.dirs.temp_dir import temp_dir  # noqa
 from tests.support.files import make_file
 
-from trashcli.fslib.real_fs_operations import RealFileSize
+from trashcli.fslib.real.real_file_size import RealFileSize
 
 
 class TestFileSize:

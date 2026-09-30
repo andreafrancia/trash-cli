@@ -6,8 +6,10 @@ import unittest
 import pytest
 
 from tests.support.dirs.my_path import MyPath
-from trashcli.fslib.real_fs_operations import RealHasStickyBit, RealMkDirs, \
-    RealWriteFile, RealIsStickyDir
+from trashcli.fslib.real.real_has_sticky_bit import RealHasStickyBit
+from trashcli.fslib.real.real_mk_dirs import RealMkDirs
+from trashcli.fslib.real.real_write_file import RealWriteFile
+from trashcli.fslib.real.real_is_sticky_dir import RealIsStickyDir
 
 
 class RealFs1:

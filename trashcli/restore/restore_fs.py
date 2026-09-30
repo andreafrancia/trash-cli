@@ -1,5 +1,5 @@
 from trashcli.compat import Protocol
-from trashcli.fslib.fs_operations import ListFilesInDir
+from trashcli.fslib.protocols.list_files_in_dir import ListFilesInDir
 from trashcli.fstab.volumes import Volumes
 
 

@@ -5,7 +5,7 @@ from typing import Dict, Optional
 from tests.support.run.cmd_result import CmdResult
 from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
 from tests.test_restore.support.recording_logger import RecordingLogger
-from trashcli.fslib.fs_operations import ListFilesInDir
+from trashcli.fslib.protocols.list_files_in_dir import ListFilesInDir
 from trashcli.fstab.volumes import Volumes
 from trashcli.lib.my_input import HardCodedInput
 from trashcli.put.fs.volume_path_fs import VolumePathFs

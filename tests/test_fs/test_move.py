@@ -2,8 +2,8 @@ import unittest
 
 from tests.support.files import make_file
 from tests.support.dirs.my_path import MyPath
-from trashcli.fslib.fs_operations import RealMove
-from trashcli.fslib.real_fs_operations import RealReadFile
+from trashcli.fslib.real.real_move import RealMove
+from trashcli.fslib.real.real_read_file import RealReadFile
 
 move = RealMove().move
 read_file = RealReadFile().read_file

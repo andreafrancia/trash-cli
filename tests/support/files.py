@@ -1,8 +1,12 @@
 import os
 import shutil
 
-from trashcli.fslib.real_fs_operations import RealHasStickyBit, RealRemoveFile, \
-    RealMkDirs, RealReadFile, RealWriteFile, RealRemoveFile2
+from trashcli.fslib.real.real_has_sticky_bit import RealHasStickyBit
+from trashcli.fslib.real.real_remove_file import RealRemoveFile
+from trashcli.fslib.real.real_mk_dirs import RealMkDirs
+from trashcli.fslib.real.real_read_file import RealReadFile
+from trashcli.fslib.real.real_write_file import RealWriteFile
+from trashcli.fslib.real.real_remove_file2 import RealRemoveFile2
 
 mkdirs = RealMkDirs().mkdirs
 read_file = RealReadFile().read_file

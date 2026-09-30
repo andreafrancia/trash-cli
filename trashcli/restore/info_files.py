@@ -1,6 +1,6 @@
 import os
 
-from trashcli.fslib.fs_operations import ListFilesInDir
+from trashcli.fslib.protocols.list_files_in_dir import ListFilesInDir
 
 
 class InfoFiles:

@@ -2,7 +2,9 @@ import os
 from typing import Iterable
 from trashcli.compat import Protocol
 
-from trashcli.fslib.fs_operations import PathExists, IsStickyDir, IsSymLink
+from trashcli.fslib.protocols.path_exists import PathExists
+from trashcli.fslib.protocols.is_sticky_dir import IsStickyDir
+from trashcli.fslib.protocols.is_sym_link import IsSymLink
 from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.lib.dir_checker import DirChecker
 from trashcli.lib.user_info import UserInfoProvider

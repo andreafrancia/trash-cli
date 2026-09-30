@@ -2,7 +2,7 @@ import pytest
 
 from tests.support.files import make_file, require_empty_dir
 from tests.support.dirs.my_path import MyPath
-from trashcli.fslib.real_fs_operations import RealListFilesInDir
+from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from trashcli.restore.info_files import InfoFiles
 
 

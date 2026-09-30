@@ -14,9 +14,9 @@ from tests.support.put.fake_fs.inode import Stickiness
 from tests.support.put.fake_fs.symlink import SymLink
 from tests.support.put.format_mode import format_mode
 from tests.support.put.my_file_not_found_error import MyFileNotFoundError
-from trashcli.fslib.fs_operations import IsStickyDir
-from trashcli.fslib.fs_operations import IsSymLink
-from trashcli.fslib.fs_operations import PathExists
+from trashcli.fslib.protocols.is_sticky_dir import IsStickyDir
+from trashcli.fslib.protocols.is_sym_link import IsSymLink
+from trashcli.fslib.protocols.path_exists import PathExists
 from trashcli.put.check_cast import check_cast
 from trashcli.put.fs.fs import Fs
 from trashcli.put.fs.fs import list_all

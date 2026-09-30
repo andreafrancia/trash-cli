@@ -1,6 +1,6 @@
 from typing import NamedTuple, Union
 
-from trashcli.fslib.fs_operations import PathExists
+from trashcli.fslib.protocols.path_exists import PathExists
 
 
 def has_been_restored(fs):  # type: (PathExists) -> HasBeenRestoredBaseMatcher

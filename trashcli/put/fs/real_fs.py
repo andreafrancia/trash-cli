@@ -5,10 +5,12 @@ import stat
 from typing import NamedTuple
 from typing import Optional
 
-from trashcli.fslib.fs_operations import RealMove
-from trashcli.fslib.real_fs_operations import RealRemoveFile, RealAtomicWrite, \
-    RealReadFile, \
-    RealWriteFile, RealMkDirs
+from trashcli.fslib.real.real_move import RealMove
+from trashcli.fslib.real.real_remove_file import RealRemoveFile
+from trashcli.fslib.real.real_atomic_write import RealAtomicWrite
+from trashcli.fslib.real.real_read_file import RealReadFile
+from trashcli.fslib.real.real_write_file import RealWriteFile
+from trashcli.fslib.real.real_mk_dirs import RealMkDirs
 from trashcli.fstab.real_volume_of import RealVolumeOf
 from trashcli.put.fs.fs import Fs
 
