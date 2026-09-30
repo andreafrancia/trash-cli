@@ -1,7 +1,6 @@
 import os
 import stat
 from typing import Iterable
-from typing import NamedTuple
 
 from trashcli.fslib.real.real_contents_of import RealContentsOf
 from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
@@ -13,18 +12,11 @@ from trashcli.fslib.real.real_write_file import RealWriteFile
 from trashcli.fslib.real.real_mk_dirs import RealMkDirs
 from trashcli.fstab.mount_points_listing import RealMountPointListFs
 from trashcli.fstab.real_volume_of import RealVolumeOf
+from trashcli.put.fs.file_stat import Stat
 from trashcli.put.fs.fs import Fs
 from trashcli.restore.fs.protocols.restore_fs import RestoreFs
 from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
 from trashcli.restore.fs.real.real_read_cwd_fs import RealReadCwdFs
-
-
-class Stat(NamedTuple('Stat', [
-    ('mode', int),
-    ('uid', int),
-    ('gid', int),
-])):
-    pass
 
 
 class RealFs(RealVolumeOf, Fs, RestoreFs):
