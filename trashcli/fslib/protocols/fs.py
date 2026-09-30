@@ -3,13 +3,8 @@ from abc import abstractmethod
 from typing import Iterable
 
 from trashcli.compat import Protocol
+from trashcli.fslib.protocols.real_path_fs import RealPathFs
 from trashcli.fstab.volume_of import VolumeOf
-
-
-class RealPathFs(Protocol):
-    @abstractmethod
-    def realpath(self, path):
-        raise NotImplementedError
 
 
 class Fs(RealPathFs, VolumeOf, Protocol):

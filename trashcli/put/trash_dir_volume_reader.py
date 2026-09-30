@@ -1,6 +1,6 @@
 import os
 
-from trashcli.fslib.protocols.fs import RealPathFs
+from trashcli.fslib.protocols.real_path_fs import RealPathFs
 
 
 class TrashDirVolumeReader:
