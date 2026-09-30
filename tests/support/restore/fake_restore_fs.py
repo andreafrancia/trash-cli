@@ -6,16 +6,12 @@ from tests.support.put.fake_fs.failing_fake_fs import FailingFakeFs, \
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.a_trashed_file import ATrashedFile
 from trashcli.fslib.protocols.path_exists import PathExists
-from trashcli.fslib.protocols.list_files_in_dir import ListFilesInDir
-from trashcli.fstab.volumes import Volumes, FakeVolumes
+from trashcli.fstab.volumes import FakeVolumes
 from trashcli.put.format_trash_info import format_trashinfo
-from trashcli.restore.restore_fs import FileReaderFs, PathReaderFs, \
-    RestoreWriterFs
+from trashcli.restore.restore_fs import RestoreFs
 
 
-class FakePathFs(ListFilesInDir,
-                 Volumes, FileReaderFs, RestoreWriterFs,
-                 PathReaderFs, PathExists, FakeVolumePathFs):
+class FakePathFs(RestoreFs, PathExists, FakeVolumePathFs):
 
     def __init__(self):
         self.fake_fs = FailOnMoveFakeFs()
