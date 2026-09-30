@@ -3,6 +3,7 @@ import os
 from typing import Optional
 
 from tests.support.put.fake_fs.fake_fs import FakeFs
+from trashcli.put.format_trash_info import format_trashinfo
 from tests.support.restore.restore_fixture import RestoreFixture
 
 
@@ -24,8 +25,12 @@ class TrashDirHasTrashInfo:
 
     def add_trash_file(self, from_path, trash_dir, time,
                        original_file_content=''):
-        return self.fixture.add_trash_file(from_path, trash_dir, time,
-                                      original_file_content)
+        content = format_trashinfo(from_path, time)
+        basename = os.path.basename(from_path)
+        info_path = os.path.join(trash_dir, 'info', "%s.trashinfo" % basename)
+        backup_copy_path = os.path.join(trash_dir, 'files', basename)
+        self.add_file(info_path, content)
+        self.add_file(backup_copy_path, original_file_content.encode('utf-8'))
 
     def has_a_well_formed_trashinfo(self,
                                     basename,  # type: str
