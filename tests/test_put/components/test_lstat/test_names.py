@@ -3,7 +3,7 @@ import os
 
 import grp
 
-from trashcli.put.fs.real_fs import Names
+from trashcli.put.fs.names import Names
 
 
 class TestNames:

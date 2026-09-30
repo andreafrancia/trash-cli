@@ -1,10 +1,7 @@
-import grp
 import os
-import pwd
 import stat
 from typing import Iterable
 from typing import NamedTuple
-from typing import Optional
 
 from trashcli.fslib.real.real_contents_of import RealContentsOf
 from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
@@ -20,20 +17,6 @@ from trashcli.put.fs.fs import Fs
 from trashcli.restore.fs.protocols.restore_fs import RestoreFs
 from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
 from trashcli.restore.fs.real.real_read_cwd_fs import RealReadCwdFs
-
-
-class Names:
-    def username(self, uid):  # type: (int) -> Optional[str]
-        try:
-            return pwd.getpwuid(uid).pw_name
-        except KeyError as e:
-            return None
-
-    def groupname(self, gid):
-        try:
-            return grp.getgrgid(gid).gr_name
-        except KeyError as e:
-            return None
 
 
 class Stat(NamedTuple('Stat', [
