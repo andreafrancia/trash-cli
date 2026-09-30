@@ -3,7 +3,7 @@ from trashcli.compat import Protocol
 
 from trashcli.fslib.protocols.contents_of import ContentsOf
 from trashcli.lib.dir_checker import DirChecker
-from trashcli.lib.dir_reader import DirReader
+from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.user_info import SingleUserInfoProvider
 from trashcli.rm.cleanable_trashcan import CleanableTrashcan
 from trashcli.rm.real_remover_fs import RealRemoverFs
@@ -14,7 +14,7 @@ from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
 
 
 class RmFileSystemReader(ContentsOf,
-                         DirReader,
+                         DirReaderFs,
                          TopTrashDirRulesFs,
                          Protocol):
     pass

@@ -13,7 +13,7 @@ from trashcli.empty.print_time_action import PrintTimeAction, PrintTimeArgs
 from trashcli.fslib.protocols.contents_of import ContentsOf
 from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.fstab.volume_of import VolumeOf
-from trashcli.lib.dir_reader import DirReader
+from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.exit_codes import EX_OK
 from trashcli.lib.print_version import PrintVersionAction, PrintVersionArgs
 from trashcli.trash_dirs_scanner import TopTrashDirRulesFs
@@ -27,7 +27,7 @@ class EmptyCmd:
                  volumes_listing,  # type: VolumesListing
                  now,  # type: Callable[[], datetime]
                  file_reader,  # type: TopTrashDirRulesFs
-                 dir_reader,  # type: DirReader
+                 dir_reader,  # type: DirReaderFs
                  content_reader,  # type: ContentsOf
                  file_remover,  # type: ExistingFileRemover
                  version,  # type: str

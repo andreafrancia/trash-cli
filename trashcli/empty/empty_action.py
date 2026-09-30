@@ -14,7 +14,7 @@ from trashcli.empty.user import User
 from trashcli.fslib.protocols.contents_of import ContentsOf
 from trashcli.fstab.volume_listing import VolumesListing
 from trashcli.fstab.volume_of import VolumeOf
-from trashcli.lib.dir_reader import DirReader
+from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.environ import Environ
 from trashcli.lib.my_input import RealInput
 from trashcli.lib.trash_dir_reader import TrashDirReader
@@ -43,7 +43,7 @@ class EmptyAction:
                  volumes_listing,  # type: VolumesListing
                  file_reader,  # type: TopTrashDirRulesFs
                  volumes,  # type: VolumeOf
-                 dir_reader,  # type: DirReader
+                 dir_reader,  # type: DirReaderFs
                  content_reader,  # type: ContentsOf
                  console,  # type: Console
                  ):  # type: (...) -> None

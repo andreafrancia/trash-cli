@@ -12,7 +12,7 @@ from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
 from trashcli.fslib.file_system_reader import FileSystemReader
 from trashcli.fstab.volume_listing import FixedVolumesListing
-from trashcli.lib.dir_reader import RealDirReader
+from trashcli.fslib.real.real_dir_reader_fs import RealDirReaderFs
 from trashcli.list.main import ListCmd
 from tests.test_list.cmd.support.run_result import RunResult
 
@@ -51,7 +51,7 @@ class TrashListUser:
             volumes_listing=FixedVolumesListing(self.volumes),
             uid=self.fake_uid,
             volumes=StubVolumeOf(),
-            dir_reader=RealDirReader(),
+            dir_reader=RealDirReaderFs(),
             file_reader=RealTopTrashDirFs(),
             content_reader=FileSystemContentReader(),
             version=self.version

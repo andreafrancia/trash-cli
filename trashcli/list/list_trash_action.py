@@ -4,7 +4,7 @@ import os
 from typing import List
 from typing import NamedTuple
 
-from trashcli.lib.dir_reader import DirReader
+from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.lib.printable import printable
 from trashcli.lib.sanitize import shell_escape, quoting_wanted
@@ -77,7 +77,7 @@ class ListTrash:
                  environ,
                  uid,
                  selector,
-                 dir_reader,  # type: DirReader
+                 dir_reader,  # type: DirReaderFs
                  content_reader,
                  quote,
                  ):

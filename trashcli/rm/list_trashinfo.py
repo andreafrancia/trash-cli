@@ -4,7 +4,7 @@ from abc import abstractmethod
 from trashcli.compat import Protocol
 
 from trashcli.fslib.protocols.contents_of import ContentsOf
-from trashcli.lib.dir_reader import DirReader
+from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.parse_trashinfo.parse_path import parse_path
 from trashcli.parse_trashinfo.parser_error import ParseError
@@ -38,7 +38,7 @@ class ListTrashinfos:
 
     @staticmethod
     def make(file_content_reader,  # type: ContentsOf
-             dir_reader,  # type: DirReader
+             dir_reader,  # type: DirReaderFs
              ):
         trash_dir_reader = TrashDirReader(dir_reader)
         return ListTrashinfos(file_content_reader, trash_dir_reader)

@@ -9,7 +9,8 @@ from trashcli.fslib.real.real_contents_of import RealContentsOf
 from trashcli.fstab.real_volume_of import RealVolumeOf
 from trashcli.fstab.volume_listing import RealVolumesListing
 from trashcli.fstab.volume_of import VolumeOf
-from trashcli.lib.dir_reader import DirReader, RealDirReader
+from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
+from trashcli.fslib.real.real_dir_reader_fs import RealDirReaderFs
 from trashcli.lib.print_version import PrintVersionArgs, \
     PrintVersionAction
 from trashcli.list.list_trash_action import ListTrashAction, ListTrashArgs
@@ -34,7 +35,7 @@ def main():
         volumes_listing=RealVolumesListing(),
         uid=os.getuid(),
         volumes=RealVolumeOf(),
-        dir_reader=RealDirReader(),
+        dir_reader=RealDirReaderFs(),
         file_reader=FileSystemReader(),
         content_reader=RealContentsOf(),
         version=trashcli.trash.version
@@ -50,7 +51,7 @@ class ListCmd:
                  uid,
                  volumes,  # type: VolumeOf
                  file_reader, # type: TopTrashDirRulesFs
-                 dir_reader,  # type: DirReader
+                 dir_reader,  # type: DirReaderFs
                  content_reader, # type: ContentReader
                  version,
                  ):

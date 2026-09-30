@@ -2,10 +2,10 @@ import os
 
 from typing import List
 
-from trashcli.lib.dir_reader import DirReader
+from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 
 
-class MockDirReader(DirReader):
+class MockDirReader(DirReaderFs):
     def __init__(self):
         self.root = {}
 

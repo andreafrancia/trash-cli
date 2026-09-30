@@ -2,13 +2,13 @@ from __future__ import absolute_import
 
 import os
 
-from trashcli.lib.dir_reader import DirReader
+from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 
 
 class TrashDirReader:
 
     def __init__(self,
-                 dir_reader, # type: DirReader
+                 dir_reader, # type: DirReaderFs
                  ):
         self.dir_reader = dir_reader
 

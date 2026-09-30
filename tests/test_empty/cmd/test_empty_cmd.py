@@ -12,7 +12,7 @@ from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.fstab.volume_listing import FixedVolumesListing
 from trashcli.fstab.volume_listing import VolumesListing
-from trashcli.lib.dir_reader import DirReader
+from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.trash_dirs_scanner import TopTrashDirRulesFs
 
 
@@ -35,7 +35,7 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
             file_reader=cast(TopTrashDirRulesFs, self.file_reader),
             file_remover=cast(ExistingFileRemover, self.file_remover),
             content_reader=cast(ContentsOf, self.content_reader),
-            dir_reader=cast(DirReader, self.dir_reader),
+            dir_reader=cast(DirReaderFs, self.dir_reader),
             version='unused',
             volumes=StubVolumeOf()
         )
