@@ -21,3 +21,22 @@ class TestFakeIsWorldWritable:
 
     def test_a_missing_path_is_not_world_writable(self, fs):
         assert fs.is_world_writable('/none') is False
+
+    def test_a_symlink_to_a_private_dir_is_not_world_writable(self, fs):
+        fs.mkdir('/foo')
+        fs.chmod("/foo", 0o700)
+        fs.symlink('/foo', '/link')
+
+        assert fs.is_world_writable('/link') is False
+
+    def test_a_symlink_to_a_world_writable_dir_is_detected(self, fs):
+        fs.mkdir('/foo')
+        fs.chmod("/foo", 0o777)
+        fs.symlink('/foo', '/link')
+
+        assert fs.is_world_writable('/link') is True
+
+    def test_a_dangling_symlink_is_not_world_writable(self, fs):
+        fs.symlink('/none', '/link')
+
+        assert fs.is_world_writable('/link') is False

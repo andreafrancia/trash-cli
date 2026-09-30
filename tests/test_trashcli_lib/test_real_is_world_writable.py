@@ -23,5 +23,23 @@ class TestRealIsWorldWritable:
     def test_a_missing_path_is_not_world_writable(self):
         assert self.checker.is_world_writable(self.tmp_dir / 'nope') is False
 
+    def test_a_symlink_to_a_private_dir_is_not_world_writable(self):
+        os.mkdir(self.tmp_dir / 'dir', 0o700)
+        os.symlink(self.tmp_dir / 'dir', self.tmp_dir / 'link')
+
+        assert self.checker.is_world_writable(self.tmp_dir / 'link') is False
+
+    def test_a_symlink_to_a_world_writable_dir_is_detected(self):
+        os.mkdir(self.tmp_dir / 'dir')
+        os.chmod(self.tmp_dir / 'dir', 0o777)
+        os.symlink(self.tmp_dir / 'dir', self.tmp_dir / 'link')
+
+        assert self.checker.is_world_writable(self.tmp_dir / 'link') is True
+
+    def test_a_dangling_symlink_is_not_world_writable(self):
+        os.symlink(self.tmp_dir / 'none', self.tmp_dir / 'link')
+
+        assert self.checker.is_world_writable(self.tmp_dir / 'link') is False
+
     def teardown_method(self):
         self.tmp_dir.clean_up()

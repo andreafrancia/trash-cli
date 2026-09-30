@@ -259,8 +259,10 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
         return self.isdir(path) and self.has_sticky_bit(path)
 
     def is_world_writable(self, path):  # type: (str) -> bool
+        # like os.stat(), it follows symlinks: the mode of the link itself
+        # (always 0o777) is not the one that matters
         try:
-            return bool(self.get_mod(path) & 0o002)
+            return bool(self._lookup(path, follow_last_link=True).mode & 0o002)
         except MyFileNotFoundError:
             return False
 
