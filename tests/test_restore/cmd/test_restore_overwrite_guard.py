@@ -4,6 +4,7 @@ import pytest
 
 from tests.support.dirs.my_path import MyPath
 from tests.support.fakes.fake_trash_dir import trashinfo_content_default_date
+from tests.support.files import read_file
 from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
@@ -72,12 +73,9 @@ class TestRestoreOverwriteGuard:
 
         assert res.exit_code == 1
         assert res.stderr == 'Refusing to overwrite existing file "a".\n'
-        with open(self.cwd / 'a') as restored:
-            assert restored.read() == 'existing a'
-        with open(self.cwd / 'b') as restored:
-            assert restored.read() == 'trashed b'
-        with open(trash / 'files/a') as remaining:
-            assert remaining.read() == 'trashed a'
+        assert read_file(self.cwd / 'a') == 'existing a'
+        assert read_file(self.cwd / 'b') == 'trashed b'
+        assert read_file(trash / 'files/a') == 'trashed a'
         assert os.path.exists(trash / 'info/a.trashinfo')
         assert not os.path.exists(trash / 'files/b')
         assert not os.path.exists(trash / 'info/b.trashinfo')
