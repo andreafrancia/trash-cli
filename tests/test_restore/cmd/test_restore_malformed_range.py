@@ -1,5 +1,4 @@
 import os
-import unittest
 
 import pytest
 
@@ -17,8 +16,8 @@ from trashcli.restore.real_restore_fs import RealFileReaderFs, \
 
 
 @pytest.mark.slow
-class TestRestoreMalformedRange(unittest.TestCase):
-    def setUp(self):
+class TestRestoreMalformedRange:
+    def setup_method(self):
         self.tmp_dir = MyPath.make_temp_dir()
         self.fixture = RestoreFileFixture(self.tmp_dir / 'XDG_DATA_HOME')
         self.user = RestoreUser(
@@ -40,7 +39,7 @@ class TestRestoreMalformedRange(unittest.TestCase):
 
         res = self.user.run_restore(reply='1-2-3', from_dir='/foo')
 
-        self.assertEqual('Invalid entry: not an index: 2-3\n', res.stderr)
+        assert res.stderr == 'Invalid entry: not an index: 2-3\n'
 
-    def tearDown(self):
+    def teardown_method(self):
         self.tmp_dir.clean_up()
