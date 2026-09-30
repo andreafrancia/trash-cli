@@ -1,7 +1,7 @@
 import pytest
 from tests.support.py2mock import Mock, call
 
-from tests.support.fakes.stub_volume_of import StubVolumeOf
+from tests.support.restore.fake_path_fs import FakePathFs
 from trashcli.restore.trash_directories import TrashDirectories2
 
 
@@ -9,7 +9,9 @@ from trashcli.restore.trash_directories import TrashDirectories2
 class TestTrashDirectories2:
     def setup_method(self):
         self.trash_directories = Mock(spec=['all_trash_directories'])
-        self.volumes = StubVolumeOf()
+        self.volumes = FakePathFs()
+        self.volumes.add_volume('/')
+        self.volumes.add_volume('/mnt')
         self.trash_directories2 = TrashDirectories2(
             self.volumes,
             self.trash_directories,
@@ -29,7 +31,7 @@ class TestTrashDirectories2:
             "os-trash-directories"
 
         result = self.trash_directories2.trash_directories_or_user(
-            'user-trash_dir')
+            '/mnt/user-trash_dir')
 
         assert self.trash_directories.mock_calls == []
-        assert result == [('user-trash_dir', 'volume_of user-trash_dir')]
+        assert result == [('/mnt/user-trash_dir', '/mnt')]
