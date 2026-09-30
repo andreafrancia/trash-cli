@@ -119,5 +119,30 @@ class TestRestore2:
                'Invalid entry: not an index: non numeric'
         assert 1 == res.exit_code
 
+    def test_restore_refuses_to_overwrite_a_dangling_symlink(self):
+        self.fixture.add_trash_file('/cwd/foo.txt', '/data_home/Trash',
+                                    a_date, 'boo')
+        self.fs.makedirs('/cwd', 0o755)
+        self.fs.symlink('/nowhere', '/cwd/foo.txt')
+
+        res = self.cmd_run(['trash-restore'], reply='0', from_dir='/cwd')
+
+        assert res.stderr == 'Refusing to overwrite existing file "foo.txt".\n'
+        assert self.fs.readlink('/cwd/foo.txt') == '/nowhere'
+        assert self.fs.exists('/data_home/Trash/files/foo.txt')
+        assert self.fs.exists('/data_home/Trash/info/foo.txt.trashinfo')
+
+    def test_restore_refuses_to_overwrite_a_directory_even_with_overwrite(self):
+        self.fixture.add_trash_file('/cwd/foo.txt', '/data_home/Trash',
+                                    a_date, 'boo')
+        self.fs.makedirs('/cwd/foo.txt', 0o755)
+
+        res = self.cmd_run(['trash-restore', '--overwrite'], reply='0',
+                           from_dir='/cwd')
+
+        assert res.stderr == 'Refusing to overwrite existing file "foo.txt".\n'
+        assert self.fs.listdir('/cwd/foo.txt') == []
+        assert self.fs.exists('/data_home/Trash/files/foo.txt')
+
     def cmd_run(self, args, reply=None, from_dir=None):
         return self.user.run_restore(args, reply=reply, from_dir=from_dir)
