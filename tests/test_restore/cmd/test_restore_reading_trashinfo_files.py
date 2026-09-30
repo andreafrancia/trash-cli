@@ -49,7 +49,7 @@ class TestRestoreReadingTrashinfoFiles:
     # Purpose: a file in the info dir without the .trashinfo extension is
     # not a trashed file: it is not offered and a warning is logged.
     def test_a_non_trashinfo_file_is_skipped_with_a_warning(self):
-        self.trash.has_a_non_trashinfo("/info/info_path.non-trashinfo")
+        self.trash.has_a_non_trashinfo("info_path.non-trashinfo")
 
         res = self.user.run_restore(['trash-restore', '/'], from_dir='/')
 
