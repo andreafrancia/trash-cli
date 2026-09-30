@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from tests.support.dirs.my_path import MyPath
@@ -6,24 +7,31 @@ from trashcli.put.fs.real_fs import RealFs
 
 
 class Env:
-    def __init__(self, fs, base):
+    def __init__(self, fs, base, is_real):
         self.fs = fs
         self.base = base
+        self.is_real = is_real
 
     def path(self, name):
         return self.base + '/' + name
+
+    def make_sticky(self, path):
+        if self.is_real:
+            os.chmod(path, 0o1755)
+        else:
+            self.fs.set_sticky_bit(path)
 
 
 @pytest.fixture
 def env(request):
     if request.param == 'real':
         tmp_dir = MyPath.make_temp_dir()
-        yield Env(RealFs(), str(tmp_dir))
+        yield Env(RealFs(), str(tmp_dir), True)
         tmp_dir.clean_up()
     else:
         fs = FakeFs()
         fs.makedirs('/base', 0o755)
-        yield Env(fs, '/base')
+        yield Env(fs, '/base', False)
 
 
 def real_and_fake():
@@ -155,3 +163,23 @@ class TestSymlinksLikeRealFs:
             ('', ['dir', 'to-dir'], ['dangling', 'file']),
             ('/dir', [], ['inner']),
         ]
+
+    @real_and_fake()
+    def test_has_sticky_bit_follows_the_symlink(self, env):
+        env.fs.makedirs(env.path('sticky'), 0o755)
+        env.fs.makedirs(env.path('plain'), 0o755)
+        env.make_sticky(env.path('sticky'))
+        env.fs.symlink('sticky', env.path('to-sticky'))
+        env.fs.symlink('plain', env.path('to-plain'))
+
+        assert env.fs.has_sticky_bit(env.path('to-sticky')) is True
+        assert env.fs.has_sticky_bit(env.path('to-plain')) is False
+
+    @real_and_fake()
+    def test_a_sticky_dir_reached_through_a_symlink_is_a_sticky_dir(self, env):
+        env.fs.makedirs(env.path('sticky'), 0o755)
+        env.make_sticky(env.path('sticky'))
+        env.fs.symlink('sticky', env.path('link'))
+
+        assert env.fs.isdir(env.path('link')) is True
+        assert env.fs.has_sticky_bit(env.path('link')) is True

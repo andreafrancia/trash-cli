@@ -281,11 +281,14 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
         directory.add_link(basename, src)
 
     def has_sticky_bit(self, path):
-        return self._find_entry(path).stickiness is Stickiness.sticky
+        # like os.stat(), it follows symlinks
+        inode = self._lookup(path, follow_last_link=True)
+        return inode.stickiness is Stickiness.sticky
 
     def set_sticky_bit(self, path):
-        entry = self._find_entry(path)
-        entry.stickiness = Stickiness.sticky
+        # like os.chmod(), it follows symlinks
+        inode = self._lookup(path, follow_last_link=True)
+        inode.stickiness = Stickiness.sticky
 
     def is_sticky_dir(self, path):  # type: (str) -> bool
         return self.isdir(path) and self.has_sticky_bit(path)
