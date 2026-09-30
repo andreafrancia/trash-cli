@@ -31,9 +31,9 @@ class TestSearcher:
     def test_will_not_detect_trashed_file_in_dirs_other_than_cur_dir(self):
         self.fs.add_volume('/disk1')
         self.trash.add_file('/disk1/.Trash-123/info/not_a_trashinfo')
-        self.trash.add_trash_file("/foo", '/home/user/.local/share/Trash',
+        self.trash.has_trashed_file("/foo", '/home/user/.local/share/Trash',
                                date_at(2018, 1, 1), '')
-        self.trash.add_trash_file("/disk1/bar", '/disk1/.Trash-123',
+        self.trash.has_trashed_file("/disk1/bar", '/disk1/.Trash-123',
                                date_at(2018, 1, 1), '')
 
         res = self.run_restore([], from_dir='/home/user')
@@ -42,7 +42,7 @@ class TestSearcher:
                 "No files trashed from current dir ('/home/user')\n")
 
     def test_will_show_file_in_cur_dir(self):
-        self.trash.add_trash_file("/home/user/foo",
+        self.trash.has_trashed_file("/home/user/foo",
                                '/home/user/.local/share/Trash',
                                date_at(2018, 1, 1), '')
 

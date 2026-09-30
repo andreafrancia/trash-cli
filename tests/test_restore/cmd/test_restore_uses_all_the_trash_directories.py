@@ -39,16 +39,16 @@ class TestRestoreUsesAllTheTrashDirectories:
         #   /.Trash-123     private trash on volume '/'
         #   /mnt/.Trash/123 shared trash on volume '/mnt'
         #   /mnt/.Trash-123 private trash on volume '/mnt'
-        self.trash.add_trash_file('/home/user/home_file', self.home_trash,
+        self.trash.has_trashed_file('/home/user/home_file', self.home_trash,
                                jan_1st_2024())
-        self.trash.add_trash_file('/root_shared_file', '/.Trash/123',
+        self.trash.has_trashed_file('/root_shared_file', '/.Trash/123',
                                jan_1st_2024())
-        self.trash.add_trash_file('/root_private_file', '/.Trash-123',
+        self.trash.has_trashed_file('/root_private_file', '/.Trash-123',
                                jan_1st_2024())
         # Path= must be relative for volume trashes on a non-root volume.
-        self.trash.add_trash_file('mnt_shared_file', '/mnt/.Trash/123',
+        self.trash.has_trashed_file('mnt_shared_file', '/mnt/.Trash/123',
                                jan_1st_2024())
-        self.trash.add_trash_file('mnt_private_file', '/mnt/.Trash-123',
+        self.trash.has_trashed_file('mnt_private_file', '/mnt/.Trash-123',
                                jan_1st_2024())
         # A shared trash dir ($topdir/.Trash/$uid) is only valid_to_be_read
         # when its parent ($topdir/.Trash) is sticky, per TopTrashDirRules.

@@ -13,7 +13,7 @@ class TestRestoreDistrustsUnsafeTrashDirs:
     def setup_method(self):
         self.fs = FakeFs()
         self.trash = GivenTrash(self.fs)
-        self.trash.add_trash_file(HOME + "/foo", HOME_TRASH,
+        self.trash.has_trashed_file(HOME + "/foo", HOME_TRASH,
                                date_at(2018, 1, 1), '')
         self.user = RestoreUser(environ={'HOME': HOME},
                                 uid=123,

@@ -21,7 +21,7 @@ class GivenTrash:
         self.fs.makedirs(os.path.dirname(path), 0o755)
         self.fs.make_file(path, content)
 
-    def add_trash_file(self, from_path, trash_dir, time,
+    def has_trashed_file(self, from_path, trash_dir, time,
                        original_file_content=''):
         content = format_trashinfo(from_path, time)
         basename = os.path.basename(from_path)
@@ -31,7 +31,7 @@ class GivenTrash:
         self.add_file(backup_copy_path, original_file_content.encode('utf-8'))
 
     def add_trash_empty_file(self, from_path, trash_dir, time):
-        self.add_trash_file(from_path, trash_dir, time, '')
+        self.has_trashed_file(from_path, trash_dir, time, '')
 
     def make_trashed_file(self, from_path, trash_dir, time,
                           original_file_content):

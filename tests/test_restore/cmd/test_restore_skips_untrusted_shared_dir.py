@@ -16,11 +16,11 @@ class TestRestoreSkipsUntrustedSharedDir:
         self.fs = FakeFs()
         self.trash = GivenTrash(self.fs)
         self.fs.add_volume('/')
-        self.trash.add_trash_file(HOME + "/from-home", HOME_TRASH,
+        self.trash.has_trashed_file(HOME + "/from-home", HOME_TRASH,
                                date_at(2018, 1, 1), '')
-        self.trash.add_trash_file("/from-shared", SHARED_TRASH,
+        self.trash.has_trashed_file("/from-shared", SHARED_TRASH,
                                date_at(2018, 1, 1), '')
-        self.trash.add_trash_file("/from-private", PRIVATE_TRASH,
+        self.trash.has_trashed_file("/from-private", PRIVATE_TRASH,
                                date_at(2018, 1, 1), '')
 
     def restore_output(self):
