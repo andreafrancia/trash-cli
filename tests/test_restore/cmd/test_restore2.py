@@ -41,7 +41,7 @@ class TestRestore2:
                 res.stdout)
 
     def test_restore_operation(self):
-        self.fixture.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
+        self.trash.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
                                datetime.datetime(2016, 1, 1), 'boo')
         assert '/cwd/parent/foo.txt' not in self.fs.find_all()
         assert '/data_home/Trash/info/foo.txt.trashinfo' in self.fs.find_all()
@@ -55,7 +55,7 @@ class TestRestore2:
         assert '/cwd/parent/foo.txt' in self.fs.find_all()
 
     def test_restore_operation_when_dest_exists(self):
-        self.fixture.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
+        self.trash.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
                                datetime.datetime(2016, 1, 1), 'boo')
         self.trash.add_file('/cwd/parent/foo.txt')
         assert '/cwd/parent/foo.txt' in self.fs.find_all()
@@ -71,7 +71,7 @@ class TestRestore2:
 
 
     def test_when_user_reply_with_empty_string(self):
-        self.fixture.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
+        self.trash.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
                                datetime.datetime(2016, 1, 1), 'boo')
 
         res = self.cmd_run(['trash-restore'], reply='', from_dir='/cwd')
@@ -79,10 +79,10 @@ class TestRestore2:
         assert res.last_line_of_stdout() == 'No files were restored'
 
     def test_batch_restore_continues_after_conflicts(self):
-        self.fixture.add_trash_file('/cwd/a.txt', '/data_home/Trash', a_date, 'trash-a')
-        self.fixture.add_trash_file('/cwd/b.txt', '/data_home/Trash', a_date, 'trash-b')
-        self.fixture.add_trash_file('/cwd/c.txt', '/data_home/Trash', a_date, 'trash-c')
-        self.fixture.add_trash_file('/cwd/d.txt', '/data_home/Trash', a_date, 'trash-d')
+        self.trash.add_trash_file('/cwd/a.txt', '/data_home/Trash', a_date, 'trash-a')
+        self.trash.add_trash_file('/cwd/b.txt', '/data_home/Trash', a_date, 'trash-b')
+        self.trash.add_trash_file('/cwd/c.txt', '/data_home/Trash', a_date, 'trash-c')
+        self.trash.add_trash_file('/cwd/d.txt', '/data_home/Trash', a_date, 'trash-d')
         self.trash.add_file('/cwd/b.txt', 'already-there-b')
         self.trash.add_file('/cwd/d.txt', 'already-there-d')
 
@@ -99,8 +99,8 @@ class TestRestore2:
         assert ['b.txt.trashinfo', 'd.txt.trashinfo'] == self.fs.listdir('/data_home/Trash/info')
 
     def test_batch_restore_continues_after_move_error(self):
-        self.fixture.add_trash_file('/cwd/a.txt', '/data_home/Trash', a_date, 'trash-a')
-        self.fixture.add_trash_file('/cwd/b.txt', '/data_home/Trash', a_date, 'trash-b')
+        self.trash.add_trash_file('/cwd/a.txt', '/data_home/Trash', a_date, 'trash-a')
+        self.trash.add_trash_file('/cwd/b.txt', '/data_home/Trash', a_date, 'trash-b')
         self.fs.fail_move_on('/data_home/Trash/files/a.txt')
 
         res = self.cmd_run(['trash-restore', '--sort=path'],
@@ -112,7 +112,7 @@ class TestRestore2:
         assert ['a.txt.trashinfo'] == self.fs.listdir('/data_home/Trash/info')
 
     def test_when_user_reply_with_not_number(self):
-        self.fixture.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
+        self.trash.add_trash_file('/cwd/parent/foo.txt', '/data_home/Trash',
                                a_date, 'boo')
 
         res = self.cmd_run(['trash-restore'], reply='non numeric',
@@ -123,7 +123,7 @@ class TestRestore2:
         assert 1 == res.exit_code
 
     def test_restore_refuses_to_overwrite_a_dangling_symlink(self):
-        self.fixture.add_trash_file('/cwd/foo.txt', '/data_home/Trash',
+        self.trash.add_trash_file('/cwd/foo.txt', '/data_home/Trash',
                                     a_date, 'boo')
         self.fs.makedirs('/cwd', 0o755)
         self.fs.symlink('/nowhere', '/cwd/foo.txt')
@@ -136,7 +136,7 @@ class TestRestore2:
         assert self.fs.exists('/data_home/Trash/info/foo.txt.trashinfo')
 
     def test_restore_refuses_to_overwrite_a_directory_even_with_overwrite(self):
-        self.fixture.add_trash_file('/cwd/foo.txt', '/data_home/Trash',
+        self.trash.add_trash_file('/cwd/foo.txt', '/data_home/Trash',
                                     a_date, 'boo')
         self.fs.makedirs('/cwd/foo.txt', 0o755)
 

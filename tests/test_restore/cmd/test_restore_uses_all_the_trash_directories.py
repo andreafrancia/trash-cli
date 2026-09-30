@@ -1,6 +1,8 @@
 from tests.support.put.dummy_clock import jan_1st_2024
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.restore_fixture import RestoreFixture
+from tests.support.trash_dirs.trash_dir_has_trashinfo import \
+    TrashDirHasTrashInfo
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 
@@ -14,6 +16,7 @@ class TestRestoreUsesAllTheTrashDirectories:
     def setup_method(self):
         self.fs = FakeFs()
         self.fixture = RestoreFixture(self.fs)
+        self.trash = TrashDirHasTrashInfo(self.fs, self.fixture)
         self.fs.add_volume('/')
         self.fs.add_volume('/mnt')
         self.log_messages = []
@@ -38,16 +41,16 @@ class TestRestoreUsesAllTheTrashDirectories:
         #   /.Trash-123     private trash on volume '/'
         #   /mnt/.Trash/123 shared trash on volume '/mnt'
         #   /mnt/.Trash-123 private trash on volume '/mnt'
-        self.fixture.add_trash_file('/home/user/home_file', self.home_trash,
+        self.trash.add_trash_file('/home/user/home_file', self.home_trash,
                                jan_1st_2024())
-        self.fixture.add_trash_file('/root_shared_file', '/.Trash/123',
+        self.trash.add_trash_file('/root_shared_file', '/.Trash/123',
                                jan_1st_2024())
-        self.fixture.add_trash_file('/root_private_file', '/.Trash-123',
+        self.trash.add_trash_file('/root_private_file', '/.Trash-123',
                                jan_1st_2024())
         # Path= must be relative for volume trashes on a non-root volume.
-        self.fixture.add_trash_file('mnt_shared_file', '/mnt/.Trash/123',
+        self.trash.add_trash_file('mnt_shared_file', '/mnt/.Trash/123',
                                jan_1st_2024())
-        self.fixture.add_trash_file('mnt_private_file', '/mnt/.Trash-123',
+        self.trash.add_trash_file('mnt_private_file', '/mnt/.Trash-123',
                                jan_1st_2024())
         # A shared trash dir ($topdir/.Trash/$uid) is only valid_to_be_read
         # when its parent ($topdir/.Trash) is sticky, per TopTrashDirRules.

@@ -22,6 +22,11 @@ class TrashDirHasTrashInfo:
         self.fs.makedirs(os.path.dirname(path), 0o755)
         self.fs.make_file(path, content)
 
+    def add_trash_file(self, from_path, trash_dir, time,
+                       original_file_content=''):
+        return self.fixture.add_trash_file(from_path, trash_dir, time,
+                                      original_file_content)
+
     def has_a_well_formed_trashinfo(self,
                                     basename,  # type: str
                                     ):

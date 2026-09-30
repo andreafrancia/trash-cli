@@ -1,6 +1,8 @@
 from tests.support.dates import date_at
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.restore_fixture import RestoreFixture
+from tests.support.trash_dirs.trash_dir_has_trashinfo import \
+    TrashDirHasTrashInfo
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 
@@ -14,12 +16,13 @@ class TestRestoreSkipsUntrustedSharedDir:
     def setup_method(self):
         self.fs = FakeFs()
         self.fixture = RestoreFixture(self.fs)
+        self.trash = TrashDirHasTrashInfo(self.fs, self.fixture)
         self.fs.add_volume('/')
-        self.fixture.add_trash_file(HOME + "/from-home", HOME_TRASH,
+        self.trash.add_trash_file(HOME + "/from-home", HOME_TRASH,
                                date_at(2018, 1, 1), '')
-        self.fixture.add_trash_file("/from-shared", SHARED_TRASH,
+        self.trash.add_trash_file("/from-shared", SHARED_TRASH,
                                date_at(2018, 1, 1), '')
-        self.fixture.add_trash_file("/from-private", PRIVATE_TRASH,
+        self.trash.add_trash_file("/from-private", PRIVATE_TRASH,
                                date_at(2018, 1, 1), '')
 
     def restore_output(self):
