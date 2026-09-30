@@ -16,7 +16,7 @@ class Fs(RealPathFs, VolumeOf, Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def isdir(self, path):
+    def path_isdir(self, path):
         raise NotImplementedError
 
     @abstractmethod

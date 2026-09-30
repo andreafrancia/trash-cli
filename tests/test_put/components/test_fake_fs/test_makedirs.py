@@ -11,7 +11,7 @@ class TestMakeDirs:
         self.fs.makedirs("/foo/bar/baz", 0o700)
 
         assert [
-                   self.fs.isdir("/foo/bar/baz"),
+                   self.fs.path_isdir("/foo/bar/baz"),
                    self.fs.get_mod("/foo/bar/baz"),
                ] == [True, 0o700]
 

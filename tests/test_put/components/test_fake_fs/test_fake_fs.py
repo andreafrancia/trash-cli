@@ -49,15 +49,15 @@ class TestFakeFs(unittest.TestCase):
     def test_is_dir_when_file(self):
         self.fs.make_file("/foo")
 
-        assert self.fs.isdir("/foo") is False
+        assert self.fs.path_isdir("/foo") is False
 
     def test_is_dir_when_dir(self):
         self.fs.mkdir("/foo")
 
-        assert self.fs.isdir("/foo") is True
+        assert self.fs.path_isdir("/foo") is True
 
     def test_is_dir_when_it_does_not_exists(self):
-        assert self.fs.isdir("/does-not-exists") is False
+        assert self.fs.path_isdir("/does-not-exists") is False
 
     def test_exists_false(self):
         assert self.fs.path_exists("/foo") is False

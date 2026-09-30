@@ -13,7 +13,7 @@ class TestEnsureDir(unittest.TestCase):
     def test_happy_path(self):
         self.dir_maker.mkdir_p('/foo', 0o755)
 
-        assert [self.fs.isdir('/foo'),
+        assert [self.fs.path_isdir('/foo'),
                 format_mode(self.fs.get_mod('/foo'))] == [True, '0o755']
 
     def test_makedirs_honor_permissions(self):
@@ -25,5 +25,5 @@ class TestEnsureDir(unittest.TestCase):
         self.fs.makedirs('/foo', 0o000)
         self.dir_maker.mkdir_p('/foo', 0o755)
 
-        assert [self.fs.isdir('/foo'),
+        assert [self.fs.path_isdir('/foo'),
                 format_mode(self.fs.get_mod('/foo'))] == [True, '0o000']

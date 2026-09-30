@@ -60,7 +60,7 @@ class TestReadLink:
     def test_is_dir_for_links(self):
         self.fs.symlink("target", "link")
 
-        assert self.fs.isdir("link") is False
+        assert self.fs.path_isdir("link") is False
 
     def test_read_linked_file_with_relative_path(self):
         self.fs.makedirs("/a/b/c/d", 0o777)

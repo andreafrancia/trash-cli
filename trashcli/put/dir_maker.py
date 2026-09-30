@@ -9,5 +9,5 @@ class DirMaker:
         try:
             self.fs.makedirs(path, mode)
         except OSError:
-            if not self.fs.isdir(path):
+            if not self.fs.path_isdir(path):
                 raise

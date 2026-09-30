@@ -20,7 +20,7 @@ class Describer:
         """
         if self.fs.islink(path):
             return 'symbolic link'
-        elif self.fs.isdir(path):
+        elif self.fs.path_isdir(path):
             if path == '.':
                 return 'directory'
             elif path == '..':

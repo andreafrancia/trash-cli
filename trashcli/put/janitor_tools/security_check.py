@@ -21,7 +21,7 @@ class SecurityCheck:
             parent = candidate.parent_dir()
             if not self.fs.path_lexists(parent):
                 return Left(TrashDirDoesNotHaveParent())
-            if not self.fs.isdir(parent):
+            if not self.fs.path_isdir(parent):
                 return Left(TrashDirCannotBeCreatedBecauseParentIsFile())
             if self.fs.islink(parent):
                 return Left(TrashDirIsNotSecureBecauseSymLink())

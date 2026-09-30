@@ -55,9 +55,6 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
             content = content.decode('utf-8')
         return content
 
-    def path_isdir(self, path):  # type: (str) -> bool
-        return self.isdir(path)
-
     def mkdirs(self, path):  # type: (str) -> None
         self.makedirs(path, 0o755)
 
@@ -218,7 +215,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
         entry = self._find_entry(path)
         entry.chmod(mode)
 
-    def isdir(self, path):
+    def path_isdir(self, path):
         try:
             entity = self.get_entity_at(path)
         except MyFileNotFoundError:
@@ -240,7 +237,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
     def move(self, src, dest):
         basename, entry = self._pop_entry_from_dir(src)
 
-        if self.path_exists(dest) and self.isdir(dest):
+        if self.path_exists(dest) and self.path_isdir(dest):
             dest_dir = self._get_directory_at(dest)
             dest_dir.add_entry(basename, entry)
         else:
@@ -285,7 +282,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
         inode.stickiness = Stickiness.sticky
 
     def is_sticky_dir(self, path):  # type: (str) -> bool
-        return self.isdir(path) and self.has_sticky_bit(path)
+        return self.path_isdir(path) and self.has_sticky_bit(path)
 
     def is_world_writable(self, path):  # type: (str) -> bool
         # like os.stat(), it follows symlinks: the mode of the link itself
@@ -330,7 +327,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
 
         dirs, nondirs = [], []
         for name in names:
-            if self.isdir(os.path.join(top, name)):
+            if self.path_isdir(os.path.join(top, name)):
                 dirs.append(name)
             else:
                 nondirs.append(name)

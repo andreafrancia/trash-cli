@@ -98,7 +98,7 @@ class MyPath(str):
     def is_dir(
             self,  # type: Self
     ):  # type: (...) -> bool
-        return self.fs.isdir(self)
+        return self.fs.path_isdir(self)
 
     def touch(self,  # type: Self
               path):

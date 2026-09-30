@@ -41,9 +41,6 @@ class RealFs(RealVolumeOf, Fs, RestoreFs):
     def chmod(self, path, mode):
         os.chmod(path, mode)
 
-    def isdir(self, path):
-        return os.path.isdir(path)
-
     def isfile(self, path):
         return os.path.isfile(path)
 

@@ -42,8 +42,8 @@ class TestSymlinksLikeRealFs:
         env.fs.symlink('dir', env.path('to-dir'))
         env.fs.symlink('missing-target', env.path('dangling'))
 
-        assert env.fs.isdir(env.path('to-dir')) is True
-        assert env.fs.isdir(env.path('dangling')) is False
+        assert env.fs.path_isdir(env.path('to-dir')) is True
+        assert env.fs.path_isdir(env.path('dangling')) is False
 
     @real_and_fake()
     def test_isfile_follows_the_symlink(self, env):
@@ -146,5 +146,5 @@ class TestSymlinksLikeRealFs:
         env.make_sticky(env.path('sticky'))
         env.fs.symlink('sticky', env.path('link'))
 
-        assert env.fs.isdir(env.path('link')) is True
+        assert env.fs.path_isdir(env.path('link')) is True
         assert env.fs.has_sticky_bit(env.path('link')) is True
