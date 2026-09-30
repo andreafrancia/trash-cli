@@ -55,7 +55,7 @@ class TestRestore2:
     def test_restore_operation_when_dest_exists(self):
         self.trash.has_trashed_file('/cwd/parent/foo.txt', '/data_home/Trash',
                                datetime.datetime(2016, 1, 1), 'boo')
-        self.trash.add_file('/cwd/parent/foo.txt')
+        self.trash.has_file('/cwd/parent/foo.txt')
         assert '/cwd/parent/foo.txt' in self.fs.find_all()
         assert '/data_home/Trash/info/foo.txt.trashinfo' in self.fs.find_all()
         assert '/data_home/Trash/files/foo.txt' in self.fs.find_all()
@@ -81,8 +81,8 @@ class TestRestore2:
         self.trash.has_trashed_file('/cwd/b.txt', '/data_home/Trash', a_date, 'trash-b')
         self.trash.has_trashed_file('/cwd/c.txt', '/data_home/Trash', a_date, 'trash-c')
         self.trash.has_trashed_file('/cwd/d.txt', '/data_home/Trash', a_date, 'trash-d')
-        self.trash.add_file('/cwd/b.txt', 'already-there-b')
-        self.trash.add_file('/cwd/d.txt', 'already-there-d')
+        self.trash.has_file('/cwd/b.txt', 'already-there-b')
+        self.trash.has_file('/cwd/d.txt', 'already-there-d')
 
         res = self.cmd_run(['trash-restore', '--sort=path'],
                            reply='0-3', from_dir='/cwd')

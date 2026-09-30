@@ -17,7 +17,7 @@ class GivenTrash:
         self.home_trash = home_trash
         self.volume_trash = volume_trash
 
-    def add_file(self, path, content=b''):
+    def has_file(self, path, content=b''):
         self.fs.makedirs(os.path.dirname(path), 0o755)
         self.fs.make_file(path, content)
 
@@ -27,8 +27,8 @@ class GivenTrash:
         basename = os.path.basename(from_path)
         info_path = os.path.join(trash_dir, 'info', "%s.trashinfo" % basename)
         backup_copy_path = os.path.join(trash_dir, 'files', basename)
-        self.add_file(info_path, content)
-        self.add_file(backup_copy_path, original_file_content.encode('utf-8'))
+        self.has_file(info_path, content)
+        self.has_file(backup_copy_path, original_file_content.encode('utf-8'))
 
     def has_trashed_empty_file(self, from_path, trash_dir, time):
         self.has_trashed_file(from_path, trash_dir, time, '')
@@ -42,34 +42,34 @@ class GivenTrash:
         trashed_file = ATrashedFile(trashed_from=from_path,
                                     info_file=info_path,
                                     backup_copy=backup_copy_path)
-        self.add_file(info_path, content)
-        self.add_file(backup_copy_path, original_file_content.encode('utf-8'))
+        self.has_file(info_path, content)
+        self.has_file(backup_copy_path, original_file_content.encode('utf-8'))
         return trashed_file
 
     def has_a_well_formed_trashinfo(self,
                                     basename,  # type: str
                                     ):
-        self.add_file('{home_trash}/info/{basename}'
+        self.has_file('{home_trash}/info/{basename}'
                          .format(basename=basename,
                                  home_trash=self.home_trash),
                          b'[Trash Info]\n'
                          b'Path=name\n'
                          b'DeletionDate=2001-01-01T10:10:10\n')
-        self.add_file('{home_trash}/files/info_path'
+        self.has_file('{home_trash}/files/info_path'
                          .format(home_trash=self.home_trash),
                          b'contents')
 
     def has_a_non_trashinfo(self,
                             basename,  # type: str
                             ):
-        self.add_file('{home_trash}/info/{basename}'
+        self.has_file('{home_trash}/info/{basename}'
                          .format(basename=basename,
                                  home_trash=self.home_trash))
 
     def has_a_non_parseable_trashinfo(self,
                                       basename,  # type: str
                                       ):
-        self.add_file('{home_trash}/info/{basename}'
+        self.has_file('{home_trash}/info/{basename}'
                          .format(basename=basename,
                                  home_trash=self.home_trash), b'')
 
@@ -87,13 +87,13 @@ class GivenTrash:
                                content=None,  # type: Optional[str]
                                ):
         content = content if content is not None else ''
-        self.add_file('{volume_path}/info/{name}.trashinfo'
+        self.has_file('{volume_path}/info/{name}.trashinfo'
                          .format(name=name, volume_path=self.volume_trash),
                          ('[Trash Info]\n'
                           'Path=%s\n'
                           'DeletionDate=2000-01-01T00:00:00\n' % path_line
                           ).encode('utf-8'))
-        self.add_file('{volume_path}/files/{name}'
+        self.has_file('{volume_path}/files/{name}'
                          .format(name=name, volume_path=self.volume_trash),
                          content)
 

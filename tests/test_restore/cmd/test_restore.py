@@ -30,7 +30,7 @@ class TestSearcher:
 
     def test_will_not_detect_trashed_file_in_dirs_other_than_cur_dir(self):
         self.fs.add_volume('/disk1')
-        self.trash.add_file('/disk1/.Trash-123/info/not_a_trashinfo')
+        self.trash.has_file('/disk1/.Trash-123/info/not_a_trashinfo')
         self.trash.has_trashed_file("/foo", '/home/user/.local/share/Trash',
                                date_at(2018, 1, 1), '')
         self.trash.has_trashed_file("/disk1/bar", '/disk1/.Trash-123',
