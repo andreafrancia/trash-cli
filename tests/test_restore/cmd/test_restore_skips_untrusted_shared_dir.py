@@ -9,26 +9,6 @@ SHARED_TRASH = '/.Trash/123'
 PRIVATE_TRASH = '/.Trash-123'
 
 
-class FakeReader:
-    # a reader that never touches the disk; unlisted paths are trusted
-    def __init__(self, sticky_dirs=(), symlinks=(), world_writable=()):
-        self.sticky_dirs = set(sticky_dirs)
-        self.symlinks = set(symlinks)
-        self.world_writable = set(world_writable)
-
-    def exists(self, path):
-        return True
-
-    def is_sticky_dir(self, path):
-        return path in self.sticky_dirs
-
-    def is_symlink(self, path):
-        return path in self.symlinks
-
-    def is_world_writable(self, path):
-        return path in self.world_writable
-
-
 class TestRestoreSkipsUntrustedSharedDir:
     def setup_method(self):
         self.fs = FakePathFs()
@@ -40,7 +20,7 @@ class TestRestoreSkipsUntrustedSharedDir:
         self.fs.add_trash_file("/from-private", PRIVATE_TRASH,
                                date_at(2018, 1, 1), '')
 
-    def restore_output(self, reader):
+    def restore_output(self):
         user = RestoreUser(environ={'HOME': HOME},
                            uid=123,
                            file_reader=self.fs,
@@ -50,22 +30,20 @@ class TestRestoreSkipsUntrustedSharedDir:
                            version='1.0',
                            volumes=self.fs,
                            volume_path_fs=self.fs,
-                           top_trash_dir_rules_reader=reader,
+                           top_trash_dir_rules_reader=self.fs,
                            logger=RecordingLogger())
         res = user.run_restore(['trash-restore', '/'], from_dir=HOME)
         return res.output()
 
     def test_a_valid_shared_trash_dir_is_read(self):
         # the parent of the shared trash dir (.Trash) is sticky, so it is trusted
-        reader = FakeReader(sticky_dirs=['/.Trash'])
+        self.fs.set_sticky_bit('/.Trash')
 
-        assert '/from-shared' in self.restore_output(reader)
+        assert '/from-shared' in self.restore_output()
 
     def test_an_untrusted_shared_trash_dir_is_skipped(self):
         # the parent of the shared trash dir (.Trash) is not sticky, so it is distrusted
-        reader = FakeReader(sticky_dirs=[])
-
-        output = self.restore_output(reader)
+        output = self.restore_output()
 
         assert '/from-shared' not in output
         assert '/from-private' in output
