@@ -24,7 +24,7 @@ class Fs(RealPathFs, VolumeOf, Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def getsize(self, path):
+    def file_size(self, path):
         raise NotImplementedError
 
     @abstractmethod

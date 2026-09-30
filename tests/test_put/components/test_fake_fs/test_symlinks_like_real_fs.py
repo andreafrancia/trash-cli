@@ -82,7 +82,7 @@ class TestSymlinksLikeRealFs:
         env.fs.make_file(env.path('file'), 'contents')
         env.fs.symlink('file', env.path('link'))
 
-        assert env.fs.getsize(env.path('link')) == len('contents')
+        assert env.fs.file_size(env.path('link')) == len('contents')
 
     @real_and_fake()
     def test_remove_file_removes_the_link_and_not_the_target(self, env):

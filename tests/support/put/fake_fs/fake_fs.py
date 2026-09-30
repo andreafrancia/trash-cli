@@ -303,7 +303,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
             return False
         return isinstance(file, File)
 
-    def getsize(self, path):
+    def file_size(self, path):
         file = self.get_entity_at(path)
         return file.getsize()
 

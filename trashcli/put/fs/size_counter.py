@@ -13,10 +13,10 @@ class SizeCounter:
 
     def get_size_recursive(self, path):
         if self.fs.isfile(path):
-            return self.fs.getsize(path)
+            return self.fs.file_size(path)
 
         files = self.list_all_files(path)
-        files_sizes = imap(self.fs.getsize, files)
+        files_sizes = imap(self.fs.file_size, files)
         return sum(files_sizes, 0)
 
     def list_all_files(self,

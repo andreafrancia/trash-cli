@@ -44,7 +44,7 @@ class RealFs(RealVolumeOf, Fs, RestoreFs):
     def isfile(self, path):
         return os.path.isfile(path)
 
-    def getsize(self, path):
+    def file_size(self, path):
         return os.path.getsize(path)
 
     def walk_no_follow(self, path):
