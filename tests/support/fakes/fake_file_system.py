@@ -4,7 +4,7 @@ class FakeFileSystem:
         self.files = {}
         self.dirs = {}
 
-    def contents_of(self, path):
+    def read_file(self, path):
         return self.files[path]
 
     def exists(self, path):

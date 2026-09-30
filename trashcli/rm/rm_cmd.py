@@ -1,7 +1,7 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 from trashcli.compat import Protocol
 
-from trashcli.fslib.protocols.contents_of import ContentsOf
+from trashcli.fslib.protocols.read_file import ReadFile
 from trashcli.lib.dir_checker import DirChecker
 from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.user_info import SingleUserInfoProvider
@@ -13,7 +13,7 @@ from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
     trash_dir_found, TopTrashDirRulesFs
 
 
-class RmFileSystemReader(ContentsOf,
+class RmFileSystemReader(ReadFile,
                          DirReaderFs,
                          TopTrashDirRulesFs,
                          Protocol):

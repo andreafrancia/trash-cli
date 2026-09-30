@@ -49,7 +49,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
         for entry in self.listdir(path):
             yield os.path.join(path, entry)
 
-    def contents_of(self, path):  # type: (str) -> str
+    def read_file(self, path):  # type: (str) -> str
         content = self.read(path)
         if isinstance(content, bytes):
             content = content.decode('utf-8')

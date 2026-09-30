@@ -90,10 +90,10 @@ class TestRestore2:
         assert 1 == res.exit_code
         assert ('Refusing to overwrite existing file "b.txt".\n'
                 'Refusing to overwrite existing file "d.txt".\n') == res.stderr
-        assert 'trash-a' == self.fs.contents_of('/cwd/a.txt')
-        assert 'trash-c' == self.fs.contents_of('/cwd/c.txt')
-        assert 'already-there-b' == self.fs.contents_of('/cwd/b.txt')
-        assert 'already-there-d' == self.fs.contents_of('/cwd/d.txt')
+        assert 'trash-a' == self.fs.read_file('/cwd/a.txt')
+        assert 'trash-c' == self.fs.read_file('/cwd/c.txt')
+        assert 'already-there-b' == self.fs.read_file('/cwd/b.txt')
+        assert 'already-there-d' == self.fs.read_file('/cwd/d.txt')
         assert ['b.txt.trashinfo', 'd.txt.trashinfo'] == self.fs.listdir('/data_home/Trash/info')
 
     def test_batch_restore_continues_after_move_error(self):

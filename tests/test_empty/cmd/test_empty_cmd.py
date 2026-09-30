@@ -7,7 +7,7 @@ from six import StringIO
 from tests.support.fakes.mock_dir_reader import MockDirReader
 from tests.support.fakes.stub_volume_of import StubVolumeOf
 from tests.support.py2mock import Mock, call
-from trashcli.empty.delete_according_date import ContentsOf
+from trashcli.empty.delete_according_date import ReadFile
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.fstab.volume_listing import FixedVolumesListing
@@ -21,7 +21,7 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
         self.volumes_listing = FixedVolumesListing([])
         self.file_reader = Mock(spec=TopTrashDirRulesFs)
         self.file_remover = Mock(spec=ExistingFileRemover)
-        self.content_reader = Mock(spec=ContentsOf)
+        self.content_reader = Mock(spec=ReadFile)
         self.dir_reader = MockDirReader()
         self.err = StringIO()
         self.out = StringIO()
@@ -34,7 +34,7 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
             now=None,
             file_reader=cast(TopTrashDirRulesFs, self.file_reader),
             file_remover=cast(ExistingFileRemover, self.file_remover),
-            content_reader=cast(ContentsOf, self.content_reader),
+            content_reader=cast(ReadFile, self.content_reader),
             dir_reader=cast(DirReaderFs, self.dir_reader),
             version='unused',
             volumes=StubVolumeOf()

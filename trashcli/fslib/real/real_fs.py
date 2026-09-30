@@ -2,7 +2,7 @@ import os
 import stat
 from typing import Iterable
 
-from trashcli.fslib.real.real_contents_of import RealContentsOf
+from trashcli.fslib.real.real_read_file import RealReadFile
 from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from trashcli.fslib.real.real_move import RealMove
 from trashcli.fslib.real.real_remove_file import RealRemoveFile
@@ -122,8 +122,8 @@ class RealFs(RealVolumeOf, Fs, RestoreFs):
     def list_files_in_dir(self, path):  # type: (str) -> Iterable[str]
         return RealListFilesInDir().list_files_in_dir(path)
 
-    def contents_of(self, path):  # type: (str) -> str
-        return RealContentsOf().contents_of(path)
+    def read_file(self, path):  # type: (str) -> str
+        return RealReadFile().read_file(path)
 
     def path_exists(self, path):  # type: (str) -> bool
         return RealPathReaderFs().path_exists(path)

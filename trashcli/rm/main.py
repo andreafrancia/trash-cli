@@ -6,7 +6,7 @@ from trashcli.fslib.real.real_entries_if_dir_exists import RealEntriesIfDirExist
 from trashcli.fslib.real.real_exists import RealExists
 from trashcli.fslib.real.real_is_sticky_dir import RealIsStickyDir
 from trashcli.fslib.real.real_is_sym_link import RealIsSymLink
-from trashcli.fslib.real.real_contents_of import RealContentsOf
+from trashcli.fslib.real.real_read_file import RealReadFile
 from trashcli.fstab.volume_listing import RealVolumesListing
 from trashcli.rm.rm_cmd import RmCmd, RmFileSystemReader
 
@@ -28,7 +28,7 @@ class RealRmFileSystemReader(RmFileSystemReader,
                              RealExists,
                              RealIsStickyDir,
                              RealIsSymLink,
-                             RealContentsOf,
+                             RealReadFile,
                              RealEntriesIfDirExists,
                              ):
     pass

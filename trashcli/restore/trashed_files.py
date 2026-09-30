@@ -53,7 +53,7 @@ class TrashedFiles:
                 yield NonTrashinfoFileFound(info_file.path)
             elif info_file.type == 'trashinfo':
                 try:
-                    contents = self.file_reader.contents_of(info_file.path)
+                    contents = self.file_reader.read_file(info_file.path)
                     original_location = self.original_location_parser \
                         .parse_original_location(contents, info_file.volume,
                                                  info_file.trash_dir)

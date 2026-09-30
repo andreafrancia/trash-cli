@@ -64,7 +64,7 @@ class TestSearcher:
         assert (res.output() ==
                 '   0 2018-01-01 00:00:00 /home/user/foo\n')
         assert_that(trashed_file, has_been_restored(self.fs))
-        assert (self.fs.contents_of('/home/user/foo') == "contents of foo\n")
+        assert (self.fs.read_file('/home/user/foo') == "contents of foo\n")
 
     def test_will_sort_by_date_by_default(self):
         self.add_file_trashed_at("/home/user/third", date_at(2013, 1, 1))

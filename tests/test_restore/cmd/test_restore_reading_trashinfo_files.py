@@ -41,7 +41,7 @@ class TestRestoreReadingTrashinfoFiles:
                                     from_dir='/')
 
         assert res.output() == '   0 2001-01-01 10:10:10 /name\n'
-        assert self.fs.contents_of('/name') == 'contents'
+        assert self.fs.read_file('/name') == 'contents'
         assert not self.fs.exists(self.home_trash + '/info/info_path.trashinfo')
         assert not self.fs.exists(self.home_trash + '/files/info_path')
         assert self.log_messages == []
@@ -91,7 +91,7 @@ class TestRestoreReadingTrashinfoFiles:
                                     from_dir='/')
 
         assert res.output() == '   0 2001-01-01 10:10:10 /name\n'
-        assert self.fs.contents_of('/name') == 'contents'
+        assert self.fs.read_file('/name') == 'contents'
         assert not self.fs.exists(self.home_trash + '/info/info_path.trashinfo')
         assert not self.fs.exists(self.home_trash + '/files/info_path')
         assert self.log_messages == ['WARN: Non .trashinfo file in info dir']
@@ -105,7 +105,7 @@ class TestRestoreReadingTrashinfoFiles:
                                     from_dir='/')
 
         assert res.output() == '   0 2001-01-01 10:10:10 /name\n'
-        assert self.fs.contents_of('/name') == 'contents'
+        assert self.fs.read_file('/name') == 'contents'
         assert not self.fs.exists(self.home_trash + '/info/info_path.trashinfo')
         assert not self.fs.exists(self.home_trash + '/files/info_path')
         assert self.log_messages == ['WARN: Non parsable trashinfo file: '
@@ -123,7 +123,7 @@ class TestRestoreReadingTrashinfoFiles:
                                     from_dir='/')
 
         assert res.output() == '   0 2001-01-01 10:10:10 /name\n'
-        assert self.fs.contents_of('/name') == 'contents'
+        assert self.fs.read_file('/name') == 'contents'
         assert not self.fs.exists(self.home_trash + '/info/info_path.trashinfo')
         assert not self.fs.exists(self.home_trash + '/files/info_path')
         assert self.log_messages == [
@@ -166,7 +166,7 @@ class TestRestoreReadingTrashinfoFiles:
 
         assert res.output() == (
             '   0 2000-01-01 00:00:00 /volume/docs/report.txt\n')
-        assert self.fs.contents_of(
+        assert self.fs.read_file(
             '/volume/docs/report.txt') == 'report-content'
         assert self.trash.remaining_trashinfo(self.volume_trash) == []
         assert self.trash.remaining_original_copies(self.volume_trash) == []

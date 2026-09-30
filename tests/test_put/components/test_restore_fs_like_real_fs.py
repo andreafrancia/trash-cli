@@ -28,7 +28,7 @@ class TestRestoreFsLikeRealFs:
     def test_contents_of_returns_the_text(self, env):
         env.fs.make_file(env.path('file'), 'contents')
 
-        assert env.fs.contents_of(env.path('file')) == 'contents'
+        assert env.fs.read_file(env.path('file')) == 'contents'
 
     @real_and_fake()
     def test_path_exists_follows_symlinks_path_lexists_does_not(self, env):
@@ -68,7 +68,7 @@ class TestRestoreFsLikeRealFs:
         env.fs.move(env.path('file'), env.path('moved'))
 
         assert env.fs.path_lexists(env.path('file')) is False
-        assert env.fs.contents_of(env.path('moved')) == 'contents'
+        assert env.fs.read_file(env.path('moved')) == 'contents'
         env.fs.remove_file(env.path('moved'))
         assert env.fs.path_lexists(env.path('moved')) is False
 
