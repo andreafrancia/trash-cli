@@ -68,7 +68,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
     def _get_directory_at(self, path):
         return as_directory(self.get_entity_at(path))
 
-    def get_entry_at(self, path):  # type: (str) -> INode
+    def _get_entry_at(self, path):  # type: (str) -> INode
         return self._lookup(path, follow_last_link=False)
 
     def _lookup(self,
@@ -148,7 +148,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
 
     def readlink(self, path):
         path = self._join_cwd(path)
-        entity = self.get_entry_at(path).entity
+        entity = self._get_entry_at(path).entity
         if isinstance(entity, SymLink):
             return entity.dest
         else:
@@ -314,7 +314,7 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink):
     def lexists(self, path):
         path = self._join_cwd(path)
         try:
-            self.get_entry_at(path)
+            self._get_entry_at(path)
         except MyFileNotFoundError:
             return False
         else:
