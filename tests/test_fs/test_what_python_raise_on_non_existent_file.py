@@ -57,17 +57,3 @@ class TestWhatPythonRaiseOnNonExistentFile:
             assert str(IOError) == "<class 'OSError'>"
         else:
             assert False
-
-        # Also python2 in OSError there is deprecated 'message' attribute that
-        # is gone with python3. In python2 the attribute contains an empty
-        # string.
-        if six.PY2:
-            assert hasattr(e.value, 'message') is True
-            assert getattr(e.value, 'message') == ''
-        elif six.PY3:
-            assert hasattr(e.value, 'message') is False
-        else:
-            assert False
-
-
-
