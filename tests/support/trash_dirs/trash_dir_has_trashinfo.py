@@ -33,7 +33,7 @@ class TrashDirHasTrashInfo:
         self.add_file(backup_copy_path, original_file_content.encode('utf-8'))
 
     def add_trash_empty_file(self, from_path, trash_dir, time):
-        return self.fixture.add_trash_empty_file(from_path, trash_dir, time)
+        self.add_trash_file(from_path, trash_dir, time, '')
 
     def has_a_well_formed_trashinfo(self,
                                     basename,  # type: str
