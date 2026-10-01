@@ -2,35 +2,28 @@ import os
 
 import pytest
 
-from tests.support.dirs.my_path import MyPath
+from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
-from trashcli.fslib.real.real_fs import RealFs
-from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from trashcli.fstab.volumes import FakeVolumes
-from trashcli.restore.fs.real.real_file_reader_fs import RealFileReaderFs
-from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
-from trashcli.restore.fs.real.real_restore_read_fs import RealRestoreReadFs
-from trashcli.restore.fs.real.real_restore_writer_fs import RealRestoreWriterFs
 
 
 @pytest.mark.slow
 class TestRestoreMalformedRange:
     def setup_method(self):
-        self.tmp_dir = MyPath.make_temp_dir()
-        self.fixture = RestoreFileFixture(self.tmp_dir / 'XDG_DATA_HOME',
-                                          RealFs())
+        self.fs = FakeFs()
+        self.fixture = RestoreFileFixture('/XDG_DATA_HOME', self.fs)
         self.user = RestoreUser(
-            environ={'XDG_DATA_HOME': self.tmp_dir / 'XDG_DATA_HOME'},
+            environ={'XDG_DATA_HOME': '/XDG_DATA_HOME'},
             uid=os.getuid(),
-            file_reader=RealFileReaderFs(),
-            path_read_fs=RealPathReaderFs(),
-            read_fs=RealRestoreReadFs(),
-            write_fs=RealRestoreWriterFs(),
-            listing_fs=RealListFilesInDir(),
+            file_reader=self.fs,
+            path_read_fs=self.fs,
+            read_fs=self.fs,
+            write_fs=self.fs,
+            listing_fs=self.fs,
             version='0.0.0',
             volumes=FakeVolumes([]),
             top_trash_dir_rules_reader=RealTopTrashDirFs(),
@@ -43,5 +36,3 @@ class TestRestoreMalformedRange:
 
         assert res.stderr == 'Invalid entry: not an index: 2-3\n'
 
-    def teardown_method(self):
-        self.tmp_dir.clean_up()
