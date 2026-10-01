@@ -3,8 +3,7 @@ import os
 import sys
 
 import trashcli.trash
-from trashcli.empty.top_trash_dir_rules_file_system_reader import \
-    RealTopTrashDirFs
+from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from trashcli.fstab.volumes import RealVolumes
 from trashcli.lib.logger import my_logger
@@ -29,7 +28,7 @@ def main():
         logger=RealRestoreLogger(my_logger),
         uid=os.getuid(),
         environ=os.environ,
-        top_trash_dir_rules_fs=RealTopTrashDirFs(),
+        top_trash_dir_rules_fs=RealFs(),
         file_reader=RealFileReaderFs(),
         read_fs=RealPathReaderFs(),
         write_fs=RealRestoreWriterFs(),

@@ -8,8 +8,7 @@ from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.fakes.stub_volume_of import StubVolumeOf
 from tests.support.files import make_empty_dir
 from trashcli.empty.main import FileSystemContentReader
-from trashcli.empty.top_trash_dir_rules_file_system_reader import \
-    RealTopTrashDirFs
+from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.file_system_reader import FileSystemReader
 from trashcli.fstab.volume_listing import FixedVolumesListing
 from trashcli.fslib.real.real_dir_reader_fs import RealDirReaderFs
@@ -52,7 +51,7 @@ class TrashListUser:
             uid=self.fake_uid,
             volumes=StubVolumeOf(),
             dir_reader=RealDirReaderFs(),
-            file_reader=RealTopTrashDirFs(),
+            file_reader=RealFs(),
             content_reader=FileSystemContentReader(),
             version=self.version
         ).run(['trash-list'] + list(args))

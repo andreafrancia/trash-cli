@@ -8,8 +8,6 @@ from tests.support.files import read_file
 from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
-from trashcli.empty.top_trash_dir_rules_file_system_reader import \
-    RealTopTrashDirFs
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from trashcli.fstab.volumes import FakeVolumes
@@ -37,7 +35,7 @@ class TestRestoreOverwriteGuard:
             listing_fs=RealListFilesInDir(),
             version='0.0.0',
             volumes=FakeVolumes([]),
-            top_trash_dir_rules_reader=RealTopTrashDirFs(),
+            top_trash_dir_rules_reader=RealFs(),
             logger=RecordingLogger())
 
     def test_it_refuses_to_restore_over_a_dangling_symlink(self):

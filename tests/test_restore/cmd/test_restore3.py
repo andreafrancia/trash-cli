@@ -9,8 +9,7 @@ from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.py2mock import Mock
 from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
 from tests.test_restore.support.recording_logger import RecordingLogger
-from trashcli.empty.top_trash_dir_rules_file_system_reader import \
-    RealTopTrashDirFs
+from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.lib.my_input import HardCodedInput
@@ -70,7 +69,7 @@ class TestTrashedFileRestoreIntegration:
             logger=self.logger,
             uid=uid,
             environ=self.env,
-            top_trash_dir_rules_fs=RealTopTrashDirFs(),
+            top_trash_dir_rules_fs=RealFs(),
         )
 
     def test_restore_one_file(self,  # type: Self

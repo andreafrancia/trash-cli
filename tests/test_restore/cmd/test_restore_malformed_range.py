@@ -6,8 +6,7 @@ from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
-from trashcli.empty.top_trash_dir_rules_file_system_reader import \
-    RealTopTrashDirFs
+from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fstab.volumes import FakeVolumes
 
 
@@ -26,7 +25,7 @@ class TestRestoreMalformedRange:
             listing_fs=self.fs,
             version='0.0.0',
             volumes=FakeVolumes([]),
-            top_trash_dir_rules_reader=RealTopTrashDirFs(),
+            top_trash_dir_rules_reader=RealFs(),
             logger=RecordingLogger())
 
     def test_a_range_with_two_dashes_gives_an_error_instead_of_crashing(self):

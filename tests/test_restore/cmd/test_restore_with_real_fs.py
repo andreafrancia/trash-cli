@@ -10,10 +10,8 @@ from tests.support.restore.has_been_restored_matcher import \
 from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
-from trashcli.empty.top_trash_dir_rules_file_system_reader import \
-    RealTopTrashDirFs
-from trashcli.fslib.real.real_exists import RealExists
 from trashcli.fslib.real.real_fs import RealFs
+from trashcli.fslib.real.real_exists import RealExists
 from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from trashcli.fstab.volumes import FakeVolumes
 from trashcli.restore.fs.real.real_file_reader_fs import RealFileReaderFs
@@ -40,7 +38,7 @@ class TestRestoreTrash:
                                 listing_fs=RealListFilesInDir(),
                                 version='0.0.0',
                                 volumes=FakeVolumes([]),
-                                top_trash_dir_rules_reader=RealTopTrashDirFs(),
+                                top_trash_dir_rules_reader=RealFs(),
                                 logger=RecordingLogger())
 
     def test_it_does_nothing_when_no_file_have_been_found_in_current_dir(self):

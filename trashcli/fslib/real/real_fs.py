@@ -2,6 +2,7 @@ import os
 import stat
 from typing import Iterable
 
+from trashcli.fslib.real.real_is_world_writable import RealIsWorldWritable
 from trashcli.fslib.real.real_read_file import RealReadFile
 from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from trashcli.fslib.real.real_move import RealMove
@@ -87,6 +88,9 @@ class RealFs(RealVolumeOf, Fs, RestoreFs, TopTrashDirRulesFs):
 
     def is_sticky_dir(self, path):  # type: (str) -> bool
         return os.path.isdir(path) and self.has_sticky_bit(path)
+
+    def is_world_writable(self, path):  # type: (str) -> bool
+        return RealIsWorldWritable().is_world_writable(path)
 
     def realpath(self, path):
         return os.path.realpath(path)
