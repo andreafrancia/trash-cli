@@ -22,8 +22,9 @@ class Guard:
         else:
             return self.non_interactive(trash_dirs)
 
-    def _interactive(self, trash_dirs,  # type: Iterable[TrashDir]
-                     ):  # type:  (...) -> UserIntention
+    def _interactive(self,
+                     trash_dirs,  # type: Iterable[TrashDir]
+                     ):  # type: (...) -> UserIntention
         trash_dirs_list = list(trash_dirs)  # type: Iterable[TrashDir]
         ok_to_empty = \
             self.user.do_you_wanna_empty_trash_dirs(trash_dirs_list)
