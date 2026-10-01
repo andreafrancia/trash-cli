@@ -27,8 +27,8 @@ class TestRestoreReadingTrashinfoFiles:
         self.home_trash = '/home/user/.local/share/Trash'
         self.volume_trash = '/volume/.Trash-123'
         self.trash = GivenTrash(self.fs,
-                                          home_trash=self.home_trash,
-                                          volume_trash=self.volume_trash)
+                                home_trash=self.home_trash,
+                                volume_trash=self.volume_trash)
 
     # Purpose: happy path. A well formed .trashinfo in the home trash (on the
     # root volume) is offered for restore with its relative Path= resolved
@@ -42,7 +42,8 @@ class TestRestoreReadingTrashinfoFiles:
 
         assert res.output() == '   0 2001-01-01 10:10:10 /name\n'
         assert self.fs.read_file('/name') == 'contents'
-        assert not self.fs.path_exists(self.home_trash + '/info/info_path.trashinfo')
+        assert not self.fs.path_exists(
+            self.home_trash + '/info/info_path.trashinfo')
         assert not self.fs.path_exists(self.home_trash + '/files/info_path')
         assert self.log_messages == []
 
@@ -92,7 +93,8 @@ class TestRestoreReadingTrashinfoFiles:
 
         assert res.output() == '   0 2001-01-01 10:10:10 /name\n'
         assert self.fs.read_file('/name') == 'contents'
-        assert not self.fs.path_exists(self.home_trash + '/info/info_path.trashinfo')
+        assert not self.fs.path_exists(
+            self.home_trash + '/info/info_path.trashinfo')
         assert not self.fs.path_exists(self.home_trash + '/files/info_path')
         assert self.log_messages == ['WARN: Non .trashinfo file in info dir']
         assert len(self.log_messages) == 1
@@ -106,7 +108,8 @@ class TestRestoreReadingTrashinfoFiles:
 
         assert res.output() == '   0 2001-01-01 10:10:10 /name\n'
         assert self.fs.read_file('/name') == 'contents'
-        assert not self.fs.path_exists(self.home_trash + '/info/info_path.trashinfo')
+        assert not self.fs.path_exists(
+            self.home_trash + '/info/info_path.trashinfo')
         assert not self.fs.path_exists(self.home_trash + '/files/info_path')
         assert self.log_messages == ['WARN: Non parsable trashinfo file: '
                                      '{home_trash}/info/'
@@ -124,7 +127,8 @@ class TestRestoreReadingTrashinfoFiles:
 
         assert res.output() == '   0 2001-01-01 10:10:10 /name\n'
         assert self.fs.read_file('/name') == 'contents'
-        assert not self.fs.path_exists(self.home_trash + '/info/info_path.trashinfo')
+        assert not self.fs.path_exists(
+            self.home_trash + '/info/info_path.trashinfo')
         assert not self.fs.path_exists(self.home_trash + '/files/info_path')
         assert self.log_messages == [
             "WARN: IOErrorReadingTrashInfo("
