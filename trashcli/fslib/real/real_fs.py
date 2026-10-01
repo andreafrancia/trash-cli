@@ -17,9 +17,10 @@ from trashcli.fslib.protocols.fs import Fs
 from trashcli.restore.fs.protocols.restore_fs import RestoreFs
 from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
 from trashcli.restore.fs.real.real_read_cwd_fs import RealReadCwdFs
+from trashcli.trash_dirs_scanner import TopTrashDirRulesFs
 
 
-class RealFs(RealVolumeOf, Fs, RestoreFs):
+class RealFs(RealVolumeOf, Fs, RestoreFs, TopTrashDirRulesFs):
 
     def __init__(self):
         super(RealFs, self).__init__()
@@ -83,6 +84,9 @@ class RealFs(RealVolumeOf, Fs, RestoreFs):
 
     def has_sticky_bit(self, path):
         return (os.stat(path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
+
+    def is_sticky_dir(self, path):  # type: (str) -> bool
+        return os.path.isdir(path) and self.has_sticky_bit(path)
 
     def realpath(self, path):
         return os.path.realpath(path)
