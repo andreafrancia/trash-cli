@@ -21,7 +21,8 @@ class Context(NamedTuple('Context', [
     ('environ', Environ),
     ('uid', int),
 ])):
-    def trash_each(self, trasher,  # type: SingleTrasher
+    def trash_each(self,
+                   trasher,  # type: SingleTrasher
                    ):  # type (...) -> TrashAllResult
         failed_paths = []
         for path in self.paths:
