@@ -6,6 +6,7 @@ from tests.support.trash_dirs.given_trash import \
     GivenTrash
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
+from trashcli.fslib.find_all import find_all
 
 a_date = jan_11_2001()
 
@@ -40,31 +41,31 @@ class TestRestore2:
     def test_restore_operation(self):
         self.trash.has_trashed_file('/cwd/parent/foo.txt', '/data_home/Trash',
                                datetime.datetime(2016, 1, 1), 'boo')
-        assert '/cwd/parent/foo.txt' not in self.fs.find_all()
-        assert '/data_home/Trash/info/foo.txt.trashinfo' in self.fs.find_all()
-        assert '/data_home/Trash/files/foo.txt' in self.fs.find_all()
+        assert '/cwd/parent/foo.txt' not in find_all(self.fs)
+        assert '/data_home/Trash/info/foo.txt.trashinfo' in find_all(self.fs)
+        assert '/data_home/Trash/files/foo.txt' in find_all(self.fs)
 
         res = self.cmd_run(['trash-restore'], reply='0', from_dir='/cwd')
 
         assert '' == res.stderr
-        assert '/data_home/Trash/info/foo.txt.trashinfo' not in self.fs.find_all()
-        assert '/data_home/Trash/files/foo.txt' not in self.fs.find_all()
-        assert '/cwd/parent/foo.txt' in self.fs.find_all()
+        assert '/data_home/Trash/info/foo.txt.trashinfo' not in find_all(self.fs)
+        assert '/data_home/Trash/files/foo.txt' not in find_all(self.fs)
+        assert '/cwd/parent/foo.txt' in find_all(self.fs)
 
     def test_restore_operation_when_dest_exists(self):
         self.trash.has_trashed_file('/cwd/parent/foo.txt', '/data_home/Trash',
                                datetime.datetime(2016, 1, 1), 'boo')
         self.trash.has_file('/cwd/parent/foo.txt')
-        assert '/cwd/parent/foo.txt' in self.fs.find_all()
-        assert '/data_home/Trash/info/foo.txt.trashinfo' in self.fs.find_all()
-        assert '/data_home/Trash/files/foo.txt' in self.fs.find_all()
+        assert '/cwd/parent/foo.txt' in find_all(self.fs)
+        assert '/data_home/Trash/info/foo.txt.trashinfo' in find_all(self.fs)
+        assert '/data_home/Trash/files/foo.txt' in find_all(self.fs)
 
         res = self.cmd_run(['trash-restore'], reply='0', from_dir='/cwd')
 
         assert res.stderr == 'Refusing to overwrite existing file "foo.txt".\n'
-        assert '/cwd/parent/foo.txt' in self.fs.find_all()
-        assert '/data_home/Trash/info/foo.txt.trashinfo' in self.fs.find_all()
-        assert '/data_home/Trash/files/foo.txt' in self.fs.find_all()
+        assert '/cwd/parent/foo.txt' in find_all(self.fs)
+        assert '/data_home/Trash/info/foo.txt.trashinfo' in find_all(self.fs)
+        assert '/data_home/Trash/files/foo.txt' in find_all(self.fs)
 
 
     def test_when_user_reply_with_empty_string(self):

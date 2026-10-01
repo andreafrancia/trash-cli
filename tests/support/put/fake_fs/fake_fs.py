@@ -18,7 +18,7 @@ from trashcli.put.check_cast import check_cast
 from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.fslib.protocols.fs import Fs
 from trashcli.fslib.protocols.remove_file_if_exists import RemoveFileIfExists
-from trashcli.fslib.list_all import list_all
+from trashcli.fslib.find_all import find_all
 from trashcli.restore.fs.protocols.restore_fs import RestoreFs
 
 
@@ -373,6 +373,6 @@ class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             return []
         self._finding_all = True
         try:
-            return list(list_all(self, "/"))
+            return find_all(self)
         finally:
             self._finding_all = False
