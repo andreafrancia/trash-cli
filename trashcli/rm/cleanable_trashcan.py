@@ -1,11 +1,17 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
-from trashcli.rm.real_remover_fs import RealRemoverFs
+from trashcli.compat import Protocol
+from trashcli.fslib.protocols.remove_file2 import RemoveFile2
+from trashcli.fslib.protocols.remove_file_if_exists import RemoveFileIfExists
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
+
+
+class _RemoverFs(RemoveFile2, RemoveFileIfExists, Protocol):
+    pass
 
 
 class CleanableTrashcan:
     def __init__(self,
-                 file_remover, # type: RealRemoverFs
+                 file_remover, # type: _RemoverFs
                  ):
         self._file_remover = file_remover
 

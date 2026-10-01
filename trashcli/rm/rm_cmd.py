@@ -2,11 +2,11 @@
 from trashcli.compat import Protocol
 
 from trashcli.fslib.protocols.read_file import ReadFile
-from trashcli.lib.dir_checker import DirChecker
+from trashcli.fslib.protocols.remove_file2 import RemoveFile2
+from trashcli.fslib.protocols.remove_file_if_exists import RemoveFileIfExists
 from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.user_info import SingleUserInfoProvider
 from trashcli.rm.cleanable_trashcan import CleanableTrashcan
-from trashcli.rm.real_remover_fs import RealRemoverFs
 from trashcli.rm.filter import Filter
 from trashcli.rm.list_trashinfo import ListTrashinfos
 from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
@@ -16,6 +16,8 @@ from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
 class RmFileSystemReader(ReadFile,
                          DirReaderFs,
                          TopTrashDirRulesFs,
+                         RemoveFileIfExists,
+                         RemoveFile2,
                          Protocol):
     pass
 
@@ -47,7 +49,7 @@ class RmCmd:
             self.exit_code = 8
             return
 
-        trashcan = CleanableTrashcan(RealRemoverFs())
+        trashcan = CleanableTrashcan(self.file_reader)
         cmd = Filter(args[0])
 
         listing = ListTrashinfos.make(self.file_reader, self.file_reader)
@@ -56,7 +58,7 @@ class RmCmd:
         scanner = TrashDirsScanner(user_info_provider,
                                    self.volumes_listing,
                                    TopTrashDirRules(self.file_reader),
-                                   DirChecker())
+                                   self.file_reader)
 
         for event, args in scanner.scan_trash_dirs(self.environ, uid):
             if event == trash_dir_found:

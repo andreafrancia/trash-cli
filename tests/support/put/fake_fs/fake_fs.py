@@ -225,6 +225,9 @@ class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         directory = self.get_entity_at(dirname)
         directory.remove(basename)
 
+    def remove_file2(self, path):
+        self.remove_file(path)
+
     def remove_file_if_exists(self, path):
         if self.path_lexists(path):
             self.remove_file(path)

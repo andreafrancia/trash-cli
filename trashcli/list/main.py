@@ -4,7 +4,9 @@ import sys
 
 import trashcli.trash
 from trashcli.empty.main import ContentReader
+from trashcli.compat import Protocol
 from trashcli.fslib.file_system_reader import FileSystemReader
+from trashcli.fslib.protocols.file_size import FileSize
 from trashcli.fslib.real.real_read_file import RealReadFile
 from trashcli.fstab.real_volume_of import RealVolumeOf
 from trashcli.fstab.volume_listing import RealVolumesListing
@@ -25,6 +27,10 @@ from trashcli.list.minor_actions.print_python_executable import \
 from trashcli.list.parser import Parser
 from trashcli.list.trash_dir_selector import TrashDirsSelector
 from trashcli.trash_dirs_scanner import TopTrashDirRulesFs
+
+
+class ListFileReader(TopTrashDirRulesFs, FileSize, Protocol):
+    pass
 
 
 def main():
@@ -50,7 +56,7 @@ class ListCmd:
                  volumes_listing,
                  uid,
                  volumes,  # type: VolumeOf
-                 file_reader, # type: TopTrashDirRulesFs
+                 file_reader, # type: ListFileReader
                  dir_reader,  # type: DirReaderFs
                  content_reader, # type: ContentReader
                  version,
@@ -81,7 +87,8 @@ class ListCmd:
                                                        self.out,
                                                        self.err,
                                                        self.dir_reader,
-                                                       self.content_reader),
+                                                       self.content_reader,
+                                                       file_reader),
                         PrintPythonExecutableArgs: PrintPythonExecutable()}
 
     def run(self, argv):

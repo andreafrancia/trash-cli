@@ -14,6 +14,7 @@ class TestTrashRmCmdRun(unittest.TestCase):
         self.stderr = StringIO()
         self.file_reader = Mock([])
         self.file_reader.path_exists = Mock([], return_value=None)
+        self.file_reader.path_isdir = Mock([], return_value=False)
         self.file_reader.entries_if_dir_exists = Mock([], return_value=[])
         self.environ = {}
         self.getuid = lambda: '111'

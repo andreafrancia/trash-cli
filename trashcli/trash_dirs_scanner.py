@@ -3,11 +3,11 @@ from typing import Iterable
 from trashcli.compat import Protocol
 
 from trashcli.fslib.protocols.path_exists import PathExists
+from trashcli.fslib.protocols.path_is_dir import PathIsDir
 from trashcli.fslib.protocols.is_sticky_dir import IsStickyDir
 from trashcli.fslib.protocols.is_sym_link import IsSymLink
 from trashcli.fslib.protocols.is_world_writable import IsWorldWritable
 from trashcli.fstab.volume_listing import VolumesListing
-from trashcli.lib.dir_checker import DirChecker
 from trashcli.lib.user_info import UserInfoProvider
 
 
@@ -47,7 +47,7 @@ class TrashDir(tuple):
 
 
 class TopTrashDirRulesFs(PathExists, IsStickyDir, IsSymLink,
-                         IsWorldWritable, Protocol):
+                         IsWorldWritable, PathIsDir, Protocol):
     pass
 
 class TopTrashDirRules:
@@ -76,7 +76,7 @@ class TrashDirsScanner:
                  user_info_provider,  # type: UserInfoProvider
                  volumes_listing,  # type: VolumesListing
                  top_trash_dir_rules,  # type: TopTrashDirRules
-                 dir_checker,  # type: DirChecker
+                 dir_checker,  # type: PathIsDir
                  ):
         self.user_info_provider = user_info_provider
         self.volumes_listing = volumes_listing  # type: VolumesListing
@@ -102,7 +102,7 @@ class TrashDirsScanner:
                         top_trash_dir_path,)
                 alt_top_trash_dir = os.path.join(volume,
                                                  '.Trash-%s' % user_info.uid)
-                if self.dir_checker.is_dir(alt_top_trash_dir):
+                if self.dir_checker.path_isdir(alt_top_trash_dir):
                     yield trash_dir_found, TrashDir(alt_top_trash_dir, volume)
 
 

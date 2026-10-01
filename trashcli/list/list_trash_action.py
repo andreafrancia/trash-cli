@@ -11,6 +11,7 @@ from trashcli.lib.sanitize import shell_escape, quoting_wanted
 from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.list.extractors import DeletionDateExtractor
 from trashcli.list.extractors import SizeExtractor
+from trashcli.list.extractors import SizeExtractorFs
 from trashcli.parse_trashinfo.parse_path import parse_path
 from trashcli.parse_trashinfo.parser_error import ParseError
 from trashcli.trash_dirs_scanner import trash_dir_found
@@ -42,7 +43,8 @@ class ListTrashAction:
                  out,
                  err,
                  dir_reader,
-                 content_reader
+                 content_reader,
+                 file_reader,  # type: SizeExtractorFs
                  ):
         self.environ = environ
         self.uid = uid
@@ -51,6 +53,7 @@ class ListTrashAction:
         self.err = err
         self.dir_reader = dir_reader
         self.content_reader = content_reader
+        self.file_reader = file_reader
 
     def run_action(self,
                    args, # type: ListTrashArgs
@@ -62,7 +65,8 @@ class ListTrashAction:
                                  self.selector,
                                  self.dir_reader,
                                  self.content_reader,
-                                 quote).list_all_trash(args):
+                                 quote,
+                                 self.file_reader).list_all_trash(args):
             self.print_event(message)
 
     def print_event(self, event):
@@ -80,6 +84,7 @@ class ListTrash:
                  dir_reader,  # type: DirReaderFs
                  content_reader,
                  quote,
+                 file_reader,  # type: SizeExtractorFs
                  ):
         self.environ = environ
         self.uid = uid
@@ -87,13 +92,14 @@ class ListTrash:
         self.dir_reader = dir_reader
         self.content_reader = content_reader
         self.quote = quote
+        self.file_reader = file_reader
 
     def list_all_trash(self,
                        args,  # type: ListTrashArgs
                        ):
         extractors = {
             'deletion_date': DeletionDateExtractor(),
-            'size': SizeExtractor(),
+            'size': SizeExtractor(self.file_reader),
         }
         user_specified_trash_dirs = args.trash_dirs
         extractor = extractors[args.attribute_to_print]
