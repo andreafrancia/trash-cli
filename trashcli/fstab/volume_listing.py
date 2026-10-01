@@ -20,8 +20,3 @@ class FixedVolumesListing(VolumesListing):
 class NoVolumesListing(VolumesListing):
     def list_volumes(self, environ):
         return []
-
-
-class RealIsMount:
-    def is_mount(self, path):
-        return os.path.ismount(path)

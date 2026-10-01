@@ -1,6 +1,6 @@
 import os
 
-from trashcli.fstab.volume_listing import RealIsMount
+from trashcli.fslib.real.real_is_mount import RealIsMount
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.fstab.volume_of_impl import VolumeOfImpl
 
