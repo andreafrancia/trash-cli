@@ -9,20 +9,16 @@ from trashcli.put.fs.volume_path_fs import VolumePathFs
 
 
 class OriginalLocationParser:
-    def __init__(self,
-                 volume_paths,  # type: VolumePathFs
-                 ):
-        self.volume_paths = volume_paths
 
     def parse_original_location(self, contents, volume_path, trash_dir):
         path = parse_path(contents)
         resolved = os.path.normpath(os.path.join(volume_path, path))
         # the home trash (or any other trash dir) may live on a mount point other than / and still record absolute paths
         if (is_volume_trash_dir(trash_dir, volume_path) and
-                not self.volume_paths.is_root_volume(volume_path)):
+                not VolumePathFs().is_root_volume(volume_path)):
             # A volume trash must record a location that is relative to and inside that volume.
             if os.path.isabs(path):
                 raise ParseError("Path= must be relative for volume trashes")
-            if self.volume_paths.is_outside_of(resolved, volume_path):
+            if VolumePathFs().is_outside_of(resolved, volume_path):
                 raise ParseError("Path= escapes the volume root")
         return resolved

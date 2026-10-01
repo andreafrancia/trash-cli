@@ -1,14 +1,14 @@
 import pytest
 
 from tests.support.trashinfo.trashinfos import an_empty_trashinfo
-from trashcli.parse_trashinfo.parse_original_location import OriginalLocationParser
+from trashcli.parse_trashinfo.parse_original_location import \
+    OriginalLocationParser
 from trashcli.parse_trashinfo.parser_error import ParseError
-from trashcli.put.fs.real_volume_path_fs import RealVolumePathFs
 
 
 class TestTrashInfoParser:
     def setup_method(self):
-        self.parser = OriginalLocationParser(RealVolumePathFs())
+        self.parser = OriginalLocationParser()
 
     def test_1(self):
         assert '/foo.txt' == self.parser.parse_original_location(

@@ -22,7 +22,6 @@ class TestRestore2:
             listing_fs=self.fs,
             version='1.2.3',
             volumes=self.fs,
-            volume_path_fs=self.fs,
             top_trash_dir_rules_reader=self.fs,
             logger=RecordingLogger()
         )

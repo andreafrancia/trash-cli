@@ -28,7 +28,6 @@ class TestRestoreTrashDirOnASeparateMount:
                                 listing_fs=self.fs,
                                 version='1.0',
                                 volumes=self.fs,
-                                volume_path_fs=self.fs,
                                 top_trash_dir_rules_reader=self.fs,
                                 logger=RecordingLogger(self.log_messages))
 

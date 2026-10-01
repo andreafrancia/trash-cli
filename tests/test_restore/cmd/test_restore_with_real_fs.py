@@ -13,10 +13,9 @@ from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
 from trashcli.fslib.real.real_exists import RealExists
+from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from trashcli.fstab.volumes import FakeVolumes
-from trashcli.fslib.real.real_fs import RealFs
-from trashcli.put.fs.real_volume_path_fs import RealVolumePathFs
 from trashcli.restore.fs.real.real_file_reader_fs import RealFileReaderFs
 from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
 from trashcli.restore.fs.real.real_restore_writer_fs import RealRestoreWriterFs
@@ -41,7 +40,6 @@ class TestRestoreTrash:
                                 listing_fs=RealListFilesInDir(),
                                 version='0.0.0',
                                 volumes=FakeVolumes([]),
-                                volume_path_fs=RealVolumePathFs(),
                                 top_trash_dir_rules_reader=RealTopTrashDirFs(),
                                 logger=RecordingLogger())
 

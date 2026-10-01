@@ -7,7 +7,6 @@ from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.parse_trashinfo.parse_deletion_date import parse_deletion_date
 from trashcli.parse_trashinfo.parse_original_location import \
     OriginalLocationParser
-from trashcli.put.fs.volume_path_fs import VolumePathFs
 from trashcli.restore.fs.protocols.file_reader_fs import FileReaderFs
 from trashcli.restore.info_dir_searcher import InfoDirSearcher
 from trashcli.restore.restore_logger import RestoreLogger
@@ -21,12 +20,11 @@ class TrashedFiles:
                  logger,  # type: RestoreLogger
                  file_reader,  # type: FileReaderFs
                  searcher,  # type: InfoDirSearcher
-                 volume_paths,  # type: VolumePathFs
                  ):
         self.logger = logger
         self.file_reader = file_reader
         self.searcher = searcher
-        self.original_location_parser = OriginalLocationParser(volume_paths)
+        self.original_location_parser = OriginalLocationParser()
 
     def all_trashed_files(self,  # type: Self
                           trash_dir_from_cli,  # type: Optional[str]

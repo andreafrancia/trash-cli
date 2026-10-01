@@ -1,13 +1,11 @@
-import datetime
-
 from tests.support.asserts.assert_that import assert_that
 from tests.support.dates import date_at
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from tests.support.trash_dirs.given_trash import \
-    GivenTrash
 from tests.support.restore.has_been_restored_matcher import \
     has_been_restored, has_not_been_restored
 from tests.support.restore.restore_user import RestoreUser
+from tests.support.trash_dirs.given_trash import \
+    GivenTrash
 from tests.test_restore.support.recording_logger import RecordingLogger
 
 
@@ -23,7 +21,6 @@ class TestSearcher:
                                 listing_fs=self.fs,
                                 version='1.0',
                                 volumes=self.fs,
-                                volume_path_fs=self.fs,
                                 read_fs=self.fs,
                                 top_trash_dir_rules_reader=self.fs,
                                 logger=RecordingLogger())

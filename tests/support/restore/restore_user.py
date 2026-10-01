@@ -5,11 +5,9 @@ from typing import Dict, Optional
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.run.cmd_result import CmdResult
 from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
-from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.fslib.protocols.list_files_in_dir import ListFilesInDir
 from trashcli.fstab.volumes import Volumes
 from trashcli.lib.my_input import HardCodedInput
-from trashcli.put.fs.volume_path_fs import VolumePathFs
 from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.fs.protocols.file_reader_fs import FileReaderFs
 from trashcli.restore.fs.protocols.restore_writer_fs import RestoreWriterFs
@@ -28,7 +26,6 @@ class RestoreUser:
                  listing_fs,  # type: ListFilesInDir
                  version,  # type: str
                  volumes,  # type: Volumes
-                 volume_path_fs,  # type: VolumePathFs
                  logger,  # type: RestoreLogger
                  top_trash_dir_rules_reader,  # type: TopTrashDirRulesFs
                  read_fs=None,  # type: Optional[RestoreReadFs]
@@ -41,7 +38,6 @@ class RestoreUser:
         self.listing_fs = listing_fs
         self.version = version
         self.volumes = volumes
-        self.volume_path_fs = volume_path_fs
         self.top_trash_dir_rules_reader = top_trash_dir_rules_reader
         self.logger = logger
 
@@ -72,7 +68,7 @@ class RestoreUser:
             read_fs=self.path_read_fs,
             write_fs=self.write_fs,
             read_cwd=read_cwd,
-            volume_path_fs=self.volume_path_fs)
+        )
 
         try:
             exit_code = cmd.run(args)

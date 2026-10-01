@@ -1,13 +1,10 @@
-from abc import abstractmethod
-
-from trashcli.compat import Protocol
+import os
 
 
-class VolumePathFs(Protocol):
-    @abstractmethod
+class VolumePathFs:
     def is_root_volume(self, volume_path):  # type: (str) -> bool
-        raise NotImplementedError()
+        return volume_path == os.path.sep
 
-    @abstractmethod
     def is_outside_of(self, path, volume_path):  # type: (str, str) -> bool
-        raise NotImplementedError()
+        rel = os.path.relpath(path, os.path.normpath(volume_path))
+        return rel == os.pardir or rel.startswith(os.pardir + os.sep)

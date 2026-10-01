@@ -8,17 +8,16 @@ from tests.support.fakes.fake_trash_dir import FakeTrashDir, \
     FakeTrashDirWithRoot
 from tests.support.fs.sorting_list_file_in_dir_fs import SortingListFilesInDir
 from tests.support.py2mock import Mock
+from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
 from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.empty.top_trash_dir_rules_file_system_reader import \
     RealTopTrashDirFs
 from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from trashcli.fstab.volumes import FakeVolumes
-from trashcli.put.fs.real_volume_path_fs import RealVolumePathFs
 from trashcli.lib.my_input import HardCodedInput
-from trashcli.restore.fs.real.real_restore_writer_fs import RealRestoreWriterFs
-from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
 from trashcli.restore.fs.real.real_file_reader_fs import RealFileReaderFs
-from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
+from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
+from trashcli.restore.fs.real.real_restore_writer_fs import RealRestoreWriterFs
 from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.trashed_files import TrashedFiles
 
@@ -76,7 +75,6 @@ class TestTrashedFileRestoreIntegration:
             uid=uid,
             environ=self.env,
             top_trash_dir_rules_fs=RealTopTrashDirFs(),
-            volume_path_fs=RealVolumePathFs(),
         )
 
     def teardown_method(self):

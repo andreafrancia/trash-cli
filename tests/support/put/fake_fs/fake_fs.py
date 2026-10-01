@@ -3,7 +3,6 @@ import os
 from typing import Iterable
 
 from tests.support.fakes.fake_volume_of import FakeVolumeOf
-from tests.support.fakes.fake_volume_path_fs import FakeVolumePathFs
 from tests.support.put.fake_fs.directory import Directory
 from tests.support.put.fake_fs.directory import make_inode_dir
 from tests.support.put.fake_fs.ent import Ent
@@ -31,7 +30,7 @@ MAX_SYMLINKS_TO_FOLLOW = 40
 
 
 class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
-             FakeVolumePathFs, RemoveFileIfExists):
+             RemoveFileIfExists):
     def __init__(self, cwd='/'):
         super(FakeFs, self).__init__()
         self.root_inode = make_inode_dir('/', 0o755, None)
