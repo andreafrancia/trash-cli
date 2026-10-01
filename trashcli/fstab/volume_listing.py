@@ -3,15 +3,9 @@ from abc import ABCMeta, abstractmethod
 
 import six
 
+from trashcli.fslib.protocols.volumes_listing import VolumesListing
 from trashcli.fstab.mount_points_listing import MountPointListFs, \
     RealMountPointListFs
-
-
-@six.add_metaclass(ABCMeta)
-class VolumesListing:
-    @abstractmethod
-    def list_volumes(self, environ):  # type (dict) -> Iterable[str]
-        raise NotImplementedError()
 
 
 class FixedVolumesListing(VolumesListing):

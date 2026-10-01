@@ -11,7 +11,7 @@ from trashcli.empty.is_input_interactive import is_input_interactive
 from trashcli.empty.parser import Parser
 from trashcli.empty.print_time_action import PrintTimeAction, PrintTimeArgs
 from trashcli.fslib.protocols.read_file import ReadFile
-from trashcli.fstab.volume_listing import VolumesListing
+from trashcli.fslib.protocols.volumes_listing import VolumesListing
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.exit_codes import EX_OK

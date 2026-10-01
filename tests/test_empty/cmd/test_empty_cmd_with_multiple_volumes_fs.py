@@ -14,7 +14,7 @@ from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.empty.main import FileSystemContentReader
 from trashcli.fslib.real.real_fs import RealFs
-from trashcli.fstab.volume_listing import VolumesListing
+from trashcli.fslib.protocols.volumes_listing import VolumesListing
 
 
 class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):

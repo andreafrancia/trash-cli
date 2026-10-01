@@ -12,7 +12,7 @@ from trashcli.empty.parse_reply import parse_reply
 from trashcli.empty.prepare_output_message import prepare_output_message
 from trashcli.empty.user import User
 from trashcli.fslib.protocols.read_file import ReadFile
-from trashcli.fstab.volume_listing import VolumesListing
+from trashcli.fslib.protocols.volumes_listing import VolumesListing
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.environ import Environ

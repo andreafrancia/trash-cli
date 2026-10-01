@@ -7,7 +7,7 @@ from trashcli.fslib.protocols.path_is_dir import PathIsDir
 from trashcli.fslib.protocols.is_sticky_dir import IsStickyDir
 from trashcli.fslib.protocols.is_sym_link import IsSymLink
 from trashcli.fslib.protocols.is_world_writable import IsWorldWritable
-from trashcli.fstab.volume_listing import VolumesListing
+from trashcli.fslib.protocols.volumes_listing import VolumesListing
 from trashcli.lib.user_info import UserInfoProvider
 
 
