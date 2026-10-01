@@ -4,6 +4,8 @@ import pytest
 
 from tests.support.dirs.my_path import MyPath
 from tests.support.put.fake_fs.fake_fs import FakeFs
+from trashcli.empty.existing_file_remover import ExistingFileRemover
+from trashcli.fslib.real.real_entries_if_dir_exists import RealEntriesIfDirExists
 from trashcli.fslib.real.real_fs import RealFs
 
 
@@ -15,6 +17,9 @@ class Env:
         self.fs = fs
         self.base = base
         self.is_real = is_real
+        # the real file system has these capabilities in separate classes
+        self.dir_reader = RealEntriesIfDirExists() if is_real else fs
+        self.remover = ExistingFileRemover() if is_real else fs
 
     def path(self, name):
         return self.base + '/' + name

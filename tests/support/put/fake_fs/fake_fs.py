@@ -15,9 +15,10 @@ from tests.support.put.format_mode import format_mode
 from tests.support.put.my_file_not_found_error import MyFileNotFoundError
 from trashcli.fslib.protocols.is_sticky_dir import IsStickyDir
 from trashcli.fslib.protocols.is_sym_link import IsSymLink
-from trashcli.fslib.protocols.path_exists import PathExists
 from trashcli.put.check_cast import check_cast
+from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.fslib.protocols.fs import Fs
+from trashcli.fslib.protocols.remove_file_if_exists import RemoveFileIfExists
 from trashcli.fslib.list_all import list_all
 from trashcli.restore.fs.protocols.restore_fs import RestoreFs
 
@@ -29,8 +30,8 @@ def as_directory(ent):  # type: (Ent) -> Directory
 MAX_SYMLINKS_TO_FOLLOW = 40
 
 
-class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
-             FakeVolumePathFs):
+class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
+             FakeVolumePathFs, RemoveFileIfExists):
     def __init__(self, cwd='/'):
         super(FakeFs, self).__init__()
         self.root_inode = make_inode_dir('/', 0o755, None)
@@ -224,6 +225,15 @@ class FakeFs(FakeVolumeOf, Fs, PathExists, IsStickyDir, IsSymLink, RestoreFs,
         dirname, basename = os.path.split(path)
         directory = self.get_entity_at(dirname)
         directory.remove(basename)
+
+    def remove_file_if_exists(self, path):
+        if self.path_lexists(path):
+            self.remove_file(path)
+
+    def entries_if_dir_exists(self, path):  # type: (str) -> Iterable[str]
+        if self.path_exists(path):
+            for entry in self.listdir(path):
+                yield entry
 
     def move(self, src, dest):
         basename, entry = self._pop_entry_from_dir(src)
