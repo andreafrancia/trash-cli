@@ -9,7 +9,7 @@ from trashcli.fslib.file_system_reader import FileSystemReader
 from trashcli.fslib.protocols.file_size import FileSize
 from trashcli.fslib.real.real_read_file import RealReadFile
 from trashcli.fstab.real_volume_of import RealVolumeOf
-from trashcli.fstab.volume_listing import RealVolumesListing
+from trashcli.fslib.real.real_volumes_listing import RealVolumesListing
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.fslib.real.real_dir_reader_fs import RealDirReaderFs

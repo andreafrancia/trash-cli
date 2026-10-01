@@ -12,7 +12,7 @@ from trashcli.fslib.real.real_read_file import RealReadFile
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.fslib.real.real_fs import RealFs
-from trashcli.fstab.volume_listing import RealVolumesListing
+from trashcli.fslib.real.real_volumes_listing import RealVolumesListing
 from trashcli.fstab.real_volume_of import RealVolumeOf
 
 

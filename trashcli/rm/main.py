@@ -7,7 +7,7 @@ from trashcli.fslib.real.real_exists import RealExists
 from trashcli.fslib.real.real_is_sticky_dir import RealIsStickyDir
 from trashcli.fslib.real.real_is_sym_link import RealIsSymLink
 from trashcli.fslib.real.real_read_file import RealReadFile
-from trashcli.fstab.volume_listing import RealVolumesListing
+from trashcli.fslib.real.real_volumes_listing import RealVolumesListing
 from trashcli.fslib.real.real_is_world_writable import RealIsWorldWritable
 from trashcli.fslib.real.real_path_is_dir import RealPathIsDir
 from trashcli.rm.real_remover_fs import RealRemoverFs

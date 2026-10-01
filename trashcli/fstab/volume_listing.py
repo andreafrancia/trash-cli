@@ -17,12 +17,6 @@ class FixedVolumesListing(VolumesListing):
         return self.volumes
 
 
-class RealVolumesListing(VolumesListing):
-    def list_volumes(self, environ):
-        return VolumesListingImpl(RealMountPointListFs()).list_volumes(
-            environ)
-
-
 class NoVolumesListing(VolumesListing):
     def list_volumes(self, environ):
         return []
