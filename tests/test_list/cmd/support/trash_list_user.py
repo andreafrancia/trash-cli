@@ -10,7 +10,7 @@ from tests.support.files import make_empty_dir
 from trashcli.empty.main import FileSystemContentReader
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.file_system_reader import FileSystemReader
-from trashcli.fstab.volume_listing import FixedVolumesListing
+from tests.support.fake_fs.fixed_volumes_listing import FixedVolumesListing
 from trashcli.fslib.real.real_dir_reader_fs import RealDirReaderFs
 from trashcli.list.main import ListCmd
 from tests.test_list.cmd.support.run_result import RunResult
