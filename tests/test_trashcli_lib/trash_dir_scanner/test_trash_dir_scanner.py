@@ -4,7 +4,7 @@ from tests.support.py2mock import Mock
 
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
 from trashcli.fslib.protocols.path_is_dir import PathIsDir
-from trashcli.lib.user_info import SingleUserInfoProvider
+from trashcli.lib.single_user_info_provider import SingleUserInfoProvider
 from trashcli.trash_dirs_scanner import TrashDirsScanner, trash_dir_found
 
 

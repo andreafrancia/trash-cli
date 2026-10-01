@@ -8,7 +8,7 @@ from trashcli.fslib.protocols.is_sticky_dir import IsStickyDir
 from trashcli.fslib.protocols.is_sym_link import IsSymLink
 from trashcli.fslib.protocols.is_world_writable import IsWorldWritable
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
-from trashcli.lib.user_info import UserInfoProvider
+from trashcli.lib.user_info_provider import UserInfoProvider
 
 
 class MyEnum(str):

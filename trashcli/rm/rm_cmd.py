@@ -5,7 +5,7 @@ from trashcli.fslib.protocols.read_file import ReadFile
 from trashcli.fslib.protocols.remove_file2 import RemoveFile2
 from trashcli.fslib.protocols.remove_file_if_exists import RemoveFileIfExists
 from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
-from trashcli.lib.user_info import SingleUserInfoProvider
+from trashcli.lib.single_user_info_provider import SingleUserInfoProvider
 from trashcli.rm.cleanable_trashcan import CleanableTrashcan
 from trashcli.rm.filter import Filter
 from trashcli.rm.list_trashinfo import ListTrashinfos

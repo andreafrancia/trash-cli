@@ -1,6 +1,6 @@
 import unittest
 
-from trashcli.lib.user_info import SingleUserInfoProvider
+from trashcli.lib.single_user_info_provider import SingleUserInfoProvider
 
 
 class TestUserInfoProvider(unittest.TestCase):

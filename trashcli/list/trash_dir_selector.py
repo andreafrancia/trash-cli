@@ -2,8 +2,9 @@
 from typing import List, Dict, Iterator, Tuple
 
 from trashcli.fstab.volume_of import VolumeOf
-from trashcli.lib.user_info import AllUsersInfoProvider, \
-    SingleUserInfoProvider
+from trashcli.lib.all_users_info_provider import AllUsersInfoProvider
+from trashcli.lib.real.real_get_all_users import RealGetPwAll
+from trashcli.lib.single_user_info_provider import SingleUserInfoProvider
 from trashcli.trash_dirs_scanner import trash_dir_found, TrashDir, \
     TopTrashDirRules, TrashDirsScanner, TopTrashDirRulesFs
 
@@ -45,7 +46,7 @@ class TrashDirsSelector:
                                             volumes_listing,
                                             TopTrashDirRules(reader),
                                             reader)
-        all_users_info_provider = AllUsersInfoProvider()
+        all_users_info_provider = AllUsersInfoProvider(RealGetPwAll())
         all_users_scanner = TrashDirsScanner(all_users_info_provider,
                                              volumes_listing,
                                              TopTrashDirRules(reader),
