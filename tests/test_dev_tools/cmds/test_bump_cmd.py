@@ -3,6 +3,7 @@ from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.tools.bump_cmd import BumpCmd
 from tests.test_dev_tools.support.fake_cal import FakeCal
 from tests.test_dev_tools.support.fake_system import FakeSystem
+from trashcli.fslib.read_all_files import read_all_files
 
 
 class TestBumpCmd:
@@ -32,7 +33,7 @@ class TestBumpCmd:
         assert self.system.os_system_calls == [
             'git diff-index --quiet HEAD',
             'git commit -m "Bump version to \'0.24.5.1\'" -a']
-        assert self.fs.read_all_files() == [
+        assert read_all_files(self.fs, "/") == [
             ('/trashcli/trash.py', "version = '0.24.5.1'")]
 
     def test_when_clean_and_dry_run(self):
@@ -48,5 +49,5 @@ class TestBumpCmd:
             'git commit -m "Bump version to \'0.24.5.1\'" -a']
         assert self.system.os_system_calls == [
             'git diff-index --quiet HEAD']
-        assert self.fs.read_all_files() == [
+        assert read_all_files(self.fs, "/") == [
             ('/trashcli/trash.py', "version=x.y.x")]

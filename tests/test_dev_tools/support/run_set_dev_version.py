@@ -6,6 +6,7 @@ from tests.support.cmd.capture_exit_code import capture_exit_code
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.tools.set_dev_version import SetDevVersionCmd
 from tests.test_dev_tools.cmds.test_bump_cmd import FakeCal
+from trashcli.fslib.read_all_files import read_all_files
 
 
 class RunSetDevVersion:
@@ -45,6 +46,6 @@ def situation(result,  # type: Result
             "filesystem:\n" +
             "\n".join([
                 "  %s: %s" % (path, content)
-                for path, content in fs.read_all_files()
+                for path, content in read_all_files(fs, "/")
             ])
             )

@@ -376,8 +376,3 @@ class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             return list(list_all(self, "/"))
         finally:
             self._finding_all = False
-
-    def read_all_files(self):
-        return [(f, self.read_file(f))
-                for f in list_all(self, "/")
-                if self.isfile(f)]
