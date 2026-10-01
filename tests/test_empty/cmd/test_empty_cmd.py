@@ -8,7 +8,7 @@ from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.trash_dirs.given_trash import GivenTrash
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
-from tests.support.fake_fs.fixed_volumes_listing import FixedVolumesListing
+from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 
 
 class TestTrashEmptyCmdFs(unittest.TestCase):
@@ -22,7 +22,7 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
             argv0='trash-empty',
             out=self.out,
             err=self.err,
-            volumes_listing=FixedVolumesListing([]),
+            volumes_listing=FakeVolumesListing(),
             now=None,
             file_reader=self.fs,
             file_remover=cast(ExistingFileRemover, self.fs),

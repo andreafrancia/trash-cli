@@ -3,9 +3,9 @@ import unittest
 import pytest
 from six import StringIO
 
+from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.dirs.my_path import MyPath
-from tests.support.fake_fs.no_volumes_listing import NoVolumesListing
 from trashcli.rm.main import RealRmFileSystemReader
 from trashcli.rm.rm_cmd import RmCmd
 
@@ -17,7 +17,7 @@ class TestTrashRm(unittest.TestCase):
         self.stderr = StringIO()
         self.trash_rm = RmCmd(environ={'XDG_DATA_HOME': self.xdg_data_home},
                               getuid=lambda: 123,
-                              volumes_listing=NoVolumesListing(),
+                              volumes_listing=FakeVolumesListing(),
                               stderr=self.stderr,
                               file_reader=RealRmFileSystemReader())
         self.fake_trash_dir = FakeTrashDir(self.xdg_data_home / 'Trash')

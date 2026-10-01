@@ -10,7 +10,7 @@ from tests.support.files import make_empty_dir
 from trashcli.empty.main import FileSystemContentReader
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.file_system_reader import FileSystemReader
-from tests.support.fake_fs.fixed_volumes_listing import FixedVolumesListing
+from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 from trashcli.fslib.real.real_dir_reader_fs import RealDirReaderFs
 from trashcli.list.main import ListCmd
 from tests.test_list.cmd.support.run_result import RunResult
@@ -34,9 +34,9 @@ class TrashListUser:
         self.xdg_data_home = root / 'xdg-data-home'
         self.environ = {'XDG_DATA_HOME': self.xdg_data_home}
         self.fake_uid = None
-        self.volumes = []
         self.version = None
         self.stdout = None
+        self.fake_volumes = FakeVolumesListing()
 
     def run_trash_list(self, *args):  # type: (...) -> RunResult
         file_reader = FileSystemReader()
@@ -47,7 +47,7 @@ class TrashListUser:
             out=stdout,
             err=stderr,
             environ=self.environ,
-            volumes_listing=FixedVolumesListing(self.volumes),
+            volumes_listing=self.fake_volumes,
             uid=self.fake_uid,
             volumes=StubVolumeOf(),
             dir_reader=RealDirReaderFs(),
@@ -64,7 +64,7 @@ class TrashListUser:
     def add_disk(self, disk_name):
         top_dir = self.root / adjust_for_root(disk_name)
         make_empty_dir(top_dir)
-        self.volumes.append(top_dir)
+        self.fake_volumes.add_volume(top_dir)
 
     def trash_dir1(self, disk_name):
         return FakeTrashDir(
