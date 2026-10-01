@@ -30,7 +30,8 @@ class SortFunction(Sorter):
                  sort_func):  # type: (Callable[[TrashedFile], Any]) -> None
         self.sort_func = sort_func
 
-    def sort_files(self, trashed_files,  # type: Iterable[TrashedFile]
+    def sort_files(self,
+                   trashed_files,  # type: Iterable[TrashedFile]
                    ):  # type: (...) -> Iterable[TrashedFile]
         return sorted(trashed_files, key=self.sort_func)
 
