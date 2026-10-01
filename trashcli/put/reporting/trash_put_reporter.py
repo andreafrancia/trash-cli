@@ -20,7 +20,6 @@ from trashcli.put.core.logs import log_str
 from trashcli.put.core.trash_all_result import TrashAllResult
 from trashcli.put.core.trashee import Trashee
 from trashcli.put.describer import Describer
-from trashcli.put.reporting.stats_reader import gentle_stat_read
 
 
 class TrashPutReporter:
@@ -77,18 +76,6 @@ class TrashPutReporter:
                                     environ):  # type: (...) -> LogEntry
         return info_str("'%s' trashed in %s" % (trashed_file,
                                                 trash_dir.shrink_user(environ)))
-
-    @classmethod
-    def log_data_for_debugging(cls, error):
-        try:
-            filename = error.filename
-        except AttributeError:
-            pass
-        else:
-            if filename is not None:
-                for path in [filename, os.path.dirname(filename)]:
-                    info = gentle_stat_read(path)
-                    yield "stats for %s: %s" % (path, info)
 
     @staticmethod
     def trash_dir_with_volume(candidate,  # type: Candidate

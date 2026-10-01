@@ -3,7 +3,6 @@ import stat
 from typing import Iterable
 
 from trashcli.fslib.real.real_is_world_writable import RealIsWorldWritable
-from trashcli.fslib.real.real_read_file import RealReadFile
 from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from trashcli.fslib.real.real_move import RealMove
 from trashcli.fslib.real.real_remove_file import RealRemoveFile
@@ -13,7 +12,6 @@ from trashcli.fslib.real.real_write_file import RealWriteFile
 from trashcli.fslib.real.real_mk_dirs import RealMkDirs
 from trashcli.fstab.mount_points_listing import RealMountPointListFs
 from trashcli.fstab.real_volume_of import RealVolumeOf
-from trashcli.put.fs.file_stat import Stat
 from trashcli.fslib.protocols.fs import Fs
 from trashcli.restore.fs.protocols.restore_fs import RestoreFs
 from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
@@ -60,10 +58,6 @@ class RealFs(RealVolumeOf, Fs, RestoreFs, TopTrashDirRulesFs):
 
     def makedirs(self, path, mode):
         os.makedirs(path, mode)
-
-    def lstat(self, path):
-        stat = os.lstat(path)
-        return Stat(mode=stat.st_mode, uid=stat.st_uid, gid=stat.st_gid)
 
     def mkdir(self, path):
         os.mkdir(path)
