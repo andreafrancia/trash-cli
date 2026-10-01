@@ -18,7 +18,8 @@ class RunRestoreAction:
         self.handler = handler
         self.trashed_files = trashed_files
 
-    def run_action(self, args,  # type: RunRestoreArgs
+    def run_action(self,
+                   args,  # type: RunRestoreArgs
                    ):  # type: (...) -> None
         trashed_files = self.all_files_trashed_from_path(args.path,
                                                          args.trash_dir)
