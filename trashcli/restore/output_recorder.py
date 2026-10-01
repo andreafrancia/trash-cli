@@ -22,7 +22,8 @@ class OutputRecorder(Output):
                      ):  # type: (...) -> None
         self.events.append(event)
 
-    def apply_to(self, output,  # type: Output
-                 ):   # type: (...) -> None
+    def apply_to(self,
+                 output,  # type: Output
+                 ):  # type: (...) -> None
         for event in self.events:
             output.append_event(event)
