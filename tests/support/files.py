@@ -47,6 +47,10 @@ class FsFixture:
         import stat
         self.fs.chmod(path, self.fs.get_mod(path) & ~ stat.S_ISVTX)
 
+    def make_proper_top_trash_dir(self, path):
+        self.make_dirs(path)
+        self.set_sticky_bit(path)
+
     def check_empty_dir(self, path):
         assert self.fs.path_isdir(path)
         assert [] == sorted(self.fs.listdir(path))

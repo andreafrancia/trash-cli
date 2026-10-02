@@ -40,7 +40,7 @@ class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
         )
 
     def test_it_removes_trashinfos_from_method_1_dir(self):
-        self.make_proper_top_trash_dir(self.top_dir / '.Trash')
+        self.fsx.make_proper_top_trash_dir(self.top_dir / '.Trash')
         self.fsx.make_empty_file(self.top_dir / '.Trash/123/info/foo.trashinfo')
 
         self.empty_cmd.run_cmd([], self.environ, uid=123)
@@ -64,10 +64,6 @@ class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
 
         assert not os.path.exists(
             self.temp_dir / 'specified/info/foo.trashinfo')
-
-    def make_proper_top_trash_dir(self, path):
-        self.fsx.make_dirs(path)
-        self.fsx.set_sticky_bit(path)
 
     def tearDown(self):
         self.temp_dir.clean_up()
