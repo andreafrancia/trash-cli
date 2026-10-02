@@ -38,3 +38,8 @@ class TestMyPathFs:
         fs = FakeFs()
 
         assert MyPath('/x', fs).path_join('a').fs is fs
+
+    def test_parent_keeps_the_fs(self):
+        fs = FakeFs()
+
+        assert MyPath('/x/y', fs).parent.fs is fs

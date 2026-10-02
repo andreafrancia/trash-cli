@@ -145,7 +145,7 @@ class MyPath(str):
     @property
     def parent(self,  # type: Self
                ):  # type: (...) -> MyPath
-        return MyPath(os.path.dirname(self))
+        return MyPath(os.path.dirname(self), self.fs)
 
     def clean_up(self,  # type: Self
                  ):
