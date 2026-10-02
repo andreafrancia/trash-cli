@@ -4,7 +4,7 @@ import shutil
 import unittest
 
 
-from tests.support.files import FsFixture, make_unreadable_dir, remove_file2
+from tests.support.files import FsFixture, remove_file2
 from tests.support.dirs.my_path import MyPath
 
 
@@ -14,7 +14,7 @@ class Test_make_unreadable_dir(unittest.TestCase):
         self.tmp_dir = MyPath.make_temp_dir()
         self.unreadable_dir = self.tmp_dir / 'unreadable-dir'
 
-        make_unreadable_dir(self.unreadable_dir)
+        self.fsx.make_unreadable_dir(self.unreadable_dir)
 
     def test_the_directory_has_been_created(self):
         assert os.path.exists(self.unreadable_dir)

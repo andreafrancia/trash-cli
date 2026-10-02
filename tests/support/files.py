@@ -69,6 +69,10 @@ class FsFixture:
     def make_readable(self, path):
         os.chmod(path, 0o700)
 
+    def make_unreadable_dir(self, path):
+        mkdirs(path)
+        os.chmod(path, 0o300)
+
 
 def make_empty_file(path):
     make_file(path, '')
@@ -124,8 +128,7 @@ def make_unreadable_file(path):
 
 
 def make_unreadable_dir(path):
-    mkdirs(path)
-    os.chmod(path, 0o300)
+    FsFixture().make_unreadable_dir(path)
 
 
 def make_readable(path):

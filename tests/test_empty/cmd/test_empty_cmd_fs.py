@@ -6,7 +6,7 @@ from tests.support.py2mock import Mock
 from six import StringIO
 
 from tests.support.fakes.stub_volume_of import StubVolumeOf
-from tests.support.files import FsFixture, make_unreadable_dir
+from tests.support.files import FsFixture
 from tests.support.dirs.my_path import MyPath
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
@@ -41,7 +41,7 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
         )
 
     def test_trash_empty_will_skip_unreadable_dir(self):
-        make_unreadable_dir(self.unreadable_dir)
+        self.fsx.make_unreadable_dir(self.unreadable_dir)
 
         self.empty.run_cmd([], self.environ, uid=123)
 
