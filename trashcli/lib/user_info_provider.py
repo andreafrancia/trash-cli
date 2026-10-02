@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 from abc import abstractmethod
 
-from typing_extensions import Protocol
+from trashcli.compat import Protocol
 
 
 class UserInfoProvider(Protocol):
