@@ -7,13 +7,14 @@ import pytest
 
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.dirs.my_path import MyPath
-from tests.support.files import read_file
 from tests.support.run.run_command import run_command
+from trashcli.fslib.real.real_fs import RealFs
 
 
 @pytest.mark.slow
 class TestEndToEndRestore:
     def setup_method(self):
+        self.fs = RealFs()
         self.tmp_dir = MyPath.make_temp_dir()
         self.curdir = self.tmp_dir / "cwd"
         self.trash_dir = self.tmp_dir / "trash-dir"
@@ -53,7 +54,7 @@ No files trashed from current dir ('%s')
    1 2000-01-01 00:00:01 %(curdir)s/path/to/file2
 What file to restore [0..1]: """ % {'curdir': self.curdir}
         assert result.stderr == ""
-        assert read_file(pj(self.curdir, "path/to/file2")) == "contents"
+        assert self.fs.read_file(pj(self.curdir, "path/to/file2")) == "contents"
         assert not file_exists(pj(self.trash_dir, "info", "file2.trashinfo"))
         assert not file_exists(pj(self.trash_dir, "files", "file2"))
 
@@ -71,7 +72,7 @@ What file to restore [0..1]: """ % {'curdir': self.curdir}
    0 2000-01-01 00:00:01 %(curdir)s/path/to/file1
 What file to restore [0..0]: """ % {'curdir': self.curdir}
         assert result.stderr == ""
-        assert read_file(pj(self.curdir, "path/to/file1")) == "contents"
+        assert self.fs.read_file(pj(self.curdir, "path/to/file1")) == "contents"
         assert not file_exists(pj(self.trash_dir, "info", "file1.trashinfo"))
         assert not file_exists(pj(self.trash_dir, "files", "file1"))
 

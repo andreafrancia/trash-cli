@@ -8,12 +8,10 @@ from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.real.real_has_sticky_bit import RealHasStickyBit
 from trashcli.fslib.real.real_remove_file import RealRemoveFile
 from trashcli.fslib.real.real_mk_dirs import RealMkDirs
-from trashcli.fslib.real.real_read_file import RealReadFile
 from trashcli.fslib.real.real_write_file import RealWriteFile
 from trashcli.fslib.real.real_remove_file2 import RealRemoveFile2
 
 mkdirs = RealMkDirs().mkdirs
-read_file = RealReadFile().read_file
 write_file = RealWriteFile().write_file
 remove_file2 = RealRemoveFile2().remove_file2
 
@@ -155,6 +153,10 @@ def is_a_symlink_to_a_dir(path):
     FsFixture().is_a_symlink_to_a_dir(path)
 
 remove_file = RealRemoveFile().remove_file
+
+
+def read_file(path):
+    return RealFs().read_file(path)
 
 
 @pytest.fixture

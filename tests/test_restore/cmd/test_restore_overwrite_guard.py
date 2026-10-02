@@ -4,7 +4,6 @@ import pytest
 
 from tests.support.dirs.my_path import MyPath
 from tests.support.fakes.fake_trash_dir import trashinfo_content_default_date
-from tests.support.files import read_file
 from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
@@ -20,6 +19,7 @@ from trashcli.restore.fs.real.real_restore_writer_fs import RealRestoreWriterFs
 @pytest.mark.slow
 class TestRestoreOverwriteGuard:
     def setup_method(self):
+        self.fs = RealFs()
         self.tmp_dir = MyPath.make_temp_dir()
         self.fixture = RestoreFileFixture(self.tmp_dir / 'XDG_DATA_HOME',
                                           RealFs())
@@ -71,9 +71,9 @@ class TestRestoreOverwriteGuard:
 
         assert res.exit_code == 1
         assert res.stderr == 'Refusing to overwrite existing file "a".\n'
-        assert read_file(self.cwd / 'a') == 'existing a'
-        assert read_file(self.cwd / 'b') == 'trashed b'
-        assert read_file(trash / 'files/a') == 'trashed a'
+        assert self.fs.read_file(self.cwd / 'a') == 'existing a'
+        assert self.fs.read_file(self.cwd / 'b') == 'trashed b'
+        assert self.fs.read_file(trash / 'files/a') == 'trashed a'
         assert os.path.exists(trash / 'info/a.trashinfo')
         assert not os.path.exists(trash / 'files/b')
         assert not os.path.exists(trash / 'info/b.trashinfo')

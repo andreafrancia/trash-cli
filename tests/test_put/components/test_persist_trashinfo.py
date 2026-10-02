@@ -5,7 +5,6 @@ import unittest
 import pytest
 from six import StringIO
 
-from tests.support.files import read_file
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.put.janitor_tools.info_file_persister import InfoFilePersister
 from trashcli.put.janitor_tools.info_file_persister import TrashinfoData
@@ -32,7 +31,7 @@ class TestPersistTrashInfo(unittest.TestCase):
         trash_info_file = self._run_persist('dummy-path', b'content')
 
         assert self.path / 'dummy-path.trashinfo' == trash_info_file
-        assert 'content' == read_file(trash_info_file)
+        assert 'content' == self.fs.read_file(trash_info_file)
 
     def test_persist_trash_info_first_100_times(self):
         self.test_persist_trash_info_first_time()
@@ -41,7 +40,7 @@ class TestPersistTrashInfo(unittest.TestCase):
                                                    b'content')
 
         assert self.path / 'dummy-path_1.trashinfo' == trash_info_file
-        assert 'content' == read_file(trash_info_file)
+        assert 'content' == self.fs.read_file(trash_info_file)
 
     def tearDown(self):
         self.path.clean_up()
