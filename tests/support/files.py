@@ -29,6 +29,12 @@ class FsFixture:
     def does_not_exist(self, path):
         assert not os.path.exists(path)
 
+    def is_a_symlink_to_a_dir(self, path):
+        dest = "%s-dest" % path
+        os.mkdir(dest)
+        rel_dest = os.path.basename(dest)
+        os.symlink(rel_dest, path)
+
 
 def make_empty_file(path):
     make_file(path, '')
@@ -128,9 +134,6 @@ def does_not_exist(path):
 
 
 def is_a_symlink_to_a_dir(path):
-    dest = "%s-dest" % path
-    os.mkdir(dest)
-    rel_dest = os.path.basename(dest)
-    os.symlink(rel_dest, path)
+    FsFixture().is_a_symlink_to_a_dir(path)
 
 remove_file = RealRemoveFile().remove_file

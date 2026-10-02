@@ -6,7 +6,6 @@ from typing import List, Tuple, NamedTuple, TypeVar
 from tests.support.dates import jan_11_2001
 from tests.support.dirs.my_path import MyPath
 from tests.support.files import FsFixture
-from tests.support.files import is_a_symlink_to_a_dir
 from tests.support.files import make_file, make_parent_for, make_unreadable_file
 from tests.support.files import make_sticky_dir
 from tests.support.files import make_unsticky_dir
@@ -229,7 +228,7 @@ class FakeTrashDir:
         make_unsticky_dir(self.path.parent)
 
     def make_parent_symlink(self):
-        is_a_symlink_to_a_dir(self.path.parent)
+        self.fsx.is_a_symlink_to_a_dir(self.path.parent)
 
     def make_dir(self):
         os.mkdir(self.path)
