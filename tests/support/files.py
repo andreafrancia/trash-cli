@@ -34,7 +34,7 @@ class FsFixture:
         self.fs.symlink(rel_dest, path)
 
     def make_parent_for(self, path):
-        parent = os.path.dirname(os.path.realpath(path))
+        parent = os.path.dirname(self.fs.realpath(path))
         self.make_dirs(parent)
 
     def make_unreadable_file(self, path):
