@@ -26,6 +26,14 @@ trash-rm --version
 trash-restore --version
 trash-empty --version
 
+# The smoke test runs the real trash-put and trash-empty: keep it away from
+# the developer's trash and files by using a temporary data home and a
+# temporary working directory.
+smoke_dir="$(mktemp -d)"
+trap 'rm -rf "$smoke_dir"' EXIT
+export XDG_DATA_HOME="$smoke_dir/data"
+cd "$smoke_dir"
+
 touch foo bar
 trash-put foo bar
 trash-list

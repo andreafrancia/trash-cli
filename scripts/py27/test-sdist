@@ -5,7 +5,9 @@
 # python2.7 interpreter active on PATH (PyPI still has an old `build`
 # release compatible with 2.7). Runs in its own venv, separate from
 # scripts/py27/test's, so installing the built sdist here never disturbs
-# that venv's editable install.
+# that venv's editable install. The smoke test uses a temporary trash and
+# working directory (see scripts/test-sdist), so it leaves the developer's
+# trash alone.
 SCRIPT_DIR="$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 ROOT_DIR="$(cd -- "$SCRIPT_DIR/../.." &> /dev/null && pwd )"
 set -euo pipefail
