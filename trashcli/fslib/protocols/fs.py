@@ -1,5 +1,6 @@
 import os
 from abc import abstractmethod
+from typing import List
 
 from trashcli.compat import Protocol
 from trashcli.fslib.protocols.real_path_fs import RealPathFs
@@ -73,6 +74,10 @@ class Fs(RealPathFs, VolumeOf, Protocol):
 
     @abstractmethod
     def path_lexists(self, path):
+        raise NotImplementedError
+
+    @abstractmethod
+    def listdir(self, path):  # type: (str) -> List[str]
         raise NotImplementedError
 
     @abstractmethod
