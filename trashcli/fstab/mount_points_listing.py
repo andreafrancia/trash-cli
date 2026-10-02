@@ -1,16 +1,7 @@
 # Copyright (C) 2009-2020 Andrea Francia Trivolzio(PV) Italy
 import os
-from abc import ABCMeta, abstractmethod
-
-import six
-
-from trashcli.compat import Protocol
+from trashcli.fstab.protocols.mount_point_list_fs import MountPointListFs
 from trashcli.fstab.partitions import Partitions
-
-
-class MountPointListFs(Protocol):
-    def list_mount_points(self):
-        raise NotImplementedError()
 
 
 class RealMountPointListFs(MountPointListFs):

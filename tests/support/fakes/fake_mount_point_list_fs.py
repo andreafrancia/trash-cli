@@ -1,5 +1,5 @@
 # Copyright (C) 2009-2020 Andrea Francia Trivolzio(PV) Italy
-from trashcli.fstab.mount_points_listing import MountPointListFs
+from trashcli.fstab.protocols.mount_point_list_fs import MountPointListFs
 
 
 class FakeMountPointListFs(MountPointListFs):
