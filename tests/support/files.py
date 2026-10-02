@@ -35,6 +35,10 @@ class FsFixture:
         rel_dest = os.path.basename(dest)
         os.symlink(rel_dest, path)
 
+    def make_parent_for(self, path):
+        parent = os.path.dirname(os.path.realpath(path))
+        make_dirs(parent)
+
 
 def make_empty_file(path):
     make_file(path, '')
@@ -67,8 +71,7 @@ def make_dirs(path):
 
 
 def make_parent_for(path):
-    parent = os.path.dirname(os.path.realpath(path))
-    make_dirs(parent)
+    FsFixture().make_parent_for(path)
 
 
 def make_sticky_dir(path):

@@ -6,7 +6,7 @@ from typing import List, Tuple, NamedTuple, TypeVar
 from tests.support.dates import jan_11_2001
 from tests.support.dirs.my_path import MyPath
 from tests.support.files import FsFixture
-from tests.support.files import make_file, make_parent_for, make_unreadable_file
+from tests.support.files import make_file, make_unreadable_file
 from tests.support.files import make_sticky_dir
 from tests.support.files import make_unsticky_dir
 from tests.support.trashinfo.parse_date import parse_date
@@ -210,7 +210,7 @@ class FakeTrashDir:
                               ):  # type: (...) -> TrashinfoData
         trash_info_path = self.a_trashinfo_path(basename)
         info_full_path = trash_info_path.info_full_path
-        make_parent_for(info_full_path)
+        self.fsx.make_parent_for(info_full_path)
         make_file(info_full_path, content)
         return TrashinfoData(
             content=content,
