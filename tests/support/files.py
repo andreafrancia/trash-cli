@@ -18,7 +18,7 @@ class FsFixture:
             os.makedirs(path)
 
     def make_empty_dir(self, path):
-        os.mkdir(path)
+        self.fs.mkdir(path)
         self.check_empty_dir(path)
 
     def remove_file2(self, path):
