@@ -266,16 +266,20 @@ class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             return False
 
     def remove_file(self, path):
+        # like RealFs.remove_file(), a missing path is ignored
+        if self.path_lexists(path):
+            self._remove_entry(path)
+
+    def _remove_entry(self, path):
         dirname, basename = os.path.split(path)
         directory = self.get_entity_at(dirname)
         directory.remove(basename)
 
     def remove_file2(self, path):
-        self.remove_file(path)
+        self._remove_entry(path)
 
     def remove_file_if_exists(self, path):
-        if self.path_lexists(path):
-            self.remove_file(path)
+        self.remove_file(path)
 
     def entries_if_dir_exists(self, path):  # type: (str) -> Iterable[str]
         if self.path_exists(path):
