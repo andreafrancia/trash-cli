@@ -118,10 +118,6 @@ def make_readable(path):
     os.chmod(path, 0o700)
 
 
-def assert_dir_contains(path, filename):
-    assert os.path.exists(os.path.join(path, filename))
-
-
 def does_not_exist(path):
     FsFixture().does_not_exist(path)
 
