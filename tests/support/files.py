@@ -14,8 +14,8 @@ class FsFixture:
         self.fs = fs
 
     def mkdir_p(self, path):
-        if not os.path.isdir(path):
-            os.makedirs(path)
+        if not self.fs.path_isdir(path):
+            self.fs.makedirs(path, 0o777)
 
     def make_empty_dir(self, path):
         self.fs.mkdir(path)
