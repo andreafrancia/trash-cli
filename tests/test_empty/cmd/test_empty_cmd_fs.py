@@ -6,7 +6,7 @@ from tests.support.py2mock import Mock
 from six import StringIO
 
 from tests.support.fakes.stub_volume_of import StubVolumeOf
-from tests.support.files import make_unreadable_dir, make_readable
+from tests.support.files import FsFixture, make_unreadable_dir
 from tests.support.dirs.my_path import MyPath
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
@@ -19,6 +19,7 @@ from trashcli.fslib.protocols.volumes_listing import VolumesListing
 @pytest.mark.slow
 class TestTrashEmptyCmdFs(unittest.TestCase):
     def setUp(self):
+        self.fsx = FsFixture()
         self.tmp_dir = MyPath.make_temp_dir()
         self.unreadable_dir = self.tmp_dir / 'data/Trash/files/unreadable'
         self.volumes_listing = Mock(spec=VolumesListing)
@@ -48,5 +49,5 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
                 self.err.getvalue())
 
     def tearDown(self):
-        make_readable(self.unreadable_dir)
+        self.fsx.make_readable(self.unreadable_dir)
         self.tmp_dir.clean_up()

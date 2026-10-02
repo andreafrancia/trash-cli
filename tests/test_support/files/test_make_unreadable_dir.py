@@ -4,13 +4,13 @@ import shutil
 import unittest
 
 
-from tests.support.files import \
-    make_unreadable_dir, make_readable, remove_file2
+from tests.support.files import FsFixture, make_unreadable_dir, remove_file2
 from tests.support.dirs.my_path import MyPath
 
 
 class Test_make_unreadable_dir(unittest.TestCase):
     def setUp(self):
+        self.fsx = FsFixture()
         self.tmp_dir = MyPath.make_temp_dir()
         self.unreadable_dir = self.tmp_dir / 'unreadable-dir'
 
@@ -27,6 +27,6 @@ class Test_make_unreadable_dir(unittest.TestCase):
             self.assertEqual(errno.errorcode[e.errno], 'EACCES')
 
     def tearDown(self):
-        make_readable(self.unreadable_dir)
+        self.fsx.make_readable(self.unreadable_dir)
         shutil.rmtree(self.unreadable_dir)
         self.tmp_dir.clean_up()

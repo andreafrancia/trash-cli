@@ -66,6 +66,9 @@ class FsFixture:
         os.mkdir(path)
         set_sticky_bit(path)
 
+    def make_readable(self, path):
+        os.chmod(path, 0o700)
+
 
 def make_empty_file(path):
     make_file(path, '')
@@ -126,7 +129,7 @@ def make_unreadable_dir(path):
 
 
 def make_readable(path):
-    os.chmod(path, 0o700)
+    FsFixture().make_readable(path)
 
 
 def does_not_exist(path):
