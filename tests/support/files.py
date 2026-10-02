@@ -55,7 +55,7 @@ class FsFixture:
         assert [] == sorted(self.fs.listdir(path))
 
     def make_unsticky_dir(self, path):
-        os.mkdir(path)
+        self.fs.mkdir(path)
         self.unset_sticky_bit(path)
 
     def make_sticky_dir(self, path):
