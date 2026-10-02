@@ -59,7 +59,7 @@ class FsFixture:
         self.unset_sticky_bit(path)
 
     def make_sticky_dir(self, path):
-        os.mkdir(path)
+        self.fs.mkdir(path)
         self.set_sticky_bit(path)
 
     def make_readable(self, path):
