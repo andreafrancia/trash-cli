@@ -43,6 +43,12 @@ class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             self.write_file(path, '')
 
     def listdir(self, path):
+        try:
+            entity = self.get_entity_at(path)
+        except MyFileNotFoundError:
+            raise OSError(errno.ENOENT, "No such file or directory", path)
+        if not isinstance(entity, Directory):
+            raise OSError(errno.ENOTDIR, "Not a directory", path)
         return self.ls_aa(path)
 
     def list_files_in_dir(self, path):  # type: (str) -> Iterable[str]
