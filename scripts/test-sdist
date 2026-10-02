@@ -10,13 +10,23 @@ function my_python() {
     fi
 }
 
-pip install --upgrade pip
-pip install --upgrade build
-pip install --upgrade setuptools
+pip install build
+pip install setuptools
 version="$(my_python -c 'import setuptools; setuptools.setup()' --version)"
 rm -f dist/*.tar.gz
 my_python -m build --sdist
 
+# Install the sdist in a brand new venv, so that only the dependencies declared
+# in setup.cfg are available: the development venv has more packages (e.g.
+# typing_extensions) and would hide a missing dependency. Python 2.7 has no
+# venv module, but scripts/py27/test-sdist already runs in a dedicated venv.
+smoke_dir="$(mktemp -d)"
+trap 'rm -rf "$smoke_dir"' EXIT
+if my_python -c 'import venv' 2>/dev/null
+then
+    my_python -m venv "$smoke_dir/venv"
+    export PATH="$smoke_dir/venv/bin:$PATH"
+fi
 pip install dist/trash[_-]cli-$version.tar.gz
 
 trash --version
@@ -29,8 +39,6 @@ trash-empty --version
 # The smoke test runs the real trash-put and trash-empty: keep it away from
 # the developer's trash and files by using a temporary data home and a
 # temporary working directory.
-smoke_dir="$(mktemp -d)"
-trap 'rm -rf "$smoke_dir"' EXIT
 export XDG_DATA_HOME="$smoke_dir/data"
 cd "$smoke_dir"
 
