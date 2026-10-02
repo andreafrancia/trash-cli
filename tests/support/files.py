@@ -97,11 +97,6 @@ def make_unsticky_dir(path):
     unset_sticky_bit(path)
 
 
-def make_dir_unsticky(path):
-    assert_is_dir(path)
-    unset_sticky_bit(path)
-
-
 def assert_is_dir(path):
     assert os.path.isdir(path)
 
