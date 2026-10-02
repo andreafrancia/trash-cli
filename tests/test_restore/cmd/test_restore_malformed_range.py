@@ -7,7 +7,7 @@ from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.fslib.real.real_fs import RealFs
-from trashcli.fstab.volumes import FakeVolumes
+from tests.support.fakes.fake_volumes import FakeVolumes
 
 
 @pytest.mark.slow
