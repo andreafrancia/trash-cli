@@ -4,12 +4,13 @@ from tests.support.dirs.temp_dir import temp_dir
 from tests.support.files import     FsFixture
 from tests.test_put.cmd.e2e.run_trash_put import run_trash_put
 from trashcli.lib.exit_codes import EX_IOERR
+from trashcli.fslib.real.real_fs import RealFs
 
 temp_dir = temp_dir
 
 @pytest.fixture
 def fs():
-    return FsFixture()
+    return FsFixture(RealFs())
 
 @pytest.mark.slow
 class TestWhenFedWithDotArguments:

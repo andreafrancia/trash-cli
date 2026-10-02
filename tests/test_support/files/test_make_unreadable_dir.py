@@ -6,11 +6,12 @@ import unittest
 
 from tests.support.files import FsFixture
 from tests.support.dirs.my_path import MyPath
+from trashcli.fslib.real.real_fs import RealFs
 
 
 class Test_make_unreadable_dir(unittest.TestCase):
     def setUp(self):
-        self.fsx = FsFixture()
+        self.fsx = FsFixture(RealFs())
         self.tmp_dir = MyPath.make_temp_dir()
         self.unreadable_dir = self.tmp_dir / 'unreadable-dir'
 

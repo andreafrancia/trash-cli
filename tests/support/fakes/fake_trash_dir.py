@@ -10,6 +10,7 @@ from tests.support.trashinfo.parse_date import parse_date
 from trashcli.put.format_trash_info import format_original_location
 from trashcli.put.janitor_tools.info_file_persister import TrashinfoData
 from trashcli.restore.trashed_file import TrashedFile
+from trashcli.fslib.real.real_fs import RealFs
 
 
 def a_default_datetime():
@@ -51,7 +52,7 @@ class FakeTrashDir:
         self.path = path
         self.info_path = os.path.join(path, 'info')
         self.files_path = os.path.join(path, 'files')
-        self.fsx = FsFixture()
+        self.fsx = FsFixture(RealFs())
 
     def __truediv__(self,  # type: Self
                     other,  # type: str

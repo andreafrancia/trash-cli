@@ -19,7 +19,7 @@ from trashcli.fslib.protocols.volumes_listing import VolumesListing
 @pytest.mark.slow
 class TestTrashEmptyCmdFs(unittest.TestCase):
     def setUp(self):
-        self.fsx = FsFixture()
+        self.fsx = FsFixture(RealFs())
         self.tmp_dir = MyPath.make_temp_dir()
         self.unreadable_dir = self.tmp_dir / 'data/Trash/files/unreadable'
         self.volumes_listing = Mock(spec=VolumesListing)

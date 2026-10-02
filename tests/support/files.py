@@ -10,8 +10,8 @@ from trashcli.fslib.real.real_remove_file2 import RealRemoveFile2
 
 
 class FsFixture:
-    def __init__(self):
-        self.fs = RealFs()
+    def __init__(self, fs):  # type: (RealFs) -> None
+        self.fs = fs
 
     def mkdir_p(self, path):
         if not os.path.isdir(path):
@@ -89,4 +89,4 @@ class FsFixture:
 
 @pytest.fixture
 def fsx():
-    return FsFixture()
+    return FsFixture(RealFs())

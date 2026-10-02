@@ -13,7 +13,7 @@ from trashcli.fslib.real.real_fs import RealFs
 @pytest.mark.slow
 class TestDescriber(unittest.TestCase):
     def setUp(self):
-        self.fsx = FsFixture()
+        self.fsx = FsFixture(RealFs())
         self.temp_dir = MyPath.make_temp_dir()
         self.describer = Describer(RealFs())
 

@@ -16,7 +16,7 @@ def parent_path(path):
 @pytest.mark.slow
 class Test_parent_path(unittest.TestCase):
     def setUp(self):
-        self.fsx = FsFixture()
+        self.fsx = FsFixture(RealFs())
         self.tmp_dir = MyPath.make_temp_dir()
 
     def test(self):

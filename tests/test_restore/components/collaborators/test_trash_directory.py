@@ -4,12 +4,13 @@ from tests.support.files import FsFixture
 from tests.support.dirs.my_path import MyPath
 from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from trashcli.restore.info_files import InfoFiles
+from trashcli.fslib.real.real_fs import RealFs
 
 
 @pytest.mark.slow
 class TestTrashDirectory:
     def setup_method(self):
-        self.fsx = FsFixture()
+        self.fsx = FsFixture(RealFs())
         self.temp_dir = MyPath.make_temp_dir()
         self.fsx.require_empty_dir(self.temp_dir / 'trash-dir')
         self.info_files = InfoFiles(RealListFilesInDir())

@@ -37,7 +37,7 @@ class TrashListUser:
         self.version = None
         self.stdout = None
         self.fake_volumes = FakeVolumesListing()
-        self.fsx = FsFixture()
+        self.fsx = FsFixture(RealFs())
 
     def run_trash_list(self, *args):  # type: (...) -> RunResult
         file_reader = FileSystemReader()

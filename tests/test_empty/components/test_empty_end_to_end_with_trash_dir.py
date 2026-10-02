@@ -6,11 +6,12 @@ from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.files import FsFixture
 from tests.support.trash_dirs.list_trash_dir import list_trash_dir
 from tests.support.dirs.my_path import MyPath
+from trashcli.fslib.real.real_fs import RealFs
 
 
 class TestEmptyEndToEndWithTrashDir(unittest.TestCase):
     def setUp(self):
-        self.fsx = FsFixture()
+        self.fsx = FsFixture(RealFs())
         self.tmp_dir = MyPath.make_temp_dir()
         self.trash_dir = self.tmp_dir / 'trash-dir'
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)

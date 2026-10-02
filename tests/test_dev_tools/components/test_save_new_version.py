@@ -7,7 +7,7 @@ from trashcli.fslib.real.real_fs import RealFs
 class TestSaveNewVersion:
     def setup_method(self):
         self.fs = RealFs()
-        self.fsx = FsFixture()
+        self.fsx = FsFixture(RealFs())
         self.tmp_dir = MyPath.make_temp_dir()
         self.saver = VersionSaver(RealFs())
 

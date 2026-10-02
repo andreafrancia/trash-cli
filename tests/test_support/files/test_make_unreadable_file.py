@@ -11,7 +11,7 @@ from trashcli.fslib.real.real_fs import RealFs
 class Test_make_unreadable_file(unittest.TestCase):
     def setUp(self):
         self.fs = RealFs()
-        self.fsx = FsFixture()
+        self.fsx = FsFixture(RealFs())
         self.tmp_dir = MyPath.make_temp_dir()
 
     def test(self):

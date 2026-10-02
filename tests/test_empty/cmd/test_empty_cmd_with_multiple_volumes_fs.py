@@ -20,7 +20,7 @@ class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
     def setUp(self):
         self.temp_dir = MyPath.make_temp_dir()
         self.top_dir = self.temp_dir / 'topdir'
-        self.fsx = FsFixture()
+        self.fsx = FsFixture(RealFs())
         self.volumes_listing = Mock(spec=VolumesListing)
         self.volumes_listing.list_volumes.return_value = [self.top_dir]
         self.fsx.require_empty_dir(self.top_dir)
