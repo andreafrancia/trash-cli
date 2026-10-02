@@ -59,19 +59,27 @@ class TrashListUser:
     def set_fake_uid(self, uid):
         self.fake_uid = uid
 
-    def add_disk(self, disk_name):
+    def add_disk(self,
+                 disk_name,  # type: str
+                 ):
         top_dir = self.root / adjust_for_root(disk_name)
         self.fsx.make_empty_dir(top_dir)
         self.fake_volumes.add_volume(top_dir)
 
-    def trash_dir1(self, disk_name):
+    def trash_dir1(self,
+                   disk_name,  # type: str
+                   ):
         return FakeTrashDir(
             self._trash_dir1_parent(disk_name) / str(self.fake_uid))
 
-    def trash_dir2(self, disk_name):
+    def trash_dir2(self,
+                   disk_name,  # type: str
+                   ):
         return FakeTrashDir(self.root / disk_name / '.Trash-%s' % self.fake_uid)
 
-    def _trash_dir1_parent(self, disk_name):
+    def _trash_dir1_parent(self,
+                           disk_name,  # type: str
+                           ):
         return self.root / disk_name / '.Trash'
 
     def home_trash_dir(self):

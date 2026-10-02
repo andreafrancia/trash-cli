@@ -5,6 +5,7 @@ from typing import List
 from typing import NamedTuple
 
 from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
+from trashcli.lib.action import Action
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.lib.printable import printable
 from trashcli.lib.sanitize import shell_escape, quoting_wanted
@@ -35,7 +36,7 @@ class ListTrashArgs(
     pass
 
 
-class ListTrashAction:
+class ListTrashAction(Action):
     def __init__(self,
                  environ,
                  uid,

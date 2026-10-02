@@ -1,12 +1,21 @@
 from __future__ import print_function
 
+from typing import Mapping
+
+from trashcli.fslib.protocols.volumes_listing import VolumesListing
+from trashcli.lib.action import Action
+
 
 class PrintVolumesArgs(object):
     pass
 
 
-class PrintVolumesList(object):
-    def __init__(self, environ, volumes_listing, out):
+class PrintVolumesList(Action):
+    def __init__(self,
+                 environ,  # type: Mapping[str, str]
+                 volumes_listing,  # type: VolumesListing
+                 out,
+                 ):
         self.environ = environ
         self.volumes_listing = volumes_listing
         self.out = out

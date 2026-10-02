@@ -1,12 +1,14 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import os
 import sys
+from typing import Mapping, TextIO, List
 
 import trashcli.trash
 from trashcli.empty.main import ContentReader
 from trashcli.compat import Protocol
 from trashcli.fslib.file_system_reader import FileSystemReader
 from trashcli.fslib.protocols.file_size import FileSize
+from trashcli.fslib.protocols.volumes_listing import VolumesListing
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.real.real_read_file import RealReadFile
 from trashcli.fslib.real.real_volume_of import RealVolumeOfFs
@@ -51,16 +53,16 @@ def main():
 
 class ListCmd:
     def __init__(self,
-                 out,
-                 err,
-                 environ,
-                 volumes_listing,
-                 uid,
+                 out,  # type: TextIO
+                 err,  # type: TextIO
+                 environ,  # type: Mapping[str, str]
+                 volumes_listing,  # type: VolumesListing
+                 uid,  # type: int
                  volumes,  # type: VolumeOfFs
-                 file_reader, # type: ListFileReader
+                 file_reader,  # type: ListFileReader
                  dir_reader,  # type: DirReaderFs
-                 content_reader, # type: ContentReader
-                 version,
+                 content_reader,  # type: ContentReader
+                 version,  # type: str
                  ):
         self.out = out
         self.err = err
@@ -92,7 +94,9 @@ class ListCmd:
                                                        file_reader),
                         PrintPythonExecutableArgs: PrintPythonExecutable()}
 
-    def run(self, argv):
+    def run(self,
+            argv,  # type: List[str]
+            ):  # type: (...) -> None
         parser = Parser(os.path.basename(argv[0]))
         args = parser.parse_list_args(argv[1:], argv[0])
 

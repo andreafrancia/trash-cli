@@ -1,5 +1,6 @@
 from typing import List, NamedTuple
 
+from trashcli.lib.action import Action
 from trashcli.trash_dirs_scanner import trash_dir_found, \
     trash_dir_skipped_because_parent_not_sticky, \
     trash_dir_skipped_because_parent_is_symlink
@@ -13,7 +14,7 @@ class ListTrashDirsArgs(
     pass
 
 
-class ListTrashDirs:
+class ListTrashDirs(Action):
     def __init__(self, environ, uid, selector):
         self.environ = environ
         self.uid = uid

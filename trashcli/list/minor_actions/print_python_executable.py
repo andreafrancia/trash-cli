@@ -1,10 +1,13 @@
+from trashcli.lib.action import Action
+
+
 class PrintPythonExecutableArgs:
     pass
 
 
-class PrintPythonExecutable:
+class PrintPythonExecutable(Action):
     def run_action(self,
-                   _args,  # type: PrintPythonExecutableArgs
+                   args,  # type: PrintPythonExecutableArgs
                    ):
         import sys
         print(sys.executable)

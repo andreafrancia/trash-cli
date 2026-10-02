@@ -1,13 +1,15 @@
 from pprint import pprint
 
+from trashcli.lib.action import Action
+
 
 class DebugVolumesArgs:
     pass
 
 
-class DebugVolumes(object):
+class DebugVolumes(Action):
     def run_action(self,
-                   _args,  # type: DebugVolumesArgs
+                   args,  # type: DebugVolumesArgs
                    ):
         import psutil
         import os
