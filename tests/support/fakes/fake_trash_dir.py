@@ -8,7 +8,6 @@ from tests.support.dirs.my_path import MyPath
 from tests.support.files import FsFixture
 from tests.support.files import make_file
 from tests.support.files import make_sticky_dir
-from tests.support.files import make_unsticky_dir
 from tests.support.trashinfo.parse_date import parse_date
 from trashcli.put.format_trash_info import format_original_location
 from trashcli.put.janitor_tools.info_file_persister import TrashinfoData
@@ -225,7 +224,7 @@ class FakeTrashDir:
         make_sticky_dir(self.path.parent)
 
     def make_parent_unsticky(self):
-        make_unsticky_dir(self.path.parent)
+        self.fsx.make_unsticky_dir(self.path.parent)
 
     def make_parent_symlink(self):
         self.fsx.is_a_symlink_to_a_dir(self.path.parent)

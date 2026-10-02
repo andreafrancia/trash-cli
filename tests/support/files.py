@@ -56,6 +56,10 @@ class FsFixture:
         assert os.path.isdir(path)
         assert [] == sorted(os.listdir(path))
 
+    def make_unsticky_dir(self, path):
+        os.mkdir(path)
+        unset_sticky_bit(path)
+
 
 def make_empty_file(path):
     make_file(path, '')
@@ -96,8 +100,7 @@ def make_sticky_dir(path):
 
 
 def make_unsticky_dir(path):
-    os.mkdir(path)
-    unset_sticky_bit(path)
+    FsFixture().make_unsticky_dir(path)
 
 
 def set_sticky_bit(path):
