@@ -39,6 +39,11 @@ class FsFixture:
         parent = os.path.dirname(os.path.realpath(path))
         make_dirs(parent)
 
+    def make_unreadable_file(self, path):
+        make_file(path, '')
+        import os
+        os.chmod(path, 0)
+
 
 def make_empty_file(path):
     make_file(path, '')
@@ -110,9 +115,7 @@ def ensure_non_sticky_dir(path):
 
 
 def make_unreadable_file(path):
-    make_file(path, '')
-    import os
-    os.chmod(path, 0)
+    FsFixture().make_unreadable_file(path)
 
 
 def make_unreadable_dir(path):

@@ -6,7 +6,7 @@ from typing import List, Tuple, NamedTuple, TypeVar
 from tests.support.dates import jan_11_2001
 from tests.support.dirs.my_path import MyPath
 from tests.support.files import FsFixture
-from tests.support.files import make_file, make_unreadable_file
+from tests.support.files import make_file
 from tests.support.files import make_sticky_dir
 from tests.support.files import make_unsticky_dir
 from tests.support.trashinfo.parse_date import parse_date
@@ -77,7 +77,7 @@ class FakeTrashDir:
     def add_unreadable_trashinfo(self,  # type: Self
                                  basename):
         info_path = self.a_trashinfo_path(basename)
-        make_unreadable_file(info_path.info_full_path)
+        self.fsx.make_unreadable_file(info_path.info_full_path)
 
     def add_file_trashed_from_dir(
             self,  # type: Self
