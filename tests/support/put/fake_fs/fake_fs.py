@@ -284,6 +284,8 @@ class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             raise OSError("Cannot call rmtree on a symbolic link")
         if not isinstance(inode.entity, Directory):
             raise OSError(errno.ENOTDIR, "Not a directory", path)
+        if inode.mode & 0o400 == 0:
+            raise OSError(errno.EACCES, "Permission denied", path)
         self._remove_entry(path)
 
     def _remove_entry(self, path):

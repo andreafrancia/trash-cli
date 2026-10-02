@@ -74,3 +74,17 @@ class TestShutilRmtreeLikeRealFs:
         env.fs.shutil_rmtree(env.path('a'))
 
         assert sorted(env.fs.listdir(env.base)) == ['b']
+
+    @real_and_fake()
+    def test_fails_on_an_unreadable_dir_and_leaves_it(self, env):
+        env.fs.mkdir(env.path('dir'))
+        env.fs.chmod(env.path('dir'), 0o300)
+
+        try:
+            with pytest.raises(OSError) as excinfo:
+                env.fs.shutil_rmtree(env.path('dir'))
+
+            assert excinfo.value.errno == errno.EACCES
+            assert env.fs.path_lexists(env.path('dir')) is True
+        finally:
+            env.fs.chmod(env.path('dir'), 0o700)
