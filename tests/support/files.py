@@ -51,8 +51,8 @@ class FsFixture:
         os.chmod(path, os.stat(path).st_mode & ~ stat.S_ISVTX)
 
     def check_empty_dir(self, path):
-        assert os.path.isdir(path)
-        assert [] == sorted(os.listdir(path))
+        assert self.fs.path_isdir(path)
+        assert [] == sorted(self.fs.listdir(path))
 
     def make_unsticky_dir(self, path):
         os.mkdir(path)
