@@ -1,6 +1,5 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import unittest
-from typing import cast
 
 from six import StringIO
 
@@ -8,10 +7,11 @@ from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.trash_dirs.given_trash import GivenTrash
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
+from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 
 
-class TestTrashEmptyCmdFs(unittest.TestCase):
+class TestTrashEmptyCmdFake(unittest.TestCase):
     def setUp(self):
         self.fs = FakeFs()
         self.trash = GivenTrash(self.fs)
@@ -25,9 +25,9 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
             volumes_listing=FakeVolumesListing(),
             now=None,
             file_reader=self.fs,
-            file_remover=cast(ExistingFileRemover, self.fs),
+            file_remover=ExistingFileRemover(self.fs),
             content_reader=self.fs,
-            dir_reader=self.fs,
+            dir_reader=FileSystemDirReader(self.fs),
             version='unused',
             volumes=self.fs
         )
