@@ -78,6 +78,11 @@ class FsFixture:
             os.makedirs(path)
         assert os.path.isdir(path)
 
+    def require_empty_dir(self, path):
+        if os.path.exists(path): shutil.rmtree(path)
+        make_dirs(path)
+        check_empty_dir(path)
+
 
 def make_empty_file(path):
     make_file(path, '')
@@ -89,9 +94,7 @@ def make_file(filename, contents=''):
 
 
 def require_empty_dir(path):
-    if os.path.exists(path): shutil.rmtree(path)
-    make_dirs(path)
-    check_empty_dir(path)
+    FsFixture().require_empty_dir(path)
 
 
 def make_empty_dir(path):

@@ -6,7 +6,7 @@ from tests.support.py2mock import Mock
 from six import StringIO
 
 from tests.support.fakes.stub_volume_of import StubVolumeOf
-from tests.support.files import FsFixture, make_empty_file, require_empty_dir
+from tests.support.files import FsFixture, make_empty_file
 from tests.support.dirs.my_path import MyPath
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
@@ -23,7 +23,7 @@ class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
         self.fsx = FsFixture()
         self.volumes_listing = Mock(spec=VolumesListing)
         self.volumes_listing.list_volumes.return_value = [self.top_dir]
-        require_empty_dir(self.top_dir)
+        self.fsx.require_empty_dir(self.top_dir)
         self.environ = {}
         self.empty_cmd = EmptyCmd(
             argv0='trash-empty',

@@ -4,7 +4,7 @@ import unittest
 
 import pytest
 
-from tests.support.files import make_empty_file, make_file, require_empty_dir
+from tests.support.files import FsFixture, make_empty_file, make_file
 from tests.support.dirs.my_path import MyPath
 from trashcli.put.describer import Describer
 from trashcli.fslib.real.real_fs import RealFs
@@ -13,25 +13,26 @@ from trashcli.fslib.real.real_fs import RealFs
 @pytest.mark.slow
 class TestDescriber(unittest.TestCase):
     def setUp(self):
+        self.fsx = FsFixture()
         self.temp_dir = MyPath.make_temp_dir()
         self.describer = Describer(RealFs())
 
     def test_on_directories(self):
-        require_empty_dir(self.temp_dir / 'a-dir')
+        self.fsx.require_empty_dir(self.temp_dir / 'a-dir')
 
         assert "directory" == self.describer.describe('.')
         assert "directory" == self.describer.describe("..")
         assert "directory" == self.describer.describe(self.temp_dir / 'a-dir')
 
     def test_on_dot_directories(self):
-        require_empty_dir(self.temp_dir / 'a-dir')
+        self.fsx.require_empty_dir(self.temp_dir / 'a-dir')
 
         assert "'.' directory" == self.describer.describe(
             self.temp_dir / "a-dir/.")
         assert "'.' directory" == self.describer.describe("./.")
 
     def test_on_dot_dot_directories(self):
-        require_empty_dir(self.temp_dir / 'a-dir')
+        self.fsx.require_empty_dir(self.temp_dir / 'a-dir')
 
         assert "'..' directory" == self.describer.describe("./..")
         assert "'..' directory" == self.describer.describe(self.temp_dir / "a-dir/..")
