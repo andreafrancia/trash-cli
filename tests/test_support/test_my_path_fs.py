@@ -72,3 +72,13 @@ class TestMyPathFs:
 
         assert path.existence_of('a', 'b') == ['/a: exists',
                                                '/b: does not exist']
+
+    def test_exists_uses_the_fs(self):
+        fs = FakeFs()
+        path = MyPath('/x', fs)
+        path.mkdirs()
+        path.write_file('a', '')
+
+        assert path.exists('a') is True
+        assert path.exists('/a') is True
+        assert path.exists('b') is False

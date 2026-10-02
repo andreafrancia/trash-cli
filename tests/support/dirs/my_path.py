@@ -68,7 +68,7 @@ class MyPath(str):
                path,  # type: str
                ):  # type: (...) -> bool
         full_path = self.join_no_slash(path)
-        return os.path.exists(full_path)
+        return self.fs.path_exists(full_path)
 
     def join_no_slash(self,  # type: Self
                       path,  # type: str
