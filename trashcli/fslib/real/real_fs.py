@@ -74,6 +74,9 @@ class RealFs(RealVolumeOf, Fs, RestoreFs, TopTrashDirRulesFs):
     def remove_file(self, path):
         RealRemoveFile().remove_file(path)
 
+    def remove(self, path):  # type: (str) -> None
+        os.remove(path)
+
     def is_symlink(self, path):
         return os.path.islink(path)
 

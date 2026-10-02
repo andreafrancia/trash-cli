@@ -270,6 +270,13 @@ class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         if self.path_lexists(path):
             self._remove_entry(path)
 
+    def remove(self, path):  # type: (str) -> None
+        # like os.remove(): files and symlinks only, a dir is an error
+        inode = self._lookup_or_enoent(path, follow_last_link=False)
+        if isinstance(inode.entity, Directory):
+            raise OSError(errno.EISDIR, "Is a directory", path)
+        self._remove_entry(path)
+
     def _remove_entry(self, path):
         dirname, basename = os.path.split(path)
         directory = self.get_entity_at(dirname)
