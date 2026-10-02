@@ -57,7 +57,7 @@ class MyPath(str):
                             path,  # type: MyPath
                             ):  # type: (...) -> str
         path = self / path
-        existence = os.path.exists(path)
+        existence = self.fs.path_exists(path)
         existence_message = {
             True: "exists",
             False: "does not exist"
