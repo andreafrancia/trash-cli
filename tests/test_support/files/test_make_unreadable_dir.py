@@ -4,7 +4,7 @@ import shutil
 import unittest
 
 
-from tests.support.files import FsFixture, remove_file2
+from tests.support.files import FsFixture
 from tests.support.dirs.my_path import MyPath
 
 
@@ -21,7 +21,7 @@ class Test_make_unreadable_dir(unittest.TestCase):
 
     def test_and_can_not_be_removed(self):
         try:
-            remove_file2(self.unreadable_dir)
+            self.fsx.remove_file2(self.unreadable_dir)
             self.fail()
         except OSError as e:
             self.assertEqual(errno.errorcode[e.errno], 'EACCES')

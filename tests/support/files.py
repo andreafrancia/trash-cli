@@ -13,7 +13,6 @@ from trashcli.fslib.real.real_remove_file2 import RealRemoveFile2
 
 mkdirs = RealMkDirs().mkdirs
 write_file = RealWriteFile().write_file
-remove_file2 = RealRemoveFile2().remove_file2
 
 class FsFixture:
     def __init__(self):
@@ -25,6 +24,9 @@ class FsFixture:
     def make_empty_dir(self, path):
         os.mkdir(path)
         check_empty_dir(path)
+
+    def remove_file2(self, path):
+        RealRemoveFile2().remove_file2(path)
 
     def does_not_exist(self, path):
         assert not os.path.exists(path)
@@ -153,6 +155,10 @@ def is_a_symlink_to_a_dir(path):
     FsFixture().is_a_symlink_to_a_dir(path)
 
 remove_file = RealRemoveFile().remove_file
+
+
+def remove_file2(path):
+    FsFixture().remove_file2(path)
 
 
 def read_file(path):
