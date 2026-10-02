@@ -79,8 +79,20 @@ class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
 
     def mkdir(self, path):
         dirname, basename = os.path.split(path)
-        directory = self.get_entity_at(dirname)
+        directory = self._get_parent_for_new_entry(dirname, path)
         directory.add_dir(basename, 0o755, path)
+
+    def _get_parent_for_new_entry(self, dirname, path):
+        # like the kernel does for mkdir() and symlink()
+        try:
+            parent = self.get_entity_at(dirname)
+        except MyFileNotFoundError:
+            raise OSError(errno.ENOENT, "No such file or directory", path)
+        if not isinstance(parent, Directory):
+            raise OSError(errno.ENOTDIR, "Not a directory", path)
+        if os.path.basename(path) in parent.entries():
+            raise OSError(errno.EEXIST, "File exists", path)
+        return parent
 
     def get_entity_at(self, path):  # type: (str) -> Ent
         return self._lookup(path, follow_last_link=True).entity
@@ -274,7 +286,7 @@ class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         dirname, basename = os.path.split(dest)
         if dirname == '':
             raise OSError("only absolute dests are supported, got %s" % dest)
-        directory = as_directory(self.get_entity_at(dirname))
+        directory = self._get_parent_for_new_entry(dirname, dest)
         directory.add_link(basename, src)
 
     def has_sticky_bit(self, path):
