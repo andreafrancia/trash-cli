@@ -54,3 +54,12 @@ class TestMyPathFs:
 
         assert found == ['/x/a']
         assert [p.fs for p in found] == [fs]
+
+    def test_list_all_files_sorted_uses_the_fs(self):
+        fs = FakeFs()
+        path = MyPath('/x', fs)
+        path.mkdirs()
+        path.write_file('b', '')
+        path.write_file('a', '')
+
+        assert path.list_all_files_sorted() == ['/a', '/b']

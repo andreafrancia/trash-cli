@@ -162,4 +162,4 @@ class MyPath(str):
     def list_all_files_sorted(self,  # type: Self
                               ):
         return sorted([p.replace(self, '')
-                       for p in list_all(RealFs(), self)])
+                       for p in list_all(self.fs, self)])
