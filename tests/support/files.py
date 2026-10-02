@@ -97,10 +97,6 @@ def make_unsticky_dir(path):
     unset_sticky_bit(path)
 
 
-def assert_is_dir(path):
-    assert os.path.isdir(path)
-
-
 def set_sticky_bit(path):
     FsFixture().set_sticky_bit(path)
 
