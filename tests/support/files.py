@@ -62,7 +62,7 @@ class FsFixture:
         self.set_sticky_bit(path)
 
     def make_readable(self, path):
-        os.chmod(path, 0o700)
+        self.fs.chmod(path, 0o700)
 
     def make_unreadable_dir(self, path):
         self.fs.mkdirs(path)
