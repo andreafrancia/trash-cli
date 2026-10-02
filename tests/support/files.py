@@ -1,6 +1,8 @@
 import os
 import shutil
 
+import pytest
+
 from trashcli.fslib.real.real_fs import RealFs
 
 from trashcli.fslib.real.real_has_sticky_bit import RealHasStickyBit
@@ -60,6 +62,10 @@ class FsFixture:
         os.mkdir(path)
         unset_sticky_bit(path)
 
+    def make_sticky_dir(self, path):
+        os.mkdir(path)
+        set_sticky_bit(path)
+
 
 def make_empty_file(path):
     make_file(path, '')
@@ -95,8 +101,7 @@ def make_parent_for(path):
 
 
 def make_sticky_dir(path):
-    os.mkdir(path)
-    set_sticky_bit(path)
+    FsFixture().make_sticky_dir(path)
 
 
 def make_unsticky_dir(path):
@@ -132,3 +137,8 @@ def is_a_symlink_to_a_dir(path):
     FsFixture().is_a_symlink_to_a_dir(path)
 
 remove_file = RealRemoveFile().remove_file
+
+
+@pytest.fixture
+def fsx():
+    return FsFixture()

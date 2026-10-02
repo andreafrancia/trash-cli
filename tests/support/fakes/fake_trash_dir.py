@@ -7,7 +7,6 @@ from tests.support.dates import jan_11_2001
 from tests.support.dirs.my_path import MyPath
 from tests.support.files import FsFixture
 from tests.support.files import make_file
-from tests.support.files import make_sticky_dir
 from tests.support.trashinfo.parse_date import parse_date
 from trashcli.put.format_trash_info import format_original_location
 from trashcli.put.janitor_tools.info_file_persister import TrashinfoData
@@ -221,7 +220,7 @@ class FakeTrashDir:
         return os.listdir(self.info_path)
 
     def make_parent_sticky(self):
-        make_sticky_dir(self.path.parent)
+        self.fsx.make_sticky_dir(self.path.parent)
 
     def make_parent_unsticky(self):
         self.fsx.make_unsticky_dir(self.path.parent)

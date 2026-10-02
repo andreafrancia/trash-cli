@@ -3,11 +3,13 @@ import os
 
 import pytest
 
+from tests.support.files import fsx
 from tests.support.files import make_empty_file
-from tests.support.files import make_sticky_dir
 from tests.support.files import require_empty_dir
 from tests.test_put.cmd.e2e.run_trash_put import run_trashput_with_vol
 from tests.support.dirs.temp_dir import temp_dir
+
+fsx = fsx  # the fixture, imported from its module
 
 temp_dir = temp_dir
 
@@ -45,10 +47,10 @@ class TestUnsecureTrashDirMessages:
             'trash-dir: /vol/.Trash/123, parent: /vol/.Trash\n'
         )
 
-    def test_when_is_a_symlink(self, fake_vol, temp_dir):
+    def test_when_is_a_symlink(self, fake_vol, temp_dir, fsx):
         require_empty_dir(fake_vol)
         make_empty_file(fake_vol / 'foo')
-        make_sticky_dir(fake_vol / 'link-destination')
+        fsx.make_sticky_dir(fake_vol / 'link-destination')
         os.symlink('link-destination', fake_vol / '.Trash')
 
         output = run_trashput_with_vol(temp_dir, fake_vol, [fake_vol / 'foo'])
