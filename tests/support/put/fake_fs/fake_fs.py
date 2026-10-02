@@ -275,7 +275,14 @@ class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         inode = self._lookup_or_enoent(path, follow_last_link=False)
         if isinstance(inode.entity, Directory):
             raise OSError(errno.EISDIR, "Is a directory", path)
+        self._require_can_unlink_from(os.path.dirname(path), path)
         self._remove_entry(path)
+
+    def _require_can_unlink_from(self, dirname, path):
+        # unlinking an entry needs write and search permissions on its dir
+        inode = self._lookup_or_enoent(dirname, follow_last_link=True)
+        if inode.mode & 0o300 != 0o300:
+            raise OSError(errno.EACCES, "Permission denied", path)
 
     def shutil_rmtree(self, path):  # type: (str) -> None
         # like shutil.rmtree(): a dir only, not a symlink to a dir
