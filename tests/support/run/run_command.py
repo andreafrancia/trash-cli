@@ -8,18 +8,6 @@ from tests.support.project_root import project_root
 from tests.support.run.cmd_result import CmdResult
 
 
-# Python 3.14 argparse colors the help and the usage messages when FORCE_COLOR
-# is set, and the tests that compare that output need plain text.
-#
-# Both variables are set on purpose, each one switches the colors off by
-# itself and each one takes precedence over FORCE_COLOR:
-#  - NO_COLOR is the standard variable: it works for any program that the
-#    command may run, not only for Python;
-#  - PYTHON_COLORS=0 is the Python specific one (3.13+): it keeps working if
-#    NO_COLOR is ignored or removed, e.g. by a wrapper or an env cleanup.
-NO_COLORS = {'NO_COLOR': '1', 'PYTHON_COLORS': '0'}
-
-
 def run_command(cwd, command, args=None, input='', env=None):
     if env is None:
         env = {}
@@ -39,3 +27,15 @@ def run_command(cwd, command, args=None, input='', env=None):
     return CmdResult(stdout.decode('utf-8'),
                      stderr.decode('utf-8'),
                      process.returncode)
+
+
+# Python 3.14 argparse colors the help and the usage messages when FORCE_COLOR
+# is set, and the tests that compare that output need plain text.
+#
+# Both variables are set on purpose, each one switches the colors off by
+# itself and each one takes precedence over FORCE_COLOR:
+#  - NO_COLOR is the standard variable: it works for any program that the
+#    command may run, not only for Python;
+#  - PYTHON_COLORS=0 is the Python specific one (3.13+): it keeps working if
+#    NO_COLOR is ignored or removed, e.g. by a wrapper or an env cleanup.
+NO_COLORS = {'NO_COLOR': '1', 'PYTHON_COLORS': '0'}
