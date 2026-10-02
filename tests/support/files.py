@@ -43,7 +43,7 @@ class FsFixture:
 
     def set_sticky_bit(self, path):
         import stat
-        os.chmod(path, os.stat(path).st_mode | stat.S_ISVTX)
+        self.fs.chmod(path, self.fs.get_mod(path) | stat.S_ISVTX)
 
     def unset_sticky_bit(self, path):
         import stat
