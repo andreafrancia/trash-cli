@@ -27,13 +27,9 @@ into `master` keeping the history linear (no merge commits).
    `.venv/bin/python` from inside it.
 2. Before committing the work of the task, always run `scripts/pre-push` from
    the task worktree and fix what it reports. It runs the tests (tox), the sdist
-   smoke test, and the type checks for Python 3 and Python 2.7.
-
-   `scripts/pre-push` runs the real `trash-put` and `trash-empty`, which would
-   empty the real trash of the user: point `XDG_DATA_HOME` to a temporary
-   directory first:
-
-       XDG_DATA_HOME="$(mktemp -d)" scripts/pre-push
+   smoke test, and the type checks for Python 3 and Python 2.7. The sdist smoke
+   test uses a temporary trash and working directory, so the user's real trash
+   is left alone.
 
    Then commit on the task branch.
 3. Integrate into `master`:
