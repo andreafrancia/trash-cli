@@ -49,6 +49,10 @@ class Fs(RealPathFs, VolumeOf, Protocol):
         raise NotImplementedError
 
     @abstractmethod
+    def shutil_rmtree(self, path):  # type: (str) -> None
+        raise NotImplementedError
+
+    @abstractmethod
     def is_symlink(self, path):
         raise NotImplementedError
 

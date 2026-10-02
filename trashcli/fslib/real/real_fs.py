@@ -1,4 +1,5 @@
 import os
+import shutil
 import stat
 from typing import Iterable
 
@@ -76,6 +77,9 @@ class RealFs(RealVolumeOf, Fs, RestoreFs, TopTrashDirRulesFs):
 
     def remove(self, path):  # type: (str) -> None
         os.remove(path)
+
+    def shutil_rmtree(self, path):  # type: (str) -> None
+        shutil.rmtree(path)
 
     def is_symlink(self, path):
         return os.path.islink(path)

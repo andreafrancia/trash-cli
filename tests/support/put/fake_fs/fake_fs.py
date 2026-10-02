@@ -277,6 +277,15 @@ class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             raise OSError(errno.EISDIR, "Is a directory", path)
         self._remove_entry(path)
 
+    def shutil_rmtree(self, path):  # type: (str) -> None
+        # like shutil.rmtree(): a dir only, not a symlink to a dir
+        inode = self._lookup_or_enoent(path, follow_last_link=False)
+        if isinstance(inode.entity, SymLink):
+            raise OSError("Cannot call rmtree on a symbolic link")
+        if not isinstance(inode.entity, Directory):
+            raise OSError(errno.ENOTDIR, "Not a directory", path)
+        self._remove_entry(path)
+
     def _remove_entry(self, path):
         dirname, basename = os.path.split(path)
         directory = self.get_entity_at(dirname)
