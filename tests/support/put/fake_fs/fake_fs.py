@@ -324,8 +324,35 @@ class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             return False
 
     def realpath(self, path):
-        path = self._join_cwd(path)
-        return os.path.join("/", path)
+        """Like os.path.realpath(): resolves the symlinks and the dot
+        components of the part of the path that exists, the rest is
+        appended as it is."""
+        pending = self._join_cwd(path).split('/')
+        resolved = '/'
+        followed = 0
+        while pending:
+            component = pending.pop(0)
+            if component in ('', '.'):
+                continue
+            if component == '..':
+                resolved = os.path.dirname(resolved)
+                continue
+            candidate = os.path.join(resolved, component)
+            try:
+                entity = self._get_entry_at(candidate).entity
+            except (MyFileNotFoundError, TypeError):
+                resolved = candidate
+                continue
+            if isinstance(entity, SymLink):
+                followed += 1
+                if followed > MAX_SYMLINKS_TO_FOLLOW:
+                    return os.path.join(candidate, *pending)
+                if entity.dest.startswith('/'):
+                    resolved = '/'
+                pending = entity.dest.split('/') + pending
+            else:
+                resolved = candidate
+        return resolved
 
     def cd(self, path):
         self.cwd = path
