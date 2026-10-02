@@ -1,5 +1,4 @@
 import os
-import shutil
 import tempfile
 from typing import Any, Generator, Optional, TypeVar, Type
 
@@ -149,7 +148,7 @@ class MyPath(str):
 
     def clean_up(self,  # type: Self
                  ):
-        shutil.rmtree(self)
+        self.fs.shutil_rmtree(self)
 
     @classmethod
     def make_temp_dir(

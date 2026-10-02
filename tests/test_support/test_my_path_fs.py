@@ -82,3 +82,13 @@ class TestMyPathFs:
         assert path.exists('a') is True
         assert path.exists('/a') is True
         assert path.exists('b') is False
+
+    def test_clean_up_uses_the_fs(self):
+        fs = FakeFs()
+        path = MyPath('/x', fs)
+        path.mkdirs()
+        path.write_file('a', '')
+
+        path.clean_up()
+
+        assert fs.path_exists('/x') is False
