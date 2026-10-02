@@ -39,8 +39,7 @@ class FsFixture:
 
     def make_unreadable_file(self, path):
         self.make_file(path, '')
-        import os
-        os.chmod(path, 0)
+        self.fs.chmod(path, 0)
 
     def set_sticky_bit(self, path):
         import stat
