@@ -26,6 +26,9 @@ class FsFixture:
         os.mkdir(path)
         check_empty_dir(path)
 
+    def does_not_exist(self, path):
+        assert not os.path.exists(path)
+
 
 def make_empty_file(path):
     make_file(path, '')
@@ -121,7 +124,7 @@ def assert_dir_contains(path, filename):
 
 
 def does_not_exist(path):
-    assert not os.path.exists(path)
+    FsFixture().does_not_exist(path)
 
 
 def is_a_symlink_to_a_dir(path):
