@@ -105,12 +105,6 @@ def unset_sticky_bit(path):
     FsFixture().unset_sticky_bit(path)
 
 
-def ensure_non_sticky_dir(path):
-    import os
-    assert os.path.isdir(path)
-    assert not RealHasStickyBit().has_sticky_bit(path)
-
-
 def make_unreadable_file(path):
     FsFixture().make_unreadable_file(path)
 
