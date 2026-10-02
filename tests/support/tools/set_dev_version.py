@@ -24,7 +24,11 @@ class SetDevVersionCmd:
         self.version_saver = VersionSaver(fs)
 
     def run_set_dev_version(self, argv, root):
-        parser = argparse.ArgumentParser(prog=argv[0])
+        if sys.version_info >= (3, 14):
+            # argparse colors its messages when FORCE_COLOR is set
+            parser = argparse.ArgumentParser(prog=argv[0], color=False)
+        else:
+            parser = argparse.ArgumentParser(prog=argv[0])
         parser.add_argument('ref')
         parser.add_argument('sha')
         args = parser.parse_args(argv[1:])
