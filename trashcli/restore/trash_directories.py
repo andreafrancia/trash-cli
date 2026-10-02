@@ -7,7 +7,7 @@ from typing import Optional
 
 from trashcli.fstab.protocols.mount_point_list_fs import MountPointListFs
 from trashcli.fstab.volume_of import VolumeOf
-from trashcli.fstab.volumes import Volumes
+from trashcli.fstab.protocols.volumes import Volumes
 from trashcli.lib.environ import Environ
 from trashcli.lib.trash_dirs import (
     volume_trash_dir1, volume_trash_dir2, home_trash_dir)

@@ -6,7 +6,7 @@ from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.run.cmd_result import CmdResult
 from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
 from trashcli.fslib.protocols.list_files_in_dir import ListFilesInDir
-from trashcli.fstab.volumes import Volumes
+from trashcli.fstab.protocols.volumes import Volumes
 from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.fs.protocols.file_reader_fs import FileReaderFs

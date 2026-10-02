@@ -1,6 +1,6 @@
 import os
 
-from trashcli.fstab.volumes import Volumes
+from trashcli.fstab.protocols.volumes import Volumes
 
 
 class FakeVolumes(Volumes):
