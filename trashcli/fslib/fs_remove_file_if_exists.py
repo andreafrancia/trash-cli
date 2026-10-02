@@ -1,6 +1,6 @@
 from trashcli.fslib.protocols.fs import Fs
 from trashcli.fslib.protocols.remove_file_if_exists import RemoveFileIfExists
-from trashcli.fslib.real.real_remove_file2 import RealRemoveFile2
+from trashcli.fslib.fs_remove_file2 import FsRemoveFile2
 
 
 class FsRemoveFileIfExists(RemoveFileIfExists):
@@ -9,4 +9,4 @@ class FsRemoveFileIfExists(RemoveFileIfExists):
 
     def remove_file_if_exists(self, path):
         if self.fs.path_lexists(path):
-            RealRemoveFile2(self.fs).remove_file2(path)
+            FsRemoveFile2(self.fs).remove_file2(path)
