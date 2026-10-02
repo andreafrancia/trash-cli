@@ -52,6 +52,10 @@ class FsFixture:
         import stat
         os.chmod(path, os.stat(path).st_mode & ~ stat.S_ISVTX)
 
+    def check_empty_dir(self, path):
+        assert os.path.isdir(path)
+        assert [] == sorted(os.listdir(path))
+
 
 def make_empty_file(path):
     make_file(path, '')
@@ -73,8 +77,7 @@ def make_empty_dir(path):
 
 
 def check_empty_dir(path):
-    assert os.path.isdir(path)
-    assert [] == sorted(os.listdir(path))
+    FsFixture().check_empty_dir(path)
 
 
 def make_dirs(path):
