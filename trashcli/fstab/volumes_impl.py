@@ -1,8 +1,3 @@
-from abc import ABCMeta
-
-import six
-import os
-
 from trashcli.fstab.protocols.mount_point_list_fs import MountPointListFs
 from trashcli.fstab.protocols.volumes import Volumes
 from trashcli.fstab.volume_of import VolumeOf
