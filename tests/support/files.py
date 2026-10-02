@@ -6,13 +6,8 @@ import pytest
 from trashcli.fslib.real.real_fs import RealFs
 
 from trashcli.fslib.real.real_has_sticky_bit import RealHasStickyBit
-from trashcli.fslib.real.real_remove_file import RealRemoveFile
-from trashcli.fslib.real.real_mk_dirs import RealMkDirs
-from trashcli.fslib.real.real_write_file import RealWriteFile
 from trashcli.fslib.real.real_remove_file2 import RealRemoveFile2
 
-mkdirs = RealMkDirs().mkdirs
-write_file = RealWriteFile().write_file
 
 class FsFixture:
     def __init__(self):
@@ -70,7 +65,7 @@ class FsFixture:
         os.chmod(path, 0o700)
 
     def make_unreadable_dir(self, path):
-        mkdirs(path)
+        self.fs.mkdirs(path)
         os.chmod(path, 0o300)
 
     def make_dirs(self, path):
@@ -88,7 +83,7 @@ class FsFixture:
 
     def make_file(self, filename, contents=''):
         make_parent_for(filename)
-        write_file(filename, contents)
+        self.fs.write_file(filename, contents)
 
 
 def make_empty_file(path):
@@ -154,11 +149,22 @@ def does_not_exist(path):
 def is_a_symlink_to_a_dir(path):
     FsFixture().is_a_symlink_to_a_dir(path)
 
-remove_file = RealRemoveFile().remove_file
 
 
 def remove_file2(path):
     FsFixture().remove_file2(path)
+
+
+def mkdirs(path):
+    RealFs().mkdirs(path)
+
+
+def write_file(filename, contents):
+    RealFs().write_file(filename, contents)
+
+
+def remove_file(path):
+    RealFs().remove_file(path)
 
 
 def read_file(path):
