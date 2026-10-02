@@ -18,7 +18,7 @@ class GivenTrash:
         self.volume_trash = volume_trash
 
     def has_file(self, path, content=b''):
-        self.fs.makedirs(os.path.dirname(path), 0o755)
+        self.fs.mkdirs(os.path.dirname(path))
         self.fs.write_file(path, content)
 
     def has_trashed_file(self, from_path, trash_dir, time,
@@ -76,10 +76,9 @@ class GivenTrash:
     def has_a_unreadable_trashinfo(self,
                                    basename,  # type: str
                                    ):
-        self.fs.makedirs('{home_trash}/info/{basename}'
-                                 .format(basename=basename,
-                                         home_trash=self.home_trash),
-                                 0o755)
+        self.fs.mkdirs('{home_trash}/info/{basename}'
+                       .format(basename=basename,
+                               home_trash=self.home_trash))
 
     def has_a_volume_trashinfo(self,
                                name,  # type: str

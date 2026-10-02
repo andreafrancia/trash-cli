@@ -56,7 +56,7 @@ class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             yield os.path.join(path, entry)
 
     def mkdirs(self, path):  # type: (str) -> None
-        self.makedirs(path, 0o755)
+        self._make_dirs_if_missing(path, 0o755)
 
     def getcwd_as_realpath(self):  # type: () -> str
         return os.path.join('/', self.cwd)
@@ -146,15 +146,28 @@ class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         raise MyFileNotFoundError("too many levels of symbolic links: %s" % path)
 
     def makedirs(self, path, mode):
+        # like os.makedirs(): the last dir must not exist
+        self._makedirs(path, mode, exist_ok=False)
+
+    def _make_dirs_if_missing(self, path, mode):
+        self._makedirs(path, mode, exist_ok=True)
+
+    def _makedirs(self, path, mode, exist_ok):
         path = self._join_cwd(path)
+        components = self._components_for(path)
         inode = self.root_inode
-        for component in self._components_for(path):
+        for index, component in enumerate(components):
+            if not isinstance(inode.entity, Directory):
+                raise OSError(errno.ENOTDIR, "Not a directory", path)
             try:
                 inode = inode.directory().get_entry(component, path, self)
             except MyFileNotFoundError:
                 directory = inode.directory()
                 directory.add_dir(component, mode, path)
                 inode = directory.get_entry(component, path, self)
+            else:
+                if index == len(components) - 1 and not exist_ok:
+                    raise OSError(errno.EEXIST, "File exists", path)
 
     def _join_cwd(self, path):
         return os.path.join(os.path.join("/", self.cwd), path)
@@ -198,7 +211,7 @@ class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
     def make_file_and_dirs(self, path, content=''):
         path = self._join_cwd(path)
         dirname, basename = os.path.split(path)
-        self.makedirs(dirname, 0o755)
+        self._make_dirs_if_missing(dirname, 0o755)
         self.write_file(path, content)
 
     def write_file(self,
