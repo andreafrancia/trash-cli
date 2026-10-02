@@ -32,6 +32,14 @@ into `master` keeping the history linear (no merge commits).
    is left alone.
 
    Then commit on the task branch.
+
+   Every commit must pass `scripts/pre-push`, not only the last one of the
+   task: run it before each commit, one commit at a time, and never batch
+   several changes to test them together at the end. The same applies when you
+   rewrite the history (rebase, reorder, split, squash, reword): afterwards
+   run `scripts/pre-push` on every rewritten commit, for example with
+   `git rebase --exec scripts/pre-push <base>`, and fix the commit that fails
+   instead of adding a fixup at the tip.
 3. Integrate into `master`:
 
        git rebase master                # in the task worktree
