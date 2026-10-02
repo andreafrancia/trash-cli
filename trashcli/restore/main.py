@@ -5,7 +5,7 @@ import sys
 import trashcli.trash
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
-from trashcli.fstab.volumes import RealVolumes
+from trashcli.fstab.real.real_volumes import RealVolumes
 from trashcli.lib.logger import my_logger
 from trashcli.lib.my_input import RealInput
 from trashcli.restore.fs.real.real_file_reader_fs import RealFileReaderFs
