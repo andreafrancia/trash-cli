@@ -1,6 +1,8 @@
 import os
 import shutil
 
+from trashcli.fslib.real.real_fs import RealFs
+
 from trashcli.fslib.real.real_has_sticky_bit import RealHasStickyBit
 from trashcli.fslib.real.real_remove_file import RealRemoveFile
 from trashcli.fslib.real.real_mk_dirs import RealMkDirs
@@ -13,9 +15,12 @@ read_file = RealReadFile().read_file
 write_file = RealWriteFile().write_file
 remove_file2 = RealRemoveFile2().remove_file2
 
-def mkdir_p(path):
-    if not os.path.isdir(path):
-        os.makedirs(path)
+class FsFixture:
+    def __init__(self):
+        self.fs = RealFs()
+    def mkdir_p(self, path):
+        if not os.path.isdir(path):
+            os.makedirs(path)
 
 
 def make_empty_file(path):

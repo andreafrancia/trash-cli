@@ -1,12 +1,15 @@
 import pytest
 
 from tests.support.dirs.temp_dir import temp_dir
-from tests.support.files import mkdir_p
+from tests.support.files import     FsFixture
 from tests.test_put.cmd.e2e.run_trash_put import run_trash_put
 from trashcli.lib.exit_codes import EX_IOERR
 
 temp_dir = temp_dir
 
+@pytest.fixture
+def fs():
+    return FsFixture()
 
 @pytest.mark.slow
 class TestWhenFedWithDotArguments:
@@ -27,9 +30,9 @@ class TestWhenFedWithDotArguments:
         assert result.combined() == [
             "trash-put: cannot trash directory '..'\n", EX_IOERR]
 
-    def test_dot_argument_is_skipped_even_in_subdirs(self, temp_dir):
+    def test_dot_argument_is_skipped_even_in_subdirs(self, temp_dir, fs):
         sandbox = temp_dir / 'sandbox'
-        mkdir_p(sandbox)
+        fs.mkdir_p(sandbox)
 
         result = run_trash_put(temp_dir, ["%s/." % sandbox])
 
@@ -39,9 +42,9 @@ class TestWhenFedWithDotArguments:
             "trash-put: cannot trash '.' directory '/sandbox/.'\n",
             EX_IOERR, "/sandbox: exists"]
 
-    def test_dot_dot_argument_is_skipped_even_in_subdirs(self, temp_dir):
+    def test_dot_dot_argument_is_skipped_even_in_subdirs(self, temp_dir, fs):
         sandbox = temp_dir / 'sandbox'
-        mkdir_p(sandbox)
+        fs.mkdir_p(sandbox)
 
         result = run_trash_put(temp_dir, ["%s/.." % sandbox])
 
