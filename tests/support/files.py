@@ -83,9 +83,12 @@ class FsFixture:
         make_dirs(path)
         check_empty_dir(path)
 
+    def make_empty_file(self, path):
+        make_file(path, '')
+
 
 def make_empty_file(path):
-    make_file(path, '')
+    FsFixture().make_empty_file(path)
 
 
 def make_file(filename, contents=''):

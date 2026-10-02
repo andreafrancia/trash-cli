@@ -3,10 +3,9 @@ import os
 
 import pytest
 
-from tests.support.files import fsx
-from tests.support.files import make_empty_file
 from tests.test_put.cmd.e2e.run_trash_put import run_trashput_with_vol
 from tests.support.dirs.temp_dir import temp_dir
+from tests.support.files import fsx
 
 fsx = fsx  # the fixture, imported from its module
 
@@ -22,7 +21,7 @@ class TestUnsecureTrashDirMessages:
 
     def test_when_is_unsticky(self, temp_dir, fake_vol, fsx):
         fsx.require_empty_dir(fake_vol)
-        make_empty_file(fake_vol / 'foo')
+        fsx.make_empty_file(fake_vol / 'foo')
         fsx.require_empty_dir(fake_vol / '.Trash')
 
         output = run_trashput_with_vol(temp_dir, fake_vol, [fake_vol / 'foo'])
@@ -35,8 +34,8 @@ class TestUnsecureTrashDirMessages:
 
     def test_when_it_is_not_a_dir(self, fake_vol, temp_dir, fsx):
         fsx.require_empty_dir(fake_vol)
-        make_empty_file(fake_vol / 'foo')
-        make_empty_file(fake_vol / '.Trash')
+        fsx.make_empty_file(fake_vol / 'foo')
+        fsx.make_empty_file(fake_vol / '.Trash')
 
         output = run_trashput_with_vol(temp_dir, fake_vol, [fake_vol / 'foo'])
 
@@ -48,7 +47,7 @@ class TestUnsecureTrashDirMessages:
 
     def test_when_is_a_symlink(self, fake_vol, temp_dir, fsx):
         fsx.require_empty_dir(fake_vol)
-        make_empty_file(fake_vol / 'foo')
+        fsx.make_empty_file(fake_vol / 'foo')
         fsx.make_sticky_dir(fake_vol / 'link-destination')
         os.symlink('link-destination', fake_vol / '.Trash')
 

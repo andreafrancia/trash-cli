@@ -4,7 +4,7 @@ import unittest
 
 import pytest
 
-from tests.support.files import FsFixture, make_empty_file, make_file
+from tests.support.files import FsFixture, make_file
 from tests.support.dirs.my_path import MyPath
 from trashcli.put.describer import Describer
 from trashcli.fslib.real.real_fs import RealFs
@@ -43,7 +43,7 @@ class TestDescriber(unittest.TestCase):
         assert "regular file" == self.describer.describe(self.temp_dir / "non-empty")
 
     def test_name_for_empty_file(self):
-        make_empty_file(self.temp_dir / 'empty')
+        self.fsx.make_empty_file(self.temp_dir / 'empty')
 
         assert "regular empty file" == self.describer.describe(self.temp_dir / "empty")
 

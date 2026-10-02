@@ -6,7 +6,7 @@ from tests.support.py2mock import Mock
 from six import StringIO
 
 from tests.support.fakes.stub_volume_of import StubVolumeOf
-from tests.support.files import FsFixture, make_empty_file
+from tests.support.files import FsFixture
 from tests.support.dirs.my_path import MyPath
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
@@ -41,7 +41,7 @@ class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
 
     def test_it_removes_trashinfos_from_method_1_dir(self):
         self.make_proper_top_trash_dir(self.top_dir / '.Trash')
-        make_empty_file(self.top_dir / '.Trash/123/info/foo.trashinfo')
+        self.fsx.make_empty_file(self.top_dir / '.Trash/123/info/foo.trashinfo')
 
         self.empty_cmd.run_cmd([], self.environ, uid=123)
 
@@ -49,7 +49,7 @@ class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
             self.top_dir / '.Trash/123/info/foo.trashinfo')
 
     def test_it_removes_trashinfos_from_method_2_dir(self):
-        make_empty_file(self.top_dir / '.Trash-123/info/foo.trashinfo')
+        self.fsx.make_empty_file(self.top_dir / '.Trash-123/info/foo.trashinfo')
 
         self.empty_cmd.run_cmd([], self.environ, uid=123)
 
@@ -57,7 +57,7 @@ class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
             self.top_dir / '.Trash-123/info/foo.trashinfo')
 
     def test_it_removes_trashinfo_from_specified_trash_dir(self):
-        make_empty_file(self.temp_dir / 'specified/info/foo.trashinfo')
+        self.fsx.make_empty_file(self.temp_dir / 'specified/info/foo.trashinfo')
 
         self.empty_cmd.run_cmd(['--trash-dir', self.temp_dir / 'specified'],
                                self.environ, uid=123)

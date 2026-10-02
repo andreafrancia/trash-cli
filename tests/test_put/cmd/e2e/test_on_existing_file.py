@@ -3,16 +3,18 @@
 import pytest
 
 from tests.support.dirs.temp_dir import temp_dir
-from tests.support.files import make_empty_file
 from tests.test_put.cmd.e2e.run_trash_put import run_trash_put2
+from tests.support.files import fsx
+
+fsx = fsx  # the fixture, imported from its module
 
 temp_dir = temp_dir
 
 
 @pytest.mark.slow
 class TestOnExistingFile:
-    def test_it_should_be_trashed(self, temp_dir):
-        make_empty_file(temp_dir / 'foo')
+    def test_it_should_be_trashed(self, temp_dir, fsx):
+        fsx.make_empty_file(temp_dir / 'foo')
 
         result = run_trash_put2(temp_dir, [temp_dir / "foo"],
                                 self._with_xdg_data_dir(temp_dir))
