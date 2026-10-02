@@ -17,17 +17,6 @@ class RealMountPointListFs(MountPointListFs):
         return os_mount_points()
 
 
-class FakeMountPointListFs(MountPointListFs):
-    def __init__(self, mount_points):
-        self.mount_points = mount_points
-
-    def set_mount_points(self, mount_points):
-        self.mount_points = mount_points
-
-    def list_mount_points(self):
-        return self.mount_points
-
-
 def os_mount_points():
     import psutil
     # List of accepted non-physical fstypes

@@ -1,6 +1,6 @@
 import unittest
 
-from trashcli.fstab.mount_points_listing import FakeMountPointListFs
+from tests.support.fakes.fake_mount_point_list_fs import FakeMountPointListFs
 from trashcli.fstab.volumes_listing_impl import VolumesListingImpl
 
 
