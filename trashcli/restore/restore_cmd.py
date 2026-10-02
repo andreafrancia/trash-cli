@@ -2,7 +2,7 @@
 from typing import TextIO, Callable, MutableMapping
 
 from trashcli.fslib.protocols.list_files_in_dir import ListFilesInDir
-from trashcli.fstab.protocols.volumes import Volumes
+from trashcli.fslib.protocols.volumes_fs import VolumesFs
 from trashcli.lib.my_input import Input
 from trashcli.lib.print_version import PrintVersionAction, PrintVersionArgs
 from trashcli.restore.args import RunRestoreArgs
@@ -32,7 +32,7 @@ class RestoreCmd(object):
                  input,  # type: Input
                  version,  # type: str
                  listing_fs,  # type: ListFilesInDir
-                 volumes,  # type: Volumes
+                 volumes,  # type: VolumesFs
                  logger,  # type: RestoreLogger
                  uid,  # type: int
                  environ,  # type: MutableMapping[str, str]

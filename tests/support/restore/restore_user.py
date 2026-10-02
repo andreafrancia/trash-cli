@@ -6,7 +6,7 @@ from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.run.cmd_result import CmdResult
 from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
 from trashcli.fslib.protocols.list_files_in_dir import ListFilesInDir
-from trashcli.fstab.protocols.volumes import Volumes
+from trashcli.fslib.protocols.volumes_fs import VolumesFs
 from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.fs.protocols.file_reader_fs import FileReaderFs
@@ -25,7 +25,7 @@ class RestoreUser:
                  write_fs,  # type: RestoreWriterFs
                  listing_fs,  # type: ListFilesInDir
                  version,  # type: str
-                 volumes,  # type: Volumes
+                 volumes,  # type: VolumesFs
                  logger,  # type: RestoreLogger
                  top_trash_dir_rules_reader,  # type: TopTrashDirRulesFs
                  read_fs=None,  # type: Optional[RestoreReadFs]

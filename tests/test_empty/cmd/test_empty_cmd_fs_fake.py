@@ -4,7 +4,7 @@ import unittest
 from tests.support.py2mock import Mock
 from six import StringIO
 
-from tests.support.fakes.stub_volume_of import StubVolumeOf
+from tests.support.fakes.stub_volume_of import StubVolumeOfFs
 from tests.support.files import FsFixture
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
@@ -34,7 +34,7 @@ class TestTrashEmptyCmdFakeFs(unittest.TestCase):
             content_reader=self.fs,
             dir_reader=FileSystemDirReader(self.fs),
             version='unused',
-            volumes=StubVolumeOf()
+            volumes=StubVolumeOfFs()
         )
 
     def test_trash_empty_will_skip_unreadable_dir(self):

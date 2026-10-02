@@ -7,7 +7,7 @@ from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.fslib.real.real_fs import RealFs
-from tests.support.fakes.fake_volumes import FakeVolumes
+from tests.support.fakes.fake_volumes import FakeVolumesFs
 
 
 @pytest.mark.slow
@@ -24,7 +24,7 @@ class TestRestoreMalformedRange:
             write_fs=self.fs,
             listing_fs=self.fs,
             version='0.0.0',
-            volumes=FakeVolumes([]),
+            volumes=FakeVolumesFs([]),
             top_trash_dir_rules_reader=RealFs(),
             logger=RecordingLogger())
 

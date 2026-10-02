@@ -9,7 +9,7 @@ from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
-from tests.support.fakes.fake_volumes import FakeVolumes
+from tests.support.fakes.fake_volumes import FakeVolumesFs
 from trashcli.restore.fs.real.real_file_reader_fs import RealFileReaderFs
 from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
 from trashcli.restore.fs.real.real_restore_read_fs import RealRestoreReadFs
@@ -34,7 +34,7 @@ class TestRestoreOverwriteGuard:
             write_fs=RealRestoreWriterFs(),
             listing_fs=RealListFilesInDir(),
             version='0.0.0',
-            volumes=FakeVolumes([]),
+            volumes=FakeVolumesFs([]),
             top_trash_dir_rules_reader=RealFs(),
             logger=RecordingLogger())
 

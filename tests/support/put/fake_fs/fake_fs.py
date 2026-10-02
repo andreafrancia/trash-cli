@@ -2,7 +2,7 @@ import errno
 import os
 from typing import Iterable
 
-from tests.support.fakes.fake_volume_of import FakeVolumeOf
+from tests.support.fakes.fake_volume_of import FakeVolumeOfFs
 from tests.support.put.fake_fs.directory import Directory
 from tests.support.put.fake_fs.directory import make_inode_dir
 from tests.support.put.fake_fs.ent import Ent
@@ -30,7 +30,7 @@ MAX_SYMLINKS_TO_FOLLOW = 40
 STICKY_BIT = 0o1000
 
 
-class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
+class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
              RemoveFileIfExists):
     def __init__(self, cwd='/'):
         super(FakeFs, self).__init__()

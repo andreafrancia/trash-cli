@@ -3,7 +3,7 @@ from __future__ import absolute_import
 
 import os
 
-from trashcli.fstab.volume_of import VolumeOf
+from trashcli.fslib.protocols.volume_of import VolumeOfFs
 
 
 def home_trash_dir_path_from_env(environ):
@@ -19,7 +19,7 @@ def home_trash_dir_path_from_home(home_dir):
 
 
 def home_trash_dir(environ,
-                   volume_of,  # type: VolumeOf
+                   volume_of,  # type: VolumeOfFs
                    ):
     paths = home_trash_dir_path_from_env(environ)
     for path in paths:

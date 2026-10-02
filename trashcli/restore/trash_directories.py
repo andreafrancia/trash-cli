@@ -5,9 +5,8 @@ import os
 import six
 from typing import Optional
 
-from trashcli.fstab.protocols.mount_point_list_fs import MountPointListFs
-from trashcli.fstab.volume_of import VolumeOf
-from trashcli.fstab.protocols.volumes import Volumes
+from trashcli.fslib.protocols.volume_of import VolumeOfFs
+from trashcli.fslib.protocols.volumes_fs import VolumesFs
 from trashcli.lib.environ import Environ
 from trashcli.lib.trash_dirs import (
     volume_trash_dir1, volume_trash_dir2, home_trash_dir)
@@ -24,7 +23,7 @@ class TrashDirectories:
 
 class TrashDirectoriesImpl(TrashDirectories):
     def __init__(self,
-                 volumes,  # type: Volumes
+                 volumes,  # type: VolumesFs
                  uid,  # type: int
                  environ,
                  top_trash_dir_rules,
@@ -44,7 +43,7 @@ class TrashDirectoriesImpl(TrashDirectories):
 
 class TrashDirectories2:
     def __init__(self,
-                 volume_of,  # type: VolumeOf
+                 volume_of,  # type: VolumeOfFs
                  trash_directories,  # type: TrashDirectories1
                  ):
         self.volume_of = volume_of
@@ -62,7 +61,7 @@ class TrashDirectories2:
 
 class TrashDirectories1:
     def __init__(self,
-                 volumes,  # type: Volumes
+                 volumes,  # type: VolumesFs
                  uid,  # type: int
                  environ,  # type: Environ
                  top_trash_dir_rules,

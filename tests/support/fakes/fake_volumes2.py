@@ -1,7 +1,7 @@
-from trashcli.fstab.protocols.volumes import Volumes
+from trashcli.fslib.protocols.volumes_fs import VolumesFs
 
 
-class FakeVolumes2(Volumes):
+class FakeVolumesFs2(VolumesFs):
     def __init__(self, volume_of_string, volumes_list):
         self.volume_of_string = volume_of_string
         self.volumes_list = volumes_list

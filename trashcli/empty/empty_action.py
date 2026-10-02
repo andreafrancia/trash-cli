@@ -13,7 +13,7 @@ from trashcli.empty.prepare_output_message import prepare_output_message
 from trashcli.empty.user import User
 from trashcli.fslib.protocols.read_file import ReadFile
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
-from trashcli.fstab.volume_of import VolumeOf
+from trashcli.fslib.protocols.volume_of import VolumeOfFs
 from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.environ import Environ
 from trashcli.lib.my_input import RealInput
@@ -42,7 +42,7 @@ class EmptyAction:
                  file_remover,  # type: ExistingFileRemover
                  volumes_listing,  # type: VolumesListing
                  file_reader,  # type: TopTrashDirRulesFs
-                 volumes,  # type: VolumeOf
+                 volumes,  # type: VolumeOfFs
                  dir_reader,  # type: DirReaderFs
                  content_reader,  # type: ReadFile
                  console,  # type: Console

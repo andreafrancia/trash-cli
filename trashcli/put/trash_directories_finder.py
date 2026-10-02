@@ -1,7 +1,7 @@
 # Copyright (C) 2007-2023 Andrea Francia Trivolzio(PV) Italy
 from typing import List
 
-from trashcli.fstab.volume_of import VolumeOf
+from trashcli.fslib.protocols.volume_of import VolumeOfFs
 from trashcli.lib.environ import Environ
 from trashcli.lib.trash_dirs import (
     volume_trash_dir1, volume_trash_dir2, home_trash_dir)
@@ -13,7 +13,7 @@ from trashcli.put.gate import Gate
 
 class TrashDirectoriesFinder:
     def __init__(self,
-                 fs,  # type: VolumeOf
+                 fs,  # type: VolumeOfFs
                  ):
         self.fs = fs
 

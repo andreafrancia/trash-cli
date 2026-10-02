@@ -5,7 +5,7 @@ from six import StringIO
 
 from tests.support.dirs.my_path import MyPath
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
-from tests.support.fakes.stub_volume_of import StubVolumeOf
+from tests.support.fakes.stub_volume_of import StubVolumeOfFs
 from tests.support.files import FsFixture
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.file_system_reader import FileSystemReader
@@ -49,7 +49,7 @@ class TrashListUser:
             environ=self.environ,
             volumes_listing=self.fake_volumes,
             uid=self.fake_uid,
-            volumes=StubVolumeOf(),
+            volumes=StubVolumeOfFs(),
             dir_reader=RealDirReaderFs(RealFs()),
             file_reader=RealFs(),
             content_reader=RealFs(),

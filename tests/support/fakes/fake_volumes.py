@@ -1,9 +1,9 @@
 import os
 
-from trashcli.fstab.protocols.volumes import Volumes
+from trashcli.fslib.protocols.volumes_fs import VolumesFs
 
 
-class FakeVolumes(Volumes):
+class FakeVolumesFs(VolumesFs):
     def __init__(self,
                  mount_points,  # type Iterable[str]
                  ):

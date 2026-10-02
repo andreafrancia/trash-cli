@@ -1,11 +1,11 @@
 from trashcli.fstab.protocols.mount_point_list_fs import MountPointListFs
-from trashcli.fstab.protocols.volumes import Volumes
-from trashcli.fstab.volume_of import VolumeOf
+from trashcli.fslib.protocols.volumes_fs import VolumesFs
+from trashcli.fslib.protocols.volume_of import VolumeOfFs
 
 
-class VolumesImpl(Volumes):
+class VolumesFsImpl(VolumesFs):
     def __init__(self,
-                 volumes,  # type: VolumeOf
+                 volumes,  # type: VolumeOfFs
                  mount_point_listing,  # type: MountPointListFs
                  ):
         self.volumes = volumes

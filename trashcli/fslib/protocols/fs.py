@@ -5,10 +5,10 @@ from typing import List
 from trashcli.compat import Protocol
 from trashcli.fslib.protocols.mk_dirs import MkDirs
 from trashcli.fslib.protocols.real_path_fs import RealPathFs
-from trashcli.fstab.volume_of import VolumeOf
+from trashcli.fslib.protocols.volume_of import VolumeOfFs
 
 
-class Fs(RealPathFs, VolumeOf, MkDirs, Protocol):
+class Fs(RealPathFs, VolumeOfFs, MkDirs, Protocol):
     @abstractmethod
     def touch(self, path):  # type: (str) -> None
         raise NotImplementedError

@@ -1,12 +1,12 @@
 import pytest
 
-from tests.support.fakes.fake_volume_of import FakeVolumeOf
+from tests.support.fakes.fake_volume_of import FakeVolumeOfFs
 
 
 class TestFakeVolumeOf:
     @pytest.fixture
     def volumes(self):
-        return FakeVolumeOf()
+        return FakeVolumeOfFs()
 
     def test_return_the_containing_volume(self, volumes):
         volumes.add_volume('/fake-vol')
