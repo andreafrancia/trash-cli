@@ -91,7 +91,7 @@ class MyPath(str):
     def find_all(self,  # type: Self
                  ):  # type: (...) -> Generator[MyPath, Any, None]
         for path in list_all(self.fs, self):
-            yield MyPath(path)
+            yield MyPath(path, self.fs)
 
     def rel_path(self,  # type: Self
                  path,  # type: str

@@ -43,3 +43,14 @@ class TestMyPathFs:
         fs = FakeFs()
 
         assert MyPath('/x/y', fs).parent.fs is fs
+
+    def test_find_all_keeps_the_fs(self):
+        fs = FakeFs()
+        path = MyPath('/x', fs)
+        path.mkdirs()
+        path.write_file('a', 'content')
+
+        found = list(path.find_all())
+
+        assert found == ['/x/a']
+        assert [p.fs for p in found] == [fs]
