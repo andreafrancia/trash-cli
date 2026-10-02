@@ -29,9 +29,9 @@ class FsFixture:
 
     def is_a_symlink_to_a_dir(self, path):
         dest = "%s-dest" % path
-        os.mkdir(dest)
+        self.fs.mkdir(dest)
         rel_dest = os.path.basename(dest)
-        os.symlink(rel_dest, path)
+        self.fs.symlink(rel_dest, path)
 
     def make_parent_for(self, path):
         parent = os.path.dirname(os.path.realpath(path))
