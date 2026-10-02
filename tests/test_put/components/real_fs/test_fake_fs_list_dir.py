@@ -7,7 +7,7 @@ from tests.support.put.fake_fs.fake_fs import FakeFs
 class TestFakeFsListDir(unittest.TestCase):
     def setUp(self):
         self.fs = FakeFs()
-        self.tmp_dir = MyPath('/tmp')
+        self.tmp_dir = MyPath('/tmp', self.fs)
         self.fs.makedirs(self.tmp_dir, 0o700)
 
     def test(self):
