@@ -10,8 +10,12 @@ source .venv/bin/activate
 "$SCRIPT_DIR/lib/install-python-requirements"
 "$SCRIPT_DIR/lib/check-python-dep" tox
 
-tox &&
-    scripts/test-sdist &&
+true &&
+    scripts/py27/check-types &&
     scripts/check-types &&
-    scripts/py27/check-all
+    scripts/py27/test-sdist &&
+    scripts/test-sdist &&
+    scripts/py27/test &&
+    tox &&
+true
 
