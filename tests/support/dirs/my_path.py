@@ -47,7 +47,7 @@ class MyPath(str):
 
     def path_join(self,  # type: Self
                   other_path):
-        return MyPath(os.path.join(self, other_path))
+        return MyPath(os.path.join(self, other_path), self.fs)
 
     def existence_of(self,  # type: Self
                      *paths):

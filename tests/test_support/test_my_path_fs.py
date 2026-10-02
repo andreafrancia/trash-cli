@@ -28,3 +28,13 @@ class TestMyPathFs:
 
         assert fs.path_isdir('/x') is True
         assert path.is_dir() is True
+
+    def test_path_join_keeps_the_fs(self):
+        fs = FakeFs()
+
+        assert (MyPath('/x', fs) / 'a').fs is fs
+
+    def test_path_join_keeps_the_fs_with_div(self):
+        fs = FakeFs()
+
+        assert MyPath('/x', fs).path_join('a').fs is fs
