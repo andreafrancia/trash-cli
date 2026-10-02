@@ -22,6 +22,10 @@ class FsFixture:
         if not os.path.isdir(path):
             os.makedirs(path)
 
+    def make_empty_dir(self, path):
+        os.mkdir(path)
+        check_empty_dir(path)
+
 
 def make_empty_file(path):
     make_file(path, '')
@@ -39,8 +43,7 @@ def require_empty_dir(path):
 
 
 def make_empty_dir(path):
-    os.mkdir(path)
-    check_empty_dir(path)
+    FsFixture().make_empty_dir(path)
 
 
 def check_empty_dir(path):

@@ -6,7 +6,7 @@ from six import StringIO
 from tests.support.dirs.my_path import MyPath
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.fakes.stub_volume_of import StubVolumeOf
-from tests.support.files import make_empty_dir
+from tests.support.files import FsFixture
 from trashcli.empty.main import FileSystemContentReader
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.file_system_reader import FileSystemReader
@@ -37,6 +37,7 @@ class TrashListUser:
         self.version = None
         self.stdout = None
         self.fake_volumes = FakeVolumesListing()
+        self.fsx = FsFixture()
 
     def run_trash_list(self, *args):  # type: (...) -> RunResult
         file_reader = FileSystemReader()
@@ -63,7 +64,7 @@ class TrashListUser:
 
     def add_disk(self, disk_name):
         top_dir = self.root / adjust_for_root(disk_name)
-        make_empty_dir(top_dir)
+        self.fsx.make_empty_dir(top_dir)
         self.fake_volumes.add_volume(top_dir)
 
     def trash_dir1(self, disk_name):
