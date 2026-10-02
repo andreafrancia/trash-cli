@@ -4,7 +4,7 @@ import six
 import os
 
 from trashcli.compat import Protocol
-from trashcli.fstab.mount_points_listing import RealMountPointListFs
+from trashcli.fstab.real.real_mount_point_list_fs import RealMountPointListFs
 from trashcli.fstab.protocols.mount_point_list_fs import MountPointListFs
 from trashcli.fstab.volume_of import VolumeOf
 from trashcli.fstab.real_volume_of import RealVolumeOf

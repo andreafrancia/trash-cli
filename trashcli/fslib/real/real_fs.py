@@ -11,7 +11,7 @@ from trashcli.fslib.real.real_atomic_write import RealAtomicWrite
 from trashcli.fslib.real.real_read_file import RealReadFile
 from trashcli.fslib.real.real_write_file import RealWriteFile
 from trashcli.fslib.real.real_mk_dirs import RealMkDirs
-from trashcli.fstab.mount_points_listing import RealMountPointListFs
+from trashcli.fstab.real.real_mount_point_list_fs import RealMountPointListFs
 from trashcli.fstab.real_volume_of import RealVolumeOf
 from trashcli.fslib.protocols.fs import Fs
 from trashcli.restore.fs.protocols.restore_fs import RestoreFs
