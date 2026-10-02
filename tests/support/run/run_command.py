@@ -27,7 +27,7 @@ def run_command(cwd, command, args=None, input='', env=None):
         args = []
     command_full_path = script_path_for(command)
     env['PYTHONPATH'] = project_root()
-    child_env = merge_dicts(merge_dicts(os.environ, NO_COLORS), env)
+    child_env = merge_dicts(os.environ, NO_COLORS, env)
     process = subprocess.Popen([sys.executable, command_full_path] + args,
                                stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE,
