@@ -1,11 +1,9 @@
 import os
-import shutil
 
 import pytest
 
 from trashcli.fslib.real.real_fs import RealFs
 
-from trashcli.fslib.real.real_has_sticky_bit import RealHasStickyBit
 from trashcli.fslib.real.real_remove_file2 import RealRemoveFile2
 
 
@@ -74,7 +72,8 @@ class FsFixture:
         assert self.fs.path_isdir(path)
 
     def require_empty_dir(self, path):
-        if os.path.exists(path): shutil.rmtree(path)
+        if self.fs.path_exists(path):
+            self.fs.remove_file(path)
         self.make_dirs(path)
         self.check_empty_dir(path)
 
