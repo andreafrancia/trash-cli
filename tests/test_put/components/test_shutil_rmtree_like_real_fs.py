@@ -88,3 +88,121 @@ class TestShutilRmtreeLikeRealFs:
             assert env.fs.path_lexists(env.path('dir')) is True
         finally:
             env.fs.chmod(env.path('dir'), 0o700)
+
+
+# The failure cases with permissions. To remove a dir with its content:
+#  - every dir of the tree has to be readable (to list it);
+#  - a dir with entries needs write and search permissions (to unlink them);
+#  - the parent of the top dir needs write and search permissions (to rmdir it).
+class TestShutilRmtreePermissionsLikeRealFs:
+    @real_and_fake()
+    def test_fails_when_the_dir_is_not_writable(self, env):
+        # the dir can be listed, but its entries cannot be unlinked
+        env.fs.mkdir(env.path('dir'))
+        env.fs.write_file(env.path('dir/file'), 'a')
+        env.fs.chmod(env.path('dir'), 0o500)
+
+        try:
+            with pytest.raises(OSError) as excinfo:
+                env.fs.shutil_rmtree(env.path('dir'))
+
+            assert excinfo.value.errno == errno.EACCES
+            assert env.fs.path_lexists(env.path('dir/file')) is True
+        finally:
+            env.fs.chmod(env.path('dir'), 0o700)
+
+    @real_and_fake()
+    def test_fails_when_the_dir_is_not_searchable(self, env):
+        env.fs.mkdir(env.path('dir'))
+        env.fs.write_file(env.path('dir/file'), 'a')
+        env.fs.chmod(env.path('dir'), 0o600)
+
+        try:
+            with pytest.raises(OSError) as excinfo:
+                env.fs.shutil_rmtree(env.path('dir'))
+
+            assert excinfo.value.errno == errno.EACCES
+        finally:
+            env.fs.chmod(env.path('dir'), 0o700)
+        assert env.fs.path_lexists(env.path('dir/file')) is True
+
+    @real_and_fake()
+    def test_fails_when_a_subdir_is_not_writable(self, env):
+        # the top dir can be removed, the file inside the subdir cannot
+        env.fs.mkdirs(env.path('dir/subdir'))
+        env.fs.write_file(env.path('dir/subdir/file'), 'a')
+        env.fs.chmod(env.path('dir/subdir'), 0o500)
+
+        try:
+            with pytest.raises(OSError) as excinfo:
+                env.fs.shutil_rmtree(env.path('dir'))
+
+            assert excinfo.value.errno == errno.EACCES
+            assert env.fs.path_lexists(env.path('dir/subdir/file')) is True
+            assert env.fs.path_lexists(env.path('dir')) is True
+        finally:
+            env.fs.chmod(env.path('dir/subdir'), 0o700)
+
+    @real_and_fake()
+    def test_fails_when_a_subdir_is_not_readable(self, env):
+        env.fs.mkdirs(env.path('dir/subdir'))
+        env.fs.write_file(env.path('dir/subdir/file'), 'a')
+        env.fs.chmod(env.path('dir/subdir'), 0o300)
+
+        try:
+            with pytest.raises(OSError) as excinfo:
+                env.fs.shutil_rmtree(env.path('dir'))
+
+            assert excinfo.value.errno == errno.EACCES
+            assert env.fs.path_lexists(env.path('dir/subdir/file')) is True
+            assert env.fs.path_lexists(env.path('dir')) is True
+        finally:
+            env.fs.chmod(env.path('dir/subdir'), 0o700)
+
+    @real_and_fake()
+    def test_fails_when_a_subdir_is_not_readable_and_empty(self, env):
+        env.fs.mkdirs(env.path('dir/subdir'))
+        env.fs.chmod(env.path('dir/subdir'), 0o300)
+
+        try:
+            with pytest.raises(OSError) as excinfo:
+                env.fs.shutil_rmtree(env.path('dir'))
+
+            assert excinfo.value.errno == errno.EACCES
+            assert env.fs.path_lexists(env.path('dir/subdir')) is True
+        finally:
+            env.fs.chmod(env.path('dir/subdir'), 0o700)
+
+    @real_and_fake()
+    def test_fails_when_the_parent_is_not_writable(self, env):
+        env.fs.mkdirs(env.path('parent/dir'))
+        env.fs.chmod(env.path('parent'), 0o500)
+
+        try:
+            with pytest.raises(OSError) as excinfo:
+                env.fs.shutil_rmtree(env.path('parent/dir'))
+
+            assert excinfo.value.errno == errno.EACCES
+            assert env.fs.path_lexists(env.path('parent/dir')) is True
+        finally:
+            env.fs.chmod(env.path('parent'), 0o700)
+
+    @real_and_fake()
+    def test_an_empty_dir_that_is_not_writable_can_be_removed(self, env):
+        # nothing to unlink inside: only the parent's permissions matter
+        env.fs.mkdir(env.path('dir'))
+        env.fs.chmod(env.path('dir'), 0o500)
+
+        env.fs.shutil_rmtree(env.path('dir'))
+
+        assert env.fs.path_lexists(env.path('dir')) is False
+
+    @real_and_fake()
+    def test_the_permissions_of_the_files_inside_do_not_matter(self, env):
+        env.fs.mkdir(env.path('dir'))
+        env.fs.write_file(env.path('dir/file'), 'a')
+        env.fs.chmod(env.path('dir/file'), 0o000)
+
+        env.fs.shutil_rmtree(env.path('dir'))
+
+        assert env.fs.path_lexists(env.path('dir')) is False

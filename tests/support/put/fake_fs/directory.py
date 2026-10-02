@@ -63,6 +63,9 @@ class Directory(Ent):
     def _inode(self):  # type: () -> INode
         return self._entries["."]
 
+    def inode_of(self, basename):  # type: (str) -> INode
+        return self._entries[basename]
+
     def get_file(self, basename):
         return self._entries[basename].entity
 
