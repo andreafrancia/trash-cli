@@ -1,16 +1,17 @@
 from tests.support.dirs.my_path import MyPath
-from tests.support.files import make_file, read_file
+from tests.support.files import FsFixture, read_file
 from tests.support.tools.version_saver import VersionSaver
 from trashcli.fslib.real.real_fs import RealFs
 
 
 class TestSaveNewVersion:
     def setup_method(self):
+        self.fsx = FsFixture()
         self.tmp_dir = MyPath.make_temp_dir()
         self.saver = VersionSaver(RealFs())
 
     def test(self):
-        make_file(self.tmp_dir / 'trash.py', """\
+        self.fsx.make_file(self.tmp_dir / 'trash.py', """\
 somecode before
 version="0.20.1.20"
 somecode after
@@ -28,7 +29,7 @@ dont change this line: version="0.20.1.20"
 """
 
     def test2(self):
-        make_file(self.tmp_dir / 'trash.py', """\
+        self.fsx.make_file(self.tmp_dir / 'trash.py', """\
 somecode before
     version="0.20.1.20"
 somecode after

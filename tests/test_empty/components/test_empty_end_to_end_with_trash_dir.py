@@ -3,13 +3,14 @@ import unittest
 
 from tests.support.run.run_command import run_command
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
-from tests.support.files import make_file
+from tests.support.files import FsFixture
 from tests.support.trash_dirs.list_trash_dir import list_trash_dir
 from tests.support.dirs.my_path import MyPath
 
 
 class TestEmptyEndToEndWithTrashDir(unittest.TestCase):
     def setUp(self):
+        self.fsx = FsFixture()
         self.tmp_dir = MyPath.make_temp_dir()
         self.trash_dir = self.tmp_dir / 'trash-dir'
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
@@ -42,7 +43,7 @@ class TestEmptyEndToEndWithTrashDir(unittest.TestCase):
                [('', '', 0), []]
 
     def test_non_trash_info_is_not_deleted(self):
-        make_file(self.trash_dir / 'info' / 'non-trashinfo')
+        self.fsx.make_file(self.trash_dir / 'info' / 'non-trashinfo')
 
         result = run_command(self.tmp_dir,
                              "trash-empty",
@@ -53,7 +54,7 @@ class TestEmptyEndToEndWithTrashDir(unittest.TestCase):
                [('', '', 0), ['info/non-trashinfo']]
 
     def test_orphan_are_deleted(self):
-        make_file(self.trash_dir / 'files' / 'orphan')
+        self.fsx.make_file(self.trash_dir / 'files' / 'orphan')
         os.makedirs(self.trash_dir / 'files' / 'orphan dir')
 
         result = run_command(self.tmp_dir, "trash-empty",

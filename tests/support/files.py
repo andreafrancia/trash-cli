@@ -86,14 +86,17 @@ class FsFixture:
     def make_empty_file(self, path):
         make_file(path, '')
 
+    def make_file(self, filename, contents=''):
+        make_parent_for(filename)
+        write_file(filename, contents)
+
 
 def make_empty_file(path):
     FsFixture().make_empty_file(path)
 
 
 def make_file(filename, contents=''):
-    make_parent_for(filename)
-    write_file(filename, contents)
+    FsFixture().make_file(filename, contents)
 
 
 def require_empty_dir(path):

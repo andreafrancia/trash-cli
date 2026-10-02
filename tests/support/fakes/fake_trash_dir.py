@@ -6,7 +6,6 @@ from typing import List, Tuple, NamedTuple, TypeVar
 from tests.support.dates import jan_11_2001
 from tests.support.dirs.my_path import MyPath
 from tests.support.files import FsFixture
-from tests.support.files import make_file
 from tests.support.trashinfo.parse_date import parse_date
 from trashcli.put.format_trash_info import format_original_location
 from trashcli.put.janitor_tools.info_file_persister import TrashinfoData
@@ -100,7 +99,7 @@ class FakeTrashDir:
                          # type: datetime.datetime
                          ):  # type: (...) -> TrashedFile
         trash_info_data = self.add_trashinfo3(basename, orig_loc, del_date)
-        make_file(self.file_path(basename), content)
+        self.fsx.make_file(self.file_path(basename), content)
 
         return TrashedFile(
             original_location=orig_loc,
@@ -209,7 +208,7 @@ class FakeTrashDir:
         trash_info_path = self.a_trashinfo_path(basename)
         info_full_path = trash_info_path.info_full_path
         self.fsx.make_parent_for(info_full_path)
-        make_file(info_full_path, content)
+        self.fsx.make_file(info_full_path, content)
         return TrashinfoData(
             content=content,
             info_dir_path=trash_info_path.info_dir_path,
