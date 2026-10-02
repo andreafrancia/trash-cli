@@ -10,7 +10,7 @@ class TestSizeCounterOnFakeFs(unittest.TestCase):
         self.fs = FakeFs()
         self.counter = SizeCounter(self.fs)
         self.fs.makedirs('/tmp', 0o777)
-        self.tmp_dir = MyPath('/tmp')
+        self.tmp_dir = MyPath('/tmp', self.fs)
 
     def test_a_single_file(self):
         self.fs.write_file(self.tmp_dir / 'file', 10 * 'a')
