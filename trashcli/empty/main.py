@@ -29,7 +29,7 @@ def main():
                          file_reader=RealFs(),
                          file_remover=ExistingFileRemover(RealFs()),
                          content_reader=FileSystemContentReader(),
-                         dir_reader=FileSystemDirReader(),
+                         dir_reader=FileSystemDirReader(RealFs()),
                          version=trash.version,
                          volumes=RealVolumeOf())
     return empty_cmd.run_cmd(sys.argv[1:], os.environ, os.getuid())

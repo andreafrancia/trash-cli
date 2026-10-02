@@ -34,7 +34,7 @@ class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
             file_reader=RealFs(),
             file_remover=ExistingFileRemover(RealFs()),
             content_reader=FileSystemContentReader(),
-            dir_reader=FileSystemDirReader(),
+            dir_reader=FileSystemDirReader(RealFs()),
             version='unused',
             volumes=StubVolumeOf(),
         )

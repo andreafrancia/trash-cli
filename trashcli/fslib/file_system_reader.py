@@ -1,3 +1,4 @@
+from trashcli.fslib.protocols.fs import Fs
 from trashcli.fslib.real.real_entries_if_dir_exists import RealEntriesIfDirExists
 from trashcli.fslib.real.real_exists import RealExists
 from trashcli.fslib.real.real_file_size import RealFileSize
@@ -14,9 +15,12 @@ class FileSystemReader(FileSystemReaderForListCmd,
                        RealHasStickyBit,
                        RealIsSymLink,
                        RealReadFile,
-                       RealEntriesIfDirExists,
                        RealExists,
                        RealFileSize,
                        RealPathIsDir,
                        ):
-    pass
+    def __init__(self, fs):  # type: (Fs) -> None
+        self.fs = fs
+
+    def entries_if_dir_exists(self, path):
+        return RealEntriesIfDirExists(self.fs).entries_if_dir_exists(path)

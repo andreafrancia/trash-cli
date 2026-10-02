@@ -4,6 +4,7 @@ import pytest
 
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.dirs.my_path import MyPath
+from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.file_system_reader import FileSystemReader
 from trashcli.rm.list_trashinfo import ListTrashinfos
 
@@ -14,7 +15,7 @@ class TestListTrashinfos(unittest.TestCase):
         self.tmp_dir = MyPath.make_temp_dir()
         self.trash_dir = self.tmp_dir / 'Trash'
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
-        self.listing = ListTrashinfos.make(FileSystemReader(), FileSystemReader())
+        self.listing = ListTrashinfos.make(FileSystemReader(RealFs()), FileSystemReader(RealFs()))
 
     def test_absolute_path(self):
         self.fake_trash_dir.add_trashinfo_basename_path('a', '/foo')
