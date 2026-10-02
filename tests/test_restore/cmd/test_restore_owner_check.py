@@ -5,7 +5,7 @@ from tests.support.trash_dirs.given_trash import \
 from tests.test_restore.cmd.test_restore_distrusts_unsafe_trash_dirs import (
         HOME, HOME_TRASH)
 from tests.test_restore.support.recording_logger import RecordingLogger
-from trashcli.fstab.volumes import FakeVolumes2
+from tests.support.fakes.fake_volumes2 import FakeVolumes2
 from trashcli.restore.trash_directories import TrashDirectories1
 from trashcli.trash_dirs_scanner import TopTrashDirRules
 
