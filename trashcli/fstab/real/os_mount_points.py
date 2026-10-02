@@ -1,0 +1,30 @@
+# Copyright (C) 2009-2020 Andrea Francia Trivolzio(PV) Italy
+import os
+
+from trashcli.fstab.partitions import Partitions
+
+
+def os_mount_points():
+    import psutil
+    # List of accepted non-physical fstypes
+    fstypes = [
+        'nfs',
+        'nfs4',
+        'p9',  # file system used in WSL 2 (Windows Subsystem for Linux)
+        'btrfs',
+        'fuse',  # https://github.com/andreafrancia/trash-cli/issues/250
+        'fuse.glusterfs',
+        # https://github.com/andreafrancia/trash-cli/issues/255
+        'fuse.mergerfs',
+        'fuse.gocryptfs',
+    ]
+
+    # Append fstypes of physical devices to list
+    fstypes += set([p.fstype for p in psutil.disk_partitions()])
+
+    partitions = Partitions(fstypes)
+
+    for p in psutil.disk_partitions(all=True):
+        if os.path.isdir(p.mountpoint) and \
+                partitions.should_used_by_trashcli(p):
+            yield p.mountpoint
