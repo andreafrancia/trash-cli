@@ -5,6 +5,7 @@ from abc import ABCMeta, abstractmethod
 import six
 
 from trashcli.compat import Protocol
+from trashcli.fstab.partitions import Partitions
 
 
 class MountPointListFs(Protocol):
@@ -41,15 +42,3 @@ def os_mount_points():
         if os.path.isdir(p.mountpoint) and \
                 partitions.should_used_by_trashcli(p):
             yield p.mountpoint
-
-
-class Partitions:
-    def __init__(self, physical_fstypes):
-        self.physical_fstypes = physical_fstypes
-
-    def should_used_by_trashcli(self, partition):
-        if ((partition.device, partition.mountpoint,
-             partition.fstype) ==
-                ('tmpfs', '/tmp', 'tmpfs')):
-            return True
-        return partition.fstype in self.physical_fstypes
