@@ -66,7 +66,7 @@ class FsFixture:
 
     def make_unreadable_dir(self, path):
         self.fs.mkdirs(path)
-        os.chmod(path, 0o300)
+        self.fs.chmod(path, 0o300)
 
     def make_dirs(self, path):
         if not self.fs.path_isdir(path):
