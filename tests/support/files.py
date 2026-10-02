@@ -70,9 +70,9 @@ class FsFixture:
         os.chmod(path, 0o300)
 
     def make_dirs(self, path):
-        if not os.path.isdir(path):
-            os.makedirs(path)
-        assert os.path.isdir(path)
+        if not self.fs.path_isdir(path):
+            self.fs.makedirs(path, 0o777)
+        assert self.fs.path_isdir(path)
 
     def require_empty_dir(self, path):
         if os.path.exists(path): shutil.rmtree(path)
