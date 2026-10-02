@@ -48,6 +48,10 @@ class FsFixture:
         import stat
         os.chmod(path, os.stat(path).st_mode | stat.S_ISVTX)
 
+    def unset_sticky_bit(self, path):
+        import stat
+        os.chmod(path, os.stat(path).st_mode & ~ stat.S_ISVTX)
+
 
 def make_empty_file(path):
     make_file(path, '')
@@ -107,8 +111,7 @@ def set_sticky_bit(path):
 
 
 def unset_sticky_bit(path):
-    import stat
-    os.chmod(path, os.stat(path).st_mode & ~ stat.S_ISVTX)
+    FsFixture().unset_sticky_bit(path)
 
 
 def ensure_non_sticky_dir(path):
