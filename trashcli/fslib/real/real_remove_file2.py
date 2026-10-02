@@ -1,12 +1,13 @@
-import os
-import shutil
-
+from trashcli.fslib.protocols.fs import Fs
 from trashcli.fslib.protocols.remove_file2 import RemoveFile2
 
 
 class RealRemoveFile2(RemoveFile2):
+    def __init__(self, fs):  # type: (Fs) -> None
+        self.fs = fs
+
     def remove_file2(self, path):
         try:
-            os.remove(path)
+            self.fs.remove(path)
         except OSError:
-            shutil.rmtree(path)
+            self.fs.shutil_rmtree(path)

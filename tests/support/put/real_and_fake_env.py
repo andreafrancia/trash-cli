@@ -19,7 +19,7 @@ class Env:
         self.is_real = is_real
         # the real file system has these capabilities in separate classes
         self.dir_reader = RealEntriesIfDirExists() if is_real else fs
-        self.remover = ExistingFileRemover() if is_real else fs
+        self.remover = ExistingFileRemover(fs) if is_real else fs
 
     def path(self, name):
         return self.base + '/' + name

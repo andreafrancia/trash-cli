@@ -27,7 +27,7 @@ def main():
                          volumes_listing=RealVolumesListing(),
                          now=datetime.now,
                          file_reader=RealFs(),
-                         file_remover=ExistingFileRemover(),
+                         file_remover=ExistingFileRemover(RealFs()),
                          content_reader=FileSystemContentReader(),
                          dir_reader=FileSystemDirReader(),
                          version=trash.version,

@@ -32,7 +32,7 @@ class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
             volumes_listing=self.volumes_listing,
             now=None,
             file_reader=RealFs(),
-            file_remover=ExistingFileRemover(),
+            file_remover=ExistingFileRemover(RealFs()),
             content_reader=FileSystemContentReader(),
             dir_reader=FileSystemDirReader(),
             version='unused',

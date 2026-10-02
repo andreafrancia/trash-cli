@@ -1,5 +1,6 @@
 import unittest
 
+from trashcli.fslib.real.real_fs import RealFs
 from trashcli.rm.real_remover_fs import RealRemoverFs
 
 
@@ -11,6 +12,6 @@ except NameError:
 
 class TestFileRemover(unittest.TestCase):
     def test_remove_file_fails_when_file_does_not_exists(self):
-        file_remover = RealRemoverFs()
+        file_remover = RealRemoverFs(RealFs())
         self.assertRaises(FileNotFoundError, file_remover.remove_file2,
                           '/non/existing/path')

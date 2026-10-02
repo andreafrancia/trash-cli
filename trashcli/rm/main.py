@@ -3,6 +3,8 @@ import os
 import sys
 
 from trashcli.fslib.real.real_entries_if_dir_exists import RealEntriesIfDirExists
+from trashcli.fslib.protocols.fs import Fs
+from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.real.real_exists import RealExists
 from trashcli.fslib.real.real_is_sticky_dir import RealIsStickyDir
 from trashcli.fslib.real.real_is_sym_link import RealIsSymLink
@@ -20,7 +22,7 @@ def main():
                 getuid=os.getuid,
                 volumes_listing=volumes_listing,
                 stderr=sys.stderr,
-                file_reader=RealRmFileSystemReader())
+                file_reader=RealRmFileSystemReader(RealFs()))
 
     cmd.run(sys.argv, os.getuid())
 
@@ -37,4 +39,5 @@ class RealRmFileSystemReader(RmFileSystemReader,
                              RealPathIsDir,
                              RealRemoverFs,
                              ):
-    pass
+    def __init__(self, fs):  # type: (Fs) -> None
+        RealRemoverFs.__init__(self, fs)
