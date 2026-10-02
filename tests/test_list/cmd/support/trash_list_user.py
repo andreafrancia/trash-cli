@@ -39,8 +39,6 @@ class TrashListUser:
         self.fsx = FsFixture(RealFs())
 
     def run_trash_list(self, *args):  # type: (...) -> RunResult
-        file_reader = FileSystemReader(RealFs())
-#        file_reader.list_volumes = lambda: self.volumes
         stdout = self.stdout if self.stdout is not None else StringIO()
         stderr = StringIO()
         ListCmd(
