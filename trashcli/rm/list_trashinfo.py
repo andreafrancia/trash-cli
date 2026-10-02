@@ -1,19 +1,11 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 import os
-from abc import abstractmethod
-from trashcli.compat import Protocol
 
 from trashcli.fslib.protocols.read_file import ReadFile
 from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.parse_trashinfo.parse_path import parse_path
 from trashcli.parse_trashinfo.parser_error import ParseError
-
-
-class FileContentReader(Protocol):
-    @abstractmethod
-    def read_file(self, path):
-        raise NotImplementedError()
 
 
 class ListTrashinfos:
