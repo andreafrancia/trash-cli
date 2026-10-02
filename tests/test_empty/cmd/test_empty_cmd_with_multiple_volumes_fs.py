@@ -6,7 +6,7 @@ from tests.support.py2mock import Mock
 from six import StringIO
 
 from tests.support.fakes.stub_volume_of import StubVolumeOf
-from tests.support.files import FsFixture, make_empty_file, require_empty_dir, make_dirs
+from tests.support.files import FsFixture, make_empty_file, require_empty_dir
 from tests.support.dirs.my_path import MyPath
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
@@ -66,7 +66,7 @@ class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
             self.temp_dir / 'specified/info/foo.trashinfo')
 
     def make_proper_top_trash_dir(self, path):
-        make_dirs(path)
+        self.fsx.make_dirs(path)
         self.fsx.set_sticky_bit(path)
 
     def tearDown(self):

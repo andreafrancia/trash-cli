@@ -73,6 +73,11 @@ class FsFixture:
         mkdirs(path)
         os.chmod(path, 0o300)
 
+    def make_dirs(self, path):
+        if not os.path.isdir(path):
+            os.makedirs(path)
+        assert os.path.isdir(path)
+
 
 def make_empty_file(path):
     make_file(path, '')
@@ -98,9 +103,7 @@ def check_empty_dir(path):
 
 
 def make_dirs(path):
-    if not os.path.isdir(path):
-        os.makedirs(path)
-    assert os.path.isdir(path)
+    FsFixture().make_dirs(path)
 
 
 def make_parent_for(path):
