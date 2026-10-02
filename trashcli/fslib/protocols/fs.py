@@ -3,11 +3,24 @@ from abc import abstractmethod
 from typing import List
 
 from trashcli.compat import Protocol
+from trashcli.fslib.protocols.mk_dirs import MkDirs
 from trashcli.fslib.protocols.real_path_fs import RealPathFs
 from trashcli.fstab.volume_of import VolumeOf
 
 
-class Fs(RealPathFs, VolumeOf, Protocol):
+class Fs(RealPathFs, VolumeOf, MkDirs, Protocol):
+    @abstractmethod
+    def touch(self, path):  # type: (str) -> None
+        raise NotImplementedError
+
+    @abstractmethod
+    def symlink(self, src, dest):  # type: (str, str) -> None
+        raise NotImplementedError
+
+    @abstractmethod
+    def mkdir(self, path):  # type: (str) -> None
+        raise NotImplementedError
+
     @abstractmethod
     def atomic_write(self, path, content):
         raise NotImplementedError
