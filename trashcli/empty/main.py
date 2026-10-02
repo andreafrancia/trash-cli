@@ -8,7 +8,6 @@ from trashcli.compat import Protocol
 from trashcli import trash
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.fslib.protocols.read_file import ReadFile
-from trashcli.fslib.real.real_read_file import RealReadFile
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.fslib.real.real_fs import RealFs
@@ -28,12 +27,8 @@ def main():
                          now=datetime.now,
                          file_reader=RealFs(),
                          file_remover=ExistingFileRemover(RealFs()),
-                         content_reader=FileSystemContentReader(),
+                         content_reader=RealFs(),
                          dir_reader=FileSystemDirReader(RealFs()),
                          version=trash.version,
                          volumes=RealVolumeOf())
     return empty_cmd.run_cmd(sys.argv[1:], os.environ, os.getuid())
-
-
-class FileSystemContentReader(ContentReader, RealReadFile):
-    pass

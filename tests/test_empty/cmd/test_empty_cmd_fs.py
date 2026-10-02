@@ -11,7 +11,6 @@ from tests.support.dirs.my_path import MyPath
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader
-from trashcli.empty.main import FileSystemContentReader
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
 
@@ -34,7 +33,7 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
             now=None,
             file_reader=RealFs(),
             file_remover=ExistingFileRemover(RealFs()),
-            content_reader=FileSystemContentReader(),
+            content_reader=RealFs(),
             dir_reader=FileSystemDirReader(RealFs()),
             version='unused',
             volumes=StubVolumeOf()
