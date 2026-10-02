@@ -27,6 +27,7 @@ def as_directory(ent):  # type: (Ent) -> Directory
 
 
 MAX_SYMLINKS_TO_FOLLOW = 40
+STICKY_BIT = 0o1000
 
 
 class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
@@ -224,8 +225,18 @@ class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         directory.add_file(basename, content, path)
 
     def get_mod(self, path):
-        entry = self._find_entry(path)
-        return entry.mode
+        # like os.lstat(), it does not follow the last symlink
+        inode = self._lookup_or_enoent(path, follow_last_link=False)
+        if inode.stickiness is Stickiness.sticky:
+            return inode.mode | STICKY_BIT
+        return inode.mode
+
+    def _lookup_or_enoent(self, path, follow_last_link):  # type: (...) -> INode
+        try:
+            return self._lookup(path, follow_last_link=follow_last_link)
+        except MyFileNotFoundError:
+            raise MyFileNotFoundError(errno.ENOENT,
+                                      "No such file or directory", path)
 
     def _find_entry(self, path):
         path = self._join_cwd(path)
@@ -234,8 +245,11 @@ class FakeFs(FakeVolumeOf, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         return directory.get_entry(basename, path, self)
 
     def chmod(self, path, mode):
-        entry = self._find_entry(path)
-        entry.chmod(mode)
+        # like os.chmod(), it follows symlinks
+        inode = self._lookup_or_enoent(path, follow_last_link=True)
+        inode.chmod(mode & ~STICKY_BIT)
+        inode.stickiness = (Stickiness.sticky if mode & STICKY_BIT
+                            else Stickiness.not_sticky)
 
     def path_isdir(self, path):
         try:
