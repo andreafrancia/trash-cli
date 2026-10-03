@@ -69,6 +69,12 @@ class Parser:
                                  action='store_true',
                                  dest='all_users',
                                  help='list trashcans of all the users')
+        self.parser.add_argument('--doctor',
+                                 action='store_true',
+                                 default=False,
+                                 dest='doctor',
+                                 help='report the inconsistencies found in '
+                                      'the trash directories')
         self.parser.add_argument('--python',
                                  dest='action',
                                  action='store_const',
@@ -98,7 +104,8 @@ class Parser:
                 trash_dirs=parsed.trash_dirs,
                 attribute_to_print=parsed.attribute_to_print,
                 show_files=parsed.show_files,
-                all_users=parsed.all_users
+                all_users=parsed.all_users,
+                doctor=parsed.doctor,
             )
         if parsed.action == ListAction.print_python_executable:
             return PrintPythonExecutableArgs()

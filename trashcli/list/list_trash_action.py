@@ -6,6 +6,7 @@ from typing import NamedTuple
 
 from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.action import Action
+from trashcli.lib.inconsistencies import inconsistencies_found
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.lib.printable import printable
 from trashcli.lib.sanitize import shell_escape, quoting_wanted
@@ -32,6 +33,7 @@ class ListTrashArgs(
         ('attribute_to_print', str),
         ('show_files', bool),
         ('all_users', bool),
+        ('doctor', bool),
     ])):
     pass
 
@@ -75,6 +77,10 @@ class ListTrashAction(Action):
             print(printable(event.error), file=self.err)
         elif isinstance(event, Output):
             print(printable(event.message), file=self.out)
+        elif isinstance(event, Inconsistency):
+            print(printable(event.message), file=self.out)
+        elif isinstance(event, InconsistenciesSummary):
+            print(printable(event.message), file=self.err)
 
 
 class ListTrash:
@@ -113,11 +119,9 @@ class ListTrash:
         for event, event_args in trash_dirs:
             if event == trash_dir_found:
                 path, volume = event_args
-                trash_dir = TrashDirReader(self.dir_reader)
-                for trash_info in trash_dir.list_trashinfo(path):
-                    for msg in self._print_trashinfo(volume, trash_info,
-                                                     extractor, show_files):
-                        yield msg
+                for msg in self._list_trash_dir(path, volume, extractor,
+                                                show_files, args.doctor):
+                    yield msg
             elif event == trash_dir_skipped_because_parent_not_sticky:
                 path, = event_args
                 msg = Error(
@@ -128,6 +132,32 @@ class ListTrash:
                 msg = Error(
                     self.top_trashdir_skipped_because_parent_is_symlink(path))
                 yield msg
+
+    def _list_trash_dir(self, path, volume, extractor, show_files, doctor):
+        found_inconsistencies = False
+        for msg in self._trash_dir_events(path, volume, extractor,
+                                          show_files):
+            if isinstance(msg, Inconsistency):
+                found_inconsistencies = True
+                if doctor:
+                    yield msg
+            elif isinstance(msg, Output):
+                if not doctor:
+                    yield msg
+            else:
+                yield msg
+        if found_inconsistencies and not doctor:
+            yield InconsistenciesSummary(
+                inconsistencies_found(path, self.environ))
+
+    def _trash_dir_events(self, path, volume, extractor, show_files):
+        trash_dir = TrashDirReader(self.dir_reader)
+        for trash_info in trash_dir.list_trashinfo(path):
+            for msg in self._print_trashinfo(volume, trash_info,
+                                             extractor, show_files):
+                yield msg
+        for non_trashinfo in trash_dir.list_non_trashinfo(path):
+            yield Inconsistency(self.print_non_trashinfo_error(non_trashinfo))
 
     def _print_trashinfo(self,
                          volume,
@@ -142,7 +172,8 @@ class ListTrash:
             try:
                 relative_location = parse_path(contents)
             except ParseError:
-                yield Error(self.print_parse_path_error(trashinfo_path))
+                yield Inconsistency(
+                    self.print_parse_path_error(trashinfo_path))
             else:
                 attribute = extractor.extract_attribute(trashinfo_path,
                                                         contents)
@@ -167,6 +198,9 @@ class ListTrash:
     def print_parse_path_error(self, offending_file):
         return "Parse Error: %s: Unable to parse Path." % offending_file
 
+    def print_non_trashinfo_error(self, offending_file):
+        return "Non .trashinfo file in info dir: %s" % offending_file
+
 
 class Event:
     pass
@@ -178,6 +212,16 @@ class Error(Event):
 
 
 class Output(Event):
+    def __init__(self, message):
+        self.message = message
+
+
+class Inconsistency(Event):
+    def __init__(self, message):
+        self.message = message
+
+
+class InconsistenciesSummary(Event):
     def __init__(self, message):
         self.message = message
 
