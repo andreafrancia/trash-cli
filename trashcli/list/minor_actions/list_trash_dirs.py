@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from typing import List, NamedTuple
 
 from trashcli.lib.action import Action
@@ -15,10 +17,11 @@ class ListTrashDirsArgs(
 
 
 class ListTrashDirs(Action):
-    def __init__(self, environ, uid, selector):
+    def __init__(self, environ, uid, selector, out):
         self.environ = environ
         self.uid = uid
         self.selector = selector
+        self.out = out
 
     def run_action(self, args):
         user_specified_trash_dirs = args.trash_dirs
@@ -30,10 +33,10 @@ class ListTrashDirs(Action):
         for event, event_args in trash_dirs:
             if event == trash_dir_found:
                 path, volume = event_args
-                print("%s" % path)
+                print("%s" % path, file=self.out)
             elif event == trash_dir_skipped_because_parent_not_sticky:
                 path = event_args
-                print("parent_not_sticky: %s" % (path))
+                print("parent_not_sticky: %s" % (path), file=self.out)
             elif event == trash_dir_skipped_because_parent_is_symlink:
                 path = event_args
-                print("parent_is_symlink: %s" % (path))
+                print("parent_is_symlink: %s" % (path), file=self.out)
