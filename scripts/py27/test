@@ -15,20 +15,13 @@ set -euo pipefail
 VENV_DIR="$("$SCRIPT_DIR/lib/ensure-venv" .venv-py27)"
 
 cd "$ROOT_DIR"
-if "$VENV_DIR/bin/python" -m pytest "$@"
+if ! "$VENV_DIR/bin/python" -c 'import pytest' 2> /dev/null
 then
-    :
-else
-    exit_code=$?
-    echo Exit Code: $exit_code
-    if [[ $exit_code == 1 ]]
-    then
-        echo "Maybe pytest module has not been found."
-        echo "Trying to install all the needed depdencies"
-        set -x
-        "$VENV_DIR/bin/pip" install --quiet -e . -e ".[dev]"
-        set +x
-    else
-        exit $exit_code
-    fi
+    echo "The pytest module has not been found."
+    echo "Installing all the needed dependencies"
+    set -x
+    "$VENV_DIR/bin/pip" install --quiet -e . -e ".[dev]"
+    set +x
 fi
+
+exec "$VENV_DIR/bin/python" -m pytest "$@"
