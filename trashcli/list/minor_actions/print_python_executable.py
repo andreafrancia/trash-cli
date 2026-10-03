@@ -3,7 +3,7 @@ from __future__ import print_function
 from trashcli.lib.action import Action
 
 
-class PrintPythonExecutableArgs:
+class PrintPythonExecutableArgs(object):
     pass
 
 
