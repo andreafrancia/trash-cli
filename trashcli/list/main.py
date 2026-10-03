@@ -93,7 +93,8 @@ class ListCmd:
                                                        self.dir_reader,
                                                        self.content_reader,
                                                        file_reader),
-                        PrintPythonExecutableArgs: PrintPythonExecutable()}
+                        PrintPythonExecutableArgs: PrintPythonExecutable(
+                            self.out)}
 
     def run(self,
             argv,  # type: List[str]
