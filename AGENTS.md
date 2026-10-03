@@ -35,11 +35,22 @@ into `master` keeping the history linear (no merge commits).
 
    Every commit must pass `scripts/pre-push`, not only the last one of the
    task: run it before each commit, one commit at a time, and never batch
-   several changes to test them together at the end. The same applies when you
-   rewrite the history (rebase, reorder, split, squash, reword): afterwards
-   run `scripts/pre-push` on every rewritten commit, for example with
-   `git rebase --exec scripts/pre-push <base>`, and fix the commit that fails
-   instead of adding a fixup at the tip.
+   several changes to test them together at the end.
+
+   Rewriting the history (rebase, reorder, split, squash, reword) is the
+   exception: you don't need to run `scripts/pre-push` on every rewritten
+   commit. While rewriting, run only the check or the tests involved in what
+   you are changing (for example `scripts/check-types`, or
+   `.venv/bin/python -m pytest tests/path/test_x.py`). When the rewrite is
+   finished, run `scripts/pre-push` once, on the tip. If it fails:
+
+   1. find the commit that introduced the failure with `git bisect`, between
+      the base of the rewrite (good) and the tip (bad). Bisect with the
+      failing check or test, not the whole `scripts/pre-push`, for example
+      `git bisect run .venv/bin/python -m pytest tests/path/test_x.py`;
+   2. fix that commit with an interactive rebase (`edit` it), not with a
+      fixup at the tip;
+   3. run `scripts/pre-push` on the tip again.
 3. Integrate into `master`:
 
        git rebase master                # in the task worktree
