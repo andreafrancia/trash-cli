@@ -4,6 +4,8 @@ import pytest
 from six import StringIO
 
 from tests.support.dirs.my_path import MyPath
+from tests.support.fakes.fake_df_command import FakeDfCommand
+from tests.support.fakes.fake_disk_partitions_fs import FakeDiskPartitionsFs
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.fakes.stub_volume_of import StubVolumeOfFs
 from tests.support.files import FsFixture
@@ -36,6 +38,8 @@ class TrashListUser:
         self.version = None
         self.stdout = None
         self.fake_volumes = FakeVolumesListing()
+        self.fake_disk_partitions = FakeDiskPartitionsFs()
+        self.fake_df = FakeDfCommand()
         self.fsx = FsFixture(RealFs())
 
     def run_trash_list(self, *args):  # type: (...) -> RunResult
@@ -51,7 +55,9 @@ class TrashListUser:
             dir_reader=RealDirReaderFs(RealFs()),
             file_reader=RealFs(),
             content_reader=RealFs(),
-            version=self.version
+            version=self.version,
+            disk_partitions_fs=self.fake_disk_partitions,
+            df_command=self.fake_df,
         ).run(['trash-list'] + list(args))
         return RunResult(clean(stdout.getvalue(), self.root),
                          clean(stderr.getvalue(), self.root))

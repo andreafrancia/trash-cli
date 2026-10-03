@@ -13,6 +13,10 @@ from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.real.real_read_file import RealReadFile
 from trashcli.fslib.real.real_volume_of import RealVolumeOfFs
 from trashcli.fslib.real.real_volumes_listing import RealVolumesListing
+from trashcli.fstab.protocols.df_command import DfCommand
+from trashcli.fstab.protocols.disk_partitions_fs import DiskPartitionsFs
+from trashcli.fstab.real.real_df_command import RealDfCommand
+from trashcli.fstab.real.real_disk_partitions_fs import RealDiskPartitionsFs
 from trashcli.fslib.protocols.volume_of import VolumeOfFs
 from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.fslib.real.real_dir_reader_fs import RealDirReaderFs
@@ -47,7 +51,9 @@ def main():
         dir_reader=RealDirReaderFs(RealFs()),
         file_reader=FileSystemReader(RealFs()),
         content_reader=RealReadFile(),
-        version=trashcli.trash.version
+        version=trashcli.trash.version,
+        disk_partitions_fs=RealDiskPartitionsFs(),
+        df_command=RealDfCommand(),
     ).run(sys.argv)
 
 
@@ -63,6 +69,8 @@ class ListCmd:
                  dir_reader,  # type: DirReaderFs
                  content_reader,  # type: ContentReader
                  version,  # type: str
+                 disk_partitions_fs,  # type: DiskPartitionsFs
+                 df_command,  # type: DfCommand
                  ):
         self.out = out
         self.err = err
@@ -80,7 +88,9 @@ class ListCmd:
                         PrintVolumesArgs: PrintVolumesList(self.environ,
                                                            self.volumes_listing,
                                                            self.out),
-                        DebugVolumesArgs: DebugVolumes(),
+                        DebugVolumesArgs: DebugVolumes(self.out,
+                                                       disk_partitions_fs,
+                                                       df_command),
                         ListTrashDirsArgs: ListTrashDirs(self.environ,
                                                          self.uid,
                                                          self.selector,
