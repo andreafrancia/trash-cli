@@ -13,7 +13,7 @@ from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.file_system_reader import FileSystemReader
 from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 from trashcli.fslib.real.real_dir_reader_fs import RealDirReaderFs
-from trashcli.list.main import ListCmd
+from trashcli.list.list_cmd import ListCmd
 from tests.test_list.cmd.support.run_result import RunResult
 
 @pytest.fixture
