@@ -8,7 +8,7 @@ from trashcli.fstab.protocols.disk_partitions_fs import DiskPartitionsFs
 from trashcli.lib.action import Action
 
 
-class DebugVolumesArgs:
+class DebugVolumesArgs(object):
     pass
 
 
