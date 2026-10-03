@@ -30,6 +30,7 @@ Permanently remove any trashed file and trashed directory.
 This command is a part of the trash-cli package that provides a command 
 line interface trashcan utility compliant with the FreeDesktop.org 
 Trash Specification.
+
 It remembers the name, original path, deletion date, and permissions of
 each trashed file.
 
@@ -37,11 +38,18 @@ each trashed file.
 .TP
 To remove all trashed files, use 'trash-empty' without arguments.
 .TP
-To remove files that have been in the trash for more than a given number of
-days, use 'trash-empty x', 'x' representing the number of days.
+To remove files that have been in the trash for more than a given number of days, use 'trash-empty x', 'x' representing the number of days.
+
+.IP "-f"
+.br
+Silently ignore any files or directories that do not exist.
+
+Do not print error messages. Do not return a nonzero status to the caller due to nonexistent/missing arguments.
 
 .SH "EXAMPLES"
 .nf
+$ trash-empty -f
+<none>
 $ date
 Tue Feb 19 20:26:52 CET 2008
 $ trash-list
@@ -84,3 +92,4 @@ https://specifications.freedesktop.org/trash-spec/trashspec-1.0.html.
 
 Both are released under the \s-1GNU\s0 General Public License, version 2 or
 later.
+
