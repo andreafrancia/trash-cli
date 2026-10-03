@@ -1,6 +1,6 @@
 import pytest
 
-from tests.support.dicts import merge_dicts
+from tests.support.merge_dicts import merge_dicts
 
 
 class TestMergeDicts:

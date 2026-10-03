@@ -2,7 +2,7 @@ import os
 import subprocess
 import sys
 
-from tests.support.dicts import merge_dicts
+from tests.support.merge_dicts import merge_dicts
 from tests.support.make_scripts import script_path_for
 from tests.support.project_root import project_root
 from tests.support.run.cmd_result import CmdResult
