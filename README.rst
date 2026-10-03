@@ -77,6 +77,10 @@ Remove all files from the trashcan::
 
     $ trash-empty
 
+Remove all files from the trashcan (force/silent - no prompt)::
+
+    $ trash-empty -f
+
 Remove only the files that have been deleted more than <days> ago::
     
     $ trash-empty <days>
