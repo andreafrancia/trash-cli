@@ -1,6 +1,7 @@
 import os
 import shutil
 import stat
+import tempfile
 from typing import Iterable
 
 from trashcli.fslib.real.real_is_world_writable import RealIsWorldWritable
@@ -133,3 +134,15 @@ class RealFs(RealVolumeOfFs, Fs, RestoreFs, TopTrashDirRulesFs):
 
     def list_mount_points(self):
         return RealMountPointListFs().list_mount_points()
+
+    def rename(self, src, dest):  # type: (str, str) -> None
+        os.rename(src, dest)
+
+    def copytree(self, src, dest):  # type: (str, str) -> None
+        shutil.copytree(src, dest, symlinks=True)
+
+    def mkdtemp(self, prefix, parent):  # type: (str, str) -> str
+        return tempfile.mkdtemp(prefix=prefix, dir=parent)
+
+    def rmdir(self, path):  # type: (str) -> None
+        os.rmdir(path)
