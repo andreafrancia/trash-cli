@@ -4,7 +4,7 @@ import sys
 
 import trashcli.trash
 from trashcli.fslib.real.real_fs import RealFs
-from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
+from trashcli.fslib.real.real_list_files_in_dir import RealListdirFs
 from trashcli.fslib.real.real_volumes import RealVolumesFs
 from trashcli.lib.logger import my_logger
 from trashcli.lib.my_input import RealInput
@@ -23,7 +23,7 @@ def main():
         exit=sys.exit,
         input=RealInput(),
         version=trashcli.trash.version,
-        listing_fs=RealListFilesInDir(),
+        listing_fs=RealListdirFs(),
         volumes=RealVolumesFs(),
         logger=RealRestoreLogger(my_logger),
         uid=os.getuid(),

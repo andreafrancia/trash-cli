@@ -52,10 +52,6 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             raise OSError(errno.ENOTDIR, "Not a directory", path)
         return self.ls_aa(path)
 
-    def list_files_in_dir(self, path):  # type: (str) -> Iterable[str]
-        for entry in self.listdir(path):
-            yield os.path.join(path, entry)
-
     def mkdirs(self, path):  # type: (str) -> None
         self._make_dirs_if_missing(path, 0o755)
 

@@ -2,7 +2,7 @@ import pytest
 
 from tests.support.files import FsFixture
 from tests.support.dirs.my_path import MyPath
-from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
+from trashcli.fslib.real.real_list_files_in_dir import RealListdirFs
 from trashcli.restore.info_files import InfoFiles
 from trashcli.fslib.real.real_fs import RealFs
 
@@ -13,7 +13,7 @@ class TestTrashDirectory:
         self.fsx = FsFixture(RealFs())
         self.temp_dir = MyPath.make_temp_dir()
         self.fsx.require_empty_dir(self.temp_dir / 'trash-dir')
-        self.info_files = InfoFiles(RealListFilesInDir())
+        self.info_files = InfoFiles(RealListdirFs())
 
     def test_should_list_a_trashinfo(self):
         self.fsx.make_file(self.temp_dir / 'trash-dir/info/foo.trashinfo')

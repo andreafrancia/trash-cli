@@ -11,7 +11,7 @@ from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.fslib.real.real_fs import RealFs
-from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
+from trashcli.fslib.real.real_list_files_in_dir import RealListdirFs
 from tests.support.fakes.fake_volumes import FakeVolumesFs
 from trashcli.restore.fs.real.real_file_reader_fs import RealFileReaderFs
 from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
@@ -34,7 +34,7 @@ class TestRestoreTrash:
                                 path_read_fs=RealPathReaderFs(),
                                 read_fs=RealPathReaderFs(),
                                 write_fs=RealRestoreWriterFs(),
-                                listing_fs=RealListFilesInDir(),
+                                listing_fs=RealListdirFs(),
                                 version='0.0.0',
                                 volumes=FakeVolumesFs([]),
                                 top_trash_dir_rules_reader=RealFs(),

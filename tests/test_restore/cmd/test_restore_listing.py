@@ -7,12 +7,12 @@ from six import StringIO
 from tests.support.dirs.my_path import MyPath
 from tests.support.fakes.fake_trash_dir import FakeTrashDir, \
     FakeTrashDirWithRoot
-from tests.support.fs.sorting_list_file_in_dir_fs import SortingListFilesInDir
+from tests.support.fs.sorting_listdir_fs import SortingListdirFs
 from tests.support.py2mock import Mock
 from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
 from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.fslib.real.real_fs import RealFs
-from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
+from trashcli.fslib.real.real_list_files_in_dir import RealListdirFs
 from tests.support.fakes.fake_volumes import FakeVolumesFs
 from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.fs.real.real_file_reader_fs import RealFileReaderFs
@@ -66,7 +66,7 @@ class TestTrashedFileRestoreIntegration:
             exit=sys.exit,
             input=self.input,
             version="0.0.0",
-            listing_fs=SortingListFilesInDir(RealListFilesInDir()),
+            listing_fs=SortingListdirFs(RealListdirFs()),
             read_fs=RealPathReaderFs(),
             write_fs=RealRestoreWriterFs(),
             read_cwd=self.cur_dir,
