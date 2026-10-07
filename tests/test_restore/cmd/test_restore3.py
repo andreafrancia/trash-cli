@@ -11,7 +11,7 @@ from tests.support.py2mock import Mock
 from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
 from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.fslib.real.real_fs import RealFs
-from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
+from trashcli.fslib.real.real_list_files_in_dir import RealListdirFs
 from tests.support.fakes.fake_volumes import FakeVolumesFs
 from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.fs.real.real_file_reader_fs import RealFileReaderFs
@@ -62,7 +62,7 @@ class TestTrashedFileRestoreIntegration:
             exit=sys.exit,
             input=self.input,
             version="0.0.0",
-            listing_fs=RealListFilesInDir(),
+            listing_fs=RealListdirFs(),
             read_fs=RealPathReaderFs(),
             write_fs=RealRestoreWriterFs(),
             read_cwd=FakeReadCwdFs(self.cwd),

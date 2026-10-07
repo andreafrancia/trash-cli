@@ -99,11 +99,11 @@ class GivenTrash:
     def remaining_trashinfo(self,
                             trash_dir,  # type: str
                             ):
-        return list(self.fs.list_files_in_dir(
+        return list(self.fs.listdir(
             "{trash_dir}/info".format(trash_dir=trash_dir)))
 
     def remaining_original_copies(self,
                                   trash_dir,  # type: str
                                   ):
-        return list(self.fs.list_files_in_dir(
+        return list(self.fs.listdir(
             "{trash_dir}/files".format(trash_dir=trash_dir)))
