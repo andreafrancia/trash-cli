@@ -4,5 +4,6 @@ from trashcli.compat import Protocol
 
 
 class VolumeOfFs(Protocol):
+    @abstractmethod
     def volume_of(self, path):
         raise NotImplementedError()
