@@ -1,11 +1,11 @@
 import pytest
 
-from tests.support.dirs.temp_dir import temp_dir
+from tests.support.dirs.temp_dir import temp_dir_fixture
 from tests.test_put.cmd.e2e.run_trash_put.directory_layout import \
     DirectoriesLayout
 from trashcli.fslib.real.real_fs import RealFs
 
-temp_dir = temp_dir
+temp_dir = temp_dir_fixture
 
 
 @pytest.mark.slow

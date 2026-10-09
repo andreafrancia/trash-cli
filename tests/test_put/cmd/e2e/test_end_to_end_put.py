@@ -3,18 +3,15 @@ from textwrap import dedent
 
 import pytest
 
-from tests.support.dirs.my_path import MyPath
-from tests.support.dirs.temp_dir import temp_dir
+from tests.support.dirs.temp_dir import temp_dir_fixture
 from tests.test_put.cmd.e2e.run_trash_put import run_trash_put
 from trashcli.lib.exit_codes import EX_IOERR
 
-temp_dir = temp_dir
+temp_dir = temp_dir_fixture
 
 
 @pytest.mark.slow
 class TestEndToEndPut:
-    def setup_method(self):
-        self.tmp_dir = MyPath.make_temp_dir()
 
     def test_last_line_of_help(self, temp_dir):
         result = run_trash_put(temp_dir, ['--help'])

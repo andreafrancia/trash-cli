@@ -3,9 +3,9 @@ import pytest
 from tests.support.dirs.my_path import MyPath
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.put.janitor_tools.put_trash_dir import move_file
-from tests.support.dirs.temp_dir import temp_dir
+from tests.support.dirs.temp_dir import temp_dir_fixture
 
-temp_dir = temp_dir
+temp_dir = temp_dir_fixture
 
 
 class TestMoveFile:
