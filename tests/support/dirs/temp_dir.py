@@ -4,7 +4,7 @@ from tests.support.dirs.my_path import MyPath
 
 
 @pytest.fixture
-def temp_dir():
+def temp_dir_fixture():
     temp_dir = MyPath.make_temp_dir()
     yield temp_dir
     temp_dir.clean_up()
