@@ -57,8 +57,27 @@ class RealFs(RealVolumeOfFs, Fs, RestoreFs, TopTrashDirRulesFs):
 
         return walk(path, followlinks=False)
 
-    def makedirs(self, path, mode):
-        os.makedirs(path, mode)
+    def makedirs(self, path, mode=0o777, exist_ok=False):
+        """
+        Implements os.makedirs as is avaiable in python 2.3, but it works even
+        in previous python
+        """
+        try:
+            # try using os.makedirs with exist_ok
+            os.makedirs(path, mode=mode, exist_ok=exist_ok)
+            return
+        except TypeError:
+            # os.makedirs does not accept exist_ok
+            pass
+
+        # emulate os.makedirs with exist_ok on previous Pythons
+        try:
+            os.makedirs(path, mode=mode)
+        except OSError as e:
+            import errno
+            if not (exist_ok and e.errno == errno.EEXIST and os.path.isdir(
+                    path)):
+                raise
 
     def mkdir(self, path):
         os.mkdir(path)
