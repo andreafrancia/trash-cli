@@ -1,5 +1,7 @@
 import unittest
 
+import pytest
+
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.rm.real_remover_fs import RealRemoverFs
 
@@ -10,6 +12,7 @@ except NameError:
     FileNotFoundError = OSError  # python 2
 
 
+@pytest.mark.slow
 class TestFileRemover(unittest.TestCase):
     def test_remove_file_fails_when_file_does_not_exists(self):
         file_remover = RealRemoverFs(RealFs())

@@ -1,10 +1,13 @@
 import os
 import unittest
 
+import pytest
+
 from tests.support.dirs.my_path import MyPath
 from trashcli.fslib.real.real_fs import RealFs
 
 
+@pytest.mark.slow
 class TestRealFsIsAccessible(unittest.TestCase):
     def setUp(self):
         self.fs = RealFs()

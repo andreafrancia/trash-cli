@@ -1,9 +1,12 @@
 import unittest
 
+import pytest
+
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.fslib.real.real_fs import RealFs
 
 
+@pytest.mark.slow
 class TestExistingFileRemover(unittest.TestCase):
 
     def test_remove_file_if_exists_fails_when_file_does_not_exists(self):

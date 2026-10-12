@@ -1,9 +1,12 @@
+import pytest
+
 from tests.support.dirs.my_path import MyPath
 from tests.support.files import FsFixture
 from tests.support.tools.version_saver import VersionSaver
 from trashcli.fslib.real.real_fs import RealFs
 
 
+@pytest.mark.slow
 class TestSaveNewVersion:
     def setup_method(self):
         self.fs = RealFs()

@@ -1,5 +1,7 @@
 import unittest
 
+import pytest
+
 from tests.support.files import FsFixture
 from tests.support.dirs.my_path import MyPath
 from trashcli.fslib.real.real_move import RealMove
@@ -9,6 +11,7 @@ from trashcli.fslib.real.real_fs import RealFs
 move = RealMove().move
 read_file = RealReadFile().read_file
 
+@pytest.mark.slow
 class TestMove(unittest.TestCase):
     def setUp(self):
         self.fsx = FsFixture(RealFs())

@@ -1,11 +1,14 @@
 import unittest
 
+import pytest
+
 from trashcli.lib.exit_codes import BAD_OPTION
 from tests.support.dirs.my_path import MyPath
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.put.parser import Parser, ExitWithCode, Trash
 
 
+@pytest.mark.slow
 class TestPutOptionShapedFilename(unittest.TestCase):
     def setUp(self):
         self.cwd = MyPath.make_temp_dir()
