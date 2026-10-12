@@ -13,16 +13,20 @@ class Env:
     """A directory (base) on a file system, to run the same test on the real
     file system (RealFs) and on the fake one (FakeFs)."""
 
-    def __init__(self, fs, base, is_real):
+    def __init__(self, fs, base, is_real, umask):
         self.fs = fs
         self.base = base
         self.is_real = is_real
+        self._umask = umask
         # the real file system has these capabilities in separate classes
         self.dir_reader = RealEntriesIfDirExists(fs) if is_real else fs
         self.remover = ExistingFileRemover(fs) if is_real else fs
 
     def path(self, name):
         return self.base + '/' + name
+
+    def umask(self):
+        return self._umask
 
     def make_sticky(self, path):
         if self.is_real:
@@ -32,15 +36,15 @@ class Env:
 
 
 @pytest.fixture
-def env(request):
+def env(request, process_umask):
     if request.param == 'real':
         tmp_dir = MyPath.make_temp_dir()
-        yield Env(RealFs(), str(tmp_dir), True)
+        yield Env(RealFs(), str(tmp_dir), True, process_umask)
         tmp_dir.clean_up()
     else:
         fs = FakeFs()
         fs.makedirs('/base', 0o755)
-        yield Env(fs, '/base', False)
+        yield Env(fs, '/base', False, 0)
 
 
 def real_and_fake():

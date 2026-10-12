@@ -31,6 +31,13 @@ class TestMakedirsLikeRealFs:
         assert env.fs.get_mod(env.path('a/b')) == 0o700
 
     @real_and_fake()
+    def test_makedirs__use_the_given_mode(self, env):
+        env.fs.makedirs(env.path('foo'), mode=0o700)
+
+        expected_mode = 0o700 & ~env.umask()
+        assert env.fs.get_mod(env.path('foo')) == expected_mode
+
+    @real_and_fake()
     def test_an_existing_dir_raises_eexist(self, env):
         env.fs.makedirs(env.path('dir'), 0o700)
 
