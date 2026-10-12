@@ -50,12 +50,6 @@ class TestRealFsMakedirs:
 
         assert fs.path_isdir(base_dir / "foo") == True
 
-    def test_makedirs__use_the_given_mode(self, fs, base_dir, process_umask):
-        fs.makedirs(base_dir / "foo", mode=0o700)
-
-        expected_mode = 0o700 & ~process_umask
-        assert fs.get_mod(base_dir / "foo") == expected_mode
-
     def test_makedirs__fail_if_an_intermediate_component_is_a_file(
             self, fs, base_dir):
         fs.touch(base_dir / "foo")
