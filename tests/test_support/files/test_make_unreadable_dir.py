@@ -3,12 +3,14 @@ import os
 import shutil
 import unittest
 
+import pytest
 
 from tests.support.files import FsFixture
 from tests.support.dirs.my_path import MyPath
 from trashcli.fslib.real.real_fs import RealFs
 
 
+@pytest.mark.slow
 class Test_make_unreadable_dir(unittest.TestCase):
     def setUp(self):
         self.fsx = FsFixture(RealFs())

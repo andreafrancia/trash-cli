@@ -1,6 +1,7 @@
 import sys
 from typing import TypeVar
 
+import pytest
 from six import StringIO
 
 from tests.support.cmd.capture_exit_code2 import capture_exit_code2
@@ -22,6 +23,7 @@ from trashcli.restore.trashed_files import TrashedFiles
 Self = TypeVar('Self', bound='TestTrashedFileRestoreIntegration')
 
 
+@pytest.mark.slow
 class TestTrashedFileRestoreIntegration:
 
     @staticmethod

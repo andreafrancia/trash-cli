@@ -1,6 +1,7 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import unittest
 
+import pytest
 from six import StringIO
 
 from tests.support.dirs.my_path import MyPath
@@ -12,6 +13,7 @@ from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 
 
+@pytest.mark.slow
 class TestTrashEmptyCmdReal(unittest.TestCase):
     def setUp(self):
         self.fs = RealFs()

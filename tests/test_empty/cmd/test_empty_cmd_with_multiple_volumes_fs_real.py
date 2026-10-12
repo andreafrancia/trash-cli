@@ -2,6 +2,7 @@
 import os
 import unittest
 
+import pytest
 from tests.support.py2mock import Mock
 from six import StringIO
 
@@ -15,6 +16,7 @@ from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
 
 
+@pytest.mark.slow
 class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
     def setUp(self):
         self.temp_dir = MyPath.make_temp_dir()

@@ -1,6 +1,8 @@
 import os
 import unittest
 
+import pytest
+
 from tests.support.run.run_command import run_command
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.files import FsFixture
@@ -9,6 +11,7 @@ from tests.support.dirs.my_path import MyPath
 from trashcli.fslib.real.real_fs import RealFs
 
 
+@pytest.mark.slow
 class TestEmptyEndToEndWithTrashDir(unittest.TestCase):
     def setUp(self):
         self.fsx = FsFixture(RealFs())

@@ -1,10 +1,13 @@
 import unittest
 
+import pytest
+
 from tests.support.capture_error import capture_error
 from tests.support.dirs.my_path import MyPath
 from trashcli.fslib.real.real_fs import RealFs
 
 
+@pytest.mark.slow
 class TestRealFsPermissions(unittest.TestCase):
     def setUp(self):
         self.fs = RealFs()
