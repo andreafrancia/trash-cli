@@ -51,3 +51,18 @@ class TestMakeDirs:
             lambda: self.fs.makedirs("/foo/bar", 0o755))
 
         assert str(error) == "[Errno 13] Permission denied: '/foo/bar'"
+
+    def test_makedirs_with_exist_ok_bug__does_not_detect_a_file_in_place_of_a_dir(self):
+        # Characterizes a known bug, not the desired behavior: unlike
+        # os.makedirs (and RealFs.makedirs, which delegates to it),
+        # exist_ok=True here suppresses EEXIST whenever the last path
+        # component already exists, even when it is a file rather than
+        # a directory. os.makedirs would still raise FileExistsError in
+        # this case. This test should start failing, and be updated,
+        # once FakeFs._makedirs is fixed to check that the existing
+        # entry is a directory before suppressing the error.
+        self.fs.write_file("/foo", "content")
+
+        self.fs.makedirs("/foo", 0o700, exist_ok=True)
+
+        assert self.fs.path_isdir("/foo") is False

@@ -146,9 +146,10 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
                 return inode
         raise MyFileNotFoundError("too many levels of symbolic links: %s" % path)
 
-    def makedirs(self, path, mode):
-        # like os.makedirs(): the last dir must not exist
-        self._makedirs(path, mode, exist_ok=False)
+    def makedirs(self, path, mode, exist_ok=False):
+        # like os.makedirs(): the last dir must not exist, unless
+        # exist_ok is True
+        self._makedirs(path, mode, exist_ok=exist_ok)
 
     def _make_dirs_if_missing(self, path, mode):
         self._makedirs(path, mode, exist_ok=True)
