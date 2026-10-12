@@ -44,4 +44,7 @@ def env(request):
 
 
 def real_and_fake():
-    return pytest.mark.parametrize('env', ['real', 'fake'], indirect=True)
+    return pytest.mark.parametrize(
+        'env',
+        [pytest.param('real', marks=pytest.mark.slow), 'fake'],
+        indirect=True)
