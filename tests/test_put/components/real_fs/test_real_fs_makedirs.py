@@ -124,9 +124,15 @@ def _without_exist_ok_kwarg():
     # Simulates os.makedirs on a Python that does not accept the
     # exist_ok keyword argument (available since Python 3.2), so
     # RealFs.makedirs falls back to its manual emulation.
-    real_makedirs = os.makedirs
-
+    #
+    # Implemented without delegating to the real os.makedirs: its own
+    # recursive parent-creation calls back into os.makedirs by name,
+    # which would resolve to this very monkeypatched replacement once
+    # installed, and fail because it passes exist_ok.
     def makedirs_without_exist_ok(path, mode=0o777):
-        return real_makedirs(path, mode)
+        parent = os.path.dirname(path)
+        if parent and not os.path.isdir(parent):
+            makedirs_without_exist_ok(parent, mode)
+        os.mkdir(path, mode)
 
     return makedirs_without_exist_ok
