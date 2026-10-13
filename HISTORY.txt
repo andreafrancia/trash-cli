@@ -1,3 +1,8 @@
+Unreleased:
+User visible changes:
+- Corrected the Homebrew PATH example to use the formula prefix
+  (Travis Fortney) [0ed2b62c]
+
 0.26.9.29 (82646023):
 User visible changes:
 - trash-put no longer leaves a copy of the trashed file in the trash dir when
