@@ -2,6 +2,7 @@ import errno
 
 import pytest
 
+from tests.support.format_os_error import format_os_error
 from tests.support.put.real_and_fake_env import env, real_and_fake
 
 env = env  # the fixture, imported from its module
@@ -50,6 +51,18 @@ class TestMakedirsLikeRealFs:
 
         assert errno_of(lambda: env.fs.makedirs(env.path('file'), 0o700)
                         ) == errno.EEXIST
+
+    @real_and_fake()
+    def test_an_existing_file_raises_eexist_even_with_exist_ok(self, env):
+        env.fs.write_file(env.path('file'), 'a')
+
+        with pytest.raises(OSError) as e:
+            env.fs.makedirs(env.path('file'), 0o700, exist_ok=True)
+
+        assert format_os_error(e.value) == {
+            'args': "(17, 'File exists')\n",
+            'errno': '17 EEXIST File exists\n',
+            'filename': env.path('file') + '\n'}
 
     @real_and_fake()
     def test_under_a_file_raises_enotdir(self, env):
