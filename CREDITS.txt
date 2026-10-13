@@ -104,6 +104,7 @@ Thanks to
  - Tim Stewart: fixed a typo in the README [e5732ba]
  - Tin Lai: added a check for a non-existent info target trash folder
    [5f3854a]
+ - Travis Fortney: fixed the Homebrew PATH example [0ed2b62c]
  - Waldir Pimenta: various README adjustments [0a72e06]
  - Wu Zhenyu: added shell completions (shtab), documented completions,
    switched optparse to argparse, fixed issue #264 for bash [a5f2d57,
