@@ -1,3 +1,7 @@
+import errno
+
+import pytest
+
 from tests.support.capture_error import capture_error
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.fslib.list_all import list_all
@@ -52,17 +56,10 @@ class TestMakeDirs:
 
         assert str(error) == "[Errno 13] Permission denied: '/foo/bar'"
 
-    def test_makedirs_with_exist_ok_bug__does_not_detect_a_file_in_place_of_a_dir(self):
-        # Characterizes a known bug, not the desired behavior: unlike
-        # os.makedirs (and RealFs.makedirs, which delegates to it),
-        # exist_ok=True here suppresses EEXIST whenever the last path
-        # component already exists, even when it is a file rather than
-        # a directory. os.makedirs would still raise FileExistsError in
-        # this case. This test should start failing, and be updated,
-        # once FakeFs._makedirs is fixed to check that the existing
-        # entry is a directory before suppressing the error.
+    def test_makedirs_with_exist_ok__still_fail_if_path_is_a_file(self):
         self.fs.write_file("/foo", "content")
 
-        self.fs.makedirs("/foo", 0o700, exist_ok=True)
+        with pytest.raises(OSError) as e:
+            self.fs.makedirs("/foo", 0o700, exist_ok=True)
 
-        assert self.fs.path_isdir("/foo") is False
+        assert e.value.errno == errno.EEXIST
