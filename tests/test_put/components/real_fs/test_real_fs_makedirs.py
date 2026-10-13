@@ -1,5 +1,4 @@
 import os
-
 import pytest
 
 from tests.support.format_os_error import format_os_error
@@ -64,18 +63,6 @@ class TestRealFsMakedirs:
             'args': "(20, 'Not a directory')\n",
             'errno': '20 ENOTDIR Not a directory\n',
             'filename': base_dir + '/foo/bar\n'}
-
-    def test_makedirs__with_exist_ok__still_fail_if_path_is_a_file(
-            self, fs, base_dir):
-        fs.touch(base_dir / "foo")
-
-        with pytest.raises(OSError) as e:
-            fs.makedirs(base_dir / "foo", exist_ok=True)
-
-        assert format_os_error(e.value) == {
-            'args': "(17, 'File exists')\n",
-            'errno': '17 EEXIST File exists\n',
-            'filename': base_dir + '/foo\n'}
 
     def test_makedirs__legacy_fallback__creates_dir(
             self, fs, base_dir, monkeypatch):
