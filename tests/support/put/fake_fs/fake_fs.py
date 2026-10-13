@@ -168,8 +168,9 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
                 directory.add_dir(component, mode, path)
                 inode = directory.get_entry(component, path, self)
             else:
-                if index == len(components) - 1 and not exist_ok:
-                    raise OSError(errno.EEXIST, "File exists", path)
+                if index == len(components) - 1:
+                    if not (exist_ok and isinstance(inode.entity, Directory)):
+                        raise OSError(errno.EEXIST, "File exists", path)
 
     def _join_cwd(self, path):
         return os.path.join(os.path.join("/", self.cwd), path)
