@@ -1,5 +1,8 @@
+import os
+
 import pytest
 
+from tests.support.format_os_error import format_os_error
 from tests.support.dirs.temp_dir import temp_dir_fixture
 from trashcli.fslib.real.real_fs import RealFs
 
@@ -57,7 +60,7 @@ class TestRealFsMakedirs:
         with pytest.raises(OSError) as e:
             fs.makedirs(base_dir / "foo/bar")
 
-        assert _describe_os_error(e.value) == {
+        assert format_os_error(e.value) == {
             'args': "(20, 'Not a directory')\n",
             'errno': '20 ENOTDIR Not a directory\n',
             'filename': base_dir + '/foo/bar\n'}
@@ -69,7 +72,7 @@ class TestRealFsMakedirs:
         with pytest.raises(OSError) as e:
             fs.makedirs(base_dir / "foo", exist_ok=True)
 
-        assert _describe_os_error(e.value) == {
+        assert format_os_error(e.value) == {
             'args': "(17, 'File exists')\n",
             'errno': '17 EEXIST File exists\n',
             'filename': base_dir + '/foo\n'}
@@ -99,20 +102,11 @@ class TestRealFsMakedirs:
         with pytest.raises(OSError) as e:
             fs.makedirs(base_dir / "foo")
 
-        assert _describe_os_error(e.value) == {
+        assert format_os_error(e.value) == {
             'args': "(17, 'File exists')\n",
             'errno': '17 EEXIST File exists\n',
             'filename': base_dir + '/foo\n'}
 
-
-def _describe_os_error(e):
-    return {
-        "errno": str(e.errno) + " " +
-                 errno.errorcode[e.errno] + " " +
-                 os.strerror(e.errno) + "\n",
-        "filename": e.filename + "\n",
-        "args": str(e.args) + "\n",
-    }
 
 def _without_exist_ok_kwarg():
     # Simulates os.makedirs on a Python that does not accept the
