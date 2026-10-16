@@ -46,7 +46,7 @@ class Fs(RealPathFs, VolumeOfFs, MkDirs, Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def makedirs(self, path, mode):  # type: (str, int)->None
+    def makedirs(self, path, mode=0o777, exist_ok=False):  # type: (str, int, bool)->None
         raise NotImplementedError
 
     @abstractmethod
