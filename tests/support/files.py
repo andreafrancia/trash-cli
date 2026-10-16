@@ -8,12 +8,11 @@ from trashcli.fslib.fs_remove_file2 import FsRemoveFile2
 
 
 class FsFixture:
-    def __init__(self, fs):  # type: (RealFs) -> None
+    def __init__(self, fs):  # type: (Fs) -> None
         self.fs = fs
 
     def mkdir_p(self, path):
-        if not self.fs.path_isdir(path):
-            self.fs.makedirs(path, 0o777)
+        self.fs.makedirs(path, exist_ok=True)
 
     def make_empty_dir(self, path):
         self.fs.mkdir(path)
