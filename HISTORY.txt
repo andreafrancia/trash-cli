@@ -2,6 +2,11 @@ Unreleased:
 User visible changes:
 - Corrected the Homebrew PATH example to use the formula prefix
   (Travis Fortney) [0ed2b62c]
+- trash-put now handles a trailing slash correctly: "trash-put ./" and
+  "trash-put ../" are refused instead of emptying the directory, a
+  writable directory inside a read-only parent is no longer lost, and a
+  read-only directory given as "dir/" is trashed instead of refused
+  (curious-rabbit) [313cd8d]
 
 0.26.9.29 (82646023):
 User visible changes:
