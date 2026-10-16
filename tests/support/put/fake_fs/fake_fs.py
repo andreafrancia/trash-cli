@@ -146,31 +146,31 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
                 return inode
         raise MyFileNotFoundError("too many levels of symbolic links: %s" % path)
 
-    def makedirs(self, path, mode, exist_ok=False):
+    def makedirs(self, name, mode=0o777, exist_ok=False):
         # like os.makedirs(): the last dir must not exist, unless
         # exist_ok is True
-        self._makedirs(path, mode, exist_ok=exist_ok)
+        self._makedirs(name, mode, exist_ok=exist_ok)
 
     def _make_dirs_if_missing(self, path, mode):
         self._makedirs(path, mode, exist_ok=True)
 
-    def _makedirs(self, path, mode, exist_ok):
-        path = self._join_cwd(path)
-        components = self._components_for(path)
+    def _makedirs(self, name, mode, exist_ok):
+        name = self._join_cwd(name)
+        components = self._components_for(name)
         inode = self.root_inode
         for index, component in enumerate(components):
             if not isinstance(inode.entity, Directory):
-                raise OSError(errno.ENOTDIR, "Not a directory", path)
+                raise OSError(errno.ENOTDIR, "Not a directory", name)
             try:
-                inode = inode.directory().get_entry(component, path, self)
+                inode = inode.directory().get_entry(component, name, self)
             except MyFileNotFoundError:
                 directory = inode.directory()
-                directory.add_dir(component, mode, path)
-                inode = directory.get_entry(component, path, self)
+                directory.add_dir(component, mode, name)
+                inode = directory.get_entry(component, name, self)
             else:
                 if index == len(components) - 1:
                     if not (exist_ok and isinstance(inode.entity, Directory)):
-                        raise OSError(errno.EEXIST, "File exists", path)
+                        raise OSError(errno.EEXIST, "File exists", name)
 
     def _join_cwd(self, path):
         return os.path.join(os.path.join("/", self.cwd), path)
