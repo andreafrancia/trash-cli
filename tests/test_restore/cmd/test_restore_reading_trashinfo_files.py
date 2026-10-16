@@ -47,7 +47,8 @@ class TestRestoreReadingTrashinfoFiles:
         assert self.log_messages == []
 
     # Purpose: a file in the info dir without the .trashinfo extension is
-    # not a trashed file: it is not offered and a warning is logged.
+    # not a trashed file: it is not offered and the trash dir is reported
+    # as inconsistent, pointing to trash-list --doctor for the details.
     def test_a_non_trashinfo_file_is_skipped_with_a_warning(self):
         self.trash.has_a_non_trashinfo("info_path.non-trashinfo")
 
@@ -55,10 +56,11 @@ class TestRestoreReadingTrashinfoFiles:
 
         assert res.output() == "No files trashed from current dir ('/')\n"
         assert self.log_messages == [
-            'WARN: Non .trashinfo file in info dir']
+            'WARN: Found inconsistencies in ~/.local/share/Trash check them '
+            'running `trash-list --doctor`']
 
     # Purpose: a .trashinfo that cannot be parsed (here: empty, so no Path=)
-    # is not offered; the warning reports both the file path and the reason.
+    # is not offered and the trash dir is reported as inconsistent.
     def test_a_non_parsable_trashinfo_is_skipped_with_a_warning(self):
         self.trash.has_a_non_parseable_trashinfo("info_path.trashinfo")
 
@@ -66,9 +68,39 @@ class TestRestoreReadingTrashinfoFiles:
 
         assert res.output() == "No files trashed from current dir ('/')\n"
         assert self.log_messages == [
-            'WARN: Non parsable trashinfo file: '
-            '/home/user/.local/share/Trash/info/info_path.trashinfo, '
-            'because Unable to parse Path']
+            'WARN: Found inconsistencies in ~/.local/share/Trash check them '
+            'running `trash-list --doctor`']
+
+    # Purpose: many inconsistencies in the same trash dir are reported with
+    # a single warning.
+    def test_many_inconsistencies_in_a_trash_dir_are_reported_once(self):
+        self.trash.has_a_non_trashinfo("info_path.non-trashinfo")
+        self.trash.has_a_non_parseable_trashinfo("malformed.trashinfo")
+        self.trash.has_a_non_parseable_trashinfo("malformed2.trashinfo")
+        self.trash.has_a_well_formed_trashinfo("info_path.trashinfo")
+
+        res = self.user.run_restore(['trash-restore', '/'], from_dir='/')
+
+        assert res.output() == ('   0 2001-01-01 10:10:10 /name\n'
+                                'No files were restored\n')
+        assert self.log_messages == [
+            'WARN: Found inconsistencies in ~/.local/share/Trash check them '
+            'running `trash-list --doctor`']
+
+    # Purpose: each trash dir with inconsistencies gets its own warning.
+    def test_inconsistencies_are_reported_once_per_trash_dir(self):
+        self.fs.add_volume('/volume')
+        self.trash.has_a_non_parseable_trashinfo("malformed.trashinfo")
+        self.trash.has_file(self.volume_trash + '/info/malformed.trashinfo')
+
+        res = self.user.run_restore(['trash-restore', '/'], from_dir='/')
+
+        assert res.output() == "No files trashed from current dir ('/')\n"
+        assert self.log_messages == [
+            'WARN: Found inconsistencies in ~/.local/share/Trash check them '
+            'running `trash-list --doctor`',
+            'WARN: Found inconsistencies in /volume/.Trash-123 check them '
+            'running `trash-list --doctor`']
 
     # Purpose: a .trashinfo that cannot be read (here it is a directory) is
     # not offered and the error is logged as a warning instead of crashing.
@@ -95,8 +127,9 @@ class TestRestoreReadingTrashinfoFiles:
         assert not self.fs.path_exists(
             self.home_trash + '/info/info_path.trashinfo')
         assert not self.fs.path_exists(self.home_trash + '/files/info_path')
-        assert self.log_messages == ['WARN: Non .trashinfo file in info dir']
-        assert len(self.log_messages) == 1
+        assert self.log_messages == [
+            'WARN: Found inconsistencies in ~/.local/share/Trash check them '
+            'running `trash-list --doctor`']
 
     def test_after_a_non_parsable_trashinfo_error_continue(self):
         self.trash.has_a_non_parseable_trashinfo('not-parseable.trashinfo')
@@ -110,12 +143,9 @@ class TestRestoreReadingTrashinfoFiles:
         assert not self.fs.path_exists(
             self.home_trash + '/info/info_path.trashinfo')
         assert not self.fs.path_exists(self.home_trash + '/files/info_path')
-        assert self.log_messages == ['WARN: Non parsable trashinfo file: '
-                                     '{home_trash}/info/'
-                                     'not-parseable.trashinfo, '
-                                     'because Unable to parse Path'
-                                     .format(home_trash=self.home_trash)]
-        assert len(self.log_messages) == 1
+        assert self.log_messages == [
+            'WARN: Found inconsistencies in ~/.local/share/Trash check them '
+            'running `trash-list --doctor`']
 
     def test_after_unreadable_trashinfo_error_continue(self):
         self.trash.has_a_unreadable_trashinfo('not-readable.trashinfo')
