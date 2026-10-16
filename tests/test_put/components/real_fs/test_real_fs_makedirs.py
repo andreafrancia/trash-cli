@@ -104,10 +104,10 @@ def _without_exist_ok_kwarg():
     # recursive parent-creation calls back into os.makedirs by name,
     # which would resolve to this very monkeypatched replacement once
     # installed, and fail because it passes exist_ok.
-    def makedirs_without_exist_ok(path, mode=0o777):
-        parent = os.path.dirname(path)
+    def makedirs_without_exist_ok(name, mode=0o777):
+        parent = os.path.dirname(name)
         if parent and not os.path.isdir(parent):
             makedirs_without_exist_ok(parent, mode)
-        os.mkdir(path, mode)
+        os.mkdir(name, mode)
 
     return makedirs_without_exist_ok
