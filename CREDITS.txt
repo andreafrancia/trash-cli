@@ -45,9 +45,11 @@ Thanks to
  - Chris Kankiewicz: made 'date' the default sort argument [255c403]
  - curious-rabbit: security hardening of trash-put, trash-restore and
    trash-list (unwritable trash dirs, shared trash dir trust check,
-   path-traversal in restore, control-character sanitization in output)
+   path-traversal in restore, control-character sanitization in output),
+   and fixed the loss of a directory passed to trash-put with a trailing
+   slash
    [e62b15d, 8ea03d8, cee9ab1, e47ac5b, b1cf321, c6f260c, f2f3a17,
-   183b2cc, ba41913, 693f568, 6cd261c, d9e1a38]
+   183b2cc, ba41913, 693f568, 6cd261c, d9e1a38, 313cd8d]
  - Cyrus Yip: added and maintained the simplified Chinese README,
    recommended APT for install [90c2d21, 911d59e, 4820f90, 63a0c45,
    64ac395]

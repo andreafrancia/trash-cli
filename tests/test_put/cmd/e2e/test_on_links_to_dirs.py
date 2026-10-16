@@ -38,7 +38,7 @@ class TestOnLinksToDirs:
         result = layout.run_trash_put(['link-to-dir/'])
 
         assert result.status() == {
-            'command output': "trash-put: 'link-to-dir/' trashed in /trash-dir",
+            'command output': "trash-put: 'link-to-dir' trashed in /trash-dir",
             'file left in current_dir': ['/a-dir', '/a-file'],
             'file in trash dir': ['/files',
                                   '/files/link-to-dir',

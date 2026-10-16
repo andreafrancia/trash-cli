@@ -1,3 +1,4 @@
+import os
 from typing import List
 from typing import NamedTuple
 from typing import Optional
@@ -26,7 +27,7 @@ class Context(NamedTuple('Context', [
                    ):  # type (...) -> TrashAllResult
         failed_paths = []
         for path in self.paths:
-            result = trasher.trash_single(path, self)
+            result = trasher.trash_single(without_trailing_slashes(path), self)
             if result == TrashResult.Failure:
                 failed_paths.append(path)
 
@@ -39,3 +40,8 @@ class SingleTrasher(Protocol):
                      context,  # type: 'Context'
                      ):
         raise NotImplementedError
+
+
+def without_trailing_slashes(path):  # type: (str) -> str
+    # a trailing slash hides "." and ".." and points at the wrong parent
+    return path.rstrip(os.sep) or path
