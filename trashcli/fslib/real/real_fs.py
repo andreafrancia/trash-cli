@@ -147,3 +147,6 @@ class RealFs(RealVolumeOfFs, Fs, RestoreFs, TopTrashDirRulesFs):
 
     def list_mount_points(self):
         return RealMountPointListFs().list_mount_points()
+
+    def rmdir(self, path):  # type: (str) -> None
+        return os.rmdir(path)
