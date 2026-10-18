@@ -140,7 +140,8 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
                     break
             else:
                 return inode
-        raise MyFileNotFoundError("too many levels of symbolic links: %s" % path)
+        raise MyFileNotFoundError(
+            "too many levels of symbolic links: %s" % path)
 
     def makedirs(self, name, mode=0o777, exist_ok=False):
         # like os.makedirs(): the last dir must not exist, unless
@@ -267,6 +268,16 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         # like RealFs.remove_file(), a missing path is ignored
         if self.path_lexists(path):
             self._remove_entry(path)
+
+    def rmdir(self, path):  # type: (str) -> None
+        """Like os.rmdir(): the dir must be empty"""
+        inode = self._lookup_or_enoent(path, follow_last_link=False)
+        if not isinstance(inode.entity, Directory):
+            raise OSError(errno.ENOTDIR, "Not a directory", path)
+        if set(inode.entity.entries()) != {".", ".."}:
+            raise OSError(errno.ENOTEMPTY, "Directory not empty", path)
+        self._require_can_unlink_from(os.path.dirname(path), path)
+        self._remove_entry(path)
 
     def remove(self, path):  # type: (str) -> None
         # like os.remove(): files and symlinks only, a dir is an error

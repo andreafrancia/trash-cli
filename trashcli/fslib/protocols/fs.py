@@ -105,6 +105,10 @@ class Fs(RealPathFs, VolumeOfFs, MkDirs, Protocol):
     def walk_no_follow(self, top):
         raise NotImplementedError
 
+    @abstractmethod
+    def rmdir(self, path):  # type: (str) -> None
+        raise NotImplementedError
+
     def parent_realpath2(self, path):
         parent = os.path.dirname(path)
         return self.realpath(parent)
