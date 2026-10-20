@@ -1,6 +1,7 @@
 import os
 import shutil
 import stat
+import tempfile
 
 from trashcli.fslib.real.real_is_world_writable import RealIsWorldWritable
 from trashcli.fslib.real.real_move import RealMove
@@ -150,3 +151,9 @@ class RealFs(RealVolumeOfFs, Fs, RestoreFs, TopTrashDirRulesFs):
 
     def rmdir(self, path):  # type: (str) -> None
         return os.rmdir(path)
+
+    def mkdtemp(self, suffix="", prefix=tempfile.template, dir=None):
+        return tempfile.mkdtemp(suffix, prefix, dir)
+
+    def gettempdir(self):
+        return tempfile.gettempdir()
