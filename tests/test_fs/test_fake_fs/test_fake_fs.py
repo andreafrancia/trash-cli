@@ -1,12 +1,12 @@
-import unittest
+import pytest
 
+from tests.support.capture_error import capture_error
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.put.format_mode import format_mode
-from tests.support.capture_error import capture_error
 
 
-class TestFakeFs(unittest.TestCase):
-    def setUp(self):
+class TestFakeFs:
+    def setup_method(self):
         self.fs = FakeFs('/')
 
     def test(self):
@@ -153,7 +153,8 @@ class TestFakeFs(unittest.TestCase):
     def test_getsize_with_dir(self):
         self.fs.mkdir("foo")
 
-        self.assertRaises(NotImplementedError, lambda: self.fs.file_size("foo"))
+        with pytest.raises(NotImplementedError):
+            self.fs.file_size("foo")
 
     def test_mode_lets_create_a_file(self):
         self.fs.makedirs("/foo/bar/baz", 0o755)
