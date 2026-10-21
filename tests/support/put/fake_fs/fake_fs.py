@@ -10,6 +10,7 @@ from tests.support.put.fake_fs.file import File
 from tests.support.put.fake_fs.inode import INode
 from tests.support.put.fake_fs.inode import Stickiness
 from tests.support.put.fake_fs.symlink import SymLink
+from tests.support.put.fake_fs.fake_tempfile import FakeTempfile
 from tests.support.put.format_mode import format_mode
 from tests.support.put.my_file_not_found_error import MyFileNotFoundError
 from trashcli.fslib.protocols.is_sticky_dir import IsStickyDir
@@ -38,6 +39,7 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         self.root = self.root_inode.directory()
         self.cwd = cwd
         self._finding_all = False
+        self.tempfile = FakeTempfile(self)
 
     def touch(self, path):
         if not self.path_exists(path):
@@ -500,3 +502,11 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             return find_all(self)
         finally:
             self._finding_all = False
+
+    def mkdtemp(self, suffix='',
+                prefix=FakeTempfile.template,
+                dir=None):
+        return self.tempfile.mkdtemp(suffix, prefix, dir)
+
+    def gettempdir(self):
+        return self.tempfile.gettempdir()
