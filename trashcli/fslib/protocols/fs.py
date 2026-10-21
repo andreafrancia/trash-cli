@@ -18,7 +18,7 @@ class Fs(RealPathFs, VolumeOfFs, MkDirs, Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def mkdir(self, path):  # type: (str) -> None
+    def mkdir(self, path, mode=0o777):  # type: (str, int) -> None
         raise NotImplementedError
 
     @abstractmethod
