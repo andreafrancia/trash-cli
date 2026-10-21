@@ -78,8 +78,8 @@ class RealFs(RealVolumeOfFs, Fs, RestoreFs, TopTrashDirRulesFs):
                     name)):
                 raise
 
-    def mkdir(self, path):
-        os.mkdir(path)
+    def mkdir(self, path, mode=0o777):
+        os.mkdir(path, mode)
 
     def mkdirs(self, path):
         RealMkDirs().mkdirs(path)
