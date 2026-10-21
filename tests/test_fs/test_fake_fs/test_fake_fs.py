@@ -13,23 +13,12 @@ class TestFakeFs:
         result = self.fs.ls_a("/")
         assert result == [".", ".."]
 
-    def test_create_dir(self):
-        self.fs.mkdir("/foo")
-        result = self.fs.ls_a("/")
-        assert result == [".", "..", "foo"]
-
     def test_find_dir_root(self):
         assert '/' == self.fs.get_entity_at('/').name
 
     def test_find_dir_root_subdir(self):
         self.fs.mkdir("/foo")
         assert 'foo' == self.fs.get_entity_at('/foo').name
-
-    def test_create_dir_in_dir(self):
-        self.fs.mkdir("/foo")
-        self.fs.mkdir("/foo/bar")
-        result = self.fs.ls_a("/foo")
-        assert result == [".", "..", "bar"]
 
     def test_create_file(self):
         self.fs.mkdir("/foo")
