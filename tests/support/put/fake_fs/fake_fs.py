@@ -74,10 +74,10 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         directory = self.get_entity_at(path)
         return list(directory.entries())
 
-    def mkdir(self, path):
+    def mkdir(self, path, mode=0o755):
         dirname, basename = os.path.split(path)
         directory = self._get_parent_for_new_entry(dirname, path)
-        directory.add_dir(basename, 0o755, path)
+        directory.add_dir(basename, mode, path)
 
     def _get_parent_for_new_entry(self, dirname, path):
         # like the kernel does for mkdir() and symlink()
