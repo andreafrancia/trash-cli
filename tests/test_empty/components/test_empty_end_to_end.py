@@ -2,13 +2,13 @@ import unittest
 
 from trashcli import trash
 from tests.support.help.help_reformatting import reformat_help_message
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from tests.support.run.run_command import run_command
 
 
 class TestEmptyEndToEnd(unittest.TestCase):
     def setUp(self):
-        self.tmp_dir = MyPath.make_temp_dir()
+        self.tmp_dir = make_temp_dir()
 
     def test_help(self):
         result = run_command(self.tmp_dir, "trash-empty", ['--help'])

@@ -3,7 +3,7 @@ import unittest
 import pytest
 
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.file_system_reader import FileSystemReader
 from trashcli.rm.list_trashinfo import ListTrashinfos
@@ -12,7 +12,7 @@ from trashcli.rm.list_trashinfo import ListTrashinfos
 @pytest.mark.slow
 class TestListTrashinfos(unittest.TestCase):
     def setUp(self):
-        self.tmp_dir = MyPath.make_temp_dir()
+        self.tmp_dir = make_temp_dir()
         self.trash_dir = self.tmp_dir / 'Trash'
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
         self.listing = ListTrashinfos.make(FileSystemReader(RealFs()), FileSystemReader(RealFs()))

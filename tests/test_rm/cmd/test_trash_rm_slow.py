@@ -5,7 +5,7 @@ from six import StringIO
 
 from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.rm.main import RealRmFileSystemReader
 from trashcli.rm.rm_cmd import RmCmd
@@ -14,7 +14,7 @@ from trashcli.rm.rm_cmd import RmCmd
 @pytest.mark.slow
 class TestTrashRm(unittest.TestCase):
     def setUp(self):
-        self.xdg_data_home = MyPath.make_temp_dir()
+        self.xdg_data_home = make_temp_dir()
         self.stderr = StringIO()
         self.trash_rm = RmCmd(environ={'XDG_DATA_HOME': self.xdg_data_home},
                               getuid=lambda: 123,

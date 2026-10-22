@@ -5,7 +5,7 @@ import unittest
 
 import pytest
 
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from trashcli.fslib.real.real_has_sticky_bit import RealHasStickyBit
 from trashcli.fslib.real.real_mk_dirs import RealMkDirs
 from trashcli.fslib.real.real_write_file import RealWriteFile
@@ -54,7 +54,7 @@ class RealFs1:
 class TestWithInSandbox(unittest.TestCase):
 
     def setUp(self):
-        self.temp_dir = MyPath.make_temp_dir()
+        self.temp_dir = make_temp_dir()
         self.fs = RealFs1()
 
     def test_mkdirs_with_default_mode(self):
@@ -82,7 +82,7 @@ class TestWithInSandbox(unittest.TestCase):
 class Test_is_sticky_dir(unittest.TestCase):
 
     def setUp(self):
-        self.temp_dir = MyPath.make_temp_dir()
+        self.temp_dir = make_temp_dir()
         self.fs = RealFs1()
 
     def test_dir_non_sticky(self):

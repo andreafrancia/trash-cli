@@ -2,7 +2,7 @@ import unittest
 
 import pytest
 
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from trashcli.fslib.real.real_fs import RealFs
 
 
@@ -10,7 +10,7 @@ from trashcli.fslib.real.real_fs import RealFs
 class TestRealFsListDir(unittest.TestCase):
     def setUp(self):
         self.fs = RealFs()
-        self.tmp_dir = MyPath.make_temp_dir()
+        self.tmp_dir = make_temp_dir()
 
     def test(self):
         self.fs.write_file(self.tmp_dir / 'a' , 'content')

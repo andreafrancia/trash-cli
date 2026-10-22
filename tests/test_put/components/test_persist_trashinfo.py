@@ -13,13 +13,13 @@ from trashcli.put.my_logger import MyLogger
 from trashcli.put.my_logger import StreamBackend
 from trashcli.put.suffix import Suffix
 from tests.support.put.fake_random import FakeRandomInt
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 
 
 @pytest.mark.slow
 class TestPersistTrashInfo(unittest.TestCase):
     def setUp(self):
-        self.path = MyPath.make_temp_dir()
+        self.path = make_temp_dir()
         self.fs = RealFs()
         self.stderr = StringIO()
         self.backend = StreamBackend(self.stderr)

@@ -5,7 +5,7 @@ import pytest
 from six import StringIO
 
 from tests.support.cmd.capture_exit_code2 import capture_exit_code2
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.py2mock import Mock
 from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
@@ -43,7 +43,7 @@ class TestTrashedFileRestoreIntegration:
         self.stdout = StringIO()
         self.stderr = StringIO()
         self.input = HardCodedInput()
-        self.temp_dir = MyPath.make_temp_dir()
+        self.temp_dir = make_temp_dir()
 
         self.root_dir = self.temp_dir
         self.cwd = self.setup_cwd(self.root_dir)

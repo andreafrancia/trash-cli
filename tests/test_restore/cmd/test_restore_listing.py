@@ -4,7 +4,7 @@ from typing import TypeVar
 import pytest
 from six import StringIO
 
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from tests.support.fakes.fake_trash_dir import FakeTrashDir, \
     FakeTrashDirWithRoot
 from tests.support.fs.sorting_listdir_fs import SortingListdirFs
@@ -43,7 +43,7 @@ class TestTrashedFileRestoreIntegration:
         self.stdout = StringIO()
         self.stderr = StringIO()
         self.input = HardCodedInput()
-        self.temp_dir = MyPath.make_temp_dir()
+        self.temp_dir = make_temp_dir()
 
         self.root_dir = self.temp_dir
         self.cwd = self.setup_cwd(self.root_dir)

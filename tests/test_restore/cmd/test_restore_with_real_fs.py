@@ -3,7 +3,7 @@ import os
 import pytest
 
 from tests.support.asserts.assert_that import assert_that
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from tests.support.restore.a_trashed_file import ATrashedFile
 from tests.support.restore.has_been_restored_matcher import \
     has_been_restored
@@ -21,7 +21,7 @@ from trashcli.restore.fs.real.real_restore_writer_fs import RealRestoreWriterFs
 @pytest.mark.slow
 class TestRestoreTrash:
     def setup_method(self):
-        self.tmp_dir = MyPath.make_temp_dir()
+        self.tmp_dir = make_temp_dir()
         self.fixture = RestoreFileFixture(self.tmp_dir / 'XDG_DATA_HOME',
                                           RealFs())
         self.fs = RealFs()

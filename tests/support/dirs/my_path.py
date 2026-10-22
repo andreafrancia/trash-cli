@@ -1,5 +1,4 @@
 import os
-import tempfile
 from typing import Any, Generator, Optional, TypeVar, Type
 
 from six import StringIO
@@ -149,14 +148,6 @@ class MyPath(str):
     def clean_up(self,  # type: Self
                  ):
         self.fs.shutil_rmtree(self)
-
-    @classmethod
-    def make_temp_dir(
-            cls,  # type: Type[Self]
-    ):  # type: (...) -> Self
-        temp_from_os = tempfile.mkdtemp(suffix="_trash_cli_test")
-        realpath_just_to_be_sure = os.path.realpath(temp_from_os)
-        return cls(realpath_just_to_be_sure)
 
     def list_all_files_sorted(self,  # type: Self
                               ):

@@ -4,7 +4,7 @@ import unittest
 import pytest
 from six import StringIO
 
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from trashcli.fslib.real.real_fs import RealFs
 from tests.support.trash_dirs.given_trash import GivenTrash
 from trashcli.empty.empty_cmd import EmptyCmd
@@ -17,7 +17,7 @@ from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 class TestTrashEmptyCmdReal(unittest.TestCase):
     def setUp(self):
         self.fs = RealFs()
-        self.tmp_dir = MyPath.make_temp_dir()
+        self.tmp_dir = make_temp_dir()
         self.xdg = str(self.tmp_dir / 'xdg')
         self.trash = GivenTrash(self.fs)
         self.err = StringIO()

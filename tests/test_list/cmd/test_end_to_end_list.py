@@ -5,14 +5,14 @@ import pytest
 
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.help.help_reformatting import reformat_help_message
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from tests.support.run.run_command import run_command
 
 
 @pytest.mark.slow
 class TestEndToEndList(unittest.TestCase):
     def setUp(self):
-        self.temp_dir = MyPath.make_temp_dir()
+        self.temp_dir = make_temp_dir()
         self.trash_dir = self.temp_dir / 'trash-dir'
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
 
