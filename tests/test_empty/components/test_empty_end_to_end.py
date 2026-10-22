@@ -9,7 +9,8 @@ from tests.support.run.run_command import run_command
 
 class TestEmptyEndToEnd(unittest.TestCase):
     def setUp(self):
-        self.tmp_dir = make_temp_dir(RealFs())
+        fs = RealFs()
+        self.tmp_dir = make_temp_dir(fs)
 
     def test_help(self):
         result = run_command(self.tmp_dir, "trash-empty", ['--help'])

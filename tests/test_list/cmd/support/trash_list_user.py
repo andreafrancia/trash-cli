@@ -18,7 +18,8 @@ from tests.test_list.cmd.support.run_result import RunResult
 
 @pytest.fixture
 def trash_list_user():
-    temp_dir = make_temp_dir(RealFs())
+    fs = RealFs()
+    temp_dir = make_temp_dir(fs)
     yield TrashListUser(temp_dir)
     temp_dir.clean_up()
 

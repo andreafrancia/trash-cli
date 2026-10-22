@@ -17,7 +17,8 @@ read_file = RealReadFile().read_file
 @pytest.mark.slow
 class Test_atomic_write(unittest.TestCase):
     def setUp(self):
-        self.temp_dir = make_temp_dir(RealFs())
+        fs = RealFs()
+        self.temp_dir = make_temp_dir(fs)
 
     def test_the_second_open_should_fail(self):
         path = self.temp_dir / "a"

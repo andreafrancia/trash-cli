@@ -8,7 +8,8 @@ from trashcli.fslib.real.real_is_world_writable import RealIsWorldWritable
 class TestRealIsWorldWritable:
     # focused integration test: exercises only is_world_writable on the real fs
     def setup_method(self):
-        self.tmp_dir = make_temp_dir(RealFs())
+        fs = RealFs()
+        self.tmp_dir = make_temp_dir(fs)
         self.checker = RealIsWorldWritable()
 
     def test_a_private_dir_is_not_world_writable(self):

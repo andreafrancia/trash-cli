@@ -13,7 +13,8 @@ from tests.support.run.run_command import run_command
 @pytest.mark.slow
 class TestEndToEndList(unittest.TestCase):
     def setUp(self):
-        self.temp_dir = make_temp_dir(RealFs())
+        fs = RealFs()
+        self.temp_dir = make_temp_dir(fs)
         self.trash_dir = self.temp_dir / 'trash-dir'
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
 
