@@ -14,7 +14,8 @@ from trashcli.fslib.real.real_fs import RealFs
 class TestDescriber(unittest.TestCase):
     def setUp(self):
         self.fsx = FsFixture(RealFs())
-        self.temp_dir = make_temp_dir(RealFs())
+        fs = RealFs()
+        self.temp_dir = make_temp_dir(fs)
         self.describer = Describer(RealFs())
 
     def test_on_directories(self):

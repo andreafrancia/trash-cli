@@ -19,7 +19,8 @@ from trashcli.fslib.protocols.volumes_listing import VolumesListing
 class TestTrashEmptyCmdFs(unittest.TestCase):
     def setUp(self):
         self.fsx = FsFixture(RealFs())
-        self.tmp_dir = make_temp_dir(RealFs())
+        fs = RealFs()
+        self.tmp_dir = make_temp_dir(fs)
         self.unreadable_dir = self.tmp_dir / 'data/Trash/files/unreadable'
         self.volumes_listing = Mock(spec=VolumesListing)
         self.volumes_listing.list_volumes.return_value = [self.unreadable_dir]

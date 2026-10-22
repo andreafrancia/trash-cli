@@ -12,7 +12,8 @@ from trashcli.rm.list_trashinfo import ListTrashinfos
 @pytest.mark.slow
 class TestListTrashinfos(unittest.TestCase):
     def setUp(self):
-        self.tmp_dir = make_temp_dir(RealFs())
+        fs = RealFs()
+        self.tmp_dir = make_temp_dir(fs)
         self.trash_dir = self.tmp_dir / 'Trash'
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
         self.listing = ListTrashinfos.make(FileSystemReader(RealFs()), FileSystemReader(RealFs()))

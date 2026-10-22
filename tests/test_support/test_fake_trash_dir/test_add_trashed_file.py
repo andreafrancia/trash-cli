@@ -6,7 +6,8 @@ from tests.support.fakes.fake_trash_dir import FakeTrashDir
 
 class TestAddTrashedFileOfFakeTrashDir:
     def setup_method(self):
-        self.root = make_temp_dir(RealFs())
+        fs = RealFs()
+        self.root = make_temp_dir(fs)
         self.trash_dir = FakeTrashDir(self.root / "Trash")
         self.cwd = self.root / "cwd"
         self.result = self.trash_dir.add_trashed_file('foo-bar',

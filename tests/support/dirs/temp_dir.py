@@ -8,7 +8,8 @@ from trashcli.fslib.real.real_fs import RealFs
 
 @pytest.fixture
 def temp_dir_fixture():
-    temp_dir = make_temp_dir(RealFs())
+    fs = RealFs()
+    temp_dir = make_temp_dir(fs)
     yield temp_dir
     temp_dir.clean_up()
 

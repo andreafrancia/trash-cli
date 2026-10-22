@@ -43,7 +43,8 @@ class TestTrashedFileRestoreIntegration:
         self.stdout = StringIO()
         self.stderr = StringIO()
         self.input = HardCodedInput()
-        self.temp_dir = make_temp_dir(RealFs())
+        fs = RealFs()
+        self.temp_dir = make_temp_dir(fs)
 
         self.root_dir = self.temp_dir
         self.cwd = self.setup_cwd(self.root_dir)

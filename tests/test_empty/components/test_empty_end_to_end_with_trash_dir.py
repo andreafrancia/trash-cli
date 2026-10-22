@@ -15,7 +15,8 @@ from trashcli.fslib.real.real_fs import RealFs
 class TestEmptyEndToEndWithTrashDir(unittest.TestCase):
     def setUp(self):
         self.fsx = FsFixture(RealFs())
-        self.tmp_dir = make_temp_dir(RealFs())
+        fs = RealFs()
+        self.tmp_dir = make_temp_dir(fs)
         self.trash_dir = self.tmp_dir / 'trash-dir'
         self.fake_trash_dir = FakeTrashDir(self.trash_dir)
 

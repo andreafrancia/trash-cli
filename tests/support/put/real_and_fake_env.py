@@ -38,7 +38,8 @@ class Env:
 @pytest.fixture
 def env(request, process_umask):
     if request.param == 'real':
-        tmp_dir = make_temp_dir(RealFs())
+        fs = RealFs()
+        tmp_dir = make_temp_dir(fs)
         yield Env(RealFs(), str(tmp_dir), True, process_umask)
         tmp_dir.clean_up()
     else:
