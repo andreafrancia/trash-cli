@@ -11,7 +11,7 @@ class TestSaveNewVersion:
     def setup_method(self):
         self.fs = RealFs()
         self.fsx = FsFixture(RealFs())
-        self.tmp_dir = make_temp_dir(RealFs())
+        self.tmp_dir = make_temp_dir(self.fs)
         self.saver = VersionSaver(RealFs())
 
     def test(self):

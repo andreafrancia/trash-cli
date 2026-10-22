@@ -19,8 +19,8 @@ from tests.support.dirs.temp_dir import make_temp_dir
 @pytest.mark.slow
 class TestPersistTrashInfo(unittest.TestCase):
     def setUp(self):
-        self.path = make_temp_dir(RealFs())
         self.fs = RealFs()
+        self.path = make_temp_dir(self.fs)
         self.stderr = StringIO()
         self.backend = StreamBackend(self.stderr)
         self.logger = MyLogger(self.backend)
