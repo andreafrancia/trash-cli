@@ -12,7 +12,7 @@ class Test_make_unreadable_file(unittest.TestCase):
     def setUp(self):
         self.fs = RealFs()
         self.fsx = FsFixture(RealFs())
-        self.tmp_dir = make_temp_dir(RealFs())
+        self.tmp_dir = make_temp_dir(self.fs)
 
     def test(self):
         path = self.tmp_dir / "unreadable"

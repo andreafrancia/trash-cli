@@ -17,7 +17,7 @@ from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 class TestTrashEmptyCmdReal(unittest.TestCase):
     def setUp(self):
         self.fs = RealFs()
-        self.tmp_dir = make_temp_dir(RealFs())
+        self.tmp_dir = make_temp_dir(self.fs)
         self.xdg = str(self.tmp_dir / 'xdg')
         self.trash = GivenTrash(self.fs)
         self.err = StringIO()

@@ -11,7 +11,7 @@ from trashcli.fslib.real.real_fs import RealFs
 class TestRealFsPermissions(unittest.TestCase):
     def setUp(self):
         self.fs = RealFs()
-        self.tmp_dir = make_temp_dir(RealFs())
+        self.tmp_dir = make_temp_dir(self.fs)
 
     def test(self):
         self.fs.makedirs(self.tmp_dir / 'dir', 0o000)

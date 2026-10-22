@@ -11,8 +11,8 @@ from trashcli.put.parser import Parser, ExitWithCode, Trash
 @pytest.mark.slow
 class TestPutOptionShapedFilename(unittest.TestCase):
     def setUp(self):
-        self.cwd = make_temp_dir(RealFs())
         fs = RealFs()
+        self.cwd = make_temp_dir(fs)
         self.parser = Parser(fs)
 
     def test_it_refuses_an_existing_file_that_looks_like_an_option(self):
