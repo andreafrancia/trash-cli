@@ -11,7 +11,7 @@ from trashcli.fslib.real.real_fs import RealFs
 class TestTrashDirectory:
     def setup_method(self):
         self.fsx = FsFixture(RealFs())
-        self.temp_dir = make_temp_dir()
+        self.temp_dir = make_temp_dir(RealFs())
         self.fsx.require_empty_dir(self.temp_dir / 'trash-dir')
         self.info_files = InfoFiles(RealListdirFs())
 

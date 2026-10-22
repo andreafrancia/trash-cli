@@ -15,7 +15,7 @@ from trashcli.fslib.real.real_fs import RealFs
 class TestEndToEndRestore:
     def setup_method(self):
         self.fs = RealFs()
-        self.tmp_dir = make_temp_dir()
+        self.tmp_dir = make_temp_dir(RealFs())
         self.curdir = self.tmp_dir / "cwd"
         self.trash_dir = self.tmp_dir / "trash-dir"
         os.makedirs(self.curdir)

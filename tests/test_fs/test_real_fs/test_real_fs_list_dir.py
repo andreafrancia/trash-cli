@@ -10,7 +10,7 @@ from trashcli.fslib.real.real_fs import RealFs
 class TestRealFsListDir(unittest.TestCase):
     def setUp(self):
         self.fs = RealFs()
-        self.tmp_dir = make_temp_dir()
+        self.tmp_dir = make_temp_dir(RealFs())
 
     def test(self):
         self.fs.write_file(self.tmp_dir / 'a' , 'content')

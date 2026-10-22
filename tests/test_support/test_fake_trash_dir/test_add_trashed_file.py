@@ -1,11 +1,12 @@
 from tests.support.dates import jan_11_2001
 from tests.support.dirs.temp_dir import make_temp_dir
+from trashcli.fslib.real.real_fs import RealFs
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 
 
 class TestAddTrashedFileOfFakeTrashDir:
     def setup_method(self):
-        self.root = make_temp_dir()
+        self.root = make_temp_dir(RealFs())
         self.trash_dir = FakeTrashDir(self.root / "Trash")
         self.cwd = self.root / "cwd"
         self.result = self.trash_dir.add_trashed_file('foo-bar',
