@@ -11,7 +11,7 @@ from trashcli.put.parser import Parser, ExitWithCode, Trash
 @pytest.mark.slow
 class TestPutOptionShapedFilename(unittest.TestCase):
     def setUp(self):
-        self.cwd = make_temp_dir()
+        self.cwd = make_temp_dir(RealFs())
         fs = RealFs()
         self.parser = Parser(fs)
 

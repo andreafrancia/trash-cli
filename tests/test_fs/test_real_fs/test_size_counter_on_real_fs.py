@@ -12,7 +12,7 @@ class TestSizeCounterOnRealFs(unittest.TestCase):
     def setUp(self):
         self.fs = RealFs()
         self.counter = SizeCounter(self.fs)
-        self.tmp_dir = make_temp_dir()
+        self.tmp_dir = make_temp_dir(RealFs())
 
     def test_a_single_file(self):
         self.fs.write_file(self.tmp_dir / 'file', 10 * 'a')

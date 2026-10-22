@@ -21,7 +21,7 @@ from trashcli.restore.fs.real.real_restore_writer_fs import RealRestoreWriterFs
 @pytest.mark.slow
 class TestRestoreTrash:
     def setup_method(self):
-        self.tmp_dir = make_temp_dir()
+        self.tmp_dir = make_temp_dir(RealFs())
         self.fixture = RestoreFileFixture(self.tmp_dir / 'XDG_DATA_HOME',
                                           RealFs())
         self.fs = RealFs()

@@ -19,7 +19,7 @@ from trashcli.fslib.protocols.volumes_listing import VolumesListing
 @pytest.mark.slow
 class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
     def setUp(self):
-        self.temp_dir = make_temp_dir()
+        self.temp_dir = make_temp_dir(RealFs())
         self.top_dir = self.temp_dir / 'topdir'
         self.fsx = FsFixture(RealFs())
         self.volumes_listing = Mock(spec=VolumesListing)

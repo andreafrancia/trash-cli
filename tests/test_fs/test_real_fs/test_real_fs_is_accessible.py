@@ -11,7 +11,7 @@ from trashcli.fslib.real.real_fs import RealFs
 class TestRealFsIsAccessible(unittest.TestCase):
     def setUp(self):
         self.fs = RealFs()
-        self.tmp_dir = make_temp_dir()
+        self.tmp_dir = make_temp_dir(RealFs())
 
     def test_dangling_link(self):
         os.symlink('non-existent', self.tmp_dir / 'link')

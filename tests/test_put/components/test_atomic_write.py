@@ -5,6 +5,7 @@ import unittest
 import pytest
 
 from tests.support.dirs.temp_dir import make_temp_dir
+from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.real.real_atomic_write import RealAtomicWrite
 from trashcli.fslib.real.real_read_file import RealReadFile
 
@@ -16,7 +17,7 @@ read_file = RealReadFile().read_file
 @pytest.mark.slow
 class Test_atomic_write(unittest.TestCase):
     def setUp(self):
-        self.temp_dir = make_temp_dir()
+        self.temp_dir = make_temp_dir(RealFs())
 
     def test_the_second_open_should_fail(self):
         path = self.temp_dir / "a"

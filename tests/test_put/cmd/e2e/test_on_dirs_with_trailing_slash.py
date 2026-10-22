@@ -12,7 +12,7 @@ from trashcli.fslib.real.real_fs import RealFs
 class TestOnDirsWithTrailingSlash:
     def setup_method(self):
         self.fs = RealFs()
-        self.temp_dir = make_temp_dir()
+        self.temp_dir = make_temp_dir(RealFs())
         self.layout = DirectoriesLayout(self.temp_dir, self.fs)
         self.layout.make_cur_dir()
 

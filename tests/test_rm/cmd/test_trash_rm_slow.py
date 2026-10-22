@@ -14,7 +14,7 @@ from trashcli.rm.rm_cmd import RmCmd
 @pytest.mark.slow
 class TestTrashRm(unittest.TestCase):
     def setUp(self):
-        self.xdg_data_home = make_temp_dir()
+        self.xdg_data_home = make_temp_dir(RealFs())
         self.stderr = StringIO()
         self.trash_rm = RmCmd(environ={'XDG_DATA_HOME': self.xdg_data_home},
                               getuid=lambda: 123,

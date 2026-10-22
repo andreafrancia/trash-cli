@@ -17,7 +17,7 @@ def parent_path(path):
 class Test_parent_path(unittest.TestCase):
     def setUp(self):
         self.fsx = FsFixture(RealFs())
-        self.tmp_dir = make_temp_dir()
+        self.tmp_dir = make_temp_dir(RealFs())
 
     def test(self):
         self.fsx.require_empty_dir(self.tmp_dir / 'other_dir/dir')
