@@ -3,7 +3,7 @@ import unittest
 import pytest
 
 from tests.support.files import FsFixture
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from trashcli.fslib.real.real_move import RealMove
 from trashcli.fslib.real.real_read_file import RealReadFile
 from trashcli.fslib.real.real_fs import RealFs
@@ -15,7 +15,7 @@ read_file = RealReadFile().read_file
 class TestMove(unittest.TestCase):
     def setUp(self):
         self.fsx = FsFixture(RealFs())
-        self.tmp_dir = MyPath.make_temp_dir()
+        self.tmp_dir = make_temp_dir()
 
     def test_two_files(self):
         self.fsx.make_file(self.tmp_dir / 'a', "AAAA")

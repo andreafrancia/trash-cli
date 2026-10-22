@@ -8,7 +8,7 @@ from six import StringIO
 
 from tests.support.fakes.stub_volume_of import StubVolumeOfFs
 from tests.support.files import FsFixture
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader
@@ -19,7 +19,7 @@ from trashcli.fslib.protocols.volumes_listing import VolumesListing
 @pytest.mark.slow
 class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
     def setUp(self):
-        self.temp_dir = MyPath.make_temp_dir()
+        self.temp_dir = make_temp_dir()
         self.top_dir = self.temp_dir / 'topdir'
         self.fsx = FsFixture(RealFs())
         self.volumes_listing = Mock(spec=VolumesListing)

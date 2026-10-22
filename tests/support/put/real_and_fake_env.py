@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.fslib.real.real_entries_if_dir_exists import RealEntriesIfDirExists
@@ -38,7 +38,7 @@ class Env:
 @pytest.fixture
 def env(request, process_umask):
     if request.param == 'real':
-        tmp_dir = MyPath.make_temp_dir()
+        tmp_dir = make_temp_dir()
         yield Env(RealFs(), str(tmp_dir), True, process_umask)
         tmp_dir.clean_up()
     else:

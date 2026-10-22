@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from tests.support.fakes.fake_trash_dir import trashinfo_content_default_date
 from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
@@ -20,7 +20,7 @@ from trashcli.restore.fs.real.real_restore_writer_fs import RealRestoreWriterFs
 class TestRestoreOverwriteGuard:
     def setup_method(self):
         self.fs = RealFs()
-        self.tmp_dir = MyPath.make_temp_dir()
+        self.tmp_dir = make_temp_dir()
         self.fixture = RestoreFileFixture(self.tmp_dir / 'XDG_DATA_HOME',
                                           RealFs())
         self.cwd = self.tmp_dir / 'cwd'

@@ -6,7 +6,7 @@ import pytest
 from trashcli.put.fs.parent_realpath import ParentRealpathFs
 from trashcli.fslib.real.real_fs import RealFs
 from tests.support.files import FsFixture
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 
 
 def parent_path(path):
@@ -17,7 +17,7 @@ def parent_path(path):
 class Test_parent_path(unittest.TestCase):
     def setUp(self):
         self.fsx = FsFixture(RealFs())
-        self.tmp_dir = MyPath.make_temp_dir()
+        self.tmp_dir = make_temp_dir()
 
     def test(self):
         self.fsx.require_empty_dir(self.tmp_dir / 'other_dir/dir')

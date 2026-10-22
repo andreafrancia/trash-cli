@@ -1,6 +1,6 @@
 import pytest
 
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from tests.support.files import FsFixture
 from tests.support.tools.version_saver import VersionSaver
 from trashcli.fslib.real.real_fs import RealFs
@@ -11,7 +11,7 @@ class TestSaveNewVersion:
     def setup_method(self):
         self.fs = RealFs()
         self.fsx = FsFixture(RealFs())
-        self.tmp_dir = MyPath.make_temp_dir()
+        self.tmp_dir = make_temp_dir()
         self.saver = VersionSaver(RealFs())
 
     def test(self):

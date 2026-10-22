@@ -3,7 +3,7 @@ import unittest
 
 import pytest
 
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from trashcli.fslib.real.real_fs import RealFs
 
 
@@ -11,7 +11,7 @@ from trashcli.fslib.real.real_fs import RealFs
 class TestRealFsIsAccessible(unittest.TestCase):
     def setUp(self):
         self.fs = RealFs()
-        self.tmp_dir = MyPath.make_temp_dir()
+        self.tmp_dir = make_temp_dir()
 
     def test_dangling_link(self):
         os.symlink('non-existent', self.tmp_dir / 'link')

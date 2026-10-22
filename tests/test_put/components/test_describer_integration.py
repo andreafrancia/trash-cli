@@ -5,7 +5,7 @@ import unittest
 import pytest
 
 from tests.support.files import FsFixture
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from trashcli.put.describer import Describer
 from trashcli.fslib.real.real_fs import RealFs
 
@@ -14,7 +14,7 @@ from trashcli.fslib.real.real_fs import RealFs
 class TestDescriber(unittest.TestCase):
     def setUp(self):
         self.fsx = FsFixture(RealFs())
-        self.temp_dir = MyPath.make_temp_dir()
+        self.temp_dir = make_temp_dir()
         self.describer = Describer(RealFs())
 
     def test_on_directories(self):

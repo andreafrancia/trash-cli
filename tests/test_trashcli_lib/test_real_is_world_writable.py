@@ -1,13 +1,13 @@
 import os
 
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from trashcli.fslib.real.real_is_world_writable import RealIsWorldWritable
 
 
 class TestRealIsWorldWritable:
     # focused integration test: exercises only is_world_writable on the real fs
     def setup_method(self):
-        self.tmp_dir = MyPath.make_temp_dir()
+        self.tmp_dir = make_temp_dir()
         self.checker = RealIsWorldWritable()
 
     def test_a_private_dir_is_not_world_writable(self):
