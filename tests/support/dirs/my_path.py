@@ -1,11 +1,10 @@
 import os
-from typing import Any, Generator, Optional, TypeVar, Type
+from typing import Any, Generator, TypeVar, Type
 
 from six import StringIO
 
 from trashcli.fslib.list_all import list_all
 from trashcli.fslib.protocols.fs import Fs
-from trashcli.fslib.real.real_fs import RealFs
 
 Self = TypeVar('Self', bound='MyPath')
 
@@ -14,16 +13,16 @@ class MyPath(str):
 
     def __new__(cls,  # type: Type[Self]
                 value,  # type: str
-                fs=None,  # type: Optional[Fs]
+                fs,  # type: Fs
                 ):  # type: (...) -> Self
         return super(MyPath, cls).__new__(cls, value)
 
     def __init__(self,  # type: Self
                  value,  # type: str
-                 fs=None,  # type: Optional[Fs]
+                 fs,  # type: Fs
                  ):
         super(MyPath, self).__init__()
-        self.fs = fs if fs is not None else RealFs()
+        self.fs = fs
 
     def __truediv__(self,  # type: Self
                     other_path,

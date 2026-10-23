@@ -14,8 +14,6 @@ class TestMyPathFs:
 
         assert MyPath('/x', fs=fs).fs is fs
 
-    def test_by_default_the_fs_is_real(self):
-        assert isinstance(MyPath('/x').fs, RealFs)
 
     def test_it_is_still_the_str(self):
         assert MyPath('/x', FakeFs()) == '/x'
