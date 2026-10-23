@@ -13,13 +13,13 @@ Self = TypeVar('Self', bound='MyPath')
 class MyPath(str):
 
     def __new__(cls,  # type: Type[Self]
-                value='',  # type: str
+                value,  # type: str
                 fs=None,  # type: Optional[Fs]
                 ):  # type: (...) -> Self
         return super(MyPath, cls).__new__(cls, value)
 
     def __init__(self,  # type: Self
-                 value='',  # type: str
+                 value,  # type: str
                  fs=None,  # type: Optional[Fs]
                  ):
         super(MyPath, self).__init__()
