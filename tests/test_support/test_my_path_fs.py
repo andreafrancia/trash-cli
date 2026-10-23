@@ -4,7 +4,7 @@ from trashcli.fslib.real.real_fs import RealFs
 
 
 class TestMyPathFs:
-    def test_the_fs_can_be_set_from_outside(self):
+    def test_my_path__need_fs(self):
         fs = FakeFs()
 
         assert MyPath('/x', fs).fs is fs
@@ -15,10 +15,10 @@ class TestMyPathFs:
         assert MyPath('/x', fs=fs).fs is fs
 
 
-    def test_it_is_still_the_str(self):
+    def test_mypath__is_a_str(self):
         assert MyPath('/x', FakeFs()) == '/x'
 
-    def test_it_works_with_the_fake_fs(self):
+    def test_mypath__works_with_fake_fs(self):
         fs = FakeFs()
         path = MyPath('/x', fs)
 
@@ -27,22 +27,22 @@ class TestMyPathFs:
         assert fs.path_isdir('/x') is True
         assert path.is_dir() is True
 
-    def test_path_join_keeps_the_fs(self):
+    def test_path_join__keeps_the_fs(self):
         fs = FakeFs()
 
         assert (MyPath('/x', fs) / 'a').fs is fs
 
-    def test_path_join_keeps_the_fs_with_div(self):
+    def test_path_join_with_div___keeps_the_fs_with_div(self):
         fs = FakeFs()
 
         assert MyPath('/x', fs).path_join('a').fs is fs
 
-    def test_parent_keeps_the_fs(self):
+    def test_parent__keeps_the_fs(self):
         fs = FakeFs()
 
         assert MyPath('/x/y', fs).parent.fs is fs
 
-    def test_find_all_keeps_the_fs(self):
+    def test_find_all__keeps_the_fs(self):
         fs = FakeFs()
         path = MyPath('/x', fs)
         path.mkdirs()
@@ -53,7 +53,7 @@ class TestMyPathFs:
         assert found == ['/x/a']
         assert [p.fs for p in found] == [fs]
 
-    def test_list_all_files_sorted_uses_the_fs(self):
+    def test_list_all_files_sorted__uses_the_fs(self):
         fs = FakeFs()
         path = MyPath('/x', fs)
         path.mkdirs()
@@ -71,7 +71,7 @@ class TestMyPathFs:
         assert path.existence_of('a', 'b') == ['/a: exists',
                                                '/b: does not exist']
 
-    def test_exists_uses_the_fs(self):
+    def test_exists__uses_the_fs(self):
         fs = FakeFs()
         path = MyPath('/x', fs)
         path.mkdirs()
@@ -81,7 +81,7 @@ class TestMyPathFs:
         assert path.exists('/a') is True
         assert path.exists('b') is False
 
-    def test_clean_up_uses_the_fs(self):
+    def test_clean_up__uses_the_fs(self):
         fs = FakeFs()
         path = MyPath('/x', fs)
         path.mkdirs()
