@@ -19,14 +19,6 @@ class TestMyPathFs:
     def test_mypath__is_a_str(self):
         assert MyPath('/x', FakeFs()) == '/x'
 
-    def test_mypath__works_with_fake_fs(self):
-        fs = FakeFs()
-        path = MyPath('/x', fs)
-
-        path.mkdirs()
-
-        assert fs.path_isdir('/x') is True
-
     def test_path_join__keeps_the_fs(self):
         fs = FakeFs()
 
@@ -47,7 +39,7 @@ class TestMyPathFs:
         path = MyPath('/x', fs)
         support_fs = SupportFs(fs, path)
 
-        path.mkdirs()
+        support_fs.mkdirs()
         support_fs.write_file('b', '')
         support_fs.write_file('a', '')
 
@@ -58,7 +50,7 @@ class TestMyPathFs:
         path = MyPath('/x', fs)
         support_fs = SupportFs(fs, path)
 
-        path.mkdirs()
+        support_fs.mkdirs()
         support_fs.write_file('a', '')
 
         path.clean_up()

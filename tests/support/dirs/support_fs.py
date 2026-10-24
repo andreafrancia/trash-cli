@@ -83,3 +83,8 @@ class SupportFs(object):
                     path,
                     ):
         self.fs.mkdirs(self.base_dir / path)
+
+    def mkdirs(self,  # type: Self
+               ):
+        self.fs.mkdirs(self.base_dir)
+        return self.base_dir

@@ -9,7 +9,7 @@ class TestSupportFs:
         base_dir = MyPath('/x', fs)
         support_fs = SupportFs(fs, base_dir)
 
-        base_dir.mkdirs()
+        support_fs.mkdirs()
         support_fs.write_file('a', 'content of a')
 
         assert support_fs.read('a') == 'content of a'
@@ -19,7 +19,7 @@ class TestSupportFs:
         base_dir = MyPath('/x', fs)
         support_fs = SupportFs(fs, base_dir)
 
-        base_dir.mkdirs()
+        support_fs.mkdirs()
         support_fs.write_file('a', 'content of a')
 
         assert support_fs.existence_of_single('a') == '/a: exists'
@@ -30,7 +30,7 @@ class TestSupportFs:
         base_dir = MyPath('/x', fs)
         support_fs = SupportFs(fs, base_dir)
 
-        base_dir.mkdirs()
+        support_fs.mkdirs()
         support_fs.write_file('a', '')
 
         assert support_fs.existence_of('a', 'b') == ['/a: exists',
@@ -41,7 +41,7 @@ class TestSupportFs:
         base_dir = MyPath('/x', fs)
         support_fs = SupportFs(fs, base_dir)
 
-        base_dir.mkdirs()
+        support_fs.mkdirs()
         support_fs.write_file('a', '')
 
         assert support_fs.exists('a') is True
@@ -53,7 +53,7 @@ class TestSupportFs:
         base_dir = MyPath('/x', fs)
         support_fs = SupportFs(fs, base_dir)
 
-        base_dir.mkdirs()
+        support_fs.mkdirs()
         support_fs.write_file('a', 'content')
 
         found = list(support_fs.find_all())
@@ -66,7 +66,7 @@ class TestSupportFs:
         base_dir = MyPath('/x', fs)
         support_fs = SupportFs(fs, base_dir)
 
-        base_dir.mkdirs()
+        support_fs.mkdirs()
         support_fs.write_file('a', '')
 
         assert support_fs.is_file('a') is True
@@ -78,7 +78,7 @@ class TestSupportFs:
         base_dir = MyPath('/x', fs)
         support_fs = SupportFs(fs, base_dir)
 
-        base_dir.mkdirs()
+        support_fs.mkdirs()
         support_fs.mkdir_rel('dir')
         support_fs.write_file('a', '')
         support_fs.write_file('dir/b', '')
@@ -90,7 +90,7 @@ class TestSupportFs:
         base_dir = MyPath('/x', fs)
         support_fs = SupportFs(fs, base_dir)
 
-        base_dir.mkdirs()
+        support_fs.mkdirs()
         support_fs.mkdir_rel('dir')
 
         assert support_fs.is_dir('dir') is True
@@ -102,7 +102,7 @@ class TestSupportFs:
         base_dir = MyPath('/x', fs)
         support_fs = SupportFs(fs, base_dir)
 
-        base_dir.mkdirs()
+        support_fs.mkdirs()
         support_fs.touch('a')
 
         assert support_fs.is_file('a') is True
@@ -112,7 +112,7 @@ class TestSupportFs:
         base_dir = MyPath('/x', fs)
         support_fs = SupportFs(fs, base_dir)
 
-        base_dir.mkdirs()
+        support_fs.mkdirs()
         support_fs.write_file('a', 'content of a')
 
         assert support_fs.read('a') == 'content of a'
@@ -122,7 +122,7 @@ class TestSupportFs:
         base_dir = MyPath('/x', fs)
         support_fs = SupportFs(fs, base_dir)
 
-        base_dir.mkdirs()
+        support_fs.mkdirs()
         support_fs.mkdir_rel('dir')
         support_fs.symlink_rel('dir', 'link-to-dir')
 
@@ -133,7 +133,7 @@ class TestSupportFs:
         base_dir = MyPath('/x', fs)
         support_fs = SupportFs(fs, base_dir)
 
-        base_dir.mkdirs()
+        support_fs.mkdirs()
         support_fs.mkdir_rel('dir')
 
         assert support_fs.is_dir('dir') is True
@@ -143,7 +143,16 @@ class TestSupportFs:
         base_dir = MyPath('/x', fs)
         support_fs = SupportFs(fs, base_dir)
 
-        base_dir.mkdirs()
+        support_fs.mkdirs()
         support_fs.mkdir_rel_p('a/b/c')
 
         assert support_fs.is_dir('a/b/c') is True
+
+    def test_mkdirs__uses_the_fs(self):
+        fs = FakeFs()
+        base_dir = MyPath('/x', fs)
+        support_fs = SupportFs(fs, base_dir)
+
+        support_fs.mkdirs()
+
+        assert fs.path_isdir('/x') is True
