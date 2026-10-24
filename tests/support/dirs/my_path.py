@@ -61,10 +61,6 @@ class MyPath(str):
             return path[len(self):]
         raise ValueError("path %s is not under %s" % (path, self))
 
-    def list_dir_rel(self,  # type: Self
-                     ):
-        return self.fs.listdir(self)
-
     @property
     def parent(self,  # type: Self
                ):  # type: (...) -> MyPath
