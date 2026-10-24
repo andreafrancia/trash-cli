@@ -78,3 +78,8 @@ class SupportFs(object):
                   path,
                   ):
         self.fs.mkdir(self.base_dir / path)
+
+    def mkdir_rel_p(self,  # type: Self
+                    path,
+                    ):
+        self.fs.mkdirs(self.base_dir / path)

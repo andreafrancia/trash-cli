@@ -4,6 +4,7 @@ from typing import TypeVar
 import pytest
 from six import StringIO
 
+from tests.support.dirs.support_fs import SupportFs
 from tests.support.dirs.temp_dir import make_temp_dir
 from tests.support.fakes.fake_trash_dir import FakeTrashDir, \
     FakeTrashDirWithRoot
@@ -34,14 +35,15 @@ class TestTrashedFileRestoreIntegration:
         self.temp_dir = make_temp_dir(fs)
 
         self.root_dir = self.temp_dir
+        self.support_fs = SupportFs(fs, self.root_dir)
 
         self.cwd = self.root_dir / "cwd"
-        self.root_dir.mkdir_rel_p(self.cwd)
+        self.support_fs.mkdir_rel_p(self.cwd)
 
         self.home_dir = self.root_dir / "home/user"
-        self.root_dir.mkdir_rel_p(self.home_dir)
+        self.support_fs.mkdir_rel_p(self.home_dir)
         trash_dir_path = self.home_dir / ".local/share/Trash"
-        self.root_dir.mkdir_rel_p(trash_dir_path)
+        self.support_fs.mkdir_rel_p(trash_dir_path)
         self.trash_dir = FakeTrashDirWithRoot(
             FakeTrashDir(trash_dir_path), self.root_dir
         )
@@ -79,7 +81,7 @@ class TestTrashedFileRestoreIntegration:
             self,  # type: Self
     ):
         cwd = self.root_dir / 'cwd'
-        self.root_dir.mkdir_rel_p(cwd)
+        self.support_fs.mkdir_rel_p(cwd)
         self.trash_dir.add_trashed_file("cwd/file1")
         self.trash_dir.add_trashed_file("cwd/file2")
         self.trash_dir.add_trashed_file("cwd/file3")
@@ -108,7 +110,7 @@ class TestTrashedFileRestoreIntegration:
     ):
         root = self.root_dir
         cwd = self.root_dir / 'cwd'
-        self.root_dir.mkdir_rel_p(cwd)
+        self.support_fs.mkdir_rel_p(cwd)
         self.trash_dir.add_trashed_file("/cwd/file1")
         self.trash_dir.add_trashed_file("/cwd/file2")
         self.trash_dir.add_trashed_file("/another/specific")

@@ -137,3 +137,13 @@ class TestSupportFs:
         support_fs.mkdir_rel('dir')
 
         assert support_fs.is_dir('dir') is True
+
+    def test_mkdir_rel_p__creates_nested_dirs_relative_to_base_dir(self):
+        fs = FakeFs()
+        base_dir = MyPath('/x', fs)
+        support_fs = SupportFs(fs, base_dir)
+
+        base_dir.mkdirs()
+        support_fs.mkdir_rel_p('a/b/c')
+
+        assert support_fs.is_dir('a/b/c') is True

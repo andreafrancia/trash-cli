@@ -27,8 +27,8 @@ class TestTrashedFileRestoreIntegration:
         self.trash_dir_path = self.home_dir / ".local/share/Trash"
         self.cwd = self.root_dir / "cwd"
 
-        self.root_dir.mkdir_rel_p(self.cwd)
-        self.root_dir.mkdir_rel_p(self.home_dir)
+        self.support_fs.mkdir_rel_p(self.cwd)
+        self.support_fs.mkdir_rel_p(self.home_dir)
 
         self.trash_dir = FakeTrashDir(self.trash_dir_path)
 
