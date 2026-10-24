@@ -44,18 +44,12 @@ class MyPath(str):
 
     def existence_of(self,  # type: Self
                      *paths):
-        return [self.existence_of_single(p) for p in paths]
-
-    def existence_of_single(self,  # type: Self
-                            path,  # type: MyPath
-                            ):  # type: (...) -> str
-        path = self / path
-        existence = self.fs.path_exists(path)
-        existence_message = {
-            True: "exists",
-            False: "does not exist"
-        }[existence]
-        return "%s: %s" % (path.replace(self, ''), existence_message)
+        # Local import: tests.support.dirs.support_fs imports MyPath, so a
+        # module-level import here would be circular. Transitional only,
+        # until existence_of itself moves to SupportFs.
+        from tests.support.dirs.support_fs import SupportFs
+        support_fs = SupportFs(self.fs, self)
+        return [support_fs.existence_of_single(p) for p in paths]
 
     def exists(self,  # type: Self
                path,  # type: str
