@@ -13,8 +13,8 @@ from trashcli.put.parser import Parser, ExitWithCode, Trash
 class TestPutOptionShapedFilename(unittest.TestCase):
     def setUp(self):
         fs = RealFs()
-        self.cwd = make_temp_dir(fs)
-        self.support_fs = SupportFs(fs, self.cwd)
+        self.temp_dir = make_temp_dir(fs)
+        self.support_fs = SupportFs(fs, self.temp_dir)
         self.parser = Parser(fs)
 
     def test_it_refuses_an_existing_file_that_looks_like_an_option(self):
@@ -44,4 +44,4 @@ class TestPutOptionShapedFilename(unittest.TestCase):
         assert result.trash_dir == '/tmp/dir'
 
     def tearDown(self):
-        self.cwd.clean_up()
+        self.temp_dir.clean_up()
