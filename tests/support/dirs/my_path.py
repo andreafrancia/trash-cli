@@ -122,7 +122,6 @@ class MyPath(str):
                   path,
                   ):
         self.fs.mkdir(self / path)
-        return self / path
 
     def mkdir_rel_p(self,  # type: Self
                     path,
