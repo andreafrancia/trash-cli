@@ -13,3 +13,14 @@ class TestSupportFs:
         base_dir.write_file('a', 'content of a')
 
         assert support_fs.read('a') == 'content of a'
+
+    def test_existence_of_single__reports_relative_to_base_dir(self):
+        fs = FakeFs()
+        base_dir = MyPath('/x', fs)
+        support_fs = SupportFs(fs, base_dir)
+
+        base_dir.mkdirs()
+        base_dir.write_file('a', 'content of a')
+
+        assert support_fs.existence_of_single('a') == '/a: exists'
+        assert support_fs.existence_of_single('b') == '/b: does not exist'
