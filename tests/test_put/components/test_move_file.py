@@ -2,20 +2,28 @@ import pytest
 
 from tests.support.dirs.my_path import MyPath
 from tests.support.dirs.support_fs import SupportFs
-from trashcli.fslib.real.real_fs import RealFs
+from tests.support.dirs.temp_dir import temp_dir_fixture_fs
+from tests.support.put.fake_fs.fake_fs import FakeFs
+from trashcli.fslib.protocols.fs import Fs
 from trashcli.put.janitor_tools.put_trash_dir import move_file
-from tests.support.dirs.temp_dir import temp_dir_fixture
 
-temp_dir = temp_dir_fixture
-
+temp_dir = temp_dir_fixture_fs
 
 class TestMoveFile:
-    @pytest.mark.slow
-    def test_delete_when_traling_slash(self,
-                                       temp_dir):  # type: (MyPath) -> None
-        fs = RealFs()
-        support_fs = SupportFs(fs, temp_dir)
+    @pytest.fixture
+    def fs(self):
+        return FakeFs()
 
+    @pytest.fixture
+    def support_fs(self, fs, temp_dir):
+        return SupportFs(fs, temp_dir)
+
+    @pytest.mark.slow
+    def test_delete_when_trailing_slash(self,
+                                       fs,  # type: Fs
+                                       support_fs,  # type: SupportFs
+                                       temp_dir,  # type: MyPath
+                                       ):
         support_fs.mkdir_rel("dir")
         support_fs.symlink_rel("dir", "link-to-dir")
 
