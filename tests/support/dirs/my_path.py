@@ -1,5 +1,5 @@
 import os
-from typing import Any, Generator, TypeVar, Type
+from typing import TypeVar, Type
 
 from six import StringIO
 
@@ -56,14 +56,14 @@ class MyPath(str):
 
     def find_files_rel(self,  # type: Self
                        ):
-        for path in self.find_all():
+        # Local import: tests.support.dirs.support_fs imports MyPath, so a
+        # module-level import here would be circular. Transitional only,
+        # until find_files_rel itself moves to SupportFs.
+        from tests.support.dirs.support_fs import SupportFs
+        support_fs = SupportFs(self.fs, self)
+        for path in support_fs.find_all():
             if path.is_file():
                 yield self.rel_path(path)
-
-    def find_all(self,  # type: Self
-                 ):  # type: (...) -> Generator[MyPath, Any, None]
-        for path in list_all(self.fs, self):
-            yield MyPath(path, self.fs)
 
     def rel_path(self,  # type: Self
                  path,  # type: str

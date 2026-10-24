@@ -47,3 +47,16 @@ class TestSupportFs:
         assert support_fs.exists('a') is True
         assert support_fs.exists('/a') is True
         assert support_fs.exists('b') is False
+
+    def test_find_all__keeps_the_fs(self):
+        fs = FakeFs()
+        base_dir = MyPath('/x', fs)
+        support_fs = SupportFs(fs, base_dir)
+
+        base_dir.mkdirs()
+        base_dir.write_file('a', 'content')
+
+        found = list(support_fs.find_all())
+
+        assert found == ['/x/a']
+        assert [p.fs for p in found] == [fs]
