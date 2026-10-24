@@ -92,3 +92,8 @@ class SupportFs(object):
     def list_dir_rel(self,  # type: Self
                      ):
         return self.fs.listdir(self.base_dir)
+
+    def list_all_files_sorted(self,  # type: Self
+                              ):
+        return sorted([p.replace(self.base_dir, '')
+                       for p in list_all(self.fs, self.base_dir)])

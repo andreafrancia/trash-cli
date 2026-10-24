@@ -21,4 +21,4 @@ class TestMoveFile:
 
         move_file(fs, temp_dir / "link-to-dir/", temp_dir / "trash-location")
 
-        assert temp_dir.list_all_files_sorted() == ['/dir', '/trash-location']
+        assert support_fs.list_all_files_sorted() == ['/dir', '/trash-location']

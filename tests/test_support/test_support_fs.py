@@ -167,3 +167,14 @@ class TestSupportFs:
         support_fs.touch('b')
 
         assert sorted(support_fs.list_dir_rel()) == ['a', 'b']
+
+    def test_list_all_files_sorted__uses_the_fs(self):
+        fs = FakeFs()
+        base_dir = MyPath('/x', fs)
+        support_fs = SupportFs(fs, base_dir)
+
+        support_fs.mkdirs()
+        support_fs.write_file('b', '')
+        support_fs.write_file('a', '')
+
+        assert support_fs.list_all_files_sorted() == ['/a', '/b']

@@ -34,17 +34,6 @@ class TestMyPathFs:
 
         assert MyPath('/x/y', fs).parent.fs is fs
 
-    def test_list_all_files_sorted__uses_the_fs(self):
-        fs = FakeFs()
-        path = MyPath('/x', fs)
-        support_fs = SupportFs(fs, path)
-
-        support_fs.mkdirs()
-        support_fs.write_file('b', '')
-        support_fs.write_file('a', '')
-
-        assert path.list_all_files_sorted() == ['/a', '/b']
-
     def test_clean_up__uses_the_fs(self):
         fs = FakeFs()
         path = MyPath('/x', fs)
