@@ -50,3 +50,9 @@ class SupportFs(object):
                 path,  # type: str
                 ):  # type: (...) -> bool
         return self.fs.isfile(self.base_dir / path)
+
+    def find_files_rel(self,  # type: Self
+                       ):
+        for path in self.find_all():
+            if self.is_file(path):
+                yield self.base_dir.rel_path(path)

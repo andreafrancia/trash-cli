@@ -50,7 +50,7 @@ class TestTrashedFileRestoreIntegration:
     def test_restore_one_file(self,  # type: Self
                               ):
         self.trash_dir.add_file_trashed_from_dir('foo-bar', self.cwd)
-        assert sorted(self.root_dir.find_files_rel()) == [
+        assert sorted(self.support_fs.find_files_rel()) == [
             '/home/user/.local/share/Trash/files/foo-bar',
             '/home/user/.local/share/Trash/info/foo-bar.trashinfo',
         ]
@@ -58,7 +58,7 @@ class TestTrashedFileRestoreIntegration:
         r = self.user.run_restore(['trash-restore'], reply="0", from_dir=self.cwd)
 
         assert r.stderr == ''
-        files_after_restore = sorted(self.root_dir.find_files_rel())
+        files_after_restore = sorted(self.support_fs.find_files_rel())
         assert (files_after_restore == ['/cwd/foo-bar'])
         assert '/home/user/.local/share/Trash/info/foo-bar.trashinfo' not in files_after_restore
         assert '/home/user/.local/share/Trash/files/foo-bar' not in files_after_restore
@@ -66,7 +66,7 @@ class TestTrashedFileRestoreIntegration:
     def test_restore_file_with_parent(self,  # type: Self
                                       ):
         self.trash_dir.add_file_trashed_from_dir('foo', self.cwd / 'parent')
-        assert sorted(self.root_dir.find_files_rel()) == [
+        assert sorted(self.support_fs.find_files_rel()) == [
             '/home/user/.local/share/Trash/files/foo',
             '/home/user/.local/share/Trash/info/foo.trashinfo',
         ]
@@ -82,7 +82,7 @@ class TestTrashedFileRestoreIntegration:
         assert not self.support_fs.exists(
             '/home/user/.local/share/Trash/files/foo')
         # assert noting more to check in root_dir
-        assert sorted(self.root_dir.find_files_rel()) == ['/cwd/parent/foo']
+        assert sorted(self.support_fs.find_files_rel()) == ['/cwd/parent/foo']
         # assert no warnings
         assert self.logger.captured == []
 
@@ -97,7 +97,7 @@ class TestTrashedFileRestoreIntegration:
                                                  'to-be-restored')
         self.cwd.write_file('bar',
                             'obstructing file')  # put a file where the trashed one should be restored
-        assert sorted(self.root_dir.find_files_rel()) == [
+        assert sorted(self.support_fs.find_files_rel()) == [
             '/cwd/bar',
             '/home/user/.local/share/Trash/files/bar',
             '/home/user/.local/share/Trash/info/bar.trashinfo',
@@ -105,7 +105,7 @@ class TestTrashedFileRestoreIntegration:
 
         r = self.user.run_restore(['trash-restore'], reply="0", from_dir=self.cwd)
 
-        assert sorted(self.root_dir.find_files_rel()) == [
+        assert sorted(self.support_fs.find_files_rel()) == [
             '/cwd/bar',
             '/home/user/.local/share/Trash/files/bar',
             '/home/user/.local/share/Trash/info/bar.trashinfo',

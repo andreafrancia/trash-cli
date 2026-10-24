@@ -18,7 +18,7 @@ class TestAddTrashedFileOfFakeTrashDir:
                                                 jan_11_2001())
 
     def test_it_creates_both_info_and_original_copy(self):
-        assert sorted(self.root.find_files_rel()) == [
+        assert sorted(self.support_fs.find_files_rel()) == [
             '/Trash/files/foo-bar',
             '/Trash/info/foo-bar.trashinfo']
 
