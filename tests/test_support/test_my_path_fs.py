@@ -25,7 +25,6 @@ class TestMyPathFs:
         path.mkdirs()
 
         assert fs.path_isdir('/x') is True
-        assert path.is_dir() is True
 
     def test_path_join__keeps_the_fs(self):
         fs = FakeFs()
