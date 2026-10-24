@@ -128,7 +128,6 @@ class MyPath(str):
                     path,
                     ):
         self.fs.mkdirs(self / path)
-        return self / path
 
     def mkdirs(self,  # type: Self
                ):
