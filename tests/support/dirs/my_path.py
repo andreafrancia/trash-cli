@@ -61,10 +61,6 @@ class MyPath(str):
             return path[len(self):]
         raise ValueError("path %s is not under %s" % (path, self))
 
-    def symlink_rel(self,  # type: Self
-                    src, dest):
-        self.fs.symlink(self / src, self / dest)
-
     def mkdir_rel(self,  # type: Self
                   path,
                   ):

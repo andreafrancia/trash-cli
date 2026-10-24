@@ -1,6 +1,7 @@
 import pytest
 
 from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.support_fs import SupportFs
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.put.janitor_tools.put_trash_dir import move_file
 from tests.support.dirs.temp_dir import temp_dir_fixture
@@ -13,8 +14,10 @@ class TestMoveFile:
     def test_delete_when_traling_slash(self,
                                        temp_dir):  # type: (MyPath) -> None
         fs = RealFs()
+        support_fs = SupportFs(fs, temp_dir)
+
         temp_dir.mkdir_rel("dir")
-        temp_dir.symlink_rel("dir", "link-to-dir")
+        support_fs.symlink_rel("dir", "link-to-dir")
 
         move_file(fs, temp_dir / "link-to-dir/", temp_dir / "trash-location")
 
