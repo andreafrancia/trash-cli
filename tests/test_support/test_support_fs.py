@@ -106,3 +106,24 @@ class TestSupportFs:
         support_fs.touch('a')
 
         assert support_fs.is_file('a') is True
+
+    def test_write_file__writes_relative_to_base_dir(self):
+        fs = FakeFs()
+        base_dir = MyPath('/x', fs)
+        support_fs = SupportFs(fs, base_dir)
+
+        base_dir.mkdirs()
+        support_fs.write_file('a', 'content of a')
+
+        assert support_fs.read('a') == 'content of a'
+
+    def test_symlink_rel__creates_a_symlink_relative_to_base_dir(self):
+        fs = FakeFs()
+        base_dir = MyPath('/x', fs)
+        support_fs = SupportFs(fs, base_dir)
+
+        base_dir.mkdirs()
+        base_dir.mkdir_rel('dir')
+        support_fs.symlink_rel('dir', 'link-to-dir')
+
+        assert support_fs.is_dir('link-to-dir') is True

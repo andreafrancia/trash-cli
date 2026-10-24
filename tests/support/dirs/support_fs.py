@@ -69,3 +69,7 @@ class SupportFs(object):
     def write_file(self,  # type: Self
                    path, content):
         self.fs.write_file(self.base_dir / path, content)
+
+    def symlink_rel(self,  # type: Self
+                    src, dest):
+        self.fs.symlink(self.base_dir / src, self.base_dir / dest)
