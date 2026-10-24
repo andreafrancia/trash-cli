@@ -1,5 +1,6 @@
 import pytest
 
+from tests.support.dirs.support_fs import SupportFs
 from tests.support.dirs.temp_dir import temp_dir_fixture
 from tests.support.files import     FsFixture
 from tests.test_put.cmd.e2e.run_trash_put import run_trash_put
@@ -11,6 +12,10 @@ temp_dir = temp_dir_fixture
 @pytest.fixture
 def fs():
     return FsFixture(RealFs())
+
+@pytest.fixture
+def support_fs(temp_dir):
+    return SupportFs(temp_dir.fs, temp_dir)
 
 @pytest.mark.slow
 class TestWhenFedWithDotArguments:
@@ -32,12 +37,13 @@ class TestWhenFedWithDotArguments:
             "trash-put: cannot trash directory '..'\n", EX_IOERR]
 
     @pytest.mark.parametrize("arg", ["./", ".///", ".//////"])
-    def test_dot_with_trailing_slashes_is_skipped(self, temp_dir, fs, arg):
+    def test_dot_with_trailing_slashes_is_skipped(self, temp_dir, fs,
+                                                  support_fs, arg):
         fs.make_empty_file(temp_dir / 'file')
 
         result = run_trash_put(temp_dir, [arg])
 
-        assert result.combined() + temp_dir.existence_of(temp_dir / 'file') == [
+        assert result.combined() + support_fs.existence_of(temp_dir / 'file') == [
             "trash-put: cannot trash directory '.'\n", EX_IOERR,
             "/file: exists"]
 
@@ -48,7 +54,8 @@ class TestWhenFedWithDotArguments:
         assert result.combined() == [
             "trash-put: cannot trash directory '..'\n", EX_IOERR]
 
-    def test_dot_argument_is_skipped_even_in_subdirs(self, temp_dir, fs):
+    def test_dot_argument_is_skipped_even_in_subdirs(self, temp_dir, fs,
+                                                      support_fs):
         sandbox = temp_dir / 'sandbox'
         fs.mkdir_p(sandbox)
 
@@ -56,11 +63,12 @@ class TestWhenFedWithDotArguments:
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be written on stderr
-        assert result.combined() + temp_dir.existence_of(sandbox) == [
+        assert result.combined() + support_fs.existence_of(sandbox) == [
             "trash-put: cannot trash '.' directory '/sandbox/.'\n",
             EX_IOERR, "/sandbox: exists"]
 
-    def test_dot_dot_argument_is_skipped_even_in_subdirs(self, temp_dir, fs):
+    def test_dot_dot_argument_is_skipped_even_in_subdirs(self, temp_dir, fs,
+                                                          support_fs):
         sandbox = temp_dir / 'sandbox'
         fs.mkdir_p(sandbox)
 
@@ -68,6 +76,6 @@ class TestWhenFedWithDotArguments:
 
         # the dot directory shouldn't be operated, but a diagnostic message
         # shall be written on stderr
-        assert result.combined() + temp_dir.existence_of(sandbox) == [
+        assert result.combined() + support_fs.existence_of(sandbox) == [
             "trash-put: cannot trash '..' directory '/sandbox/..'\n",
             EX_IOERR, "/sandbox: exists"]

@@ -19,6 +19,10 @@ class SupportFs(object):
              path):
         return self.fs.read_file(self.base_dir / path)
 
+    def existence_of(self,  # type: Self
+                     *paths):
+        return [self.existence_of_single(p) for p in paths]
+
     def existence_of_single(self,  # type: Self
                             path,  # type: MyPath
                             ):  # type: (...) -> str

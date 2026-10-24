@@ -62,15 +62,6 @@ class TestMyPathFs:
 
         assert path.list_all_files_sorted() == ['/a', '/b']
 
-    def test_existence_of_uses_the_fs(self):
-        fs = FakeFs()
-        path = MyPath('/x', fs)
-        path.mkdirs()
-        path.write_file('a', '')
-
-        assert path.existence_of('a', 'b') == ['/a: exists',
-                                               '/b: does not exist']
-
     def test_exists__uses_the_fs(self):
         fs = FakeFs()
         path = MyPath('/x', fs)
