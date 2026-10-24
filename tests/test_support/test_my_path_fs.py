@@ -1,4 +1,5 @@
 from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.support_fs import SupportFs
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.fslib.real.real_fs import RealFs
 
@@ -44,17 +45,21 @@ class TestMyPathFs:
     def test_list_all_files_sorted__uses_the_fs(self):
         fs = FakeFs()
         path = MyPath('/x', fs)
+        support_fs = SupportFs(fs, path)
+
         path.mkdirs()
-        path.write_file('b', '')
-        path.write_file('a', '')
+        support_fs.write_file('b', '')
+        support_fs.write_file('a', '')
 
         assert path.list_all_files_sorted() == ['/a', '/b']
 
     def test_clean_up__uses_the_fs(self):
         fs = FakeFs()
         path = MyPath('/x', fs)
+        support_fs = SupportFs(fs, path)
+
         path.mkdirs()
-        path.write_file('a', '')
+        support_fs.write_file('a', '')
 
         path.clean_up()
 

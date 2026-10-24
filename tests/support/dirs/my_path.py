@@ -61,10 +61,6 @@ class MyPath(str):
             return path[len(self):]
         raise ValueError("path %s is not under %s" % (path, self))
 
-    def write_file(self,  # type: Self
-                   path, content):
-        self.fs.write_file(self / path, content)
-
     def symlink_rel(self,  # type: Self
                     src, dest):
         self.fs.symlink(self / src, self / dest)
