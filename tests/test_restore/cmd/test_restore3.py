@@ -3,6 +3,7 @@ from typing import TypeVar
 import pytest
 
 from tests.support.restore.restore_user import RestoreUser
+from tests.support.dirs.support_fs import SupportFs
 from tests.support.dirs.temp_dir import make_temp_dir
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.py2mock import Mock
@@ -21,6 +22,7 @@ class TestTrashedFileRestoreIntegration:
         fs = RealFs()
         self.temp_dir = make_temp_dir(fs)
         self.root_dir = self.temp_dir
+        self.support_fs = SupportFs(fs, self.root_dir)
         self.home_dir = self.root_dir / "home/user"
         self.trash_dir_path = self.home_dir / ".local/share/Trash"
         self.cwd = self.root_dir / "cwd"
@@ -110,8 +112,8 @@ class TestTrashedFileRestoreIntegration:
         ]
 
         # assert it cannot be restored
-        assert self.root_dir.read('cwd/bar') != 'to-be-restored'
-        assert self.root_dir.read('cwd/bar') == 'obstructing file'
+        assert self.support_fs.read('cwd/bar') != 'to-be-restored'
+        assert self.support_fs.read('cwd/bar') == 'obstructing file'
         # assert that trashinfo remains there
         assert self.root_dir.exists(
             '/home/user/.local/share/Trash/info/bar.trashinfo')

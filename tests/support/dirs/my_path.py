@@ -34,10 +34,6 @@ class MyPath(str):
                   ):  # type: (...) -> str
         return stdout.getvalue().replace(self, '')
 
-    def read(self,  # type: Self
-             path):
-        return self.fs.read_file(self / path)
-
     def __div__(self,  # type: Self
                 other_path):
         return self.path_join(other_path)
