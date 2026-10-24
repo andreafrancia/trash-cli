@@ -61,3 +61,7 @@ class SupportFs(object):
                path,  # type: str
                ):  # type: (...) -> bool
         return self.fs.path_isdir(self.base_dir / path)
+
+    def touch(self,  # type: Self
+              path):
+        self.fs.touch(self.base_dir / path)
