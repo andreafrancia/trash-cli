@@ -84,3 +84,15 @@ class TestSupportFs:
         base_dir.write_file('dir/b', '')
 
         assert sorted(support_fs.find_files_rel()) == ['/a', '/dir/b']
+
+    def test_is_dir__uses_the_fs(self):
+        fs = FakeFs()
+        base_dir = MyPath('/x', fs)
+        support_fs = SupportFs(fs, base_dir)
+
+        base_dir.mkdirs()
+        base_dir.mkdir_rel('dir')
+
+        assert support_fs.is_dir('dir') is True
+        assert support_fs.is_dir(base_dir / 'dir') is True
+        assert support_fs.is_dir('missing') is False

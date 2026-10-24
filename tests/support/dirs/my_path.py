@@ -61,11 +61,6 @@ class MyPath(str):
             return path[len(self):]
         raise ValueError("path %s is not under %s" % (path, self))
 
-    def is_dir(
-            self,  # type: Self
-    ):  # type: (...) -> bool
-        return self.fs.path_isdir(self)
-
     def touch(self,  # type: Self
               path):
         self.fs.touch(self / path)
