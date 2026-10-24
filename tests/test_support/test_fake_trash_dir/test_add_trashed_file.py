@@ -1,4 +1,5 @@
 from tests.support.dates import jan_11_2001
+from tests.support.dirs.support_fs import SupportFs
 from tests.support.dirs.temp_dir import make_temp_dir
 from trashcli.fslib.real.real_fs import RealFs
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
@@ -8,6 +9,7 @@ class TestAddTrashedFileOfFakeTrashDir:
     def setup_method(self):
         fs = RealFs()
         self.root = make_temp_dir(fs)
+        self.support_fs = SupportFs(fs, self.root)
         self.trash_dir = FakeTrashDir(self.root / "Trash")
         self.cwd = self.root / "cwd"
         self.result = self.trash_dir.add_trashed_file('foo-bar',
@@ -21,13 +23,13 @@ class TestAddTrashedFileOfFakeTrashDir:
             '/Trash/info/foo-bar.trashinfo']
 
     def test_it_creates_the_right_content_of_info(self):
-        assert (self.root.read('Trash/info/foo-bar.trashinfo') ==
+        assert (self.support_fs.read('Trash/info/foo-bar.trashinfo') ==
                 '[Trash Info]\n'
                 'Path=' + self.cwd / 'foo-bar' + '\n' +
                 'DeletionDate=2001-01-01T00:00:00\n')
 
     def test_it_creates_the_original_copy(self):
-        assert self.root.read('Trash/files/foo-bar') == "content of foo-bar"
+        assert self.support_fs.read('Trash/files/foo-bar') == "content of foo-bar"
 
     def test_result(self):
         assert self.result.original_file == self.trash_dir / 'files' / 'foo-bar'
