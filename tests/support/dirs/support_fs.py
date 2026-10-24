@@ -45,3 +45,8 @@ class SupportFs(object):
                  ):  # type: (...) -> Generator[MyPath, Any, None]
         for path in list_all(self.fs, self.base_dir):
             yield MyPath(path, self.fs)
+
+    def is_file(self,  # type: Self
+                path,  # type: str
+                ):  # type: (...) -> bool
+        return self.fs.isfile(self.base_dir / path)
