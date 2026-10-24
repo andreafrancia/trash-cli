@@ -156,3 +156,14 @@ class TestSupportFs:
         support_fs.mkdirs()
 
         assert fs.path_isdir('/x') is True
+
+    def test_list_dir_rel__lists_the_entries_of_base_dir(self):
+        fs = FakeFs()
+        base_dir = MyPath('/x', fs)
+        support_fs = SupportFs(fs, base_dir)
+
+        support_fs.mkdirs()
+        support_fs.touch('a')
+        support_fs.touch('b')
+
+        assert sorted(support_fs.list_dir_rel()) == ['a', 'b']

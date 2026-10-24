@@ -88,3 +88,7 @@ class SupportFs(object):
                ):
         self.fs.mkdirs(self.base_dir)
         return self.base_dir
+
+    def list_dir_rel(self,  # type: Self
+                     ):
+        return self.fs.listdir(self.base_dir)
