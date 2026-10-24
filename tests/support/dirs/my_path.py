@@ -54,17 +54,6 @@ class MyPath(str):
             path = path[1:]
         return path
 
-    def find_files_rel(self,  # type: Self
-                       ):
-        # Local import: tests.support.dirs.support_fs imports MyPath, so a
-        # module-level import here would be circular. Transitional only,
-        # until find_files_rel itself moves to SupportFs.
-        from tests.support.dirs.support_fs import SupportFs
-        support_fs = SupportFs(self.fs, self)
-        for path in support_fs.find_all():
-            if support_fs.is_file(path):
-                yield self.rel_path(path)
-
     def rel_path(self,  # type: Self
                  path,  # type: str
                  ):  # type: (...) -> str
