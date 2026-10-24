@@ -33,3 +33,9 @@ class SupportFs(object):
             False: "does not exist"
         }[existence]
         return "%s: %s" % (path.replace(self.base_dir, ''), existence_message)
+
+    def exists(self,  # type: Self
+               path,  # type: str
+               ):  # type: (...) -> bool
+        full_path = self.base_dir.join_no_slash(path)
+        return self.fs.path_exists(full_path)

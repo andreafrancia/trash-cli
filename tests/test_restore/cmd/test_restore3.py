@@ -74,12 +74,12 @@ class TestTrashedFileRestoreIntegration:
         self.user.run_restore(['trash-restore'], reply="0", from_dir=self.cwd)
 
         # assert it has been restored
-        assert self.root_dir.exists('/cwd/parent/foo')
+        assert self.support_fs.exists('/cwd/parent/foo')
         # assert that trashinfo is gone
-        assert not self.root_dir.exists(
+        assert not self.support_fs.exists(
             '/home/user/.local/share/Trash/info/foo.trashinfo')
         # assert that backup copy is no there
-        assert not self.root_dir.exists(
+        assert not self.support_fs.exists(
             '/home/user/.local/share/Trash/files/foo')
         # assert noting more to check in root_dir
         assert sorted(self.root_dir.find_files_rel()) == ['/cwd/parent/foo']
@@ -115,10 +115,10 @@ class TestTrashedFileRestoreIntegration:
         assert self.support_fs.read('cwd/bar') != 'to-be-restored'
         assert self.support_fs.read('cwd/bar') == 'obstructing file'
         # assert that trashinfo remains there
-        assert self.root_dir.exists(
+        assert self.support_fs.exists(
             '/home/user/.local/share/Trash/info/bar.trashinfo')
         # assert that backup copy remains there
-        assert self.root_dir.exists('/home/user/.local/share/Trash/files/bar')
+        assert self.support_fs.exists('/home/user/.local/share/Trash/files/bar')
         # assert a warning is passed
         assert r.stderr == 'Refusing to overwrite existing file "bar".\n'
         assert r.exit_code == 1
