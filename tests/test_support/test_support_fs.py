@@ -10,7 +10,7 @@ class TestSupportFs:
         support_fs = SupportFs(fs, base_dir)
 
         base_dir.mkdirs()
-        base_dir.write_file('a', 'content of a')
+        support_fs.write_file('a', 'content of a')
 
         assert support_fs.read('a') == 'content of a'
 
@@ -20,7 +20,7 @@ class TestSupportFs:
         support_fs = SupportFs(fs, base_dir)
 
         base_dir.mkdirs()
-        base_dir.write_file('a', 'content of a')
+        support_fs.write_file('a', 'content of a')
 
         assert support_fs.existence_of_single('a') == '/a: exists'
         assert support_fs.existence_of_single('b') == '/b: does not exist'
@@ -31,7 +31,7 @@ class TestSupportFs:
         support_fs = SupportFs(fs, base_dir)
 
         base_dir.mkdirs()
-        base_dir.write_file('a', '')
+        support_fs.write_file('a', '')
 
         assert support_fs.existence_of('a', 'b') == ['/a: exists',
                                                       '/b: does not exist']
@@ -42,7 +42,7 @@ class TestSupportFs:
         support_fs = SupportFs(fs, base_dir)
 
         base_dir.mkdirs()
-        base_dir.write_file('a', '')
+        support_fs.write_file('a', '')
 
         assert support_fs.exists('a') is True
         assert support_fs.exists('/a') is True
@@ -54,7 +54,7 @@ class TestSupportFs:
         support_fs = SupportFs(fs, base_dir)
 
         base_dir.mkdirs()
-        base_dir.write_file('a', 'content')
+        support_fs.write_file('a', 'content')
 
         found = list(support_fs.find_all())
 
@@ -67,7 +67,7 @@ class TestSupportFs:
         support_fs = SupportFs(fs, base_dir)
 
         base_dir.mkdirs()
-        base_dir.write_file('a', '')
+        support_fs.write_file('a', '')
 
         assert support_fs.is_file('a') is True
         assert support_fs.is_file(base_dir / 'a') is True
@@ -80,8 +80,8 @@ class TestSupportFs:
 
         base_dir.mkdirs()
         base_dir.mkdir_rel('dir')
-        base_dir.write_file('a', '')
-        base_dir.write_file('dir/b', '')
+        support_fs.write_file('a', '')
+        support_fs.write_file('dir/b', '')
 
         assert sorted(support_fs.find_files_rel()) == ['/a', '/dir/b']
 

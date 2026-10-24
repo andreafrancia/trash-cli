@@ -95,8 +95,8 @@ class TestTrashedFileRestoreIntegration:
         """
         self.trash_dir.add_file_trashed_from_dir('bar', self.cwd,
                                                  'to-be-restored')
-        self.cwd.write_file('bar',
-                            'obstructing file')  # put a file where the trashed one should be restored
+        self.support_fs.write_file('cwd/bar',
+                                   'obstructing file')  # put a file where the trashed one should be restored
         assert sorted(self.support_fs.find_files_rel()) == [
             '/cwd/bar',
             '/home/user/.local/share/Trash/files/bar',

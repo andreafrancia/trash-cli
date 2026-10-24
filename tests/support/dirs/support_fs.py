@@ -65,3 +65,7 @@ class SupportFs(object):
     def touch(self,  # type: Self
               path):
         self.fs.touch(self.base_dir / path)
+
+    def write_file(self,  # type: Self
+                   path, content):
+        self.fs.write_file(self.base_dir / path, content)
