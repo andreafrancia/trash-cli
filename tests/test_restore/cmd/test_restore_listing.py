@@ -26,19 +26,6 @@ Self = TypeVar('Self', bound='TestTrashedFileRestoreIntegration')
 @pytest.mark.slow
 class TestTrashedFileRestoreIntegration:
 
-    @staticmethod
-    def setup_trash_dir(home_dir):
-        trash_dir = home_dir.mkdir_rel_p('.local/share/Trash')
-        return FakeTrashDir(trash_dir)
-
-    @staticmethod
-    def setup_home_dir(root_dir):
-        return root_dir.mkdir_rel_p("home/user")
-
-    @staticmethod
-    def setup_cwd(root_dir):
-        return root_dir.mkdir_rel_p("cwd")
-
     def setup_method(self):
         self.stdout = StringIO()
         self.stderr = StringIO()
@@ -47,10 +34,16 @@ class TestTrashedFileRestoreIntegration:
         self.temp_dir = make_temp_dir(fs)
 
         self.root_dir = self.temp_dir
-        self.cwd = self.setup_cwd(self.root_dir)
-        self.home_dir = self.setup_home_dir(self.root_dir)
+
+        self.cwd = self.root_dir / "cwd"
+        self.root_dir.mkdir_rel_p(self.cwd)
+
+        self.home_dir = self.root_dir / "home/user"
+        self.root_dir.mkdir_rel_p(self.home_dir)
+        trash_dir_path = self.home_dir / ".local/share/Trash"
+        self.root_dir.mkdir_rel_p(trash_dir_path)
         self.trash_dir = FakeTrashDirWithRoot(
-            self.setup_trash_dir(self.home_dir), self.root_dir
+            FakeTrashDir(trash_dir_path), self.root_dir
         )
 
         uid = 1000
