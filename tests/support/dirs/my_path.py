@@ -3,7 +3,6 @@ from typing import TypeVar, Type
 
 from six import StringIO
 
-from trashcli.fslib.list_all import list_all
 from trashcli.fslib.protocols.fs import Fs
 
 Self = TypeVar('Self', bound='MyPath')
@@ -70,7 +69,3 @@ class MyPath(str):
                  ):
         self.fs.shutil_rmtree(self)
 
-    def list_all_files_sorted(self,  # type: Self
-                              ):
-        return sorted([p.replace(self, '')
-                       for p in list_all(self.fs, self)])
