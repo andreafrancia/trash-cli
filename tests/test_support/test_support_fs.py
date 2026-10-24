@@ -79,7 +79,7 @@ class TestSupportFs:
         support_fs = SupportFs(fs, base_dir)
 
         base_dir.mkdirs()
-        base_dir.mkdir_rel('dir')
+        support_fs.mkdir_rel('dir')
         support_fs.write_file('a', '')
         support_fs.write_file('dir/b', '')
 
@@ -91,7 +91,7 @@ class TestSupportFs:
         support_fs = SupportFs(fs, base_dir)
 
         base_dir.mkdirs()
-        base_dir.mkdir_rel('dir')
+        support_fs.mkdir_rel('dir')
 
         assert support_fs.is_dir('dir') is True
         assert support_fs.is_dir(base_dir / 'dir') is True
@@ -123,7 +123,17 @@ class TestSupportFs:
         support_fs = SupportFs(fs, base_dir)
 
         base_dir.mkdirs()
-        base_dir.mkdir_rel('dir')
+        support_fs.mkdir_rel('dir')
         support_fs.symlink_rel('dir', 'link-to-dir')
 
         assert support_fs.is_dir('link-to-dir') is True
+
+    def test_mkdir_rel__creates_a_dir_relative_to_base_dir(self):
+        fs = FakeFs()
+        base_dir = MyPath('/x', fs)
+        support_fs = SupportFs(fs, base_dir)
+
+        base_dir.mkdirs()
+        support_fs.mkdir_rel('dir')
+
+        assert support_fs.is_dir('dir') is True

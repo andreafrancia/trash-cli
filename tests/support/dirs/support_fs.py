@@ -73,3 +73,8 @@ class SupportFs(object):
     def symlink_rel(self,  # type: Self
                     src, dest):
         self.fs.symlink(self.base_dir / src, self.base_dir / dest)
+
+    def mkdir_rel(self,  # type: Self
+                  path,
+                  ):
+        self.fs.mkdir(self.base_dir / path)

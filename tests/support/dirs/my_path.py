@@ -61,11 +61,6 @@ class MyPath(str):
             return path[len(self):]
         raise ValueError("path %s is not under %s" % (path, self))
 
-    def mkdir_rel(self,  # type: Self
-                  path,
-                  ):
-        self.fs.mkdir(self / path)
-
     def mkdir_rel_p(self,  # type: Self
                     path,
                     ):
