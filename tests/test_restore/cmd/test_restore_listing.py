@@ -79,6 +79,7 @@ class TestTrashedFileRestoreIntegration:
             self,  # type: Self
     ):
         cwd = self.root_dir / 'cwd'
+        self.root_dir.mkdir_rel_p(cwd)
         self.trash_dir.add_trashed_file("cwd/file1")
         self.trash_dir.add_trashed_file("cwd/file2")
         self.trash_dir.add_trashed_file("cwd/file3")
@@ -86,7 +87,7 @@ class TestTrashedFileRestoreIntegration:
         self.trash_dir.add_trashed_file("another_dir/fileB")
         self.trash_dir.add_trashed_file("another_dir/fileC")
 
-        self.cur_dir.chdir(cwd.mkdirs())
+        self.cur_dir.chdir(cwd)
         self.input.set_reply('')
         self.cmd.run([])
 
@@ -107,11 +108,12 @@ class TestTrashedFileRestoreIntegration:
     ):
         root = self.root_dir
         cwd = self.root_dir / 'cwd'
+        self.root_dir.mkdir_rel_p(cwd)
         self.trash_dir.add_trashed_file("/cwd/file1")
         self.trash_dir.add_trashed_file("/cwd/file2")
         self.trash_dir.add_trashed_file("/another/specific")
 
-        self.cur_dir.chdir(cwd.mkdirs())
+        self.cur_dir.chdir(cwd)
         self.input.set_reply('')
         self.cmd.run(['--sort=path', root / 'another'])
 
