@@ -16,7 +16,7 @@ class TestMoveFile:
         fs = RealFs()
         support_fs = SupportFs(fs, temp_dir)
 
-        temp_dir.mkdir_rel("dir")
+        support_fs.mkdir_rel("dir")
         support_fs.symlink_rel("dir", "link-to-dir")
 
         move_file(fs, temp_dir / "link-to-dir/", temp_dir / "trash-location")
