@@ -62,7 +62,7 @@ class MyPath(str):
         from tests.support.dirs.support_fs import SupportFs
         support_fs = SupportFs(self.fs, self)
         for path in support_fs.find_all():
-            if path.is_file():
+            if support_fs.is_file(path):
                 yield self.rel_path(path)
 
     def rel_path(self,  # type: Self
@@ -71,10 +71,6 @@ class MyPath(str):
         if path.startswith(self):
             return path[len(self):]
         raise ValueError("path %s is not under %s" % (path, self))
-
-    def is_file(self,  # type: Self
-                ):  # type: (...) -> bool
-        return self.fs.isfile(self)
 
     def is_dir(
             self,  # type: Self
