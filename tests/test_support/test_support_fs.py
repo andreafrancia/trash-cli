@@ -35,3 +35,15 @@ class TestSupportFs:
 
         assert support_fs.existence_of('a', 'b') == ['/a: exists',
                                                       '/b: does not exist']
+
+    def test_exists__uses_the_fs(self):
+        fs = FakeFs()
+        base_dir = MyPath('/x', fs)
+        support_fs = SupportFs(fs, base_dir)
+
+        base_dir.mkdirs()
+        base_dir.write_file('a', '')
+
+        assert support_fs.exists('a') is True
+        assert support_fs.exists('/a') is True
+        assert support_fs.exists('b') is False
