@@ -96,3 +96,13 @@ class TestSupportFs:
         assert support_fs.is_dir('dir') is True
         assert support_fs.is_dir(base_dir / 'dir') is True
         assert support_fs.is_dir('missing') is False
+
+    def test_touch__creates_the_file_relative_to_base_dir(self):
+        fs = FakeFs()
+        base_dir = MyPath('/x', fs)
+        support_fs = SupportFs(fs, base_dir)
+
+        base_dir.mkdirs()
+        support_fs.touch('a')
+
+        assert support_fs.is_file('a') is True
