@@ -1,6 +1,7 @@
-from typing import TypeVar
+from typing import Any, Generator, TypeVar
 
 from tests.support.dirs.my_path import MyPath
+from trashcli.fslib.list_all import list_all
 from trashcli.fslib.protocols.fs import Fs
 
 Self = TypeVar('Self', bound='SupportFs')
@@ -39,3 +40,8 @@ class SupportFs(object):
                ):  # type: (...) -> bool
         full_path = self.base_dir.join_no_slash(path)
         return self.fs.path_exists(full_path)
+
+    def find_all(self,  # type: Self
+                 ):  # type: (...) -> Generator[MyPath, Any, None]
+        for path in list_all(self.fs, self.base_dir):
+            yield MyPath(path, self.fs)
