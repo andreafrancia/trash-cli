@@ -7,6 +7,11 @@ User visible changes:
   writable directory inside a read-only parent is no longer lost, and a
   read-only directory given as "dir/" is trashed instead of refused
   (curious-rabbit) [313cd8d]
+- trash-list and trash-restore print one line for each trash directory
+  that contains trashinfo files without a parsable Path= or files in the
+  info directory without the .trashinfo extension, instead of one warning
+  per file; trash-list --doctor lists them one by one
+  (Dev M) [f80324b8, 9d8ed408]
 
 0.26.9.29 (82646023):
 User visible changes:
