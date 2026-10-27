@@ -8,6 +8,7 @@ from trashcli.fslib.protocols.is_sticky_dir import IsStickyDir
 from trashcli.fslib.protocols.is_sym_link import IsSymLink
 from trashcli.fslib.protocols.is_world_writable import IsWorldWritable
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
+from trashcli.lib.trash_dirs import is_own_dir
 from trashcli.lib.user_info_provider import UserInfoProvider
 
 
@@ -92,7 +93,8 @@ class TrashDirsScanner:
                                                   str(user_info.uid))
                 result = self.top_trash_dir_rules.valid_to_be_read(
                     top_trash_dir_path)
-                if result == top_trash_dir_valid:
+                if result == top_trash_dir_valid and \
+                        is_own_dir(top_trash_dir_path, user_info.uid):
                     yield trash_dir_found, TrashDir(top_trash_dir_path, volume)
                 elif result == top_trash_dir_invalid_because_not_sticky:
                     yield trash_dir_skipped_because_parent_not_sticky, (
@@ -102,7 +104,8 @@ class TrashDirsScanner:
                         top_trash_dir_path,)
                 alt_top_trash_dir = os.path.join(volume,
                                                  '.Trash-%s' % user_info.uid)
-                if self.dir_checker.path_isdir(alt_top_trash_dir):
+                if self.dir_checker.path_isdir(alt_top_trash_dir) and \
+                        is_own_dir(alt_top_trash_dir, user_info.uid):
                     yield trash_dir_found, TrashDir(alt_top_trash_dir, volume)
 
 

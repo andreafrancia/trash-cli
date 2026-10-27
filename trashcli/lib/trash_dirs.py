@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 
 import os
+import stat
 
 from trashcli.fslib.protocols.volume_of import VolumeOfFs
 
@@ -28,12 +29,24 @@ def home_trash_dir(environ,
 
 def volume_trash_dir1(volume, uid):
     path = os.path.join(volume, '.Trash/%s' % uid)
-    yield path, volume
+    if is_own_dir(path, uid):
+        yield path, volume
 
 
 def volume_trash_dir2(volume, uid):
     path = os.path.join(volume, ".Trash-%s" % uid)
-    yield path, volume
+    if is_own_dir(path, uid):
+        yield path, volume
+
+
+def is_own_dir(path, uid):  # type: (str, int) -> bool
+    # an existing uid trash dir must be a real dir of the user that others cannot write
+    try:
+        st = os.lstat(path)
+    except OSError:
+        return True
+    return (stat.S_ISDIR(st.st_mode) and st.st_uid in (uid, os.geteuid()) and
+            not st.st_mode & stat.S_IWOTH)
 
 
 def is_volume_trash_dir(trash_dir, volume):  # type: (str, str) -> bool
