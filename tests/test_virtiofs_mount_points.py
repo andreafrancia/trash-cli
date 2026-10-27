@@ -1,7 +1,7 @@
 import sys
 import unittest
 from collections import namedtuple
-from unittest.mock import Mock, patch
+from tests.support.py2mock import Mock, patch
 
 from trashcli.fstab.real.os_mount_points import os_mount_points
 
