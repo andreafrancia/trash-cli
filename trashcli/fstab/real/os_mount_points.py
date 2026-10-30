@@ -10,6 +10,7 @@ def os_mount_points():
     fstypes = [
         'nfs',
         'nfs4',
+        'virtiofs',  # shared directories exposed by a virtual machine
         'p9',  # file system used in WSL 2 (Windows Subsystem for Linux)
         'btrfs',
         'fuse',  # https://github.com/andreafrancia/trash-cli/issues/250
