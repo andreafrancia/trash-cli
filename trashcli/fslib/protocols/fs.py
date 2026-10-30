@@ -111,3 +111,19 @@ class Fs(RealPathFs, VolumeOfFs, MkDirs, Protocol):
 
     def list_sorted(self, path):
         return sorted(self.listdir(path))
+
+    @abstractmethod
+    def rename(self, src, dest):  # type: (str, str) -> None
+        raise NotImplementedError
+
+    @abstractmethod
+    def copytree(self, src, dest):  # type: (str, str) -> None
+        raise NotImplementedError
+
+    @abstractmethod
+    def mkdtemp(self, prefix, parent):  # type: (str, str) -> str
+        raise NotImplementedError
+
+    @abstractmethod
+    def rmdir(self, path):  # type: (str) -> None
+        raise NotImplementedError
