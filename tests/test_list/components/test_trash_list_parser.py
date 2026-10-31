@@ -45,5 +45,15 @@ class TestTrashListParser(unittest.TestCase):
 
         assert True == args.show_files
 
+    def test_doctor_off(self):
+        args = self.parse([])
+
+        assert False == args.doctor
+
+    def test_doctor_on(self):
+        args = self.parse(['--doctor'])
+
+        assert True == args.doctor
+
     def parse(self, args):
         return self.parser.parse_list_args(args, 'trash-list')

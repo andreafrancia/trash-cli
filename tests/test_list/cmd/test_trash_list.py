@@ -52,8 +52,8 @@ class TestTrashList:
         output = user.run_trash_list()
 
         assert output.err_and_out() == (
-            "Parse Error: /xdg-data-home/Trash/info/empty.trashinfo: Unable "
-            "to parse Path.\n", '')
+            "Found inconsistencies in /xdg-data-home/Trash check them "
+            "running `trash-list --doctor`\n", '')
 
     def test_should_warn_about_unreadable_trashinfo(self, user):
         user.home_trash_dir().add_unreadable_trashinfo('unreadable')
@@ -71,6 +71,6 @@ class TestTrashList:
         output = user.run_trash_list()
 
         assert output.err_and_out() == (
-            "Parse Error: /xdg-data-home/Trash/info/foo.trashinfo: "
-            "Unable to parse Path.\n",
+            "Found inconsistencies in /xdg-data-home/Trash check them "
+            "running `trash-list --doctor`\n",
             '')

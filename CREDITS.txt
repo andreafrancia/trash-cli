@@ -56,6 +56,10 @@ Thanks to
  - David Auer: relaxed the virtualenv version requirement, fixed typos
    and a dead link, removed an empty file
    [864b13e, 0a608b3, 402474c, f8c030d, b3e35f4]
+ - Dev M: trash-list and trash-restore print one summary line for each
+   trash directory with unparsable trashinfo files or files in the info
+   directory without the .trashinfo extension, and trash-list --doctor
+   lists them one by one [f80324b8, 9d8ed408]
  - Devon Sawatsky Burnham: fixed a typo [f008c78]
  - Don Cross: improved the trash-put man page, made 'trash-put -f' ignore
    files/dirs that don't exist [13b2847, c9a3fd1]
