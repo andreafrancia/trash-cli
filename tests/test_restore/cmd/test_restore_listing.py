@@ -93,7 +93,7 @@ class TestTrashedFileRestoreIntegration:
         self.input.set_reply('')
         self.cmd.run([])
 
-        output = self.root_dir.clean_str(self.stdout)
+        output = self.root_dir.clean_stream(self.stdout)
         # file from another dir are not listed
         assert 'fileA' not in output
         assert 'fileB' not in output
@@ -119,7 +119,7 @@ class TestTrashedFileRestoreIntegration:
         self.input.set_reply('')
         self.cmd.run(['--sort=path', root / 'another'])
 
-        output = self.root_dir.clean_str(self.stdout)
+        output = self.root_dir.clean_stream(self.stdout)
         # only files from the cwd are listed
         assert (output ==
                 '   0 2001-01-01 00:00:00 /another/specific\n'
@@ -133,7 +133,7 @@ class TestTrashedFileRestoreIntegration:
         self.input.set_reply('')
         self.cmd.run(['--sort=path', root / 'prefix'])
 
-        output = self.root_dir.clean_str(self.stdout)
+        output = self.root_dir.clean_stream(self.stdout)
         # only files from the cwd are listed
         assert (output ==
                 '   0 2001-01-01 00:00:00 /prefix\n'
