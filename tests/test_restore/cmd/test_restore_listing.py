@@ -9,7 +9,6 @@ from tests.support.dirs.temp_dir import make_temp_dir
 from tests.support.fakes.fake_trash_dir import FakeTrashDir, \
     FakeTrashDirWithRoot
 from tests.support.fs.sorting_listdir_fs import SortingListdirFs
-from tests.support.py2mock import Mock
 from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
 from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.fslib.real.real_fs import RealFs
@@ -20,7 +19,6 @@ from trashcli.restore.fs.real.real_file_reader_fs import RealFileReaderFs
 from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
 from trashcli.restore.fs.real.real_restore_writer_fs import RealRestoreWriterFs
 from trashcli.restore.restore_cmd import RestoreCmd
-from trashcli.restore.trashed_files import TrashedFiles
 
 Self = TypeVar('Self', bound='TestTrashedFileRestoreIntegration')
 
@@ -55,7 +53,6 @@ class TestTrashedFileRestoreIntegration:
         self.cur_dir = FakeReadCwdFs(self.cwd)
 
         self.logger = RecordingLogger()
-        self.trashed_files = Mock(spec=TrashedFiles)
         self.cmd = RestoreCmd(
             stdout=self.stdout,
             stderr=self.stderr,
