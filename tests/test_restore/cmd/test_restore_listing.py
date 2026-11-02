@@ -1,24 +1,20 @@
-import sys
 from typing import TypeVar
 
 import pytest
-from six import StringIO
 
 from tests.support.dirs.support_fs import SupportFs
 from tests.support.dirs.temp_dir import make_temp_dir
 from tests.support.fakes.fake_trash_dir import FakeTrashDir, \
     FakeTrashDirWithRoot
 from tests.support.fs.sorting_listdir_fs import SortingListdirFs
-from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
+from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.real.real_list_files_in_dir import RealListdirFs
 from tests.support.fakes.fake_volumes import FakeVolumesFs
-from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.fs.real.real_file_reader_fs import RealFileReaderFs
 from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
 from trashcli.restore.fs.real.real_restore_writer_fs import RealRestoreWriterFs
-from trashcli.restore.restore_cmd import RestoreCmd
 
 Self = TypeVar('Self', bound='TestRestoreListing')
 
@@ -26,9 +22,6 @@ Self = TypeVar('Self', bound='TestRestoreListing')
 class TestRestoreListing:
 
     def setup_method(self):
-        self.stdout = StringIO()
-        self.stderr = StringIO()
-        self.input = HardCodedInput()
         fs = RealFs()
         self.temp_dir = make_temp_dir(fs)
 
@@ -50,25 +43,18 @@ class TestRestoreListing:
         self.env = {'HOME': self.home_dir}
         # end of unix-like env
 
-        self.cur_dir = FakeReadCwdFs(self.cwd)
-
         self.logger = RecordingLogger()
-        self.cmd = RestoreCmd(
-            stdout=self.stdout,
-            stderr=self.stderr,
-            exit=sys.exit,
-            input=self.input,
-            version="0.0.0",
-            listing_fs=SortingListdirFs(RealListdirFs()),
-            read_fs=RealPathReaderFs(),
-            write_fs=RealRestoreWriterFs(),
-            read_cwd=self.cur_dir,
+        self.user = RestoreUser(
+            environ=self.env,
+            uid=uid,
             file_reader=RealFileReaderFs(),
+            path_read_fs=RealPathReaderFs(),
+            write_fs=RealRestoreWriterFs(),
+            listing_fs=SortingListdirFs(RealListdirFs()),
+            version="0.0.0",
             volumes=FakeVolumesFs([]),
             logger=self.logger,
-            uid=uid,
-            environ=self.env,
-            top_trash_dir_rules_fs=RealFs(),
+            top_trash_dir_rules_reader=RealFs(),
         )
 
     def teardown_method(self):
@@ -86,11 +72,9 @@ class TestRestoreListing:
         self.trash_dir.add_trashed_file("another_dir/fileB")
         self.trash_dir.add_trashed_file("another_dir/fileC")
 
-        self.cur_dir.chdir(cwd)
-        self.input.set_reply('')
-        self.cmd.run([])
+        res = self.user.run_restore(['trash-restore'], from_dir=cwd)
 
-        output = self.root_dir.clean_stream(self.stdout)
+        output = self.root_dir.clean_str(res.stdout)
         # file from another dir are not listed
         assert 'fileA' not in output
         assert 'fileB' not in output
@@ -112,11 +96,11 @@ class TestRestoreListing:
         self.trash_dir.add_trashed_file("/cwd/file2")
         self.trash_dir.add_trashed_file("/another/specific")
 
-        self.cur_dir.chdir(cwd)
-        self.input.set_reply('')
-        self.cmd.run(['--sort=path', root / 'another'])
+        res = self.user.run_restore(
+            ['trash-restore', '--sort=path', root / 'another'],
+            from_dir=cwd)
 
-        output = self.root_dir.clean_stream(self.stdout)
+        output = self.root_dir.clean_str(res.stdout)
         # only files from the cwd are listed
         assert (output ==
                 '   0 2001-01-01 00:00:00 /another/specific\n'
@@ -127,12 +111,12 @@ class TestRestoreListing:
         self.trash_dir.add_trashed_file("/prefix")
         self.trash_dir.add_trashed_file("/prefix-with-other")
 
-        self.input.set_reply('')
-        self.cmd.run(['--sort=path', root / 'prefix'])
+        res = self.user.run_restore(
+            ['trash-restore', '--sort=path', root / 'prefix'],
+            from_dir=self.cwd)
 
-        output = self.root_dir.clean_stream(self.stdout)
+        output = self.root_dir.clean_str(res.stdout)
         # only files from the cwd are listed
         assert (output ==
                 '   0 2001-01-01 00:00:00 /prefix\n'
                 'No files were restored\n')
-
