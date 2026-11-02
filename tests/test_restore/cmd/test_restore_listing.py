@@ -20,10 +20,10 @@ from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
 from trashcli.restore.fs.real.real_restore_writer_fs import RealRestoreWriterFs
 from trashcli.restore.restore_cmd import RestoreCmd
 
-Self = TypeVar('Self', bound='TestTrashedFileRestoreIntegration')
+Self = TypeVar('Self', bound='TestRestoreListing')
 
 @pytest.mark.slow
-class TestTrashedFileRestoreIntegration:
+class TestRestoreListing:
 
     def setup_method(self):
         self.stdout = StringIO()
