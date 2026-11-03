@@ -11,7 +11,7 @@ from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.fs.protocols.file_reader_fs import FileReaderFs
 from trashcli.restore.fs.protocols.restore_writer_fs import RestoreWriterFs
-from trashcli.restore.fs.protocols.restore_read_fs import RestoreReadFs
+from trashcli.restore.fs.protocols.restore_fs import RestoreFs
 from trashcli.restore.restore_logger import RestoreLogger
 from trashcli.trash_dirs_scanner import TopTrashDirRulesFs
 
@@ -21,14 +21,14 @@ class RestoreUser:
                  environ,  # type: Dict[str, str]
                  uid,  # type: int
                  file_reader,  # type: FileReaderFs
-                 path_read_fs,  # type: RestoreReadFs
+                 path_read_fs,  # type: RestoreFs
                  write_fs,  # type: RestoreWriterFs
                  listing_fs,  # type: ListdirFs
                  version,  # type: str
                  volumes,  # type: VolumesFs
                  logger,  # type: RestoreLogger
                  top_trash_dir_rules_reader,  # type: TopTrashDirRulesFs
-                 read_fs=None,  # type: Optional[RestoreReadFs]
+                 read_fs=None,  # type: Optional[RestoreFs]
                  ):
         self.environ = environ
         self.uid = uid
