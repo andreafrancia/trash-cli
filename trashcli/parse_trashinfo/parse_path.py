@@ -3,7 +3,7 @@ from __future__ import absolute_import
 import sys
 
 from trashcli.compat import fsdecode, TextType
-from trashcli.parse_trashinfo.parser_error import ParseError
+from trashcli.parse_trashinfo.parser_error import UnableToParsePath
 
 if sys.version_info[0] >= 3:
     # python 3: unquote to raw bytes so no byte gets lost
@@ -22,4 +22,4 @@ def parse_path(contents):
     for line in contents.split('\n'):
         if line.startswith('Path='):
             return unquote_path(line[len('Path='):])
-    raise ParseError('Unable to parse Path')
+    raise UnableToParsePath('Unable to parse Path')

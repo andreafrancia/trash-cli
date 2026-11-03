@@ -1,12 +1,15 @@
-from typing import Iterable, TypeVar
+from typing import Iterable, List, Mapping, TypeVar
 from typing import NamedTuple
 from typing import Optional
 from typing import Union
 
+from trashcli.lib.inconsistencies import inconsistencies_check_hint
+from trashcli.lib.inconsistencies import inconsistencies_found
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.parse_trashinfo.parse_deletion_date import parse_deletion_date
 from trashcli.parse_trashinfo.parse_original_location import \
     OriginalLocationParser
+from trashcli.parse_trashinfo.parser_error import UnableToParsePath
 from trashcli.restore.fs.protocols.file_reader_fs import FileReaderFs
 from trashcli.restore.info_dir_searcher import InfoDirSearcher
 from trashcli.restore.restore_logger import RestoreLogger
@@ -20,18 +23,24 @@ class TrashedFiles:
                  logger,  # type: RestoreLogger
                  file_reader,  # type: FileReaderFs
                  searcher,  # type: InfoDirSearcher
+                 environ,  # type: Mapping[str, str]
                  ):
         self.logger = logger
         self.file_reader = file_reader
         self.searcher = searcher
+        self.environ = environ
         self.original_location_parser = OriginalLocationParser()
 
     def all_trashed_files(self,  # type: Self
                           trash_dir_from_cli,  # type: Optional[str]
                           ):  # type: (...) -> Iterable[TrashedFile]
+        inconsistent_trash_dirs = []  # type: List[str]
+        seen_inconsistent_trash_dirs = set()
         for event in self._all_trashed_files_internal(trash_dir_from_cli):
-            if type(event) is NonTrashinfoFileFound:
-                self.logger.warning("Non .trashinfo file in info dir")
+            if isinstance(event, (NonTrashinfoFileFound, MalformedTrashInfo)):
+                if event.trash_dir not in seen_inconsistent_trash_dirs:
+                    seen_inconsistent_trash_dirs.add(event.trash_dir)
+                    inconsistent_trash_dirs.append(event.trash_dir)
             elif type(event) is NonParsableTrashInfo:
                 self.logger.warning(
                     "Non parsable trashinfo file: %s, because %s" %
@@ -42,13 +51,18 @@ class TrashedFiles:
                 yield event.trashed_file
             else:
                 raise RuntimeError()
+        for trash_dir in inconsistent_trash_dirs:
+            self.logger.warning(inconsistencies_found(trash_dir, self.environ))
+        if inconsistent_trash_dirs:
+            self.logger.warning(inconsistencies_check_hint())
 
     def _all_trashed_files_internal(self,  # type: Self
                                     trash_dir_from_cli,  # type: Optional[str]
                                     ):  # type: (...) -> Iterable[Event]
         for info_file in self.searcher.all_file_in_info_dir(trash_dir_from_cli):
             if info_file.type == 'non_trashinfo':
-                yield NonTrashinfoFileFound(info_file.path)
+                yield NonTrashinfoFileFound(info_file.path,
+                                            info_file.trash_dir)
             elif info_file.type == 'trashinfo':
                 try:
                     contents = self.file_reader.read_file(info_file.path)
@@ -62,6 +76,9 @@ class TrashedFiles:
                                               info_file.path,
                                               backup_file_path)
                     yield TrashedFileFound(trashedfile)
+                except UnableToParsePath:
+                    yield MalformedTrashInfo(info_file.path,
+                                             info_file.trash_dir)
                 except ValueError as e:
                     yield NonParsableTrashInfo(info_file.path, e)
                 except IOError as e:
@@ -74,6 +91,14 @@ class TrashedFiles:
 class NonTrashinfoFileFound(
     NamedTuple('NonTrashinfoFileFound', [
         ('path', str),
+        ('trash_dir', str),
+    ])): pass
+
+
+class MalformedTrashInfo(
+    NamedTuple('MalformedTrashInfo', [
+        ('path', str),
+        ('trash_dir', str),
     ])): pass
 
 
@@ -99,6 +124,7 @@ class IOErrorReadingTrashInfo(
 
 Event = Union[
     NonTrashinfoFileFound,
+    MalformedTrashInfo,
     TrashedFileFound,
     NonParsableTrashInfo,
     IOErrorReadingTrashInfo]
