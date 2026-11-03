@@ -10,11 +10,8 @@ from tests.support.fs.sorting_listdir_fs import SortingListdirFs
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.fslib.real.real_fs import RealFs
-from trashcli.fslib.real.real_list_files_in_dir import RealListdirFs
 from tests.support.fakes.fake_volumes import FakeVolumesFs
-from trashcli.restore.fs.real.real_file_reader_fs import RealFileReaderFs
-from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
-from trashcli.restore.fs.real.real_restore_writer_fs import RealRestoreWriterFs
+from trashcli.restore.fs.real.real_restore_fs import RealRestoreFs
 
 Self = TypeVar('Self', bound='TestRestoreListing')
 
@@ -47,10 +44,10 @@ class TestRestoreListing:
         self.user = RestoreUser(
             environ=self.env,
             uid=uid,
-            file_reader=RealFileReaderFs(),
-            path_read_fs=RealPathReaderFs(),
-            write_fs=RealRestoreWriterFs(),
-            listing_fs=SortingListdirFs(RealListdirFs()),
+            file_reader=RealRestoreFs(),
+            path_read_fs=RealRestoreFs(),
+            write_fs=RealRestoreFs(),
+            listing_fs=SortingListdirFs(RealRestoreFs()),
             version="0.0.0",
             volumes=FakeVolumesFs([]),
             logger=self.logger,

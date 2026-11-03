@@ -4,14 +4,10 @@ import sys
 
 import trashcli.trash
 from trashcli.fslib.real.real_fs import RealFs
-from trashcli.fslib.real.real_list_files_in_dir import RealListdirFs
 from trashcli.fslib.real.real_volumes import RealVolumesFs
 from trashcli.lib.logger import my_logger
 from trashcli.lib.my_input import RealInput
-from trashcli.restore.fs.real.real_file_reader_fs import RealFileReaderFs
-from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
-from trashcli.restore.fs.real.real_read_cwd_fs import RealReadCwdFs
-from trashcli.restore.fs.real.real_restore_writer_fs import RealRestoreWriterFs
+from trashcli.restore.fs.real.real_restore_fs import RealRestoreFs
 from trashcli.restore.real_restore_logger import RealRestoreLogger
 from trashcli.restore.restore_cmd import RestoreCmd
 
@@ -23,14 +19,14 @@ def main():
         exit=sys.exit,
         input=RealInput(),
         version=trashcli.trash.version,
-        listing_fs=RealListdirFs(),
+        listing_fs=RealRestoreFs(),
         volumes=RealVolumesFs(),
         logger=RealRestoreLogger(my_logger),
         uid=os.getuid(),
         environ=os.environ,
         top_trash_dir_rules_fs=RealFs(),
-        file_reader=RealFileReaderFs(),
-        read_fs=RealPathReaderFs(),
-        write_fs=RealRestoreWriterFs(),
-        read_cwd=RealReadCwdFs(),
+        file_reader=RealRestoreFs(),
+        read_fs=RealRestoreFs(),
+        write_fs=RealRestoreFs(),
+        read_cwd=RealRestoreFs(),
     ).run(sys.argv)
