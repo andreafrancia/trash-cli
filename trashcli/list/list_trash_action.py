@@ -6,10 +6,11 @@ from typing import NamedTuple
 
 from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.action import Action
+from trashcli.lib.inconsistencies import inconsistencies_check_hint
+from trashcli.lib.inconsistencies import inconsistencies_found
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.lib.printable import printable
 from trashcli.lib.sanitize import shell_escape, quoting_wanted
-from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.list.extractors import DeletionDateExtractor
 from trashcli.list.extractors import SizeExtractor
 from trashcli.list.extractors import SizeExtractorFs
@@ -36,6 +37,14 @@ class ListTrashArgs(
     pass
 
 
+class DoctorArgs(
+    NamedTuple('DoctorArgs', [
+        ('trash_dirs', List[str]),
+        ('all_users', bool),
+    ])):
+    pass
+
+
 class ListTrashAction(Action):
     def __init__(self,
                  environ,
@@ -57,10 +66,11 @@ class ListTrashAction(Action):
         self.file_reader = file_reader
 
     def run_action(self,
-                   args, # type: ListTrashArgs
+                   args,  # type: ListTrashArgs
                    ):
         quote = shell_escape if quoting_wanted(self.out, self.environ) \
             else quote_nothing
+        found_inconsistencies = False
         for message in ListTrash(self.environ,
                                  self.uid,
                                  self.selector,
@@ -68,13 +78,88 @@ class ListTrashAction(Action):
                                  self.content_reader,
                                  quote,
                                  self.file_reader).list_all_trash(args):
+            if isinstance(message, InconsistenciesSummary):
+                found_inconsistencies = True
             self.print_event(message)
+        if found_inconsistencies:
+            print(printable(inconsistencies_check_hint()), file=self.err)
 
     def print_event(self, event):
         if isinstance(event, Error):
             print(printable(event.error), file=self.err)
         elif isinstance(event, Output):
             print(printable(event.message), file=self.out)
+        elif isinstance(event, Inconsistency):
+            print(printable(event.message), file=self.out)
+        elif isinstance(event, InconsistenciesSummary):
+            print(printable(event.message), file=self.err)
+
+
+class DoctorAction(Action):
+    def __init__(self,
+                 environ,
+                 uid,
+                 selector,
+                 out,
+                 err,
+                 dir_reader,
+                 content_reader,
+                 ):
+        self.environ = environ
+        self.uid = uid
+        self.selector = selector
+        self.out = out
+        self.err = err
+        self.dir_reader = dir_reader
+        self.content_reader = content_reader
+
+    def run_action(self,
+                   args,  # type: DoctorArgs
+                   ):
+        trash_dirs = self.selector.select(args.all_users,
+                                          args.trash_dirs,
+                                          self.environ,
+                                          self.uid)
+        for event, event_args in trash_dirs:
+            if event == trash_dir_found:
+                path, volume = event_args
+                for msg in self._doctor_dir_events(path):
+                    self.print_event(msg)
+            elif event == trash_dir_skipped_because_parent_not_sticky:
+                path, = event_args
+                self.print_event(Error(
+                    top_trashdir_skipped_because_parent_not_sticky(path)))
+            elif event == trash_dir_skipped_because_parent_is_symlink:
+                path, = event_args
+                self.print_event(Error(
+                    top_trashdir_skipped_because_parent_is_symlink(path)))
+
+    def _doctor_dir_events(self, path):
+        info_dir = os.path.join(path, 'info')
+        for entry in self.dir_reader.entries_if_dir_exists(info_dir):
+            entry_path = os.path.join(info_dir, entry)
+            if entry.endswith('.trashinfo'):
+                try:
+                    contents = self.content_reader.read_file(entry_path)
+                except IOError as e:
+                    yield Error(str(e))
+                else:
+                    try:
+                        parse_path(contents)
+                    except ParseError:
+                        yield Inconsistency(
+                            print_parse_path_error(entry_path))
+            else:
+                yield Inconsistency(
+                    print_non_trashinfo_error(entry_path))
+
+    def print_event(self, event):
+        if isinstance(event, Error):
+            print(printable(event.error), file=self.err)
+        elif isinstance(event, Inconsistency):
+            print(printable(event.message), file=self.out)
+        else:
+            raise RuntimeError()
 
 
 class ListTrash:
@@ -113,21 +198,45 @@ class ListTrash:
         for event, event_args in trash_dirs:
             if event == trash_dir_found:
                 path, volume = event_args
-                trash_dir = TrashDirReader(self.dir_reader)
-                for trash_info in trash_dir.list_trashinfo(path):
-                    for msg in self._print_trashinfo(volume, trash_info,
-                                                     extractor, show_files):
-                        yield msg
+                for msg in self._list_trash_dir(path, volume, extractor,
+                                                show_files):
+                    yield msg
             elif event == trash_dir_skipped_because_parent_not_sticky:
                 path, = event_args
                 msg = Error(
-                    self.top_trashdir_skipped_because_parent_not_sticky(path))
+                    top_trashdir_skipped_because_parent_not_sticky(path))
                 yield msg
             elif event == trash_dir_skipped_because_parent_is_symlink:
                 path, = event_args
                 msg = Error(
-                    self.top_trashdir_skipped_because_parent_is_symlink(path))
+                    top_trashdir_skipped_because_parent_is_symlink(path))
                 yield msg
+
+    def _list_trash_dir(self, path, volume, extractor, show_files):
+        found_inconsistencies = False
+        for msg in self._trash_dir_events(path, volume, extractor,
+                                          show_files):
+            if isinstance(msg, Inconsistency):
+                found_inconsistencies = True
+            elif isinstance(msg, Output):
+                yield msg
+            else:
+                yield msg
+        if found_inconsistencies:
+            yield InconsistenciesSummary(
+                inconsistencies_found(path, self.environ))
+
+    def _trash_dir_events(self, path, volume, extractor, show_files):
+        info_dir = os.path.join(path, 'info')
+        for entry in self.dir_reader.entries_if_dir_exists(info_dir):
+            entry_path = os.path.join(info_dir, entry)
+            if entry.endswith('.trashinfo'):
+                for msg in self._print_trashinfo(volume, entry_path,
+                                                 extractor, show_files):
+                    yield msg
+            else:
+                yield Inconsistency(
+                    print_non_trashinfo_error(entry_path))
 
     def _print_trashinfo(self,
                          volume,
@@ -142,7 +251,8 @@ class ListTrash:
             try:
                 relative_location = parse_path(contents)
             except ParseError:
-                yield Error(self.print_parse_path_error(trashinfo_path))
+                yield Inconsistency(
+                    print_parse_path_error(trashinfo_path))
             else:
                 attribute = extractor.extract_attribute(trashinfo_path,
                                                         contents)
@@ -158,15 +268,6 @@ class ListTrash:
                     line = format_line(attribute, original_location)
                 yield Output(line)
 
-    def top_trashdir_skipped_because_parent_is_symlink(self, trashdir):
-        return "TrashDir skipped because parent is symlink: %s" % trashdir
-
-    def top_trashdir_skipped_because_parent_not_sticky(self, trashdir):
-        return "TrashDir skipped because parent not sticky: %s" % trashdir
-
-    def print_parse_path_error(self, offending_file):
-        return "Parse Error: %s: Unable to parse Path." % offending_file
-
 
 class Event:
     pass
@@ -180,6 +281,32 @@ class Error(Event):
 class Output(Event):
     def __init__(self, message):
         self.message = message
+
+
+class Inconsistency(Event):
+    def __init__(self, message):
+        self.message = message
+
+
+class InconsistenciesSummary(Event):
+    def __init__(self, message):
+        self.message = message
+
+
+def top_trashdir_skipped_because_parent_is_symlink(trashdir):
+    return "TrashDir skipped because parent is symlink: %s" % trashdir
+
+
+def top_trashdir_skipped_because_parent_not_sticky(trashdir):
+    return "TrashDir skipped because parent not sticky: %s" % trashdir
+
+
+def print_parse_path_error(offending_file):
+    return "Parse Error: %s: Unable to parse Path." % offending_file
+
+
+def print_non_trashinfo_error(offending_file):
+    return "Non .trashinfo file in info dir: %s" % offending_file
 
 
 def format_line(attribute, original_location):
