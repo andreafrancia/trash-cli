@@ -59,6 +59,20 @@ class TestRestoreReadingTrashinfoFiles:
             'WARN: Found inconsistencies in ~/.local/share/Trash',
             'WARN: To check all inconsistencies run: `trash-list --doctor`']
 
+    # Purpose: when the user selects a custom trash directory, the hint
+    # points doctor at that same directory instead of the default ones.
+    def test_hint_keeps_the_trash_dir_selected_by_the_user(self):
+        self.trash.has_file('/custom/info/malformed.trashinfo')
+
+        res = self.user.run_restore(
+            ['trash-restore', '--trash-dir', '/custom', '/'], from_dir='/')
+
+        assert res.output() == "No files trashed from current dir ('/')\n"
+        assert self.log_messages == [
+            'WARN: Found inconsistencies in /custom',
+            'WARN: To check all inconsistencies run: `trash-list --doctor '
+            '--trash-dir /custom`']
+
     # Purpose: a .trashinfo that cannot be parsed (here: empty, so no Path=)
     # is not offered and the trash dir is reported as inconsistent.
     def test_a_non_parsable_trashinfo_is_skipped_with_a_warning(self):

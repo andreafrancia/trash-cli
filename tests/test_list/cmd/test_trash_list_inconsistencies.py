@@ -1,6 +1,8 @@
 import pytest
 
+from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.test_list.cmd.support.trash_list_user import trash_list_user  # noqa
+from trashcli.lib.inconsistencies import inconsistencies_check_hint
 
 
 # Without --doctor, trash-list prints one summary line per trash dir with
@@ -87,3 +89,21 @@ class TestTrashListInconsistencies:
         assert output.stderr == (
             "Found inconsistencies in ~/xdg-data-home/Trash\n" + self.HINT +
             "\n")
+
+    def test_hint_keeps_a_user_specified_trash_dir(self, user):
+        custom_trash_dir = user.root / 'custom-trash'
+        FakeTrashDir(custom_trash_dir).add_trashinfo_without_path('malformed')
+        custom_path = str(custom_trash_dir).replace(str(user.root), '')
+
+        output = user.run_trash_list('--trash-dir', str(custom_trash_dir))
+
+        assert output.err_and_out() == (
+            "Found inconsistencies in %s\n" % custom_path +
+            "To check all inconsistencies run: `trash-list --doctor "
+            "--trash-dir %s`\n" % custom_path,
+            '')
+
+    def test_hint_keeps_the_all_users_scope(self):
+        assert inconsistencies_check_hint(all_users=True) == (
+            "To check all inconsistencies run: `trash-list --doctor "
+            "--all-users`")

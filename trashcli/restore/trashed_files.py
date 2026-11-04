@@ -54,7 +54,8 @@ class TrashedFiles:
         for trash_dir in inconsistent_trash_dirs:
             self.logger.warning(inconsistencies_found(trash_dir, self.environ))
         if inconsistent_trash_dirs:
-            self.logger.warning(inconsistencies_check_hint())
+            self.logger.warning(inconsistencies_check_hint(
+                [trash_dir_from_cli] if trash_dir_from_cli else None))
 
     def _all_trashed_files_internal(self,  # type: Self
                                     trash_dir_from_cli,  # type: Optional[str]

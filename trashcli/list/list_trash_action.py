@@ -82,7 +82,9 @@ class ListTrashAction(Action):
                 found_inconsistencies = True
             self.print_event(message)
         if found_inconsistencies:
-            print(printable(inconsistencies_check_hint()), file=self.err)
+            print(printable(inconsistencies_check_hint(args.trash_dirs,
+                                                       args.all_users)),
+                  file=self.err)
 
     def print_event(self, event):
         if isinstance(event, Error):
