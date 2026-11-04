@@ -4,6 +4,7 @@ import os
 from typing import List
 from typing import NamedTuple
 
+from trashcli.compat import fsdecode_text
 from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.action import Action
 from trashcli.lib.inconsistencies import inconsistencies_check_hint
@@ -304,11 +305,13 @@ def top_trashdir_skipped_because_parent_not_sticky(trashdir):
 
 
 def print_parse_path_error(offending_file):
-    return "Parse Error: %s: Unable to parse Path." % offending_file
+    return "Parse Error: %s: Unable to parse Path." % fsdecode_text(
+        offending_file)
 
 
 def print_non_trashinfo_error(offending_file):
-    return "Non .trashinfo file in info dir: %s" % offending_file
+    return "Non .trashinfo file in info dir: %s" % fsdecode_text(
+        offending_file)
 
 
 def format_line(attribute, original_location):

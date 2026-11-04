@@ -5,15 +5,9 @@ decide anything.
 """
 from typing import List, Mapping, Optional
 
-from trashcli.compat import TextType, fsdecode
+from trashcli.compat import fsdecode_text
 from trashcli.lib.sanitize import shell_escape
 from trashcli.lib.shrink_user import shrink_user
-
-
-def _as_text(path):
-    if isinstance(path, TextType):
-        return path
-    return fsdecode(path)
 
 
 def inconsistencies_found(trash_dir,  # type: str
@@ -31,5 +25,6 @@ def inconsistencies_check_hint(
         command += " --all-users"
     elif trash_dirs:
         for trash_dir in trash_dirs:
-            command += " --trash-dir %s" % shell_escape(_as_text(trash_dir))
+            command += " --trash-dir %s" % shell_escape(
+                fsdecode_text(trash_dir))
     return "To check all inconsistencies run: `%s`" % command
