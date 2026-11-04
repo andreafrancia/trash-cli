@@ -71,7 +71,7 @@ class TestRestoreReadingTrashinfoFiles:
         assert self.log_messages == [
             'WARN: Found inconsistencies in /custom',
             'WARN: To check all inconsistencies run: `trash-list --doctor '
-            '--trash-dir /custom`']
+            '--trash-dir=/custom`']
 
     # Purpose: a .trashinfo that cannot be parsed (here: empty, so no Path=)
     # is not offered and the trash dir is reported as inconsistent.

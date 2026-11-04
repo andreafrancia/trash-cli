@@ -100,7 +100,7 @@ class TestTrashListInconsistencies:
         assert output.err_and_out() == (
             "Found inconsistencies in %s\n" % custom_path +
             "To check all inconsistencies run: `trash-list --doctor "
-            "--trash-dir %s`\n" % custom_path,
+            "--trash-dir=%s`\n" % custom_path,
             '')
 
     def test_hint_keeps_the_all_users_scope(self):

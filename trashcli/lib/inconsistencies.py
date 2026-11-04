@@ -25,6 +25,6 @@ def inconsistencies_check_hint(
         command += " --all-users"
     elif trash_dirs:
         for trash_dir in trash_dirs:
-            command += " --trash-dir %s" % shell_escape(
+            command += " --trash-dir=%s" % shell_escape(
                 fsdecode_text(trash_dir))
     return "To check all inconsistencies run: `%s`" % command

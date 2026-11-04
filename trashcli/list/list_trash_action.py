@@ -10,7 +10,7 @@ from trashcli.lib.action import Action
 from trashcli.lib.inconsistencies import inconsistencies_check_hint
 from trashcli.lib.inconsistencies import inconsistencies_found
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
-from trashcli.lib.printable import printable
+from trashcli.lib.printable import printable, write_text
 from trashcli.lib.sanitize import shell_escape, quoting_wanted
 from trashcli.list.extractors import DeletionDateExtractor
 from trashcli.list.extractors import SizeExtractor
@@ -83,19 +83,18 @@ class ListTrashAction(Action):
                 found_inconsistencies = True
             self.print_event(message)
         if found_inconsistencies:
-            print(printable(inconsistencies_check_hint(args.trash_dirs,
-                                                       args.all_users)),
-                  file=self.err)
+            write_text(self.err, printable(inconsistencies_check_hint(
+                args.trash_dirs, args.all_users)))
 
     def print_event(self, event):
         if isinstance(event, Error):
-            print(printable(event.error), file=self.err)
+            write_text(self.err, printable(event.error))
         elif isinstance(event, Output):
-            print(printable(event.message), file=self.out)
+            write_text(self.out, printable(event.message))
         elif isinstance(event, Inconsistency):
-            print(printable(event.message), file=self.out)
+            write_text(self.out, printable(event.message))
         elif isinstance(event, InconsistenciesSummary):
-            print(printable(event.message), file=self.err)
+            write_text(self.err, printable(event.message))
 
 
 class DoctorAction(Action):
@@ -158,9 +157,9 @@ class DoctorAction(Action):
 
     def print_event(self, event):
         if isinstance(event, Error):
-            print(printable(event.error), file=self.err)
+            write_text(self.err, printable(event.error))
         elif isinstance(event, Inconsistency):
-            print(printable(event.message), file=self.out)
+            write_text(self.out, printable(event.message))
         else:
             raise RuntimeError()
 
