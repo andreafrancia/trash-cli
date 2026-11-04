@@ -22,6 +22,9 @@ def write_text(stream, text):  # type: (TextIO, TextType) -> None
         encoding = getattr(stream, 'encoding', None) or 'ascii'
         stream.write(text.encode(encoding, 'backslashreplace') + b'\n')
     else:
+        encoding = getattr(stream, 'encoding', None)
+        if encoding:
+            text = text.encode(encoding, 'backslashreplace').decode(encoding)
         stream.write(text + u'\n')
 
 

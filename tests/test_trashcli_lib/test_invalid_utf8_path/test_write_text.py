@@ -14,10 +14,13 @@ class FakePy2Stream:
 
 
 class FakeTextStream:
-    def __init__(self):
+    def __init__(self, encoding=None):
+        self.encoding = encoding
         self.written = u''
 
     def write(self, data):
+        if self.encoding:
+            data.encode(self.encoding)
         self.written += data
 
 
@@ -42,6 +45,24 @@ def test_on_python2_a_utf8_stream_gets_utf8_bytes(monkeypatch):
 def test_on_python3_the_stream_gets_text(monkeypatch):
     monkeypatch.setattr(six, 'PY2', False)
     stream = FakeTextStream()
+
+    write_text(stream, u'caf\xe9')
+
+    assert stream.written == u'caf\xe9\n'
+
+
+def test_on_python3_an_ascii_stream_gets_escaped_text(monkeypatch):
+    monkeypatch.setattr(six, 'PY2', False)
+    stream = FakeTextStream('ascii')
+
+    write_text(stream, u'caf\xe9')
+
+    assert stream.written == u'caf\\xe9\n'
+
+
+def test_on_python3_a_utf8_stream_keeps_text(monkeypatch):
+    monkeypatch.setattr(six, 'PY2', False)
+    stream = FakeTextStream('utf-8')
 
     write_text(stream, u'caf\xe9')
 
