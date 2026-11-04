@@ -157,3 +157,9 @@ class RealFs(RealVolumeOfFs, Fs, RestoreFs, TopTrashDirRulesFs):
 
     def gettempdir(self):
         return tempfile.gettempdir()
+
+    def rename(self, src, dest):  # type: (str, str) -> None
+        os.rename(src, dest)
+
+    def copytree(self, src, dest):  # type: (str, str) -> None
+        shutil.copytree(src, dest, symlinks=True)

@@ -6,6 +6,7 @@ from trashcli.put.core.either import Left
 from trashcli.put.core.either import Right
 from trashcli.put.core.failure_reason import FailureReason
 from trashcli.put.core.failure_reason import LogContext
+from trashcli.fslib.clean_move import PartlyMoved, clean_move
 from trashcli.fslib.protocols.fs import Fs
 from trashcli.put.janitor_tools.info_file_persister import TrashedFile
 
@@ -34,6 +35,9 @@ class PutTrashDir:
         try:
             move_file(self.fs, path, paths.backup_copy_path)
             return Right(None)
+        except PartlyMoved as error:
+            # the original is not complete any more, so the copy and its trashinfo are kept
+            return Left(UnableToMoveFileToTrash(error))
         except (IOError, OSError) as error:
             # seems_to_have_delete_permissions() is only a best-effort prediction (it
             # cannot see sticky bits, ancestor permissions, ACLs, or races);
@@ -53,4 +57,4 @@ def move_file(fs,  # type: Fs
               ):
     # Using nornpath allow to delete symlink to a dir even if the are
     # specified with traling slash
-    fs.move(os.path.normpath(src), dest)
+    clean_move(fs, os.path.normpath(src), dest)
