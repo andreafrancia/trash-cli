@@ -28,11 +28,6 @@ class MyPath(str):
                     ):  # type: (...) -> MyPath
         return self.path_join(other_path)
 
-    def clean_stream(self,  # type: Self
-                     stdout,  # type: StringIO
-                     ):  # type: (...) -> str
-        return stdout.getvalue().replace(self, '')
-
     def clean_str(self,  # type: Self
                   s,  # type: str
                   ):  # type: (...) -> str
