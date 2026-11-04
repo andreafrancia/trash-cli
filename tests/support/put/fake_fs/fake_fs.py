@@ -474,6 +474,30 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         else:
             return True
 
+    def rename(self, src, dest):  # type: (str, str) -> None
+        # like os.rename(): it never copies, so it fails across volumes
+        if self.volume_of(self._join_cwd(src)) != self.volume_of(
+                os.path.dirname(self._join_cwd(dest))):
+            raise OSError(errno.EXDEV, "Invalid cross-device link", src)
+        self._require_can_unlink_from(os.path.dirname(src), src)
+        self._require_can_unlink_from(os.path.dirname(dest), dest)
+        _, entry = self._pop_entry_from_dir(src)
+        dest_dirname, dest_basename = os.path.split(dest)
+        self._get_directory_at(dest_dirname).add_entry(dest_basename, entry)
+
+    def copytree(self, src, dest):  # type: (str, str) -> None
+        # like shutil.copytree(src, dest, symlinks=True): the mode is set after the content
+        self.makedirs(dest, 0o755)
+        for name in self.listdir(src):
+            src_entry, dest_entry = os.path.join(src, name), os.path.join(dest, name)
+            if self.is_symlink(src_entry):
+                self.symlink(self.readlink(src_entry), dest_entry)
+            elif self.path_isdir(src_entry):
+                self.copytree(src_entry, dest_entry)
+            else:
+                self.write_file(dest_entry, self.read_file(src_entry))
+        self.chmod(dest, self.get_mod(src))
+
     def find_all(self):
         """Lists the paths of everything in the fake file system.
 
