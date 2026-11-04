@@ -138,22 +138,25 @@ class DoctorAction(Action):
 
     def _doctor_dir_events(self, path):
         info_dir = os.path.join(path, 'info')
-        for entry in self.dir_reader.entries_if_dir_exists(info_dir):
-            entry_path = os.path.join(info_dir, entry)
-            if entry.endswith('.trashinfo'):
-                try:
-                    contents = self.content_reader.read_file(entry_path)
-                except IOError as e:
-                    yield Error(str(e))
-                else:
+        try:
+            for entry in self.dir_reader.entries_if_dir_exists(info_dir):
+                entry_path = os.path.join(info_dir, entry)
+                if entry.endswith('.trashinfo'):
                     try:
-                        parse_path(contents)
-                    except ParseError:
-                        yield Inconsistency(
-                            print_parse_path_error(entry_path))
-            else:
-                yield Inconsistency(
-                    print_non_trashinfo_error(entry_path))
+                        contents = self.content_reader.read_file(entry_path)
+                    except IOError as e:
+                        yield Error(str(e))
+                    else:
+                        try:
+                            parse_path(contents)
+                        except ParseError:
+                            yield Inconsistency(
+                                print_parse_path_error(entry_path))
+                else:
+                    yield Inconsistency(
+                        print_non_trashinfo_error(entry_path))
+        except (IOError, OSError) as e:
+            yield Error(str(e))
 
     def print_event(self, event):
         if isinstance(event, Error):
