@@ -1,6 +1,4 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
-import unittest
-
 from tests.support.py2mock import Mock
 from six import StringIO
 
@@ -13,8 +11,8 @@ from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
 
 
-class TestEmptyCmdFakeWithMultipleVolumesFs(unittest.TestCase):
-    def setUp(self):
+class TestEmptyCmdFakeWithMultipleVolumesFs:
+    def setup_method(self):
         self.fs = FakeFs()
         self.temp_dir = '/tmp'
         self.top_dir = self.temp_dir + '/topdir'
