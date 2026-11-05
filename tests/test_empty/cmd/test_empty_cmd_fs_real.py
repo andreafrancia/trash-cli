@@ -3,54 +3,40 @@ import os
 
 import pytest
 
+from tests.support.empty.empty_user import empty_user_fixture
+from tests.support.fs_fixture import real_fs_fixture
+from tests.support.unreadable import unreadable_fixture
 from tests.support.dates import jan_11_2001
 from six import StringIO
 
 from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 from tests.support.fakes.stub_volume_of import StubVolumeOfFs
-from tests.support.files import FsFixture
-from tests.support.dirs.temp_dir import make_temp_dir
+from tests.support.dirs.temp_dir import make_temp_dir, temp_dir_fixture_fs
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.fslib.real.real_fs import RealFs
 
 
+
+temp_dir = temp_dir_fixture_fs
+unreadable = unreadable_fixture
+user = empty_user_fixture
+fs = real_fs_fixture
+
 @pytest.mark.slow
 class TestTrashEmptyCmdFs:
-    def setup_method(self):
-        self.fsx = FsFixture(RealFs())
-        fs = RealFs()
-        self.tmp_dir = make_temp_dir(fs)
-        self.unreadable_dir = self.tmp_dir / 'data/Trash/files/unreadable'
-        self.err = StringIO()
-        self.environ = {'XDG_DATA_HOME': self.tmp_dir / 'data'}
-        self.empty = EmptyCmd(
-            argv0='trash-empty',
-            out=StringIO(),
-            err=self.err,
-            volumes_listing=FakeVolumesListing(),
-            now=lambda: jan_11_2001(),
-            file_reader=RealFs(),
-            file_remover=ExistingFileRemover(RealFs()),
-            content_reader=RealFs(),
-            dir_reader=FileSystemDirReader(RealFs()),
-            version='unused',
-            volumes=StubVolumeOfFs()
-        )
 
-    def test_trash_empty_will_skip_unreadable_dir(self):
-        self.fsx.make_unreadable_dir(self.unreadable_dir)
+    def test_trash_empty_will_skip_unreadable_dir(self,
+                                                  user,
+                                                  temp_dir,
+                                                  unreadable):
+        unreadable.new_unreadable_dir(temp_dir / 'data/Trash/files/unreadable')
 
-        self.empty.run_cmd([], self.environ, uid=123)
+        user.run_empty(environ={'XDG_DATA_HOME': temp_dir / 'data'})
 
-        assert ("trash-empty: cannot remove %s\n" % self.unreadable_dir ==
-                self.err.getvalue())
-
-    def teardown_method(self):
-        self.fsx.make_readable(self.unreadable_dir)
-        self.tmp_dir.clean_up()
-
+        assert ("trash-empty: cannot remove %s\n" % (temp_dir / 'data/Trash/files/unreadable') ==
+                user.stderr)
 
 @pytest.mark.slow
 class TestTrashEmptyRemovesReadonlyDir:
