@@ -1,6 +1,4 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
-import unittest
-
 from six import StringIO
 
 from tests.support.put.fake_fs.fake_fs import FakeFs
@@ -11,8 +9,8 @@ from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 
 
-class TestTrashEmptyCmdFake(unittest.TestCase):
-    def setUp(self):
+class TestTrashEmptyCmdFake:
+    def setup_method(self):
         self.fs = FakeFs()
         self.trash = GivenTrash(self.fs)
         self.err = StringIO()

@@ -1,6 +1,4 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
-import unittest
-
 import pytest
 from six import StringIO
 
@@ -14,8 +12,8 @@ from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 
 
 @pytest.mark.slow
-class TestTrashEmptyCmdReal(unittest.TestCase):
-    def setUp(self):
+class TestTrashEmptyCmdReal:
+    def setup_method(self):
         self.fs = RealFs()
         self.tmp_dir = make_temp_dir(self.fs)
         self.xdg = str(self.tmp_dir / 'xdg')
@@ -55,5 +53,5 @@ class TestTrashEmptyCmdReal(unittest.TestCase):
                'would remove %s/Trash/info/pippo.trashinfo\n' % (
                    self.xdg, self.xdg)
 
-    def tearDown(self):
+    def teardown_method(self):
         self.tmp_dir.clean_up()

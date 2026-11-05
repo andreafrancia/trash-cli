@@ -1,6 +1,5 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import os
-import unittest
 
 import pytest
 from tests.support.py2mock import Mock
@@ -17,8 +16,8 @@ from trashcli.fslib.protocols.volumes_listing import VolumesListing
 
 
 @pytest.mark.slow
-class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
-    def setUp(self):
+class TestEmptyCmdWithMultipleVolumesFs:
+    def setup_method(self):
         fs = RealFs()
         self.temp_dir = make_temp_dir(fs)
         self.top_dir = self.temp_dir / 'topdir'
@@ -67,5 +66,5 @@ class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
         assert not os.path.exists(
             self.temp_dir / 'specified/info/foo.trashinfo')
 
-    def tearDown(self):
+    def teardown_method(self):
         self.temp_dir.clean_up()

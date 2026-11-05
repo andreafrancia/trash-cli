@@ -1,6 +1,4 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
-import unittest
-
 from tests.support.py2mock import Mock
 from six import StringIO
 
@@ -13,8 +11,8 @@ from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
 
 
-class TestTrashEmptyCmdFakeFs(unittest.TestCase):
-    def setUp(self):
+class TestTrashEmptyCmdFakeFs:
+    def setup_method(self):
         self.fs = FakeFs()
         self.fsx = FsFixture(self.fs)
         self.tmp_dir = '/tmp'
@@ -45,5 +43,5 @@ class TestTrashEmptyCmdFakeFs(unittest.TestCase):
         assert ("trash-empty: cannot remove %s\n" % self.unreadable_dir ==
                 self.err.getvalue())
 
-    def tearDown(self):
+    def teardown_method(self):
         self.fsx.make_readable(self.unreadable_dir)
