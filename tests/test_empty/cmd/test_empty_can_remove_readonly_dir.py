@@ -14,7 +14,7 @@ fs = real_fs_fixture
 
 
 @pytest.mark.slow
-class TestTrashEmptyRemovesReadonlyDir:
+class TestEmptyCanRemoveReadonlyDir:
     @pytest.fixture
     def temp_dir(self, fs):
         temp_dir = make_temp_dir(fs)
