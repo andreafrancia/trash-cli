@@ -8,6 +8,7 @@ from tests.support.fakes.stub_volume_of import StubVolumeOfFs
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader
+from trashcli.fslib.protocols.fs import Fs
 from trashcli.fslib.real.real_fs import RealFs
 
 
@@ -38,5 +39,5 @@ class EmptyUser:
         self.stderr = err.getvalue()
 
 @pytest.fixture
-def empty_user_fixture(fs):
+def empty_user_fixture(fs):  # type: (Fs) -> EmptyUser
     return EmptyUser(fs)
