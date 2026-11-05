@@ -5,7 +5,6 @@ import unittest
 import pytest
 
 from tests.support.dates import jan_11_2001
-from tests.support.py2mock import Mock
 from six import StringIO
 
 from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
@@ -16,7 +15,6 @@ from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.fslib.real.real_fs import RealFs
-from trashcli.fslib.protocols.volumes_listing import VolumesListing
 
 
 @pytest.mark.slow
@@ -26,15 +24,13 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
         fs = RealFs()
         self.tmp_dir = make_temp_dir(fs)
         self.unreadable_dir = self.tmp_dir / 'data/Trash/files/unreadable'
-        self.volumes_listing = Mock(spec=VolumesListing)
-        self.volumes_listing.list_volumes.return_value = [self.unreadable_dir]
         self.err = StringIO()
         self.environ = {'XDG_DATA_HOME': self.tmp_dir / 'data'}
         self.empty = EmptyCmd(
             argv0='trash-empty',
             out=StringIO(),
             err=self.err,
-            volumes_listing=self.volumes_listing,
+            volumes_listing=FakeVolumesListing(),
             now=lambda: jan_11_2001(),
             file_reader=RealFs(),
             file_remover=ExistingFileRemover(RealFs()),
