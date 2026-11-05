@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import six
 
-from trashcli.lib.printable import printable
+from trashcli.lib.printable import printable, write_text
 from trashcli.restore.output import Output
 from trashcli.restore.output_event import Println, Die, Quit, Exiting, \
     OutputEvent
@@ -18,10 +18,10 @@ class RealOutput(Output):
         self.die('')
 
     def printerr(self, msg):
-        print(printable(six.text_type(msg)), file=self.stderr)
+        write_text(self.stderr, printable(six.text_type(msg)))
 
     def println(self, line):
-        print(printable(six.text_type(line)), file=self.stdout)
+        write_text(self.stdout, printable(six.text_type(line)))
 
     def die(self, error):
         self.printerr(error)

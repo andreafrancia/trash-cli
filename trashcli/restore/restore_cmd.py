@@ -49,7 +49,7 @@ class RestoreCmd(object):
             logger)
         searcher = InfoDirSearcher(trash_directories,
                                    InfoFiles(listing_fs))
-        trashed_files = TrashedFiles(logger, file_reader, searcher)
+        trashed_files = TrashedFiles(logger, file_reader, searcher, environ)
         restorer = Restorer(read_fs, write_fs)
         output = RealOutput(stdout, stderr, exit)
         handler = HandlerImpl(input, read_cwd, restorer, output)

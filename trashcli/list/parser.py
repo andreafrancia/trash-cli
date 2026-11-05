@@ -3,6 +3,7 @@ from enum import Enum
 from typing import List, Union
 
 from trashcli.lib.print_version import PrintVersionArgs
+from trashcli.list.list_trash_action import DoctorArgs
 from trashcli.list.list_trash_action import ListTrashArgs
 from trashcli.list.minor_actions.debug_volumes import DebugVolumesArgs
 from trashcli.list.minor_actions.list_trash_dirs import ListTrashDirsArgs
@@ -16,6 +17,7 @@ Args = Union[
     PrintVolumesArgs,
     DebugVolumesArgs,
     ListTrashDirsArgs,
+    DoctorArgs,
     ListTrashArgs,
     PrintPythonExecutableArgs
 ]
@@ -69,6 +71,12 @@ class Parser:
                                  action='store_true',
                                  dest='all_users',
                                  help='list trashcans of all the users')
+        self.parser.add_argument('--doctor',
+                                 action='store_true',
+                                 default=False,
+                                 dest='doctor',
+                                 help='report the inconsistencies found in '
+                                      'the trash directories')
         self.parser.add_argument('--python',
                                  dest='action',
                                  action='store_const',
@@ -94,11 +102,16 @@ class Parser:
                 all_users=parsed.all_users
             )
         if parsed.action == ListAction.list_trash:
+            if parsed.doctor:
+                return DoctorArgs(
+                    trash_dirs=parsed.trash_dirs,
+                    all_users=parsed.all_users,
+                )
             return ListTrashArgs(
                 trash_dirs=parsed.trash_dirs,
                 attribute_to_print=parsed.attribute_to_print,
                 show_files=parsed.show_files,
-                all_users=parsed.all_users
+                all_users=parsed.all_users,
             )
         if parsed.action == ListAction.print_python_executable:
             return PrintPythonExecutableArgs()

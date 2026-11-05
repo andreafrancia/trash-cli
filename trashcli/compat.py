@@ -60,6 +60,13 @@ import os
 fsdecode = getattr(os, 'fsdecode', _fsdecode_fallback)
 fsencode = getattr(os, 'fsencode', _fsencode_fallback)
 
+
+def fsdecode_text(path):
+    if isinstance(path, TextType):
+        return path
+    return fsdecode(path)
+
+
 if six.PY2:
     def octal(number):
         return "0o" + oct(number)[1:]
