@@ -1,3 +1,5 @@
+import io
+
 import six
 
 from typing import TextIO
@@ -16,12 +18,13 @@ def printable(text):  # type: (str) -> TextType
 
 def write_text(stream, text):  # type: (TextIO, TextType) -> None
     text = fsdecode_text(text)
-    if six.PY2:
-        # Python 2 writes unicode to a byte stream by encoding with the
-        # default encoding, which raises for non-ASCII when redirected.
+    if six.PY2 and not isinstance(stream, io.TextIOBase):
+        # Python 2 file objects take bytes. Encoding with the default
+        # encoding raises for non-ASCII when the output is redirected.
         encoding = getattr(stream, 'encoding', None) or 'ascii'
         stream.write(text.encode(encoding, 'backslashreplace') + b'\n')
     else:
+        # Text streams take unicode, including io.StringIO on Python 2.
         encoding = getattr(stream, 'encoding', None)
         if encoding:
             text = text.encode(encoding, 'backslashreplace').decode(encoding)

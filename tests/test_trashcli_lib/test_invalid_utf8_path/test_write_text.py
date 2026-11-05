@@ -1,3 +1,5 @@
+import io
+
 import six
 
 from trashcli.lib.printable import write_text
@@ -40,6 +42,24 @@ def test_on_python2_a_utf8_stream_gets_utf8_bytes(monkeypatch):
     write_text(stream, u'caf\xe9')
 
     assert stream.written == u'caf\xe9\n'.encode('utf-8')
+
+
+def test_on_python2_a_unicode_stream_gets_text(monkeypatch):
+    monkeypatch.setattr(six, 'PY2', True)
+    stream = io.StringIO()
+
+    write_text(stream, u'caf\xe9')
+
+    assert stream.getvalue() == u'caf\xe9\n'
+
+
+def test_on_python2_a_binary_stream_gets_bytes(monkeypatch):
+    monkeypatch.setattr(six, 'PY2', True)
+    stream = io.BytesIO()
+
+    write_text(stream, u'caf\xe9')
+
+    assert stream.getvalue() == b'caf\\xe9\n'
 
 
 def test_on_python3_the_stream_gets_text(monkeypatch):
