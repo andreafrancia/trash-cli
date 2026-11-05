@@ -3,6 +3,8 @@ import os
 import unittest
 
 import pytest
+
+from tests.support.dates import jan_11_2001
 from tests.support.py2mock import Mock
 from six import StringIO
 
@@ -33,7 +35,7 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
             out=StringIO(),
             err=self.err,
             volumes_listing=self.volumes_listing,
-            now=None,
+            now=lambda: jan_11_2001(),
             file_reader=RealFs(),
             file_remover=ExistingFileRemover(RealFs()),
             content_reader=RealFs(),
@@ -68,7 +70,7 @@ class TestTrashEmptyRemovesReadonlyDir:
             out=StringIO(),
             err=self.err,
             volumes_listing=FakeVolumesListing(),
-            now=None,
+            now=lambda: jan_11_2001(),
             file_reader=self.fs,
             file_remover=ExistingFileRemover(self.fs),
             content_reader=self.fs,
