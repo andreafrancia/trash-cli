@@ -36,7 +36,7 @@ class TestTrashEmptyRemovesReadonlyDir:
         fs.chmod(target / 'sub', 0o500)
         fs.chmod(target, 0o500)
 
-        user.run_empty({'XDG_DATA_HOME': temp_dir / 'xdg_data_home'})
+        user.run_empty(environ={'XDG_DATA_HOME': temp_dir / 'xdg_data_home'})
 
         assert not fs.path_exists(target)
         assert user.stderr == ""
