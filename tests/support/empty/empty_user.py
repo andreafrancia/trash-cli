@@ -17,7 +17,7 @@ class EmptyUser:
         self.stdout = ''
         self.stderr = ''
 
-    def run_empty(self, environ):
+    def run_empty(self, args=None, environ=None):
         out = StringIO()
         err = StringIO()
         empty_cmd = EmptyCmd(
@@ -33,7 +33,11 @@ class EmptyUser:
             version='unused',
             volumes=StubVolumeOfFs()
         )
-        empty_cmd.run_cmd([], environ, uid=123)
+        if args is None:
+            args = []
+        if environ is None:
+            environ = {}
+        empty_cmd.run_cmd(args, environ, uid=123)
         self.stdout = out.getvalue()
         self.stderr = err.getvalue()
 
