@@ -13,7 +13,7 @@ fs = real_fs_fixture
 
 
 @pytest.mark.slow
-class TestTrashEmptyCmdFs:
+class TestEmptyCanRemoveUnreadableDirOnRealFs:
 
     def test_trash_empty_will_skip_unreadable_dir(self,
                                                   user,
