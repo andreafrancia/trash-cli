@@ -59,3 +59,26 @@ jobs:
         python-version: ${{ matrix.python_version }}
     - name: Test sdist
       run: scripts/test-sdist
+  macos:
+    name: macOS (system Python)
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    # We only check that the package works with the Python already
+    # installed on the machine (we don't pin a version), so a contributor
+    # who wants to hack on trash-cli on macOS can do it without first
+    # installing a specific Python version.
+    - name: Use preinstalled Python via venv
+      run: |
+        python3 -m venv .venv
+        echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+    - name: Upgrade pip
+      run: python -m pip install --upgrade pip
+    - name: Install dependencies
+      run: python -m pip install . '.[dev]'
+    - name: Check Types
+      run: ./scripts/check-types
+    - name: Run tests
+      run: python -m pytest
+    - name: Test sdist
+      run: scripts/test-sdist
