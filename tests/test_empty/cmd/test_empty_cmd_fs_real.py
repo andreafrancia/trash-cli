@@ -1,6 +1,5 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import os
-import unittest
 
 import pytest
 
@@ -18,8 +17,8 @@ from trashcli.fslib.real.real_fs import RealFs
 
 
 @pytest.mark.slow
-class TestTrashEmptyCmdFs(unittest.TestCase):
-    def setUp(self):
+class TestTrashEmptyCmdFs:
+    def setup_method(self):
         self.fsx = FsFixture(RealFs())
         fs = RealFs()
         self.tmp_dir = make_temp_dir(fs)
@@ -48,7 +47,7 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
         assert ("trash-empty: cannot remove %s\n" % self.unreadable_dir ==
                 self.err.getvalue())
 
-    def tearDown(self):
+    def teardown_method(self):
         self.fsx.make_readable(self.unreadable_dir)
         self.tmp_dir.clean_up()
 
