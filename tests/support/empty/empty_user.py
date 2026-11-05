@@ -9,7 +9,6 @@ from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.fslib.protocols.fs import Fs
-from trashcli.fslib.real.real_fs import RealFs
 
 
 class EmptyUser:
@@ -27,16 +26,17 @@ class EmptyUser:
             err=err,
             volumes_listing=FakeVolumesListing(),
             now=lambda: jan_11_2001(),
-            file_reader=RealFs(),
-            file_remover=ExistingFileRemover(RealFs()),
-            content_reader=RealFs(),
-            dir_reader=FileSystemDirReader(RealFs()),
+            file_reader=self.fs,
+            file_remover=ExistingFileRemover(self.fs),
+            content_reader=self.fs,
+            dir_reader=FileSystemDirReader(self.fs),
             version='unused',
             volumes=StubVolumeOfFs()
         )
         empty_cmd.run_cmd([], environ, uid=123)
         self.stdout = out.getvalue()
         self.stderr = err.getvalue()
+
 
 @pytest.fixture
 def empty_user_fixture(fs):  # type: (Fs) -> EmptyUser
