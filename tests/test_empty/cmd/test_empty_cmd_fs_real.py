@@ -59,7 +59,7 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
 class TestTrashEmptyRemovesReadonlyDir:
     def setup_method(self):
         self.fs = RealFs()
-        self.tmp_dir = MyPath.make_temp_dir()
+        self.tmp_dir = make_temp_dir(self.fs)
         self.trash_files = self.tmp_dir / 'data/Trash/files'
         self.err = StringIO()
         self.environ = {'XDG_DATA_HOME': self.tmp_dir / 'data'}
