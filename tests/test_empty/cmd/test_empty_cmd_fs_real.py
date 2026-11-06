@@ -48,6 +48,24 @@ class TestTrashEmptyCmdFs(unittest.TestCase):
         assert ("trash-empty: cannot remove %s\n" % self.unreadable_dir ==
                 self.err.getvalue())
 
+    def test_trash_empty_removes_a_dir_containing_a_read_only_dir(self):
+        # https://github.com/andreafrancia/trash-cli/issues/364
+        trash = self.tmp_dir / 'data/Trash'
+        self.fsx.fs.makedirs(trash + '/files/myfolder/testfolder', 0o755)
+        self.fsx.fs.write_file(trash + '/files/myfolder/testfolder/file', 'a')
+        self.fsx.fs.chmod(trash + '/files/myfolder/testfolder', 0o555)
+        self.fsx.fs.makedirs(trash + '/info', 0o700)
+        self.fsx.fs.write_file(trash + '/info/myfolder.trashinfo',
+                           '[Trash Info]\nPath=/myfolder\n'
+                           'DeletionDate=2000-01-01T00:00:00\n')
+
+        self.empty.run_cmd([], self.environ, uid=123)
+
+        assert self.fsx.fs.path_lexists(trash + '/files/myfolder') is False
+        assert self.fsx.fs.path_lexists(trash + '/info/myfolder.trashinfo') is False
+        assert self.err.getvalue() == ''
+
     def tearDown(self):
-        self.fsx.make_readable(self.unreadable_dir)
+        if self.fsx.fs.path_exists(self.unreadable_dir):
+            self.fsx.make_readable(self.unreadable_dir)
         self.tmp_dir.clean_up()
