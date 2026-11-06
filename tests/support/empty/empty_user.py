@@ -16,6 +16,7 @@ class EmptyUser:
         self.fs = fs
         self.stdout = ''
         self.stderr = ''
+        self.volumes = []
 
     def run_empty(self, args=None, environ=None):
         out = StringIO()
@@ -24,7 +25,7 @@ class EmptyUser:
             argv0='trash-empty',
             out=out,
             err=err,
-            volumes_listing=FakeVolumesListing(),
+            volumes_listing=FakeVolumesListing(self.volumes),
             now=lambda: jan_11_2001(),
             file_reader=self.fs,
             file_remover=ExistingFileRemover(self.fs),
@@ -40,6 +41,9 @@ class EmptyUser:
         empty_cmd.run_cmd(args, environ, uid=123)
         self.stdout = out.getvalue()
         self.stderr = err.getvalue()
+
+    def add_volume(self, path):
+        self.volumes.append(path)
 
 
 @pytest.fixture
