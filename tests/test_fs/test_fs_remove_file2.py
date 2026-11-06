@@ -148,3 +148,24 @@ class TestFsRemoveFile2OnReadOnlyDirs:
             assert env.fs.get_mod(env.path('dir')) == 0o750
         finally:
             env.fs.chmod(env.path('dir/subdir'), 0o700)
+
+    @real_and_fake()
+    def test_restores_the_permissions_it_added_when_it_fails(self, env):
+        # the dirs that survive a failure are left as they were found
+        env.fs.mkdirs(env.path('dir/a/unreadable'))
+        env.fs.write_file(env.path('dir/a/unreadable/file'), 'a')
+        env.fs.chmod(env.path('dir/a/unreadable'), 0o300)
+        env.fs.chmod(env.path('dir/a'), 0o555)
+        env.fs.chmod(env.path('dir'), 0o555)
+
+        try:
+            with pytest.raises(OSError):
+                remove_file2(env, env.path('dir'))
+
+            assert env.fs.get_mod(env.path('dir')) == 0o555
+            assert env.fs.get_mod(env.path('dir/a')) == 0o555
+            assert env.fs.get_mod(env.path('dir/a/unreadable')) == 0o300
+        finally:
+            env.fs.chmod(env.path('dir'), 0o755)
+            env.fs.chmod(env.path('dir/a'), 0o755)
+            env.fs.chmod(env.path('dir/a/unreadable'), 0o755)

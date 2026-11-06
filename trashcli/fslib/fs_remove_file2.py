@@ -30,7 +30,8 @@ class FsRemoveTreeMakingDirsWritable:
     only on the dirs that are being removed, never on the files (their
     permissions do not matter to unlink them), never on the targets of the
     symlinks, never on the parent of the removed dir. The read permission is
-    not added, so an unreadable dir is still an error.
+    not added, so an unreadable dir is still an error. If the removal fails,
+    the dirs that are left get back the permissions they had.
     """
 
     def __init__(self, fs):  # type: (Fs) -> None
@@ -40,12 +41,23 @@ class FsRemoveTreeMakingDirsWritable:
         if self.fs.is_symlink(path) or not self.fs.path_isdir(path):
             self.fs.remove(path)
             return
-        self._make_writable_and_searchable(path)
-        for name in self.fs.listdir(path):
-            self.remove_tree(os.path.join(path, name))
-        self.fs.rmdir(path)
-
-    def _make_writable_and_searchable(self, path):  # type: (str) -> None
         mode = self.fs.get_mod(path)
-        if mode & WRITE_AND_SEARCH != WRITE_AND_SEARCH:
+        missing = mode & WRITE_AND_SEARCH != WRITE_AND_SEARCH
+        if missing:
             self.fs.chmod(path, mode | WRITE_AND_SEARCH)
+        try:
+            for name in self.fs.listdir(path):
+                self.remove_tree(os.path.join(path, name))
+            self.fs.rmdir(path)
+        except BaseException:
+            if missing:
+                self._restore_mode(path, mode)
+            raise
+
+    def _restore_mode(self, path, mode):  # type: (str, int) -> None
+        # a dir that survives a failure is left with the permissions it had;
+        # a failure here must not hide the error that is being raised
+        try:
+            self.fs.chmod(path, mode)
+        except OSError:
+            pass
