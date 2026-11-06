@@ -52,6 +52,9 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             raise OSError(errno.ENOENT, "No such file or directory", path)
         if not isinstance(entity, Directory):
             raise OSError(errno.ENOTDIR, "Not a directory", path)
+        # like os.listdir(), listing a dir needs the read permission on it
+        if self._lookup_or_enoent(path, follow_last_link=True).mode & 0o400 == 0:
+            raise OSError(errno.EACCES, "Permission denied", path)
         return self.ls_aa(path)
 
     def mkdirs(self, path):  # type: (str) -> None
@@ -449,7 +452,11 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         return format_mode(mode)
 
     def walk_no_follow(self, top):
-        names = self.listdir(top)
+        # like os.walk(), a dir that cannot be listed is silently skipped
+        try:
+            names = self.listdir(top)
+        except OSError:
+            return
 
         dirs, nondirs = [], []
         for name in names:
