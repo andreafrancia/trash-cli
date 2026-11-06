@@ -1,9 +1,9 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import pytest
 
-from tests.support.dirs.temp_dir import temp_dir_fixture_fs
-from tests.support.empty.empty_user import EmptyUser, empty_user_fixture
+from tests.support.empty.empty_user import EmptyUser
 from tests.support.files import FsFixture
+from tests.support.dirs.temp_dir import temp_dir_fixture_fs
 from tests.support.fs_fixture import fake_fs_fixture
 
 fs = fake_fs_fixture
@@ -20,7 +20,7 @@ class TestEmptyWithVolumesFakeFs:
     def fsx(self, fs):
         return FsFixture(fs)
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture
     def user(self, fs, top_dir):
         user = EmptyUser(fs)
         user.add_volume(top_dir)
@@ -30,14 +30,13 @@ class TestEmptyWithVolumesFakeFs:
                                                      fs,
                                                      user,
                                                      top_dir,
-                                                     fsx
+                                                     fsx,
                                                      ):
         trashinfo = top_dir / '.Trash/123/info/foo.trashinfo'
         fsx.make_proper_top_trash_dir(top_dir / '.Trash')
         fsx.make_empty_file(trashinfo)
         assert fs.path_exists(trashinfo)
 
-        user.add_volume(top_dir)
         user.run_empty()
 
         assert not fs.path_exists(trashinfo)
