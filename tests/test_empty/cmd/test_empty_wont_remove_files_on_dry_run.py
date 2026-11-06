@@ -11,12 +11,15 @@ fs = fake_fs_fixture
 
 
 class TestEmptyWontRemoveFilesOnDryRun:
-    @pytest.fixture(autouse=True, scope="function")
-    def set_up_trashed_file(self, fs):
-        self.trash = GivenTrash(fs)
+    @pytest.fixture(autouse=True)
+    def trash_info_to_delete(self, trash):
         self.environ = {'XDG_DATA_HOME': '/xdg'}
-        self.trash.has_file('/xdg/Trash/info/pippo.trashinfo')
-        self.trash.has_file('/xdg/Trash/files/pippo')
+        trash.has_file('/xdg/Trash/info/pippo.trashinfo')
+        trash.has_file('/xdg/Trash/files/pippo')
+
+    @pytest.fixture
+    def trash(self, fs):
+        return GivenTrash(fs)
 
     def test(self,
              user,  # type: EmptyUser
