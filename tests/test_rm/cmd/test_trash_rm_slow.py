@@ -1,45 +1,38 @@
-import unittest
-
 import pytest
-from six import StringIO
 
-from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
-from tests.support.dirs.temp_dir import make_temp_dir
-from trashcli.fslib.real.real_fs import RealFs
-from trashcli.rm.main import RealRmFileSystemReader
-from trashcli.rm.rm_cmd import RmCmd
+from tests.support.dirs.temp_dir import temp_dir_fixture_fs
+from tests.support.fs_fixture import real_fs_fixture
+from tests.support.rm.rm_user import rm_user_fixture
+
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture_fs
+user = rm_user_fixture
 
 
 @pytest.mark.slow
-class TestTrashRm(unittest.TestCase):
-    def setUp(self):
-        fs = RealFs()
-        self.xdg_data_home = make_temp_dir(fs)
-        self.stderr = StringIO()
-        self.trash_rm = RmCmd(environ={'XDG_DATA_HOME': self.xdg_data_home},
-                              getuid=lambda: 123,
-                              volumes_listing=FakeVolumesListing(),
-                              stderr=self.stderr,
-                              file_reader=RealRmFileSystemReader(RealFs()))
-        self.fake_trash_dir = FakeTrashDir(self.xdg_data_home / 'Trash')
+class TestTrashRm:
+    @pytest.fixture(autouse=True)
+    def fake_trash_dir(self, xdg_data_home):
+        return FakeTrashDir(xdg_data_home / 'Trash')
 
-    def test_issue69(self):
-        self.fake_trash_dir.add_trashinfo_without_path('foo')
+    @pytest.fixture
+    def xdg_data_home(self, temp_dir):
+        return temp_dir
 
-        self.trash_rm.run(['trash-rm', 'ignored'], uid=None)
+    def test_issue69(self, user, xdg_data_home, fake_trash_dir):
+        fake_trash_dir.add_trashinfo_without_path('foo')
 
-        assert (self.stderr.getvalue() ==
+        user.run_rm(['ignored'])
+
+        assert (user.stderr ==
                 "trash-rm: %s/Trash/info/foo.trashinfo: unable to parse 'Path'"
-                '\n' % self.xdg_data_home)
+                '\n' % xdg_data_home)
 
-    def test_integration(self):
-        self.fake_trash_dir.add_trashinfo_basename_path("del", 'to/be/deleted')
-        self.fake_trash_dir.add_trashinfo_basename_path("keep", 'to/be/kept')
+    def test_integration(self, user, fake_trash_dir):
+        fake_trash_dir.add_trashinfo_basename_path("del", 'to/be/deleted')
+        fake_trash_dir.add_trashinfo_basename_path("keep", 'to/be/kept')
 
-        self.trash_rm.run(['trash-rm', 'delete*'], uid=None)
+        user.run_rm(['delete*'])
 
-        assert self.fake_trash_dir.ls_info() == ['keep.trashinfo']
-
-    def tearDown(self):
-        self.xdg_data_home.clean_up()
+        assert fake_trash_dir.ls_info() == ['keep.trashinfo']
