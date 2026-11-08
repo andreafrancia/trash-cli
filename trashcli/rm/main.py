@@ -1,5 +1,6 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 import os
+from typing import Callable, Mapping
 import sys
 
 from trashcli.fslib.real.real_entries_if_dir_exists import RealEntriesIfDirExists
@@ -21,7 +22,8 @@ def main():
                 getuid=os.getuid,
                 volumes_listing=volumes_listing,
                 stderr=sys.stderr,
-                file_reader=RealRmFileSystemReader(RealFs()))
+                file_reader=RealRmFileSystemReader(RealFs(), os.environ,
+                                                   os.geteuid))
 
     cmd.run(sys.argv, os.getuid())
 
@@ -36,8 +38,12 @@ class RealRmFileSystemReader(RmFileSystemReader,
                              RealPathIsDir,
                              RealRemoverFs,
                              ):
-    def __init__(self, fs):  # type: (Fs) -> None
-        RealRemoverFs.__init__(self, fs)
+    def __init__(self,
+                 fs,  # type: Fs
+                 environ,  # type: Mapping[str, str]
+                 geteuid,  # type: Callable[[], int]
+                 ):  # type: (...) -> None
+        RealRemoverFs.__init__(self, fs, environ, geteuid)
 
     def entries_if_dir_exists(self, path):
         return RealEntriesIfDirExists(self.fs).entries_if_dir_exists(path)

@@ -1,3 +1,4 @@
+import os
 import unittest
 
 import pytest
@@ -15,6 +16,6 @@ except NameError:
 @pytest.mark.slow
 class TestFileRemover(unittest.TestCase):
     def test_remove_file_fails_when_file_does_not_exists(self):
-        file_remover = RealRemoverFs(RealFs())
+        file_remover = RealRemoverFs(RealFs(), {}, os.geteuid)
         self.assertRaises(FileNotFoundError, file_remover.remove_file2,
                           '/non/existing/path')

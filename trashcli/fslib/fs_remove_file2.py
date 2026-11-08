@@ -1,6 +1,7 @@
 import errno
 import os
 import stat
+from typing import Callable, Mapping
 
 from trashcli.fslib.protocols.fs import Fs
 from trashcli.fslib.protocols.remove_file2 import RemoveFile2
@@ -8,8 +9,14 @@ from trashcli.lib.trash_dirs import home_trash_dir_path_from_env
 
 
 class FsRemoveFile2(RemoveFile2):
-    def __init__(self, fs):  # type: (Fs) -> None
+    def __init__(self,
+                 fs,  # type: Fs
+                 environ,  # type: Mapping[str, str]
+                 geteuid,  # type: Callable[[], int]
+                 ):  # type: (...) -> None
         self.fs = fs
+        self.environ = environ
+        self.geteuid = geteuid
 
     def remove_file2(self, path):
         try:
@@ -19,7 +26,7 @@ class FsRemoveFile2(RemoveFile2):
                 self.fs.shutil_rmtree(path)
             except OSError as e:
                 # root is not stopped by mode bits and must not chmod files of other users
-                if e.errno != errno.EACCES or os.geteuid() == 0 or not is_in_home_trash(path):
+                if e.errno != errno.EACCES or self.geteuid() == 0 or not self.is_in_home_trash(path):
                     raise
                 old_modes = []  # type: list
                 self.add_write_permission(path, old_modes)
@@ -60,13 +67,16 @@ class FsRemoveFile2(RemoveFile2):
         # bottom up: a dir keeps its search bit until the dirs under it are restored
         for path, mode in reversed(old_modes):
             try:
+                # owner bits only, as when adding them: a swapped symlink must not open its target
                 self.fs.chmod(path, mode & stat.S_IRWXU)
             except OSError:
                 # the dir was already removed
                 pass
 
-
-def is_in_home_trash(path):  # type: (str) -> bool
-    home = os.path.realpath(os.path.expanduser('~')) + os.sep
-    return any(path.startswith(trash + os.sep) and os.path.realpath(trash).startswith(home)
-               for trash in home_trash_dir_path_from_env(os.environ))
+    def is_in_home_trash(self, path):  # type: (str) -> bool
+        """True if path is in the home trash and that trash really is inside the home dir."""
+        if 'HOME' not in self.environ:
+            return False
+        home = self.fs.realpath(self.environ['HOME']) + os.sep
+        return any(path.startswith(trash + os.sep) and self.fs.realpath(trash).startswith(home)
+                   for trash in home_trash_dir_path_from_env(self.environ))
