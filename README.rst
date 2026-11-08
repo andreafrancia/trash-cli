@@ -275,15 +275,10 @@ coding/testing conventions.
 
 Thanks
 ------
-Thanks to Paypal donors.
-
 Thanks to `project contributors`_.
-
-Thanks to `JetBrains`_ for their license for Open Source Development
 
 .. |Downloads| image:: https://img.shields.io/pypi/dm/trash-cli
 .. _简体中文: https://github.com/andreafrancia/trash-cli/blob/master/README_zh-CN.rst
 .. _project contributors: https://github.com/andreafrancia/trash-cli/graphs/contributors
-.. _JetBrains: https://jb.gg/OpenSource
 .. _pipx: https://pypa.github.io/pipx/
 .. _DEVELOPMENT.md: https://github.com/andreafrancia/trash-cli/blob/master/DEVELOPMENT.md
