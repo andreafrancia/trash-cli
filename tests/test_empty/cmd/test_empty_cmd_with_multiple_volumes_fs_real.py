@@ -40,6 +40,7 @@ class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
 
     def test_it_removes_trashinfos_from_method_1_dir(self):
         self.fsx.make_proper_top_trash_dir(self.top_dir / '.Trash')
+        os.mkdir(self.top_dir / '.Trash/123', 0o700)
         self.fsx.make_empty_file(self.top_dir / '.Trash/123/info/foo.trashinfo')
 
         self.empty_cmd.run_cmd([], self.environ, uid=123)
@@ -48,6 +49,7 @@ class TestEmptyCmdWithMultipleVolumesFs(unittest.TestCase):
             self.top_dir / '.Trash/123/info/foo.trashinfo')
 
     def test_it_removes_trashinfos_from_method_2_dir(self):
+        os.mkdir(self.top_dir / '.Trash-123', 0o700)
         self.fsx.make_empty_file(self.top_dir / '.Trash-123/info/foo.trashinfo')
 
         self.empty_cmd.run_cmd([], self.environ, uid=123)
