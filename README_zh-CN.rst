@@ -318,14 +318,9 @@ Bugs
 
 感谢
 ------
-感谢通过 Paypal 捐献的捐赠者.
-
 感谢 `项目贡献者`_.
-
-感谢 `JetBrains`_  为开源开发提供的许可证。
 
 .. _English: https://github.com/andreafrancia/trash-cli/blob/master/README.rst
 .. _pipx: https://pypa.github.io/pipx
 .. _项目贡献者: https://github.com/andreafrancia/trash-cli/graphs/contributors
-.. _JetBrains: https://jb.gg/OpenSource
 .. _DEVELOPMENT.md: https://github.com/andreafrancia/trash-cli/blob/master/DEVELOPMENT.md
