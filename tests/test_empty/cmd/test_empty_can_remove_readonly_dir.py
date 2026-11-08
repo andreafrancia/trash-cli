@@ -29,13 +29,16 @@ class TestEmptyCanRemovesReadonlyDir:
                                                              user,
                                                              # type: EmptyUser
                                                              fs,
-                                                             temp_dir):
+                                                             temp_dir,
+                                                             monkeypatch):
         target = temp_dir / 'xdg_data_home/Trash/files' / 'proj'
         fs.makedirs(target / 'sub', 0o755)
         fs.write_file(target / 'sub' / 'f', 'x')
         fs.chmod(target / 'sub', 0o500)
         fs.chmod(target, 0o500)
 
+        monkeypatch.setenv('HOME', temp_dir)
+        monkeypatch.setenv('XDG_DATA_HOME', temp_dir / 'xdg_data_home')
         user.run_empty(environ={'XDG_DATA_HOME': temp_dir / 'xdg_data_home'})
 
         assert not fs.path_exists(target)

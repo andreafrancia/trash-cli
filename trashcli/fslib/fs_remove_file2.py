@@ -4,6 +4,7 @@ import stat
 
 from trashcli.fslib.protocols.fs import Fs
 from trashcli.fslib.protocols.remove_file2 import RemoveFile2
+from trashcli.lib.trash_dirs import home_trash_dir_path_from_env
 
 
 class FsRemoveFile2(RemoveFile2):
@@ -17,8 +18,8 @@ class FsRemoveFile2(RemoveFile2):
             try:
                 self.fs.shutil_rmtree(path)
             except OSError as e:
-                # a missing write or search bit fails with EACCES
-                if e.errno != errno.EACCES:
+                # root is not stopped by mode bits and must not chmod files of other users
+                if e.errno != errno.EACCES or os.geteuid() == 0 or not is_in_home_trash(path):
                     raise
                 old_modes = []  # type: list
                 self.add_write_permission(path, old_modes)
@@ -36,8 +37,9 @@ class FsRemoveFile2(RemoveFile2):
         if not self.fs.path_isdir(path) or self.fs.is_symlink(path):
             return
         mode = self.fs.get_mod(path)
-        new_mode = mode | stat.S_IWUSR | stat.S_IXUSR
-        if new_mode != mode:
+        # owner bits only: a dir swapped for a symlink must not open its target to others
+        new_mode = (mode | stat.S_IWUSR | stat.S_IXUSR) & stat.S_IRWXU
+        if new_mode != mode & stat.S_IRWXU:
             try:
                 self.fs.chmod(path, new_mode)
             except OSError:
@@ -58,7 +60,13 @@ class FsRemoveFile2(RemoveFile2):
         # bottom up: a dir keeps its search bit until the dirs under it are restored
         for path, mode in reversed(old_modes):
             try:
-                self.fs.chmod(path, mode)
+                self.fs.chmod(path, mode & stat.S_IRWXU)
             except OSError:
                 # the dir was already removed
                 pass
+
+
+def is_in_home_trash(path):  # type: (str) -> bool
+    home = os.path.realpath(os.path.expanduser('~')) + os.sep
+    return any(path.startswith(trash + os.sep) and os.path.realpath(trash).startswith(home)
+               for trash in home_trash_dir_path_from_env(os.environ))
