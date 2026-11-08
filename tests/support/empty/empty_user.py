@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from tests.support.dates import jan_11_2001
@@ -19,6 +20,8 @@ class EmptyUser:
         self.volumes = []
 
     def run_empty(self, args=None, environ=None):
+        if environ is None:
+            environ = {}
         out = StringIO()
         err = StringIO()
         empty_cmd = EmptyCmd(
@@ -28,7 +31,7 @@ class EmptyUser:
             volumes_listing=FakeVolumesListing(self.volumes),
             now=lambda: jan_11_2001(),
             file_reader=self.fs,
-            file_remover=ExistingFileRemover(self.fs),
+            file_remover=ExistingFileRemover(self.fs, environ, os.geteuid),
             content_reader=self.fs,
             dir_reader=FileSystemDirReader(self.fs),
             version='unused',
@@ -36,8 +39,6 @@ class EmptyUser:
         )
         if args is None:
             args = []
-        if environ is None:
-            environ = {}
         empty_cmd.run_cmd(args, environ, uid=123)
         self.stdout = out.getvalue()
         self.stderr = err.getvalue()
