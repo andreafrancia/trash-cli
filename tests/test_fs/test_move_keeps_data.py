@@ -69,6 +69,64 @@ class TestMoveKeepsData:
 
         assert os.listdir(os.path.join(self.tmp, 'dest', 'dir')) == ['keep']
 
+    def test_a_file_written_during_the_copy_is_not_lost(self, monkeypatch):
+        src, dest = self.writable_across_file_systems(monkeypatch)
+        copytree = real_move.shutil.copytree
+
+        def copy_while_another_program_writes(a, b, *args, **kwargs):
+            copytree(a, b, *args, **kwargs)
+            if a == src:
+                open(os.path.join(src, 'new'), 'w').close()
+
+        monkeypatch.setattr(real_move.shutil, 'copytree', copy_while_another_program_writes)
+
+        with pytest.raises(OSError):
+            RealMove().move(src, dest)
+
+        assert sorted(os.listdir(src)) == ['new', 'sub']
+        assert not os.path.exists(dest)
+
+    def test_removed_dirs_are_put_back_after_a_failure(self, monkeypatch):
+        src, dest = self.writable_across_file_systems(monkeypatch)
+        rmdir = os.rmdir
+
+        def the_last_step_fails(path, *args, **kwargs):
+            if path == src:
+                raise OSError(errno.EACCES, 'Permission denied', path)
+            rmdir(path, *args, **kwargs)
+
+        monkeypatch.setattr(real_move.os, 'rmdir', the_last_step_fails)
+
+        with pytest.raises(OSError):
+            RealMove().move(src, dest)
+
+        assert os.path.exists(os.path.join(src, 'sub', 'file'))
+        assert not os.path.exists(dest)
+
+    def test_a_destination_created_just_before_the_copy_is_kept(self, monkeypatch):
+        src, dest = self.writable_across_file_systems(monkeypatch)
+        copytree = real_move.shutil.copytree
+
+        def another_program_creates_the_destination(a, b, *args, **kwargs):
+            if a == src:
+                os.mkdir(b)
+                open(os.path.join(b, 'theirs'), 'w').close()
+            copytree(a, b, *args, **kwargs)
+
+        monkeypatch.setattr(real_move.shutil, 'copytree', another_program_creates_the_destination)
+
+        with pytest.raises(OSError):
+            RealMove().move(src, dest)
+
+        assert os.listdir(dest) == ['theirs']
+        assert os.path.exists(os.path.join(src, 'sub', 'file'))
+
+    def writable_across_file_systems(self, monkeypatch):
+        src = os.path.join(self.tmp, 'src', 'dir')
+        os.chmod(src, 0o755)
+        monkeypatch.setattr(real_move.os, 'rename', rename_across_file_systems)
+        return src, os.path.join(self.tmp, 'dest', 'dir')
+
 
 RENAME = os.rename
 
