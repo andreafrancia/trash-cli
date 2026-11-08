@@ -7,6 +7,7 @@ from trashcli.put.core.either import Right
 from trashcli.put.core.failure_reason import FailureReason
 from trashcli.put.core.failure_reason import LogContext
 from trashcli.fslib.protocols.fs import Fs
+from trashcli.fslib.protocols.move import PartlyMoved
 from trashcli.put.janitor_tools.info_file_persister import TrashedFile
 
 
@@ -34,6 +35,9 @@ class PutTrashDir:
         try:
             move_file(self.fs, path, paths.backup_copy_path)
             return Right(None)
+        except PartlyMoved as error:
+            # the original is no longer complete, so the copy and its trashinfo are kept
+            return Left(UnableToMoveFileToTrash(error))
         except (IOError, OSError) as error:
             # seems_to_have_delete_permissions() is only a best-effort prediction (it
             # cannot see sticky bits, ancestor permissions, ACLs, or races);
