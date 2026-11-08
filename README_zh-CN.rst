@@ -311,29 +311,10 @@ Bugs
 
     https://github.com/andreafrancia/trash-cli/issues
 
-反馈
---------
-
-你可以通过 andrea@andreafrancia.it 发给我邮件.
-
 开发
 ----
 
-环境设置：
-
-::
-
-   python -m venv .venv
-   source .venv/bin/activate
-   pip install . '.[dev]'
-
-运行测试：
-
-::
-
-   pytest -m 'not slow'        # 只运行快测试
-   pytest -m 'slow'            # 运行慢测试
-   pytest                      # 运行所有测试
+环境设置、运行测试和测试规范请参阅 `DEVELOPMENT.md`_。
 
 感谢
 ------
@@ -347,3 +328,4 @@ Bugs
 .. _pipx: https://pypa.github.io/pipx
 .. _项目贡献者: https://github.com/andreafrancia/trash-cli/graphs/contributors
 .. _JetBrains: https://jb.gg/OpenSource
+.. _DEVELOPMENT.md: https://github.com/andreafrancia/trash-cli/blob/master/DEVELOPMENT.md

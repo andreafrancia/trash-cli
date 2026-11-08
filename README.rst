@@ -267,25 +267,11 @@ If you discover a bug please report it here:
 
     https://github.com/andreafrancia/trash-cli/issues
 
-Feedback
---------
-
-You can send me an email using andrea@andreafrancia.it.
-
 Development
 -----------
 
-Environment setup::
-
-    python -m venv .venv
-    source .venv/bin/activate
-    pip install . '.[dev]'
-
-Running tests::
-
-    pytest -m 'not slow'        # run only fast tests
-    pytest -m 'slow'            # run slow tests
-    pytest                      # run all tests
+See `DEVELOPMENT.md`_ for environment setup, running tests, and
+coding/testing conventions.
 
 Thanks
 ------
@@ -300,3 +286,4 @@ Thanks to `JetBrains`_ for their license for Open Source Development
 .. _project contributors: https://github.com/andreafrancia/trash-cli/graphs/contributors
 .. _JetBrains: https://jb.gg/OpenSource
 .. _pipx: https://pypa.github.io/pipx/
+.. _DEVELOPMENT.md: https://github.com/andreafrancia/trash-cli/blob/master/DEVELOPMENT.md
