@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from six import StringIO
 
@@ -15,11 +17,13 @@ class RmUser:
 
     def run_rm(self, args):
         err = StringIO()
-        rm_cmd = RmCmd(environ={'XDG_DATA_HOME': self.xdg_data_home},
+        environ = {'XDG_DATA_HOME': self.xdg_data_home}
+        rm_cmd = RmCmd(environ=environ,
                        getuid=lambda: 123,
                        volumes_listing=FakeVolumesListing(self.volumes),
                        stderr=err,
-                       file_reader=RealRmFileSystemReader(self.fs))
+                       file_reader=RealRmFileSystemReader(self.fs, environ,
+                                                          os.geteuid))
         rm_cmd.run(['trash-rm'] + args, uid=None)
         self.stderr = err.getvalue()
 
