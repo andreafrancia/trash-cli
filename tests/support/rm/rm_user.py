@@ -22,8 +22,8 @@ class RmUser:
                        getuid=lambda: 123,
                        volumes_listing=FakeVolumesListing(self.volumes),
                        stderr=err,
-                       file_reader=RmFsImpl(self.fs, environ,
-                                            os.geteuid))
+                       rm_fs=RmFsImpl(self.fs, environ,
+                                      os.geteuid))
         rm_cmd.run(['trash-rm'] + args, uid=None)
         self.stderr = err.getvalue()
 
