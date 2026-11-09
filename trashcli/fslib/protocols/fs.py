@@ -119,3 +119,7 @@ class Fs(RealPathFs, VolumeOfFs, MkDirs, Protocol):
 
     def list_sorted(self, path):
         return sorted(self.listdir(path))
+
+    @abstractmethod
+    def is_sticky_dir(self, path):  # type: (str) -> bool
+        raise NotImplementedError
