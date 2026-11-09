@@ -12,7 +12,7 @@ from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
     trash_dir_found
 
 
-class RmFileSystemReader(Protocol):
+class RmFs(Protocol):
     @abstractmethod
     def read_file(self, path):
         raise NotImplementedError()
@@ -44,7 +44,7 @@ class RmCmd:
                  getuid,
                  volumes_listing,
                  stderr,
-                 file_reader,  # type: RmFileSystemReader
+                 file_reader,  # type: RmFs
                  ):
         self.environ = environ
         self.getuid = getuid
