@@ -46,7 +46,8 @@ class Fs(RealPathFs, VolumeOfFs, MkDirs, Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def makedirs(self, name, mode=0o777, exist_ok=False):  # type: (str, int, bool)->None
+    def makedirs(self, name, mode=0o777,
+                 exist_ok=False):  # type: (str, int, bool)->None
         raise NotImplementedError
 
     @abstractmethod
@@ -122,4 +123,8 @@ class Fs(RealPathFs, VolumeOfFs, MkDirs, Protocol):
 
     @abstractmethod
     def is_sticky_dir(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def is_world_writable(self, path):  # type: (str) -> bool
         raise NotImplementedError
