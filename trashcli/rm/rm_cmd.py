@@ -1,11 +1,11 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 from trashcli.rm.rm_fs import RmFs
 from trashcli.lib.single_user_info_provider import SingleUserInfoProvider
-from trashcli.rm.cleanable_trashcan import CleanableTrashcan
 from trashcli.rm.filter import Filter
 from trashcli.rm.list_trashinfo import ListTrashinfos
 from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
     trash_dir_found
+from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 
 
 class RmCmd:
@@ -35,7 +35,6 @@ class RmCmd:
             self.exit_code = 8
             return
 
-        trashcan = CleanableTrashcan(self.rm_fs)
         cmd = Filter(args[0])
 
         listing = ListTrashinfos.make(self.rm_fs, self.rm_fs)
@@ -56,8 +55,13 @@ class RmCmd:
                     elif type == 'trashed_file':
                         original_location, info_file = arg
                         if cmd.matches(original_location):
-                            trashcan.delete_trash_info_and_backup_copy(
+                            self.delete_trash_info_and_backup_copy(
                                 info_file)
+
+    def delete_trash_info_and_backup_copy(self, trash_info_path):
+        backup_copy = path_of_backup_copy(trash_info_path)
+        self.rm_fs.remove_file_if_exists(backup_copy)
+        self.rm_fs.remove_file2(trash_info_path)
 
     def unable_to_parse_path(self, trashinfo):
         self.report_error('{}: unable to parse \'Path\''.format(trashinfo))
