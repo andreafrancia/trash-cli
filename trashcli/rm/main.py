@@ -14,8 +14,8 @@ def main():
                 getuid=os.getuid,
                 volumes_listing=volumes_listing,
                 stderr=sys.stderr,
-                file_reader=RmFsImpl(RealFs(), os.environ,
-                                     os.geteuid))
+                rm_fs=RmFsImpl(RealFs(), os.environ,
+                               os.geteuid))
 
     cmd.run(sys.argv, os.getuid())
 

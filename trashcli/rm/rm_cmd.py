@@ -14,13 +14,13 @@ class RmCmd:
                  getuid,
                  volumes_listing,
                  stderr,
-                 file_reader,  # type: RmFs
+                 rm_fs,  # type: RmFs
                  ):
         self.environ = environ
         self.getuid = getuid
         self.volumes_listing = volumes_listing
         self.stderr = stderr
-        self.file_reader = file_reader
+        self.rm_fs = rm_fs
 
     def run(self, argv, uid):
         args = argv[1:]
@@ -35,16 +35,16 @@ class RmCmd:
             self.exit_code = 8
             return
 
-        trashcan = CleanableTrashcan(self.file_reader)
+        trashcan = CleanableTrashcan(self.rm_fs)
         cmd = Filter(args[0])
 
-        listing = ListTrashinfos.make(self.file_reader, self.file_reader)
+        listing = ListTrashinfos.make(self.rm_fs, self.rm_fs)
 
         user_info_provider = SingleUserInfoProvider()
         scanner = TrashDirsScanner(user_info_provider,
                                    self.volumes_listing,
-                                   TopTrashDirRules(self.file_reader),
-                                   self.file_reader)
+                                   TopTrashDirRules(self.rm_fs),
+                                   self.rm_fs)
 
         for event, args in scanner.scan_trash_dirs(self.environ, uid):
             if event == trash_dir_found:
