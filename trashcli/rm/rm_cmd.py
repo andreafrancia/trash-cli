@@ -1,25 +1,41 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
+from abc import abstractmethod
+from typing import Iterable
+
 from trashcli.compat import Protocol
 
-from trashcli.fslib.protocols.read_file import ReadFile
-from trashcli.fslib.protocols.remove_file2 import RemoveFile2
-from trashcli.fslib.protocols.remove_file_if_exists import RemoveFileIfExists
-from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.single_user_info_provider import SingleUserInfoProvider
 from trashcli.rm.cleanable_trashcan import CleanableTrashcan
 from trashcli.rm.filter import Filter
 from trashcli.rm.list_trashinfo import ListTrashinfos
 from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
-    trash_dir_found, TopTrashDirRulesFs
+    trash_dir_found
 
 
-class RmFileSystemReader(ReadFile,
-                         DirReaderFs,
-                         TopTrashDirRulesFs,
-                         RemoveFileIfExists,
-                         RemoveFile2,
-                         Protocol):
-    pass
+class RmFileSystemReader(Protocol):
+    @abstractmethod
+    def read_file(self, path):
+        raise NotImplementedError()
+
+    @abstractmethod
+    def entries_if_dir_exists(self, path):  # type: (str) -> Iterable[str]
+        raise NotImplementedError()
+
+    @abstractmethod
+    def path_exists(self, path):
+        raise NotImplementedError()
+
+    @abstractmethod
+    def is_sticky_dir(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def remove_file2(self, path):
+        raise NotImplementedError()
+
+    @abstractmethod
+    def remove_file_if_exists(self, path):
+        raise NotImplementedError()
 
 
 class RmCmd:
