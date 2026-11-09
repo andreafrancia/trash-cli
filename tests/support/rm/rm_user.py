@@ -4,7 +4,7 @@ import pytest
 from six import StringIO
 
 from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
-from trashcli.rm.main import RealRmFileSystemReader
+from trashcli.rm.main import RmFileSystemReaderImpl
 from trashcli.rm.rm_cmd import RmCmd
 
 
@@ -22,7 +22,7 @@ class RmUser:
                        getuid=lambda: 123,
                        volumes_listing=FakeVolumesListing(self.volumes),
                        stderr=err,
-                       file_reader=RealRmFileSystemReader(self.fs, environ,
+                       file_reader=RmFileSystemReaderImpl(self.fs, environ,
                                                           os.geteuid))
         rm_cmd.run(['trash-rm'] + args, uid=None)
         self.stderr = err.getvalue()

@@ -20,7 +20,7 @@ def main():
                 getuid=os.getuid,
                 volumes_listing=volumes_listing,
                 stderr=sys.stderr,
-                file_reader=RealRmFileSystemReader(RealFs(), os.environ,
+                file_reader=RmFileSystemReaderImpl(RealFs(), os.environ,
                                                    os.geteuid))
 
     cmd.run(sys.argv, os.getuid())
@@ -28,7 +28,7 @@ def main():
     return cmd.exit_code
 
 
-class RealRmFileSystemReader(RmFileSystemReader):
+class RmFileSystemReaderImpl(RmFileSystemReader):
     def __init__(self,
                  fs,  # type: Fs
                  environ,  # type: Mapping[str, str]
@@ -39,10 +39,10 @@ class RealRmFileSystemReader(RmFileSystemReader):
         self.geteuid = geteuid
 
     def read_file(self, path):
-        return RealReadFile().read_file(path)
+        return self.fs.read_file(path)
 
     def is_symlink(self, path):  # type: (str) -> bool
-        return RealIsSymLink().is_symlink(path)
+        return self.fs.is_symlink(path)
 
     def is_sticky_dir(self, path):  # type: (str) -> bool
         return self.fs.is_sticky_dir(path)
