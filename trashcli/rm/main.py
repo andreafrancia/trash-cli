@@ -7,11 +7,9 @@ from trashcli.fslib.real.real_entries_if_dir_exists import \
     RealEntriesIfDirExists
 from trashcli.fslib.protocols.fs import Fs
 from trashcli.fslib.real.real_fs import RealFs
-from trashcli.fslib.real.real_is_sym_link import RealIsSymLink
-from trashcli.fslib.real.real_read_file import RealReadFile
 from trashcli.fslib.real.real_volumes_listing import RealVolumesListing
 from trashcli.rm.real_remover_fs import RealRemoverFs
-from trashcli.rm.rm_cmd import RmCmd, RmFileSystemReader
+from trashcli.rm.rm_cmd import RmCmd, RmFs
 
 
 def main():
@@ -20,15 +18,15 @@ def main():
                 getuid=os.getuid,
                 volumes_listing=volumes_listing,
                 stderr=sys.stderr,
-                file_reader=RmFileSystemReaderImpl(RealFs(), os.environ,
-                                                   os.geteuid))
+                file_reader=RmFsImpl(RealFs(), os.environ,
+                                     os.geteuid))
 
     cmd.run(sys.argv, os.getuid())
 
     return cmd.exit_code
 
 
-class RmFileSystemReaderImpl(RmFileSystemReader):
+class RmFsImpl(RmFs):
     def __init__(self,
                  fs,  # type: Fs
                  environ,  # type: Mapping[str, str]
