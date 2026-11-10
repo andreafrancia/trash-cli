@@ -3,7 +3,7 @@ import errno
 import pytest
 
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from trashcli.fslib.fs_remove_file2 import FsRemoveFile2
+from trashcli.fslib.force_remove_impl import ForceRemoverImpl
 
 
 HOME_TRASH = {'HOME': '/xdg', 'XDG_DATA_HOME': '/xdg'}
@@ -30,7 +30,7 @@ class TestFsRemoveFile2OnFakeFs:
         self.fs = FakeFs()
         self.fs.make_file_and_dirs('/xdg/Trash/dir/sub/file')
         # a fixed non-root uid keeps the result independent of the test runner
-        self.remover = FsRemoveFile2(self.fs, HOME_TRASH, lambda: 1000)
+        self.remover = ForceRemoverImpl(self.fs, HOME_TRASH, lambda: 1000)
 
     def test_a_dir_without_write_bits_is_removed(self):
         self.fs.chmod('/xdg/Trash/dir/sub', 0o500)
@@ -77,7 +77,7 @@ class TestFsRemoveFile2OnFakeFs:
         self.fs.chmod('/xdg/Trash/dir', 0o500)
 
         with pytest.raises(OSError):
-            FsRemoveFile2(self.fs, HOME_TRASH, lambda: 0).remove_file2('/xdg/Trash/dir')
+            ForceRemoverImpl(self.fs, HOME_TRASH, lambda: 0).remove_file2('/xdg/Trash/dir')
 
         assert self.fs.get_mod('/xdg/Trash/dir') == 0o500
 
