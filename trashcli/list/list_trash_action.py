@@ -1,9 +1,11 @@
 from __future__ import print_function
 
 import os
+from abc import abstractmethod
 from typing import List
 from typing import NamedTuple
 
+from trashcli.compat import Protocol
 from trashcli.lib.action import Action
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.lib.printable import printable
@@ -188,10 +190,6 @@ def format_line(attribute, original_location):
 
 def format_line2(attribute, original_location, original_file):
     return "%s %s -> %s" % (attribute, original_location, original_file)
-
-
-from abc import abstractmethod
-from trashcli.compat import Protocol
 
 
 class ListTrashActionFs(Protocol):

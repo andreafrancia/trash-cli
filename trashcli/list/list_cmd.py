@@ -26,10 +26,6 @@ from trashcli.list.trash_dir_selector import TrashDirsSelector
 from trashcli.trash_dirs_scanner import TopTrashDirRulesFs
 
 
-class ListFileReader(TopTrashDirRulesFs, FileSize, Protocol):
-    pass
-
-
 class ListCmd:
     def __init__(self,
                  out,  # type: TextIO
@@ -88,3 +84,7 @@ class ListCmd:
         action = self.actions[type(args)]
 
         action.run_action(args)
+
+
+class ListFileReader(TopTrashDirRulesFs, FileSize, Protocol):
+    pass

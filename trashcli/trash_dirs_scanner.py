@@ -43,28 +43,6 @@ class TrashDir(tuple):
         return 'TrashDir(%r, %r)' % (self.path, self.volume)
 
 
-class TopTrashDirRulesFs(Protocol):
-    @abstractmethod
-    def path_exists(self, path):  # type: (str) -> bool
-        raise NotImplementedError()
-
-    @abstractmethod
-    def is_sticky_dir(self, path):  # type: (str) -> bool
-        raise NotImplementedError
-
-    @abstractmethod
-    def is_symlink(self, path):  # type: (str) -> bool
-        raise NotImplementedError
-
-    @abstractmethod
-    def is_world_writable(self, path):  # type: (str) -> bool
-        raise NotImplementedError
-
-    @abstractmethod
-    def path_isdir(self, path):  # type: (str) -> bool
-        raise NotImplementedError()
-
-
 class TopTrashDirRules:
 
     def __init__(self,
@@ -124,3 +102,25 @@ def only_found(events, # type: Iterable[TrashDir]
     for event, args in events:
         if event == trash_dir_found:
             yield args
+
+
+class TopTrashDirRulesFs(Protocol):
+    @abstractmethod
+    def path_exists(self, path):  # type: (str) -> bool
+        raise NotImplementedError()
+
+    @abstractmethod
+    def is_sticky_dir(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def is_symlink(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def is_world_writable(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def path_isdir(self, path):  # type: (str) -> bool
+        raise NotImplementedError()
