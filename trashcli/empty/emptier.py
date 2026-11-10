@@ -3,7 +3,7 @@ from typing import Iterable
 
 from trashcli.empty.console import Console
 from trashcli.empty.delete_according_date import DeleteAccordingDate
-from trashcli.empty.existing_file_remover import ExistingFileRemover
+from trashcli.fslib.protocols.remove_file_if_exists import RemoveFileIfExists
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.trash_dirs_scanner import TrashDir, only_found
@@ -13,7 +13,7 @@ class Emptier:
     def __init__(self,
                  delete_mode,  # type: DeleteAccordingDate
                  trash_dir_reader,  # type: TrashDirReader
-                 file_remover,  # type: ExistingFileRemover
+                 file_remover,  # type: RemoveFileIfExists
                  console  # type: Console
                  ):  # type: (...) -> None
         self.console = console
