@@ -35,9 +35,10 @@ class TestEmptyCanRemoveReadonlyDir:
         fs.write_file(target / 'sub' / 'f', 'x')
         fs.chmod(target / 'sub', 0o500)
         fs.chmod(target, 0o500)
+        user.add_environ('HOME', temp_dir)
+        user.add_environ('XDG_DATA_HOME', temp_dir / 'xdg_data_home')
 
-        user.run_empty(environ={'HOME': temp_dir,
-                                'XDG_DATA_HOME': temp_dir / 'xdg_data_home'})
+        user.run_empty()
 
         assert not fs.path_exists(target)
         assert user.stderr == ""

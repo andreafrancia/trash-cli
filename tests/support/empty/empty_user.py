@@ -1,4 +1,4 @@
-from typing import Optional, Mapping, List
+from typing import Optional, MutableMapping, List
 
 import pytest
 
@@ -19,13 +19,11 @@ class EmptyUser:
         self.stdout = ''
         self.stderr = ''
         self.volumes = []  # type: List[str]
+        self.environ = {}  # type: MutableMapping[str, str]
 
     def run_empty(self,
                   args=None,   # type: Optional[List[str]]
-                  environ=None,  # type: Optional[Mapping[str, str]]
                   ):
-        if environ is None:
-            environ = {}
         out = StringIO()
         err = StringIO()
         empty_cmd = EmptyCmd(
@@ -34,7 +32,7 @@ class EmptyUser:
             err=err,
             volumes_listing=FakeVolumesListing(self.volumes),
             now=lambda: jan_11_2001(),
-            environ=environ,
+            environ=self.environ,
             fs=self.fs,
             geteuid=lambda: 123,
             version='unused',
@@ -42,12 +40,15 @@ class EmptyUser:
         )
         if args is None:
             args = []
-        empty_cmd.run_cmd(args, environ, uid=123)
+        empty_cmd.run_cmd(args, self.environ, uid=123)
         self.stdout = out.getvalue()
         self.stderr = err.getvalue()
 
     def add_volume(self, path):  # type: (str) -> None
         self.volumes.append(path)
+
+    def add_environ(self, name, value):  # type: (str, str) -> None
+        self.environ[name] = value
 
 
 @pytest.fixture

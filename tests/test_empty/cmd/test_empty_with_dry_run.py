@@ -14,19 +14,19 @@ class TestEmptyWithDryRun:
         return GivenTrash(fs)
 
     @pytest.fixture(autouse=True, scope="function")
-    def setup_trash(self, trash):
-        self.environ = {'XDG_DATA_HOME': '/xdg'}
+    def setup_trash(self, user, trash):
+        user.add_environ('XDG_DATA_HOME', '/xdg')
         trash.has_file('/xdg/Trash/info/pippo.trashinfo')
         trash.has_file('/xdg/Trash/files/pippo')
 
     def test(self, fs, user):
-        user.run_empty([], self.environ)
+        user.run_empty([])
 
         assert fs.listdir('/xdg/Trash/files') == []
         assert fs.listdir('/xdg/Trash/info') == []
 
     def test_with_dry_run(self, fs, user):
-        user.run_empty(['--dry-run'], self.environ)
+        user.run_empty(['--dry-run'])
 
         assert fs.listdir('/xdg/Trash/files') == ['pippo']
         assert fs.listdir('/xdg/Trash/info') == ['pippo.trashinfo']

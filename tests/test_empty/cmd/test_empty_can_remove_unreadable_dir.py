@@ -11,17 +11,17 @@ user = empty_user_fixture
 
 class TestEmptyCanRemoveUnreadableDir:
     @pytest.fixture(autouse=True)
-    def setup_environ(self):
+    def setup_environ(self, user):
         self.tmp_dir = '/tmp'
         self.unreadable_dir = self.tmp_dir + '/data/Trash/files/unreadable'
-        self.environ = {'XDG_DATA_HOME': self.tmp_dir + '/data'}
+        user.add_environ('XDG_DATA_HOME', self.tmp_dir + '/data')
 
     def test_trash_empty_will_skip_unreadable_dir(self,
                                                   user,
                                                   unreadable):
         unreadable.new_unreadable_dir(self.unreadable_dir)
 
-        user.run_empty([], self.environ)
+        user.run_empty([])
 
         assert ("trash-empty: cannot remove %s\n" % self.unreadable_dir ==
                 user.stderr)
