@@ -11,4 +11,4 @@ class TestFsRemoveFile2OnRealFs:
     def test_remove_file_fails_when_file_does_not_exists(self):
         file_remove2 = ForceRemoverImpl(RealFs(), {}, os.geteuid)
         with pytest.raises(MyFileNotFoundError):
-            file_remove2.remove_file2('/non/existing/path')
+            file_remove2.remove_path_forcefully('/non/existing/path')
