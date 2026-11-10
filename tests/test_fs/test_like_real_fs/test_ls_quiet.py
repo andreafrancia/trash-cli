@@ -1,4 +1,4 @@
-from trashcli.fslib.real.entries_if_dir_exists import EntriesIfDirExists
+from trashcli.fslib.ls_quiet import LsQuiet
 
 from tests.support.put.real_and_fake_env import env, real_and_fake, Env
 
@@ -12,14 +12,14 @@ class TestLsQuiet:
         env.fs.write_file(env.path('dir/a'), 'a')
         env.fs.write_file(env.path('dir/b'), 'b')
 
-        lister = EntriesIfDirExists(env.fs)
+        lister = LsQuiet(env.fs)
 
-        assert sorted(lister.entries_if_dir_exists(
+        assert sorted(lister.list_if_exists(
             env.path('dir'))) == ['a', 'b']
 
     @real_and_fake()
     def test_entries_of_a_missing_dir_are_empty(self, env):
-        lister = EntriesIfDirExists(env.fs)
+        lister = LsQuiet(env.fs)
 
-        assert list(lister.entries_if_dir_exists(
+        assert list(lister.list_if_exists(
             env.path('missing'))) == []
