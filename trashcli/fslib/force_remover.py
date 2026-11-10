@@ -1,13 +1,14 @@
 import errno
 import os
 import stat
-from typing import Callable, Mapping
+from abc import abstractmethod
+from typing import Callable, Mapping, List
 
-from trashcli.fslib.force_remove_fs import ForceRemoveFs
-from trashcli.fslib.protocols.force_remover import ForceRemover
+from trashcli.compat import Protocol
 from trashcli.lib.trash_dirs import home_trash_dir_path_from_env
 
-class ForceRemoverImpl(ForceRemover):
+
+class ForceRemover:
     def __init__(self,
                  fs,  # type: ForceRemoveFs
                  environ,  # type: Mapping[str, str]
@@ -26,7 +27,8 @@ class ForceRemoverImpl(ForceRemover):
             except OSError as e:
                 # the condition says if we should not attempt the self heal
                 # root is not stopped by mode bits and must not chmod files of other users
-                if e.errno != errno.EACCES or self.geteuid() == 0 or not self.is_in_home_trash(path):
+                if e.errno != errno.EACCES or self.geteuid() == 0 or not self.is_in_home_trash(
+                        path):
                     raise
                 old_modes = []  # type: list
                 self.add_write_permission(path, old_modes)
@@ -39,7 +41,8 @@ class ForceRemoverImpl(ForceRemover):
                     self.restore_modes(old_modes)
                     raise
 
-    def add_write_permission(self, path, old_modes):  # type: (str, list) -> None
+    def add_write_permission(self, path,
+                             old_modes):  # type: (str, list) -> None
         """Add the owner write and search bits to path and to every dir under it."""
         if not self.fs.path_isdir(path) or self.fs.is_symlink(path):
             return
@@ -78,5 +81,40 @@ class ForceRemoverImpl(ForceRemover):
         if 'HOME' not in self.environ:
             return False
         home = self.fs.realpath(self.environ['HOME']) + os.sep
-        return any(path.startswith(trash + os.sep) and self.fs.realpath(trash).startswith(home)
+        return any(path.startswith(trash + os.sep) and self.fs.realpath(
+            trash).startswith(home)
                    for trash in home_trash_dir_path_from_env(self.environ))
+
+
+class ForceRemoveFs(Protocol):
+    @abstractmethod
+    def remove(self, path):  # type: (str) -> None
+        raise NotImplementedError
+
+    @abstractmethod
+    def shutil_rmtree(self, path):  # type: (str) -> None
+        raise NotImplementedError
+
+    @abstractmethod
+    def path_isdir(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def is_symlink(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_mod(self, path):  # type: (str) -> int
+        raise NotImplementedError
+
+    @abstractmethod
+    def chmod(self, path, mode):  # type: (str, int) -> None
+        raise NotImplementedError
+
+    @abstractmethod
+    def listdir(self, path):  # type: (str) -> List[str]
+        raise NotImplementedError
+
+    @abstractmethod
+    def realpath(self, path):
+        raise NotImplementedError
