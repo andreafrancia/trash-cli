@@ -3,14 +3,13 @@ import os
 import stat
 from typing import Callable, Mapping
 
-from trashcli.fslib.protocols.fs import Fs
+from trashcli.fslib.force_remove_fs import ForceRemoveFs
 from trashcli.fslib.protocols.force_remover import ForceRemover
 from trashcli.lib.trash_dirs import home_trash_dir_path_from_env
 
-
 class ForceRemoverImpl(ForceRemover):
     def __init__(self,
-                 fs,  # type: Fs
+                 fs,  # type: ForceRemoveFs
                  environ,  # type: Mapping[str, str]
                  geteuid,  # type: Callable[[], int]
                  ):  # type: (...) -> None
