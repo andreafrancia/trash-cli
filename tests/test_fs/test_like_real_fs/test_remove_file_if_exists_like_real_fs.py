@@ -3,10 +3,9 @@ from tests.support.put.real_and_fake_env import env, real_and_fake
 env = env  # the fixture, imported from its module
 
 
-# entries_if_dir_exists and remove_file_if_exists live in separate classes on
-# the real file system and in FakeFs on the fake one: same answers expected.
-class TestDirReaderAndRemoverLikeRealFs:
-
+# remove_file_if_exists lives in a separate class on the real file system and
+# in FakeFs on the fake one: same answers expected.
+class TestRemoveFileIfExistsLikeRealFs:
     @real_and_fake()
     def test_remove_file_if_exists_removes_a_file(self, env):
         env.fs.write_file(env.path('file'), 'contents')
