@@ -1,8 +1,6 @@
 import os
 from typing import TypeVar, Type
 
-from six import StringIO
-
 from trashcli.fslib.protocols.fs import Fs
 
 Self = TypeVar('Self', bound='MyPath')

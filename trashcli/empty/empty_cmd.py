@@ -6,13 +6,11 @@ from trashcli.empty.clock import Clock
 from trashcli.empty.console import Console
 from trashcli.empty.empty_action import EmptyAction, EmptyActionArgs
 from trashcli.empty.errors import Errors
-from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.empty.is_input_interactive import is_input_interactive
 from trashcli.empty.parser import Parser
 from trashcli.empty.print_time_action import PrintTimeAction, PrintTimeArgs
 from trashcli.fslib.protocols.fs import Fs
-from trashcli.fslib.protocols.read_file import ReadFile
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
 from trashcli.fslib.protocols.volume_of import VolumeOfFs
 from trashcli.lib.exit_codes import EX_OK

@@ -8,8 +8,6 @@ from trashcli.compat import Protocol
 from trashcli import trash
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.fslib.protocols.read_file import ReadFile
-from trashcli.empty.existing_file_remover import ExistingFileRemover
-from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.real.real_volumes_listing import RealVolumesListing
 from trashcli.fslib.real.real_volume_of import RealVolumeOfFs

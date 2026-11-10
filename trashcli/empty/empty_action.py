@@ -6,7 +6,6 @@ from trashcli.empty.delete_according_date import (
     DeleteAccordingDate,
 )
 from trashcli.empty.emptier import Emptier
-from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.guard import Guard
 from trashcli.empty.parse_reply import parse_reply
 from trashcli.empty.prepare_output_message import prepare_output_message
