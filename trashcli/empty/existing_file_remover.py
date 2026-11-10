@@ -4,7 +4,7 @@ from trashcli.fslib.fs_remove_file_if_exists import FsRemoveFileIfExists
 from trashcli.fslib.protocols.fs import Fs
 from trashcli.fslib.protocols.force_remover import ForceRemover
 from trashcli.fslib.protocols.remove_file_if_exists import RemoveFileIfExists
-from trashcli.fslib.fs_remove_file2 import FsRemoveFile2
+from trashcli.fslib.force_remove_impl import ForceRemoverImpl
 
 
 class ExistingFileRemover(RemoveFileIfExists, ForceRemover):
@@ -18,7 +18,7 @@ class ExistingFileRemover(RemoveFileIfExists, ForceRemover):
         self.geteuid = geteuid
 
     def remove_file2(self, path):
-        FsRemoveFile2(self.fs, self.environ, self.geteuid).remove_file2(path)
+        ForceRemoverImpl(self.fs, self.environ, self.geteuid).remove_file2(path)
 
     def remove_file_if_exists(self, path):
         FsRemoveFileIfExists(self.fs, self.environ, self.geteuid).remove_file_if_exists(path)

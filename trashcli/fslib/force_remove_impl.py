@@ -8,7 +8,7 @@ from trashcli.fslib.protocols.force_remover import ForceRemover
 from trashcli.lib.trash_dirs import home_trash_dir_path_from_env
 
 
-class FsRemoveFile2(ForceRemover):
+class ForceRemoverImpl(ForceRemover):
     def __init__(self,
                  fs,  # type: Fs
                  environ,  # type: Mapping[str, str]
