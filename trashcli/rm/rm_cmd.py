@@ -71,7 +71,7 @@ class RmCmd:
                         original_location, info_file = arg
                         if cmd.matches(original_location):
                             trashcan.delete_trash_info_and_backup_copy(
-                                info_file)
+                                path, info_file)
 
     def unable_to_parse_path(self, trashinfo):
         self.report_error('{}: unable to parse \'Path\''.format(trashinfo))
