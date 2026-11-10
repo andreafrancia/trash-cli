@@ -51,8 +51,6 @@ class TopTrashDirRulesFs(PathExists, IsStickyDir, IsSymLink,
     pass
 
 class TopTrashDirRules:
-    class Reader(PathExists, IsStickyDir, IsSymLink, Protocol):
-        pass
 
     def __init__(self,
                  reader # type: TopTrashDirRulesFs
