@@ -20,8 +20,9 @@ class TestEmptyCanRemoveUnreadableDirOnRealFs:
                                                   temp_dir,
                                                   unreadable):
         unreadable.new_unreadable_dir(temp_dir / 'data/Trash/files/unreadable')
+        user.add_environ('XDG_DATA_HOME', temp_dir / 'data')
 
-        user.run_empty(environ={'XDG_DATA_HOME': temp_dir / 'data'})
+        user.run_empty()
 
         assert ("trash-empty: cannot remove %s\n" % (temp_dir / 'data/Trash/files/unreadable') ==
                 user.stderr)
