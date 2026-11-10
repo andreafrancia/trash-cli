@@ -7,6 +7,7 @@ from trashcli.empty.delete_according_date import (
 )
 from trashcli.empty.emptier import Emptier
 from trashcli.empty.empty_fs import EmptyFs
+from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.empty.guard import Guard
 from trashcli.empty.parse_reply import parse_reply
 from trashcli.empty.prepare_output_message import prepare_output_message
@@ -40,12 +41,12 @@ class EmptyAction:
                  clock,  # type: Clock
                  volumes_listing,  # type: VolumesListing
                  volumes,  # type: VolumeOfFs
-                 dir_reader,  # type: DirReaderFs
                  console,  # type: Console
                  environ,  # type: Mapping[str, str]
                  geteuid,  # type: Callable[[], int]
                  fs, # type: EmptyFs
                  ):  # type: (...) -> None
+        dir_reader = FileSystemDirReader(fs)
         file_remover = FsRemoveFileIfExists(fs, environ, geteuid)
         self.selector = TrashDirsSelector.make(volumes_listing,
                                                fs,

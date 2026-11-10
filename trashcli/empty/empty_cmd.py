@@ -45,7 +45,6 @@ class EmptyCmd:
         self.empty_action = EmptyAction(clock,
                                         volumes_listing=self.volumes_listing,
                                         volumes=self.volumes,
-                                        dir_reader=FileSystemDirReader(fs),
                                         console=console,
                                         environ=environ,
                                         geteuid=geteuid,
