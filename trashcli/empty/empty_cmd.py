@@ -5,12 +5,12 @@ from typing import TextIO, Callable, Mapping
 from trashcli.empty.clock import Clock
 from trashcli.empty.console import Console
 from trashcli.empty.empty_action import EmptyAction, EmptyActionArgs
+from trashcli.empty.empty_fs import EmptyFs
 from trashcli.empty.errors import Errors
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.empty.is_input_interactive import is_input_interactive
 from trashcli.empty.parser import Parser
 from trashcli.empty.print_time_action import PrintTimeAction, PrintTimeArgs
-from trashcli.fslib.protocols.fs import Fs
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
 from trashcli.fslib.protocols.volume_of import VolumeOfFs
 from trashcli.lib.exit_codes import EX_OK
@@ -25,7 +25,7 @@ class EmptyCmd:
                  environ,  # type: Mapping[str, str]
                  volumes_listing,  # type: VolumesListing
                  now,  # type: Callable[[], datetime]
-                 fs,  # type: Fs
+                 fs,  # type: EmptyFs
                  geteuid,  # type: Callable[[], int]
                  version,  # type: str
                  volumes,  # type: VolumeOfFs
@@ -44,10 +44,8 @@ class EmptyCmd:
         console = Console(self.program_name, self.out, self.err)
         self.empty_action = EmptyAction(clock,
                                         volumes_listing=self.volumes_listing,
-                                        file_reader=fs,
                                         volumes=self.volumes,
                                         dir_reader=FileSystemDirReader(fs),
-                                        content_reader=fs,
                                         console=console,
                                         environ=environ,
                                         geteuid=geteuid,
