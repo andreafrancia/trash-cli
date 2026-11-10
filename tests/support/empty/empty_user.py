@@ -1,4 +1,3 @@
-import os
 import pytest
 
 from tests.support.dates import jan_11_2001
@@ -7,8 +6,6 @@ from six import StringIO
 from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 from tests.support.fakes.stub_volume_of import StubVolumeOfFs
 from trashcli.empty.empty_cmd import EmptyCmd
-from trashcli.empty.existing_file_remover import ExistingFileRemover
-from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.fslib.protocols.fs import Fs
 
 

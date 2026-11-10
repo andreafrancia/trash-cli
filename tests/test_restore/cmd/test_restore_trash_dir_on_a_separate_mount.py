@@ -1,5 +1,3 @@
-import datetime
-
 from tests.support.dates import date_at
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.trash_dirs.given_trash import \
