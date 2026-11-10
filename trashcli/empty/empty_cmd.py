@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from typing import TextIO, Callable
+from typing import TextIO, Callable, Mapping
 
 from trashcli.empty.clock import Clock
 from trashcli.empty.console import Console
@@ -10,6 +10,7 @@ from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.is_input_interactive import is_input_interactive
 from trashcli.empty.parser import Parser
 from trashcli.empty.print_time_action import PrintTimeAction, PrintTimeArgs
+from trashcli.fslib.protocols.fs import Fs
 from trashcli.fslib.protocols.read_file import ReadFile
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
 from trashcli.fslib.protocols.volume_of import VolumeOfFs
@@ -24,17 +25,18 @@ class EmptyCmd:
                  argv0,  # type: str
                  out,  # type: TextIO
                  err,  # type: TextIO
+                 environ,  # type: Mapping[str, str]
                  volumes_listing,  # type: VolumesListing
                  now,  # type: Callable[[], datetime]
+                 fs,  # type: Fs
+                 geteuid,  # type: Callable[[], int]
                  file_reader,  # type: TopTrashDirRulesFs
                  dir_reader,  # type: DirReaderFs
                  content_reader,  # type: ReadFile
-                 file_remover,  # type: ExistingFileRemover
                  version,  # type: str
                  volumes,  # type: VolumeOfFs
                  ):
         self.volumes = volumes
-        self.file_remover = file_remover
         self.dir_reader = dir_reader
         self.file_reader = file_reader
         self.volumes_listing = volumes_listing
@@ -46,6 +48,7 @@ class EmptyCmd:
         self.content_reader = content_reader
         self.parser = Parser()
         self.program_name = os.path.basename(argv0)
+        self.file_remover = ExistingFileRemover(fs, environ, geteuid)
         errors = Errors(self.program_name, self.err)
         clock = Clock(self.now, errors)
         console = Console(self.program_name, self.out, self.err)
