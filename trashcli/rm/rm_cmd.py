@@ -1,4 +1,8 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
+from typing import Callable, TextIO
+
+from trashcli.fslib.protocols.volumes_listing import VolumesListing
+from trashcli.lib.environ import Environ
 from trashcli.rm.rm_fs import RmFs
 from trashcli.lib.single_user_info_provider import SingleUserInfoProvider
 from trashcli.rm.filter import Filter
@@ -10,12 +14,12 @@ from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 
 class RmCmd:
     def __init__(self,
-                 environ,
-                 getuid,
-                 volumes_listing,
-                 stderr,
+                 environ,  # type: Environ
+                 getuid,  # type: Callable[[], int]
+                 volumes_listing,  # type: VolumesListing
+                 stderr,  # type: TextIO
                  rm_fs,  # type: RmFs
-                 ):
+                 ):  # type: (...) -> None
         self.environ = environ
         self.getuid = getuid
         self.volumes_listing = volumes_listing
