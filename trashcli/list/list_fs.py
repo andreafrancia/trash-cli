@@ -4,7 +4,7 @@ from typing import Iterable
 from trashcli.compat import Protocol
 
 
-class FileSystemReaderForListCmd(Protocol):
+class ListFs(Protocol):
     @abstractmethod
     def is_sticky_dir(self, path):  # type: (str) -> bool
         raise NotImplementedError
