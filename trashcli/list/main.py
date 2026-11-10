@@ -3,7 +3,7 @@ import os
 import sys
 
 import trashcli.trash
-from trashcli.fslib.file_system_reader import FileSystemReader
+from trashcli.fslib.list_fs_impl import ListFsImpl
 from trashcli.fslib.real.real_dir_reader_fs import RealDirReaderFs
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.real.real_read_file import RealReadFile
@@ -23,7 +23,7 @@ def main():
         uid=os.getuid(),
         volumes=RealVolumeOfFs(),
         dir_reader=RealDirReaderFs(RealFs()),
-        file_reader=FileSystemReader(RealFs()),
+        file_reader=ListFsImpl(RealFs()),
         content_reader=RealReadFile(),
         version=trashcli.trash.version,
         disk_partitions_fs=RealDiskPartitionsFs(),

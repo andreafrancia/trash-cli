@@ -28,3 +28,7 @@ class ListFs(Protocol):
     @abstractmethod
     def path_exists(self, path):  # type: (str) -> bool
         raise NotImplementedError
+
+    @abstractmethod
+    def is_world_writable(self, path):  # type: (str) -> bool
+        raise NotImplementedError
