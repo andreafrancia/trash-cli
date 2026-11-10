@@ -259,7 +259,7 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             return False
         return isinstance(entity, Directory)
 
-    def path_exists(self, path):
+    def path_exists(self, path):  # type: (str) -> bool
         try:
             self.get_entity_at(path)
             return True
