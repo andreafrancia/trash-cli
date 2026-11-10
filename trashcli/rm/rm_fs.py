@@ -13,7 +13,7 @@ class RmFs(Protocol):
         raise NotImplementedError()
 
     @abstractmethod
-    def path_exists(self, path):
+    def path_exists(self, path):  # type: (str) -> bool
         raise NotImplementedError()
 
     @abstractmethod
