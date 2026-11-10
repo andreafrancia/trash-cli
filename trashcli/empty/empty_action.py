@@ -1,4 +1,4 @@
-from typing import NamedTuple, List
+from typing import NamedTuple, List, Mapping, Callable
 
 from trashcli.empty.clock import Clock
 from trashcli.empty.console import Console
@@ -11,6 +11,7 @@ from trashcli.empty.guard import Guard
 from trashcli.empty.parse_reply import parse_reply
 from trashcli.empty.prepare_output_message import prepare_output_message
 from trashcli.empty.user import User
+from trashcli.fslib.protocols.fs import Fs
 from trashcli.fslib.protocols.read_file import ReadFile
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
 from trashcli.fslib.protocols.volume_of import VolumeOfFs
@@ -39,14 +40,17 @@ class EmptyActionArgs(
 class EmptyAction:
     def __init__(self,
                  clock,  # type: Clock
-                 file_remover,  # type: ExistingFileRemover
                  volumes_listing,  # type: VolumesListing
                  file_reader,  # type: TopTrashDirRulesFs
                  volumes,  # type: VolumeOfFs
                  dir_reader,  # type: DirReaderFs
                  content_reader,  # type: ReadFile
                  console,  # type: Console
+                 environ,  # type: Mapping[str, str]
+                 geteuid,  # type: Callable[[], int]
+                 fs, # type: Fs
                  ):  # type: (...) -> None
+        file_remover = ExistingFileRemover(fs, environ, geteuid)
         self.selector = TrashDirsSelector.make(volumes_listing,
                                                file_reader,
                                                volumes)
