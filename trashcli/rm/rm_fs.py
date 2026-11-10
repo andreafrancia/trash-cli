@@ -21,6 +21,10 @@ class RmFs(Protocol):
         raise NotImplementedError
 
     @abstractmethod
+    def is_symlink(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
     def remove_file2(self, path):
         raise NotImplementedError()
 
