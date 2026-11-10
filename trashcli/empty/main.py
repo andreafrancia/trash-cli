@@ -29,7 +29,6 @@ def main():
                          geteuid=os.geteuid,
                          environ=os.environ,
                          fs=fs,
-                         content_reader=fs,
                          version=trash.version,
                          volumes=RealVolumeOfFs())
     return empty_cmd.run_cmd(sys.argv[1:], os.environ, os.getuid())
