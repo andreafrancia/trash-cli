@@ -1,11 +1,11 @@
 from __future__ import absolute_import
 
 import os
-from trashcli.fslib.ls_quiet import LsQuiet
-
-from trashcli.compat import Protocol
 from abc import abstractmethod
 from typing import List
+
+from trashcli.compat import Protocol
+from trashcli.fslib.ls_quiet import LsQuiet
 
 
 class TrashDirReader:

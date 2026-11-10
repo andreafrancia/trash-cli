@@ -1,7 +1,9 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
 import os
-from typing import Iterable
+from abc import abstractmethod
+from typing import List
 
+from trashcli.compat import Protocol
 from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.parse_trashinfo.parse_path import parse_path
 from trashcli.parse_trashinfo.parser_error import ParseError
@@ -25,9 +27,6 @@ class ListTrashinfos:
                 complete_path = os.path.join(volume, path)
                 yield 'trashed_file', (complete_path, trashinfo_path)
 
-from abc import abstractmethod
-from trashcli.compat import Protocol
-from typing import List
 
 class ListTrashinfosFs(Protocol):
     @abstractmethod
