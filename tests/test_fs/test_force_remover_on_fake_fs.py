@@ -25,7 +25,7 @@ def make_dir_unlistable(fs, unlistable):
     fs.shutil_rmtree = rmtree_stopped_by_unlistable
 
 
-class TestFsRemoveFile2OnFakeFs:
+class TestForceRemoverOnFakeFs:
     def setup_method(self):
         self.fs = FakeFs()
         self.fs.make_file_and_dirs('/xdg/Trash/dir/sub/file')
