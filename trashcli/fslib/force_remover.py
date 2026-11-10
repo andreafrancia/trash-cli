@@ -75,7 +75,7 @@ class ForceRemover:
         for path, mode in reversed(old_modes):
             try:
                 # owner bits only, as when adding them: a swapped symlink must not open its target
-                self.fs.chmod(path, mode & stat.S_IRWXU)
+                self.fs.chmod(path, keep_only_user_bits(mode))
             except OSError:
                 # the dir was already removed
                 pass
@@ -88,6 +88,10 @@ class ForceRemover:
         return any(path.startswith(trash + os.sep) and self.fs.realpath(
             trash).startswith(home)
                    for trash in home_trash_dir_path_from_env(self.environ))
+
+
+def keep_only_user_bits(mode):  # type: (int) -> int
+    return mode & stat.S_IRWXU
 
 
 class ModeToRestore(NamedTuple('ModeToRestore', [
