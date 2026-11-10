@@ -25,6 +25,7 @@ class FsRemoveFile2(RemoveFile2):
             try:
                 self.fs.shutil_rmtree(path)
             except OSError as e:
+                # the condition says if we should not attempt the self heal
                 # root is not stopped by mode bits and must not chmod files of other users
                 if e.errno != errno.EACCES or self.geteuid() == 0 or not self.is_in_home_trash(path):
                     raise
