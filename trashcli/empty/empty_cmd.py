@@ -30,7 +30,6 @@ class EmptyCmd:
                  now,  # type: Callable[[], datetime]
                  fs,  # type: Fs
                  geteuid,  # type: Callable[[], int]
-                 file_reader,  # type: TopTrashDirRulesFs
                  dir_reader,  # type: DirReaderFs
                  content_reader,  # type: ReadFile
                  version,  # type: str
@@ -38,7 +37,6 @@ class EmptyCmd:
                  ):
         self.volumes = volumes
         self.dir_reader = dir_reader
-        self.file_reader = file_reader
         self.volumes_listing = volumes_listing
         self.argv0 = argv0
         self.out = out
@@ -55,7 +53,7 @@ class EmptyCmd:
         self.empty_action = EmptyAction(clock,
                                         self.file_remover,
                                         self.volumes_listing,
-                                        self.file_reader,
+                                        fs,
                                         self.volumes,
                                         self.dir_reader,
                                         self.content_reader,
