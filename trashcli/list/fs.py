@@ -1,22 +1,30 @@
-import abc
+from abc import abstractmethod
+from typing import Iterable
 
-from six import add_metaclass
-
-from trashcli.fslib.protocols.is_sym_link import IsSymLink
-from trashcli.fslib.protocols.read_file import ReadFile
-from trashcli.fslib.protocols.entries_if_dir_exists import EntriesIfDirExists
-from trashcli.fslib.protocols.path_exists import PathExists
-from trashcli.fslib.protocols.is_sticky_dir import IsStickyDir
-from trashcli.fslib.protocols.has_sticky_bit import HasStickyBit
+from trashcli.compat import Protocol
 
 
-@add_metaclass(abc.ABCMeta)
-class FileSystemReaderForListCmd(
-    IsStickyDir,
-    HasStickyBit,
-    IsSymLink,
-    ReadFile,
-    EntriesIfDirExists,
-    PathExists,
-):
-    pass
+class FileSystemReaderForListCmd(Protocol):
+    @abstractmethod
+    def is_sticky_dir(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def has_sticky_bit(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def is_symlink(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def read_file(self, path):
+        raise NotImplementedError
+
+    @abstractmethod
+    def entries_if_dir_exists(self, path):  # type: (str) -> Iterable[str]
+        raise NotImplementedError
+
+    @abstractmethod
+    def path_exists(self, path):  # type: (str) -> bool
+        raise NotImplementedError
