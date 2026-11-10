@@ -7,7 +7,7 @@ from trashcli.fslib.force_remover import ForceRemover
 from trashcli.fslib.real.real_fs import RealFs
 
 @pytest.mark.slow
-class TestFsRemoveFile2OnRealFs:
+class TestForceRemoverOnRealFs:
     def test_remove_file_fails_when_file_does_not_exists(self):
         file_remove2 = ForceRemover(RealFs(), {}, os.geteuid)
         with pytest.raises(MyFileNotFoundError):
