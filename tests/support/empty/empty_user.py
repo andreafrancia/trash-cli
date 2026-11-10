@@ -1,3 +1,5 @@
+from typing import Optional, Mapping, List
+
 import pytest
 
 from tests.support.dates import jan_11_2001
@@ -10,13 +12,18 @@ from trashcli.fslib.protocols.fs import Fs
 
 
 class EmptyUser:
-    def __init__(self, fs):
+    def __init__(self,
+                 fs,  # type: Fs
+                 ):
         self.fs = fs
         self.stdout = ''
         self.stderr = ''
-        self.volumes = []
+        self.volumes = []  # type: List[str]
 
-    def run_empty(self, args=None, environ=None):
+    def run_empty(self,
+                  args=None,   # type: Optional[List[str]]
+                  environ=None,  # type: Optional[Mapping[str, str]]
+                  ):
         if environ is None:
             environ = {}
         out = StringIO()
@@ -39,7 +46,7 @@ class EmptyUser:
         self.stdout = out.getvalue()
         self.stderr = err.getvalue()
 
-    def add_volume(self, path):
+    def add_volume(self, path):  # type: (str) -> None
         self.volumes.append(path)
 
 
