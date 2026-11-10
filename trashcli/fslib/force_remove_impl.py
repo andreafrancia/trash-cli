@@ -18,7 +18,7 @@ class ForceRemoverImpl(ForceRemover):
         self.environ = environ
         self.geteuid = geteuid
 
-    def remove_file2(self, path):
+    def remove_path_forcefully(self, path):
         try:
             self.fs.remove(path)
         except OSError:

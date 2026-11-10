@@ -39,7 +39,7 @@ class RmFsImpl(RmFs):
         return self.fs.path_isdir(path)
 
     def remove_file2(self, path):
-        return ForceRemoverImpl(self.fs, self.environ, self.geteuid).remove_file2(path)
+        return ForceRemoverImpl(self.fs, self.environ, self.geteuid).remove_path_forcefully(path)
 
     def remove_file_if_exists(self, path):
         return FsRemoveFileIfExists(self.fs, self.environ,

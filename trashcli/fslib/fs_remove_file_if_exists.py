@@ -17,4 +17,4 @@ class FsRemoveFileIfExists(RemoveFileIfExists):
 
     def remove_file_if_exists(self, path):
         if self.fs.path_lexists(path):
-            ForceRemoverImpl(self.fs, self.environ, self.geteuid).remove_file2(path)
+            ForceRemoverImpl(self.fs, self.environ, self.geteuid).remove_path_forcefully(path)

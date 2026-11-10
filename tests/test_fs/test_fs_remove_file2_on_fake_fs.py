@@ -36,7 +36,7 @@ class TestFsRemoveFile2OnFakeFs:
         self.fs.chmod('/xdg/Trash/dir/sub', 0o500)
         self.fs.chmod('/xdg/Trash/dir', 0o500)
 
-        self.remover.remove_file2('/xdg/Trash/dir')
+        self.remover.remove_path_forcefully('/xdg/Trash/dir')
 
         assert self.fs.ls_aa('/xdg/Trash') == []
 
@@ -45,7 +45,7 @@ class TestFsRemoveFile2OnFakeFs:
         self.fs.chmod('/xdg/Trash/dir', 0o500)
 
         with pytest.raises(OSError):
-            self.remover.remove_file2('/xdg/Trash/dir')
+            self.remover.remove_path_forcefully('/xdg/Trash/dir')
 
         assert self.fs.get_mod('/xdg/Trash/dir') == 0o500
         assert self.fs.get_mod('/xdg/Trash/dir/sub') == 0o000
@@ -56,7 +56,7 @@ class TestFsRemoveFile2OnFakeFs:
         self.fs.symlink('/elsewhere/ro', '/xdg/Trash/dir/link')
         self.fs.chmod('/xdg/Trash/dir', 0o500)
 
-        self.remover.remove_file2('/xdg/Trash/dir')
+        self.remover.remove_path_forcefully('/xdg/Trash/dir')
 
         assert self.fs.ls_aa('/xdg/Trash') == []
         assert self.fs.get_mod('/elsewhere/ro') == 0o500
@@ -68,7 +68,7 @@ class TestFsRemoveFile2OnFakeFs:
         self.fs.chmod('/xdg/Trash/dir', 0o500)
 
         with pytest.raises(OSError):
-            self.remover.remove_file2('/xdg/Trash/dir')
+            self.remover.remove_path_forcefully('/xdg/Trash/dir')
 
         assert self.fs.get_mod('/xdg/Trash/dir') == 0o500
 
@@ -77,7 +77,7 @@ class TestFsRemoveFile2OnFakeFs:
         self.fs.chmod('/xdg/Trash/dir', 0o500)
 
         with pytest.raises(OSError):
-            ForceRemoverImpl(self.fs, HOME_TRASH, lambda: 0).remove_file2('/xdg/Trash/dir')
+            ForceRemoverImpl(self.fs, HOME_TRASH, lambda: 0).remove_path_forcefully('/xdg/Trash/dir')
 
         assert self.fs.get_mod('/xdg/Trash/dir') == 0o500
 
@@ -86,7 +86,7 @@ class TestFsRemoveFile2OnFakeFs:
         self.fs.chmod('/outside/dir', 0o500)
 
         with pytest.raises(OSError):
-            self.remover.remove_file2('/outside/dir')
+            self.remover.remove_path_forcefully('/outside/dir')
 
         assert self.fs.get_mod('/outside/dir') == 0o500
 
@@ -97,7 +97,7 @@ class TestFsRemoveFile2OnFakeFs:
         chmod = self.fs.chmod
         self.fs.chmod = lambda path, mode: modes.append(mode) or chmod(path, mode)
 
-        self.remover.remove_file2('/xdg/Trash/dir')
+        self.remover.remove_path_forcefully('/xdg/Trash/dir')
 
         # no group, other or special bit is added to a trashed dir
         assert modes and all(m & ~0o700 == 0 for m in modes)
@@ -108,6 +108,6 @@ class TestFsRemoveFile2OnFakeFs:
         self.fs.symlink('/elsewhere/outer', '/xdg/Trash/dir/link')
         self.fs.chmod('/xdg/Trash/dir', 0o500)
 
-        self.remover.remove_file2('/xdg/Trash/dir')
+        self.remover.remove_path_forcefully('/xdg/Trash/dir')
 
         assert self.fs.get_mod('/elsewhere/outer/inner') == 0o500
