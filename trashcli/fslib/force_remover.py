@@ -2,7 +2,7 @@ import errno
 import os
 import stat
 from abc import abstractmethod
-from typing import Callable, Mapping, List
+from typing import Callable, Mapping, List, NamedTuple
 
 from trashcli.compat import Protocol
 from trashcli.lib.trash_dirs import home_trash_dir_path_from_env
@@ -18,7 +18,7 @@ class ForceRemover:
         self.environ = environ
         self.geteuid = geteuid
 
-    def remove_path_forcefully(self, path):
+    def remove_path_forcefully(self, path):  # type: (str) -> None
         try:
             self.fs.remove(path)
         except OSError:
@@ -41,8 +41,10 @@ class ForceRemover:
                     self.restore_modes(old_modes)
                     raise
 
-    def add_write_permission(self, path,
-                             old_modes):  # type: (str, list) -> None
+    def add_write_permission(self,
+                             path,  # type: str
+                             old_modes,  # type: List[ModeToRestore]
+                             ):  # type: (...) -> None
         """Add the owner write and search bits to path and to every dir under it."""
         if not self.fs.path_isdir(path) or self.fs.is_symlink(path):
             return
@@ -55,7 +57,7 @@ class ForceRemover:
             except OSError:
                 # only the owner can change the mode
                 return
-            old_modes.append((path, mode))
+            old_modes.append(ModeToRestore(path, mode))
         try:
             names = self.fs.listdir(path)
         except OSError:
@@ -65,7 +67,9 @@ class ForceRemover:
         for name in names:
             self.add_write_permission(os.path.join(path, name), old_modes)
 
-    def restore_modes(self, old_modes):  # type: (list) -> None
+    def restore_modes(self,
+                      old_modes,  # type: List[ModeToRestore]
+                      ):  # type: (...) -> None
         """Set back the old mode of each changed dir that is left."""
         # bottom up: a dir keeps its search bit until the dirs under it are restored
         for path, mode in reversed(old_modes):
@@ -84,6 +88,13 @@ class ForceRemover:
         return any(path.startswith(trash + os.sep) and self.fs.realpath(
             trash).startswith(home)
                    for trash in home_trash_dir_path_from_env(self.environ))
+
+
+class ModeToRestore(NamedTuple('ModeToRestore', [
+    ('path', str),
+    ('mode', int)
+])):
+    pass
 
 
 class ForceRemoveFs(Protocol):
