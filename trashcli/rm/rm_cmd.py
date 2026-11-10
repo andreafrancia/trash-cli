@@ -41,7 +41,7 @@ class RmCmd:
 
         cmd = Filter(args[0])
 
-        listing = ListTrashinfos.make(self.rm_fs, self.rm_fs)
+        listing = ListTrashinfos(self.rm_fs)
 
         user_info_provider = SingleUserInfoProvider()
         scanner = TrashDirsScanner(user_info_provider,
