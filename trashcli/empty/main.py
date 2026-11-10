@@ -26,7 +26,6 @@ def main():
                          err=sys.stderr,
                          volumes_listing=RealVolumesListing(),
                          now=datetime.now,
-                         file_reader=fs,
                          geteuid=os.geteuid,
                          environ=os.environ,
                          fs=fs,

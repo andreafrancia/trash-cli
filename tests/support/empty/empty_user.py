@@ -30,7 +30,6 @@ class EmptyUser:
             err=err,
             volumes_listing=FakeVolumesListing(self.volumes),
             now=lambda: jan_11_2001(),
-            file_reader=self.fs,
             environ=environ,
             fs=self.fs,
             geteuid=lambda: 123,
