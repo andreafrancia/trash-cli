@@ -5,7 +5,7 @@ import pytest
 from trashcli.fslib.protocols.fs import Fs
 from trashcli.fslib.real.real_fs import RealFs
 
-from trashcli.fslib.force_remove_impl import ForceRemoverImpl
+from trashcli.fslib.force_remover import ForceRemover
 
 
 class FsFixture:
@@ -20,7 +20,7 @@ class FsFixture:
         self.check_empty_dir(path)
 
     def remove_file2(self, path):
-        ForceRemoverImpl(self.fs, {}, os.geteuid).remove_path_forcefully(path)
+        ForceRemover(self.fs, {}, os.geteuid).remove_path_forcefully(path)
 
     def does_not_exist(self, path):
         assert not self.fs.path_exists(path)
