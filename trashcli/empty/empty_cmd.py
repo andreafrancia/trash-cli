@@ -7,6 +7,7 @@ from trashcli.empty.console import Console
 from trashcli.empty.empty_action import EmptyAction, EmptyActionArgs
 from trashcli.empty.errors import Errors
 from trashcli.empty.existing_file_remover import ExistingFileRemover
+from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.empty.is_input_interactive import is_input_interactive
 from trashcli.empty.parser import Parser
 from trashcli.empty.print_time_action import PrintTimeAction, PrintTimeArgs
@@ -14,10 +15,8 @@ from trashcli.fslib.protocols.fs import Fs
 from trashcli.fslib.protocols.read_file import ReadFile
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
 from trashcli.fslib.protocols.volume_of import VolumeOfFs
-from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.exit_codes import EX_OK
 from trashcli.lib.print_version import PrintVersionAction, PrintVersionArgs
-from trashcli.trash_dirs_scanner import TopTrashDirRulesFs
 
 
 class EmptyCmd:
@@ -30,13 +29,11 @@ class EmptyCmd:
                  now,  # type: Callable[[], datetime]
                  fs,  # type: Fs
                  geteuid,  # type: Callable[[], int]
-                 dir_reader,  # type: DirReaderFs
                  content_reader,  # type: ReadFile
                  version,  # type: str
                  volumes,  # type: VolumeOfFs
                  ):
         self.volumes = volumes
-        self.dir_reader = dir_reader
         self.volumes_listing = volumes_listing
         self.argv0 = argv0
         self.out = out
@@ -55,7 +52,7 @@ class EmptyCmd:
                                         self.volumes_listing,
                                         fs,
                                         self.volumes,
-                                        self.dir_reader,
+                                        FileSystemDirReader(fs),
                                         self.content_reader,
                                         console)
         self.print_version_action = PrintVersionAction(self.out,
