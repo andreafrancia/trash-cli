@@ -34,7 +34,6 @@ class EmptyUser:
             fs=self.fs,
             geteuid=lambda: 123,
             content_reader=self.fs,
-            dir_reader=FileSystemDirReader(self.fs),
             version='unused',
             volumes=StubVolumeOfFs()
         )
