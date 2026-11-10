@@ -2,8 +2,9 @@ from typing import Callable, Mapping
 
 from trashcli.fslib.real.real_entries_if_dir_exists import \
     RealEntriesIfDirExists
+from trashcli.fslib.fs_remove_file2 import FsRemoveFile2
+from trashcli.fslib.fs_remove_file_if_exists import FsRemoveFileIfExists
 from trashcli.fslib.protocols.fs import Fs
-from trashcli.rm.real_remover_fs import RealRemoverFs
 from trashcli.rm.rm_cmd import RmFs
 
 class RmFsImpl(RmFs):
@@ -38,9 +39,8 @@ class RmFsImpl(RmFs):
         return self.fs.path_isdir(path)
 
     def remove_file2(self, path):
-        return RealRemoverFs(self.fs, self.environ, self.geteuid).remove_file2(
-            path)
+        return FsRemoveFile2(self.fs, self.environ, self.geteuid).remove_file2(path)
 
     def remove_file_if_exists(self, path):
-        return RealRemoverFs(self.fs, self.environ,
-                             self.geteuid).remove_file_if_exists(path)
+        return FsRemoveFileIfExists(self.fs, self.environ,
+                                    self.geteuid).remove_file_if_exists(path)
