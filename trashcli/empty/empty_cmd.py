@@ -29,7 +29,6 @@ class EmptyCmd:
                  now,  # type: Callable[[], datetime]
                  fs,  # type: Fs
                  geteuid,  # type: Callable[[], int]
-                 content_reader,  # type: ReadFile
                  version,  # type: str
                  volumes,  # type: VolumeOfFs
                  ):
@@ -40,7 +39,6 @@ class EmptyCmd:
         self.err = err
         self.version = version
         self.now = now
-        self.content_reader = content_reader
         self.parser = Parser()
         self.program_name = os.path.basename(argv0)
         self.file_remover = ExistingFileRemover(fs, environ, geteuid)
@@ -53,7 +51,7 @@ class EmptyCmd:
                                         fs,
                                         self.volumes,
                                         FileSystemDirReader(fs),
-                                        self.content_reader,
+                                        fs,
                                         console)
         self.print_version_action = PrintVersionAction(self.out,
                                                        self.version)
