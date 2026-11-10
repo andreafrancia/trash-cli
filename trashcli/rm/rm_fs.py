@@ -17,6 +17,10 @@ class RmFs(Protocol):
         raise NotImplementedError()
 
     @abstractmethod
+    def path_isdir(self, path):  # type: (str) -> bool
+        raise NotImplementedError()
+
+    @abstractmethod
     def is_sticky_dir(self, path):  # type: (str) -> bool
         raise NotImplementedError
 
