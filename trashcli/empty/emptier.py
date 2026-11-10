@@ -10,8 +10,12 @@ from trashcli.trash_dirs_scanner import TrashDir, only_found
 
 
 class Emptier:
-    def __init__(self, delete_mode, trash_dir_reader, file_remover, console
-                 ):  # type: (DeleteAccordingDate, TrashDirReader, ExistingFileRemover, Console) -> None
+    def __init__(self,
+                 delete_mode,  # type: DeleteAccordingDate
+                 trash_dir_reader,  # type: TrashDirReader
+                 file_remover,  # type: ExistingFileRemover
+                 console  # type: Console
+                 ):  # type: (...) -> None
         self.console = console
         self.file_remover = file_remover
         self.delete_mode = delete_mode

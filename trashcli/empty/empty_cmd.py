@@ -41,18 +41,20 @@ class EmptyCmd:
         self.now = now
         self.parser = Parser()
         self.program_name = os.path.basename(argv0)
-        self.file_remover = ExistingFileRemover(fs, environ, geteuid)
         errors = Errors(self.program_name, self.err)
         clock = Clock(self.now, errors)
         console = Console(self.program_name, self.out, self.err)
         self.empty_action = EmptyAction(clock,
-                                        self.file_remover,
-                                        self.volumes_listing,
-                                        fs,
-                                        self.volumes,
-                                        FileSystemDirReader(fs),
-                                        fs,
-                                        console)
+                                        volumes_listing=self.volumes_listing,
+                                        file_reader=fs,
+                                        volumes=self.volumes,
+                                        dir_reader=FileSystemDirReader(fs),
+                                        content_reader=fs,
+                                        console=console,
+                                        environ=environ,
+                                        geteuid=geteuid,
+                                        fs=fs,
+                                        )
         self.print_version_action = PrintVersionAction(self.out,
                                                        self.version)
         self.print_time_action = PrintTimeAction(self.out, clock)
