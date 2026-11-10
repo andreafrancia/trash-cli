@@ -1,13 +1,14 @@
+from abc import abstractmethod
 from typing import Callable, Mapping
 
-from trashcli.fslib.protocols.fs import Fs
+from trashcli.compat import Protocol
 from trashcli.fslib.protocols.remove_file_if_exists import RemoveFileIfExists
 from trashcli.fslib.force_remover import ForceRemover
 
 
 class FsRemoveFileIfExists(RemoveFileIfExists):
     def __init__(self,
-                 fs,  # type: Fs
+                 fs,  # type: FsRemoveFileIfExistsFs
                  environ,  # type: Mapping[str, str]
                  geteuid,  # type: Callable[[], int]
                  ):  # type: (...) -> None
@@ -18,3 +19,17 @@ class FsRemoveFileIfExists(RemoveFileIfExists):
     def remove_file_if_exists(self, path):
         if self.fs.path_lexists(path):
             ForceRemover(self.fs, self.environ, self.geteuid).remove_path_forcefully(path)
+
+
+class FsRemoveFileIfExistsFs(Protocol):
+    @abstractmethod
+    def path_lexists(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def remove(self, path):  # type: (str) -> None
+        raise NotImplementedError
+
+    @abstractmethod
+    def shutil_rmtree(self, path):  # type: (str) -> None
+        raise NotImplementedError
