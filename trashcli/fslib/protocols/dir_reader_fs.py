@@ -1,14 +1,16 @@
 from __future__ import absolute_import
 
+from abc import abstractmethod
+from typing import Iterable
+
 from trashcli.compat import Protocol
 
-from trashcli.fslib.protocols.entries_if_dir_exists import EntriesIfDirExists
-from trashcli.fslib.protocols.path_exists import PathExists
 
+class DirReaderFs(Protocol):
+    @abstractmethod
+    def entries_if_dir_exists(self, path):  # type: (str) -> Iterable[str]
+        raise NotImplementedError
 
-class DirReaderFs(
-    EntriesIfDirExists,
-    PathExists,
-    Protocol,
-):
-    pass
+    @abstractmethod
+    def path_exists(self, path):  # type: (str) -> bool
+        raise NotImplementedError
