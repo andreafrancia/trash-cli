@@ -5,7 +5,7 @@ from trashcli.compat import Protocol
 from trashcli.fslib.protocols.entries_if_dir_exists import EntriesIfDirExists
 
 
-class RealEntriesIfDirExists(EntriesIfDirExists):
+class EntriesIfDirExistsImpl(EntriesIfDirExists):
     def __init__(self, fs):  # type: (RealEntriesIfDirExistsFs) -> None
         self.fs = fs
 

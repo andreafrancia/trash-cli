@@ -1,6 +1,6 @@
 from trashcli.fslib.protocols.fs import Fs
 from trashcli.fslib.real.real_entries_if_dir_exists import \
-    RealEntriesIfDirExists
+    EntriesIfDirExistsImpl
 from trashcli.list.list_fs import ListFs
 
 
@@ -9,7 +9,7 @@ class ListFsImpl(ListFs):
         self.fs = fs
 
     def entries_if_dir_exists(self, path):
-        return RealEntriesIfDirExists(self.fs).entries_if_dir_exists(path)
+        return EntriesIfDirExistsImpl(self.fs).entries_if_dir_exists(path)
 
     def path_exists(self, path):  # type: (str) -> bool
         return self.fs.path_exists(path)

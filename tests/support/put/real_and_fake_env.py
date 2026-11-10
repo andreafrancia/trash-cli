@@ -5,7 +5,7 @@ import pytest
 from tests.support.dirs.temp_dir import make_temp_dir
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.fslib.fs_remove_file_if_exists import FsRemoveFileIfExists
-from trashcli.fslib.real.real_entries_if_dir_exists import RealEntriesIfDirExists
+from trashcli.fslib.real.real_entries_if_dir_exists import EntriesIfDirExistsImpl
 from trashcli.fslib.real.real_fs import RealFs
 
 
@@ -19,7 +19,7 @@ class Env:
         self.is_real = is_real
         self._umask = umask
         # the real file system has these capabilities in separate classes
-        self.dir_reader = RealEntriesIfDirExists(fs) if is_real else fs
+        self.dir_reader = EntriesIfDirExistsImpl(fs) if is_real else fs
         self.remover = FsRemoveFileIfExists(fs, {}, os.geteuid) if is_real else fs
 
     def path(self, name):

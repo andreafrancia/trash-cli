@@ -1,7 +1,7 @@
 from typing import Callable, Mapping
 
 from trashcli.fslib.real.real_entries_if_dir_exists import \
-    RealEntriesIfDirExists
+    EntriesIfDirExistsImpl
 from trashcli.fslib.force_remover import ForceRemover
 from trashcli.fslib.fs_remove_file_if_exists import FsRemoveFileIfExists
 from trashcli.fslib.protocols.fs import Fs
@@ -30,7 +30,7 @@ class RmFsImpl(RmFs):
         return self.fs.is_world_writable(path)
 
     def entries_if_dir_exists(self, path):
-        return RealEntriesIfDirExists(self.fs).entries_if_dir_exists(path)
+        return EntriesIfDirExistsImpl(self.fs).entries_if_dir_exists(path)
 
     def path_exists(self, path):  # type: (str) -> bool
         return self.fs.path_exists(path)
