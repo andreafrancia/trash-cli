@@ -8,12 +8,12 @@ from six import StringIO
 from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 from tests.support.fakes.stub_volume_of import StubVolumeOfFs
 from trashcli.empty.empty_cmd import EmptyCmd
-from trashcli.fslib.protocols.fs import Fs
+from trashcli.empty.empty_fs import EmptyFs
 
 
 class EmptyUser:
     def __init__(self,
-                 fs,  # type: Fs
+                 fs,  # type: EmptyFs
                  ):
         self.fs = fs
         self.stdout = ''
@@ -51,5 +51,5 @@ class EmptyUser:
 
 
 @pytest.fixture
-def empty_user_fixture(fs):  # type: (Fs) -> EmptyUser
+def empty_user_fixture(fs):  # type: (EmptyFs) -> EmptyUser
     return EmptyUser(fs)
