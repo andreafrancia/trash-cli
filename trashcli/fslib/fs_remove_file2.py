@@ -4,11 +4,11 @@ import stat
 from typing import Callable, Mapping
 
 from trashcli.fslib.protocols.fs import Fs
-from trashcli.fslib.protocols.remove_file2 import RemoveFile2
+from trashcli.fslib.protocols.force_remover import ForceRemover
 from trashcli.lib.trash_dirs import home_trash_dir_path_from_env
 
 
-class FsRemoveFile2(RemoveFile2):
+class FsRemoveFile2(ForceRemover):
     def __init__(self,
                  fs,  # type: Fs
                  environ,  # type: Mapping[str, str]
