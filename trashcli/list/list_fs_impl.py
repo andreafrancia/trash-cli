@@ -1,15 +1,12 @@
+from typing import List
+
 from trashcli.fslib.protocols.fs import Fs
-from trashcli.fslib.real.real_entries_if_dir_exists import \
-    EntriesIfDirExistsImpl
 from trashcli.list.list_fs import ListFs
 
 
 class ListFsImpl(ListFs):
     def __init__(self, fs):  # type: (Fs) -> None
         self.fs = fs
-
-    def entries_if_dir_exists(self, path):
-        return EntriesIfDirExistsImpl(self.fs).entries_if_dir_exists(path)
 
     def path_exists(self, path):  # type: (str) -> bool
         return self.fs.path_exists(path)
@@ -34,3 +31,6 @@ class ListFsImpl(ListFs):
 
     def is_world_writable(self, path):  # type: (str) -> bool
         return self.fs.is_world_writable(path)
+
+    def listdir(self, path):  # type: (str) -> List[str]
+        return self.fs.listdir(path)

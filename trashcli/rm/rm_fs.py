@@ -1,15 +1,11 @@
 from abc import abstractmethod
-from typing import Iterable
+from typing import Iterable, List
 from trashcli.compat import Protocol
 
 
 class RmFs(Protocol):
     @abstractmethod
     def read_file(self, path):
-        raise NotImplementedError()
-
-    @abstractmethod
-    def entries_if_dir_exists(self, path):  # type: (str) -> Iterable[str]
         raise NotImplementedError()
 
     @abstractmethod
@@ -35,3 +31,7 @@ class RmFs(Protocol):
     @abstractmethod
     def remove_file_if_exists(self, path):
         raise NotImplementedError()
+
+    @abstractmethod
+    def listdir(self, path):  # type: (str) -> List[str]
+        raise NotImplementedError

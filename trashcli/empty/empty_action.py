@@ -7,7 +7,6 @@ from trashcli.empty.delete_according_date import (
 )
 from trashcli.empty.emptier import Emptier
 from trashcli.empty.empty_fs import EmptyFs
-from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.empty.guard import Guard
 from trashcli.empty.parse_reply import parse_reply
 from trashcli.empty.prepare_output_message import prepare_output_message
@@ -15,7 +14,6 @@ from trashcli.empty.user import User
 from trashcli.fslib.fs_remove_file_if_exists import FsRemoveFileIfExists
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
 from trashcli.fslib.protocols.volume_of import VolumeOfFs
-from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.environ import Environ
 from trashcli.lib.my_input import RealInput
 from trashcli.lib.trash_dir_reader import TrashDirReader
@@ -46,12 +44,11 @@ class EmptyAction:
                  geteuid,  # type: Callable[[], int]
                  fs, # type: EmptyFs
                  ):  # type: (...) -> None
-        dir_reader = FileSystemDirReader(fs)
         file_remover = FsRemoveFileIfExists(fs, environ, geteuid)
         self.selector = TrashDirsSelector.make(volumes_listing,
                                                fs,
                                                volumes)
-        trash_dir_reader = TrashDirReader(dir_reader)
+        trash_dir_reader = TrashDirReader(fs)
         delete_mode = DeleteAccordingDate(fs,
                                           clock)
         user = User(prepare_output_message, RealInput(), parse_reply)

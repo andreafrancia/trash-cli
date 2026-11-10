@@ -2,11 +2,12 @@ from abc import abstractmethod
 from typing import List
 
 from trashcli.compat import Protocol
-from trashcli.fslib.protocols.entries_if_dir_exists import EntriesIfDirExists
 
 
-class EntriesIfDirExistsImpl(EntriesIfDirExists):
-    def __init__(self, fs):  # type: (RealEntriesIfDirExistsFs) -> None
+class EntriesIfDirExists:
+    def __init__(self,
+                 fs,  # type: RealEntriesIfDirExistsFs
+                 ):  # type: (...) -> None
         self.fs = fs
 
     def entries_if_dir_exists(self, path):
