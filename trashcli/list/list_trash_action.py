@@ -4,7 +4,6 @@ import os
 from typing import List
 from typing import NamedTuple
 
-from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.action import Action
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.lib.printable import printable
@@ -43,31 +42,32 @@ class ListTrashAction(Action):
                  selector,
                  out,
                  err,
-                 dir_reader,
                  content_reader,
                  file_reader,  # type: SizeExtractorFs
+                 fs,  # type: ListTrashActionFs
                  ):
         self.environ = environ
         self.uid = uid
         self.selector = selector
         self.out = out
         self.err = err
-        self.dir_reader = dir_reader
         self.content_reader = content_reader
         self.file_reader = file_reader
+        self.fs = fs
 
     def run_action(self,
-                   args, # type: ListTrashArgs
+                   args,  # type: ListTrashArgs
                    ):
         quote = shell_escape if quoting_wanted(self.out, self.environ) \
             else quote_nothing
         for message in ListTrash(self.environ,
                                  self.uid,
                                  self.selector,
-                                 self.dir_reader,
                                  self.content_reader,
                                  quote,
-                                 self.file_reader).list_all_trash(args):
+                                 self.file_reader,
+                                 fs=self.fs,
+                                 ).list_all_trash(args):
             self.print_event(message)
 
     def print_event(self, event):
@@ -82,18 +82,18 @@ class ListTrash:
                  environ,
                  uid,
                  selector,
-                 dir_reader,  # type: DirReaderFs
                  content_reader,
                  quote,
                  file_reader,  # type: SizeExtractorFs
+                 fs,  # type: ListTrashActionFs
                  ):
         self.environ = environ
         self.uid = uid
         self.selector = selector
-        self.dir_reader = dir_reader
         self.content_reader = content_reader
         self.quote = quote
         self.file_reader = file_reader
+        self.fs = fs
 
     def list_all_trash(self,
                        args,  # type: ListTrashArgs
@@ -113,7 +113,7 @@ class ListTrash:
         for event, event_args in trash_dirs:
             if event == trash_dir_found:
                 path, volume = event_args
-                trash_dir = TrashDirReader(self.dir_reader)
+                trash_dir = TrashDirReader(self.fs)
                 for trash_info in trash_dir.list_trashinfo(path):
                     for msg in self._print_trashinfo(volume, trash_info,
                                                      extractor, show_files):
@@ -188,3 +188,17 @@ def format_line(attribute, original_location):
 
 def format_line2(attribute, original_location, original_file):
     return "%s %s -> %s" % (attribute, original_location, original_file)
+
+
+from abc import abstractmethod
+from trashcli.compat import Protocol
+
+
+class ListTrashActionFs(Protocol):
+    @abstractmethod
+    def path_exists(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def listdir(self, path):  # type: (str) -> List[str]
+        raise NotImplementedError

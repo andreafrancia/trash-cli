@@ -24,7 +24,7 @@ class RmCmd:
         self.getuid = getuid
         self.volumes_listing = volumes_listing
         self.stderr = stderr
-        self.rm_fs = rm_fs
+        self.rm_fs = rm_fs  # type: RmFs
 
     def run(self, argv, uid):
         args = argv[1:]

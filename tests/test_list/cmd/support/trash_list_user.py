@@ -11,9 +11,10 @@ from tests.support.fakes.stub_volume_of import StubVolumeOfFs
 from tests.support.files import FsFixture
 from trashcli.fslib.real.real_fs import RealFs
 from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
-from trashcli.fslib.real.real_dir_reader_fs import RealDirReaderFs
 from trashcli.list.list_cmd import ListCmd
 from tests.test_list.cmd.support.run_result import RunResult
+from trashcli.list.list_fs_impl import ListFsImpl
+
 
 @pytest.fixture
 def trash_list_user():
@@ -45,6 +46,7 @@ class TrashListUser:
     def run_trash_list(self, *args):  # type: (...) -> RunResult
         stdout = self.stdout if self.stdout is not None else StringIO()
         stderr = StringIO()
+        fs = RealFs()
         ListCmd(
             out=stdout,
             err=stderr,
@@ -52,9 +54,9 @@ class TrashListUser:
             volumes_listing=self.fake_volumes,
             uid=self.fake_uid,
             volumes=StubVolumeOfFs(),
-            dir_reader=RealDirReaderFs(RealFs()),
-            file_reader=RealFs(),
-            content_reader=RealFs(),
+            dir_reader_fs=ListFsImpl(fs),
+            file_reader=fs,
+            content_reader=fs,
             version=self.version,
             disk_partitions_fs=self.fake_disk_partitions,
             df_command=self.fake_df,

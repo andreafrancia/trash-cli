@@ -7,7 +7,6 @@ from trashcli.empty.console import Console
 from trashcli.empty.empty_action import EmptyAction, EmptyActionArgs
 from trashcli.empty.empty_fs import EmptyFs
 from trashcli.empty.errors import Errors
-from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from trashcli.empty.is_input_interactive import is_input_interactive
 from trashcli.empty.parser import Parser
 from trashcli.empty.print_time_action import PrintTimeAction, PrintTimeArgs

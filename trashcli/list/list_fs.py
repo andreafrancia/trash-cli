@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Iterable
+from typing import List
 
 from trashcli.compat import Protocol
 
@@ -22,13 +22,13 @@ class ListFs(Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def entries_if_dir_exists(self, path):  # type: (str) -> Iterable[str]
-        raise NotImplementedError
-
-    @abstractmethod
     def path_exists(self, path):  # type: (str) -> bool
         raise NotImplementedError
 
     @abstractmethod
     def is_world_writable(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def listdir(self, path):  # type: (str) -> List[str]
         raise NotImplementedError

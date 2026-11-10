@@ -11,7 +11,7 @@ class ListTrashinfos:
     def __init__(self,
                  fs,  # type: ListTrashinfosFs
                  ):
-        self.fs = fs
+        self.fs = fs  # type: ListTrashinfosFs
 
     def list_from_volume_trashdir(self, trashdir_path, volume):
         for trashinfo_path in TrashDirReader(self.fs).list_trashinfo(
@@ -27,7 +27,7 @@ class ListTrashinfos:
 
 from abc import abstractmethod
 from trashcli.compat import Protocol
-
+from typing import List
 
 class ListTrashinfosFs(Protocol):
     @abstractmethod
@@ -39,5 +39,5 @@ class ListTrashinfosFs(Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def entries_if_dir_exists(self, path):  # type: (str) -> Iterable[str]
+    def listdir(self, path):  # type: (str) -> List[str]
         raise NotImplementedError
