@@ -182,3 +182,40 @@ class TestForceRemoverOnReadOnlyDirs:
             env.fs.chmod(env.path('Trash/dir'), 0o755)
             env.fs.chmod(env.path('Trash/dir/a'), 0o755)
             env.fs.chmod(env.path('Trash/dir/a/unreadable'), 0o755)
+
+    @real_and_fake()
+    def test_root_never_self_heals(self, env):
+        # root is not stopped by mode bits, so it must not chmod other
+        # users' files either: it never attempts the self-heal at all.
+        env.fs.mkdirs(env.path('Trash/dir/subdir'))
+        env.fs.write_file(env.path('Trash/dir/subdir/file'), 'a')
+        env.fs.chmod(env.path('Trash/dir/subdir'), 0o500)
+        env.fs.chmod(env.path('Trash/dir'), 0o500)
+
+        try:
+            with pytest.raises(OSError):
+                ForceRemover(env.fs, home_trash(env), lambda: 0
+                            ).remove_path_forcefully(env.path('Trash/dir'))
+
+            assert env.fs.get_mod(env.path('Trash/dir')) == 0o500
+            assert env.fs.get_mod(env.path('Trash/dir/subdir')) == 0o500
+        finally:
+            env.fs.chmod(env.path('Trash/dir'), 0o700)
+            env.fs.chmod(env.path('Trash/dir/subdir'), 0o700)
+
+    @real_and_fake()
+    def test_a_path_outside_the_home_trash_never_self_heals(self, env):
+        env.fs.mkdirs(env.path('outside/dir/subdir'))
+        env.fs.write_file(env.path('outside/dir/subdir/file'), 'a')
+        env.fs.chmod(env.path('outside/dir/subdir'), 0o500)
+        env.fs.chmod(env.path('outside/dir'), 0o500)
+
+        try:
+            with pytest.raises(OSError):
+                remove_path_forcefully(env, env.path('outside/dir'))
+
+            assert env.fs.get_mod(env.path('outside/dir')) == 0o500
+            assert env.fs.get_mod(env.path('outside/dir/subdir')) == 0o500
+        finally:
+            env.fs.chmod(env.path('outside/dir'), 0o700)
+            env.fs.chmod(env.path('outside/dir/subdir'), 0o700)
