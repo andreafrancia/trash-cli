@@ -1,26 +1,14 @@
 import pytest
 
 from tests.support.asserts import assert_starts_with
-from tests.support.fakes.fake_trash_dir import FakeTrashDir
-from tests.support.dirs.temp_dir import temp_dir_fixture_fs
 from tests.support.fs_fixture import fake_fs_fixture
 from tests.support.rm.rm_user import rm_user_fixture
 
 fs = fake_fs_fixture
-temp_dir = temp_dir_fixture_fs
 user = rm_user_fixture
 
 
 class TestTrashRmCmdRun:
-    @pytest.fixture(autouse=True)
-    def fake_trash_dir(self, xdg_data_home):
-        return FakeTrashDir(xdg_data_home / 'Trash')
-
-    @pytest.fixture
-    def xdg_data_home(self, user, temp_dir):
-        user.add_environ('XDG_DATA_HOME', temp_dir)
-        return temp_dir
-
     def test_without_arguments(self, user):
         user.run_rm([])
 

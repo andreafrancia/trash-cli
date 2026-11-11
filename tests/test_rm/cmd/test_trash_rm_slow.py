@@ -12,16 +12,10 @@ user = rm_user_fixture
 
 @pytest.mark.slow
 class TestTrashRm:
-    @pytest.fixture(autouse=True)
-    def fake_trash_dir(self, xdg_data_home):
-        return FakeTrashDir(xdg_data_home / 'Trash')
-
-    @pytest.fixture
-    def xdg_data_home(self, user, temp_dir):
-        user.add_environ('XDG_DATA_HOME', temp_dir)
-        return temp_dir
-
-    def test_issue69(self, user, xdg_data_home, fake_trash_dir):
+    def test_issue69(self, user, temp_dir):
+        xdg_data_home = temp_dir / 'xdg'
+        user.add_environ('XDG_DATA_HOME', xdg_data_home)
+        fake_trash_dir = FakeTrashDir(xdg_data_home / 'Trash')
         fake_trash_dir.add_trashinfo_without_path('foo')
 
         user.run_rm(['ignored'])
@@ -30,7 +24,10 @@ class TestTrashRm:
                 "trash-rm: %s/Trash/info/foo.trashinfo: unable to parse 'Path'"
                 '\n' % xdg_data_home)
 
-    def test_integration(self, user, fake_trash_dir):
+    def test_integration(self, user, temp_dir):
+        xdg_data_home = temp_dir / 'xdg'
+        user.add_environ('XDG_DATA_HOME', xdg_data_home)
+        fake_trash_dir = FakeTrashDir(xdg_data_home / 'Trash')
         fake_trash_dir.add_trashinfo_basename_path("del", 'to/be/deleted')
         fake_trash_dir.add_trashinfo_basename_path("keep", 'to/be/kept')
 
