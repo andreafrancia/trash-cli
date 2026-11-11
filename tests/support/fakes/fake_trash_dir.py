@@ -208,6 +208,8 @@ class FakeTrashDir:
                               ):  # type: (...) -> TrashinfoData
         trash_info_path = self.a_trashinfo_path(basename)
         info_full_path = trash_info_path.info_full_path
+        if not os.path.isdir(self.path):
+            os.makedirs(self.path, 0o700)
         self.fsx.make_parent_for(info_full_path)
         self.fsx.make_file(info_full_path, content)
         return TrashinfoData(
@@ -229,7 +231,7 @@ class FakeTrashDir:
         self.fsx.is_a_symlink_to_a_dir(self.path.parent)
 
     def make_dir(self):
-        os.mkdir(self.path)
+        os.mkdir(self.path, 0o700)
 
     def does_not_exist(self):
         self.fsx.does_not_exist(self.path)

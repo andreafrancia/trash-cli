@@ -19,7 +19,7 @@ class TestListTrashDirs:
         user.add_disk("disk")
         user.trash_dir1("disk").make_parent_sticky()
         user.trash_dir1("disk").make_dir()
-        user.fsx.make_empty_dir(user.trash_dir2("disk").path)
+        user.trash_dir2("disk").make_dir()
 
         output = user.run_trash_list('--trash-dirs')
 
