@@ -25,10 +25,10 @@ class ForceRemover:
             try:
                 self.fs.shutil_rmtree(path)
             except OSError as e:
-                # the condition says if we should not attempt the self heal
-                # root is not stopped by mode bits and must not chmod files of other users
-                if e.errno != errno.EACCES or self.geteuid() == 0 or not self.is_in_home_trash(
-                        path):
+                # root needs no help, and outside the home trash another user could redirect the chmod with a symlink
+                if not self.should_self_heal(e,
+                                             self.geteuid(),
+                                             self.is_in_home_trash(path)):
                     raise
                 old_modes = []  # type: list
                 self.add_write_permission(path, old_modes)
@@ -40,6 +40,26 @@ class ForceRemover:
                 except OSError:
                     self.restore_modes(old_modes)
                     raise
+
+    @staticmethod
+    def should_self_heal(e,  # type: OSError
+                         euid,  # type: int
+                         in_home_trash,  # type: bool
+                         ):  # type: (...) -> bool
+        if euid == 0:
+            # root needs no help
+            return False
+        if e.errno != errno.EACCES:
+            # with permission changes we can heal only on EACCES
+            return False
+        if not in_home_trash:
+            # outside the home trash another user could redirect the chmod with
+            # a symlink
+            return False
+
+        # if it is a user that can remove files in the home trash for
+        # permission problems, we will heal
+        return True
 
     def add_write_permission(self,
                              path,  # type: str
