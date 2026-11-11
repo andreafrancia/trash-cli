@@ -247,6 +247,8 @@ class FakeFs(FakeVolumeOfFs, Fs, IsStickyDir, IsSymLink, RestoreFs,
     def chmod(self, path, mode):
         # like os.chmod(), it follows symlinks
         inode = self._lookup_or_enoent(path, follow_last_link=True)
+        if inode.owned_by_another_user:
+            raise OSError(errno.EPERM, "Operation not permitted", path)
         inode.chmod(mode & ~STICKY_BIT)
         inode.stickiness = (Stickiness.sticky if mode & STICKY_BIT
                             else Stickiness.not_sticky)
@@ -371,6 +373,11 @@ class FakeFs(FakeVolumeOfFs, Fs, IsStickyDir, IsSymLink, RestoreFs,
         # like os.chmod(), it follows symlinks
         inode = self._lookup(path, follow_last_link=True)
         inode.stickiness = Stickiness.sticky
+
+    def chown_to_another_user(self, path):
+        # like os.chmod(), it follows symlinks
+        inode = self._lookup(path, follow_last_link=True)
+        inode.owned_by_another_user = True
 
     def is_sticky_dir(self, path):  # type: (str) -> bool
         return self.path_isdir(path) and self.has_sticky_bit(path)

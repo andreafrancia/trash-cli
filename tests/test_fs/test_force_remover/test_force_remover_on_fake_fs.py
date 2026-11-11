@@ -111,3 +111,16 @@ class TestForceRemoverOnFakeFs:
         self.remover.remove_path_forcefully('/xdg/Trash/dir')
 
         assert self.fs.get_mod('/elsewhere/outer/inner') == 0o500
+
+    def test_a_dir_owned_by_another_user_is_not_chmoded(self):
+        # chmod fails with EPERM, as it would on a real fs for a dir we
+        # don't own: only the owner (or root) can change its mode.
+        self.fs.chmod('/xdg/Trash/dir/sub', 0o500)
+        self.fs.chmod('/xdg/Trash/dir', 0o500)
+        self.fs.chown_to_another_user('/xdg/Trash/dir')
+
+        with pytest.raises(OSError):
+            self.remover.remove_path_forcefully('/xdg/Trash/dir')
+
+        assert self.fs.get_mod('/xdg/Trash/dir') == 0o500
+        assert self.fs.get_mod('/xdg/Trash/dir/sub') == 0o500
