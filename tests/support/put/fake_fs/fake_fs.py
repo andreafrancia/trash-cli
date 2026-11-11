@@ -453,7 +453,11 @@ class FakeFs(FakeVolumeOfFs, Fs, IsStickyDir, IsSymLink, RestoreFs,
         return format_mode(mode)
 
     def walk_no_follow(self, top):
-        names = self.listdir(top)
+        # like os.walk(), a dir that cannot be listed is silently skipped
+        try:
+            names = self.listdir(top)
+        except OSError:
+            return
 
         dirs, nondirs = [], []
         for name in names:
