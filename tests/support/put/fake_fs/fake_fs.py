@@ -51,6 +51,11 @@ class FakeFs(FakeVolumeOfFs, Fs, IsStickyDir, IsSymLink, RestoreFs,
             raise OSError(errno.ENOENT, "No such file or directory", path)
         if not isinstance(entity, Directory):
             raise OSError(errno.ENOTDIR, "Not a directory", path)
+        # like os.listdir(), listing a dir needs the read permission on it;
+        # find_all() is exempt, as it must list everything to ease debugging
+        if (not self._finding_all and
+                self._lookup_or_enoent(path, follow_last_link=True).mode & 0o400 == 0):
+            raise OSError(errno.EACCES, "Permission denied", path)
         return self.ls_aa(path)
 
     def mkdirs(self, path):  # type: (str) -> None

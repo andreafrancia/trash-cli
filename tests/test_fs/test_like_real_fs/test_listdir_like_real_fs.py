@@ -96,3 +96,24 @@ class TestListdirLikeRealFs:
         env.fs.symlink(env.path('file'), env.path('link'))
 
         assert errno_of_listdir(env, env.path('link')) == errno.ENOTDIR
+
+    @real_and_fake()
+    def test_unreadable_dir_raises_eacces(self, env):
+        env.fs.mkdirs(env.path('dir'))
+        env.fs.chmod(env.path('dir'), 0o300)
+
+        try:
+            assert errno_of_listdir(env, env.path('dir')) == errno.EACCES
+        finally:
+            env.fs.chmod(env.path('dir'), 0o700)
+
+    @real_and_fake()
+    def test_a_dir_that_is_only_readable_can_be_listed(self, env):
+        env.fs.mkdirs(env.path('dir'))
+        env.fs.write_file(env.path('dir/a'), 'a')
+        env.fs.chmod(env.path('dir'), 0o400)
+
+        try:
+            assert sorted(env.fs.listdir(env.path('dir'))) == ['a']
+        finally:
+            env.fs.chmod(env.path('dir'), 0o700)
