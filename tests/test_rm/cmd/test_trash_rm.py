@@ -17,7 +17,8 @@ class TestTrashRmCmdRun:
         return FakeTrashDir(xdg_data_home / 'Trash')
 
     @pytest.fixture
-    def xdg_data_home(self, temp_dir):
+    def xdg_data_home(self, user, temp_dir):
+        user.add_environ('XDG_DATA_HOME', temp_dir)
         return temp_dir
 
     def test_without_arguments(self, user):

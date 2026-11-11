@@ -1,4 +1,5 @@
 import os
+from typing import MutableMapping
 
 import pytest
 from six import StringIO
@@ -9,20 +10,19 @@ from trashcli.rm.rm_cmd import RmCmd
 
 
 class RmUser:
-    def __init__(self, fs, xdg_data_home):
+    def __init__(self, fs):
         self.fs = fs
-        self.xdg_data_home = xdg_data_home
         self.stderr = ''
         self.volumes = []
+        self.environ = {}  # type: MutableMapping[str, str]
 
     def run_rm(self, args):
         err = StringIO()
-        environ = {'XDG_DATA_HOME': self.xdg_data_home}
-        rm_cmd = RmCmd(environ=environ,
+        rm_cmd = RmCmd(environ=self.environ,
                        getuid=lambda: 123,
                        volumes_listing=FakeVolumesListing(self.volumes),
                        stderr=err,
-                       rm_fs=RmFsImpl(self.fs, environ,
+                       rm_fs=RmFsImpl(self.fs, self.environ,
                                       os.geteuid))
         rm_cmd.run(['trash-rm'] + args, uid=None)
         self.stderr = err.getvalue()
@@ -30,7 +30,10 @@ class RmUser:
     def add_volume(self, path):
         self.volumes.append(path)
 
+    def add_environ(self, name, value):
+        self.environ[name] = value
+
 
 @pytest.fixture
-def rm_user_fixture(fs, xdg_data_home):
-    return RmUser(fs, xdg_data_home)
+def rm_user_fixture(fs):
+    return RmUser(fs)
