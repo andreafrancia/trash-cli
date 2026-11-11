@@ -32,6 +32,10 @@ class Env:
         else:
             self.fs.set_sticky_bit(path)
 
+    def skip_on_root_user_and_real_fs(self, reason):
+        if self.is_real and os.geteuid() == 0:
+            pytest.skip(reason)
+
 
 @pytest.fixture
 def env(request, process_umask):

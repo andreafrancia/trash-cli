@@ -99,6 +99,8 @@ class TestListdirLikeRealFs:
 
     @real_and_fake()
     def test_unreadable_dir_raises_eacces(self, env):
+        env.skip_on_root_user_and_real_fs(
+            "root can read regardless of permissions")
         env.fs.mkdirs(env.path('dir'))
         env.fs.chmod(env.path('dir'), 0o300)
 

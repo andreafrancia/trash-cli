@@ -23,6 +23,8 @@ class TestWalkNoFollowLikeRealFs:
 
     @real_and_fake()
     def test_skips_an_unreadable_subdir_silently(self, env):
+        env.skip_on_root_user_and_real_fs(
+            "root can read regardless of permissions")
         env.fs.mkdirs(env.path('dir/subdir'))
         env.fs.write_file(env.path('dir/subdir/file'), 'a')
         env.fs.chmod(env.path('dir/subdir'), 0o300)
