@@ -34,6 +34,12 @@ Show help message and exit.
 .IP "--trash-dir=TRASHDIR"
 Use TRASHDIR as trash folder. Can be used multiple times
 
+.IP "--doctor"
+Report one by one the inconsistencies found in the trash directories:
+trashinfo files that cannot be parsed and files in the info directory
+without the .trashinfo extension. Without this option trash-list prints
+only one line for each trash directory with inconsistencies.
+
 .IP "--version"
 Show program's version number and exit.
 
