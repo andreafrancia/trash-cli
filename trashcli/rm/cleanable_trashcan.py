@@ -15,7 +15,8 @@ class CleanableTrashcan:
                  ):
         self._file_remover = file_remover
 
-    def delete_trash_info_and_backup_copy(self, trash_info_path):
+    def delete_trash_info_and_backup_copy(self, trash_dir, trash_info_path):
         backup_copy = path_of_backup_copy(trash_info_path)
-        self._file_remover.remove_file_if_exists(backup_copy)
-        self._file_remover.remove_file2(trash_info_path)
+        if self._file_remover.path_lexists(backup_copy):
+            self._file_remover.remove_trash_entry(trash_dir, backup_copy)
+        self._file_remover.remove_trash_entry(trash_dir, trash_info_path)
