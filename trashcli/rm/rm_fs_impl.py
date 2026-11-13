@@ -3,42 +3,22 @@ from typing import Callable, Mapping, List
 from trashcli.fslib.force_remover import ForceRemover
 from trashcli.fslib.fs_remove_file_if_exists import FsRemoveFileIfExists
 from trashcli.fslib.protocols.fs import Fs
-from trashcli.rm.rm_cmd import RmFs
 
-class RmFsImpl(RmFs):
+class RmFsImpl:
     def __init__(self,
                  fs,  # type: Fs
                  environ,  # type: Mapping[str, str]
                  geteuid,  # type: Callable[[], int]
                  ):  # type: (...) -> None
-        self.fs = fs
-        self.environ = environ
-        self.geteuid = geteuid
+        force_remover = ForceRemover(fs, environ, geteuid)
+        fs_remove_file_if_exists = FsRemoveFileIfExists(fs, environ, geteuid)
 
-    def read_file(self, path):
-        return self.fs.read_file(path)
-
-    def is_symlink(self, path):  # type: (str) -> bool
-        return self.fs.is_symlink(path)
-
-    def is_sticky_dir(self, path):  # type: (str) -> bool
-        return self.fs.is_sticky_dir(path)
-
-    def is_world_writable(self, path):  # type: (str) -> bool
-        return self.fs.is_world_writable(path)
-
-    def path_exists(self, path):  # type: (str) -> bool
-        return self.fs.path_exists(path)
-
-    def path_isdir(self, path):  # type: (str) -> bool
-        return self.fs.path_isdir(path)
-
-    def remove_file2(self, path):
-        return ForceRemover(self.fs, self.environ, self.geteuid).remove_path_forcefully(path)
-
-    def remove_file_if_exists(self, path):
-        return FsRemoveFileIfExists(self.fs, self.environ,
-                                    self.geteuid).remove_file_if_exists(path)
-
-    def listdir(self, path):  # type: (str) -> List[str]
-        return self.fs.listdir(path)
+        self.read_file = fs.read_file
+        self.listdir = fs.listdir
+        self.is_symlink = fs.is_symlink
+        self.is_sticky_dir = fs.is_sticky_dir
+        self.is_world_writable = fs.is_world_writable
+        self.path_exists = fs.path_exists
+        self.path_isdir = fs.path_isdir
+        self.remove_file2 = force_remover.remove_path_forcefully
+        self.remove_file_if_exists = fs_remove_file_if_exists.remove_file_if_exists

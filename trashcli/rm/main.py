@@ -8,7 +8,7 @@ from trashcli.rm.rm_cmd import RmCmd
 from trashcli.rm.rm_fs_impl import RmFsImpl
 
 
-def main():
+def main():  # type: () -> int
     volumes_listing = RealVolumesListing()
     cmd = RmCmd(environ=os.environ,
                 getuid=os.getuid,
