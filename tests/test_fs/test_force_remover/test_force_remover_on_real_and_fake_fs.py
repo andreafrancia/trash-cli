@@ -185,6 +185,8 @@ class TestForceRemoverOnReadOnlyDirs:
 
     @real_and_fake()
     def test_root_never_self_heals(self, env):
+        env.skip_on_root_user_and_real_fs(
+            'root is not blocked by mode bits on the real filesystem')
         # root is not stopped by mode bits, so it must not chmod other
         # users' files either: it never attempts the self-heal at all.
         env.fs.mkdirs(env.path('Trash/dir/subdir'))
