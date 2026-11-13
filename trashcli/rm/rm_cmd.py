@@ -1,8 +1,7 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
-from typing import Callable, TextIO
+from typing import Callable, TextIO, Mapping, List
 
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
-from trashcli.lib.environ import Environ
 from trashcli.rm.rm_fs import RmFs
 from trashcli.lib.single_user_info_provider import SingleUserInfoProvider
 from trashcli.rm.filter import Filter
@@ -14,7 +13,7 @@ from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 
 class RmCmd:
     def __init__(self,
-                 environ,  # type: Environ
+                 environ,  # type: Mapping[str, str]
                  getuid,  # type: Callable[[], int]
                  volumes_listing,  # type: VolumesListing
                  stderr,  # type: TextIO
@@ -26,7 +25,7 @@ class RmCmd:
         self.stderr = stderr
         self.rm_fs = rm_fs  # type: RmFs
 
-    def run(self, argv, uid):
+    def run(self, argv, uid):  # type: (List[str], int) -> None
         args = argv[1:]
         self.exit_code = 0
 
@@ -62,16 +61,20 @@ class RmCmd:
                             self.delete_trash_info_and_backup_copy(
                                 info_file)
 
-    def delete_trash_info_and_backup_copy(self, trash_info_path):
+    def delete_trash_info_and_backup_copy(self,
+                                          trash_info_path,  # type: str
+                                          ):
         backup_copy = path_of_backup_copy(trash_info_path)
         self.rm_fs.remove_file_if_exists(backup_copy)
         self.rm_fs.remove_file2(trash_info_path)
 
-    def unable_to_parse_path(self, trashinfo):
+    def unable_to_parse_path(self,
+                             trashinfo,  # type: str
+                             ):
         self.report_error('{}: unable to parse \'Path\''.format(trashinfo))
 
-    def report_error(self, error_msg):
+    def report_error(self, error_msg):  # type: (str) -> None
         self.print_err('trash-rm: {}'.format(error_msg))
 
-    def print_err(self, msg):
+    def print_err(self, msg):  # type: (str) -> None
         self.stderr.write(msg + '\n')

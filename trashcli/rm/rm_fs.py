@@ -35,3 +35,7 @@ class RmFs(Protocol):
     @abstractmethod
     def listdir(self, path):  # type: (str) -> List[str]
         raise NotImplementedError
+
+    @abstractmethod
+    def is_world_writable(self, path):  # type: (str) -> bool
+        raise NotImplementedError
