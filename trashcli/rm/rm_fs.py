@@ -25,7 +25,7 @@ class RmFs(Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def remove_file2(self, path):
+    def remove_path_forcefully(self, path):
         raise NotImplementedError()
 
     @abstractmethod
