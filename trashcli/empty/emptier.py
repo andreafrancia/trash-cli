@@ -1,9 +1,10 @@
 # Copyright (C) 2022 Andrea Francia Bereguardo(PV) Italy
 from typing import Iterable
 
+from trashcli.fslib.remove_file_if_exists import RemoveFileIfExists
+
 from trashcli.empty.console import Console
 from trashcli.empty.delete_according_date import DeleteAccordingDate
-from trashcli.fslib.protocols.remove_file_if_exists import RemoveFileIfExists
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 from trashcli.lib.trash_dir_reader import TrashDirReader
 from trashcli.trash_dirs_scanner import TrashDir, only_found

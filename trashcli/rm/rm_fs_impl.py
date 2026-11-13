@@ -1,7 +1,7 @@
 from typing import Callable, Mapping, List
 
 from trashcli.fslib.force_remover import ForceRemover
-from trashcli.fslib.fs_remove_file_if_exists import FsRemoveFileIfExists
+from trashcli.fslib.remove_file_if_exists import RemoveFileIfExists
 from trashcli.fslib.protocols.fs import Fs
 
 class RmFsImpl:
@@ -11,7 +11,7 @@ class RmFsImpl:
                  geteuid,  # type: Callable[[], int]
                  ):  # type: (...) -> None
         force_remover = ForceRemover(fs, environ, geteuid)
-        fs_remove_file_if_exists = FsRemoveFileIfExists(fs, environ, geteuid)
+        fs_remove_file_if_exists = RemoveFileIfExists(fs, environ, geteuid)
 
         self.read_file = fs.read_file
         self.listdir = fs.listdir
