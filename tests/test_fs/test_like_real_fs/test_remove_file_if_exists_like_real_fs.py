@@ -9,7 +9,7 @@ env = env  # the fixture, imported from its module
 
 class TestRemoveFileIfExistsWorkInFakeFsLikeRealFs:
     @pytest.fixture(autouse=True)
-    def remover(self, env):  # type: (Env) -> None
+    def setup_remover(self, env):  # type: (Env) -> None
         self.remover = RemoveFileIfExists(env.fs, {}, lambda: 123)
 
     @real_and_fake()
