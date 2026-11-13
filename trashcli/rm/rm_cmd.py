@@ -1,5 +1,5 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
-from typing import Callable, TextIO, Mapping, List
+from typing import Callable, IO, Mapping, List
 
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
 from trashcli.rm.rm_fs import RmFs
@@ -16,7 +16,7 @@ class RmCmd:
                  environ,  # type: Mapping[str, str]
                  getuid,  # type: Callable[[], int]
                  volumes_listing,  # type: VolumesListing
-                 stderr,  # type: TextIO
+                 stderr,  # type: IO[str]
                  rm_fs,  # type: RmFs
                  ):  # type: (...) -> None
         self.environ = environ
