@@ -66,7 +66,7 @@ class RmCmd:
                                           ):
         backup_copy = path_of_backup_copy(trash_info_path)
         self.rm_fs.remove_file_if_exists(backup_copy)
-        self.rm_fs.remove_file2(trash_info_path)
+        self.rm_fs.remove_path_forcefully(trash_info_path)
 
     def unable_to_parse_path(self,
                              trashinfo,  # type: str

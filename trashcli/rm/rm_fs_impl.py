@@ -20,5 +20,5 @@ class RmFsImpl:
         self.is_world_writable = fs.is_world_writable
         self.path_exists = fs.path_exists
         self.path_isdir = fs.path_isdir
-        self.remove_file2 = force_remover.remove_path_forcefully
+        self.remove_path_forcefully = force_remover.remove_path_forcefully
         self.remove_file_if_exists = fs_remove_file_if_exists.remove_file_if_exists
