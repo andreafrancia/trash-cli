@@ -17,7 +17,6 @@ from trashcli.fslib.protocols.is_sticky_dir import IsStickyDir
 from trashcli.fslib.protocols.is_sym_link import IsSymLink
 from trashcli.put.check_cast import check_cast
 from trashcli.fslib.protocols.fs import Fs
-from trashcli.fslib.protocols.remove_file_if_exists import RemoveFileIfExists
 from trashcli.fslib.find_all import find_all
 from trashcli.restore.fs.protocols.restore_fs import RestoreFs
 
@@ -30,8 +29,7 @@ MAX_SYMLINKS_TO_FOLLOW = 40
 STICKY_BIT = 0o1000
 
 
-class FakeFs(FakeVolumeOfFs, Fs, IsStickyDir, IsSymLink, RestoreFs,
-             RemoveFileIfExists):
+class FakeFs(FakeVolumeOfFs, Fs, IsStickyDir, IsSymLink, RestoreFs):
     def __init__(self, cwd='/'):
         super(FakeFs, self).__init__()
         self.root_inode = make_inode_dir('/', 0o755, None)
@@ -331,9 +329,6 @@ class FakeFs(FakeVolumeOfFs, Fs, IsStickyDir, IsSymLink, RestoreFs,
         directory = self.get_entity_at(dirname)
         directory.remove(basename)
 
-
-    def remove_file_if_exists(self, path):
-        self.remove_file(path)
 
     def move(self, src, dest):
         basename, entry = self._pop_entry_from_dir(src)

@@ -11,7 +11,7 @@ from trashcli.empty.guard import Guard
 from trashcli.empty.parse_reply import parse_reply
 from trashcli.empty.prepare_output_message import prepare_output_message
 from trashcli.empty.user import User
-from trashcli.fslib.fs_remove_file_if_exists import FsRemoveFileIfExists
+from trashcli.fslib.remove_file_if_exists import RemoveFileIfExists
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
 from trashcli.fslib.protocols.volume_of import VolumeOfFs
 from trashcli.lib.environ import Environ
@@ -44,7 +44,7 @@ class EmptyAction:
                  geteuid,  # type: Callable[[], int]
                  fs, # type: EmptyFs
                  ):  # type: (...) -> None
-        file_remover = FsRemoveFileIfExists(fs, environ, geteuid)
+        file_remover = RemoveFileIfExists(fs, environ, geteuid)
         self.selector = TrashDirsSelector.make(volumes_listing,
                                                fs,
                                                volumes)
