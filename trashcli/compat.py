@@ -3,6 +3,8 @@ try:
 except ImportError as e:
     from typing_extensions import Protocol  # type: ignore[assignment]
 
+import os
+
 import six
 
 if six.PY2:
@@ -56,7 +58,7 @@ def _fsdecode_fallback(raw):  # type: (bytes) -> TextType
             raw = raw[e.start + 1:]
     return u''.join(result)
 
-import os
+
 fsdecode = getattr(os, 'fsdecode', _fsdecode_fallback)
 fsencode = getattr(os, 'fsencode', _fsencode_fallback)
 
