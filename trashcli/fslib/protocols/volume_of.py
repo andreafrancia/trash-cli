@@ -1,5 +1,3 @@
-from abc import abstractmethod
-
 from trashcli.compat import Protocol
 
 

@@ -4,8 +4,6 @@ import pytest
 
 from tests.support.dirs.temp_dir import make_temp_dir
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from trashcli.empty.existing_file_remover import ExistingFileRemover
-from trashcli.fslib.real.real_entries_if_dir_exists import RealEntriesIfDirExists
 from trashcli.fslib.real.real_fs import RealFs
 
 
@@ -18,9 +16,6 @@ class Env:
         self.base = base
         self.is_real = is_real
         self._umask = umask
-        # the real file system has these capabilities in separate classes
-        self.dir_reader = RealEntriesIfDirExists(fs) if is_real else fs
-        self.remover = ExistingFileRemover(fs) if is_real else fs
 
     def path(self, name):
         return self.base + '/' + name
@@ -33,6 +28,10 @@ class Env:
             os.chmod(path, 0o1755)
         else:
             self.fs.set_sticky_bit(path)
+
+    def skip_on_root_user_and_real_fs(self, reason):
+        if self.is_real and os.geteuid() == 0:
+            pytest.skip(reason)
 
 
 @pytest.fixture

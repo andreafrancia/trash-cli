@@ -18,6 +18,7 @@ class INode:
         self.entity = entity
         self.mode = mode
         self.stickiness = stickiness
+        self.owned_by_another_user = False
 
     def chmod(self, mode):
         self.mode = mode

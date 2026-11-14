@@ -15,12 +15,6 @@ def make_scripts():
     fs = RealScriptFs()
     return Scripts(fs)
 
-class ScriptFs(Protocol):
-    def make_file_executable(self, path):
-        raise NotImplementedError
-
-    def write_file(self, name, contents):
-        raise NotImplementedError
 
 class Scripts:
     def __init__(self, fs):  # type: (ScriptFs) -> None
@@ -51,3 +45,11 @@ def script_path_for(name):
 
 def script_path_without_base_dir_for(name):  # type: (str) -> str
     return os.path.join(name)
+
+
+class ScriptFs(Protocol):
+    def make_file_executable(self, path):
+        raise NotImplementedError
+
+    def write_file(self, name, contents):
+        raise NotImplementedError

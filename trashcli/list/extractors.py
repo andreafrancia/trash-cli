@@ -10,10 +10,6 @@ class DeletionDateExtractor:
         return maybe_parse_deletion_date(contents)
 
 
-class SizeExtractorFs(FileSize, IsSymLink, Protocol):
-    pass
-
-
 class SizeExtractor:
     def __init__(self,
                  fs,  # type: SizeExtractorFs
@@ -29,3 +25,7 @@ class SizeExtractor:
                 return 0
             else:
                 raise
+
+
+class SizeExtractorFs(FileSize, IsSymLink, Protocol):
+    pass

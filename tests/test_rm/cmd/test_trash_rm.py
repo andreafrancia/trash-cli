@@ -1,38 +1,24 @@
-import unittest
-
-from six import StringIO
-
-from tests.support.py2mock import Mock
+import pytest
 
 from tests.support.asserts import assert_starts_with
-from trashcli.rm.rm_cmd import RmCmd
+from tests.support.fs_fixture import fake_fs_fixture
+from tests.support.rm.rm_user import rm_user_fixture
+
+fs = fake_fs_fixture
+user = rm_user_fixture
 
 
-class TestTrashRmCmdRun(unittest.TestCase):
-    def setUp(self):
-        self.volumes_listing = Mock()
-        self.stderr = StringIO()
-        self.file_reader = Mock([])
-        self.file_reader.path_exists = Mock([], return_value=None)
-        self.file_reader.path_isdir = Mock([], return_value=False)
-        self.file_reader.entries_if_dir_exists = Mock([], return_value=[])
-        self.environ = {}
-        self.getuid = lambda: '111'
-        self.cmd = RmCmd(self.environ,
-                         self.getuid,
-                         self.volumes_listing,
-                         self.stderr,
-                         self.file_reader)
+class TestTrashRmCmdRun:
+    def test_without_arguments(self, user):
+        user.run_rm([])
 
-    def test_without_arguments(self):
-        self.cmd.run([None], uid=None)
+        assert_starts_with(
+            user.stderr,
+            'Usage:\n    trash-rm PATTERN\n\nPlease specify PATTERN.\n')
 
-        assert_starts_with(self.stderr.getvalue(),
-                           'Usage:\n    trash-rm PATTERN\n\nPlease specify PATTERN.\n')
+    def test_without_pattern_argument(self, user):
+        user.add_volume('/vol1')
 
-    def test_without_pattern_argument(self):
-        self.volumes_listing.list_volumes.return_value = ['/vol1']
+        user.run_rm([None])
 
-        self.cmd.run([None, None], uid=None)
-
-        assert '' == self.stderr.getvalue()
+        assert '' == user.stderr
