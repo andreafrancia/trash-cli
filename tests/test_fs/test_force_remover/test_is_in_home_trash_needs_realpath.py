@@ -12,7 +12,7 @@ def is_in_home_trash(env, environ, path):
 # makes the written path and the real location disagree.
 class TestIsInHomeTrashNeedsRealpath:
     @real_and_fake()
-    def test_false_when_xdg_data_home_is_written_inside_home_but_links_outside(self, env):
+    def test_path__is_not_in_home_trash__when_xdg_data_home_links_from_inside_home_to_outside(self, env):
         # ~/data -> /shared: the trash is written as ~/data/Trash, but it
         # really is /shared/Trash, outside the home dir
         env.fs.mkdirs(env.path('home'))
@@ -24,7 +24,7 @@ class TestIsInHomeTrashNeedsRealpath:
         assert not is_in_home_trash(env, environ, env.path('home/data/Trash/files/dir'))
 
     @real_and_fake()
-    def test_false_when_xdg_data_home_is_written_inside_home_but_dots_go_outside(self, env):
+    def test_path__is_not_in_home_trash__when_dots_in_xdg_data_home_lead_outside_home(self, env):
         environ = {'HOME': env.path('home'),
                    'XDG_DATA_HOME': env.path('home/../shared')}
 
@@ -32,7 +32,7 @@ class TestIsInHomeTrashNeedsRealpath:
             env, environ, env.path('home/../shared/Trash/files/dir'))
 
     @real_and_fake()
-    def test_true_when_xdg_data_home_is_written_outside_home_but_links_inside(self, env):
+    def test_path__is_in_home_trash__when_xdg_data_home_links_from_outside_home_to_inside(self, env):
         # /data -> ~/data: the trash is written as /data/Trash, but it
         # really is ~/data/Trash, inside the home dir
         env.fs.mkdirs(env.path('home/data'))
@@ -43,7 +43,7 @@ class TestIsInHomeTrashNeedsRealpath:
         assert is_in_home_trash(env, environ, env.path('data/Trash/files/dir'))
 
     @real_and_fake()
-    def test_true_when_home_is_a_symlink(self, env):
+    def test_path__is_in_home_trash__when_home_is_a_symlink(self, env):
         # /home/user -> /disk/user, as when the home dir is on another disk:
         # the realpath of the trash must be compared with the realpath of
         # the home dir, not with the home dir as it is written
