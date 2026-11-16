@@ -4,14 +4,16 @@ import unittest
 import pytest
 
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
+from trashcli.fslib.real.real_fs import RealFs
 from tests.support.run.run_command import run_command
 
 
 @pytest.mark.slow
 class TestEmptyEndToEndInteractive(unittest.TestCase):
     def setUp(self):
-        self.tmp_dir = MyPath.make_temp_dir()
+        fs = RealFs()
+        self.tmp_dir = make_temp_dir(fs)
         self.xdg_data_home = self.tmp_dir / 'XDG_DATA_HOME'
         self.environ = {
             'XDG_DATA_HOME': self.xdg_data_home,

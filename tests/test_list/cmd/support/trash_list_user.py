@@ -3,7 +3,7 @@ import os
 import pytest
 from six import StringIO
 
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from tests.support.fakes.fake_df_command import FakeDfCommand
 from tests.support.fakes.fake_disk_partitions_fs import FakeDiskPartitionsFs
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
@@ -18,7 +18,8 @@ from tests.test_list.cmd.support.run_result import RunResult
 
 @pytest.fixture
 def trash_list_user():
-    temp_dir = MyPath.make_temp_dir()
+    fs = RealFs()
+    temp_dir = make_temp_dir(fs)
     yield TrashListUser(temp_dir)
     temp_dir.clean_up()
 
@@ -81,7 +82,8 @@ class TrashListUser:
     def trash_dir2(self,
                    disk_name,  # type: str
                    ):
-        return FakeTrashDir(self.root / disk_name / '.Trash-%s' % self.fake_uid)
+        return FakeTrashDir(
+            self.root / disk_name / ('.Trash-%s' % self.fake_uid))
 
     def _trash_dir1_parent(self,
                            disk_name,  # type: str

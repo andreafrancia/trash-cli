@@ -1,10 +1,9 @@
 import os
 import shutil
 import stat
-from typing import Iterable
+import tempfile
 
 from trashcli.fslib.real.real_is_world_writable import RealIsWorldWritable
-from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from trashcli.fslib.real.real_move import RealMove
 from trashcli.fslib.real.real_remove_file import RealRemoveFile
 from trashcli.fslib.real.real_atomic_write import RealAtomicWrite
@@ -79,8 +78,8 @@ class RealFs(RealVolumeOfFs, Fs, RestoreFs, TopTrashDirRulesFs):
                     name)):
                 raise
 
-    def mkdir(self, path):
-        os.mkdir(path)
+    def mkdir(self, path, mode=0o777):
+        os.mkdir(path, mode)
 
     def mkdirs(self, path):
         RealMkDirs().mkdirs(path)
@@ -135,9 +134,6 @@ class RealFs(RealVolumeOfFs, Fs, RestoreFs, TopTrashDirRulesFs):
     def write_file(self, path, content):
         return RealWriteFile().write_file(path, content)
 
-    def list_files_in_dir(self, path):  # type: (str) -> Iterable[str]
-        return RealListFilesInDir().list_files_in_dir(path)
-
     def path_exists(self, path):  # type: (str) -> bool
         return RealPathReaderFs().path_exists(path)
 
@@ -152,3 +148,12 @@ class RealFs(RealVolumeOfFs, Fs, RestoreFs, TopTrashDirRulesFs):
 
     def list_mount_points(self):
         return RealMountPointListFs().list_mount_points()
+
+    def rmdir(self, path):  # type: (str) -> None
+        return os.rmdir(path)
+
+    def mkdtemp(self, suffix="", prefix=tempfile.template, dir=None):
+        return tempfile.mkdtemp(suffix, prefix, dir)
+
+    def gettempdir(self):
+        return tempfile.gettempdir()

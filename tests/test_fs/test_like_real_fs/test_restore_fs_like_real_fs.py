@@ -1,5 +1,6 @@
 import os
 
+from trashcli.fslib.listdir_with_complete_path import listdir_with_complete_path
 from tests.support.put.real_and_fake_env import env, real_and_fake
 from trashcli.fslib.real.real_fs import RealFs
 from tests.support.put.fake_fs.fake_fs import FakeFs
@@ -21,7 +22,7 @@ class TestRestoreFsLikeRealFs:
         env.fs.write_file(env.path('dir/a'), 'a')
         env.fs.write_file(env.path('dir/b'), 'b')
 
-        assert sorted(env.fs.list_files_in_dir(env.path('dir'))) == [
+        assert sorted(listdir_with_complete_path(env.fs, env.path('dir'))) == [
             env.path('dir/a'), env.path('dir/b')]
 
     @real_and_fake()

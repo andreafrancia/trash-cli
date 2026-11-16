@@ -18,7 +18,7 @@ class Fs(RealPathFs, VolumeOfFs, MkDirs, Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def mkdir(self, path):  # type: (str) -> None
+    def mkdir(self, path, mode=0o777):  # type: (str, int) -> None
         raise NotImplementedError
 
     @abstractmethod
@@ -103,6 +103,14 @@ class Fs(RealPathFs, VolumeOfFs, MkDirs, Protocol):
 
     @abstractmethod
     def walk_no_follow(self, top):
+        raise NotImplementedError
+
+    @abstractmethod
+    def rmdir(self, path):  # type: (str) -> None
+        raise NotImplementedError
+
+    @abstractmethod
+    def mkdtemp(self, prefix=None, suffix=None, dir=None):
         raise NotImplementedError
 
     def parent_realpath2(self, path):

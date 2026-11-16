@@ -59,3 +59,11 @@ def _fsdecode_fallback(raw):  # type: (bytes) -> TextType
 import os
 fsdecode = getattr(os, 'fsdecode', _fsdecode_fallback)
 fsencode = getattr(os, 'fsencode', _fsencode_fallback)
+
+if six.PY2:
+    def octal(number):
+        return "0o" + oct(number)[1:]
+elif six.PY3:
+    octal = oct
+else:
+    raise RuntimeError("Unsupported Python version")

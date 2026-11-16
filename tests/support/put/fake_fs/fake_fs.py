@@ -10,6 +10,7 @@ from tests.support.put.fake_fs.file import File
 from tests.support.put.fake_fs.inode import INode
 from tests.support.put.fake_fs.inode import Stickiness
 from tests.support.put.fake_fs.symlink import SymLink
+from tests.support.put.fake_fs.fake_tempfile import FakeTempfile
 from tests.support.put.format_mode import format_mode
 from tests.support.put.my_file_not_found_error import MyFileNotFoundError
 from trashcli.fslib.protocols.is_sticky_dir import IsStickyDir
@@ -38,6 +39,7 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         self.root = self.root_inode.directory()
         self.cwd = cwd
         self._finding_all = False
+        self.tempfile = FakeTempfile(self)
 
     def touch(self, path):
         if not self.path_exists(path):
@@ -51,10 +53,6 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         if not isinstance(entity, Directory):
             raise OSError(errno.ENOTDIR, "Not a directory", path)
         return self.ls_aa(path)
-
-    def list_files_in_dir(self, path):  # type: (str) -> Iterable[str]
-        for entry in self.listdir(path):
-            yield os.path.join(path, entry)
 
     def mkdirs(self, path):  # type: (str) -> None
         self._make_dirs_if_missing(path, 0o755)
@@ -78,10 +76,10 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         directory = self.get_entity_at(path)
         return list(directory.entries())
 
-    def mkdir(self, path):
+    def mkdir(self, path, mode=0o755):
         dirname, basename = os.path.split(path)
         directory = self._get_parent_for_new_entry(dirname, path)
-        directory.add_dir(basename, 0o755, path)
+        directory.add_dir(basename, mode, path)
 
     def _get_parent_for_new_entry(self, dirname, path):
         # like the kernel does for mkdir() and symlink()
@@ -144,7 +142,8 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
                     break
             else:
                 return inode
-        raise MyFileNotFoundError("too many levels of symbolic links: %s" % path)
+        raise MyFileNotFoundError(
+            "too many levels of symbolic links: %s" % path)
 
     def makedirs(self, name, mode=0o777, exist_ok=False):
         # like os.makedirs(): the last dir must not exist, unless
@@ -271,6 +270,16 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         # like RealFs.remove_file(), a missing path is ignored
         if self.path_lexists(path):
             self._remove_entry(path)
+
+    def rmdir(self, path):  # type: (str) -> None
+        """Like os.rmdir(): the dir must be empty"""
+        inode = self._lookup_or_enoent(path, follow_last_link=False)
+        if not isinstance(inode.entity, Directory):
+            raise OSError(errno.ENOTDIR, "Not a directory", path)
+        if set(inode.entity.entries()) != {".", ".."}:
+            raise OSError(errno.ENOTEMPTY, "Directory not empty", path)
+        self._require_can_unlink_from(os.path.dirname(path), path)
+        self._remove_entry(path)
 
     def remove(self, path):  # type: (str) -> None
         # like os.remove(): files and symlinks only, a dir is an error
@@ -493,3 +502,11 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             return find_all(self)
         finally:
             self._finding_all = False
+
+    def mkdtemp(self, suffix='',
+                prefix=FakeTempfile.template,
+                dir=None):
+        return self.tempfile.mkdtemp(suffix, prefix, dir)
+
+    def gettempdir(self):
+        return self.tempfile.gettempdir()

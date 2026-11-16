@@ -1,11 +1,12 @@
 import os
 
-from trashcli.fslib.protocols.list_files_in_dir import ListFilesInDir
+from trashcli.fslib.listdir_with_complete_path import listdir_with_complete_path
+from trashcli.fslib.protocols.listdir_fs import ListdirFs
 
 
 class InfoFiles:
     def __init__(self,
-                 fs,  # type: ListFilesInDir
+                 fs,  # type: ListdirFs
                  ):
         self.fs = fs
 
@@ -15,7 +16,7 @@ class InfoFiles:
         norm_path = os.path.normpath(path)
         info_dir = os.path.join(norm_path, 'info')
         try:
-            for info_file in self.fs.list_files_in_dir(info_dir):
+            for info_file in listdir_with_complete_path(self.fs, info_dir):
                 if not os.path.basename(info_file).endswith('.trashinfo'):
                     yield ('non_trashinfo', info_file)
                 else:

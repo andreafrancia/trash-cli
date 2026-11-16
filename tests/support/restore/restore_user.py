@@ -5,13 +5,13 @@ from typing import Dict, Optional
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.run.cmd_result import CmdResult
 from tests.test_restore.support.fake_read_cwd import FakeReadCwdFs
-from trashcli.fslib.protocols.list_files_in_dir import ListFilesInDir
+from trashcli.fslib.protocols.listdir_fs import ListdirFs
 from trashcli.fslib.protocols.volumes_fs import VolumesFs
 from trashcli.lib.my_input import HardCodedInput
 from trashcli.restore.restore_cmd import RestoreCmd
 from trashcli.restore.fs.protocols.file_reader_fs import FileReaderFs
 from trashcli.restore.fs.protocols.restore_writer_fs import RestoreWriterFs
-from trashcli.restore.fs.protocols.restore_read_fs import RestoreReadFs
+from trashcli.restore.fs.protocols.restore_fs import RestoreFs
 from trashcli.restore.restore_logger import RestoreLogger
 from trashcli.trash_dirs_scanner import TopTrashDirRulesFs
 
@@ -21,14 +21,14 @@ class RestoreUser:
                  environ,  # type: Dict[str, str]
                  uid,  # type: int
                  file_reader,  # type: FileReaderFs
-                 path_read_fs,  # type: RestoreReadFs
+                 path_read_fs,  # type: RestoreFs
                  write_fs,  # type: RestoreWriterFs
-                 listing_fs,  # type: ListFilesInDir
+                 listing_fs,  # type: ListdirFs
                  version,  # type: str
                  volumes,  # type: VolumesFs
                  logger,  # type: RestoreLogger
                  top_trash_dir_rules_reader,  # type: TopTrashDirRulesFs
-                 read_fs=None,  # type: Optional[RestoreReadFs]
+                 read_fs=None,  # type: Optional[RestoreFs]
                  ):
         self.environ = environ
         self.uid = uid

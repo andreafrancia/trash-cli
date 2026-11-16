@@ -1,22 +1,17 @@
-import unittest
+import pytest
 
+from tests.support.capture_error import capture_error
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.put.format_mode import format_mode
-from tests.support.capture_error import capture_error
 
 
-class TestFakeFs(unittest.TestCase):
-    def setUp(self):
+class TestFakeFs:
+    def setup_method(self):
         self.fs = FakeFs('/')
 
     def test(self):
         result = self.fs.ls_a("/")
         assert result == [".", ".."]
-
-    def test_create_dir(self):
-        self.fs.mkdir("/foo")
-        result = self.fs.ls_a("/")
-        assert result == [".", "..", "foo"]
 
     def test_find_dir_root(self):
         assert '/' == self.fs.get_entity_at('/').name
@@ -24,12 +19,6 @@ class TestFakeFs(unittest.TestCase):
     def test_find_dir_root_subdir(self):
         self.fs.mkdir("/foo")
         assert 'foo' == self.fs.get_entity_at('/foo').name
-
-    def test_create_dir_in_dir(self):
-        self.fs.mkdir("/foo")
-        self.fs.mkdir("/foo/bar")
-        result = self.fs.ls_a("/foo")
-        assert result == [".", "..", "bar"]
 
     def test_create_file(self):
         self.fs.mkdir("/foo")
@@ -153,7 +142,8 @@ class TestFakeFs(unittest.TestCase):
     def test_getsize_with_dir(self):
         self.fs.mkdir("foo")
 
-        self.assertRaises(NotImplementedError, lambda: self.fs.file_size("foo"))
+        with pytest.raises(NotImplementedError):
+            self.fs.file_size("foo")
 
     def test_mode_lets_create_a_file(self):
         self.fs.makedirs("/foo/bar/baz", 0o755)

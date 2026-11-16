@@ -2,25 +2,21 @@ import os
 
 import pytest
 
-from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.temp_dir import make_temp_dir
 from tests.support.fakes.fake_trash_dir import trashinfo_content_default_date
 from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 from trashcli.fslib.real.real_fs import RealFs
-from trashcli.fslib.real.real_list_files_in_dir import RealListFilesInDir
 from tests.support.fakes.fake_volumes import FakeVolumesFs
-from trashcli.restore.fs.real.real_file_reader_fs import RealFileReaderFs
-from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
-from trashcli.restore.fs.real.real_restore_read_fs import RealRestoreReadFs
-from trashcli.restore.fs.real.real_restore_writer_fs import RealRestoreWriterFs
+from trashcli.restore.fs.real.real_restore_fs import RealRestoreFs
 
 
 @pytest.mark.slow
 class TestRestoreOverwriteGuard:
     def setup_method(self):
         self.fs = RealFs()
-        self.tmp_dir = MyPath.make_temp_dir()
+        self.tmp_dir = make_temp_dir(self.fs)
         self.fixture = RestoreFileFixture(self.tmp_dir / 'XDG_DATA_HOME',
                                           RealFs())
         self.cwd = self.tmp_dir / 'cwd'
@@ -28,11 +24,11 @@ class TestRestoreOverwriteGuard:
         self.user = RestoreUser(
             environ={'XDG_DATA_HOME': self.tmp_dir / 'XDG_DATA_HOME'},
             uid=os.getuid(),
-            file_reader=RealFileReaderFs(),
-            path_read_fs=RealPathReaderFs(),
-            read_fs=RealRestoreReadFs(),
-            write_fs=RealRestoreWriterFs(),
-            listing_fs=RealListFilesInDir(),
+            file_reader=RealRestoreFs(),
+            path_read_fs=RealRestoreFs(),
+            read_fs=RealRestoreFs(),
+            write_fs=RealRestoreFs(),
+            listing_fs=RealRestoreFs(),
             version='0.0.0',
             volumes=FakeVolumesFs([]),
             top_trash_dir_rules_reader=RealFs(),

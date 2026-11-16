@@ -1,3 +1,4 @@
+from tests.support.dirs.support_fs import SupportFs
 from tests.test_put.cmd.e2e.run_trash_put import PutResult
 from tests.test_put.cmd.e2e.run_trash_put import run_trash_put4
 from typing import List
@@ -12,10 +13,12 @@ class Result:
         self.layout = layout
 
     def status(self):
+        cur_dir_fs = SupportFs(self.layout.fs, self.layout.cur_dir)
+        trash_dir_fs = SupportFs(self.layout.fs, self.layout.trash_dir)
         return {
             'command output': "\n".join(self.output.stderr.lines()),
-            'file left in current_dir': self.layout.cur_dir.list_all_files_sorted(),
-            'file in trash dir': self.layout.trash_dir.list_all_files_sorted(),
+            'file left in current_dir': cur_dir_fs.list_all_files_sorted(),
+            'file in trash dir': trash_dir_fs.list_all_files_sorted(),
         }
 
 
