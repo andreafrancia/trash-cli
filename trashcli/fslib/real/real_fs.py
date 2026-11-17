@@ -8,18 +8,15 @@ from trashcli.fslib.real.real_move import RealMove
 from trashcli.fslib.real.real_remove_file import RealRemoveFile
 from trashcli.fslib.real.real_atomic_write import RealAtomicWrite
 from trashcli.fslib.real.real_read_file import RealReadFile
+from trashcli.fslib.real.real_volume_of import RealVolumeOfFs
 from trashcli.fslib.real.real_write_file import RealWriteFile
 from trashcli.fslib.real.real_mk_dirs import RealMkDirs
 from trashcli.fstab.real.real_mount_point_list_fs import RealMountPointListFs
-from trashcli.fslib.real.real_volume_of import RealVolumeOfFs
 from trashcli.fslib.protocols.fs import Fs
-from trashcli.restore.fs.protocols.restore_fs import RestoreFs
 from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
 from trashcli.restore.fs.real.real_read_cwd_fs import RealReadCwdFs
-from trashcli.trash_dirs_scanner import TopTrashDirRulesFs
 
-
-class RealFs(RealVolumeOfFs, Fs, RestoreFs, TopTrashDirRulesFs):
+class RealFs(Fs):
 
     def __init__(self):
         super(RealFs, self).__init__()
@@ -34,6 +31,9 @@ class RealFs(RealVolumeOfFs, Fs, RestoreFs, TopTrashDirRulesFs):
         with open(path, 'a'):
             import os
             os.utime(path, None)
+
+    def volume_of(self, path):
+        return RealVolumeOfFs().volume_of(path)
 
     def atomic_write(self, path, content):
         RealAtomicWrite().atomic_write(path, content)
