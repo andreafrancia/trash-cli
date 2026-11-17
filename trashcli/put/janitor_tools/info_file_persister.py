@@ -14,7 +14,7 @@ from trashcli.put.suffix import Suffix
 
 _TrashinfoDataFields = NamedTuple('_TrashinfoDataFields', [
     ('basename', str),
-    ('content', str),
+    ('content', bytes),
     ('info_dir_path', str),
 ])
 

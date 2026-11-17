@@ -7,7 +7,7 @@ from trashcli.compat import fsencode
 
 def format_trashinfo(original_location,  # type: str
                      deletion_date,  # type: datetime.datetime
-                     ):
+                     ):   # type: (...) -> bytes
     content = ("[Trash Info]\n" +
                "Path=%s\n" % format_original_location(original_location) +
                "DeletionDate=%s\n" % format_date(deletion_date)).encode('utf-8')
