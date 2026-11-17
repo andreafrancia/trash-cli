@@ -41,7 +41,7 @@ class RealFs(Fs):
     def chmod(self, path, mode):
         os.chmod(path, mode)
 
-    def isfile(self, path):
+    def path_isfile(self, path):
         return os.path.isfile(path)
 
     def file_size(self, path):

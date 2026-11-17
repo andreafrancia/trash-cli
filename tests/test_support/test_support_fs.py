@@ -61,7 +61,7 @@ class TestSupportFs:
         assert found == ['/x/a']
         assert [p.fs for p in found] == [fs]
 
-    def test_is_file__uses_the_fs(self):
+    def test_path_isfile__uses_the_fs(self):
         fs = FakeFs()
         base_dir = MyPath('/x', fs)
         support_fs = SupportFs(fs, base_dir)
@@ -69,9 +69,9 @@ class TestSupportFs:
         support_fs.mkdirs()
         support_fs.write_file('a', '')
 
-        assert support_fs.is_file('a') is True
-        assert support_fs.is_file(base_dir / 'a') is True
-        assert support_fs.is_file('b') is False
+        assert support_fs.path_isfile('a') is True
+        assert support_fs.path_isfile(base_dir / 'a') is True
+        assert support_fs.path_isfile('b') is False
 
     def test_find_files_rel__lists_only_files_relative_to_base_dir(self):
         fs = FakeFs()
@@ -105,7 +105,7 @@ class TestSupportFs:
         support_fs.mkdirs()
         support_fs.touch('a')
 
-        assert support_fs.is_file('a') is True
+        assert support_fs.path_isfile('a') is True
 
     def test_write_file__writes_relative_to_base_dir(self):
         fs = FakeFs()

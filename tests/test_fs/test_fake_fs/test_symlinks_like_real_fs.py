@@ -51,8 +51,8 @@ class TestSymlinksLikeRealFs:
         env.fs.symlink('file', env.path('to-file'))
         env.fs.symlink('missing-target', env.path('dangling'))
 
-        assert env.fs.isfile(env.path('to-file')) is True
-        assert env.fs.isfile(env.path('dangling')) is False
+        assert env.fs.path_isfile(env.path('to-file')) is True
+        assert env.fs.path_isfile(env.path('dangling')) is False
 
     @real_and_fake()
     def test_readlink_returns_the_target_as_written(self, env):
