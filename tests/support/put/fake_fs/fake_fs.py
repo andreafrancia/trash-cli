@@ -425,7 +425,7 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
     def cd(self, path):
         self.cwd = path
 
-    def isfile(self, path):
+    def path_isfile(self, path):
         try:
             file = self.get_entity_at(path)
         except MyFileNotFoundError:

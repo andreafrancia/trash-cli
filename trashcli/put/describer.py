@@ -32,7 +32,7 @@ class Describer:
                     return "'..' directory"
                 else:
                     return 'directory'
-        elif self.fs.isfile(path):
+        elif self.fs.path_isfile(path):
             if self.fs.file_size(path) == 0:
                 return 'regular empty file'
             else:

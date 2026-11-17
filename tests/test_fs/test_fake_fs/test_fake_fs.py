@@ -122,12 +122,12 @@ class TestFakeFs:
     def test_isfile_with_file(self):
         self.fs.write_file('/foo')
 
-        assert self.fs.isfile("/foo") is True
+        assert self.fs.path_isfile("/foo") is True
 
     def test_isfile_with_dir(self):
         self.fs.mkdir('/foo')
 
-        assert self.fs.isfile("/foo") is False
+        assert self.fs.path_isfile("/foo") is False
 
     def test_getsize_with_empty_file(self):
         self.fs.write_file("foo")
@@ -150,7 +150,7 @@ class TestFakeFs:
 
         self.fs.write_file("/foo/bar/baz/1", "1")
 
-        assert self.fs.isfile("/foo/bar/baz/1") is True
+        assert self.fs.path_isfile("/foo/bar/baz/1") is True
 
     def test_mode_does_not_let_create_a_file(self):
         self.fs.makedirs("/foo/bar/baz", 0o755)

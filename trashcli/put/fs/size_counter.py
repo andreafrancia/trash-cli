@@ -12,7 +12,7 @@ class SizeCounter:
         self.fs = fs
 
     def get_size_recursive(self, path):
-        if self.fs.isfile(path):
+        if self.fs.path_isfile(path):
             return self.fs.file_size(path)
 
         files = self.list_all_files(path)

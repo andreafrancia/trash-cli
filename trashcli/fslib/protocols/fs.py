@@ -53,7 +53,7 @@ class Fs(Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def isfile(self, path):  # type: (str) -> bool
+    def path_isfile(self, path):  # type: (str) -> bool
         raise NotImplementedError
 
     @abstractmethod
