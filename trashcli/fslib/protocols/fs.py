@@ -38,7 +38,10 @@ class Fs(Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def atomic_write(self, path, content):  # type: (str, str) -> None
+    def atomic_write(self,
+                     path,  # type: str
+                     content,  # type: bytes
+                     ):  # type: (...) -> None
         raise NotImplementedError
 
     @abstractmethod

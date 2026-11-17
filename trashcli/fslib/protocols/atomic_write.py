@@ -5,7 +5,10 @@ from trashcli.compat import Protocol
 
 class AtomicWrite(Protocol):
     @abstractmethod
-    def atomic_write(self, path, content):
+    def atomic_write(self,
+                     path,  # type: str
+                     content,  # type: bytes
+                     ):  # type: (...) -> None
         raise NotImplementedError()
 
     @abstractmethod
