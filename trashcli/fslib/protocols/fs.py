@@ -3,14 +3,30 @@ from abc import abstractmethod
 from typing import List, Optional, Tuple, Iterable
 
 from trashcli.compat import Protocol
-from trashcli.fslib.protocols.mk_dirs import MkDirs
-from trashcli.fslib.protocols.real_path_fs import RealPathFs
-from trashcli.fslib.protocols.volume_of import VolumeOfFs
 
 
-class Fs(RealPathFs, VolumeOfFs, MkDirs, Protocol):
+class Fs(Protocol):
+    # notes:
+    #  - the use of @abstractmethod the use of abstract method ensure that
+    #    implementation of this protocol cannot be instantiated if not all the
+    #    methods are implemented.
+    #  - Fs it a big protocol and it is expected to be implemented only by two
+    #    classes: FakeFs and RealFs.
+
+    @abstractmethod
+    def mkdirs(self, path):
+        raise NotImplementedError
+
+    @abstractmethod
+    def realpath(self, path):  # type: (str) -> str
+        raise NotImplementedError
+
     @abstractmethod
     def touch(self, path):  # type: (str) -> None
+        raise NotImplementedError
+
+    @abstractmethod
+    def volume_of(self, path):  # type: (str) -> str
         raise NotImplementedError
 
     @abstractmethod
