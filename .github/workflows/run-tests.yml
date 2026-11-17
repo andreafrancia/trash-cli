@@ -11,31 +11,18 @@ on:
 jobs:
   run_tests:
     name: Run Python Tests
+    runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        include:
-          - { os: ubuntu-latest, python_version: '3.8' }
-          - { os: ubuntu-latest, python_version: '3.14' }
-
-    runs-on: ${{ matrix.os }}
+        python_version: ['3.10', '3.11', '3.12', '3.13', '3.14', '3.15']
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up 3.5 Python, ${{ matrix.python_version }}
-      if: ${{ matrix.python_version == '3.5' }}
-      uses: actions/setup-python@v5
-      env:
-        # Workaround copied from
-        # https://github.com/ytdl-org/youtube-dl/commit/a08f2b7e4567cdc50c0614ee0a4ffdff49b8b6e6
-        PIP_TRUSTED_HOST: "pypi.python.org pypi.org files.pythonhosted.org"
+    - uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python_version }}
-    - name: Set up Python ${{ matrix.python_version }}
-      uses: andreafrancia/setup-python@v1
-      if: ${{ matrix.python_version != '3.5' }}
-      with:
-        python-version: ${{ matrix.python_version }}
-        cache-build: 'true'
+        cache: 'pip'
     - name: Upgrade pip
       run: python -m pip install --upgrade pip
     - name: Install dependencies
