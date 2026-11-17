@@ -97,7 +97,9 @@ class Fs(Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def seems_to_have_delete_permissions(self, path):  # type: (str) -> int
+    def seems_to_have_delete_permissions(self,
+                                         path,  # type: str
+                                         ):  # type: (...) -> bool
         raise NotImplementedError
 
     @abstractmethod
