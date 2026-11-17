@@ -47,14 +47,14 @@ class RealFs(RealVolumeOfFs, Fs, RestoreFs, TopTrashDirRulesFs):
     def file_size(self, path):
         return os.path.getsize(path)
 
-    def walk_no_follow(self, path):
+    def walk_no_follow(self, top):
         try:
             import scandir  # type: ignore
             walk = scandir.walk
         except ImportError:
             walk = os.walk
 
-        return walk(path, followlinks=False)
+        return walk(top, followlinks=False)
 
     def makedirs(self, name, mode=0o777, exist_ok=False):
         """
