@@ -11,7 +11,7 @@ from trashcli.put.reporting.trash_put_reporter import TrashPutReporter
 from trashcli.put.trasher import Trasher
 
 
-class TrashPutCmd:
+class PutCmd:
     def __init__(self,
                  fs,  # type: Fs
                  reporter,  # type: TrashPutReporter

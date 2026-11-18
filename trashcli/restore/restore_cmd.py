@@ -17,7 +17,7 @@ from trashcli.restore.real_output import RealOutput
 from trashcli.restore.restore_arg_parser import RestoreArgParser
 from trashcli.restore.restore_logger import RestoreLogger
 from trashcli.restore.restorer import Restorer
-from trashcli.restore.run_restore_action import RunRestoreAction, Handler
+from trashcli.restore.run_restore_action import RunRestoreAction
 from trashcli.restore.trash_directories import TrashDirectoriesImpl
 from trashcli.restore.trashed_files import TrashedFiles
 from trashcli.trash_dirs_scanner import TopTrashDirRules, TopTrashDirRulesFs

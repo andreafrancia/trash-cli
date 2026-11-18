@@ -4,7 +4,6 @@ from typing import Mapping, TextIO, List
 
 from trashcli.compat import Protocol
 from trashcli.empty.main import ContentReader
-from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.fslib.protocols.file_size import FileSize
 from trashcli.fslib.protocols.volume_of import VolumeOfFs
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
@@ -12,6 +11,7 @@ from trashcli.fstab.protocols.df_command import DfCommand
 from trashcli.fstab.protocols.disk_partitions_fs import DiskPartitionsFs
 from trashcli.lib.print_version import PrintVersionArgs, \
     PrintVersionAction
+from trashcli.list.list_fs import ListFs
 from trashcli.list.list_trash_action import ListTrashAction, ListTrashArgs
 from trashcli.list.minor_actions.debug_volumes import DebugVolumes, \
     DebugVolumesArgs
@@ -26,10 +26,6 @@ from trashcli.list.trash_dir_selector import TrashDirsSelector
 from trashcli.trash_dirs_scanner import TopTrashDirRulesFs
 
 
-class ListFileReader(TopTrashDirRulesFs, FileSize, Protocol):
-    pass
-
-
 class ListCmd:
     def __init__(self,
                  out,  # type: TextIO
@@ -39,7 +35,7 @@ class ListCmd:
                  uid,  # type: int
                  volumes,  # type: VolumeOfFs
                  file_reader,  # type: ListFileReader
-                 dir_reader,  # type: DirReaderFs
+                 dir_reader_fs, # type: ListFs
                  content_reader,  # type: ContentReader
                  version,  # type: str
                  disk_partitions_fs,  # type: DiskPartitionsFs
@@ -48,7 +44,6 @@ class ListCmd:
         self.out = out
         self.err = err
         self.version = version
-        self.dir_reader = dir_reader
         self.content_reader = content_reader
         self.environ = environ
         self.uid = uid
@@ -73,9 +68,10 @@ class ListCmd:
                                                        self.selector,
                                                        self.out,
                                                        self.err,
-                                                       self.dir_reader,
                                                        self.content_reader,
-                                                       file_reader),
+                                                       file_reader,
+                                                       fs=dir_reader_fs,
+                                                       ),
                         PrintPythonExecutableArgs: PrintPythonExecutable(
                             self.out)}
 
@@ -88,3 +84,7 @@ class ListCmd:
         action = self.actions[type(args)]
 
         action.run_action(args)
+
+
+class ListFileReader(TopTrashDirRulesFs, FileSize, Protocol):
+    pass

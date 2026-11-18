@@ -1,12 +1,9 @@
 import os
+from abc import abstractmethod
 from typing import Iterable
 from trashcli.compat import Protocol
 
-from trashcli.fslib.protocols.path_exists import PathExists
 from trashcli.fslib.protocols.path_is_dir import PathIsDir
-from trashcli.fslib.protocols.is_sticky_dir import IsStickyDir
-from trashcli.fslib.protocols.is_sym_link import IsSymLink
-from trashcli.fslib.protocols.is_world_writable import IsWorldWritable
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
 from trashcli.lib.user_info_provider import UserInfoProvider
 
@@ -46,13 +43,7 @@ class TrashDir(tuple):
         return 'TrashDir(%r, %r)' % (self.path, self.volume)
 
 
-class TopTrashDirRulesFs(PathExists, IsStickyDir, IsSymLink,
-                         IsWorldWritable, PathIsDir, Protocol):
-    pass
-
 class TopTrashDirRules:
-    class Reader(PathExists, IsStickyDir, IsSymLink, Protocol):
-        pass
 
     def __init__(self,
                  reader # type: TopTrashDirRulesFs
@@ -111,3 +102,25 @@ def only_found(events, # type: Iterable[TrashDir]
     for event, args in events:
         if event == trash_dir_found:
             yield args
+
+
+class TopTrashDirRulesFs(Protocol):
+    @abstractmethod
+    def path_exists(self, path):  # type: (str) -> bool
+        raise NotImplementedError()
+
+    @abstractmethod
+    def is_sticky_dir(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def is_symlink(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def is_world_writable(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def path_isdir(self, path):  # type: (str) -> bool
+        raise NotImplementedError()

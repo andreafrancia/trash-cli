@@ -1,6 +1,3 @@
-from trashcli.fslib.protocols.fs import Fs
-
-
 class FakeTempfile:
     template = "tmp"
     def __init__(self, fs):

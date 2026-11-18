@@ -1,7 +1,6 @@
 from tests.support.dirs.my_path import MyPath
 from tests.support.dirs.support_fs import SupportFs
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from trashcli.fslib.real.real_fs import RealFs
 
 
 class TestMyPathFs:

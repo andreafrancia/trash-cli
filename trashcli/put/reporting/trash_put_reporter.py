@@ -1,5 +1,4 @@
 # Copyright (C) 2007-2024 Andrea Francia Trivolzio(PV) Italy
-import os
 from typing import List
 from typing import Tuple
 
