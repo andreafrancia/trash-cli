@@ -4,6 +4,7 @@ import trashcli.list
 import trashcli.list.main
 import trashcli.list.parser
 from trashcli.lib.print_version import PrintVersionArgs
+from trashcli.list.list_trash_action import DoctorArgs, ListTrashArgs
 
 
 class TestTrashListParser(unittest.TestCase):
@@ -44,6 +45,16 @@ class TestTrashListParser(unittest.TestCase):
         args = self.parse(['--files'])
 
         assert True == args.show_files
+
+    def test_doctor_off(self):
+        args = self.parse([])
+
+        assert isinstance(args, ListTrashArgs)
+
+    def test_doctor_on(self):
+        args = self.parse(['--doctor'])
+
+        assert isinstance(args, DoctorArgs)
 
     def parse(self, args):
         return self.parser.parse_list_args(args, 'trash-list')

@@ -12,6 +12,7 @@ from trashcli.fstab.protocols.df_command import DfCommand
 from trashcli.fstab.protocols.disk_partitions_fs import DiskPartitionsFs
 from trashcli.lib.print_version import PrintVersionArgs, \
     PrintVersionAction
+from trashcli.list.list_trash_action import DoctorAction, DoctorArgs
 from trashcli.list.list_trash_action import ListTrashAction, ListTrashArgs
 from trashcli.list.minor_actions.debug_volumes import DebugVolumes, \
     DebugVolumesArgs
@@ -76,6 +77,13 @@ class ListCmd:
                                                        self.dir_reader,
                                                        self.content_reader,
                                                        file_reader),
+                        DoctorArgs: DoctorAction(self.environ,
+                                                 self.uid,
+                                                 self.selector,
+                                                 self.out,
+                                                 self.err,
+                                                 self.dir_reader,
+                                                 self.content_reader),
                         PrintPythonExecutableArgs: PrintPythonExecutable(
                             self.out)}
 

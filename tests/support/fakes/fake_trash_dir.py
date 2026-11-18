@@ -216,6 +216,13 @@ class FakeTrashDir:
             basename=trash_info_path.info_basename,
         )
 
+    def add_non_trashinfo(self,  # type: Self
+                          basename,  # type: str
+                          ):
+        path = os.path.join(self.info_path, basename)
+        self.fsx.make_parent_for(path)
+        self.fsx.make_file(path, '')
+
     def ls_info(self):
         return os.listdir(self.info_path)
 

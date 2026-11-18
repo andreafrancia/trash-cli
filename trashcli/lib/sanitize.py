@@ -18,20 +18,42 @@ def _is_printable(cp):
     return not (cp < 0x20 or cp == 0x7f or 0x80 <= cp <= 0x9f)
 
 
+def _lone_raw_byte(cp, text, index):
+    # A lone surrogate in U+DC80..U+DCFF stands for one raw byte. The low
+    # half of a surrogate pair is a normal character on narrow Python 2.
+    if not (0xdc80 <= cp <= 0xdcff):
+        return None
+    if index > 0 and 0xd800 <= ord(text[index - 1]) <= 0xdbff:
+        return None
+    return cp - 0xdc00
+
+
+def _escape_byte(byte):
+    if byte in _MNEMONICS:
+        return "$'\\%s'" % _MNEMONICS[byte]
+    return "$'\\%03o'" % byte
+
+
 def shell_escape(s):
     """Quote a name the way GNU ls and rm do (shell-escape style)."""
     if s is None or (s != '' and all(c in _SAFE for c in s)):
         return s
     out = []
     in_quotes = False
-    for c in s:
+    for index, c in enumerate(s):
         cp = ord(c)
+        raw_byte = _lone_raw_byte(cp, s, index)
+        if raw_byte is not None:
+            if in_quotes:
+                out.append("'")
+                in_quotes = False
+            out.append(_escape_byte(raw_byte))
+            continue
         if not _is_printable(cp):
             if in_quotes:
                 out.append("'")
                 in_quotes = False
-            out.append("$'\\%s'" % _MNEMONICS[cp] if cp in _MNEMONICS
-                       else "$'\\%03o'" % cp)
+            out.append(_escape_byte(cp))
             continue
         if not in_quotes:
             out.append("'")

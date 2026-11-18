@@ -1,8 +1,7 @@
 import os
-import posixpath
-import re
 from typing import NamedTuple
 
+from trashcli.lib.shrink_user import shrink_user
 from trashcli.put.core.check_type import CheckType
 from trashcli.put.core.path_maker_type import PathMakerType
 from trashcli.put.gate import Gate
@@ -28,12 +27,6 @@ class Candidate(NamedTuple('Candidate', [
         return os.path.normpath(self.trash_dir_path)
 
     def shrink_user(self, environ):
-        path = self.norm_path()
         if environ.get('TRASH_PUT_DISABLE_SHRINK', '') == '1':
-            return path
-        home_dir = environ.get('HOME', '')
-        home_dir = posixpath.normpath(home_dir)
-        if home_dir != '':
-            path = re.sub('^' + re.escape(home_dir + os.path.sep),
-                          '~' + os.path.sep, path)
-        return path
+            return self.norm_path()
+        return shrink_user(self.norm_path(), environ)
