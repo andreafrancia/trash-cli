@@ -44,3 +44,9 @@ class RealRmFileSystemReader(RmFileSystemReader,
 
     def path_exists(self, path):
         return self.fs.path_exists(path)
+
+    def lstat(self, path):  # type: (str) -> os.stat_result
+        return self.fs.lstat(path)
+
+    def geteuid(self):  # type: () -> int
+        return self.fs.geteuid()

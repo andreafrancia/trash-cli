@@ -113,6 +113,26 @@ class Fs(RealPathFs, VolumeOfFs, MkDirs, Protocol):
     def mkdtemp(self, prefix=None, suffix=None, dir=None):
         raise NotImplementedError
 
+    @abstractmethod
+    def getcwd_as_realpath(self):  # type: () -> str
+        raise NotImplementedError
+
+    @abstractmethod
+    def chdir(self, path):  # type: (str) -> None
+        raise NotImplementedError
+
+    @abstractmethod
+    def lstat(self, path):  # type: (str) -> os.stat_result
+        raise NotImplementedError
+
+    @abstractmethod
+    def stat(self, path):  # type: (str) -> os.stat_result
+        raise NotImplementedError
+
+    @abstractmethod
+    def geteuid(self):  # type: () -> int
+        raise NotImplementedError
+
     def parent_realpath2(self, path):
         parent = os.path.dirname(path)
         return self.realpath(parent)

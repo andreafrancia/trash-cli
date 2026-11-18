@@ -2,11 +2,9 @@
 from trashcli.compat import Protocol
 
 from trashcli.fslib.protocols.read_file import ReadFile
-from trashcli.fslib.protocols.remove_file2 import RemoveFile2
-from trashcli.fslib.protocols.remove_file_if_exists import RemoveFileIfExists
 from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.lib.single_user_info_provider import SingleUserInfoProvider
-from trashcli.rm.cleanable_trashcan import CleanableTrashcan
+from trashcli.rm.cleanable_trashcan import CleanableTrashcan, RemoverFs
 from trashcli.rm.filter import Filter
 from trashcli.rm.list_trashinfo import ListTrashinfos
 from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
@@ -16,8 +14,7 @@ from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
 class RmFileSystemReader(ReadFile,
                          DirReaderFs,
                          TopTrashDirRulesFs,
-                         RemoveFileIfExists,
-                         RemoveFile2,
+                         RemoverFs,
                          Protocol):
     pass
 
@@ -63,6 +60,11 @@ class RmCmd:
         for event, args in scanner.scan_trash_dirs(self.environ, uid):
             if event == trash_dir_found:
                 path, volume = args
+                try:
+                    # each removal checks that it still happens inside this dir
+                    checked_dir = self.file_reader.check_trash_dir(path, volume, args.uid)
+                except OSError:
+                    continue
                 for type, arg in listing.list_from_volume_trashdir(path,
                                                                    volume):
                     if type == 'unable_to_parse_path':
@@ -71,7 +73,7 @@ class RmCmd:
                         original_location, info_file = arg
                         if cmd.matches(original_location):
                             trashcan.delete_trash_info_and_backup_copy(
-                                info_file)
+                                checked_dir, info_file)
 
     def unable_to_parse_path(self, trashinfo):
         self.report_error('{}: unable to parse \'Path\''.format(trashinfo))

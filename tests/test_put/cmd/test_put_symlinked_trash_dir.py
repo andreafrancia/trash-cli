@@ -26,6 +26,16 @@ class TestPutSymlinkedTrashDir:
         assert self.fs.path_exists("/foo")
         assert not self.fs.path_exists('/.Trash-123/files')
 
+    def test_it_does_not_trash_into_a_trash_dir_of_another_user(self):
+        self.fs.touch("/foo")
+        self.fs.makedirs("/.Trash-123", 0o700)
+        self.fs.geteuid = lambda: 123
+
+        self.run_cmd(['trash-put', '/foo'])
+
+        assert self.fs.path_exists("/foo")
+        assert not self.fs.path_exists('/.Trash-123/files')
+
     def run_cmd(self, args):
         stderr = StringIO()
         backend = RecordingBackend(stderr)

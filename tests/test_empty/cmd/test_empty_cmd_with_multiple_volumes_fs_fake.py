@@ -62,3 +62,29 @@ class TestEmptyCmdFakeWithMultipleVolumesFs(unittest.TestCase):
 
         assert not self.fs.path_exists(
             self.temp_dir + '/specified/info/foo.trashinfo')
+
+    def test_it_keeps_a_dir_renamed_to_the_trash_dir_name_after_the_listing(self):
+        self.fsx.make_empty_file(self.top_dir + '/.Trash-123/info/foo.trashinfo')
+        self.fsx.make_empty_file(self.top_dir + '/.Trash-123/files/foo')
+        self.fsx.make_empty_file(self.top_dir + '/project/files/foo')
+        lexists = self.fs.path_lexists
+
+        def swap_then_check(path):
+            if self.fs.path_exists(self.top_dir + '/project'):
+                self.fs.move(self.top_dir + '/.Trash-123', self.top_dir + '/away')
+                self.fs.move(self.top_dir + '/project', self.top_dir + '/.Trash-123')
+            return lexists(path)
+
+        self.fs.path_lexists = swap_then_check
+
+        self.empty_cmd.run_cmd([], self.environ, uid=123)
+
+        assert self.fs.path_exists(self.top_dir + '/.Trash-123/files/foo')
+
+    def test_root_keeps_a_trash_dir_made_by_another_user(self):
+        self.fsx.make_empty_file(self.top_dir + '/.Trash-0/info/foo.trashinfo')
+        self.fs.geteuid = lambda: 0
+
+        self.empty_cmd.run_cmd([], self.environ, uid=0)
+
+        assert self.fs.path_exists(self.top_dir + '/.Trash-0/info/foo.trashinfo')

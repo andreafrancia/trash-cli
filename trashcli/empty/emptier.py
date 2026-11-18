@@ -1,5 +1,6 @@
 # Copyright (C) 2022 Andrea Francia Bereguardo(PV) Italy
-from typing import Iterable
+import os
+from typing import Iterable, Tuple
 
 from trashcli.empty.console import Console
 from trashcli.empty.delete_according_date import DeleteAccordingDate
@@ -24,14 +25,14 @@ class Emptier:
                  dry_run,  # type: bool
                  verbose,  # type: int
                  ):  # type: (...) -> None
-        for path in self.files_to_delete(trash_dirs, environ, parsed_days):
+        for checked_dir, path in self.files_to_delete(trash_dirs, environ, parsed_days):
             if dry_run:
                 self.console.print_dry_run(path)
             else:
                 if verbose:
                     self.console.print_removing(path)
                 try:
-                    self.file_remover.remove_file_if_exists(path)
+                    self.file_remover.remove_if_exists(checked_dir, path)
                 except OSError:
                     self.console.print_cannot_remove_error(path)
 
@@ -39,14 +40,17 @@ class Emptier:
                         trash_dirs,  # type: Iterable[TrashDir]
                         environ,  # type: dict
                         parsed_days,  # type: int
-                        ):  # type: (...) -> Iterable[str]
+                        ):  # type: (...) -> Iterable[Tuple[os.stat_result, str]]
         for trash_dir in only_found(trash_dirs):  # type: TrashDir
+            try:
+                # each removal checks that it still happens inside this dir
+                checked_dir = self.file_remover.check_trash_dir(
+                    trash_dir.path, trash_dir.volume, trash_dir.uid)
+            except OSError:
+                continue
             for trash_info_path in self.trash_dir_reader.list_trashinfo(
                     trash_dir.path):
                 if self.delete_mode.ok_to_delete(trash_info_path, environ,
                                                  parsed_days):
-                    yield (path_of_backup_copy(trash_info_path))
-                    yield trash_info_path
-            for orphan in self.trash_dir_reader.list_orphans(
-                    trash_dir.path):
-                yield orphan
+                    yield checked_dir, path_of_backup_copy(trash_info_path)
+                    yield checked_dir, trash_info_path

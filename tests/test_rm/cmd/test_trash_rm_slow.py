@@ -1,3 +1,4 @@
+import os
 import unittest
 
 import pytest
@@ -17,11 +18,12 @@ class TestTrashRm(unittest.TestCase):
         fs = RealFs()
         self.xdg_data_home = make_temp_dir(fs)
         self.stderr = StringIO()
+        self.remover_fs = RealFs()
         self.trash_rm = RmCmd(environ={'XDG_DATA_HOME': self.xdg_data_home},
                               getuid=lambda: 123,
                               volumes_listing=FakeVolumesListing(),
                               stderr=self.stderr,
-                              file_reader=RealRmFileSystemReader(RealFs()))
+                              file_reader=RealRmFileSystemReader(self.remover_fs))
         self.fake_trash_dir = FakeTrashDir(self.xdg_data_home / 'Trash')
 
     def test_issue69(self):
@@ -40,6 +42,26 @@ class TestTrashRm(unittest.TestCase):
         self.trash_rm.run(['trash-rm', 'delete*'], uid=None)
 
         assert self.fake_trash_dir.ls_info() == ['keep.trashinfo']
+
+    def test_it_keeps_a_dir_renamed_to_the_trash_dir_name_after_the_listing(self):
+        self.fake_trash_dir.add_trashinfo_basename_path("del", 'to/be/deleted')
+        os.makedirs(self.xdg_data_home / 'Trash/files')
+        os.makedirs(self.xdg_data_home / 'project/files')
+        open(self.xdg_data_home / 'project/files/del', 'w').close()
+        lexists = self.remover_fs.path_lexists
+
+        def swap_then_check(path):
+            if os.path.exists(self.xdg_data_home / 'project'):
+                os.rename(self.xdg_data_home / 'Trash', self.xdg_data_home / 'away')
+                os.rename(self.xdg_data_home / 'project', self.xdg_data_home / 'Trash')
+            return lexists(path)
+
+        self.remover_fs.path_lexists = swap_then_check
+
+        with pytest.raises(OSError):
+            self.trash_rm.run(['trash-rm', 'delete*'], uid=None)
+
+        assert os.path.exists(self.xdg_data_home / 'Trash/files/del')
 
     def tearDown(self):
         self.xdg_data_home.clean_up()

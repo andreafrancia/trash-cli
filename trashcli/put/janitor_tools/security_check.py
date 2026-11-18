@@ -2,6 +2,7 @@ from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.check_type import NoCheck, TopTrashDirCheck
 from trashcli.put.core.either import Either, Right, Left
 from trashcli.put.core.failure_reason import FailureReason, LogContext
+from trashcli.lib.trash_dir_remover import TrashDirRemover
 
 
 class SecurityCheck:
@@ -12,6 +13,12 @@ class SecurityCheck:
     def check_trash_dir_is_secure(self,
                                   candidate,  # type: Candidate
                                   ):  # type: (...) -> Either[None, FailureReason]
+        if self.fs.path_lexists(candidate.trash_dir_path):
+            try:
+                TrashDirRemover(self.fs).check_trash_dir(
+                    candidate.trash_dir_path, candidate.volume)
+            except OSError:
+                return Left(TrashDirOfAnotherUser())
         for sub_dir in (candidate.info_dir(), candidate.files_dir()):
             if self.fs.path_lexists(sub_dir) and self.fs.is_symlink(sub_dir):
                 return Left(TrashDirIsNotSecureBecauseSymLink())
@@ -29,6 +36,12 @@ class SecurityCheck:
                 return Left(TrashDirIsNotSecureBecauseNotSticky())
             return Right(None)
         raise Exception("Unknown check type: %s" % candidate.check_type)
+
+
+class TrashDirOfAnotherUser(FailureReason):
+    def log_entries(self, context):  # type: (LogContext) -> str
+        return ("trash dir is not a dir of this user, trash-dir: %s"
+                % context.trash_dir_norm_path())
 
 
 class TrashDirDoesNotHaveParent(FailureReason):

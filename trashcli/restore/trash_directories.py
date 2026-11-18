@@ -81,11 +81,13 @@ class TrashDirectories1:
         for volume in volumes_to_check:
             for path1, volume1 in volume_trash_dir1(volume, self.uid):
                 # Read a shared .Trash/$uid only when its parent is sticky and not a symlink.
-                if self.top_trash_dir_rules.valid_to_be_read(
-                        path1) == top_trash_dir_valid and self._is_trusted(path1):
+                if (self.top_trash_dir_rules.valid_to_be_read(path1) == top_trash_dir_valid
+                        and self._is_trusted(path1)
+                        and self.top_trash_dir_rules.is_usable_by(path1, self.uid)):
                     yield path1, volume1
             for path1, volume1 in volume_trash_dir2(volume, self.uid):
-                if self._is_trusted(path1):
+                if (self._is_trusted(path1)
+                        and self.top_trash_dir_rules.is_usable_by(path1, self.uid)):
                     yield path1, volume1
 
     def _is_trusted(self, trash_dir):

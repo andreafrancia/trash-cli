@@ -2,6 +2,8 @@
 from __future__ import absolute_import
 
 import os
+import stat
+from typing import Optional
 
 from trashcli.fslib.protocols.volume_of import VolumeOfFs
 
@@ -42,3 +44,8 @@ def is_volume_trash_dir(trash_dir, volume):  # type: (str, str) -> bool
     volume = os.path.normpath(volume)
     return ((parent == volume and name.startswith('.Trash-')) or
             parent == os.path.join(volume, '.Trash'))
+
+
+def is_trash_dir_of(found, uid, euid):  # type: (os.stat_result, Optional[int], int) -> bool
+    # a real dir that belongs to the user it is the trash of, or to the one running
+    return stat.S_ISDIR(found.st_mode) and found.st_uid in (uid, euid)

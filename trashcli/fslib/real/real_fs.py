@@ -157,3 +157,15 @@ class RealFs(RealVolumeOfFs, Fs, RestoreFs, TopTrashDirRulesFs):
 
     def gettempdir(self):
         return tempfile.gettempdir()
+
+    def chdir(self, path):  # type: (str) -> None
+        os.chdir(path)
+
+    def lstat(self, path):  # type: (str) -> os.stat_result
+        return os.lstat(path)
+
+    def stat(self, path):  # type: (str) -> os.stat_result
+        return os.stat(path)
+
+    def geteuid(self):  # type: () -> int
+        return os.geteuid()
