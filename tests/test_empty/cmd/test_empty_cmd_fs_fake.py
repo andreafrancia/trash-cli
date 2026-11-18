@@ -38,6 +38,7 @@ class TestTrashEmptyCmdFakeFs(unittest.TestCase):
         )
 
     def test_trash_empty_will_skip_unreadable_dir(self):
+        self.fsx.make_empty_file(self.tmp_dir + '/data/Trash/info/unreadable.trashinfo')
         self.fsx.make_unreadable_dir(self.unreadable_dir)
 
         self.empty.run_cmd([], self.environ, uid=123)

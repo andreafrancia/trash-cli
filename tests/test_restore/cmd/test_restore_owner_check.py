@@ -34,3 +34,11 @@ class TestRestoreOwnerCheck:
         self.fs.chmod(HOME_TRASH + '/info', 0o777)
 
         assert self.home_trash_dirs() == []
+
+    def test_a_volume_trash_dir_made_by_another_user_is_skipped(self):
+        self.volumes.set_volumes(['/vol'])
+        self.fs.makedirs('/vol/.Trash-123/info', 0o755)
+        self.fs.makedirs('/vol/.Trash-123/files', 0o755)
+        self.fs.geteuid = lambda: 123
+
+        assert '/vol/.Trash-123' not in self.home_trash_dirs()

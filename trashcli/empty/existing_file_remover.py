@@ -3,9 +3,10 @@ from trashcli.fslib.protocols.fs import Fs
 from trashcli.fslib.protocols.remove_file2 import RemoveFile2
 from trashcli.fslib.protocols.remove_file_if_exists import RemoveFileIfExists
 from trashcli.fslib.fs_remove_file2 import FsRemoveFile2
+from trashcli.lib.trash_dir_remover import TrashDirRemover
 
 
-class ExistingFileRemover(RemoveFileIfExists, RemoveFile2):
+class ExistingFileRemover(TrashDirRemover, RemoveFileIfExists, RemoveFile2):
     def __init__(self, fs):  # type: (Fs) -> None
         self.fs = fs
 

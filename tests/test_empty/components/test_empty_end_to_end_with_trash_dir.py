@@ -58,15 +58,15 @@ class TestEmptyEndToEndWithTrashDir(unittest.TestCase):
         assert [result.all, list_trash_dir(self.trash_dir)] == \
                [('', '', 0), ['info/non-trashinfo']]
 
-    def test_orphan_are_deleted(self):
+    def test_files_without_a_trash_record_are_kept(self):
         self.fsx.make_file(self.trash_dir / 'files' / 'orphan')
         os.makedirs(self.trash_dir / 'files' / 'orphan dir')
 
         result = run_command(self.tmp_dir, "trash-empty",
                              ['--trash-dir', self.trash_dir])
 
-        assert [result.all, list_trash_dir(self.trash_dir)] == \
-               [('', '', 0), []]
+        assert [result.all, sorted(list_trash_dir(self.trash_dir))] == \
+               [('', '', 0), ['files/orphan', 'files/orphan dir']]
 
     def tearDown(self):
         self.tmp_dir.clean_up()

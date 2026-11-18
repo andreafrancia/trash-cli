@@ -1,21 +1,30 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
+import os
+from abc import abstractmethod
+from typing import Optional
+
 from trashcli.compat import Protocol
-from trashcli.fslib.protocols.remove_file2 import RemoveFile2
-from trashcli.fslib.protocols.remove_file_if_exists import RemoveFileIfExists
 from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 
 
-class _RemoverFs(RemoveFile2, RemoveFileIfExists, Protocol):
-    pass
+class RemoverFs(Protocol):
+    @abstractmethod
+    def check_trash_dir(self, trash_dir, volume, uid):
+        # type: (str, str, Optional[int]) -> os.stat_result
+        raise NotImplementedError()
+
+    @abstractmethod
+    def remove_if_exists(self, checked_dir, path):  # type: (os.stat_result, str) -> None
+        raise NotImplementedError()
 
 
 class CleanableTrashcan:
     def __init__(self,
-                 file_remover, # type: _RemoverFs
+                 file_remover, # type: RemoverFs
                  ):
         self._file_remover = file_remover
 
-    def delete_trash_info_and_backup_copy(self, trash_info_path):
+    def delete_trash_info_and_backup_copy(self, checked_dir, trash_info_path):
         backup_copy = path_of_backup_copy(trash_info_path)
-        self._file_remover.remove_file_if_exists(backup_copy)
-        self._file_remover.remove_file2(trash_info_path)
+        self._file_remover.remove_if_exists(checked_dir, backup_copy)
+        self._file_remover.remove_if_exists(checked_dir, trash_info_path)

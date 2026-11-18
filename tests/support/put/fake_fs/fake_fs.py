@@ -1,5 +1,6 @@
 import errno
 import os
+import stat
 from typing import Iterable
 
 from tests.support.fakes.fake_volume_of import FakeVolumeOfFs
@@ -175,9 +176,8 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         return os.path.join(os.path.join("/", self.cwd), path)
 
     def _components_for(self, path):
-        if path == '/':
-            return []
-        return path.split('/')[1:]
+        # like the kernel, '' and a trailing slash name the dir itself
+        return [component for component in path.split('/') if component]
 
     def atomic_write(self, path, content):
         if self.path_exists(path):
@@ -424,6 +424,30 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
 
     def cd(self, path):
         self.cwd = path
+
+    def chdir(self, path):  # type: (str) -> None
+        # like os.chdir(): the working dir is the dir the path leads to now
+        if not self.path_isdir(path):
+            raise OSError(errno.ENOENT, "No such file or directory", path)
+        self.cwd = self.realpath(path)
+
+    def lstat(self, path):  # type: (str) -> os.stat_result
+        return self._stat(self._lookup_or_enoent(path, follow_last_link=False))
+
+    def stat(self, path):  # type: (str) -> os.stat_result
+        return self._stat(self._lookup_or_enoent(path, follow_last_link=True))
+
+    def _stat(self, inode):  # type: (INode) -> os.stat_result
+        kind = (stat.S_IFDIR if isinstance(inode.entity, Directory)
+                else stat.S_IFLNK if isinstance(inode.entity, SymLink)
+                else stat.S_IFREG)
+        # mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime
+        return os.stat_result((kind | inode.mode, id(inode), 0, 1,
+                               1000, 0, 0, 0, 0, 0))
+
+    def geteuid(self):  # type: () -> int
+        # the owner of every entry
+        return 1000
 
     def isfile(self, path):
         try:

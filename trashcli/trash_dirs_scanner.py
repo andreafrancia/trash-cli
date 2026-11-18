@@ -1,5 +1,6 @@
 import os
-from typing import Iterable
+from abc import abstractmethod
+from typing import Iterable, Optional
 from trashcli.compat import Protocol
 
 from trashcli.fslib.protocols.path_exists import PathExists
@@ -8,6 +9,7 @@ from trashcli.fslib.protocols.is_sticky_dir import IsStickyDir
 from trashcli.fslib.protocols.is_sym_link import IsSymLink
 from trashcli.fslib.protocols.is_world_writable import IsWorldWritable
 from trashcli.fslib.protocols.volumes_listing import VolumesListing
+from trashcli.lib.trash_dirs import is_trash_dir_of
 from trashcli.lib.user_info_provider import UserInfoProvider
 
 
@@ -31,6 +33,8 @@ top_trash_dir_valid = MyEnum('top_trash_dir_valid')
 
 
 class TrashDir(tuple):
+    uid = None  # type: Optional[int]
+
     @property
     def path(self):
         return self[0]
@@ -39,8 +43,11 @@ class TrashDir(tuple):
     def volume(self):
         return self[1]
 
-    def __new__(cls, path, volume):
-        return tuple.__new__(TrashDir, (path, volume))
+    def __new__(cls, path, volume, uid=None):
+        trash_dir = tuple.__new__(TrashDir, (path, volume))
+        # the user it is the trash of
+        trash_dir.uid = uid
+        return trash_dir
 
     def __repr__(self):
         return 'TrashDir(%r, %r)' % (self.path, self.volume)
@@ -48,7 +55,13 @@ class TrashDir(tuple):
 
 class TopTrashDirRulesFs(PathExists, IsStickyDir, IsSymLink,
                          IsWorldWritable, PathIsDir, Protocol):
-    pass
+    @abstractmethod
+    def lstat(self, path):  # type: (str) -> os.stat_result
+        raise NotImplementedError
+
+    @abstractmethod
+    def geteuid(self):  # type: () -> int
+        raise NotImplementedError
 
 class TopTrashDirRules:
     class Reader(PathExists, IsStickyDir, IsSymLink, Protocol):
@@ -70,6 +83,14 @@ class TopTrashDirRules:
         else:
             return top_trash_dir_valid
 
+    def is_usable_by(self, path, uid):  # type: (str, int) -> bool
+        """False if path exists and is not a dir of uid or of the user running."""
+        try:
+            found = self.reader.lstat(path)
+        except OSError:
+            return True
+        return is_trash_dir_of(found, uid, self.reader.geteuid())
+
 
 class TrashDirsScanner:
     def __init__(self,
@@ -86,14 +107,17 @@ class TrashDirsScanner:
     def scan_trash_dirs(self, environ, uid):
         for user_info in self.user_info_provider.get_user_info(environ, uid):
             for path in user_info.home_trash_dir_paths:
-                yield trash_dir_found, TrashDir(path, '/')
+                yield trash_dir_found, TrashDir(path, '/', user_info.uid)
             for volume in self.volumes_listing.list_volumes(environ):
                 top_trash_dir_path = os.path.join(volume, '.Trash',
                                                   str(user_info.uid))
                 result = self.top_trash_dir_rules.valid_to_be_read(
                     top_trash_dir_path)
-                if result == top_trash_dir_valid:
-                    yield trash_dir_found, TrashDir(top_trash_dir_path, volume)
+                if (result == top_trash_dir_valid
+                        and self.top_trash_dir_rules.is_usable_by(
+                            top_trash_dir_path, user_info.uid)):
+                    yield trash_dir_found, TrashDir(top_trash_dir_path, volume,
+                                                    user_info.uid)
                 elif result == top_trash_dir_invalid_because_not_sticky:
                     yield trash_dir_skipped_because_parent_not_sticky, (
                         top_trash_dir_path,)
@@ -102,8 +126,11 @@ class TrashDirsScanner:
                         top_trash_dir_path,)
                 alt_top_trash_dir = os.path.join(volume,
                                                  '.Trash-%s' % user_info.uid)
-                if self.dir_checker.path_isdir(alt_top_trash_dir):
-                    yield trash_dir_found, TrashDir(alt_top_trash_dir, volume)
+                if (self.dir_checker.path_isdir(alt_top_trash_dir)
+                        and self.top_trash_dir_rules.is_usable_by(
+                            alt_top_trash_dir, user_info.uid)):
+                    yield trash_dir_found, TrashDir(alt_top_trash_dir, volume,
+                                                    user_info.uid)
 
 
 def only_found(events, # type: Iterable[TrashDir]
