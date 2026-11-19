@@ -1,9 +1,9 @@
 from tests.support.dirs.temp_dir import temp_dir_fixture  # noqa
 
 from trashcli.fslib.real.real_file_size import RealFileSize
-from tests.support.files import fsx
+from tests.support.files import fsx_fixture
 
-fsx = fsx  # the fixture, imported from its module
+fsx = fsx_fixture  # the fixture, imported from its module
 temp_dir = temp_dir_fixture
 
 class TestFileSize:

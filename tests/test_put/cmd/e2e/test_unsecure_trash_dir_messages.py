@@ -5,9 +5,9 @@ import pytest
 
 from tests.test_put.cmd.e2e.run_trash_put import run_trashput_with_vol
 from tests.support.dirs.temp_dir import temp_dir_fixture
-from tests.support.files import fsx
+from tests.support.files import fsx_fixture
 
-fsx = fsx  # the fixture, imported from its module
+fsx = fsx_fixture
 
 temp_dir = temp_dir_fixture
 
