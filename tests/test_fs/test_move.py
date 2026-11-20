@@ -2,7 +2,7 @@ import unittest
 
 import pytest
 
-from tests.support.files import FsFixture
+from tests.support.fs_fixture import FsFixture
 from tests.support.dirs.temp_dir import make_temp_dir
 from trashcli.fslib.real.real_move import RealMove
 from trashcli.fslib.real.real_read_file import RealReadFile

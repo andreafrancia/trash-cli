@@ -21,7 +21,7 @@ class RealFs(Fs):
     def __init__(self):
         super(RealFs, self).__init__()
 
-    def readlink(self, path):
+    def readlink(self, path):  # type: (str) -> str
         return os.readlink(path)
 
     def symlink(self, src, dest):  # type: (str, str) -> None

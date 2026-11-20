@@ -196,7 +196,7 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             return content
         raise IOError("Unable to read: %s" % path)
 
-    def readlink(self, path):
+    def readlink(self, path):  # type: (str) -> str
         path = self._join_cwd(path)
         entity = self._get_entry_at(path).entity
         if isinstance(entity, SymLink):

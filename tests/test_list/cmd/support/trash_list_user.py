@@ -8,7 +8,7 @@ from tests.support.fakes.fake_df_command import FakeDfCommand
 from tests.support.fakes.fake_disk_partitions_fs import FakeDiskPartitionsFs
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.fakes.stub_volume_of import StubVolumeOfFs
-from tests.support.files import FsFixture
+from tests.support.fs_fixture import FsFixture
 from trashcli.fslib.real.real_fs import RealFs
 from trashcli.fslib.file_system_reader import FileSystemReader
 from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing

@@ -5,7 +5,7 @@ from tests.support.py2mock import Mock
 from six import StringIO
 
 from tests.support.fakes.stub_volume_of import StubVolumeOfFs
-from tests.support.files import FsFixture
+from tests.support.fs_fixture import FsFixture
 from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader

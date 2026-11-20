@@ -5,7 +5,7 @@ from typing import List, Tuple, NamedTuple, TypeVar
 
 from tests.support.dates import jan_11_2001
 from tests.support.dirs.my_path import MyPath
-from tests.support.files import FsFixture
+from tests.support.fs_fixture import FsFixture
 from tests.support.trashinfo.parse_date import parse_date
 from trashcli.put.format_trash_info import format_original_location
 from trashcli.put.janitor_tools.info_file_persister import TrashinfoData

@@ -5,10 +5,10 @@ import pytest
 
 from tests.test_put.cmd.e2e.run_trash_put import run_trashput_with_vol
 from tests.support.dirs.temp_dir import temp_dir_fixture
-from tests.support.files import fsx_fixture
+from tests.support.fs_fixture import fsx_fixture, real_fs_fixture
 
+fs = real_fs_fixture
 fsx = fsx_fixture
-
 temp_dir = temp_dir_fixture
 
 

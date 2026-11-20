@@ -1,6 +1,7 @@
 from trashcli.empty.clock import Clock
 from trashcli.empty.older_than import older_than
 from trashcli.fslib.protocols.read_file import ReadFile
+from trashcli.lib.environ import Environ
 from trashcli.parse_trashinfo.parse_deletion_date import parse_deletion_date
 
 
@@ -12,8 +13,11 @@ class DeleteAccordingDate:
         self.reader = reader
         self.clock = clock
 
-    def ok_to_delete(self, trashinfo_path, environ,
-                     parsed_days):  # type: (str, dict, int) -> bool
+    def ok_to_delete(self,
+                     trashinfo_path,  # type: str
+                     environ,  # type: Environ
+                     parsed_days,  # type: int
+                     ):  # type: (...) -> bool
         if parsed_days is None:
             return True
         else:

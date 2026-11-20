@@ -5,7 +5,7 @@ import pytest
 
 from trashcli.put.fs.parent_realpath import ParentRealpathFs
 from trashcli.fslib.real.real_fs import RealFs
-from tests.support.files import FsFixture
+from tests.support.fs_fixture import FsFixture
 from tests.support.dirs.temp_dir import make_temp_dir
 
 

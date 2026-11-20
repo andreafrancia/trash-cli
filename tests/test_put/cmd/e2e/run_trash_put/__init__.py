@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Mapping
 from typing import Optional
 
 from tests.support.run.run_command import run_command

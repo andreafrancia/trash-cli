@@ -65,7 +65,8 @@ class Fs(Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def makedirs(self, name, mode=0o777, exist_ok=False):  # type: (str, int, bool)->None
+    def makedirs(self, name, mode=0o777,
+                 exist_ok=False):  # type: (str, int, bool)->None
         raise NotImplementedError
 
     @abstractmethod
@@ -82,6 +83,10 @@ class Fs(Protocol):
 
     @abstractmethod
     def shutil_rmtree(self, path):  # type: (str) -> None
+        raise NotImplementedError
+
+    @abstractmethod
+    def readlink(self, path):  # type: (str) -> str
         raise NotImplementedError
 
     @abstractmethod
