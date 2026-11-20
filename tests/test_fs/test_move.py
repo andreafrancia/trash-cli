@@ -1,28 +1,27 @@
-import unittest
-
 import pytest
 
-from tests.support.fs_fixture import FsFixture
-from tests.support.dirs.temp_dir import make_temp_dir
-from trashcli.fslib.real.real_move import RealMove
-from trashcli.fslib.real.real_read_file import RealReadFile
-from trashcli.fslib.real.real_fs import RealFs
+from tests.support.fs_fixture import fsx_fixture
+from tests.support.dirs.temp_dir import temp_dir_fixture
+from tests.support.fs_fixture import real_fs_fixture
 
-move = RealMove().move
-read_file = RealReadFile().read_file
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture
+fsx = fsx_fixture
+
 
 @pytest.mark.slow
-class TestMove(unittest.TestCase):
-    def setUp(self):
-        self.fsx = FsFixture(RealFs())
-        fs = RealFs()
-        self.tmp_dir = make_temp_dir(fs)
+class TestMove:
+    @pytest.fixture(autouse=True)
+    def setup_fs(self, fs, fsx, temp_dir):
+        self.fs = fs
+        self.fsx = fsx
+        self.tmp_dir = temp_dir
 
     def test_two_files(self):
         self.fsx.make_file(self.tmp_dir / 'a', "AAAA")
         self.fsx.make_file(self.tmp_dir / 'b', "BBBB")
 
-        result = read_file(self.tmp_dir / 'b')
+        result = self.fs.read_file(self.tmp_dir / 'b')
 
         assert result == 'BBBB'
 
@@ -30,11 +29,7 @@ class TestMove(unittest.TestCase):
         self.fsx.make_file(self.tmp_dir / 'a', "AAAA")
         self.fsx.make_file(self.tmp_dir / 'b', "BBBB")
 
-        move(self.tmp_dir / 'a', self.tmp_dir / 'b')
+        self.fs.move(self.tmp_dir / 'a', self.tmp_dir / 'b')
 
-        result = read_file(self.tmp_dir / 'b')
+        result = self.fs.read_file(self.tmp_dir / 'b')
         assert result == 'AAAA'
-
-
-    def tearDown(self):
-        self.tmp_dir.clean_up()

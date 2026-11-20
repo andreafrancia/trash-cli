@@ -2,25 +2,27 @@ from typing import TypeVar
 
 import pytest
 
+from tests.support.fs_fixture import real_fs_fixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.support.dirs.support_fs import SupportFs
-from tests.support.dirs.temp_dir import make_temp_dir
+from tests.support.dirs.temp_dir import make_temp_dir, temp_dir_fixture
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.py2mock import Mock
 from tests.test_restore.support.recording_logger import RecordingLogger
-from trashcli.fslib.real.real_fs import RealFs
 from tests.support.fakes.fake_volumes import FakeVolumesFs
 from trashcli.restore.trashed_files import TrashedFiles
 
 Self = TypeVar('Self', bound='TestTrashedFileRestoreIntegration')
 
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture
 
 @pytest.mark.slow
 class TestTrashedFileRestoreIntegration:
 
-    def setup_method(self):
-        fs = RealFs()
-        self.temp_dir = make_temp_dir(fs)
+    @pytest.fixture(autouse=True)
+    def setup(self, fs, temp_dir):
+        self.temp_dir = temp_dir
         self.root_dir = self.temp_dir
         self.support_fs = SupportFs(fs, self.root_dir)
         self.home_dir = self.root_dir / "home/user"
@@ -30,7 +32,7 @@ class TestTrashedFileRestoreIntegration:
         self.support_fs.mkdir_rel_p(self.cwd)
         self.support_fs.mkdir_rel_p(self.home_dir)
 
-        self.trash_dir = FakeTrashDir(self.trash_dir_path)
+        self.trash_dir = FakeTrashDir(self.trash_dir_path, fs)
 
         self.logger = RecordingLogger()
         self.trashed_files = Mock(spec=TrashedFiles)
@@ -122,6 +124,3 @@ class TestTrashedFileRestoreIntegration:
         # assert a warning is passed
         assert r.stderr == 'Refusing to overwrite existing file "bar".\n'
         assert r.exit_code == 1
-
-    def teardown_method(self):
-        self.temp_dir.clean_up()

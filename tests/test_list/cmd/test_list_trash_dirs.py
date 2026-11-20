@@ -1,14 +1,18 @@
 import pytest
 
-from tests.test_list.cmd.support.trash_list_user import trash_list_user  # noqa
+from tests.support.dirs.temp_dir import temp_dir_fixture
+from tests.support.fs_fixture import real_fs_fixture
+from tests.test_list.cmd.support.trash_list_user import trash_list_user
 
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture
+user = trash_list_user
 
 class TestListTrashDirs:
     @pytest.fixture
-    def user(self, trash_list_user):
-        u = trash_list_user
-        u.set_fake_uid(123)
-        return u
+    def user(self, user):
+        user.set_fake_uid(123)
+        return user
 
     def test_lists_the_home_trash_dir(self, user):
         output = user.run_trash_list('--trash-dirs')

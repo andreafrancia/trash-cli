@@ -12,10 +12,10 @@ support_fs = support_fs_fixture
 
 class TestAddTrashedFileOfFakeTrashDir:
     @pytest.fixture(autouse=True)
-    def setup_fs(self, support_fs, temp_dir):
+    def setup_fs(self, fs, support_fs, temp_dir):
         self.root = temp_dir
         self.support_fs = support_fs
-        self.trash_dir = FakeTrashDir(self.root / "Trash")
+        self.trash_dir = FakeTrashDir(self.root / "Trash", fs)
         self.cwd = self.root / "cwd"
         self.result = self.trash_dir.add_trashed_file('foo-bar',
                                                       self.cwd / 'foo-bar',

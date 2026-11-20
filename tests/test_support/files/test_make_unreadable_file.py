@@ -1,24 +1,23 @@
-import unittest
+import errno
 
 import pytest
 
-from tests.support.fs_fixture import FsFixture
-from tests.support.dirs.temp_dir import make_temp_dir
-from trashcli.fslib.real.real_fs import RealFs
+from tests.support.dirs.temp_dir import make_temp_dir, temp_dir_fixture
+from tests.support.fs_fixture import real_fs_fixture, fsx_fixture
+
+fs = real_fs_fixture
+fsx = fsx_fixture
+temp_dir = temp_dir_fixture
 
 
 @pytest.mark.slow
-class Test_make_unreadable_file(unittest.TestCase):
-    def setUp(self):
-        self.fs = RealFs()
-        self.fsx = FsFixture(RealFs())
-        self.tmp_dir = make_temp_dir(self.fs)
+class TestMakeUnreadableFile:
 
-    def test(self):
-        path = self.tmp_dir / "unreadable"
-        self.fsx.make_unreadable_file(self.tmp_dir / "unreadable")
-        with self.assertRaises(IOError):
-            self.fs.read_file(path)
+    def test(self, fs, temp_dir, fsx):
+        path = temp_dir / "unreadable"
+        fsx.make_unreadable_file(temp_dir / "unreadable")
+        with pytest.raises((OSError, IOError)) as e:
+            fs.read_file(path)
 
-    def tearDown(self):
-        self.tmp_dir.clean_up()
+        assert errno.errorcode[e.value.errno] == 'EACCES'
+

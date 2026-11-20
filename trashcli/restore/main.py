@@ -4,29 +4,28 @@ import sys
 
 import trashcli.trash
 from trashcli.fslib.real.real_fs import RealFs
-from trashcli.fslib.real.real_volumes import RealVolumesFs
 from trashcli.lib.logger import my_logger
 from trashcli.lib.my_input import RealInput
-from trashcli.restore.fs.real.real_restore_fs import RealRestoreFs
 from trashcli.restore.real_restore_logger import RealRestoreLogger
 from trashcli.restore.restore_cmd import RestoreCmd
 
 
 def main():
+    fs = RealFs()
     RestoreCmd(
         stdout=sys.stdout,
         stderr=sys.stderr,
         exit=sys.exit,
         input=RealInput(),
         version=trashcli.trash.version,
-        listing_fs=RealRestoreFs(),
-        volumes=RealVolumesFs(),
+        listing_fs=fs,
+        volumes=fs,
         logger=RealRestoreLogger(my_logger),
         uid=os.getuid(),
         environ=os.environ,
-        top_trash_dir_rules_fs=RealFs(),
-        file_reader=RealRestoreFs(),
-        read_fs=RealRestoreFs(),
-        write_fs=RealRestoreFs(),
-        read_cwd=RealRestoreFs(),
+        top_trash_dir_rules_fs=fs,
+        file_reader=fs,
+        read_fs=fs,
+        write_fs=fs,
+        read_cwd=fs,
     ).run(sys.argv)

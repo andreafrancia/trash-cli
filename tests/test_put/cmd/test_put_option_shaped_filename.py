@@ -1,19 +1,21 @@
-import unittest
-
 import pytest
 
 from trashcli.lib.exit_codes import BAD_OPTION
 from tests.support.dirs.support_fs import SupportFs
-from tests.support.dirs.temp_dir import make_temp_dir
-from trashcli.fslib.real.real_fs import RealFs
 from trashcli.put.parser import Parser, ExitWithCode, Trash
 
+from tests.support.dirs.temp_dir import temp_dir_fixture
+from tests.support.fs_fixture import real_fs_fixture
+
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture
 
 @pytest.mark.slow
-class TestPutOptionShapedFilename(unittest.TestCase):
-    def setUp(self):
-        fs = RealFs()
-        self.temp_dir = make_temp_dir(fs)
+class TestPutOptionShapedFilename:
+    @pytest.fixture(autouse=True)
+    def setup_fs(self, fs, temp_dir):
+        fs = fs
+        self.temp_dir = temp_dir
         self.support_fs = SupportFs(fs, self.temp_dir)
         self.parser = Parser(fs)
 
@@ -42,6 +44,3 @@ class TestPutOptionShapedFilename(unittest.TestCase):
 
         assert result.type is Trash
         assert result.trash_dir == '/tmp/dir'
-
-    def tearDown(self):
-        self.temp_dir.clean_up()

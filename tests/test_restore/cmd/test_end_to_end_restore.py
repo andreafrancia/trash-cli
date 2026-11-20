@@ -1,25 +1,25 @@
-import os
 from datetime import datetime
-from os.path import exists as file_exists
-from os.path import join as pj
 
 import pytest
 
+from tests.support.dirs.temp_dir import temp_dir_fixture
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
-from tests.support.dirs.temp_dir import make_temp_dir
+from tests.support.fs_fixture import real_fs_fixture
 from tests.support.run.run_command import run_command
-from trashcli.fslib.real.real_fs import RealFs
 
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture
 
 @pytest.mark.slow
 class TestEndToEndRestore:
-    def setup_method(self):
-        self.fs = RealFs()
-        self.tmp_dir = make_temp_dir(self.fs)
-        self.curdir = self.tmp_dir / "cwd"
-        self.trash_dir = self.tmp_dir / "trash-dir"
-        os.makedirs(self.curdir)
-        self.fake_trash_dir = FakeTrashDir(self.trash_dir)
+    @pytest.fixture(autouse=True)
+    def setup(self, fs, temp_dir):
+        self.fs = fs
+        self.tmp_dir = temp_dir
+        self.curdir = temp_dir / "cwd"
+        self.trash_dir = temp_dir / "trash-dir"
+        fs.makedirs(self.curdir)
+        self.fake_trash_dir = FakeTrashDir(self.trash_dir, fs)
 
     def test_no_file_trashed(self):
         result = self.run_command("trash-restore")
@@ -41,11 +41,11 @@ No files trashed from current dir ('%s')
 
     def test_restore_happy_path(self):
         self.fake_trash_dir.add_trashed_file(
-            "file1", pj(self.curdir, "path", "to", "file1"), "contents")
+            "file1", self.curdir / "path/to/file1", "contents")
         self.fake_trash_dir.add_trashed_file(
-            "file2", pj(self.curdir, "path", "to", "file2"), "contents")
-        assert file_exists(pj(self.trash_dir, "info", "file2.trashinfo"))
-        assert file_exists(pj(self.trash_dir, "files", "file2"))
+            "file2", self.curdir / "path/to/file2", "contents")
+        assert self.fs.path_exists(self.trash_dir / "info/file2.trashinfo")
+        assert self.fs.path_exists(self.trash_dir / "files/file2")
 
         result = self.run_command("trash-restore", ["/", '--sort=path'], input='1')
 
@@ -54,15 +54,15 @@ No files trashed from current dir ('%s')
    1 2000-01-01 00:00:01 %(curdir)s/path/to/file2
 What file to restore [0..1]: """ % {'curdir': self.curdir}
         assert result.stderr == ""
-        assert self.fs.read_file(pj(self.curdir, "path/to/file2")) == "contents"
-        assert not file_exists(pj(self.trash_dir, "info", "file2.trashinfo"))
-        assert not file_exists(pj(self.trash_dir, "files", "file2"))
+        assert self.fs.read_file(self.curdir / "path/to/file2") == "contents"
+        assert not self.fs.path_exists(self.trash_dir / "info/file2.trashinfo")
+        assert not self.fs.path_exists(self.trash_dir / "files/file2")
 
     def test_restore_with_relative_path(self):
         self.fake_trash_dir.add_trashed_file(
-            "file1", pj(self.curdir, "path", "to", "file1"), "contents")
-        assert file_exists(pj(self.trash_dir, "info", "file1.trashinfo"))
-        assert file_exists(pj(self.trash_dir, "files", "file1"))
+            "file1", self.curdir/ "path/to/file1", "contents")
+        assert self.fs.path_exists(self.trash_dir / "info/file1.trashinfo")
+        assert self.fs.path_exists(self.trash_dir / "files/file1")
 
         result = self.run_command("trash-restore",
                                   ["%(curdir)s" % {'curdir': "."},
@@ -72,9 +72,9 @@ What file to restore [0..1]: """ % {'curdir': self.curdir}
    0 2000-01-01 00:00:01 %(curdir)s/path/to/file1
 What file to restore [0..0]: """ % {'curdir': self.curdir}
         assert result.stderr == ""
-        assert self.fs.read_file(pj(self.curdir, "path/to/file1")) == "contents"
-        assert not file_exists(pj(self.trash_dir, "info", "file1.trashinfo"))
-        assert not file_exists(pj(self.trash_dir, "files", "file1"))
+        assert self.fs.read_file(self.curdir / "path/to/file1") == "contents"
+        assert not self.fs.path_exists(self.trash_dir / "info/file1.trashinfo")
+        assert not self.fs.path_exists(self.trash_dir / "files/file1")
 
     def run_command(self, command, args=None, input=''):
         if args is None:
@@ -82,5 +82,3 @@ What file to restore [0..0]: """ % {'curdir': self.curdir}
         return run_command(self.curdir, command,
                            ["--trash-dir", self.trash_dir] + args, input)
 
-    def teardown_method(self):
-        self.tmp_dir.clean_up()

@@ -2,6 +2,7 @@ import os
 import shutil
 import stat
 import tempfile
+from typing import List
 
 from trashcli.fslib.real.real_is_world_writable import RealIsWorldWritable
 from trashcli.fslib.real.real_move import RealMove
@@ -146,7 +147,7 @@ class RealFs(Fs):
     def getcwd_as_realpath(self):  # type: () -> str
         return RealReadCwdFs().getcwd_as_realpath()
 
-    def list_mount_points(self):
+    def list_mount_points(self):  # type: () -> List[str]
         return RealMountPointListFs().list_mount_points()
 
     def rmdir(self, path):  # type: (str) -> None

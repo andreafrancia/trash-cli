@@ -1,18 +1,20 @@
 import pytest
 
-from tests.support.dirs.temp_dir import make_temp_dir
-from tests.support.fs_fixture import FsFixture
+from tests.support.dirs.temp_dir import temp_dir_fixture
+from tests.support.fs_fixture import FsFixture, real_fs_fixture
 from tests.support.tools.version_saver import VersionSaver
-from trashcli.fslib.real.real_fs import RealFs
 
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture
 
 @pytest.mark.slow
 class TestSaveNewVersion:
-    def setup_method(self):
-        self.fs = RealFs()
-        self.fsx = FsFixture(RealFs())
-        self.tmp_dir = make_temp_dir(self.fs)
-        self.saver = VersionSaver(RealFs())
+    @pytest.fixture(autouse=True)
+    def setup_fs(self, fs, temp_dir):
+        self.fs = fs
+        self.fsx = FsFixture(fs)
+        self.tmp_dir = temp_dir
+        self.saver = VersionSaver(fs)
 
     def test(self):
         self.fsx.make_file(self.tmp_dir / 'trash.py', """\
@@ -47,6 +49,3 @@ somecode before
     version="0.20.1.20"
 somecode after
 """
-
-    def teardown_method(self):
-        self.tmp_dir.clean_up()

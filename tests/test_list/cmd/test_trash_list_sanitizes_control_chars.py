@@ -1,7 +1,40 @@
 from six import StringIO
 
+from tests.support.dirs.temp_dir import temp_dir_fixture
+from tests.support.fs_fixture import real_fs_fixture
 from tests.test_list.cmd.support.trash_list_user import trash_list_user
+from tests.test_list.cmd.support.trash_list_user import TrashListUser
 
+
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture
+user = trash_list_user
+
+class TestListSanitizeControlChars:
+    def test_on_a_terminal_the_name_is_shell_escaped(
+            self, user):  # type: (TrashListUser) -> None
+        user.home_trash_dir().add_trashinfo4('/tmp/weird\rname',
+                                                        "2001-01-01 00:00:00")
+        out = Tty()
+        user.stdout = out
+
+        user.run_trash_list()
+
+        output = out.getvalue()
+        assert "'/tmp/weird'$'\\r''name'" in output
+        assert '\r' not in output
+
+
+    def test_when_piped_the_name_is_printed_raw(
+            self, user):  # type: (TrashListUser) -> None
+        user.home_trash_dir().add_trashinfo4('/tmp/weird\rname',
+                                                        "2001-01-01 00:00:00")
+        out = Pipe()
+        user.stdout = out
+
+        user.run_trash_list()
+
+        assert '/tmp/weird\rname' in out.getvalue()
 
 class Tty(StringIO):
     def isatty(self):
@@ -11,27 +44,3 @@ class Tty(StringIO):
 class Pipe(StringIO):
     def isatty(self):
         return False
-
-
-def test_on_a_terminal_the_name_is_shell_escaped(trash_list_user):
-    trash_list_user.home_trash_dir().add_trashinfo4('/tmp/weird\rname',
-                                                    "2001-01-01 00:00:00")
-    out = Tty()
-    trash_list_user.stdout = out
-
-    trash_list_user.run_trash_list()
-
-    output = out.getvalue()
-    assert "'/tmp/weird'$'\\r''name'" in output
-    assert '\r' not in output
-
-
-def test_when_piped_the_name_is_printed_raw(trash_list_user):
-    trash_list_user.home_trash_dir().add_trashinfo4('/tmp/weird\rname',
-                                                    "2001-01-01 00:00:00")
-    out = Pipe()
-    trash_list_user.stdout = out
-
-    trash_list_user.run_trash_list()
-
-    assert '/tmp/weird\rname' in out.getvalue()

@@ -1,36 +1,34 @@
 import errno
-import os
 import shutil
-import unittest
 
 import pytest
 
-from tests.support.fs_fixture import FsFixture
 from tests.support.dirs.temp_dir import make_temp_dir
-from trashcli.fslib.real.real_fs import RealFs
+from tests.support.fs_fixture import real_fs_fixture, fsx_fixture
+from trashcli.fslib.protocols.fs import Fs
 
+fs = real_fs_fixture
+fsx = fsx_fixture
 
 @pytest.mark.slow
-class Test_make_unreadable_dir(unittest.TestCase):
-    def setUp(self):
-        self.fsx = FsFixture(RealFs())
-        fs = RealFs()
+class TestMakeUnreadableDir:
+    @pytest.fixture(autouse=True)
+    def setup_fs(self, fs, fsx):
+        self.fsx = fsx
         self.tmp_dir = make_temp_dir(fs)
         self.unreadable_dir = self.tmp_dir / 'unreadable-dir'
 
         self.fsx.make_unreadable_dir(self.unreadable_dir)
 
-    def test_the_directory_has_been_created(self):
-        assert os.path.exists(self.unreadable_dir)
+    def test_the_directory_has_been_created(
+            self, fs):  # type: (Fs) -> None
+        assert fs.path_exists(self.unreadable_dir)
 
     def test_and_can_not_be_removed(self):
-        try:
+        with pytest.raises(OSError) as e:
             self.fsx.remove_file2(self.unreadable_dir)
-            self.fail()
-        except OSError as e:
-            self.assertEqual(errno.errorcode[e.errno], 'EACCES')
+        assert errno.errorcode[e.value.errno] == 'EACCES'
 
-    def tearDown(self):
+    def teardown_method(self):
         self.fsx.make_readable(self.unreadable_dir)
         shutil.rmtree(self.unreadable_dir)
-        self.tmp_dir.clean_up()

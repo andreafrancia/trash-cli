@@ -1,3 +1,5 @@
+from typing import List
+
 from trashcli.fstab.protocols.mount_point_list_fs import MountPointListFs
 from trashcli.fslib.protocols.volumes_fs import VolumesFs
 from trashcli.fslib.protocols.volume_of import VolumeOfFs
@@ -14,5 +16,5 @@ class VolumesFsImpl(VolumesFs):
     def volume_of(self, path):
         return self.volumes.volume_of(path)
 
-    def list_mount_points(self):
+    def list_mount_points(self):  # type: () -> List[str]
         return self.mount_point_listing.list_mount_points()

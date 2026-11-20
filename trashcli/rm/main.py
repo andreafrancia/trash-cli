@@ -16,12 +16,13 @@ from trashcli.rm.rm_cmd import RmCmd, RmFileSystemReader
 
 
 def main():
+    fs = RealFs()
     volumes_listing = RealVolumesListing()
     cmd = RmCmd(environ=os.environ,
                 getuid=os.getuid,
                 volumes_listing=volumes_listing,
                 stderr=sys.stderr,
-                file_reader=RealRmFileSystemReader(RealFs()))
+                file_reader=RealRmFileSystemReader(fs))
 
     cmd.run(sys.argv, os.getuid())
 

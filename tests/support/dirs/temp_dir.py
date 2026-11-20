@@ -1,6 +1,7 @@
 import pytest
 
 from tests.support.dirs.my_path import MyPath
+from tests.support.fs_fixture import FsFixture
 from trashcli.fslib.real.real_fs import RealFs
 
 

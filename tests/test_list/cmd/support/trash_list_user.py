@@ -3,25 +3,20 @@ import os
 import pytest
 from six import StringIO
 
-from tests.support.dirs.temp_dir import make_temp_dir
 from tests.support.fakes.fake_df_command import FakeDfCommand
 from tests.support.fakes.fake_disk_partitions_fs import FakeDiskPartitionsFs
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.fakes.stub_volume_of import StubVolumeOfFs
-from tests.support.fs_fixture import FsFixture
-from trashcli.fslib.real.real_fs import RealFs
-from trashcli.fslib.file_system_reader import FileSystemReader
+from tests.support.fs_fixture import FsFixture, real_fs_fixture
 from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 from trashcli.fslib.real.real_dir_reader_fs import RealDirReaderFs
 from trashcli.list.list_cmd import ListCmd
 from tests.test_list.cmd.support.run_result import RunResult
 
+
 @pytest.fixture
-def trash_list_user():
-    fs = RealFs()
-    temp_dir = make_temp_dir(fs)
-    yield TrashListUser(temp_dir)
-    temp_dir.clean_up()
+def trash_list_user(fs, temp_dir):
+    yield TrashListUser(fs, temp_dir)
 
 
 def adjust_for_root(path):
@@ -31,7 +26,7 @@ def adjust_for_root(path):
 
 
 class TrashListUser:
-    def __init__(self, root):
+    def __init__(self, fs, root):
         self.root = root
         self.xdg_data_home = root / 'xdg-data-home'
         self.environ = {'XDG_DATA_HOME': self.xdg_data_home}
@@ -41,7 +36,8 @@ class TrashListUser:
         self.fake_volumes = FakeVolumesListing()
         self.fake_disk_partitions = FakeDiskPartitionsFs()
         self.fake_df = FakeDfCommand()
-        self.fsx = FsFixture(RealFs())
+        self.fsx = FsFixture(fs)
+        self.fs = fs
 
     def run_trash_list(self, *args):  # type: (...) -> RunResult
         stdout = self.stdout if self.stdout is not None else StringIO()
@@ -53,9 +49,9 @@ class TrashListUser:
             volumes_listing=self.fake_volumes,
             uid=self.fake_uid,
             volumes=StubVolumeOfFs(),
-            dir_reader=RealDirReaderFs(RealFs()),
-            file_reader=RealFs(),
-            content_reader=RealFs(),
+            dir_reader=RealDirReaderFs(self.fs),
+            file_reader=self.fs,
+            content_reader=self.fs,
             version=self.version,
             disk_partitions_fs=self.fake_disk_partitions,
             df_command=self.fake_df,
@@ -77,13 +73,13 @@ class TrashListUser:
                    disk_name,  # type: str
                    ):
         return FakeTrashDir(
-            self._trash_dir1_parent(disk_name) / str(self.fake_uid))
+            self._trash_dir1_parent(disk_name) / str(self.fake_uid), self.fs)
 
     def trash_dir2(self,
                    disk_name,  # type: str
                    ):
         return FakeTrashDir(
-            self.root / disk_name / ('.Trash-%s' % self.fake_uid))
+            self.root / disk_name / ('.Trash-%s' % self.fake_uid), self.fs)
 
     def _trash_dir1_parent(self,
                            disk_name,  # type: str
@@ -91,7 +87,7 @@ class TrashListUser:
         return self.root / disk_name / '.Trash'
 
     def home_trash_dir(self):
-        return FakeTrashDir(self.xdg_data_home / "Trash")
+        return FakeTrashDir(self.xdg_data_home / "Trash", self.fs)
 
     def set_version(self, version):
         self.version = version

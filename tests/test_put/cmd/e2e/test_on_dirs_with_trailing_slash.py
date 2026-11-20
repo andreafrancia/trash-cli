@@ -2,22 +2,23 @@ import os
 
 import pytest
 
-from tests.support.dirs.temp_dir import make_temp_dir
 from tests.test_put.cmd.e2e.run_trash_put.directory_layout import \
     DirectoriesLayout
-from trashcli.fslib.real.real_fs import RealFs
 
+from tests.support.dirs.temp_dir import temp_dir_fixture
+from tests.support.fs_fixture import real_fs_fixture
+
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture
 
 @pytest.mark.slow
 class TestOnDirsWithTrailingSlash:
-    def setup_method(self):
-        self.fs = RealFs()
-        self.temp_dir = make_temp_dir(self.fs)
+    @pytest.fixture(autouse=True)
+    def setup_fs(self, fs, temp_dir):
+        self.fs = fs
+        self.temp_dir = temp_dir
         self.layout = DirectoriesLayout(self.temp_dir, self.fs)
         self.layout.make_cur_dir()
-
-    def teardown_method(self):
-        self.temp_dir.clean_up()
 
     @pytest.mark.skipif(os.geteuid() == 0, reason="root can delete anyway")
     def test_dir_in_a_read_only_parent_is_refused(self):

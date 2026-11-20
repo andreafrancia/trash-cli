@@ -1,6 +1,6 @@
 import errno
 import os
-from typing import Iterable
+from typing import Iterable, List
 
 from tests.support.fakes.fake_volume_of import FakeVolumeOfFs
 from tests.support.put.fake_fs.directory import Directory
@@ -60,7 +60,7 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
     def getcwd_as_realpath(self):  # type: () -> str
         return os.path.join('/', self.cwd)
 
-    def list_mount_points(self):
+    def list_mount_points(self):  # type: () -> List[str]
         return self.volumes
 
     def ls_existing(self, paths):

@@ -49,6 +49,10 @@ class Fs(Protocol):
         raise NotImplementedError
 
     @abstractmethod
+    def getcwd_as_realpath(self):  # type: () -> str
+        raise NotImplementedError
+
+    @abstractmethod
     def path_isdir(self, path):  # type: (str) -> bool
         raise NotImplementedError
 
@@ -94,11 +98,19 @@ class Fs(Protocol):
         raise NotImplementedError
 
     @abstractmethod
+    def is_sticky_dir(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
     def has_sticky_bit(self, path):  # type: (str) -> bool
         raise NotImplementedError
 
     @abstractmethod
     def is_accessible(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def is_world_writable(self, path):  # type: (str) -> bool
         raise NotImplementedError
 
     @abstractmethod

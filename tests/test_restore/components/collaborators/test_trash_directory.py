@@ -1,20 +1,21 @@
 import pytest
 
-from tests.support.fs_fixture import FsFixture
-from tests.support.dirs.temp_dir import make_temp_dir
-from trashcli.fslib.real.real_list_files_in_dir import RealListdirFs
+from tests.support.fs_fixture import real_fs_fixture, fsx_fixture
+from tests.support.dirs.temp_dir import make_temp_dir, temp_dir_fixture
 from trashcli.restore.info_files import InfoFiles
-from trashcli.fslib.real.real_fs import RealFs
 
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture
+fsx = fsx_fixture
 
 @pytest.mark.slow
 class TestTrashDirectory:
-    def setup_method(self):
-        self.fsx = FsFixture(RealFs())
-        fs = RealFs()
+    @pytest.fixture(autouse=True)
+    def setup_method(self, fs, temp_dir, fsx):
+        self.fsx = fsx
         self.temp_dir = make_temp_dir(fs)
         self.fsx.require_empty_dir(self.temp_dir / 'trash-dir')
-        self.info_files = InfoFiles(RealListdirFs())
+        self.info_files = InfoFiles(fs)
 
     def test_should_list_a_trashinfo(self):
         self.fsx.make_file(self.temp_dir / 'trash-dir/info/foo.trashinfo')
@@ -45,6 +46,3 @@ class TestTrashDirectory:
 
     def list_trashinfos(self):
         return list(self.info_files.all_info_files(self.temp_dir / 'trash-dir'))
-
-    def teardown_method(self):
-        self.temp_dir.clean_up()

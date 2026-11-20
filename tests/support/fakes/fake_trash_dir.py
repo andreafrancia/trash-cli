@@ -7,10 +7,10 @@ from tests.support.dates import jan_11_2001
 from tests.support.dirs.my_path import MyPath
 from tests.support.fs_fixture import FsFixture
 from tests.support.trashinfo.parse_date import parse_date
+from trashcli.fslib.protocols.fs import Fs
 from trashcli.put.format_trash_info import format_original_location
 from trashcli.put.janitor_tools.info_file_persister import TrashinfoData
 from trashcli.restore.trashed_file import TrashedFile
-from trashcli.fslib.real.real_fs import RealFs
 
 
 def a_default_datetime():
@@ -48,11 +48,15 @@ Self = TypeVar('Self', bound='FakeTrashDir')
 
 
 class FakeTrashDir:
-    def __init__(self, path):
+    def __init__(self,
+                 path,  # type: MyPath
+                 fs,  # type: Fs
+                 ):
         self.path = path
         self.info_path = os.path.join(path, 'info')
         self.files_path = os.path.join(path, 'files')
-        self.fsx = FsFixture(RealFs())
+        self.fs = fs
+        self.fsx = FsFixture(fs)
 
     def __truediv__(self,  # type: Self
                     other,  # type: str
@@ -217,7 +221,7 @@ class FakeTrashDir:
         )
 
     def ls_info(self):
-        return os.listdir(self.info_path)
+        return self.fs.listdir(self.info_path)
 
     def make_parent_sticky(self):
         self.fsx.make_sticky_dir(self.path.parent)
@@ -229,7 +233,7 @@ class FakeTrashDir:
         self.fsx.is_a_symlink_to_a_dir(self.path.parent)
 
     def make_dir(self):
-        os.mkdir(self.path)
+        self.fs.mkdir(self.path)
 
     def does_not_exist(self):
         self.fsx.does_not_exist(self.path)
