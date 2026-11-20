@@ -1,5 +1,8 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
+import errno
 import unittest
+
+import pytest
 
 from tests.support.fakes.fake_file_system import FakeFileSystem
 
@@ -34,3 +37,8 @@ class TestFakeFileSystem(unittest.TestCase):
 
         assert (set(['passwd', 'shadow', 'hosts']) ==
                 set(self.fs.entries_if_dir_exists('/etc')))
+
+    def test_reading_a_missing_file_raises_enoent(self):
+        with pytest.raises(IOError) as e:
+            self.fs.read_file('/missing')
+        assert e.value.errno == errno.ENOENT

@@ -1,10 +1,15 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
+import errno
+
+
 class FakeFileSystem:
     def __init__(self):
         self.files = {}
         self.dirs = {}
 
     def read_file(self, path):
+        if path not in self.files:
+            raise IOError(errno.ENOENT, "No such file or directory", path)
         return self.files[path]
 
     def path_exists(self, path):
@@ -20,3 +25,8 @@ class FakeFileSystem:
 
     def create_fake_dir(self, dir_path, *dir_entries):
         self.dirs[dir_path] = dir_entries
+
+
+class UnreadableFileSystem(FakeFileSystem):
+    def read_file(self, path):
+        raise IOError(errno.EACCES, "Permission denied", path)

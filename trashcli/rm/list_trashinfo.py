@@ -1,4 +1,5 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
+import errno
 import os
 
 from trashcli.fslib.protocols.read_file import ReadFile
@@ -19,7 +20,13 @@ class ListTrashinfos:
     def list_from_volume_trashdir(self, trashdir_path, volume):
         for trashinfo_path in self.trash_dir_reader.list_trashinfo(
                 trashdir_path):
-            trashinfo = self.file_content_reader.read_file(trashinfo_path)
+            try:
+                trashinfo = self.file_content_reader.read_file(trashinfo_path)
+            except IOError as e:
+                if e.errno == errno.ENOENT:
+                    # Removed after the listing, e.g. by another trash-rm.
+                    continue
+                raise
             try:
                 path = parse_path(trashinfo)
             except ParseError:
