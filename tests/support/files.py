@@ -90,5 +90,5 @@ class FsFixture:
 
 
 @pytest.fixture
-def fsx():
+def fsx_fixture():
     return FsFixture(RealFs())

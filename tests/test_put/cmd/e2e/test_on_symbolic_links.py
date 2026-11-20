@@ -6,9 +6,9 @@ from tests.support.dirs.temp_dir import temp_dir_fixture
 from tests.support.dirs.my_path import MyPath
 from tests.test_put.cmd.e2e.run_trash_put import run_trash_put
 from trashcli.fslib.real.real_fs import RealFs
-from tests.support.files import FsFixture, fsx
+from tests.support.files import FsFixture, fsx_fixture
 
-fsx = fsx  # the fixture, imported from its module
+fsx = fsx_fixture
 
 fs = RealFs()
 temp_dir = temp_dir_fixture
