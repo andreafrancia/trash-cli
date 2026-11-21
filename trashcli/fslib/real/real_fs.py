@@ -2,7 +2,7 @@ import os
 import shutil
 import stat
 import tempfile
-from typing import List
+from typing import List, Optional
 
 from trashcli.fslib.real.real_is_world_writable import RealIsWorldWritable
 from trashcli.fslib.real.real_move import RealShUtilMove
@@ -16,6 +16,7 @@ from trashcli.fstab.real.real_mount_point_list_fs import RealMountPointListFs
 from trashcli.fslib.protocols.fs import Fs
 from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
 from trashcli.restore.fs.real.real_read_cwd_fs import RealReadCwdFs
+
 
 class RealFs(Fs):
 
@@ -153,7 +154,12 @@ class RealFs(Fs):
     def rmdir(self, path):  # type: (str) -> None
         return os.rmdir(path)
 
-    def mkdtemp(self, suffix="", prefix=tempfile.template, dir=None):
+    def mkdtemp(
+            self,
+            suffix="",  # type: Optional[str]
+            prefix=tempfile.template,  # type: Optional[str]
+            dir=None  # type: Optional[str]
+    ):
         return tempfile.mkdtemp(suffix, prefix, dir)
 
     def gettempdir(self):
