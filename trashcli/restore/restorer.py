@@ -25,5 +25,5 @@ class Restorer:
             raise IOError(
                 'Refusing to overwrite existing file "%s".' % os.path.basename(dest))
         self.write_fs.mkdirs(os.path.dirname(dest))
-        self.write_fs.move(trashed_file.original_file, dest)
+        self.write_fs.shutil_move(trashed_file.original_file, dest)
         self.write_fs.remove_file(trashed_file.info_file)

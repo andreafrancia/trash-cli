@@ -336,7 +336,7 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             for entry in self.listdir(path):
                 yield entry
 
-    def move(self, src, dst):  # type: (str, str) -> None
+    def shutil_move(self, src, dst):  # type: (str, str) -> None
         basename, entry = self._pop_entry_from_dir(src)
 
         if self.path_exists(dst) and self.path_isdir(dst):

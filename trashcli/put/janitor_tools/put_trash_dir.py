@@ -53,4 +53,4 @@ def move_file(fs,  # type: Fs
               ):
     # Using nornpath allow to delete symlink to a dir even if the are
     # specified with traling slash
-    fs.move(os.path.normpath(src), dest)
+    fs.shutil_move(os.path.normpath(src), dest)

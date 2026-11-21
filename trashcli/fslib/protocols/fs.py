@@ -74,7 +74,7 @@ class Fs(Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def move(self, src, dst):  # type: (str, str) -> None
+    def shutil_move(self, src, dst):  # type: (str, str) -> None
         raise NotImplementedError
 
     @abstractmethod

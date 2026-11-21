@@ -31,7 +31,7 @@ class TestRestoreDistrustsUnsafeTrashDirs:
 
     def make_symlink_to_the_content_of(self, path):
         # the content of path is moved elsewhere and path becomes a symlink to it
-        self.fs.move(path, '/elsewhere')
+        self.fs.shutil_move(path, '/elsewhere')
         self.fs.symlink('/elsewhere', path)
 
     def test_a_normal_home_trash_is_kept(self):

@@ -5,7 +5,7 @@ import tempfile
 from typing import List
 
 from trashcli.fslib.real.real_is_world_writable import RealIsWorldWritable
-from trashcli.fslib.real.real_move import RealMove
+from trashcli.fslib.real.real_move import RealShUtilMove
 from trashcli.fslib.real.real_remove_file import RealRemoveFile
 from trashcli.fslib.real.real_atomic_write import RealAtomicWrite
 from trashcli.fslib.real.real_read_file import RealReadFile
@@ -88,8 +88,8 @@ class RealFs(Fs):
     def mkdir_with_mode(self, path, mode):
         os.mkdir(path, mode)
 
-    def move(self, src, dst):  # type: (str, str) -> None
-        return RealMove().move(src, dst)
+    def shutil_move(self, src, dst):  # type: (str, str) -> None
+        return RealShUtilMove().shutil_move(src, dst)
 
     def remove_file(self, path):
         RealRemoveFile().remove_file(path)

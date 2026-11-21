@@ -29,7 +29,7 @@ class TestMove:
         self.fsx.make_file(self.tmp_dir / 'a', "AAAA")
         self.fsx.make_file(self.tmp_dir / 'b', "BBBB")
 
-        self.fs.move(self.tmp_dir / 'a', self.tmp_dir / 'b')
+        self.fs.shutil_move(self.tmp_dir / 'a', self.tmp_dir / 'b')
 
         result = self.fs.read_file(self.tmp_dir / 'b')
         assert result == 'AAAA'

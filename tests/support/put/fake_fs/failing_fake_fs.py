@@ -45,13 +45,13 @@ class FailOnMoveFakeFs(FakeFs):
         self._fail_move_on_paths = []
         self._fail_move_leaving_copy_on_path = None
 
-    def move(self, src, dst):  # type: (str, str) -> None
+    def shutil_move(self, src, dst):  # type: (str, str) -> None
         if src in self._fail_move_on_paths:
             raise OSError("move failed")
         if src == self._fail_move_leaving_copy_on_path:
             self.write_file(dst, self.read_file(src))
             raise OSError(errno.EACCES, os.strerror(errno.EACCES), src)
-        return super(FailOnMoveFakeFs, self).move(src, dst)
+        return super(FailOnMoveFakeFs, self).shutil_move(src, dst)
 
     def fail_move_on(self, path):
         self._fail_move_on_paths.append(path)

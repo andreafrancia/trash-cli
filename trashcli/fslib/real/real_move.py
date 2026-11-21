@@ -1,8 +1,8 @@
 import shutil
 
-from trashcli.fslib.protocols.move import Move
+from trashcli.fslib.protocols.move import ShutilMove
 
 
-class RealMove(Move):
-    def move(self, src, dst):  # type: (str, str) -> None
+class RealShUtilMove(ShutilMove):
+    def shutil_move(self, src, dst):  # type: (str, str) -> None
         shutil.move(src, str(dst))

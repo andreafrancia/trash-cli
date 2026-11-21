@@ -54,7 +54,7 @@ class TestRestoreSkipsUntrustedSharedDir:
     def test_a_shared_trash_dir_under_a_symlinked_parent_is_skipped(self):
         # the parent of the shared trash dir (.Trash) is sticky, but it is a
         # symlink: it could be redirected anywhere, so it is distrusted
-        self.fs.move('/.Trash', '/elsewhere')
+        self.fs.shutil_move('/.Trash', '/elsewhere')
         self.fs.set_sticky_bit('/elsewhere')
         self.fs.symlink('/elsewhere', '/.Trash')
 

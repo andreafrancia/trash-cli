@@ -58,7 +58,7 @@ class TestRestoreFsLikeRealFs:
     def test_move_and_remove_file(self, env):
         env.fs.write_file(env.path('file'), 'contents')
 
-        env.fs.move(env.path('file'), env.path('moved'))
+        env.fs.shutil_move(env.path('file'), env.path('moved'))
 
         assert env.fs.path_lexists(env.path('file')) is False
         assert env.fs.read_file(env.path('moved')) == 'contents'
