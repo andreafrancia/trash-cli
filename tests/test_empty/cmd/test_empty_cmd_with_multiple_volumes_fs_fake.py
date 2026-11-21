@@ -1,7 +1,8 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import unittest
 
-from tests.support.py2mock import Mock
+from tests.support.dates import jan_11_2001
+from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 from six import StringIO
 
 from tests.support.fakes.stub_volume_of import StubVolumeOfFs
@@ -10,7 +11,6 @@ from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from trashcli.fslib.protocols.volumes_listing import VolumesListing
 
 
 class TestEmptyCmdFakeWithMultipleVolumesFs(unittest.TestCase):
@@ -19,8 +19,7 @@ class TestEmptyCmdFakeWithMultipleVolumesFs(unittest.TestCase):
         self.temp_dir = '/tmp'
         self.top_dir = self.temp_dir + '/topdir'
         self.fsx = FsFixture(self.fs)
-        self.volumes_listing = Mock(spec=VolumesListing)
-        self.volumes_listing.list_volumes.return_value = [self.top_dir]
+        self.volumes_listing = FakeVolumesListing([self.top_dir])
         self.fsx.require_empty_dir(self.top_dir)
         self.environ = {}
         self.empty_cmd = EmptyCmd(
@@ -28,7 +27,7 @@ class TestEmptyCmdFakeWithMultipleVolumesFs(unittest.TestCase):
             out=StringIO(),
             err=StringIO(),
             volumes_listing=self.volumes_listing,
-            now=None,
+            now=jan_11_2001,
             file_reader=self.fs,
             file_remover=ExistingFileRemover(self.fs),
             content_reader=self.fs,

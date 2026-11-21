@@ -4,5 +4,5 @@ from trashcli.fslib.protocols.move import Move
 
 
 class RealMove(Move):
-    def move(self, path, dest):
-        return shutil.move(path, str(dest))
+    def move(self, src, dst):  # type: (str, str) -> None
+        shutil.move(src, str(dst))

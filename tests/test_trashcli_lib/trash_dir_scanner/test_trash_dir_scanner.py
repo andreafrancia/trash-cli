@@ -1,16 +1,14 @@
-import unittest
-
+from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 from tests.support.py2mock import Mock
 
-from trashcli.fslib.protocols.volumes_listing import VolumesListing
 from trashcli.fslib.protocols.path_is_dir import PathIsDir
 from trashcli.lib.single_user_info_provider import SingleUserInfoProvider
 from trashcli.trash_dirs_scanner import TrashDirsScanner, trash_dir_found
 
 
-class TestTrashDirScanner(unittest.TestCase):
+class TestTrashDirScanner:
     def test_scan_trash_dirs(self):
-        volumes_listing = Mock(spec=VolumesListing)
+        volumes_listing = FakeVolumesListing(['/vol', '/vol2'])
         user_info_provider = SingleUserInfoProvider()
         dir_checker = Mock(spec=PathIsDir)
         scanner = TrashDirsScanner(
@@ -21,10 +19,9 @@ class TestTrashDirScanner(unittest.TestCase):
         )
 
         dir_checker.path_isdir.return_value = True
-        volumes_listing.list_volumes.return_value = ['/vol', '/vol2']
         result = sorted(scanner.scan_trash_dirs({'HOME': '/home/user'}, 123))
 
-        self.assertEqual(
+        assert result == \
             [(trash_dir_found, ('/home/user/.local/share/Trash', '/')),
              (trash_dir_found, ('/vol/.Trash-123', '/vol')),
-             (trash_dir_found, ('/vol2/.Trash-123', '/vol2'))], result)
+             (trash_dir_found, ('/vol2/.Trash-123', '/vol2'))]

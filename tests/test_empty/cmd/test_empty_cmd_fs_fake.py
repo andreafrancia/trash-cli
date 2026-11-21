@@ -1,7 +1,8 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
 import unittest
 
-from tests.support.py2mock import Mock
+from tests.support.dates import jan_11_2001
+from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 from six import StringIO
 
 from tests.support.fakes.stub_volume_of import StubVolumeOfFs
@@ -10,7 +11,6 @@ from trashcli.empty.empty_cmd import EmptyCmd
 from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from trashcli.fslib.protocols.volumes_listing import VolumesListing
 
 
 class TestTrashEmptyCmdFakeFs(unittest.TestCase):
@@ -19,8 +19,7 @@ class TestTrashEmptyCmdFakeFs(unittest.TestCase):
         self.fsx = FsFixture(self.fs)
         self.tmp_dir = '/tmp'
         self.unreadable_dir = self.tmp_dir + '/data/Trash/files/unreadable'
-        self.volumes_listing = Mock(spec=VolumesListing)
-        self.volumes_listing.list_volumes.return_value = [self.unreadable_dir]
+        self.volumes_listing = FakeVolumesListing([self.unreadable_dir])
         self.err = StringIO()
         self.environ = {'XDG_DATA_HOME': self.tmp_dir + '/data'}
         self.empty = EmptyCmd(
@@ -28,7 +27,7 @@ class TestTrashEmptyCmdFakeFs(unittest.TestCase):
             out=StringIO(),
             err=self.err,
             volumes_listing=self.volumes_listing,
-            now=None,
+            now=jan_11_2001,
             file_reader=self.fs,
             file_remover=ExistingFileRemover(self.fs),
             content_reader=self.fs,

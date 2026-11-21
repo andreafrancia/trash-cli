@@ -82,14 +82,14 @@ class RealFs(Fs):
     def mkdir(self, path, mode=0o777):
         os.mkdir(path, mode)
 
-    def mkdirs(self, path):
+    def mkdirs(self, path):  # type: (str) -> None
         RealMkDirs().mkdirs(path)
 
     def mkdir_with_mode(self, path, mode):
         os.mkdir(path, mode)
 
-    def move(self, path, dest):
-        return RealMove().move(path, dest)
+    def move(self, src, dst):  # type: (str, str) -> None
+        return RealMove().move(src, dst)
 
     def remove_file(self, path):
         RealRemoveFile().remove_file(path)
@@ -129,7 +129,7 @@ class RealFs(Fs):
     def listdir(self, path):
         return os.listdir(path)
 
-    def read_file(self, path):
+    def read_file(self, path):  # type: (str) -> str
         return RealReadFile().read_file(path)
 
     def write_file(self, path, content):

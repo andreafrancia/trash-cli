@@ -1,12 +1,11 @@
 import datetime
-import unittest
 
 from tests.support.py2mock import Mock, call
 from trashcli.empty.clock import Clock
 
 
-class TestClock(unittest.TestCase):
-    def setUp(self):
+class TestClock:
+    def setup_method(self):
         self.errors = Mock(spec=['print_error'])
 
     def test_return_real_time(self):

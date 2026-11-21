@@ -336,14 +336,14 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             for entry in self.listdir(path):
                 yield entry
 
-    def move(self, src, dest):
+    def move(self, src, dst):  # type: (str, str) -> None
         basename, entry = self._pop_entry_from_dir(src)
 
-        if self.path_exists(dest) and self.path_isdir(dest):
-            dest_dir = self._get_directory_at(dest)
+        if self.path_exists(dst) and self.path_isdir(dst):
+            dest_dir = self._get_directory_at(dst)
             dest_dir.add_entry(basename, entry)
         else:
-            dest_dirname, dest_basename = os.path.split(dest)
+            dest_dirname, dest_basename = os.path.split(dst)
             dest_dir = self._get_directory_at(dest_dirname)
             dest_dir.add_entry(dest_basename, entry)
 
