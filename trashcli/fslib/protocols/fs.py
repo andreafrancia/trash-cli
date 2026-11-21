@@ -151,8 +151,8 @@ class Fs(Protocol):
 
     @abstractmethod
     def mkdtemp(self,
-                prefix=None,  # type: Optional[str]
                 suffix=None,  # type: Optional[str]
+                prefix=None,  # type: Optional[str]
                 dir=None,  # type: Optional[str]
                 ):  # type: (...) -> str
         raise NotImplementedError
