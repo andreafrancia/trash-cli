@@ -1,3 +1,5 @@
+import errno
+
 from trashcli.empty.clock import Clock
 from trashcli.empty.older_than import older_than
 from trashcli.fslib.protocols.read_file import ReadFile
@@ -17,7 +19,13 @@ class DeleteAccordingDate:
         if parsed_days is None:
             return True
         else:
-            contents = self.reader.read_file(trashinfo_path)
+            try:
+                contents = self.reader.read_file(trashinfo_path)
+            except IOError as e:
+                if e.errno == errno.ENOENT:
+                    # Removed after the listing, e.g. by trash-rm.
+                    return False
+                raise
             now_value = self.clock.get_now_value(environ)
             deletion_date = parse_deletion_date(contents)
             if deletion_date is not None:

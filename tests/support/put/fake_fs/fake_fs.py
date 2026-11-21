@@ -188,7 +188,11 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
                   path,  # type: str
                   ):  # type: (...) -> str
         path = self._join_cwd(path)
-        entity = self.get_entity_at(os.path.normpath(path))
+        try:
+            entity = self.get_entity_at(os.path.normpath(path))
+        except MyFileNotFoundError:
+            # like open(): IOError, that is OSError on Python 3
+            raise IOError(errno.ENOENT, "No such file or directory", path)
         if isinstance(entity, File):
             content = entity.content
             if isinstance(content, bytes):
