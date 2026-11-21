@@ -5,5 +5,5 @@ from trashcli.compat import Protocol
 
 class PathExists(Protocol):
     @abstractmethod
-    def path_exists(self, path):
-        raise NotImplementedError()
+    def path_exists(self, path):  # type: (str) -> bool
+        raise NotImplementedError

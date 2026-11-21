@@ -40,8 +40,8 @@ class RealRmFileSystemReader(RmFileSystemReader,
     def __init__(self, fs):  # type: (Fs) -> None
         RealRemoverFs.__init__(self, fs)
 
+    def path_exists(self, path):  # type: (str) -> bool
+        return self.fs.path_exists(path)
+
     def entries_if_dir_exists(self, path):
         return RealEntriesIfDirExists(self.fs).entries_if_dir_exists(path)
-
-    def path_exists(self, path):
-        return self.fs.path_exists(path)

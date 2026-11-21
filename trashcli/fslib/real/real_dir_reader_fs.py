@@ -12,5 +12,5 @@ class RealDirReaderFs(PathExists):
     def entries_if_dir_exists(self, path):
         return RealEntriesIfDirExists(self.fs).entries_if_dir_exists(path)
 
-    def path_exists(self, path):
+    def path_exists(self, path):  # type: (str) -> bool
         return self.fs.path_exists(path)

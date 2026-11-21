@@ -5,7 +5,7 @@ from trashcli.fslib.protocols.remove_file import RemoveFile
 
 
 class RealRemoveFile(RemoveFile):
-    def remove_file(self, path):
+    def remove_file(self, path):  # type: (str) -> None
         if os.path.lexists(path):
             try:
                 os.remove(path)

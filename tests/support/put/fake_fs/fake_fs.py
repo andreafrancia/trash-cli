@@ -252,14 +252,14 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         inode.stickiness = (Stickiness.sticky if mode & STICKY_BIT
                             else Stickiness.not_sticky)
 
-    def path_isdir(self, path):
+    def path_isdir(self, path):  # type: (str) -> bool
         try:
             entity = self.get_entity_at(path)
         except MyFileNotFoundError:
             return False
         return isinstance(entity, Directory)
 
-    def path_exists(self, path):
+    def path_exists(self, path):  # type: (str) -> bool
         try:
             self.get_entity_at(path)
             return True
@@ -465,7 +465,7 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
                 for x in self.walk_no_follow(new_path):
                     yield x
 
-    def path_lexists(self, path):
+    def path_lexists(self, path):  # type: (str) -> bool
         path = self._join_cwd(path)
         try:
             self._get_entry_at(path)

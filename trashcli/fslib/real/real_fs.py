@@ -33,7 +33,7 @@ class RealFs(Fs):
             import os
             os.utime(path, None)
 
-    def volume_of(self, path):
+    def volume_of(self, path):  # type: (str) -> str
         return RealVolumeOfFs().volume_of(path)
 
     def atomic_write(self, path, content):

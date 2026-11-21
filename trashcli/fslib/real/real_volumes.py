@@ -6,7 +6,7 @@ from trashcli.fslib.real.real_volume_of import RealVolumeOfFs
 
 
 class RealVolumesFs(VolumesFs):
-    def volume_of(self, path):
+    def volume_of(self, path):  # type: (str) -> str
         return RealVolumeOfFs().volume_of(path)
 
     def list_mount_points(self):  # type: () -> List[str]
