@@ -2,14 +2,16 @@ from typing import TypeVar
 
 import pytest
 
+from tests.support.dirs.my_path import MyPath
 from tests.support.fs_fixture import real_fs_fixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.support.dirs.support_fs import SupportFs
-from tests.support.dirs.temp_dir import make_temp_dir, temp_dir_fixture
+from tests.support.dirs.temp_dir import temp_dir_fixture
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.py2mock import Mock
 from tests.test_restore.support.recording_logger import RecordingLogger
 from tests.support.fakes.fake_volumes import FakeVolumesFs
+from trashcli.fslib.protocols.fs import Fs
 from trashcli.restore.trashed_files import TrashedFiles
 
 Self = TypeVar('Self', bound='TestTrashedFileRestoreIntegration')
@@ -21,7 +23,10 @@ temp_dir = temp_dir_fixture
 class TestTrashedFileRestoreIntegration:
 
     @pytest.fixture(autouse=True)
-    def setup(self, fs, temp_dir):
+    def setup(self,
+              fs,  # type: Fs
+              temp_dir,  # type: MyPath
+              ):
         self.temp_dir = temp_dir
         self.root_dir = self.temp_dir
         self.support_fs = SupportFs(fs, self.root_dir)
@@ -39,13 +44,9 @@ class TestTrashedFileRestoreIntegration:
         self.user = RestoreUser(
             environ={'HOME': self.home_dir},
             uid=1000,
-            file_reader=fs,
-            path_read_fs=fs,
-            write_fs=fs,
-            listing_fs=fs,
+            fs=fs,
             version="0.0.0.",
             volumes=FakeVolumesFs([]),
-            top_trash_dir_rules_reader=fs,
             logger=self.logger,
         )
 

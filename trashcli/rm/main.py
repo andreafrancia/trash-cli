@@ -30,11 +30,9 @@ def main():
 
 
 class RealRmFileSystemReader(RmFileSystemReader,
-                             RealIsStickyDir,
                              RealIsSymLink,
                              RealIsWorldWritable,
                              RealReadFile,
-                             RealPathIsDir,
                              RealRemoverFs,
                              ):
     def __init__(self, fs):  # type: (Fs) -> None
@@ -45,3 +43,9 @@ class RealRmFileSystemReader(RmFileSystemReader,
 
     def entries_if_dir_exists(self, path):
         return RealEntriesIfDirExists(self.fs).entries_if_dir_exists(path)
+
+    def path_isdir(self, path):  # type: (str) -> bool
+        return self.fs.path_isdir(path)
+
+    def is_sticky_dir(self, path):  # type: (str) -> bool
+        return self.fs.is_sticky_dir(path)
