@@ -47,11 +47,7 @@ class RestoreUser:
         args = [] if args is self.no_args else args
         stdout = StringIO()
         stderr = StringIO()
-        if isinstance(self.path_read_fs, FakeFs):
-            self.path_read_fs.cd(from_dir or '/')
-            read_cwd = self.path_read_fs
-        else:
-            read_cwd = FakeReadCwdFs(from_dir)
+        read_cwd = FakeReadCwdFs(from_dir)
         cmd = RestoreCmd(
             stdout=stdout,
             stderr=stderr,
