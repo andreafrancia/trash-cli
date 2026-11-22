@@ -1,6 +1,7 @@
 import pytest
 
 from tests.support.asserts.assert_that import assert_that
+from tests.support.dirs.my_path import MyPath
 from tests.support.dirs.temp_dir import make_temp_dir, temp_dir_fixture
 from tests.support.fs_fixture import real_fs_fixture
 from tests.support.restore.a_trashed_file import ATrashedFile
@@ -10,6 +11,7 @@ from tests.support.restore.restore_file_fixture import RestoreFileFixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 from tests.support.fakes.fake_volumes import FakeVolumesFs
+from trashcli.fslib.protocols.fs import Fs
 
 fs = real_fs_fixture
 temp_dir = temp_dir_fixture
@@ -17,7 +19,10 @@ temp_dir = temp_dir_fixture
 @pytest.mark.slow
 class TestRestoreTrash:
     @pytest.fixture(autouse=True)
-    def setup(self, fs, temp_dir):
+    def setup(self,
+              fs,  # type: Fs
+              temp_dir,  # type: MyPath
+              ):
         self.fixture = RestoreFileFixture(temp_dir / 'XDG_DATA_HOME',
                                           fs)
         self.cwd = temp_dir / "cwd"
@@ -25,14 +30,9 @@ class TestRestoreTrash:
         self.trash_dir = XDG_DATA_HOME / 'Trash'
         self.user = RestoreUser(environ={'XDG_DATA_HOME': XDG_DATA_HOME},
                                 uid=123,
-                                file_reader=fs,
-                                path_read_fs=fs,
-                                read_fs=fs,
-                                write_fs=fs,
-                                listing_fs=fs,
+                                fs=fs,
                                 version='0.0.0',
                                 volumes=FakeVolumesFs([]),
-                                top_trash_dir_rules_reader=fs,
                                 logger=RecordingLogger())
 
     def test_it_does_nothing_when_no_file_have_been_found_in_current_dir(self):

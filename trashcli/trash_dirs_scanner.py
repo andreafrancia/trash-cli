@@ -46,9 +46,18 @@ class TrashDir(tuple):
         return 'TrashDir(%r, %r)' % (self.path, self.volume)
 
 
-class TopTrashDirRulesFs(PathExists, IsStickyDir, IsSymLink,
-                         IsWorldWritable, PathIsDir, Protocol):
-    pass
+class TopTrashDirRulesFs(Protocol):
+    def is_sticky_dir(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+    def is_symlink(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+    def is_world_writable(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+    def path_isdir(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+    def path_exists(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
 
 class TopTrashDirRules:
     class Reader(PathExists, IsStickyDir, IsSymLink, Protocol):

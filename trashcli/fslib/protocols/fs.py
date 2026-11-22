@@ -146,6 +146,10 @@ class Fs(Protocol):
         raise NotImplementedError
 
     @abstractmethod
+    def list_mount_points(self):  # type: () -> List[str]
+        raise NotImplementedError
+
+    @abstractmethod
     def rmdir(self, path):  # type: (str) -> None
         raise NotImplementedError
 

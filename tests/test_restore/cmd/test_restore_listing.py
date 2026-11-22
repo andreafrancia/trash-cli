@@ -1,7 +1,8 @@
-from typing import TypeVar
+from typing import TypeVar, MutableMapping
 
 import pytest
 
+from tests.support.dirs.my_path import MyPath
 from tests.support.dirs.support_fs import SupportFs
 from tests.support.dirs.temp_dir import temp_dir_fixture
 from tests.support.fakes.fake_trash_dir import FakeTrashDir, \
@@ -11,6 +12,8 @@ from tests.support.fs_fixture import real_fs_fixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
 from tests.support.fakes.fake_volumes import FakeVolumesFs
+from trashcli.fslib.protocols.fs import Fs
+from trashcli.lib.environ import Environ
 
 fs = real_fs_fixture
 temp_dir = temp_dir_fixture
@@ -22,7 +25,10 @@ Self = TypeVar('Self', bound='TestRestoreListing')
 class TestRestoreListing:
 
     @pytest.fixture(autouse=True)
-    def setup(self, fs, temp_dir):
+    def setup(self,
+              fs,  # type: Fs
+              temp_dir,  # type: MyPath
+              ):
         self.temp_dir = temp_dir
 
         self.root_dir = temp_dir
@@ -40,21 +46,17 @@ class TestRestoreListing:
         )
 
         uid = 1000
-        self.env = {'HOME': self.home_dir}
+        self.env = {'HOME': self.home_dir}  # type: MutableMapping[str, str]
 
         make_listdir_sorted(fs)
         self.logger = RecordingLogger()
         self.user = RestoreUser(
             environ=self.env,
             uid=uid,
-            file_reader=fs,
-            path_read_fs=fs,
-            write_fs=fs,
-            listing_fs=fs,
+            fs=fs,
             version="0.0.0",
             volumes=FakeVolumesFs([]),
             logger=self.logger,
-            top_trash_dir_rules_reader=fs,
         )
 
     def test_with_no_args_should_show_only_files_in_cwd(

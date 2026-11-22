@@ -23,14 +23,9 @@ class TestRestoreOverwriteGuard:
         self.user = RestoreUser(
             environ={'XDG_DATA_HOME': temp_dir / 'XDG_DATA_HOME'},
             uid=123,
-            file_reader=fs,
-            path_read_fs=fs,
-            read_fs=fs,
-            write_fs=fs,
-            listing_fs=fs,
+            fs=fs,
             version='0.0.0',
             volumes=FakeVolumesFs([]),
-            top_trash_dir_rules_reader=fs,
             logger=RecordingLogger())
 
     def test_it_refuses_to_restore_over_a_dangling_symlink(

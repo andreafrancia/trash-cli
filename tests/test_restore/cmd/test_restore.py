@@ -15,14 +15,9 @@ class TestSearcher:
         self.trash = GivenTrash(self.fs)
         self.user = RestoreUser(environ={'HOME': '/home/user'},
                                 uid=123,
-                                file_reader=self.fs,
-                                path_read_fs=self.fs,
-                                write_fs=self.fs,
-                                listing_fs=self.fs,
+                                fs=self.fs,
                                 version='1.0',
                                 volumes=self.fs,
-                                read_fs=self.fs,
-                                top_trash_dir_rules_reader=self.fs,
                                 logger=RecordingLogger())
 
     def test_will_not_detect_trashed_file_in_dirs_other_than_cur_dir(self):
