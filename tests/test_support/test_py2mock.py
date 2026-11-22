@@ -1,6 +1,6 @@
 import os
 
-from tests.support.py2mock import Mock, patch
+from tests.support.py2mock import patch
 class TestPy2mock:
     def test_patching(self):
         "This test should work in Python before and after 3.3"

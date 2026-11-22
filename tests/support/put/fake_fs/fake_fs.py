@@ -16,9 +16,7 @@ from tests.support.put.my_file_not_found_error import MyFileNotFoundError
 from trashcli.fslib.protocols.is_sticky_dir import IsStickyDir
 from trashcli.fslib.protocols.is_sym_link import IsSymLink
 from trashcli.put.check_cast import check_cast
-from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
 from trashcli.fslib.protocols.fs import Fs
-from trashcli.fslib.protocols.remove_file_if_exists import RemoveFileIfExists
 from trashcli.fslib.find_all import find_all
 from trashcli.restore.fs.protocols.restore_fs import RestoreFs
 
@@ -31,8 +29,7 @@ MAX_SYMLINKS_TO_FOLLOW = 40
 STICKY_BIT = 0o1000
 
 
-class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
-             RemoveFileIfExists):
+class FakeFs(FakeVolumeOfFs, Fs, IsStickyDir, IsSymLink, RestoreFs):
     def __init__(self, cwd='/'):
         super(FakeFs, self).__init__()
         self.root_inode = make_inode_dir('/', 0o755, None)
@@ -52,6 +49,11 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             raise OSError(errno.ENOENT, "No such file or directory", path)
         if not isinstance(entity, Directory):
             raise OSError(errno.ENOTDIR, "Not a directory", path)
+        # like os.listdir(), listing a dir needs the read permission on it;
+        # find_all() is exempt, as it must list everything to ease debugging
+        if (not self._finding_all and
+                self._lookup_or_enoent(path, follow_last_link=True).mode & 0o400 == 0):
+            raise OSError(errno.EACCES, "Permission denied", path)
         return self.ls_aa(path)
 
     def mkdirs(self, path):  # type: (str) -> None
@@ -248,6 +250,8 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
     def chmod(self, path, mode):
         # like os.chmod(), it follows symlinks
         inode = self._lookup_or_enoent(path, follow_last_link=True)
+        if inode.owned_by_another_user:
+            raise OSError(errno.EPERM, "Operation not permitted", path)
         inode.chmod(mode & ~STICKY_BIT)
         inode.stickiness = (Stickiness.sticky if mode & STICKY_BIT
                             else Stickiness.not_sticky)
@@ -259,7 +263,7 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             return False
         return isinstance(entity, Directory)
 
-    def path_exists(self, path):
+    def path_exists(self, path):  # type: (str) -> bool
         try:
             self.get_entity_at(path)
             return True
@@ -325,16 +329,6 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         directory = self.get_entity_at(dirname)
         directory.remove(basename)
 
-    def remove_file2(self, path):
-        self._remove_entry(path)
-
-    def remove_file_if_exists(self, path):
-        self.remove_file(path)
-
-    def entries_if_dir_exists(self, path):  # type: (str) -> Iterable[str]
-        if self.path_exists(path):
-            for entry in self.listdir(path):
-                yield entry
 
     def move(self, src, dest):
         basename, entry = self._pop_entry_from_dir(src)
@@ -379,6 +373,11 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         # like os.chmod(), it follows symlinks
         inode = self._lookup(path, follow_last_link=True)
         inode.stickiness = Stickiness.sticky
+
+    def chown_to_another_user(self, path):
+        # like os.chmod(), it follows symlinks
+        inode = self._lookup(path, follow_last_link=True)
+        inode.owned_by_another_user = True
 
     def is_sticky_dir(self, path):  # type: (str) -> bool
         return self.path_isdir(path) and self.has_sticky_bit(path)
@@ -449,7 +448,11 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         return format_mode(mode)
 
     def walk_no_follow(self, top):
-        names = self.listdir(top)
+        # like os.walk(), a dir that cannot be listed is silently skipped
+        try:
+            names = self.listdir(top)
+        except OSError:
+            return
 
         dirs, nondirs = [], []
         for name in names:

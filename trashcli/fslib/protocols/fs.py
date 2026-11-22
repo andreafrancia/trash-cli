@@ -65,7 +65,8 @@ class Fs(Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def makedirs(self, name, mode=0o777, exist_ok=False):  # type: (str, int, bool)->None
+    def makedirs(self, name, mode=0o777,
+                 exist_ok=False):  # type: (str, int, bool)->None
         raise NotImplementedError
 
     @abstractmethod
@@ -146,3 +147,11 @@ class Fs(Protocol):
 
     def list_sorted(self, path):  # type: (str) -> List[str]
         return sorted(self.listdir(path))
+
+    @abstractmethod
+    def is_sticky_dir(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def is_world_writable(self, path):  # type: (str) -> bool
+        raise NotImplementedError

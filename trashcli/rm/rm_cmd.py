@@ -1,42 +1,31 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
-from trashcli.compat import Protocol
+from typing import Callable, IO, Mapping, List
 
-from trashcli.fslib.protocols.read_file import ReadFile
-from trashcli.fslib.protocols.remove_file2 import RemoveFile2
-from trashcli.fslib.protocols.remove_file_if_exists import RemoveFileIfExists
-from trashcli.fslib.protocols.dir_reader_fs import DirReaderFs
+from trashcli.fslib.protocols.volumes_listing import VolumesListing
+from trashcli.rm.rm_fs import RmFs
 from trashcli.lib.single_user_info_provider import SingleUserInfoProvider
-from trashcli.rm.cleanable_trashcan import CleanableTrashcan
 from trashcli.rm.filter import Filter
 from trashcli.rm.list_trashinfo import ListTrashinfos
 from trashcli.trash_dirs_scanner import TrashDirsScanner, TopTrashDirRules, \
-    trash_dir_found, TopTrashDirRulesFs
-
-
-class RmFileSystemReader(ReadFile,
-                         DirReaderFs,
-                         TopTrashDirRulesFs,
-                         RemoveFileIfExists,
-                         RemoveFile2,
-                         Protocol):
-    pass
+    trash_dir_found
+from trashcli.lib.path_of_backup_copy import path_of_backup_copy
 
 
 class RmCmd:
     def __init__(self,
-                 environ,
-                 getuid,
-                 volumes_listing,
-                 stderr,
-                 file_reader,  # type: RmFileSystemReader
-                 ):
+                 environ,  # type: Mapping[str, str]
+                 getuid,  # type: Callable[[], int]
+                 volumes_listing,  # type: VolumesListing
+                 stderr,  # type: IO[str]
+                 rm_fs,  # type: RmFs
+                 ):  # type: (...) -> None
         self.environ = environ
         self.getuid = getuid
         self.volumes_listing = volumes_listing
         self.stderr = stderr
-        self.file_reader = file_reader
+        self.rm_fs = rm_fs  # type: RmFs
 
-    def run(self, argv, uid):
+    def run(self, argv, uid):  # type: (List[str], int) -> None
         args = argv[1:]
         self.exit_code = 0
 
@@ -49,16 +38,15 @@ class RmCmd:
             self.exit_code = 8
             return
 
-        trashcan = CleanableTrashcan(self.file_reader)
         cmd = Filter(args[0])
 
-        listing = ListTrashinfos.make(self.file_reader, self.file_reader)
+        listing = ListTrashinfos(self.rm_fs)
 
         user_info_provider = SingleUserInfoProvider()
         scanner = TrashDirsScanner(user_info_provider,
                                    self.volumes_listing,
-                                   TopTrashDirRules(self.file_reader),
-                                   self.file_reader)
+                                   TopTrashDirRules(self.rm_fs),
+                                   self.rm_fs)
 
         for event, args in scanner.scan_trash_dirs(self.environ, uid):
             if event == trash_dir_found:
@@ -70,14 +58,23 @@ class RmCmd:
                     elif type == 'trashed_file':
                         original_location, info_file = arg
                         if cmd.matches(original_location):
-                            trashcan.delete_trash_info_and_backup_copy(
+                            self.delete_trash_info_and_backup_copy(
                                 info_file)
 
-    def unable_to_parse_path(self, trashinfo):
+    def delete_trash_info_and_backup_copy(self,
+                                          trash_info_path,  # type: str
+                                          ):
+        backup_copy = path_of_backup_copy(trash_info_path)
+        self.rm_fs.remove_file_if_exists(backup_copy)
+        self.rm_fs.remove_path_forcefully(trash_info_path)
+
+    def unable_to_parse_path(self,
+                             trashinfo,  # type: str
+                             ):
         self.report_error('{}: unable to parse \'Path\''.format(trashinfo))
 
-    def report_error(self, error_msg):
+    def report_error(self, error_msg):  # type: (str) -> None
         self.print_err('trash-rm: {}'.format(error_msg))
 
-    def print_err(self, msg):
+    def print_err(self, msg):  # type: (str) -> None
         self.stderr.write(msg + '\n')

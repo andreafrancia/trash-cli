@@ -15,7 +15,7 @@ from trashcli.put.janitor import Janitor
 from trashcli.put.my_logger import LoggerBackend
 from trashcli.put.my_logger import StreamBackend
 from trashcli.put.reporting.trash_put_reporter import TrashPutReporter
-from trashcli.put.trash_put_cmd import TrashPutCmd
+from trashcli.put.put_cmd import PutCmd
 from trashcli.put.trasher import Trasher
 from trashcli.put.user import User
 
@@ -38,13 +38,13 @@ def make_cmd(clock,
              user_input,  # type: Input
              randint,  # type: IntGenerator
              backend,  # type: LoggerBackend
-             ):  # type: (...) -> TrashPutCmd
+             ):  # type: (...) -> PutCmd
     reporter = TrashPutReporter(fs)
     janitor = Janitor(fs, clock, backend, randint)
     file_trasher = FileTrasher(fs, janitor, backend)
     user = User(user_input, Describer(fs))
     trasher = Trasher(file_trasher, user, fs, backend)
-    return TrashPutCmd(fs, reporter, trasher)
+    return PutCmd(fs, reporter, trasher)
 
 
 class RandomIntGenerator(IntGenerator):
