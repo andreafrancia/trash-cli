@@ -1,11 +1,10 @@
-import unittest
 from typing import Union
 
 from trashcli.empty.parser import Parser
 
 
-class TestMakeParser(unittest.TestCase):
-    def setUp(self):
+class TestMakeParser:
+    def setup_method(self):
         self.parser = Parser()
 
     def test(self):
