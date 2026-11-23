@@ -1,13 +1,11 @@
-import unittest
-
 import trashcli.list
 import trashcli.list.main
 import trashcli.list.parser
 from trashcli.lib.print_version import PrintVersionArgs
 
 
-class TestTrashListParser(unittest.TestCase):
-    def setUp(self):
+class TestTrashListParser:
+    def setup_method(self):
         self.parser = trashcli.list.parser.Parser("trash-list")
 
     def test_version(self):
