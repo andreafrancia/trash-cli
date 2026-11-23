@@ -1,10 +1,8 @@
-import unittest
-
 from trashcli.lib.single_user_info_provider import SingleUserInfoProvider
 
 
-class TestUserInfoProvider(unittest.TestCase):
-    def setUp(self):
+class TestUserInfoProvider:
+    def setup_method(self):
         self.provider = SingleUserInfoProvider()
 
     def test_getuid(self):
