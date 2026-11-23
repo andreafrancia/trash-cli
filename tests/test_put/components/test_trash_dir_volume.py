@@ -1,11 +1,9 @@
-import unittest
-
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.put.trash_dir_volume_reader import TrashDirVolumeReader
 
 
-class TestTrashDirVolume(unittest.TestCase):
-    def setUp(self):
+class TestTrashDirVolume:
+    def setup_method(self):
         fs = FakeFs()
         fs.add_volume('/disk1')
         fs.add_volume('/disk2')
