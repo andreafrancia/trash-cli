@@ -1,11 +1,9 @@
-import unittest
-
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.put.fs.volume_of_parent import VolumeOfParent
 
 
-class TestVolumeOfParent(unittest.TestCase):
-    def setUp(self):
+class TestVolumeOfParent:
+    def setup_method(self):
         self.fs = FakeFs()
 
         self.volume_of_parent = VolumeOfParent(self.fs)
