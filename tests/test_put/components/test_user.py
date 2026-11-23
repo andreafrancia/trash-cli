@@ -1,4 +1,3 @@
-import unittest
 from typing import cast
 
 import flexmock
@@ -13,8 +12,8 @@ from trashcli.put.user import (
 )
 
 
-class TestUser(unittest.TestCase):
-    def setUp(self):
+class TestUser:
+    def setup_method(self):
         self.my_input = HardCodedInput("y")
         self.describer = flexmock.Mock(spec=Describer)
         self.describer.should_receive('describe').and_return("description!")
@@ -27,7 +26,7 @@ class TestUser(unittest.TestCase):
         assert result == 'user_replied_yes'
 
 
-class Test_parse_user_reply(unittest.TestCase):
+class Test_parse_user_reply:
     def test_y(self): assert parse_user_reply('y') == user_replied_yes
     def test_Y(self): assert parse_user_reply('Y') == user_replied_yes
     def test_n(self): assert parse_user_reply('n') == user_replied_no
