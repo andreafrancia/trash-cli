@@ -1,12 +1,10 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
-import unittest
-
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.put.describer import Describer
 
 
-class TestDescriber(unittest.TestCase):
-    def setUp(self):
+class TestDescriber:
+    def setup_method(self):
         self.fs = FakeFs()
         self.describer = Describer(self.fs)
 
