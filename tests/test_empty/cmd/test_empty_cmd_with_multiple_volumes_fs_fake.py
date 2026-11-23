@@ -1,6 +1,4 @@
 # Copyright (C) 2011-2022 Andrea Francia Bereguardo(PV) Italy
-import unittest
-
 from tests.support.dates import jan_11_2001
 from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 from six import StringIO
@@ -13,8 +11,8 @@ from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from tests.support.put.fake_fs.fake_fs import FakeFs
 
 
-class TestEmptyCmdFakeWithMultipleVolumesFs(unittest.TestCase):
-    def setUp(self):
+class TestEmptyCmdFakeWithMultipleVolumesFs:
+    def setup_method(self):
         self.fs = FakeFs()
         self.temp_dir = '/tmp'
         self.top_dir = self.temp_dir + '/topdir'
