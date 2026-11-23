@@ -1,10 +1,8 @@
-import unittest
-
 from trashcli.empty.prepare_output_message import prepare_output_message
 from trashcli.trash_dirs_scanner import trash_dir_found
 
 
-class TestPrepareOutputMessage(unittest.TestCase):
+class TestPrepareOutputMessage:
     def test_one_dir(self):
         trash_dirs = [
             (trash_dir_found, ('/Trash', '/')),
