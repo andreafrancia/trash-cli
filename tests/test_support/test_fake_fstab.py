@@ -1,8 +1,7 @@
-import unittest
 from tests.support.fakes.fake_volume_of import FakeVolumeOfFs
 
 
-class TestFakeFstab(unittest.TestCase):
+class TestFakeFstab:
 
     def test_default(self):
         volumes = FakeVolumeOfFs()
