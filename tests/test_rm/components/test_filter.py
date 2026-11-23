@@ -1,9 +1,7 @@
-import unittest
-
 from trashcli.rm.filter import Filter
 
 
-class TestFilter(unittest.TestCase):
+class TestFilter:
 
     def test_a_star_matches_all(self):
         self.cmd = Filter('*')
