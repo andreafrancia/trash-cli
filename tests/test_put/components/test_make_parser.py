@@ -1,11 +1,9 @@
-import unittest
-
 from trashcli.put.core.mode import Mode
 from trashcli.put.parser import make_parser
 
 
-class Test_make_parser(unittest.TestCase):
-    def setUp(self):
+class Test_make_parser:
+    def setup_method(self):
         self.parser = make_parser("program-name")
 
     def test(self):
