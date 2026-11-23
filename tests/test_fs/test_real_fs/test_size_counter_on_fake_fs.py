@@ -1,12 +1,10 @@
-import unittest
-
 from tests.support.dirs.my_path import MyPath
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.put.fs.size_counter import SizeCounter
 
 
-class TestSizeCounterOnFakeFs(unittest.TestCase):
-    def setUp(self):
+class TestSizeCounterOnFakeFs:
+    def setup_method(self):
         self.fs = FakeFs()
         self.counter = SizeCounter(self.fs)
         self.fs.makedirs('/tmp', 0o777)
