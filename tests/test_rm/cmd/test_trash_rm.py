@@ -1,5 +1,3 @@
-import unittest
-
 from six import StringIO
 
 from tests.support.py2mock import Mock
@@ -8,8 +6,8 @@ from tests.support.asserts import assert_starts_with
 from trashcli.rm.rm_cmd import RmCmd
 
 
-class TestTrashRmCmdRun(unittest.TestCase):
-    def setUp(self):
+class TestTrashRmCmdRun:
+    def setup_method(self):
         self.volumes_listing = Mock()
         self.stderr = StringIO()
         self.file_reader = Mock([])
