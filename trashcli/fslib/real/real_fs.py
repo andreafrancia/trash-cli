@@ -160,7 +160,10 @@ class RealFs(Fs):
             prefix=tempfile.template,  # type: Optional[str]
             dir=None  # type: Optional[str]
     ):
-        return tempfile.mkdtemp(suffix, prefix, dir)
+        return tempfile.mkdtemp(
+            suffix if suffix is not None else "",
+            prefix if prefix is not None else tempfile.template,
+            dir)
 
     def gettempdir(self):
         return tempfile.gettempdir()
