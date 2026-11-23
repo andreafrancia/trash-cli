@@ -1,5 +1,3 @@
-import unittest
-
 from trashcli.compat import fsdecode
 from trashcli.parse_trashinfo.parse_path import parse_path
 from trashcli.put.format_trash_info import format_original_location
@@ -8,7 +6,7 @@ from trashcli.put.format_trash_info import format_original_location
 bad_name = fsdecode(b'/foo/bad\xffname')
 
 
-class TestFormatOriginalLocation(unittest.TestCase):
+class TestFormatOriginalLocation:
     def test_plain_name(self):
         assert format_original_location('/foo/bar') == '/foo/bar'
 
