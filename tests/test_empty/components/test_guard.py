@@ -1,11 +1,9 @@
-import unittest
-
 from tests.support.py2mock import Mock
 from trashcli.empty.guard import Guard, UserIntention
 
 
-class TestGuard(unittest.TestCase):
-    def setUp(self):
+class TestGuard:
+    def setup_method(self):
         self.user = Mock(spec=['do_you_wanna_empty_trash_dirs'])
         self.guard = Guard(self.user)
 
