@@ -1,11 +1,9 @@
 # Copyright (C) 2011-2021 Andrea Francia Bereguardo(PV) Italy
-import unittest
-
 from tests.support.fakes.fake_file_system import FakeFileSystem
 
 
-class TestFakeFileSystem(unittest.TestCase):
-    def setUp(self):
+class TestFakeFileSystem:
+    def setup_method(self):
         self.fs = FakeFileSystem()
 
     def test_you_can_read_from_files(self):
