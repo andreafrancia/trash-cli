@@ -1,11 +1,9 @@
-import unittest
-
 from trashcli.compat import fsdecode
 from trashcli.parse_trashinfo.parse_path import parse_path
 from trashcli.put.format_trash_info import format_original_location
 from trashcli.compat import TextType
 
-class TestFormatOriginalLocation(unittest.TestCase):
+class TestFormatOriginalLocation:
     @property
     def bad_name(self):  # type: () -> TextType
         # this is how a file name with the raw byte 0xff reaches python
