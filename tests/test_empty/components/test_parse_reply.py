@@ -1,9 +1,7 @@
-import unittest
-
 from trashcli.empty.parse_reply import parse_reply
 
 
-class TestParseReply(unittest.TestCase):
+class TestParseReply:
     def test_y(self):
         assert parse_reply('y') == True
 
