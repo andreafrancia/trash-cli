@@ -33,6 +33,13 @@ Trash Specification.
 
 It remembers the name, original path, deletion date, and permissions of
 each trashed file.
+.PP
+By default, \fBtrash-empty\fR scans and empties the current user's home trash
+directory ($XDG_DATA_HOME/Trash or ~/.local/share/Trash) as well as trash
+directories on all detected mounted volumes ($top_dir/.Trash/$uid and
+$top_dir/.Trash-$uid), rather than only the mount point of the current working
+directory. Trash directories on unmounted volumes or non-standard paths not
+detected by system mount listings are not emptied.
 
 .SH "ARGUMENTS"
 .TP
