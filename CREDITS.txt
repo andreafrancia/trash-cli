@@ -53,6 +53,7 @@ Thanks to
  - Cyrus Yip: added and maintained the simplified Chinese README,
    recommended APT for install [90c2d21, 911d59e, 4820f90, 63a0c45,
    64ac395]
+ - dajiaohuang: added virtiofs mount discovery [#441]
  - David Auer: relaxed the virtualenv version requirement, fixed typos
    and a dead link, removed an empty file
    [864b13e, 0a608b3, 402474c, f8c030d, b3e35f4]
