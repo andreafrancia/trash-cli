@@ -35,11 +35,16 @@ It remembers the name, original path, deletion date, and permissions of
 each trashed file.
 .PP
 By default, \fBtrash-empty\fR scans and empties the current user's home trash
-directory ($XDG_DATA_HOME/Trash or ~/.local/share/Trash) as well as trash
+directory ($XDG_DATA_HOME/Trash when XDG_DATA_HOME is set in the environment,
+including /Trash if it is empty; otherwise ~/.local/share/Trash when HOME is
+set, or no home trash directory if neither variable is set) as well as trash
 directories on all detected mounted volumes ($top_dir/.Trash/$uid and
 $top_dir/.Trash-$uid), rather than only the mount point of the current working
-directory. Trash directories on unmounted volumes or non-standard paths not
-detected by system mount listings are not emptied.
+directory. When TRASH_VOLUMES is set to a nonempty colon-separated list of
+paths, it replaces the system mount listing, so listed paths are scanned even
+if they are not mount points and mounted volumes omitted from TRASH_VOLUMES are
+skipped. Otherwise, trash directories on unmounted volumes or non-standard
+paths not detected by system mount listings are not emptied.
 
 .SH "ARGUMENTS"
 .TP
