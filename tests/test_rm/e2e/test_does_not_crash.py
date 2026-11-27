@@ -8,16 +8,20 @@ fs = real_fs_fixture
 temp_dir = temp_dir_fixture
 
 
-class TestDoesNotCrash:
-    @pytest.fixture(autouse=True)
-    def run_trash_rm_version(self, temp_dir):
-        return run_command(temp_dir, "trash-rm", [])
+class TestWithoutArguments:
+    @pytest.fixture
+    def run_trash_rm_without_arguments(self, temp_dir):
+        return run_command(temp_dir, "trash-rm", [], env={
+            'XDG_DATA_HOME': temp_dir / 'XDG_DATA_HOME',
+            'TRASH_VOLUMES': ':',
+        })
 
-    def test_exit_code__is_not_zeros(self, run_trash_rm_version):
-        assert run_trash_rm_version.exit_code == 8
+    def test_exit_code_is_8(self, run_trash_rm_without_arguments):
+        assert run_trash_rm_without_arguments.exit_code == 8
 
-    def test_stderr__should_contains_usage(self, run_trash_rm_version):
-        assert run_trash_rm_version.stderr.startswith("Usage")
+    def test_stderr_shows_usage(self, run_trash_rm_without_arguments):
+        assert run_trash_rm_without_arguments.stderr.startswith(
+            "Usage:\n    trash-rm PATTERN\n\nPlease specify PATTERN.\n")
 
-    def test_stdout__should_be_empty(self, run_trash_rm_version):
-        assert run_trash_rm_version.stdout == ""
+    def test_stdout_is_empty(self, run_trash_rm_without_arguments):
+        assert run_trash_rm_without_arguments.stdout == ""
