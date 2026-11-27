@@ -1,47 +1,56 @@
-import os
+import pytest
 
-from tests.support.dirs.temp_dir import make_temp_dir
-from trashcli.fslib.real.real_fs import RealFs
-from trashcli.fslib.real.real_is_world_writable import RealIsWorldWritable
+from tests.support.dirs.temp_dir import make_temp_dir, temp_dir_fixture
+from tests.support.fs_fixture import real_fs_fixture
+
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture
 
 
 class TestRealIsWorldWritable:
     # focused integration test: exercises only is_world_writable on the real fs
-    def setup_method(self):
-        fs = RealFs()
-        self.tmp_dir = make_temp_dir(fs)
-        self.checker = RealIsWorldWritable()
+    @pytest.fixture(autouse=True)
+    def setup_sut(self, fs, temp_dir):
+        self.tmp_dir = temp_dir
+        self.checker = fs
 
-    def test_a_private_dir_is_not_world_writable(self):
-        os.chmod(self.tmp_dir, 0o700)
+    def test_a_private_dir_is_not_world_writable(
+            self, fs):
+        fs.chmod(self.tmp_dir, 0o700)
 
-        assert self.checker.is_world_writable(self.tmp_dir) is False
+        result = self.checker.is_world_writable(self.tmp_dir)
 
-    def test_a_world_writable_dir_is_detected(self):
-        os.chmod(self.tmp_dir, 0o777)
+        assert result is False
 
-        assert self.checker.is_world_writable(self.tmp_dir) is True
+    def test_a_world_writable_dir_is_detected(self, fs):
+        fs.chmod(self.tmp_dir, 0o777)
 
-    def test_a_missing_path_is_not_world_writable(self):
-        assert self.checker.is_world_writable(self.tmp_dir / 'nope') is False
+        result = self.checker.is_world_writable(self.tmp_dir)
 
-    def test_a_symlink_to_a_private_dir_is_not_world_writable(self):
-        os.mkdir(self.tmp_dir / 'dir', 0o700)
-        os.symlink(self.tmp_dir / 'dir', self.tmp_dir / 'link')
+        assert result is True
 
-        assert self.checker.is_world_writable(self.tmp_dir / 'link') is False
+    def test_a_missing_path_is_not_world_writable(self, temp_dir):
+        assert self.checker.is_world_writable(temp_dir / 'nope') is False
 
-    def test_a_symlink_to_a_world_writable_dir_is_detected(self):
-        os.mkdir(self.tmp_dir / 'dir')
-        os.chmod(self.tmp_dir / 'dir', 0o777)
-        os.symlink(self.tmp_dir / 'dir', self.tmp_dir / 'link')
+    def test_a_symlink_to_a_private_dir_is_not_world_writable(
+            self, fs, temp_dir):
+        fs.mkdir(temp_dir / 'dir', 0o700)
+        fs.symlink(temp_dir / 'dir', temp_dir / 'link')
 
-        assert self.checker.is_world_writable(self.tmp_dir / 'link') is True
+        result = self.checker.is_world_writable(temp_dir / 'link')
 
-    def test_a_dangling_symlink_is_not_world_writable(self):
-        os.symlink(self.tmp_dir / 'none', self.tmp_dir / 'link')
+        assert result is False
 
-        assert self.checker.is_world_writable(self.tmp_dir / 'link') is False
+    def test_a_symlink_to_a_world_writable_dir_is_detected(self, fs, temp_dir):
+        fs.mkdir(temp_dir / 'dir')
+        fs.chmod(temp_dir / 'dir', 0o777)
+        fs.symlink(temp_dir / 'dir', temp_dir / 'link')
 
-    def teardown_method(self):
-        self.tmp_dir.clean_up()
+        result = self.checker.is_world_writable(temp_dir / 'link')
+
+        assert result is True
+
+    def test_a_dangling_symlink_is_not_world_writable(self, fs, temp_dir):
+        fs.symlink(temp_dir / 'none', temp_dir / 'link')
+
+        assert self.checker.is_world_writable(temp_dir / 'link') is False

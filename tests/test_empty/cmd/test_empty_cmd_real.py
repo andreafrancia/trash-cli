@@ -4,7 +4,9 @@ import unittest
 import pytest
 from six import StringIO
 
-from tests.support.dirs.temp_dir import make_temp_dir
+from tests.support.dates import jan_11_2001
+from tests.support.dirs.temp_dir import make_temp_dir, temp_dir_fixture
+from tests.support.fs_fixture import real_fs_fixture
 from trashcli.fslib.real.real_fs import RealFs
 from tests.support.trash_dirs.given_trash import GivenTrash
 from trashcli.empty.empty_cmd import EmptyCmd
@@ -12,12 +14,15 @@ from trashcli.empty.existing_file_remover import ExistingFileRemover
 from trashcli.empty.file_system_dir_reader import FileSystemDirReader
 from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture
 
 @pytest.mark.slow
-class TestTrashEmptyCmdReal(unittest.TestCase):
-    def setUp(self):
-        self.fs = RealFs()
-        self.tmp_dir = make_temp_dir(self.fs)
+class TestTrashEmptyCmdReal:
+    @pytest.fixture(autouse=True)
+    def setup_fs(self, fs, temp_dir):
+        self.fs = fs
+        self.tmp_dir = temp_dir
         self.xdg = str(self.tmp_dir / 'xdg')
         self.trash = GivenTrash(self.fs)
         self.err = StringIO()
@@ -28,7 +33,7 @@ class TestTrashEmptyCmdReal(unittest.TestCase):
             out=self.out,
             err=self.err,
             volumes_listing=FakeVolumesListing(),
-            now=None,
+            now=jan_11_2001,
             file_reader=self.fs,
             file_remover=ExistingFileRemover(self.fs),
             content_reader=self.fs,
@@ -55,5 +60,3 @@ class TestTrashEmptyCmdReal(unittest.TestCase):
                'would remove %s/Trash/info/pippo.trashinfo\n' % (
                    self.xdg, self.xdg)
 
-    def tearDown(self):
-        self.tmp_dir.clean_up()

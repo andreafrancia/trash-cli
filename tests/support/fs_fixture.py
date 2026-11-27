@@ -2,6 +2,9 @@ import os
 
 import pytest
 
+from tests.support.dirs.my_path import MyPath
+from tests.support.dirs.support_fs import SupportFs
+from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.fslib.protocols.fs import Fs
 from trashcli.fslib.real.real_fs import RealFs
 
@@ -90,5 +93,22 @@ class FsFixture:
 
 
 @pytest.fixture
-def fsx():
-    return FsFixture(RealFs())
+def real_fs_fixture():
+    return RealFs()
+
+
+@pytest.fixture
+def fake_fs_fixture():
+    return FakeFs()
+
+
+@pytest.fixture
+def fsx_fixture(fs):
+    return FsFixture(fs)
+
+
+@pytest.fixture
+def support_fs_fixture(fs,  # type: Fs
+                       temp_dir  # type: MyPath
+                       ):  # type: (...) -> SupportFs
+    return SupportFs(fs, temp_dir)

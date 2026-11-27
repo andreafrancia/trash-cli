@@ -1,6 +1,6 @@
 import pytest
 
-from tests.support.files import FsFixture
+from tests.support.fs_fixture import FsFixture
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from trashcli.compat import octal
 

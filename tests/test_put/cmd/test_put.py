@@ -252,7 +252,7 @@ class TestPut:
                           'files_in_info_dir': ['pippo.trashinfo']}
 
     def test_when_file_move_fails(self):
-        flexmock.flexmock(self.fs).should_receive('move'). \
+        flexmock.flexmock(self.fs).should_receive('shutil_move'). \
             and_raise(IOError, 'No space left on device')
         self.fs.write_file("pippo", 'content')
 

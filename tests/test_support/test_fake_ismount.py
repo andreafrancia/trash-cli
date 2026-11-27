@@ -1,10 +1,8 @@
-import unittest
-
 from tests.support.fakes.fake_is_mount import FakeIsMount
 
 
-class TestOnDefault(unittest.TestCase):
-    def setUp(self):
+class TestOnDefault:
+    def setup_method(self):
         self.ismount = FakeIsMount([])
 
     def test_by_default_root_is_mount(self):
@@ -15,8 +13,8 @@ class TestOnDefault(unittest.TestCase):
 
         assert not self.ismount.is_mount('/any/other')
 
-class WhenOneFakeVolumeIsDefined(unittest.TestCase):
-    def setUp(self):
+class WhenOneFakeVolumeIsDefined:
+    def setup_method(self):
         self.ismount = FakeIsMount(['/fake-vol'])
 
     def test_accept_fake_mount_point(self):
@@ -32,8 +30,8 @@ class WhenOneFakeVolumeIsDefined(unittest.TestCase):
         assert self.ismount.is_mount('/fake-vol/')
 
 
-class TestWhenMultipleFakesMountPoints(unittest.TestCase):
-    def setUp(self):
+class TestWhenMultipleFakesMountPoints:
+    def setup_method(self):
         self.ismount = FakeIsMount(['/vol1', '/vol2'])
 
     def test_recognize_both(self):

@@ -1,13 +1,11 @@
-import unittest
-
 from tests.support.py2mock import Mock, call
 
 from trashcli.empty.user import User
 from trashcli.lib.my_input import HardCodedInput
 
 
-class TestUser(unittest.TestCase):
-    def setUp(self):
+class TestUser:
+    def setup_method(self):
         self.prepare_output_message = Mock(spec=[])
         self.input = HardCodedInput()
         self.parse_reply = Mock(spec=[])

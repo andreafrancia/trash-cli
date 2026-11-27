@@ -1,11 +1,9 @@
-import unittest
-
 from tests.support.fakes.fake_mount_point_list_fs import FakeMountPointListFs
 from trashcli.fstab.volumes_listing_impl import VolumesListingImpl
 
 
-class TestVolumesListingImpl(unittest.TestCase):
-    def setUp(self):
+class TestVolumesListingImpl:
+    def setup_method(self):
         self.volumes_listing = VolumesListingImpl(FakeMountPointListFs(['/os-vol1', '/os-vol2']))
 
     def test_os_mount_points(self):

@@ -1,8 +1,8 @@
 import os
 
-from typing import Dict
+from typing import Mapping
 
-Environ = Dict[str, str]
+Environ = Mapping[str, str]
 
 
 def cast_environ(env,

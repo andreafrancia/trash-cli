@@ -64,7 +64,7 @@ class TestFakeFs:
 
     def test_move(self):
         self.fs.write_file("/foo")
-        self.fs.move("/foo", "/bar")
+        self.fs.shutil_move("/foo", "/bar")
 
         assert self.fs.path_exists("/foo") is False
         assert self.fs.path_exists("/bar") is True
@@ -72,7 +72,7 @@ class TestFakeFs:
     def test_move_dir(self):
         self.fs.mkdir("/fruits")
         self.fs.write_file("/apple")
-        self.fs.move("/apple", "/fruits")
+        self.fs.shutil_move("/apple", "/fruits")
 
         assert self.fs.ls_a('/fruits') == ['.', '..', 'apple']
 

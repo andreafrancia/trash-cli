@@ -2,9 +2,10 @@ import os
 import shutil
 import stat
 import tempfile
+from typing import List, Optional
 
 from trashcli.fslib.real.real_is_world_writable import RealIsWorldWritable
-from trashcli.fslib.real.real_move import RealMove
+from trashcli.fslib.real.real_move import RealShUtilMove
 from trashcli.fslib.real.real_remove_file import RealRemoveFile
 from trashcli.fslib.real.real_atomic_write import RealAtomicWrite
 from trashcli.fslib.real.real_read_file import RealReadFile
@@ -16,12 +17,13 @@ from trashcli.fslib.protocols.fs import Fs
 from trashcli.restore.fs.real.real_path_reader_fs import RealPathReaderFs
 from trashcli.restore.fs.real.real_read_cwd_fs import RealReadCwdFs
 
+
 class RealFs(Fs):
 
     def __init__(self):
         super(RealFs, self).__init__()
 
-    def readlink(self, path):
+    def readlink(self, path):  # type: (str) -> str
         return os.readlink(path)
 
     def symlink(self, src, dest):  # type: (str, str) -> None
@@ -32,7 +34,7 @@ class RealFs(Fs):
             import os
             os.utime(path, None)
 
-    def volume_of(self, path):
+    def volume_of(self, path):  # type: (str) -> str
         return RealVolumeOfFs().volume_of(path)
 
     def atomic_write(self, path, content):
@@ -81,14 +83,14 @@ class RealFs(Fs):
     def mkdir(self, path, mode=0o777):
         os.mkdir(path, mode)
 
-    def mkdirs(self, path):
+    def mkdirs(self, path):  # type: (str) -> None
         RealMkDirs().mkdirs(path)
 
     def mkdir_with_mode(self, path, mode):
         os.mkdir(path, mode)
 
-    def move(self, path, dest):
-        return RealMove().move(path, dest)
+    def shutil_move(self, src, dst):  # type: (str, str) -> None
+        return RealShUtilMove().shutil_move(src, dst)
 
     def remove_file(self, path):
         RealRemoveFile().remove_file(path)
@@ -128,7 +130,7 @@ class RealFs(Fs):
     def listdir(self, path):
         return os.listdir(path)
 
-    def read_file(self, path):
+    def read_file(self, path):  # type: (str) -> str
         return RealReadFile().read_file(path)
 
     def write_file(self, path, content):
@@ -146,14 +148,22 @@ class RealFs(Fs):
     def getcwd_as_realpath(self):  # type: () -> str
         return RealReadCwdFs().getcwd_as_realpath()
 
-    def list_mount_points(self):
+    def list_mount_points(self):  # type: () -> List[str]
         return RealMountPointListFs().list_mount_points()
 
     def rmdir(self, path):  # type: (str) -> None
         return os.rmdir(path)
 
-    def mkdtemp(self, suffix="", prefix=tempfile.template, dir=None):
-        return tempfile.mkdtemp(suffix, prefix, dir)
+    def mkdtemp(
+            self,
+            suffix="",  # type: Optional[str]
+            prefix=tempfile.template,  # type: Optional[str]
+            dir=None  # type: Optional[str]
+    ):
+        return tempfile.mkdtemp(
+            suffix if suffix is not None else "",
+            prefix if prefix is not None else tempfile.template,
+            dir)
 
     def gettempdir(self):
         return tempfile.gettempdir()

@@ -1,12 +1,10 @@
-import unittest
-
 import pytest
 
 from trashcli.compat import fsdecode
 from trashcli.lib.printable import printable
 
 
-class TestPrintable(unittest.TestCase):
+class TestPrintable:
     def test_plain_text_is_unchanged(self):
         assert printable('/foo/bar baz') == '/foo/bar baz'
 

@@ -1,7 +1,10 @@
-from tests.test_list.cmd.support.trash_list_user import trash_list_user  # noqa
+from tests.support.dirs.temp_dir import temp_dir_fixture
+from tests.support.fs_fixture import real_fs_fixture
+from tests.test_list.cmd.support.trash_list_user import trash_list_user
 
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture
 user = trash_list_user
-
 
 class TestDebugVolumes:
     def test_prints_physical_and_virtual_partitions_and_df_output(self, user):

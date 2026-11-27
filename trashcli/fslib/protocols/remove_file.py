@@ -5,5 +5,5 @@ from trashcli.compat import Protocol
 
 class RemoveFile(Protocol):
     @abstractmethod
-    def remove_file(self, path):
-        raise NotImplementedError()
+    def remove_file(self, path):  # type: (str) -> None
+        raise NotImplementedError

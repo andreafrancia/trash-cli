@@ -1,6 +1,6 @@
 import errno
 import os
-from typing import Iterable
+from typing import Iterable, List
 
 from tests.support.fakes.fake_volume_of import FakeVolumeOfFs
 from tests.support.put.fake_fs.directory import Directory
@@ -60,7 +60,7 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
     def getcwd_as_realpath(self):  # type: () -> str
         return os.path.join('/', self.cwd)
 
-    def list_mount_points(self):
+    def list_mount_points(self):  # type: () -> List[str]
         return self.volumes
 
     def ls_existing(self, paths):
@@ -196,7 +196,7 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             return content
         raise IOError("Unable to read: %s" % path)
 
-    def readlink(self, path):
+    def readlink(self, path):  # type: (str) -> str
         path = self._join_cwd(path)
         entity = self._get_entry_at(path).entity
         if isinstance(entity, SymLink):
@@ -252,14 +252,14 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
         inode.stickiness = (Stickiness.sticky if mode & STICKY_BIT
                             else Stickiness.not_sticky)
 
-    def path_isdir(self, path):
+    def path_isdir(self, path):  # type: (str) -> bool
         try:
             entity = self.get_entity_at(path)
         except MyFileNotFoundError:
             return False
         return isinstance(entity, Directory)
 
-    def path_exists(self, path):
+    def path_exists(self, path):  # type: (str) -> bool
         try:
             self.get_entity_at(path)
             return True
@@ -336,14 +336,14 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
             for entry in self.listdir(path):
                 yield entry
 
-    def move(self, src, dest):
+    def shutil_move(self, src, dst):  # type: (str, str) -> None
         basename, entry = self._pop_entry_from_dir(src)
 
-        if self.path_exists(dest) and self.path_isdir(dest):
-            dest_dir = self._get_directory_at(dest)
+        if self.path_exists(dst) and self.path_isdir(dst):
+            dest_dir = self._get_directory_at(dst)
             dest_dir.add_entry(basename, entry)
         else:
-            dest_dirname, dest_basename = os.path.split(dest)
+            dest_dirname, dest_basename = os.path.split(dst)
             dest_dir = self._get_directory_at(dest_dirname)
             dest_dir.add_entry(dest_basename, entry)
 
@@ -465,7 +465,7 @@ class FakeFs(FakeVolumeOfFs, Fs, DirReaderFs, IsStickyDir, IsSymLink, RestoreFs,
                 for x in self.walk_no_follow(new_path):
                     yield x
 
-    def path_lexists(self, path):
+    def path_lexists(self, path):  # type: (str) -> bool
         path = self._join_cwd(path)
         try:
             self._get_entry_at(path)

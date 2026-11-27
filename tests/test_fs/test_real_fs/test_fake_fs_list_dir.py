@@ -1,11 +1,9 @@
-import unittest
-
 from tests.support.dirs.my_path import MyPath
 from tests.support.put.fake_fs.fake_fs import FakeFs
 
 
-class TestFakeFsListDir(unittest.TestCase):
-    def setUp(self):
+class TestFakeFsListDir:
+    def setup_method(self):
         self.fs = FakeFs()
         self.tmp_dir = MyPath('/tmp', self.fs)
         self.fs.makedirs(self.tmp_dir, 0o700)

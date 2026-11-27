@@ -1,18 +1,48 @@
-from trashcli.fslib.protocols.listdir_fs import ListdirFs
+from typing import List
 
 from trashcli.compat import Protocol
-from trashcli.fslib.protocols.volumes_fs import VolumesFs
-from trashcli.restore.fs.protocols.file_reader_fs import FileReaderFs
-from trashcli.restore.fs.protocols.path_reader_fs import PathReaderFs
-from trashcli.restore.fs.protocols.read_cwd_fs import ReadCwdFs
-from trashcli.restore.fs.protocols.restore_writer_fs import RestoreWriterFs
 
+class RestoreFs(Protocol):
 
-class RestoreFs(ListdirFs,
-                FileReaderFs,
-                PathReaderFs,
-                ReadCwdFs,
-                VolumesFs,
-                RestoreWriterFs,
-                Protocol):
-    pass
+    def getcwd_as_realpath(self):  # type: () -> str
+        raise NotImplementedError
+
+    def is_sticky_dir(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    def is_symlink(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    def is_world_writable(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    def listdir(self, path):  # type: (str) -> List[str]
+        raise NotImplementedError
+
+    def list_mount_points(self):  # type: () -> List[str]
+        raise NotImplementedError
+
+    def mkdirs(self, path):  # type: (str) -> None
+        raise NotImplementedError
+
+    def path_exists(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    def path_isdir(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    def path_lexists(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    def read_file(self, path):  # type: (str) -> str
+        raise NotImplementedError
+
+    def remove_file(self, path):  # type: (str) -> None
+        raise NotImplementedError
+
+    def shutil_move(self, src, dst):  # type: (str, str) -> None
+        raise NotImplementedError
+
+    def volume_of(self, path):  # type: (str) -> str
+        raise NotImplementedError
+

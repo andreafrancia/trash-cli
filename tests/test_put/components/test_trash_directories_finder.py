@@ -1,6 +1,5 @@
-import unittest
-
 from tests.support.py2mock import Mock
+from trashcli.fslib.protocols.volume_of import VolumeOfFs
 
 from trashcli.put.core.candidate import Candidate
 from trashcli.put.core.check_type import NoCheck, TopTrashDirCheck
@@ -9,9 +8,9 @@ from trashcli.put.gate import Gate
 from trashcli.put.trash_directories_finder import TrashDirectoriesFinder
 
 
-class TestTrashDirectoriesFinder(unittest.TestCase):
-    def setUp(self):
-        volumes = Mock(spec=[])
+class TestTrashDirectoriesFinder:
+    def setup_method(self):
+        volumes = Mock(spec=VolumeOfFs)
         volumes.volume_of = lambda x: 'volume_of(%s)' % x
         self.environ = {'HOME': "~"}
         self.finder = TrashDirectoriesFinder(volumes)

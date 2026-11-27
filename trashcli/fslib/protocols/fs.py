@@ -49,6 +49,10 @@ class Fs(Protocol):
         raise NotImplementedError
 
     @abstractmethod
+    def getcwd_as_realpath(self):  # type: () -> str
+        raise NotImplementedError
+
+    @abstractmethod
     def path_isdir(self, path):  # type: (str) -> bool
         raise NotImplementedError
 
@@ -65,11 +69,12 @@ class Fs(Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def makedirs(self, name, mode=0o777, exist_ok=False):  # type: (str, int, bool)->None
+    def makedirs(self, name, mode=0o777,
+                 exist_ok=False):  # type: (str, int, bool)->None
         raise NotImplementedError
 
     @abstractmethod
-    def move(self, path, dest):  # type: (str, str) -> None
+    def shutil_move(self, src, dst):  # type: (str, str) -> None
         raise NotImplementedError
 
     @abstractmethod
@@ -85,7 +90,15 @@ class Fs(Protocol):
         raise NotImplementedError
 
     @abstractmethod
+    def readlink(self, path):  # type: (str) -> str
+        raise NotImplementedError
+
+    @abstractmethod
     def is_symlink(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def is_sticky_dir(self, path):  # type: (str) -> bool
         raise NotImplementedError
 
     @abstractmethod
@@ -94,6 +107,10 @@ class Fs(Protocol):
 
     @abstractmethod
     def is_accessible(self, path):  # type: (str) -> bool
+        raise NotImplementedError
+
+    @abstractmethod
+    def is_world_writable(self, path):  # type: (str) -> bool
         raise NotImplementedError
 
     @abstractmethod
@@ -129,13 +146,17 @@ class Fs(Protocol):
         raise NotImplementedError
 
     @abstractmethod
+    def list_mount_points(self):  # type: () -> List[str]
+        raise NotImplementedError
+
+    @abstractmethod
     def rmdir(self, path):  # type: (str) -> None
         raise NotImplementedError
 
     @abstractmethod
     def mkdtemp(self,
-                prefix=None,  # type: Optional[str]
                 suffix=None,  # type: Optional[str]
+                prefix=None,  # type: Optional[str]
                 dir=None,  # type: Optional[str]
                 ):  # type: (...) -> str
         raise NotImplementedError

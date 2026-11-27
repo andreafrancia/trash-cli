@@ -3,7 +3,7 @@ from abc import abstractmethod
 from trashcli.compat import Protocol
 
 
-class Move(Protocol):
+class ShutilMove(Protocol):
     @abstractmethod
-    def move(self, path, dest):
-        raise NotImplementedError()
+    def shutil_move(self, src, dst):  # type: (str, str) -> None
+        raise NotImplementedError

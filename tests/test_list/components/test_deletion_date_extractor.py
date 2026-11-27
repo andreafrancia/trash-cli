@@ -1,11 +1,10 @@
 import datetime
-import unittest
 
 from trashcli.list.extractors import DeletionDateExtractor
 
 
-class TestDeletionDateExtractor(unittest.TestCase):
-    def setUp(self):
+class TestDeletionDateExtractor:
+    def setup_method(self):
         self.extractor = DeletionDateExtractor()
 
     def test_extract_attribute_default(self):

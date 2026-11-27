@@ -8,5 +8,5 @@ class RealVolumeOfFs(VolumeOfFs):
     def __init__(self):
         self.impl = VolumeOfFsImpl(RealIsMount(), RealAbspathFs())
 
-    def volume_of(self, path):
+    def volume_of(self, path):  # type: (str) -> str
         return self.impl.volume_of(path)

@@ -15,16 +15,17 @@ from trashcli.list.list_cmd import ListCmd
 
 
 def main():
+    fs = RealFs()
     ListCmd(
         out=sys.stdout,
         err=sys.stderr,
         environ=os.environ,
         volumes_listing=RealVolumesListing(),
         uid=os.getuid(),
-        volumes=RealVolumeOfFs(),
-        dir_reader=RealDirReaderFs(RealFs()),
-        file_reader=FileSystemReader(RealFs()),
-        content_reader=RealReadFile(),
+        volumes=fs,
+        dir_reader=RealDirReaderFs(fs),
+        file_reader=FileSystemReader(fs),
+        content_reader=fs,
         version=trashcli.trash.version,
         disk_partitions_fs=RealDiskPartitionsFs(),
         df_command=RealDfCommand(),

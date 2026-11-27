@@ -1,5 +1,3 @@
-import unittest
-
 from tests.support.py2mock import Mock, call
 from trashcli.trash_dirs_scanner import (
     TopTrashDirRules,
@@ -10,8 +8,8 @@ from trashcli.trash_dirs_scanner import (
 )
 
 
-class TestTopTrashDirRules(unittest.TestCase):
-    def setUp(self):
+class TestTopTrashDirRules:
+    def setup_method(self):
         self.fs = Mock(spec=['path_exists', 'is_sticky_dir', 'is_symlink'])
         self.rules = TopTrashDirRules(self.fs)
 

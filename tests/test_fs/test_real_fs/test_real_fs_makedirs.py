@@ -3,18 +3,16 @@ import pytest
 
 from tests.support.format_os_error import format_os_error
 from tests.support.dirs.temp_dir import temp_dir_fixture
-from trashcli.fslib.real.real_fs import RealFs
+from tests.support.fs_fixture import real_fs_fixture
 
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture
 
 @pytest.mark.slow
 class TestRealFsMakedirs:
     @pytest.fixture
-    def fs(self):
-        return RealFs()
-
-    @pytest.fixture
-    def base_dir(self, temp_dir_fixture):
-        return temp_dir_fixture
+    def base_dir(self, temp_dir):
+        return temp_dir
 
     def test_makedirs__use_0o777__when_mode_is_not_specified(
             self, fs, base_dir, process_umask):

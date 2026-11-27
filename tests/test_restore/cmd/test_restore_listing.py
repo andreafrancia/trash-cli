@@ -1,28 +1,37 @@
-from typing import TypeVar
+from typing import TypeVar, MutableMapping
 
 import pytest
 
+from tests.support.dirs.my_path import MyPath
 from tests.support.dirs.support_fs import SupportFs
-from tests.support.dirs.temp_dir import make_temp_dir
+from tests.support.dirs.temp_dir import temp_dir_fixture
 from tests.support.fakes.fake_trash_dir import FakeTrashDir, \
     FakeTrashDirWithRoot
-from tests.support.fs.sorting_listdir_fs import SortingListdirFs
+from tests.support.fs.sorting_listdir_fs import make_listdir_sorted
+from tests.support.fs_fixture import real_fs_fixture
 from tests.support.restore.restore_user import RestoreUser
 from tests.test_restore.support.recording_logger import RecordingLogger
-from trashcli.fslib.real.real_fs import RealFs
 from tests.support.fakes.fake_volumes import FakeVolumesFs
-from trashcli.restore.fs.real.real_restore_fs import RealRestoreFs
+from trashcli.fslib.protocols.fs import Fs
+from trashcli.lib.environ import Environ
+
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture
 
 Self = TypeVar('Self', bound='TestRestoreListing')
+
 
 @pytest.mark.slow
 class TestRestoreListing:
 
-    def setup_method(self):
-        fs = RealFs()
-        self.temp_dir = make_temp_dir(fs)
+    @pytest.fixture(autouse=True)
+    def setup(self,
+              fs,  # type: Fs
+              temp_dir,  # type: MyPath
+              ):
+        self.temp_dir = temp_dir
 
-        self.root_dir = self.temp_dir
+        self.root_dir = temp_dir
         self.support_fs = SupportFs(fs, self.root_dir)
 
         self.cwd = self.root_dir / "cwd"
@@ -33,29 +42,22 @@ class TestRestoreListing:
         trash_dir_path = self.home_dir / ".local/share/Trash"
         self.support_fs.mkdir_rel_p(trash_dir_path)
         self.trash_dir = FakeTrashDirWithRoot(
-            FakeTrashDir(trash_dir_path), self.root_dir
+            FakeTrashDir(trash_dir_path, fs), self.root_dir
         )
 
         uid = 1000
-        self.env = {'HOME': self.home_dir}
-        # end of unix-like env
+        self.env = {'HOME': self.home_dir}  # type: MutableMapping[str, str]
 
+        make_listdir_sorted(fs)
         self.logger = RecordingLogger()
         self.user = RestoreUser(
             environ=self.env,
             uid=uid,
-            file_reader=RealRestoreFs(),
-            path_read_fs=RealRestoreFs(),
-            write_fs=RealRestoreFs(),
-            listing_fs=SortingListdirFs(RealRestoreFs()),
+            fs=fs,
             version="0.0.0",
             volumes=FakeVolumesFs([]),
             logger=self.logger,
-            top_trash_dir_rules_reader=RealFs(),
         )
-
-    def teardown_method(self):
-        self.temp_dir.clean_up()
 
     def test_with_no_args_should_show_only_files_in_cwd(
             self,  # type: Self

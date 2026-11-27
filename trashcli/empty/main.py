@@ -20,15 +20,16 @@ class ContentReader(ReadFile, Protocol):
 
 
 def main():
+    fs = RealFs()
     empty_cmd = EmptyCmd(argv0=sys.argv[0],
                          out=sys.stdout,
                          err=sys.stderr,
                          volumes_listing=RealVolumesListing(),
                          now=datetime.now,
-                         file_reader=RealFs(),
-                         file_remover=ExistingFileRemover(RealFs()),
-                         content_reader=RealFs(),
-                         dir_reader=FileSystemDirReader(RealFs()),
+                         file_reader=fs,
+                         file_remover=ExistingFileRemover(fs),
+                         content_reader=fs,
+                         dir_reader=FileSystemDirReader(fs),
                          version=trash.version,
-                         volumes=RealVolumeOfFs())
+                         volumes=fs)
     return empty_cmd.run_cmd(sys.argv[1:], os.environ, os.getuid())

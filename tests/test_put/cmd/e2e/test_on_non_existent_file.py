@@ -1,9 +1,11 @@
 import pytest
 
+from tests.support.dirs.temp_dir import temp_dir_fixture
+from tests.support.fs_fixture import real_fs_fixture
 from tests.test_put.cmd.e2e.run_trash_put import run_trash_put
-from tests.test_put.cmd.e2e.test_end_to_end_put import temp_dir_fixture
 from trashcli.lib.exit_codes import EX_IOERR
 
+fs = real_fs_fixture
 temp_dir = temp_dir_fixture
 
 @pytest.mark.slow

@@ -1,21 +1,29 @@
-import unittest
+import pytest
 
+from tests.support.dirs.my_path import MyPath
+from tests.support.fs_fixture import real_fs_fixture
 from trashcli import trash
 from tests.support.help.help_reformatting import reformat_help_message
-from tests.support.dirs.temp_dir import make_temp_dir
-from trashcli.fslib.real.real_fs import RealFs
+from tests.support.dirs.temp_dir import temp_dir_fixture
 from tests.support.run.run_command import run_command
+from trashcli.fslib.protocols.fs import Fs
+
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture
 
 
-class TestEmptyEndToEnd(unittest.TestCase):
-    def setUp(self):
-        fs = RealFs()
-        self.tmp_dir = make_temp_dir(fs)
+class TestEmptyEndToEnd:
+    @pytest.fixture(autouse=True)
+    def setup_fs(self, fs, temp_dir):  # type: (Fs, MyPath) -> None
+        fs = fs
+        self.tmp_dir = temp_dir
 
     def test_help(self):
         result = run_command(self.tmp_dir, "trash-empty", ['--help'])
 
-        self.assertEqual([reformat_help_message("""\
+        assert [result.reformatted_help(),
+                result.stderr,
+                result.exit_code] == [reformat_help_message("""\
 usage: trash-empty [-h] [--print-completion {bash,zsh,tcsh}] [--version] [-v]
                    [--trash-dir TRASH_DIR] [--all-users] [-i] [-f] [--dry-run]
                    [days]
@@ -39,50 +47,41 @@ options:
   --dry-run             show which files would have been removed
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues
-"""), '', 0],
-                         [result.reformatted_help(),
-                          result.stderr,
-                          result.exit_code])
+"""), '', 0]
 
     def test_h(self):
         result = run_command(self.tmp_dir, "trash-empty", ['-h'])
 
-        self.assertEqual(["usage:", '', 0],
-                         [result.stdout[0:6],
-                          result.stderr,
-                          result.exit_code])
+        assert [result.stdout[0:6],
+                result.stderr,
+                result.exit_code] == ["usage:", '', 0]
 
     def test_version(self):
         result = run_command(self.tmp_dir, "trash-empty", ['--version'])
 
-        self.assertEqual(['trash-empty %s\n' % trash.version, '', 0],
-                         [result.stdout,
-                          result.stderr,
-                          result.exit_code])
+        assert [result.stdout,
+                result.stderr,
+                result.exit_code] == ['trash-empty %s\n' % trash.version, '', 0]
 
     def test_on_invalid_option(self):
         result = run_command(self.tmp_dir, "trash-empty", ['--wrong-option'])
 
-        self.assertEqual(['',
-                          'trash-empty: error: unrecognized arguments: --wrong-option',
-                          2],
-                         [result.stdout,
-                          result.stderr.splitlines()[-1],
-                          result.exit_code])
+        assert [result.stdout,
+                result.stderr.splitlines()[-1],
+                result.exit_code] == [
+                   '',
+                   'trash-empty: error: unrecognized arguments: --wrong-option',
+                   2]
 
     def test_on_print_time(self):
         result = run_command(self.tmp_dir, "trash-empty", ['--print-time'],
-            env={'TRASH_DATE': '1970-12-31T23:59:59'})
+                             env={'TRASH_DATE': '1970-12-31T23:59:59'})
 
-        self.assertEqual(('1970-12-31T23:59:59\n', '', 0), result.all)
+        assert result.all == ('1970-12-31T23:59:59\n', '', 0)
 
     def test_on_trash_date_not_parsable(self):
         result = run_command(self.tmp_dir, "trash-empty", ['--print-time'],
-            env={'TRASH_DATE': 'not a valid date'})
+                             env={'TRASH_DATE': 'not a valid date'})
 
-        self.assertEqual(['trash-empty: invalid TRASH_DATE: not a valid date\n',
-                          0],
-                         [result.stderr, result.exit_code])
-
-    def tearDown(self):
-        self.tmp_dir.clean_up()
+        assert ([result.stderr, result.exit_code] ==
+                ['trash-empty: invalid TRASH_DATE: not a valid date\n', 0])

@@ -40,7 +40,7 @@ def env(request, process_umask):
     if request.param == 'real':
         fs = RealFs()
         tmp_dir = make_temp_dir(fs)
-        yield Env(RealFs(), str(tmp_dir), True, process_umask)
+        yield Env(fs, str(tmp_dir), True, process_umask)
         tmp_dir.clean_up()
     else:
         fs = FakeFs()

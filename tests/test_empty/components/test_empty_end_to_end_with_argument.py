@@ -1,24 +1,26 @@
 import datetime
-import unittest
 
 import pytest
 
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
+from tests.support.fs_fixture import real_fs_fixture
 from tests.support.trash_dirs.list_trash_dir import list_trash_dir
-from tests.support.dirs.temp_dir import make_temp_dir
-from trashcli.fslib.real.real_fs import RealFs
+from tests.support.dirs.temp_dir import temp_dir_fixture
 from tests.support.run.run_command import run_command
+
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture
 
 
 @pytest.mark.slow
-class TestEmptyEndToEndWithArgument(unittest.TestCase):
-    def setUp(self):
-        fs = RealFs()
-        self.tmp_dir = make_temp_dir(fs)
+class TestEmptyEndToEndWithArgument:
+    @pytest.fixture(autouse=True)
+    def setup_fs(self, fs, temp_dir):
+        self.tmp_dir = temp_dir
         self.xdg_data_home = self.tmp_dir / 'XDG_DATA_HOME'
         self.environ = {'XDG_DATA_HOME': self.xdg_data_home}
         self.trash_dir = self.xdg_data_home / 'Trash'
-        self.fake_trash_dir = FakeTrashDir(self.trash_dir)
+        self.fake_trash_dir = FakeTrashDir(self.trash_dir, fs)
 
     def user_run_trash_empty(self, args):
         return run_command(self.tmp_dir, "trash-empty", args, env=self.environ)
@@ -31,10 +33,11 @@ class TestEmptyEndToEndWithArgument(unittest.TestCase):
 
         result = self.user_run_trash_empty(['--print-time'])
 
-        self.assertEqual(('2000-01-01T00:00:00\n', '', 0), result.all)
+        assert result.all == ('2000-01-01T00:00:00\n', '', 0)
 
     def test_it_should_keep_files_newer_than_N_days(self):
-        self.fake_trash_dir.add_trashinfo_with_date('foo', datetime.date(2000, 1, 1))
+        self.fake_trash_dir.add_trashinfo_with_date('foo',
+                                                    datetime.date(2000, 1, 1))
         self.set_clock_at('2000-01-01')
 
         self.user_run_trash_empty(['2'])
@@ -42,7 +45,8 @@ class TestEmptyEndToEndWithArgument(unittest.TestCase):
         assert list_trash_dir(self.trash_dir) == ['info/foo.trashinfo']
 
     def test_it_should_remove_files_older_than_N_days(self):
-        self.fake_trash_dir.add_trashinfo_with_date('foo', datetime.date(1999, 1, 1))
+        self.fake_trash_dir.add_trashinfo_with_date('foo',
+                                                    datetime.date(1999, 1, 1))
         self.set_clock_at('2000-01-01')
 
         self.user_run_trash_empty(['2'])
@@ -50,12 +54,10 @@ class TestEmptyEndToEndWithArgument(unittest.TestCase):
         assert list_trash_dir(self.trash_dir) == []
 
     def test_it_should_kept_files_with_invalid_deletion_date(self):
-        self.fake_trash_dir.add_trashinfo_with_invalid_date('foo', 'Invalid Date')
+        self.fake_trash_dir.add_trashinfo_with_invalid_date('foo',
+                                                            'Invalid Date')
         self.set_clock_at('2000-01-01')
 
         self.user_run_trash_empty(['2'])
 
         assert list_trash_dir(self.trash_dir) == ['info/foo.trashinfo']
-
-    def tearDown(self):
-        self.tmp_dir.clean_up()

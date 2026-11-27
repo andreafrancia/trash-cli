@@ -1,13 +1,11 @@
 # Copyright (C) 2011 Andrea Francia Trivolzio(PV) Italy
-import unittest
-
 from tests.support.fakes.fake_file_system import FakeFileSystem
 
 from trashcli.lib.trash_dir_reader import TrashDirReader
 
 
-class TestTrashDirReader(unittest.TestCase):
-    def setUp(self):
+class TestTrashDirReader:
+    def setup_method(self):
         self.fs = FakeFileSystem()
         self.trash_dir = TrashDirReader(self.fs)
 

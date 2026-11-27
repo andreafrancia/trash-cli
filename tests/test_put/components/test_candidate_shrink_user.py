@@ -1,10 +1,8 @@
-import unittest
-
 from trashcli.put.core.candidate import Candidate
 
 
-class TestCandidateShrinkUser(unittest.TestCase):
-    def setUp(self):
+class TestCandidateShrinkUser:
+    def setup_method(self):
         self.environ = {}
 
     def test_should_substitute_tilde_in_place_of_home_dir(self):

@@ -1,12 +1,10 @@
-import unittest
-
 from tests.support.put.fake_fs.fake_fs import FakeFs
 from tests.support.put.format_mode import format_mode
 from trashcli.put.dir_maker import DirMaker
 
 
-class TestEnsureDir(unittest.TestCase):
-    def setUp(self):
+class TestEnsureDir:
+    def setup_method(self):
         self.fs = FakeFs('/')
         self.dir_maker = DirMaker(self.fs)
 

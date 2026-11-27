@@ -1,35 +1,42 @@
 import pytest
 
 from tests.support.capture_error import capture_error
+from tests.support.dirs.my_path import MyPath
+from tests.support.fs_fixture import real_fs_fixture
 from tests.support.put.fake_fs.fake_fs import FakeFs
-from trashcli.fslib.real.real_fs import RealFs
 from tests.support.dirs.temp_dir import temp_dir_fixture
+from trashcli.fslib.protocols.fs import Fs
 
+fs = real_fs_fixture
 temp_dir = temp_dir_fixture
-
 
 @pytest.mark.slow
 class TestReadLinkOnRealFs:
-    def setup_method(self):
-        self.fs = RealFs()
+    @pytest.fixture(autouse=True)
+    def setup_fs(self, fs):  # type: (Fs) -> None
+        self.fs = fs
 
-    def test_readlink(self, temp_dir_fixture):
-        self.fs.symlink("target", temp_dir_fixture / "link")
+    def test_readlink(self,
+                      temp_dir,  # type: MyPath
+                      ):
+        self.fs.symlink("target", temp_dir / "link")
 
-        assert self.fs.readlink(temp_dir_fixture / "link") == "target"
+        assert self.fs.readlink(temp_dir / "link") == "target"
 
-    def test_readlink_on_regular_file(self, temp_dir_fixture):
-        self.fs.write_file(temp_dir_fixture / "regular-file", 'contents')
+    def test_readlink_on_regular_file(self,
+                                      temp_dir,  # type: MyPath
+                                      ):
+        self.fs.write_file(temp_dir / "regular-file", 'contents')
 
-        exc = capture_error(lambda: self.fs.readlink(temp_dir_fixture / "regular-file"))
+        exc = capture_error(lambda: self.fs.readlink(temp_dir / "regular-file"))
 
-        assert ((type(exc), str(exc).replace(temp_dir_fixture, '')) ==
+        assert ((type(exc), str(exc).replace(temp_dir, '')) ==
                 (OSError, "[Errno 22] Invalid argument: '/regular-file'"))
 
-    def test_lexists(self, temp_dir_fixture):
-        self.fs.symlink("target", temp_dir_fixture / "link")
+    def test_lexists(self, temp_dir):  # type: (MyPath) -> None
+        self.fs.symlink("target", temp_dir / "link")
 
-        assert self.fs.path_lexists(temp_dir_fixture / "link") is True
+        assert self.fs.path_lexists(temp_dir / "link") is True
 
 
 class TestReadLink:

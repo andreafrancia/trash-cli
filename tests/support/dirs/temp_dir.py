@@ -1,18 +1,12 @@
 import pytest
 
 from tests.support.dirs.my_path import MyPath
+from tests.support.fs_fixture import FsFixture
 from trashcli.fslib.real.real_fs import RealFs
 
 
 @pytest.fixture
-def temp_dir_fixture():
-    fs = RealFs()
-    temp_dir = make_temp_dir(fs)
-    yield temp_dir
-    temp_dir.clean_up()
-
-@pytest.fixture
-def temp_dir_fixture_fs(fs):
+def temp_dir_fixture(fs):
     temp_dir = make_temp_dir(fs)
     yield temp_dir
     temp_dir.clean_up()

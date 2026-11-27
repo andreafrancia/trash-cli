@@ -3,5 +3,5 @@ from trashcli.fslib.real.read_whole_file import read_whole_file
 
 
 class RealReadFile(ReadFile):
-    def read_file(self, path):
+    def read_file(self, path):  # type: (str) -> str
         return read_whole_file(path)

@@ -1,28 +1,29 @@
-import unittest
-
 import pytest
 from six import StringIO
 
 from tests.support.fake_fs.fake_volumes_listing import FakeVolumesListing
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
-from tests.support.dirs.temp_dir import make_temp_dir
-from trashcli.fslib.real.real_fs import RealFs
+from tests.support.dirs.temp_dir import temp_dir_fixture
+from tests.support.fs_fixture import real_fs_fixture
 from trashcli.rm.main import RealRmFileSystemReader
 from trashcli.rm.rm_cmd import RmCmd
 
 
+fs =  real_fs_fixture
+temp_dir = temp_dir_fixture
+
 @pytest.mark.slow
-class TestTrashRm(unittest.TestCase):
-    def setUp(self):
-        fs = RealFs()
-        self.xdg_data_home = make_temp_dir(fs)
+class TestTrashRm:
+    @pytest.fixture(autouse=True)
+    def setup_fs(self, fs, temp_dir):
+        self.xdg_data_home = temp_dir
         self.stderr = StringIO()
         self.trash_rm = RmCmd(environ={'XDG_DATA_HOME': self.xdg_data_home},
                               getuid=lambda: 123,
                               volumes_listing=FakeVolumesListing(),
                               stderr=self.stderr,
-                              file_reader=RealRmFileSystemReader(RealFs()))
-        self.fake_trash_dir = FakeTrashDir(self.xdg_data_home / 'Trash')
+                              file_reader=RealRmFileSystemReader(fs))
+        self.fake_trash_dir = FakeTrashDir(self.xdg_data_home / 'Trash', fs)
 
     def test_issue69(self):
         self.fake_trash_dir.add_trashinfo_without_path('foo')
@@ -40,6 +41,3 @@ class TestTrashRm(unittest.TestCase):
         self.trash_rm.run(['trash-rm', 'delete*'], uid=None)
 
         assert self.fake_trash_dir.ls_info() == ['keep.trashinfo']
-
-    def tearDown(self):
-        self.xdg_data_home.clean_up()

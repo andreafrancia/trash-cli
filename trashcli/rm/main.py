@@ -16,12 +16,13 @@ from trashcli.rm.rm_cmd import RmCmd, RmFileSystemReader
 
 
 def main():
+    fs = RealFs()
     volumes_listing = RealVolumesListing()
     cmd = RmCmd(environ=os.environ,
                 getuid=os.getuid,
                 volumes_listing=volumes_listing,
                 stderr=sys.stderr,
-                file_reader=RealRmFileSystemReader(RealFs()))
+                file_reader=RealRmFileSystemReader(fs))
 
     cmd.run(sys.argv, os.getuid())
 
@@ -29,18 +30,22 @@ def main():
 
 
 class RealRmFileSystemReader(RmFileSystemReader,
-                             RealIsStickyDir,
                              RealIsSymLink,
                              RealIsWorldWritable,
                              RealReadFile,
-                             RealPathIsDir,
                              RealRemoverFs,
                              ):
     def __init__(self, fs):  # type: (Fs) -> None
         RealRemoverFs.__init__(self, fs)
 
+    def path_exists(self, path):  # type: (str) -> bool
+        return self.fs.path_exists(path)
+
     def entries_if_dir_exists(self, path):
         return RealEntriesIfDirExists(self.fs).entries_if_dir_exists(path)
 
-    def path_exists(self, path):
-        return self.fs.path_exists(path)
+    def path_isdir(self, path):  # type: (str) -> bool
+        return self.fs.path_isdir(path)
+
+    def is_sticky_dir(self, path):  # type: (str) -> bool
+        return self.fs.is_sticky_dir(path)

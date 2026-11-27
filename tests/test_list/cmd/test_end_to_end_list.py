@@ -1,22 +1,25 @@
 import datetime
-import unittest
 
 import pytest
 
 from tests.support.fakes.fake_trash_dir import FakeTrashDir
 from tests.support.help.help_reformatting import reformat_help_message
-from tests.support.dirs.temp_dir import make_temp_dir
-from trashcli.fslib.real.real_fs import RealFs
 from tests.support.run.run_command import run_command
+
+from tests.support.dirs.temp_dir import temp_dir_fixture
+from tests.support.fs_fixture import real_fs_fixture
+
+fs = real_fs_fixture
+temp_dir = temp_dir_fixture
 
 
 @pytest.mark.slow
-class TestEndToEndList(unittest.TestCase):
-    def setUp(self):
-        fs = RealFs()
-        self.temp_dir = make_temp_dir(fs)
+class TestEndToEndList:
+    @pytest.fixture(autouse=True)
+    def setup_fs(self, fs, temp_dir):
+        self.temp_dir = temp_dir
         self.trash_dir = self.temp_dir / 'trash-dir'
-        self.fake_trash_dir = FakeTrashDir(self.trash_dir)
+        self.fake_trash_dir = FakeTrashDir(self.trash_dir, fs)
 
     def test_list(self):
         self.fake_trash_dir.add_trashinfo4("/file1", '2000-01-01 00:00:01')
@@ -30,7 +33,8 @@ class TestEndToEndList(unittest.TestCase):
 
     def test_list_trash_dirs(self):
         result = run_command(self.temp_dir, "trash-list",
-                             ['--trash-dirs', '--trash-dir=/home/user/.local/share/Trash'])
+                             ['--trash-dirs',
+                              '--trash-dir=/home/user/.local/share/Trash'])
 
         assert result.all == ('/home/user/.local/share/Trash\n', '', 0)
 
@@ -53,7 +57,7 @@ class TestEndToEndList(unittest.TestCase):
     def test_help(self):
         result = run_command(self.temp_dir, "trash-list", ['--help'])
 
-        self.assertEqual(reformat_help_message("""\
+        assert result.stderr + result.reformatted_help() == reformat_help_message("""\
 usage: trash-list [-h] [--print-completion {bash,zsh,tcsh}] [--version]
                   [--volumes] [--trash-dirs] [--trash-dir TRASH_DIRS]
                   [--all-users]
@@ -72,7 +76,4 @@ options:
   --all-users           list trashcans of all the users
 
 Report bugs to https://github.com/andreafrancia/trash-cli/issues
-"""), result.stderr + result.reformatted_help())
-
-    def tearDown(self):
-        self.temp_dir.clean_up()
+""")

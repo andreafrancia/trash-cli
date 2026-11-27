@@ -1,17 +1,18 @@
 import pytest
 
 from tests.support.dirs.temp_dir import temp_dir_fixture
+from tests.support.fs_fixture import real_fs_fixture
 from tests.test_put.cmd.e2e.run_trash_put.directory_layout import \
     DirectoriesLayout
-from trashcli.fslib.real.real_fs import RealFs
 
+fs = real_fs_fixture
 temp_dir = temp_dir_fixture
 
 
 @pytest.mark.slow
 class TestOnLinksToDirs:
-    def test_link_to_dir_without_slashes(self, temp_dir):
-        layout = DirectoriesLayout(temp_dir, RealFs())
+    def test_link_to_dir_without_slashes(self, temp_dir, fs):
+        layout = DirectoriesLayout(temp_dir, fs)
         layout.make_cur_dir()
         layout.mkdir_in_cur_dir('a-dir')
         layout.touch_in_cur_dir('a-file')
@@ -28,8 +29,8 @@ class TestOnLinksToDirs:
                                   '/info/link-to-dir.trashinfo'],
         }
 
-    def test_link_to_dir_with_slashes(self, temp_dir):
-        layout = DirectoriesLayout(temp_dir, RealFs())
+    def test_link_to_dir_with_slashes(self, temp_dir, fs):
+        layout = DirectoriesLayout(temp_dir, fs)
         layout.make_cur_dir()
         layout.mkdir_in_cur_dir("a-dir")
         layout.touch_in_cur_dir("a-file")

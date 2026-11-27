@@ -2,16 +2,8 @@ import os
 
 from trashcli.fslib.listdir_with_complete_path import listdir_with_complete_path
 from tests.support.put.real_and_fake_env import env, real_and_fake
-from trashcli.fslib.real.real_fs import RealFs
-from tests.support.put.fake_fs.fake_fs import FakeFs
-from trashcli.restore.fs.protocols.restore_fs import RestoreFs
 
 env = env  # the fixture, imported from its module
-
-# both file systems can be used wherever a RestoreFs is expected
-real_fs_as_restore_fs = RealFs()  # type: RestoreFs
-fake_fs_as_restore_fs = FakeFs()  # type: RestoreFs
-
 
 # The RestoreFs methods must answer the same on RealFs (real file system)
 # and on FakeFs.
@@ -66,7 +58,7 @@ class TestRestoreFsLikeRealFs:
     def test_move_and_remove_file(self, env):
         env.fs.write_file(env.path('file'), 'contents')
 
-        env.fs.move(env.path('file'), env.path('moved'))
+        env.fs.shutil_move(env.path('file'), env.path('moved'))
 
         assert env.fs.path_lexists(env.path('file')) is False
         assert env.fs.read_file(env.path('moved')) == 'contents'

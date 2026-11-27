@@ -1,5 +1,3 @@
-import unittest
-
 from trashcli.fstab.partitions import Partitions
 
 
@@ -10,8 +8,8 @@ class MockPartition:
         self.fstype = fstype
 
 
-class TestOsMountPoints(unittest.TestCase):
-    def setUp(self):
+class TestOsMountPoints:
+    def setup_method(self):
         self.partitions = Partitions(['realfs'])
 
     def test_a_physical_fs(self):

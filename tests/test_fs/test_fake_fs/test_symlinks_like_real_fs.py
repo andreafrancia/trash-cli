@@ -99,7 +99,7 @@ class TestSymlinksLikeRealFs:
         env.fs.write_file(env.path('file'), 'contents')
         env.fs.symlink('file', env.path('link'))
 
-        env.fs.move(env.path('link'), env.path('moved'))
+        env.fs.shutil_move(env.path('link'), env.path('moved'))
 
         assert env.fs.path_lexists(env.path('link')) is False
         assert env.fs.is_symlink(env.path('moved')) is True
